@@ -1,4 +1,4 @@
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {

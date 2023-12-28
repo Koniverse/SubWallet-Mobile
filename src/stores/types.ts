@@ -35,10 +35,11 @@ import { _ChainState } from '@subwallet/extension-base/services/chain-service/ty
 import {
   BalanceMap,
   BuyServiceInfo,
-  BuyTokenInfo, EarningRewardItem,
+  BuyTokenInfo,
+  EarningRewardItem,
   NominationPoolInfo,
   YieldPoolInfo,
-  YieldPositionInfo
+  YieldPositionInfo,
 } from '@subwallet/extension-base/types';
 import { SessionTypes } from '@walletconnect/types';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';

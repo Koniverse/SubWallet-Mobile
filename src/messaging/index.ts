@@ -146,6 +146,7 @@ import {
   OptimalYieldPathParams,
   RequestStakeCancelWithdrawal,
   RequestStakeClaimReward,
+  RequestYieldLeave,
   RequestYieldStepSubmit,
   RequestYieldWithdrawal,
   ValidateYieldProcessParams,
@@ -1489,8 +1490,8 @@ export async function validateYieldProcess(data: ValidateYieldProcessParams): Pr
   return sendMessage('pri(yield.join.validateProcess)', data);
 }
 
-export async function yieldSubmitUnstaking(data: RequestUnbondingSubmit) {
-  return sendMessage('pri(yield.staking.submitUnstaking)', data);
+export async function yieldSubmitLeavePool(data: RequestYieldLeave) {
+  return sendMessage('pri(yield.leave.submit)', data);
 }
 
 export async function yieldSubmitStakingWithdrawal(data: RequestYieldWithdrawal) {

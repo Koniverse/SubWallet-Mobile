@@ -34,7 +34,6 @@ const Component: React.FC<Props> = (props: Props) => {
   const { list, poolInfo, compound } = props;
   const navigation = useNavigation<RootNavigationProps>();
 
-  const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { priceMap } = useSelector((state: RootState) => state.price);
 
@@ -75,6 +74,13 @@ const Component: React.FC<Props> = (props: Props) => {
     navigation.goBack();
   }, [navigation]);
 
+  const onLeavePool = useCallback(() => {
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: { screen: 'Unbond', params: { slug: poolInfo.slug } },
+    });
+  }, [navigation, poolInfo.slug]);
+
   const onEarnMore = useCallback(() => {
     // Empty
   }, []);
@@ -104,7 +110,11 @@ const Component: React.FC<Props> = (props: Props) => {
         <View style={styles.infoContainer}>
           <EarningRewardInfo inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} />
           <View style={styles.buttonContainer}>
-            <Button block={true} type="secondary" icon={<Icon phosphorIcon={MinusCircle} weight="fill" />}>
+            <Button
+              block={true}
+              type="secondary"
+              icon={<Icon phosphorIcon={MinusCircle} weight="fill" />}
+              onPress={onLeavePool}>
               {i18n.buttonTitles.unstake}
             </Button>
             <Button block={true} type="secondary" icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>

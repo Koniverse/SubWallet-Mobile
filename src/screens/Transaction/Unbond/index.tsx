@@ -1,19 +1,14 @@
+import { YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
+import { RequestYieldLeave } from '@subwallet/extension-base/types/yield/actions/others';
+import { useYieldPositionDetail } from 'hooks/earning';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
 import { useSelector } from 'react-redux';
+import { accountFilterFunc } from 'screens/Transaction/helper/earning';
 import { RootState } from 'stores/index';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import useGetChainStakingMetadata from 'hooks/screen/Staking/useGetChainStakingMetadata';
-import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
-import {
-  AmountData,
-  NominationInfo,
-  NominatorMetadata,
-  RequestStakePoolingUnbonding,
-  RequestUnbondingSubmit,
-  StakingType,
-} from '@subwallet/extension-base/background/KoniTypes';
-import { isActionFromValidator } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
+import { AmountData, NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
@@ -28,11 +23,9 @@ import { formatBalance } from 'utils/number';
 import { BN_ZERO } from 'utils/chainBalances';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import { accountFilterFunc } from 'screens/Transaction/helper/staking';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
-import { submitPoolUnbonding, submitUnbonding } from 'messaging/index';
+import { yieldSubmitLeavePool } from 'messaging/index';
 import { FontMedium, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { UnbondProps } from 'routes/transaction/transactionAction';
@@ -46,40 +39,39 @@ import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { getInputValuesFromString } from 'components/Input/InputAmountV2';
 import { useGetBalance } from 'hooks/balance';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
+import { isActionFromValidator } from '@subwallet/extension-base/services/earning-service/utils';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
 }
 
 const _accountFilterFunc = (
-  allNominator: NominatorMetadata[],
+  positionInfos: YieldPositionInfo[],
   chainInfoMap: Record<string, _ChainInfo>,
-  stakingType: StakingType,
-  stakingChain?: string,
+  poolType: YieldPoolType,
+  poolChain?: string,
 ): ((account: AccountJson) => boolean) => {
   return (account: AccountJson): boolean => {
-    const nominator = allNominator.find(item => item.address.toLowerCase() === account.address.toLowerCase());
+    const nominator = positionInfos.find(item => item.address.toLowerCase() === account.address.toLowerCase());
 
     return (
       new BigN(nominator?.activeStake || BN_ZERO).gt(BN_ZERO) &&
-      accountFilterFunc(chainInfoMap, stakingType, stakingChain)(account)
+      accountFilterFunc(chainInfoMap, poolType, poolChain)(account)
     );
   };
 };
 
 export const Unbond = ({
   route: {
-    params: { chain: stakingChain, type: _stakingType },
+    params: { slug },
   },
 }: UnbondProps) => {
   const theme = useSubWalletTheme().swThemes;
-  const stakingType = _stakingType as StakingType;
   const accountSelectorRef = useRef<ModalRef>();
   const {
     title,
     form: {
       setValue,
-      getValues,
       control,
       formState: { errors },
     },
@@ -94,33 +86,33 @@ export const Unbond = ({
       nomination: '',
     },
   });
-  const {
-    from: fromValue,
-    nomination: currentValidator,
-    chain: chainValue,
-    value: currentValue,
-  } = {
-    ...useWatch<UnstakeFormValues>({ control }),
-    ...getValues(),
-  };
+
+  const fromValue = useWatch<UnstakeFormValues>({ name: 'from', control });
+  const currentValidator = useWatch<UnstakeFormValues>({ name: 'nomination', control });
+  const chainValue = useWatch<UnstakeFormValues>({ name: 'chain', control });
+  const currentValue = useWatch<UnstakeFormValues>({ name: 'value', control });
 
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+  const { poolInfoMap } = useSelector((state: RootState) => state.earning);
+  const poolInfo = poolInfoMap[slug];
+  const poolType = poolInfo.type;
+  const poolChain = poolInfo.chain;
+
   const [isTransactionDone, setTransactionDone] = useState(false);
-  const { decimals, symbol } = useGetNativeTokenBasicInfo(stakingChain || '');
-  const chainStakingMetadata = useGetChainStakingMetadata(stakingChain);
-  const allNominatorInfo = useGetNominatorInfo(stakingChain, stakingType);
-  const nominatorInfo = useGetNominatorInfo(stakingChain, stakingType, fromValue);
-  const nominatorMetadata = nominatorInfo[0];
+  const { decimals, symbol } = useGetNativeTokenBasicInfo(poolChain || '');
+  const chainStakingMetadata = useGetChainStakingMetadata(poolChain);
+  const { list: allPositions } = useYieldPositionDetail(slug);
+  const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
   const accountInfo = useGetAccountByAddress(fromValue);
   const selectedValidator = useMemo((): NominationInfo | undefined => {
-    if (nominatorMetadata) {
-      return nominatorMetadata.nominations.find(item => item.validatorAddress === currentValidator);
+    if (positionInfo) {
+      return positionInfo.nominations.find(item => item.validatorAddress === currentValidator);
     } else {
       return undefined;
     }
-  }, [currentValidator, nominatorMetadata]);
+  }, [currentValidator, positionInfo]);
   const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
   const existentialDeposit = useMemo(() => {
     const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
@@ -132,19 +124,19 @@ export const Unbond = ({
   }, [assetRegistry, chainValue]);
 
   const mustChooseValidator = useMemo(() => {
-    return isActionFromValidator(stakingType, stakingChain || '');
-  }, [stakingChain, stakingType]);
+    return isActionFromValidator(poolType, poolChain || '');
+  }, [poolChain, poolType]);
 
   const bondedValue = useMemo((): string => {
     if (!mustChooseValidator) {
-      return nominatorMetadata?.activeStake || '0';
+      return positionInfo?.activeStake || '0';
     } else {
       return selectedValidator?.activeStake || '0';
     }
-  }, [mustChooseValidator, nominatorMetadata?.activeStake, selectedValidator?.activeStake]);
+  }, [mustChooseValidator, positionInfo?.activeStake, selectedValidator?.activeStake]);
 
   const minValue = useMemo((): string => {
-    if (stakingType === StakingType.POOLED) {
+    if (poolType === YieldPoolType.NOMINATION_POOL) {
       return chainStakingMetadata?.minJoinNominationPool || '0';
     } else {
       const minChain = new BigN(chainStakingMetadata?.minStake || '0');
@@ -156,7 +148,7 @@ export const Unbond = ({
     chainStakingMetadata?.minJoinNominationPool,
     chainStakingMetadata?.minStake,
     selectedValidator?.validatorMinStake,
-    stakingType,
+    poolType,
   ]);
 
   const unBondedTime = useMemo((): string => {
@@ -178,8 +170,8 @@ export const Unbond = ({
 
   const [loading, setLoading] = useState(false);
   const accountList = useMemo(() => {
-    return accounts.filter(_accountFilterFunc(allNominatorInfo, chainInfoMap, stakingType, stakingChain));
-  }, [accounts, allNominatorInfo, chainInfoMap, stakingChain, stakingType]);
+    return accounts.filter(_accountFilterFunc(allPositions, chainInfoMap, poolType, poolChain));
+  }, [accounts, allPositions, chainInfoMap, poolChain, poolType]);
 
   const renderBounded = useCallback(() => {
     return <BondedBalance bondedBalance={bondedValue} decimals={decimals} symbol={symbol} />;
@@ -201,33 +193,28 @@ export const Unbond = ({
     setTransactionDone,
     undefined,
     undefined,
-    chainValue === 'vara_network' && stakingType === StakingType.POOLED ? handleDataForInsufficientAlert : undefined,
+    chainValue === 'vara_network' && poolType === YieldPoolType.NOMINATION_POOL
+      ? handleDataForInsufficientAlert
+      : undefined,
   );
 
   const onSubmit = useCallback(() => {
-    let unbondingPromise: Promise<SWTransactionResponse>;
-
-    if (nominatorMetadata.type === StakingType.POOLED) {
-      const params: RequestStakePoolingUnbonding = {
-        amount: currentValue,
-        chain: nominatorMetadata.chain,
-        nominatorMetadata,
-      };
-
-      unbondingPromise = submitPoolUnbonding(params);
-    } else {
-      const params: RequestUnbondingSubmit = {
-        amount: currentValue,
-        chain: nominatorMetadata.chain,
-        nominatorMetadata,
-      };
-
-      if (mustChooseValidator) {
-        params.validatorAddress = currentValidator || '';
-      }
-
-      unbondingPromise = submitUnbonding(params);
+    if (!positionInfo) {
+      return;
     }
+
+    const request: RequestYieldLeave = {
+      address: fromValue,
+      amount: currentValue,
+      fastLeave: false,
+      slug: slug,
+    };
+
+    if (mustChooseValidator) {
+      request.selectedTarget = currentValidator || '';
+    }
+
+    const unbondingPromise = yieldSubmitLeavePool(request);
 
     setLoading(true);
 
@@ -239,19 +226,19 @@ export const Unbond = ({
           setLoading(false);
         });
     }, 300);
-  }, [currentValidator, currentValue, mustChooseValidator, nominatorMetadata, onError, onSuccess]);
+  }, [positionInfo, fromValue, currentValue, slug, mustChooseValidator, currentValidator, onSuccess, onError]);
 
   const nominators = useMemo(() => {
-    if (fromValue && nominatorMetadata?.nominations && nominatorMetadata.nominations.length) {
-      return nominatorMetadata.nominations.filter(n => new BigN(n.activeStake || '0').gt(BN_ZERO));
+    if (fromValue && positionInfo?.nominations && positionInfo.nominations.length) {
+      return positionInfo.nominations.filter(n => new BigN(n.activeStake || '0').gt(BN_ZERO));
     }
 
     return [];
-  }, [fromValue, nominatorMetadata?.nominations]);
+  }, [fromValue, positionInfo?.nominations]);
 
   useEffect(() => {
-    setChain(stakingChain || '');
-  }, [setChain, stakingChain]);
+    setChain(poolChain || '');
+  }, [setChain, poolChain]);
 
   const amountInputRules = useMemo(
     () => ({

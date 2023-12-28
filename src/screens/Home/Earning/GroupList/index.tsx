@@ -55,7 +55,9 @@ export const GroupList = () => {
 
   const items = useMemo(() => {
     return [...data].sort((a, b) => {
-      return groupOrdinal(b) - groupOrdinal(a) || testnetOrdinal(b) - testnetOrdinal(a) || apyOrdinal(b) - apyOrdinal(a);
+      return (
+        groupOrdinal(b) - groupOrdinal(a) || testnetOrdinal(b) - testnetOrdinal(a) || apyOrdinal(b) - apyOrdinal(a)
+      );
     });
   }, [data]);
 
