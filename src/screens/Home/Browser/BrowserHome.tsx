@@ -16,9 +16,6 @@ import { RootNavigationProps } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
 import { browserHomeItem, browserHomeItemIconOnly, browserHomeItemWidth } from 'constants/itemHeight';
-import { MissionPoolItem } from 'components/MissionPoolItem';
-import { MissionInfo } from 'types/missionPool';
-import { MissionPoolDetailModal } from 'screens/Home/Browser/MissionPool/MissionPoolDetailModal/MissionPoolDetailModal';
 import ImageSlider from 'components/common/ImageSlider';
 import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
@@ -30,11 +27,6 @@ interface HeaderProps {
 interface SectionListProps {
   data: RecommendedListType[];
   renderItem: (item: DAppInfo) => JSX.Element;
-}
-
-interface MissionPoolSectionListProps {
-  data: MissionInfo[];
-  renderItem: (item: MissionInfo) => JSX.Element;
 }
 
 type RecommendedListType = {
@@ -78,19 +70,6 @@ const SectionList: React.FC<SectionListProps> = ({ data, renderItem }): JSX.Elem
   );
 };
 
-const MissionPoolSectionList: React.FC<MissionPoolSectionListProps> = ({ data, renderItem }): JSX.Element => {
-  const stylesheet = createStylesheet();
-  return (
-    <ScrollView
-      horizontal
-      style={{ marginBottom: 24 }}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={stylesheet.missionPoolListContentContainer}>
-      {data.map(item => renderItem(item))}
-    </ScrollView>
-  );
-};
 const ItemSeparator = () => {
   const stylesheet = createStylesheet();
   return <View style={stylesheet.flatListSeparator} />;
@@ -104,20 +83,12 @@ const BrowserHome = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
-  const { missions } = useSelector((state: RootState) => state.missionPool);
-  const [selectedMissionPool, setSelectedMissionPool] = useState<MissionInfo | undefined>(undefined);
   const [loadingDataLv1, setLoadingDataLv1] = useState<boolean>(true);
-  const [loadingDataLv2, setLoadingDataLv2] = useState<boolean>(true);
-  const [visible, setVisible] = useState<boolean>(false);
 
   useEffect(() => {
     setTimeout(() => {
       setLoadingDataLv1(false);
     }, 100);
-
-    setTimeout(() => {
-      setLoadingDataLv2(false);
-    }, 200);
   }, []);
 
   const onPressImageSliderItem = (index: number) => {
@@ -129,9 +100,9 @@ const BrowserHome = () => {
       return [];
     }
     const sectionData = [];
-    for (let i = 0; i < 15; i += 3) {
+    for (let i = 0; i < 20; i += 5) {
       const section = {
-        data: dApps.slice(i, i + 3),
+        data: dApps.slice(i, i + 5),
       };
       sectionData.push(section);
     }
@@ -183,15 +154,6 @@ const BrowserHome = () => {
       />
     );
   };
-
-  const onPressMissionPoolItem = (data: MissionInfo) => {
-    setSelectedMissionPool(data);
-    setVisible(true);
-  };
-
-  const renderMissionPoolItem = (item: MissionInfo) => (
-    <MissionPoolItem key={item.id} data={item} onPressItem={() => onPressMissionPoolItem(item)} />
-  );
 
   const getItemLayout = (data: StoredSiteInfo[] | null | undefined, index: number) => ({
     index,
@@ -251,21 +213,6 @@ const BrowserHome = () => {
               onPress={() => navigation.navigate('BrowserListByTabview', { type: 'RECOMMENDED' })}
             />
             <SectionList data={recommendedList} renderItem={renderSectionItem} />
-          </>
-        )}
-
-        {!loadingDataLv2 && (
-          <>
-            <SectionHeader
-              title={i18n.browser.missionPool}
-              actionTitle={i18n.browser.seeAll}
-              onPress={() => navigation.navigate('MissionPoolsByTabview', { type: 'all' })}
-            />
-            <MissionPoolSectionList data={missions.slice(0, 7)} renderItem={renderMissionPoolItem} />
-
-            {selectedMissionPool && (
-              <MissionPoolDetailModal modalVisible={visible} data={selectedMissionPool} setVisible={setVisible} />
-            )}
           </>
         )}
       </ScrollView>

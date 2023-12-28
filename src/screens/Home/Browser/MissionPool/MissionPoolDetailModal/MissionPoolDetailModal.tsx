@@ -9,7 +9,7 @@ import createStyles from './style';
 import { ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MetaInfo from 'components/MetaInfo';
-import { missionCategoryMap } from 'screens/Home/Browser/MissionPool/predefined';
+import { missionCategoryMap, MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useMissionPools } from 'hooks/useMissionPools';
 import { MissionPoolFooter } from 'components/MissionPoolHorizontalItem/MissionPoolFooter';
@@ -108,6 +108,7 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
               style={{ flexDirection: 'row', paddingTop: theme.paddingLG, gap: theme.padding }}
               data={data}
               closeDetailModal={() => setVisible(false)}
+              disabledJoinNowBtn={data.status === MissionCategoryType.ARCHIVED}
             />
           </View>
         </ScrollView>
