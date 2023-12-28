@@ -6,6 +6,7 @@ export interface ComponentStyle {
   wrapper: ViewStyle;
   spaceXS: ViewStyle;
   header: ViewStyle;
+  headerBottom: ViewStyle;
   headerText: TextStyle;
   infoContainer: ViewStyle;
   timeRow: ViewStyle;
@@ -34,6 +35,9 @@ export default (theme: ThemeTypes) => {
       marginTop: -theme.marginSM,
       marginRight: -theme.margin,
       alignItems: 'center',
+    },
+    headerBottom: {
+      marginBottom: -theme.marginSM,
     },
     headerText: {
       ...FontSemiBold,

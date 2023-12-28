@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import i18n from 'utils/i18n/i18n';
-import { UnstakingInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { CancelUnstakeSelectorField } from 'components/Field/CancelUnstakeSelector';
 import { CancelUnstakeItem } from 'components/common/CancelUnstakeItem';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
+import { UnstakingInfo } from '@subwallet/extension-base/types';
 
 export interface UnstakeItem extends UnstakingInfo {
   key: string;

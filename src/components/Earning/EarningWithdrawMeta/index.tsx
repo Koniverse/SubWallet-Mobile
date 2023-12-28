@@ -66,6 +66,10 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
     [haveUnlocking, poolInfo.metadata.allowCancelUnstaking],
   );
 
+  const canWithdraw = useMemo(() => {
+    return totalWithdrawable.gt(BN_ZERO);
+  }, [totalWithdrawable]);
+
   const [showDetail, setShowDetail] = useState(false);
 
   const toggleDetail = useCallback(() => {
@@ -76,6 +80,13 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
     navigation.navigate('Drawer', {
       screen: 'TransactionAction',
       params: { screen: 'Withdraw', params: { slug } },
+    });
+  }, [navigation, slug]);
+
+  const onPressCancelWithdraw = useCallback(() => {
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: { screen: 'CancelUnstake', params: { slug } },
     });
   }, [navigation, slug]);
 
@@ -103,7 +114,7 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
 
   return (
     <View style={[styles.wrapper, !showDetail ? styles.spaceXS : undefined]}>
-      <View style={styles.header}>
+      <View style={[styles.header, !canWithdraw ? styles.headerBottom : undefined]}>
         <Typography.Text style={styles.headerText}>Withdraw info</Typography.Text>
         <Button
           type="ghost"
@@ -133,13 +144,14 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
           <Button
             size="xs"
             type="ghost"
-            icon={<Icon phosphorIcon={ProhibitInset} size="sm" iconColor={theme['gray-4']} weight="fill" />}>
+            icon={<Icon phosphorIcon={ProhibitInset} size="sm" iconColor={theme['gray-4']} weight="fill" />}
+            onPress={onPressCancelWithdraw}>
             {i18n.buttonTitles.cancelUnstaking}
           </Button>
         </View>
       )}
-      {showDetail && totalWithdrawable.gt(BN_ZERO) && <View style={styles.withdrawSeparator} />}
-      {totalWithdrawable.gt(BN_ZERO) && (
+      {showDetail && canWithdraw && <View style={styles.withdrawSeparator} />}
+      {canWithdraw && (
         <View style={styles.withdrawButtonContainer}>
           <Number
             value={totalWithdrawable}

@@ -12,7 +12,7 @@ export type TransactionActionStackParamList = {
   Unbond: { slug: string };
   Withdraw: { slug: string };
   ClaimReward: { slug: string };
-  CancelUnstake: { chain?: string; type?: string };
+  CancelUnstake: { slug: string };
 };
 
 export type NavigationProps = NativeStackScreenProps<TransactionActionStackParamList>;

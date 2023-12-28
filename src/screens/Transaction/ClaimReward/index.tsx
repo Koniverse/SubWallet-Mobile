@@ -189,7 +189,6 @@ const ClaimReward = ({
     setTimeout(() => {
       yieldSubmitStakingClaimReward({
         address: fromValue,
-        chain: chainValue,
         bondReward: !!bondReward,
         slug: slug,
         unclaimedReward: reward?.unclaimedReward,
@@ -200,7 +199,7 @@ const ClaimReward = ({
           setLoading(false);
         });
     }, 300);
-  }, [fromValue, chainValue, bondReward, slug, reward?.unclaimedReward, onSuccess, onError]);
+  }, [fromValue, bondReward, slug, reward?.unclaimedReward, onSuccess, onError]);
 
   const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
 
