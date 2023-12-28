@@ -1,10 +1,11 @@
-import { StakingType, UnstakingStatus } from '@subwallet/extension-base/background/KoniTypes';
+import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { UnstakingStatus } from '@subwallet/extension-base/types';
 import { getBondingOptions, getNominationPoolOptions } from 'messaging/index';
 import { store } from 'stores/index';
 import { ALL_KEY } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 import humanizeDuration from 'humanize-duration';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 
 export function getUnstakingPeriod(unstakingPeriod?: number) {
   if (unstakingPeriod) {
