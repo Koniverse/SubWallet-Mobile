@@ -57,7 +57,9 @@ export const AddressField = ({
         {!placeholder && (
           <View style={{ flexDirection: 'row', flex: 1, paddingRight: 16 }}>
             {!!name && (
-              <Typography.Text style={{ ...styles.text, maxWidth: 100, color: textColor }}>{name}</Typography.Text>
+              <Typography.Text ellipsis style={{ ...styles.text, maxWidth: 70, color: textColor }}>
+                {name}
+              </Typography.Text>
             )}
             {!!name && <Typography.Text style={{ ...styles.text, color: textColor }}> (</Typography.Text>}
             <Typography.Text style={{ ...styles.text, color: textColor }}>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Keyboard, ListRenderItemInfo } from 'react-native';
+import { ListRenderItemInfo } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
@@ -57,7 +57,6 @@ export const TokenSelector = ({
   }, []);
 
   const _onSelectItem = (item: TokenItemType) => {
-    Keyboard.dismiss();
     onSelectItem && onSelectItem(item);
   };
 

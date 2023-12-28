@@ -85,6 +85,7 @@ export type RootStackParamList = {
     owner: string;
   };
   ManageAddressBook: undefined;
+  DeriveAccount: undefined;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;

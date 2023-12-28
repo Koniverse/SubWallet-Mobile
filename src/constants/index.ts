@@ -34,7 +34,7 @@ export enum BitLengthOption {
   CHAIN_SPEC = 128,
   NORMAL_NUMBERS = 32,
 }
-export const TOAST_DURATION = getBrand().toLowerCase() === 'xiaomi' ? 5000 : 1500;
+export const TOAST_DURATION = getBrand().toLowerCase() === 'xiaomi' ? 5000 : 4000;
 export const CELL_COUNT = 6;
 export const DEVICE: DeviceInfo = {
   isIos: Platform.OS === 'ios',

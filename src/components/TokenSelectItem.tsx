@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { Keyboard, StyleSheet, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { getTokenLogo } from 'utils/index';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
@@ -36,7 +36,7 @@ export const TokenSelectItem = ({
   const styles = useMemo(() => createStyle(theme), [theme]);
 
   return (
-    <TouchableOpacity onPress={onSelectNetwork}>
+    <TouchableOpacity onPress={onSelectNetwork} onPressIn={() => Keyboard.dismiss()}>
       <View style={styles.itemArea}>
         <View style={styles.itemBodyArea}>
           {getTokenLogo(logoKey, subLogoKey, iconSize, defaultItemKey)}
