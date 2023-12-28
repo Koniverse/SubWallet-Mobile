@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { RequestStakeWithdrawal } from '@subwallet/extension-base/background/KoniTypes';
+import { RequestYieldWithdrawal } from '@subwallet/extension-base/types';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import { ConfirmationContent } from 'components/common/Confirmation';
 import MetaInfo from 'components/MetaInfo';
@@ -15,9 +15,9 @@ type Props = BaseTransactionConfirmationProps;
 
 const WithdrawTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const { transaction } = props;
-  const data = transaction.data as RequestStakeWithdrawal;
+  const data = transaction.data as RequestYieldWithdrawal;
 
-  const { decimals, symbol } = useGetNativeTokenBasicInfo(data.chain);
+  const { decimals, symbol } = useGetNativeTokenBasicInfo(data.unstakingInfo.chain);
 
   return (
     <ConfirmationContent isFullHeight>

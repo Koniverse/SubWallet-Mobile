@@ -86,7 +86,7 @@ const Component: React.FC<Props> = (props: Props) => {
       onPressRightIcon={onEarnMore}
       showRightBtn={true}
       rightIcon={Plus}>
-      <ScrollView contentContainerStyle={styles.wrapper}>
+      <ScrollView contentContainerStyle={styles.wrapper} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Typography.Text style={styles.activeTitle}>Active stake</Typography.Text>
           <Number

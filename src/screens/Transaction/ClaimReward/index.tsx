@@ -1,20 +1,17 @@
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { EarningRewardItem, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
+import { useYieldPositionDetail } from 'hooks/earning';
+import { yieldSubmitStakingClaimReward } from 'messaging/index';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { ScrollView, View } from 'react-native';
-import {
-  AmountData,
-  NominatorMetadata,
-  StakingRewardItem,
-  StakingType,
-} from '@subwallet/extension-base/background/KoniTypes';
+import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
-import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
-import { submitStakeClaimReward } from 'messaging/index';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
@@ -27,7 +24,6 @@ import {
 import { isAccountAll } from 'utils/accountAll';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { isSameAddress } from '@subwallet/extension-base/utils';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
 import MetaInfo from 'components/MetaInfo';
@@ -52,13 +48,13 @@ interface ClaimRewardFormValues extends TransactionFormValues {
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
-  allNominatorInfo: NominatorMetadata[],
-  rewardList: StakingRewardItem[],
-  stakingType: StakingType,
-  stakingChain?: string,
+  yieldPositions: YieldPositionInfo[],
+  rewardList: EarningRewardItem[],
+  poolType: YieldPoolType,
+  poolChain?: string,
 ): ((account: AccountJson) => boolean) => {
-  const _stakingChain = stakingChain || '';
-  const chain = chainInfoMap[_stakingChain];
+  const _poolChain = poolChain || '';
+  const chain = chainInfoMap[_poolChain];
 
   return (account: AccountJson): boolean => {
     if (!chain) {
@@ -83,7 +79,7 @@ const filterAccount = (
       return false;
     }
 
-    const nominatorMetadata = allNominatorInfo.find(value => isSameAddress(value.address, account.address));
+    const nominatorMetadata = yieldPositions.find(value => isSameAddress(value.address, account.address));
 
     if (!nominatorMetadata) {
       return false;
@@ -91,28 +87,29 @@ const filterAccount = (
 
     const reward = rewardList.find(value => isSameAddress(value.address, account.address));
 
-    const isAstarNetwork = _STAKING_CHAIN_GROUP.astar.includes(_stakingChain);
-    const isAmplitudeNetwork = _STAKING_CHAIN_GROUP.amplitude.includes(_stakingChain);
+    const isAstarNetwork = _STAKING_CHAIN_GROUP.astar.includes(_poolChain);
+    const isAmplitudeNetwork = _STAKING_CHAIN_GROUP.amplitude.includes(_poolChain);
     const bnUnclaimedReward = new BigN(reward?.unclaimedReward || '0');
 
     return (
-      ((stakingType === StakingType.POOLED || isAmplitudeNetwork) && bnUnclaimedReward.gt(BN_ZERO)) || isAstarNetwork
+      ((poolType === YieldPoolType.NOMINATION_POOL || isAmplitudeNetwork) && bnUnclaimedReward.gt(BN_ZERO)) ||
+      isAstarNetwork
     );
   };
 };
 
 const ClaimReward = ({
   route: {
-    params: { chain: stakingChain, type: _stakingType },
+    params: { slug },
   },
 }: ClaimRewardProps) => {
   const accountSelectorRef = useRef<ModalRef>();
-  const stakingType = _stakingType as StakingType;
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
-  const { stakingRewardMap } = useSelector((state: RootState) => state.staking);
+  const { earningRewards, poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
 
   const {
     title,
@@ -121,7 +118,6 @@ const ClaimReward = ({
     onChangeChainValue: setChain,
     form: {
       setValue,
-      getValues,
       control,
       formState: { errors },
     },
@@ -133,23 +129,23 @@ const ClaimReward = ({
       bondReward: '1',
     },
   });
-  const {
-    chain: chainValue,
-    from: fromValue,
-    bondReward,
-  } = {
-    ...useWatch<ClaimRewardFormValues>({ control }),
-    ...getValues(),
-  };
-  const allNominatorInfo = useGetNominatorInfo(stakingChain, stakingType);
+
+  const chainValue = useWatch<ClaimRewardFormValues>({ name: 'chain', control });
+  const fromValue = useWatch<ClaimRewardFormValues>({ name: 'from', control });
+  const bondReward = useWatch<ClaimRewardFormValues>({ name: 'bondReward', control });
+
+  const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
+  const poolType = poolInfo.type;
+  const poolChain = poolInfo.chain;
+
+  const reward = useMemo((): EarningRewardItem | undefined => {
+    return earningRewards.find(item => item.slug === slug && item.address === fromValue);
+  }, [earningRewards, fromValue, slug]);
+
+  const { list: allPositions } = useYieldPositionDetail(slug);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chainValue);
   const [isTransactionDone, setTransactionDone] = useState(false);
-  const reward = useMemo((): StakingRewardItem | undefined => {
-    return stakingRewardMap.find(
-      item => item.chain === chainValue && item.address === chainValue && item.type === stakingType,
-    );
-  }, [chainValue, stakingRewardMap, stakingType]);
-  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+
   const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
   const existentialDeposit = useMemo(() => {
     const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
@@ -174,24 +170,28 @@ const ClaimReward = ({
     setTransactionDone,
     undefined,
     undefined,
-    chainValue === 'vara_network' && stakingType === StakingType.POOLED ? handleDataForInsufficientAlert : undefined,
+    chainValue === 'vara_network' && poolType === YieldPoolType.NOMINATION_POOL
+      ? handleDataForInsufficientAlert
+      : undefined,
   );
 
-  const rewardList = useMemo((): StakingRewardItem[] => {
-    return stakingRewardMap.filter(item => item.chain === chainValue && item.type === stakingType);
-  }, [chainValue, stakingRewardMap, stakingType]);
+  const rewardList = useMemo((): EarningRewardItem[] => {
+    return earningRewards.filter(item => item.slug === slug);
+  }, [earningRewards, slug]);
+
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
+
   const accountInfo = useGetAccountByAddress(fromValue);
   const onSubmit = useCallback(() => {
     setLoading(true);
 
     setTimeout(() => {
-      submitStakeClaimReward({
+      yieldSubmitStakingClaimReward({
         address: fromValue,
         chain: chainValue,
         bondReward: !!bondReward,
-        stakingType: stakingType,
+        slug: slug,
         unclaimedReward: reward?.unclaimedReward,
       })
         .then(onSuccess)
@@ -200,13 +200,13 @@ const ClaimReward = ({
           setLoading(false);
         });
     }, 300);
-  }, [bondReward, chainValue, fromValue, onError, onSuccess, reward?.unclaimedReward, stakingType]);
+  }, [fromValue, chainValue, bondReward, slug, reward?.unclaimedReward, onSuccess, onError]);
 
   const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
 
   useEffect(() => {
-    setChain(stakingChain || '');
-  }, [setChain, stakingChain]);
+    setChain(poolInfo.chain);
+  }, [poolInfo.chain, setChain]);
 
   useEffect(() => {
     // Trick to trigger validate when case single account
@@ -218,8 +218,8 @@ const ClaimReward = ({
   }, [errors.from, fromValue]);
 
   const accountList = useMemo(() => {
-    return accounts.filter(filterAccount(chainInfoMap, allNominatorInfo, rewardList, stakingType, stakingChain));
-  }, [accounts, allNominatorInfo, chainInfoMap, rewardList, stakingChain, stakingType]);
+    return accounts.filter(filterAccount(chainInfoMap, allPositions, rewardList, poolType, poolChain));
+  }, [accounts, allPositions, chainInfoMap, rewardList, poolChain, poolType]);
 
   const onChangeBondReward = (value: string) => {
     setValue('bondReward', value);
@@ -237,21 +237,19 @@ const ClaimReward = ({
         <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
           <>
             <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
-              {isAllAccount && (
-                <AccountSelector
-                  items={accountList}
-                  selectedValueMap={{ [fromValue]: true }}
-                  onSelectItem={item => {
-                    setFrom(item.address);
-                    accountSelectorRef && accountSelectorRef.current?.onCloseModal();
-                  }}
-                  disabled={loading}
-                  renderSelected={() => (
-                    <AccountSelectField accountName={accountInfo?.name || ''} value={fromValue} showIcon />
-                  )}
-                  accountSelectorRef={accountSelectorRef}
-                />
-              )}
+              <AccountSelector
+                items={accountList}
+                selectedValueMap={{ [fromValue]: true }}
+                onSelectItem={item => {
+                  setFrom(item.address);
+                  accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                }}
+                disabled={loading || !isAllAccount}
+                renderSelected={() => (
+                  <AccountSelectField accountName={accountInfo?.name || ''} value={fromValue} showIcon />
+                )}
+                accountSelectorRef={accountSelectorRef}
+              />
 
               <GeneralFreeBalance address={fromValue} chain={chainValue} />
 

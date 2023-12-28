@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { EarningStatus, YieldPoolInfo, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
@@ -8,6 +9,7 @@ import useYieldRewardTotal from 'hooks/earning/useYieldRewardTotal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { RootNavigationProps } from 'routes/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
@@ -22,16 +24,13 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   const { inputAsset, poolInfo, compound } = props;
   const { slug, type } = compound;
 
+  const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const total = useYieldRewardTotal(slug);
 
   const [showDetail, setShowDetail] = useState(false);
-
-  const toggleDetail = useCallback(() => {
-    setShowDetail(old => !old);
-  }, []);
 
   const canClaim = useMemo((): boolean => {
     switch (type) {
@@ -63,6 +62,17 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
     return stakingStatusUi.inactive;
   }, [compound.status]);
 
+  const toggleDetail = useCallback(() => {
+    setShowDetail(old => !old);
+  }, []);
+
+  const onPressWithdraw = useCallback(() => {
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: { screen: 'ClaimReward', params: { slug } },
+    });
+  }, [navigation, slug]);
+
   return (
     <MetaInfo hasBackgroundWrapper={true} labelColorScheme="gray">
       <MetaInfo.Status
@@ -83,7 +93,11 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
           decimalOpacity={0.45}
           unitOpacity={0.45}
         />
-        {canClaim && <Button size="xs">{i18n.buttonTitles.claimRewards}</Button>}
+        {canClaim && (
+          <Button size="xs" onPress={onPressWithdraw}>
+            {i18n.buttonTitles.claimRewards}
+          </Button>
+        )}
       </View>
     </MetaInfo>
   );

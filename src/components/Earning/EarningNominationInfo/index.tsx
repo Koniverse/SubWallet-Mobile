@@ -12,20 +12,19 @@ import { toShort } from 'utils/index';
 import createStyles from './styles';
 
 type Props = {
-  list: YieldPositionInfo[];
+  compound: YieldPositionInfo;
   poolInfo: YieldPoolInfo;
   inputAsset: _ChainAsset;
 };
 
 const EarningNominationInfo: React.FC<Props> = (props: Props) => {
-  const { inputAsset, poolInfo, list } = props;
+  const { inputAsset, poolInfo, compound } = props;
 
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const positionInfo = useMemo(() => list[0], [list]);
-  const isAllAccount = useMemo(() => isAccountAll(positionInfo.address), [positionInfo.address]);
+  const isAllAccount = useMemo(() => isAccountAll(compound.address), [compound.address]);
 
   const [showDetail, setShowDetail] = useState(false);
 
@@ -56,7 +55,7 @@ const EarningNominationInfo: React.FC<Props> = (props: Props) => {
       </View>
       {showDetail && (
         <MetaInfo style={styles.infoContainer}>
-          {positionInfo.nominations.map(item => {
+          {compound.nominations.map(item => {
             return (
               <View style={styles.infoRow} key={item.validatorAddress}>
                 <View style={styles.accountRow}>

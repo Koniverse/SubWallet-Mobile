@@ -124,7 +124,7 @@ const EarningBaseInfo: React.FC<Props> = (props: Props) => {
           />
         </MetaInfo>
       )}
-      <EarningNominationInfo poolInfo={poolInfo} list={list} inputAsset={inputAsset} />
+      <EarningNominationInfo poolInfo={poolInfo} compound={compound} inputAsset={inputAsset} />
       <View style={[styles.header, styles.headerBottom]}>
         <Typography.Text style={styles.headerText}>Earning info</Typography.Text>
         <Button
