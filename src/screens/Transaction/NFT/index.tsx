@@ -70,10 +70,6 @@ const NftNameTextStyle: StyleProp<TextStyle> = {
   textAlign: 'center',
 };
 
-const InputStyle: StyleProp<any> = {
-  marginBottom: 8,
-};
-
 interface SendNftFormValues extends TransactionFormValues {
   recipientAddress: string;
 }
@@ -244,12 +240,12 @@ const SendNFT: React.FC<SendNFTProps> = ({
                 </View>
                 <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
                 <FormItem
+                  style={{ marginBottom: 8 }}
                   control={control}
                   rules={recipientAddressRules}
                   render={({ field: { value, ref, onChange, onBlur } }) => (
                     <InputAddress
                       ref={ref}
-                      containerStyle={InputStyle}
                       showAddressBook
                       addressPrefix={addressPrefix}
                       networkGenesisHash={chainGenesisHash}

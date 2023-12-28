@@ -70,7 +70,7 @@ const useHandleSubmitTransaction = (
     (error: Error) => {
       setTransactionDone(false);
       hideAll();
-      show(error.message, { type: 'danger', duration: 5000 });
+      show(error.message, { type: 'danger', duration: 8000 });
     },
     [hideAll, setTransactionDone, show],
   );

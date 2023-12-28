@@ -1,6 +1,6 @@
-import { Button, Typography } from 'components/design-system-ui';
+import { Button, Image, Typography } from 'components/design-system-ui';
 import useFormControl from 'hooks/screen/useFormControl';
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   DeviceEventEmitter,
   ImageBackground,
@@ -260,49 +260,48 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
       <TouchableWithoutFeedback onPress={dismissKeyboard}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.fullscreen}>
           <SafeAreaView style={styles.container}>
-            <Suspense>
-              <SVGImages.LogoGradient width={66} height={100} />
-              <View style={styles.subLogo}>
-                <SVGImages.SubwalletStyled width={139} height={23} />
-              </View>
-              <Typography.Text size="sm" style={styles.subTitle}>
-                Polkadot, Substrate & Ethereum wallet
-              </Typography.Text>
-              {authMethod === 'master-password' && (
-                <>
-                  <InlinePassword
-                    ref={formState.refs.password}
-                    defaultValue={formState.data.password}
-                    onChangeText={value => onChangeValue('password')(value)}
-                    errorMessages={formState.errors.password}
-                    onSubmitField={onSubmitField('password')}
-                    containerStyle={{ marginBottom: 0 }}
-                  />
-                  <View style={styles.fullWidth}>
-                    <TouchableOpacity style={styles.forgotpasswordButton} onPress={onToggleModal}>
-                      <Typography.Text size="sm" style={styles.forgotpasswordText}>
-                        {i18n.common.forgotPassword}
-                      </Typography.Text>
-                    </TouchableOpacity>
-                  </View>
-                  <Button loading={loading} disabled={isDisabled} style={styles.submitButton} onPress={onSubmit}>
-                    {i18n.buttonTitles.unlock}
+            <Image src={Images.SubWalletLogoGradient} style={{ width: 66, height: 100 }} />
+            <View style={styles.subLogo}>
+              <SVGImages.SubwalletStyled width={139} height={23} />
+            </View>
+            <Typography.Text size="sm" style={styles.subTitle}>
+              Polkadot, Substrate & Ethereum wallet
+            </Typography.Text>
+            {authMethod === 'master-password' && (
+              <>
+                <InlinePassword
+                  ref={formState.refs.password}
+                  defaultValue={formState.data.password}
+                  onChangeText={value => onChangeValue('password')(value)}
+                  errorMessages={formState.errors.password}
+                  onSubmitField={onSubmitField('password')}
+                  containerStyle={{ marginBottom: 0 }}
+                />
+
+                <View style={styles.fullWidth}>
+                  <TouchableOpacity style={styles.forgotpasswordButton} onPress={onToggleModal}>
+                    <Typography.Text size="sm" style={styles.forgotpasswordText}>
+                      {i18n.common.forgotPassword}
+                    </Typography.Text>
+                  </TouchableOpacity>
+                </View>
+                <Button loading={loading} disabled={isDisabled} style={styles.submitButton} onPress={onSubmit}>
+                  {i18n.buttonTitles.unlock}
+                </Button>
+                {isUseBiometric && isBiometricEnabled && (
+                  <Button
+                    icon={<SVGImages.Fingerprint />}
+                    size="xs"
+                    type="ghost"
+                    onPress={() => {
+                      requestUnlockWithBiometric();
+                      setAuthMethod('biometric');
+                    }}>
+                    {i18n.buttonTitles.unlockWithBiometric}
                   </Button>
-                  {isUseBiometric && isBiometricEnabled && (
-                    <Button
-                      icon={<SVGImages.Fingerprint />}
-                      size="xs"
-                      type="ghost"
-                      onPress={() => {
-                        requestUnlockWithBiometric();
-                        setAuthMethod('biometric');
-                      }}>
-                      {i18n.buttonTitles.unlockWithBiometric}
-                    </Button>
-                  )}
-                </>
-              )}
-            </Suspense>
+                )}
+              </>
+            )}
             <ForgotPasswordModal
               modalVisible={modalVisible}
               onReset={onReset}

@@ -64,7 +64,7 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
     <>
       <View style={sharedStyles.layoutContainer}>
         <View style={bodyAreaStyle}>
-          <ScrollView style={{ ...ScrollViewStyle }}>
+          <ScrollView style={{ ...ScrollViewStyle, marginBottom: 16 }}>
             <View style={infoBlockStyle}>
               <Text style={infoTextStyle}>
                 {

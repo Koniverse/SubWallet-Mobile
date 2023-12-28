@@ -279,7 +279,7 @@
   "createAccount": {
     "createWithNewSeedPhrase": "新しいシードフレーズで作成",
     "deriveFromAnExistingAcc": "既存のアカウントから派生",
-    "substrate": "Substrate",
+    "polkadot": "Polkadot",
     "ethereum": "Ethereum"
   },
   "importAccount": {

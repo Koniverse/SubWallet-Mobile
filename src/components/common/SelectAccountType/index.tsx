@@ -49,7 +49,7 @@ export const SelectAccountType = (props: SelectAccountTypeProps) => {
       {
         icon: 'polkadot',
         key: SUBSTRATE_ACCOUNT_TYPE,
-        label: i18n.createAccount.substrate,
+        label: i18n.createAccount.polkadot,
         onClick: onClickItem(SUBSTRATE_ACCOUNT_TYPE),
       },
       {

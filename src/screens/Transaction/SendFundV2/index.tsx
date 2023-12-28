@@ -73,7 +73,6 @@ import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
-import { getInputValuesFromString } from 'components/Input/InputAmountV2';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -432,7 +431,6 @@ export const SendFund = ({
   }, [viewStep, destChainItems, chainInfoMap, fromValue, toValue, chainValue]);
 
   const currentChainAsset = useMemo(() => {
-    console.log('123123', assetValue);
     return assetValue ? assetRegistry[assetValue] : undefined;
   }, [assetValue, assetRegistry]);
 
@@ -689,16 +687,10 @@ export const SendFund = ({
           return;
         }
 
-        if (new BigN(nativeTokenBalance.value).eq(new BigN(currentEd))) {
+        if (new BigN(nativeTokenBalance.value).eq(new BigN(currentEd)) && assetValue !== nativeTokenSlug) {
           Alert.alert(
             'Insufficient balance',
-            `Your available ${nativeTokenBalance.symbol} balance is ${getInputValuesFromString(
-              nativeTokenBalance.value,
-              nativeTokenBalance.decimals,
-            )}. You need to have at least ${getInputValuesFromString(
-              currentEd,
-              nativeChainAsset?.decimals || 0,
-            )} to pay gas fees on the ${chainInfo?.name} network. Deposit ${nativeTokenBalance.symbol} to continue.`,
+            `Your available ${nativeTokenBalance.symbol} balance is not enough to pay gas fees on the ${chainInfo?.name} network. Deposit ${nativeTokenBalance.symbol} to continue.`,
             [
               {
                 text: 'I understand',
@@ -746,10 +738,10 @@ export const SendFund = ({
       }
     },
     [
+      assetRegistry,
       assetValue,
       chainInfo?.name,
       chainValue,
-      currentChainAsset,
       maxTransfer,
       nativeTokenBalance.decimals,
       nativeTokenBalance.symbol,
@@ -876,13 +868,11 @@ export const SendFund = ({
             onSuccess(res);
           } else {
             const { errors: currentErrors, warnings } = res;
-            console.log('currentErrors', currentErrors);
 
             if (
               insufficientMessages.some(v => currentErrors?.[0]?.message.includes(v)) ||
               warnings[0]?.warningType === 'notEnoughExistentialDeposit'
             ) {
-              console.log('123123123123123123123');
               doTransferAll();
               return;
             }
@@ -1255,7 +1245,6 @@ export const SendFund = ({
                         {viewStep === 2 && (
                           <TouchableOpacity
                             onPress={() => {
-                              console.log('run to this');
                               setFocus('value');
                               setForceUpdateValue({ value: maxTransfer });
                               const bnMaxTransfer = new BN(maxTransfer);

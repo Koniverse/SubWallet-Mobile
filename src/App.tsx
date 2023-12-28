@@ -2,7 +2,7 @@ import { ExternalRequestContextProvider } from 'providers/ExternalRequestContext
 import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppState, DeviceEventEmitter, ImageBackground, Linking, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
@@ -30,9 +30,9 @@ import { updateAutoLockTime } from 'stores/MobileSettings';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 import { NEED_UPDATE_CHROME } from 'providers/WebRunnerProvider/WebRunner';
-import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
+import { Button, Icon, Image, PageIcon, Typography } from 'components/design-system-ui';
 import { Warning } from 'phosphor-react-native';
-import { Images, SVGImages } from 'assets/index';
+import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
 
@@ -267,9 +267,7 @@ export const App = () => {
                   opacity: 0.8,
                   marginBottom: -32,
                 }}>
-                <Suspense>
-                  <SVGImages.LogoGradient width={66} height={100} />
-                </Suspense>
+                <Image src={Images.SubWalletLogoGradient} style={{ width: 66, height: 100 }} />
                 <Text style={logoTextStyle}>SubWallet</Text>
                 <Text style={logoSubTextStyle}>{i18n.title.slogan}</Text>
               </View>

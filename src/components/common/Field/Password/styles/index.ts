@@ -1,6 +1,5 @@
-import { Platform, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
-import { FontMedium } from 'styles/sharedStyles';
 
 export interface ComponentStyle {
   inputContainer: ViewStyle;
@@ -10,28 +9,23 @@ export interface ComponentStyle {
   warningStyle: ViewStyle;
 }
 
-function createStyles(theme: ThemeTypes, isValid: boolean, readonly?: boolean, isFocus?: boolean) {
+function createStyles(theme: ThemeTypes, readonly?: boolean, isFocus?: boolean) {
   return StyleSheet.create<ComponentStyle>({
     inputContainer: {
       width: '100%',
       position: 'relative',
       marginBottom: 8,
       height: 48,
-    },
-    textInput: {
-      ...FontMedium,
       paddingLeft: 44,
       paddingRight: 52,
-      paddingTop: 13,
-      paddingBottom: 13,
-      borderColor: isFocus ? theme.colorPrimary : theme.colorBgSecondary,
       borderWidth: 2,
-      borderRadius: theme.borderRadiusLG,
+      borderColor: isFocus ? theme.colorPrimary : theme.colorBgSecondary,
+    },
+    textInput: {
+      paddingTop: 13,
+      paddingHorizontal: 0,
       backgroundColor: theme.colorBgSecondary,
-      color: isValid ? (readonly ? theme.colorTextLight5 : theme.colorTextLight1) : theme.colorError,
-      lineHeight: Platform.OS === 'ios' ? 17 : theme.lineHeight * theme.fontSize,
-      fontSize: theme.fontSize,
-      zIndex: 1,
+      height: 44,
     },
     leftInputStyle: { left: 15, zIndex: 2 },
     rightInputStyle: { right: 3, zIndex: 2 },

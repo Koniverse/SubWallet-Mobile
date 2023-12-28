@@ -1,4 +1,4 @@
-import { Alert, AlertButton, Linking } from 'react-native';
+import { Alert, AlertButton, Linking, Platform } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { mmkvStore } from 'utils/storage';
 
@@ -8,7 +8,7 @@ export function notifyUnstable() {
   const nextNotifyTime = mmkvStore.getNumber('unstable-next-notify-time') || now;
 
   // If is first time install, or the next notify time is not reached, do not notify.
-  if (!appIsSetup || nextNotifyTime > now) {
+  if (!appIsSetup || nextNotifyTime > now || Platform.OS === 'android') {
     return;
   }
 

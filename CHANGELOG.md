@@ -1,3 +1,18 @@
+## 1.1.22 (285)
+- Update disable popup backup seed phrase on Android
+
+## 1.1.22 (284)
+- Add bundle release config
+
+## 1.1.22 (282)
+- Add swipe down to reload balance on tokens screen & update web runner 1.1.27 (#1266)
+- Fallback t&c content incase static content offline (#1276)
+- Fix UI bug on some devices (#1228)
+
+## 1.1.21 (281)
+# bundle-av8-iv4
+- Update UX in case transfer all (#1224)
+
 ## 1.1.20 (280)
 - Update web runner 1.1.26 (#1258)
 - Fix UI bug Filter screen (#1254)
@@ -5,12 +20,10 @@
 - Fix bug automatically switch all accounts mode when connect or perform transaction via WalletConnect (#1221)
 
 ## 1.1.19 (276)
-
-
-## bundle-av4-iv5
+# bundle-av8-iv3
 - Add Alert in case user do not check Checkbox (#1211)
 
-## bundle-av3-iv4
+# bundle-av8-iv3
 - Fix unable to show Transfer NFT transaction in transaction history (#1250)
 
 
@@ -24,6 +37,7 @@
 - Fix bug crash app when accept Camera on Android (#1198)
 - Integrate App Center (#1210)
 - Apply static content for T&C (#1211)
+- Update auto select account for Cancel unstake, Claim reward, Stake, Unbond (#1208)
 
 ## 1.1.18 (273)
 

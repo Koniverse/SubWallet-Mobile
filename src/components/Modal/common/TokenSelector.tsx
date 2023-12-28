@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ListRenderItemInfo } from 'react-native';
+import { Keyboard, ListRenderItemInfo } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
@@ -56,6 +56,11 @@ export const TokenSelector = ({
     setAdjustPan();
   }, []);
 
+  const _onSelectItem = (item: TokenItemType) => {
+    Keyboard.dismiss();
+    onSelectItem && onSelectItem(item);
+  };
+
   return (
     <FullSizeSelectModal
       items={items}
@@ -64,7 +69,7 @@ export const TokenSelector = ({
       selectModalType={'single'}
       selectModalItemType={'token'}
       title={i18n.header.selectToken}
-      onSelectItem={onSelectItem}
+      onSelectItem={_onSelectItem}
       ref={tokenSelectorRef}
       renderSelected={renderSelected}
       placeholder={i18n.placeholder.searchToken}

@@ -279,7 +279,7 @@
   "createAccount": {
     "createWithNewSeedPhrase": "Create with new seed phrase",
     "deriveFromAnExistingAcc": "Derive from an existing account",
-    "substrate": "Substrate",
+    "polkadot": "Polkadot",
     "ethereum": "Ethereum"
   },
   "importAccount": {

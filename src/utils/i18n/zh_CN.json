@@ -279,7 +279,7 @@
   "createAccount": {
     "createWithNewSeedPhrase": "使用新助记词创建新帐户",
     "deriveFromAnExistingAcc": "从现有账户派生新账户",
-    "substrate": "Substrate",
+    "polkadot": "Polkadot",
     "ethereum": "以太坊"
   },
   "importAccount": {
