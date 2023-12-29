@@ -37,6 +37,7 @@ import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import IntroducingModal from 'components/Modal/IntroducingModal';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 import WarningModal from 'components/Modal/WarningModal';
+import { TermAndCondition } from 'constants/termAndCondition';
 
 interface tabbarIconColor {
   color: string;
@@ -206,6 +207,8 @@ export const Home = ({ navigation }: Props) => {
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
   const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
   const isOpenDAppWarningFirstTime = mmkvStore.getBoolean('isOpenDAppWarningFirstTime');
+  const language = useSelector((state: RootState) => state.settings.language);
+  mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
   useEffect(() => {
     if (isReady && isLoading) {
       setTimeout(() => setLoading(false), 1500);
