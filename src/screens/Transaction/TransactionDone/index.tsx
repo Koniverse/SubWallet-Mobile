@@ -14,6 +14,7 @@ import { TransactionDoneInfo } from 'hooks/screen/Transaction/useTransactionV2';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { mmkvStore } from 'utils/storage';
 import InAppReview from 'react-native-in-app-review';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   transactionDoneInfo: TransactionDoneInfo;
@@ -46,7 +47,7 @@ export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) =
 
   const viewTransaction = useCallback(() => {
     if (chain && id && address) {
-      navigation.navigate('History', { chain, transactionId: id, address });
+      navigation.navigate('History', { chain, transactionId: id, address: reformatAddress(address) });
     } else {
       navigation.navigate('History', {});
     }

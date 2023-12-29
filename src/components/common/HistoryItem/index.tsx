@@ -4,7 +4,11 @@ import { TransactionHistoryDisplayItem } from 'types/history';
 import { CaretRight } from 'phosphor-react-native';
 import { Icon, Logo, Typography } from 'components/design-system-ui';
 import { Number } from 'components/design-system-ui';
-import { ExtrinsicStatus, TransactionDirection } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  ExtrinsicStatus,
+  TransactionDirection,
+  TransactionHistoryItem,
+} from '@subwallet/extension-base/background/KoniTypes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import HistoryItemStyles from './style';
 import { ThemeTypes } from 'styles/themes';
@@ -23,6 +27,10 @@ function getIconColor(status: ExtrinsicStatus, theme: ThemeTypes): string | unde
   const color = historyStatusMap[status]?.color;
 
   return theme[color || ''];
+}
+
+export function isAbleToShowFee(item: TransactionHistoryItem): boolean {
+  return !!(item.fee && item.fee.value && item.fee.value !== '0');
 }
 
 export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
@@ -65,20 +73,24 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
                   value={item?.amount?.value || '0'}
                   textStyle={_style.upperText}
                 />
-                <Number
-                  decimal={item?.fee?.decimals || 0}
-                  decimalOpacity={1}
-                  intOpacity={1}
-                  suffix={item.fee?.symbol}
-                  unitOpacity={1}
-                  value={item.fee?.value || '0'}
-                  size={theme.fontSizeSM}
-                  textStyle={_style.lowerText}
-                />
+                {isAbleToShowFee(item) ? (
+                  <Number
+                    decimal={item?.fee?.decimals || 0}
+                    decimalOpacity={1}
+                    intOpacity={1}
+                    suffix={item.fee?.symbol}
+                    unitOpacity={1}
+                    value={item.fee?.value || '0'}
+                    size={theme.fontSizeSM}
+                    textStyle={_style.lowerText}
+                  />
+                ) : (
+                  <View style={{ height: 20 }} />
+                )}
               </>
             )}
 
-            {!isShowBalance && <HideBalanceItem />}
+            {!isShowBalance && <HideBalanceItem isShowConvertedBalance={isAbleToShowFee(item)} />}
           </View>
 
           <View style={_style.arrowWrapper}>
