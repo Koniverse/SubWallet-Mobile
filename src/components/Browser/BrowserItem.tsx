@@ -1,15 +1,13 @@
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Icon, Image, Tag, Typography } from 'components/design-system-ui';
-import { Star } from 'phosphor-react-native';
+import { Image, Tag, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { StoredSiteInfo } from 'stores/types';
-import { addBookmark, removeBookmark } from 'stores/updater';
 import createStylesheet from './styles/BrowserItem';
 import { getHostName, searchDomain } from 'utils/browser';
 import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
+import { BookmarkItem } from './BookmarkItem';
 
 interface Props {
   logo?: string;
@@ -22,20 +20,14 @@ interface Props {
   isLoading?: boolean;
 }
 
-function isSiteBookmark(url: string, bookmarks: StoredSiteInfo[]) {
-  return bookmarks.some(i => i.url === url);
-}
-
 export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, isLoading }: Props) => {
   const {
     browserDApps: { dAppCategories },
   } = useGetDAppList();
   const assetLogoMap = useSelector((state: RootState) => state.logoMaps.assetLogoMap);
-  const [image, setImage] = useState<string>(assetLogoMap.default);
+  const [image, setImage] = useState<string | null>(null);
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
-  const bookmarks = useSelector((state: RootState) => state.browser.bookmarks);
-  const _isSiteBookmark = isSiteBookmark(url, bookmarks);
 
   useEffect(() => {
     if (isLoading) {
@@ -48,17 +40,6 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, 
     }
   }, [logo, url, isLoading]);
 
-  const onPressStar = () => {
-    if (_isSiteBookmark) {
-      removeBookmark({
-        name: title,
-        url,
-      });
-    } else {
-      addBookmark({ name: title, url });
-    }
-  };
-
   const renderTag = (tagId: string) => {
     const tagInfo = dAppCategories?.find(category => category.slug === tagId);
 
@@ -70,6 +51,9 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, 
   };
 
   const onLoadImageError = useCallback(() => {
+    if (!image) {
+      return;
+    }
     if (image.includes('avicon.ico')) {
       setImage(`https://${getHostName(url)}/favicon.png`);
       return;
@@ -81,7 +65,15 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, 
     <View style={[stylesheet.container, style]}>
       <TouchableOpacity onPress={onPress} style={stylesheet.contentWrapper}>
         <View style={stylesheet.logoWrapper}>
-          <Image src={image} onError={onLoadImageError} style={stylesheet.logo} shape={'squircle'} squircleSize={44} />
+          {image && (
+            <Image
+              src={image}
+              onError={onLoadImageError}
+              style={stylesheet.logo}
+              shape={'squircle'}
+              squircleSize={44}
+            />
+          )}
         </View>
         <View style={stylesheet.textContentWrapper}>
           <View style={stylesheet.textContentLine1}>
@@ -98,21 +90,7 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, 
         </View>
       </TouchableOpacity>
 
-      {!url.startsWith(`https://${searchDomain}`) && (
-        <Button
-          size={'xs'}
-          type={'ghost'}
-          icon={
-            <Icon
-              size={'sm'}
-              weight={_isSiteBookmark ? 'fill' : undefined}
-              iconColor={_isSiteBookmark ? theme.colorTextLight1 : theme.colorTextLight4}
-              phosphorIcon={Star}
-            />
-          }
-          onPress={onPressStar}
-        />
-      )}
+      {!url.startsWith(`https://${searchDomain}`) && <BookmarkItem url={url} title={title} />}
     </View>
   );
 };

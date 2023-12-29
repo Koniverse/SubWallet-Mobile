@@ -23,7 +23,7 @@ const IconItem: React.FC<IconItemProps> = ({ data, itemData, isWithText, onPress
   const navigation = useNavigation<RootNavigationProps>();
   const assetLogoMap = useSelector((state: RootState) => state.logoMaps.assetLogoMap);
   const dApp = data?.find(dAppItem => itemData.url.includes(dAppItem.url));
-  const [image, setImage] = useState<string>(assetLogoMap.default);
+  const [image, setImage] = useState<string | null>(null);
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
 
@@ -40,6 +40,9 @@ const IconItem: React.FC<IconItemProps> = ({ data, itemData, isWithText, onPress
   }, [dApp, itemData.url, isLoading]);
 
   const onLoadImageError = useCallback(() => {
+    if (!image) {
+      return;
+    }
     if (image.includes('avicon.ico')) {
       setImage(`https://${getHostName(itemData.url)}/favicon.png`);
       return;
@@ -55,7 +58,9 @@ const IconItem: React.FC<IconItemProps> = ({ data, itemData, isWithText, onPress
   return (
     <View style={[stylesheet.container]}>
       <TouchableOpacity style={stylesheet.imageWrapper} onPress={onPress}>
-        <Image src={image} onError={onLoadImageError} style={stylesheet.image} shape={'squircle'} squircleSize={44} />
+        {image && (
+          <Image src={image} onError={onLoadImageError} style={stylesheet.image} shape={'squircle'} squircleSize={44} />
+        )}
         {isWithText && (
           <Typography.Text size={'xs'} style={stylesheet.title} ellipsis>
             {dApp?.title || itemData.name}
