@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
@@ -43,7 +43,7 @@ import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { FormItem } from 'components/common/FormItem';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
-import { getInputValuesFromString } from 'components/Input/InputAmountV2';
+import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { useGetBalance } from 'hooks/balance';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 

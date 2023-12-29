@@ -4,7 +4,7 @@ import { RootState } from 'stores/index';
 import { NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
-import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import {
   Keyboard,
   ScrollView,
@@ -30,7 +30,7 @@ import { SWTransactionResponse } from '@subwallet/extension-base/services/transa
 import { evmNftSubmitTransaction, substrateNftSubmitTransaction } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { InputAddress } from 'components/Input/InputAddressV2';
+import { InputAddress } from 'components/Input/InputAddress';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { SendNFTProps } from 'routes/transaction/transactionAction';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';

@@ -6,7 +6,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
-import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { submitStakeCancelWithdrawal } from 'messaging/index';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { ScrollView, View } from 'react-native';

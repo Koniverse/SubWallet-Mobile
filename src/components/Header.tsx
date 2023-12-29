@@ -52,7 +52,6 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
       if (isAddress(data)) {
         setError(undefined);
         setIsScanning(false);
-        //TODO: need to refactor
         navigation.navigate('Drawer', {
           screen: 'TransactionAction',
           params: { screen: 'SendFund', params: { recipient: data } },

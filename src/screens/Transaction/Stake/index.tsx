@@ -3,7 +3,7 @@ import { ScrollView, View } from 'react-native';
 import { StakingTab } from 'components/common/StakingTab';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
-import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import useGetSupportedStakingTokens from 'hooks/screen/Staking/useGetSupportedStakingTokens';
 import {
   AmountData,
@@ -57,7 +57,7 @@ import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { FormItem } from 'components/common/FormItem';
 import { InstructionModal } from 'screens/Home/Staking/InstructionModal';
 import { mmkvStore } from 'utils/storage';
-import { getInputValuesFromString } from 'components/Input/InputAmountV2';
+import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 
 interface StakeFormValues extends TransactionFormValues {

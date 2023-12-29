@@ -8,7 +8,7 @@ import ConnectParitySigner from 'screens/Account/ConnectQrSigner/ConnectParitySi
 import ImportQrCode from 'screens/Account/ImportQrCode';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { GeneralSettings } from 'screens/Settings/General';
-import { SendFund } from 'screens/Transaction/SendFundV2';
+import { SendFund } from 'screens/Transaction/SendFund';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
 import { AccountsScreen } from 'screens/Account/AccountsScreen';

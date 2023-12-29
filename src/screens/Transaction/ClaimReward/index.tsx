@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { ScrollView, View } from 'react-native';
@@ -43,7 +43,7 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { useGetBalance } from 'hooks/balance';
-import { getInputValuesFromString } from 'components/Input/InputAmountV2';
+import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 
 interface ClaimRewardFormValues extends TransactionFormValues {

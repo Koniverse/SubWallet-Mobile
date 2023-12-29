@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { TransactionDoneInfo } from 'hooks/screen/Transaction/useTransactionV2';
+import { TransactionDoneInfo } from 'hooks/screen/Transaction/useTransaction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { mmkvStore } from 'utils/storage';
 import InAppReview from 'react-native-in-app-review';

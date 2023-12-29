@@ -21,7 +21,6 @@ interface Props extends FieldBaseProps {
   disableText?: boolean;
 }
 
-// todo: onPress infoIcon
 export const AddressField = ({
   address,
   networkPrefix,
