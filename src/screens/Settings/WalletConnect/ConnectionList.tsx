@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { ConnectListProps, RootNavigationProps } from 'routes/index';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -19,7 +19,6 @@ import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
-import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 
 const searchFunc = (items: SessionTypes.Struct[], searchString: string) => {
   const searchTextLowerCase = searchString.toLowerCase();
@@ -47,28 +46,40 @@ export const ConnectionList = ({
   const theme = useSubWalletTheme().swThemes;
   const { sessions } = useSelector((state: RootState) => state.walletConnect);
   const items = useMemo(() => Object.values(sessions), [sessions]);
+  const itemsRef = useRef<SessionTypes.Struct[]>(items);
   const navigation = useNavigation<RootNavigationProps>();
-  const [isScanning, setIsScanning] = useState<boolean>(!(items?.length || isDelete));
+  const [isScanning, setIsScanning] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    async function checkPermission() {
-      const result = await requestCameraPermission(() => navigation.goBack());
+    itemsRef.current = items;
+  }, [items]);
 
-      if (result !== RESULTS.GRANTED) {
-        setIsScanning(false);
+  useEffect(() => {
+    function checkPermission() {
+      if (!itemsRef.current?.length) {
+        requestCameraPermission(() => navigation.goBack()).then(result => {
+          if (result === RESULTS.GRANTED) {
+            setIsScanning(true);
+          } else {
+            setIsScanning(false);
+          }
+        });
       }
     }
+
+    checkPermission();
 
     const deleteWcCallback = (isDeleteWc: boolean) => {
       if (!isDeleteWc) {
         checkPermission();
       }
     };
-    const deleteWcEvent = DeviceEventEmitter.addListener(OPEN_UNLOCK_FROM_MODAL, deleteWcCallback);
+    const deleteWcEvent = DeviceEventEmitter.addListener('isDeleteWc', deleteWcCallback);
 
     return () => deleteWcEvent.remove();
-  }, [navigation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const renderEmptyList = () => {
     return (
