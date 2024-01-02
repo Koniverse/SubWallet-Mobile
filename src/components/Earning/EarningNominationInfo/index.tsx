@@ -38,7 +38,7 @@ const EarningNominationInfo: React.FC<Props> = (props: Props) => {
     setShowDetail(old => !old);
   }, []);
 
-  if (!haveNomination || isAllAccount) {
+  if (!haveNomination || isAllAccount || !compound.nominations.length) {
     return null;
   }
 

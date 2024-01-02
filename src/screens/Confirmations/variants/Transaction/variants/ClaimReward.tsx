@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { RequestStakeClaimReward } from '@subwallet/extension-base/background/KoniTypes';
+import { RequestStakeClaimReward } from '@subwallet/extension-base/types';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import { ConfirmationContent } from 'components/common/Confirmation';
 import MetaInfo from 'components/MetaInfo';
@@ -9,6 +9,8 @@ import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React from 'react';
 import { Text } from 'react-native';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 import { BaseTransactionConfirmationProps } from './Base';
 import i18n from 'utils/i18n/i18n';
@@ -21,7 +23,10 @@ const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
 
   const theme = useSubWalletTheme().swThemes;
 
-  const { decimals, symbol } = useGetNativeTokenBasicInfo(data.chain);
+  const { poolInfoMap } = useSelector((state: RootState) => state.earning);
+  const poolInfo = poolInfoMap[data.slug];
+
+  const { decimals, symbol } = useGetNativeTokenBasicInfo(poolInfo.chain);
 
   return (
     <ConfirmationContent isFullHeight>

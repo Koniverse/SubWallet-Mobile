@@ -2,6 +2,7 @@ import { _ChainAsset } from '@subwallet/chain-list/types';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import {
   NormalYieldPoolMetadata,
+  SpecialYieldPositionInfo,
   YieldCompoundingPeriod,
   YieldPoolInfo,
   YieldPositionInfo,
@@ -13,7 +14,9 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CaretDown, CaretUp } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { getUnstakingPeriod } from 'screens/Transaction/helper/staking';
+import { RootState } from 'stores/index';
 import { EarningTagType } from 'types/earning';
 import { isAccountAll } from 'utils/accountAll';
 import { createEarningTypeTags } from 'utils/earning';
@@ -32,7 +35,18 @@ const EarningBaseInfo: React.FC<Props> = (props: Props) => {
 
   const theme = useSubWalletTheme().swThemes;
 
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const deriveAsset = useMemo(() => {
+    if ('derivativeToken' in compound) {
+      const position = compound as SpecialYieldPositionInfo;
+      return assetRegistry[position.derivativeToken];
+    } else {
+      return undefined;
+    }
+  }, [assetRegistry, compound]);
 
   const earningTagType: EarningTagType = useMemo(() => {
     return createEarningTypeTags(theme)[compound.type];
@@ -41,6 +55,7 @@ const EarningBaseInfo: React.FC<Props> = (props: Props) => {
   const addresses = useMemo(() => {
     return list.map(item => item.address);
   }, [list]);
+
   const isAllAccount = useMemo(() => isAccountAll(compound.address), [compound.address]);
 
   const totalApy = useMemo((): number | undefined => {
@@ -107,25 +122,25 @@ const EarningBaseInfo: React.FC<Props> = (props: Props) => {
           <MetaInfo.Number
             label={i18n.inputLabel.totalStake}
             value={compound.totalStake}
-            decimals={inputAsset?.decimals || 0}
-            suffix={inputAsset?.symbol}
+            decimals={deriveAsset?.decimals || inputAsset?.decimals || 0}
+            suffix={deriveAsset?.symbol || inputAsset?.symbol}
           />
           <MetaInfo.Number
             label={i18n.inputLabel.activeStaked}
             value={compound.activeStake}
-            decimals={inputAsset?.decimals || 0}
-            suffix={inputAsset?.symbol}
+            decimals={deriveAsset?.decimals || inputAsset?.decimals || 0}
+            suffix={deriveAsset?.symbol || inputAsset?.symbol}
           />
           <MetaInfo.Number
             label={i18n.inputLabel.unstaked}
             value={compound.unstakeBalance}
-            decimals={inputAsset?.decimals || 0}
-            suffix={inputAsset?.symbol}
+            decimals={deriveAsset?.decimals || inputAsset?.decimals || 0}
+            suffix={deriveAsset?.symbol || inputAsset?.symbol}
           />
         </MetaInfo>
       )}
       <EarningNominationInfo poolInfo={poolInfo} compound={compound} inputAsset={inputAsset} />
-      <View style={[styles.header, styles.headerBottom]}>
+      <View style={[styles.header, showEarningDetail ? undefined : styles.headerBottom]}>
         <Typography.Text style={styles.headerText}>Earning info</Typography.Text>
         <Button
           type="ghost"
