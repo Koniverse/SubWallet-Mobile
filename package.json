@@ -193,7 +193,7 @@
     "@polkadot/util": "^12.2.1",
     "@polkadot/api": "^10.7.2",
     "@polkadot/util-crypto": "^12.2.1",
-    "@subwallet/extension-base": "file:../SubWallet-Earning/packages/extension-base/build/",
+    "@subwallet/extension-base": "^1.1.28-beta.1",
     "@subwallet/chain-list": "0.2.30",
     "react-native-svg": "^13.6.0"
   },
