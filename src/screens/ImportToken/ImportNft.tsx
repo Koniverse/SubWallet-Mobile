@@ -1,4 +1,4 @@
-import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import InputText from 'components/Input/InputText';
@@ -8,14 +8,11 @@ import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { upsertCustomToken, validateCustomToken } from 'messaging/index';
 import { ImportNftProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { AddressScanner } from 'components/Scanner/AddressScanner';
-import { InputAddress, InputAddressRefProps } from 'components/Input/InputAddress';
+import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
 import { NetworkField } from 'components/Field/Network';
-import { requestCameraPermission } from 'utils/permission/camera';
-import { RESULTS } from 'react-native-permissions';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
+import { addLazy, isValidSubstrateAddress, removeLazy } from '@subwallet/extension-base/utils';
 import { WebRunnerContext } from 'providers/contexts';
 import {
   _getNftTypesSupportedByChain,
@@ -30,7 +27,7 @@ import { AssetTypeOption } from 'types/asset';
 import { Plus, PlusCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
-import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { ModalRef } from 'types/modalRef';
 import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
@@ -97,8 +94,6 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [isValidName, setIsValidName] = useState(true);
-  const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
-  const [error, setError] = useState<string | undefined>(undefined);
   const [isValidContract, setIsValidContract] = useState<boolean>(true);
   const tokenTypeRef = useRef<ModalRef>();
   const chainSelectorRef = useRef<ModalRef>();
@@ -117,7 +112,6 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   }, [chainInfoMap]);
   const [symbol, setSymbol] = useState<string>('');
   const symbolRef = useRef<string>('');
-  const inputAddressRef = useRef<InputAddressRefProps>(null);
 
   useEffect(() => {
     symbolRef.current = symbol;
@@ -129,7 +123,8 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       control,
       getValues,
       setValue,
-      formState: { errors },
+      trigger,
+      formState: { errors, dirtyFields },
     },
     onChangeChainValue: setChain,
     showPopupEnableChain,
@@ -201,14 +196,6 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const nftTypeOptions = useMemo(() => {
     return getNftTypeSupported(chainInfoMap[chain]);
   }, [chainInfoMap, chain]);
-
-  const onPressQrButton = async () => {
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
-      setShowQrModalVisible(true);
-    }
-  };
 
   const smartContractInputRules = useMemo(
     () => ({
@@ -289,17 +276,23 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     return <Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} iconColor={color} />;
   };
 
-  const onScanContractAddress = useCallback((onChangeContractAddress?: (data: string) => void) => {
-    return (data: string) => {
-      if (isAddress(data)) {
-        setError(undefined);
-        setShowQrModalVisible(false);
-        onChangeContractAddress && onChangeContractAddress(data);
-      } else {
-        setError(i18n.errorMessage.isNotContractAddress);
-      }
+  useEffect(() => {
+    if (chain && dirtyFields.smartContract) {
+      addLazy(
+        'trigger-validate-import-nft',
+        () => {
+          trigger('smartContract');
+        },
+        100,
+      );
+    }
+
+    return () => {
+      removeLazy('trigger-validate-import-nft');
     };
-  }, []);
+  }, [chain, dirtyFields.smartContract, trigger]);
+
+  const reValidate = () => trigger('smartContract');
 
   return (
     <ContainerWithSubHeader
@@ -342,16 +335,17 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           control={control}
           showError
           rules={smartContractInputRules}
-          render={({ field: { value, onChange } }) => (
+          render={({ field: { value, onChange, ref, onBlur } }) => (
             <InputAddress
-              disabled={!chain}
-              ref={inputAddressRef}
+              ref={ref}
               label={i18n.inputLabel.contractAddress}
               value={value}
-              onPressQrButton={onPressQrButton}
-              onChange={(output: string | null, currentValue: string) => onChange(currentValue)}
+              onChangeText={onChange}
               placeholder={i18n.placeholder.enterOrPasteAnAddress}
+              disabled={!chain}
               isValidValue={isValidContract}
+              reValidate={reValidate}
+              onSideEffectChange={onBlur}
             />
           )}
           name={'smartContract'}
@@ -390,18 +384,6 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
             </Button>
           </>
         )}
-
-        <AddressScanner
-          qrModalVisible={isShowQrModalVisible}
-          onPressCancel={() => {
-            setError(undefined);
-            setShowQrModalVisible(false);
-          }}
-          onChangeAddress={onScanContractAddress(inputAddressRef.current?.onChange)}
-          isShowError
-          error={error}
-          setQrModalVisible={setShowQrModalVisible}
-        />
       </ScrollView>
 
       <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>

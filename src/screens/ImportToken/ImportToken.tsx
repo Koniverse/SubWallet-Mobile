@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ImportTokenProps, RootNavigationProps } from 'routes/index';
@@ -8,15 +8,12 @@ import i18n from 'utils/i18n/i18n';
 import { NetworkField } from 'components/Field/Network';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import { TextField } from 'components/Field/Text';
-import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 import { completeConfirmation, upsertCustomToken, validateCustomToken } from 'messaging/index';
 import { Warning } from 'components/Warning';
-import { InputAddress, InputAddressRefProps } from 'components/Input/InputAddress';
-import { requestCameraPermission } from 'utils/permission/camera';
-import { RESULTS } from 'react-native-permissions';
-import { AddressScanner } from 'components/Scanner/AddressScanner';
+import { InputAddress } from 'components/Input/InputAddress';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
+import { addLazy, isValidSubstrateAddress, removeLazy } from '@subwallet/extension-base/utils';
 import { WebRunnerContext } from 'providers/contexts';
 import { _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
 import {
@@ -29,7 +26,7 @@ import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTyp
 import { useToast } from 'react-native-toast-notifications';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
 import { AssetTypeOption } from 'types/asset';
-import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { Plus } from 'phosphor-react-native';
 import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
@@ -94,24 +91,22 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useGetContractSupportedChains();
   const [isBusy, setBusy] = useState<boolean>(false);
-  const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const toast = useToast();
   useHandlerHardwareBackPress(isBusy);
   const payload = routeParams?.payload;
   const tokenInfo = payload?.payload;
   const { isNetConnected, isReady } = useContext(WebRunnerContext);
-  const [error, setError] = useState<string | undefined>(undefined);
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
   const [isValidContract, setIsValidContract] = useState<boolean>(true);
-  const inputAddressRef = useRef<InputAddressRefProps>(null);
   const {
     title,
     form: {
       control,
       getValues,
       setValue,
-      formState: { errors },
+      formState: { errors, dirtyFields },
+      trigger,
     },
     onChangeChainValue: setChain,
     showPopupEnableChain,
@@ -256,18 +251,6 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     [selectedTokenTypeData, chainNetworkPrefix, chain, setValue],
   );
 
-  const onScanContractAddress = useCallback((onChangeContractAddress?: (data: string) => void) => {
-    return (data: string) => {
-      if (isAddress(data)) {
-        setError(undefined);
-        setShowQrModalVisible(false);
-        onChangeContractAddress && onChangeContractAddress(data);
-      } else {
-        setError(i18n.errorMessage.isNotContractAddress);
-      }
-    };
-  }, []);
-
   const onSelectTokenType = useCallback(
     (item: AssetTypeOption) => {
       setValue('selectedTokenType', item.value);
@@ -287,13 +270,23 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     navigation.canGoBack() && navigation.goBack();
   };
 
-  const onPressQrButton = async () => {
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
-      setShowQrModalVisible(true);
+  useEffect(() => {
+    if (chain && dirtyFields.contractAddress) {
+      addLazy(
+        'trigger-validate-import-token',
+        () => {
+          trigger('contractAddress');
+        },
+        100,
+      );
     }
-  };
+
+    return () => {
+      removeLazy('trigger-validate-import-token');
+    };
+  }, [chain, dirtyFields.contractAddress, trigger]);
+
+  const reValidate = () => trigger('contractAddress');
 
   const addTokenButtonDisabled =
     !contractAddress || !!errors.contractAddress || !symbol || !decimals || !isNetConnected || !isReady || isBusy;
@@ -335,16 +328,17 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             style={{ marginBottom: 8 }}
             control={control}
             rules={contractAddressRules}
-            render={({ field: { value, onChange } }) => (
+            render={({ field: { value, onChange, ref, onBlur } }) => (
               <InputAddress
-                disabled={!chain}
-                ref={inputAddressRef}
+                ref={ref}
                 label={i18n.importToken.contractAddress}
                 value={value}
-                onChange={(output: string | null, currentValue: string) => onChange(currentValue)}
+                onChangeText={onChange}
                 placeholder={i18n.placeholder.typeOrPasteContractAddress}
-                onPressQrButton={onPressQrButton}
+                disabled={!chain}
                 isValidValue={isValidContract}
+                reValidate={reValidate}
+                onSideEffectChange={onBlur}
               />
             )}
             name={'contractAddress'}
@@ -388,18 +382,6 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
               </Button>
             </>
           )}
-
-          <AddressScanner
-            qrModalVisible={isShowQrModalVisible}
-            onPressCancel={() => {
-              setError(undefined);
-              setShowQrModalVisible(false);
-            }}
-            onChangeAddress={onScanContractAddress(inputAddressRef.current?.onChange)}
-            isShowError
-            error={error}
-            setQrModalVisible={setShowQrModalVisible}
-          />
         </ScrollView>
 
         <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>

@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { InputAddress } from 'components/Input/InputAddressV2';
+import { InputAddress } from 'components/Input/InputAddress';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';

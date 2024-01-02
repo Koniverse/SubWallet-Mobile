@@ -7,6 +7,7 @@ import FastImage from 'react-native-fast-image';
 import { CampaignBanner, CampaignButton } from '@subwallet/extension-base/background/KoniTypes';
 import { completeBannerCampaign } from 'messaging/index';
 import { getBannerButtonIcon } from 'utils/campaign';
+import { setBannerSlugs } from 'utils/storage';
 
 interface Props {
   visible: boolean;
@@ -31,7 +32,9 @@ const CampaignBannerModal = ({ visible, banner, setVisible }: Props) => {
     setVisible(false);
     completeBannerCampaign({
       slug: banner.slug,
-    }).catch(console.error);
+    })
+      .then(() => setBannerSlugs(banner.slug))
+      .catch(console.error);
   }, [banner.slug, setVisible]);
 
   const onPressBtn = (item: CampaignButton) => {

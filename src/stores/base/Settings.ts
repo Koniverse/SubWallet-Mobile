@@ -6,9 +6,6 @@ import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State
 import { ThemeNames, UiSettings } from '@subwallet/extension-base/background/KoniTypes';
 import { AppSettings, ReduxStatus } from 'stores/types';
 
-// import settings from '@polkadot/ui-settings';
-// import { SettingsStruct } from '@polkadot/ui-settings/types';
-
 const initialState = {
   // UI settings
   isShowBalance: false,
@@ -17,9 +14,6 @@ const initialState = {
   theme: ThemeNames.DARK,
   language: 'en',
   browserConfirmationType: 'extension',
-
-  // Polkadot settings
-  // ...settings.get(),
 
   // AuthUrls
   authUrls: {},
@@ -44,7 +38,6 @@ const settingsSlice = createSlice({
 
       return {
         ...state,
-        // todo: will save language, theme, isShowZeroBalance in background
         language: payload.language,
         browserConfirmationType: payload.browserConfirmationType,
         isShowBalance: payload.isShowBalance,

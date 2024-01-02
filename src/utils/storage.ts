@@ -182,3 +182,23 @@ export const restoreStorageData = () => {
     })
     .catch(e => console.debug('** Restore storage data error:', e));
 };
+
+// MKT Campaign flags for iOS 17 when reset data happen
+const bannerSlugKey = 'bannerSlugs';
+export const setBannerSlugs = (newSlug: string) => {
+  const bannerSlugs = getBannerSlugs();
+  if (bannerSlugs) {
+    bannerSlugs.push(newSlug);
+    mmkvStore.set(bannerSlugKey, JSON.stringify(bannerSlugs));
+  }
+};
+export const getBannerSlugs = () => {
+  let bannerSlugs = mmkvStore.getString(bannerSlugKey);
+  try {
+    bannerSlugs = JSON.parse(bannerSlugs ?? '');
+  } catch (error) {
+    bannerSlugs = undefined;
+  }
+
+  return bannerSlugs as string[] | undefined;
+};

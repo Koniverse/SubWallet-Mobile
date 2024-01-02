@@ -9,7 +9,6 @@ import {
   ConfirmationType,
   CrowdloanItem,
   KeyringState,
-  LanguageType,
   NftCollection,
   NftItem,
   NominatorMetadata,
@@ -45,6 +44,7 @@ import { SessionTypes } from '@walletconnect/types';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { MissionInfo } from 'types/missionPool';
 import { DAPPCategory, DAppInfo } from 'types/browser';
+import { BuyServiceInfo, BuyTokenInfo } from '@subwallet/extension-base/types';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -145,17 +145,7 @@ export interface BaseReduxStore {
   reduxStatus: ReduxStatus;
 }
 
-// todo: merge with UiSettings later
-export interface LocalUiSettings {
-  language: LanguageType;
-  isShowZeroBalance: boolean;
-}
-
-export interface AppSettings
-  extends LocalUiSettings,
-    UiSettings,
-    Omit<SettingsStruct, 'camera' | 'notification'>,
-    BaseReduxStore {
+export interface AppSettings extends UiSettings, Omit<SettingsStruct, 'camera' | 'notification'>, BaseReduxStore {
   authUrls: Record<string, AuthUrlInfo>;
   mediaAllowed: boolean;
   isDeepLinkConnect: boolean;

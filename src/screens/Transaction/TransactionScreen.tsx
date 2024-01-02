@@ -6,7 +6,7 @@ import { Unbond } from 'screens/Transaction/Unbond';
 import ClaimReward from 'screens/Transaction/ClaimReward';
 import { CancelUnstake } from 'screens/Transaction/CancelUnstake';
 import { Withdraw } from 'screens/Transaction/Withdraw';
-import { SendFund } from 'screens/Transaction/SendFundV2';
+import { SendFund } from 'screens/Transaction/SendFund';
 import SendNFT from 'screens/Transaction/NFT';
 
 const TransactionScreen = () => {

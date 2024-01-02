@@ -8,7 +8,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSelector } from 'react-redux';
 import { accountFilterFunc } from 'screens/Transaction/helper/earning';
 import { RootState } from 'stores/index';
-import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { ScrollView, View } from 'react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';

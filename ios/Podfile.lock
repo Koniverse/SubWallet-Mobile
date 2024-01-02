@@ -1,4 +1,10 @@
 PODS:
+  - appcenter-core (5.0.0):
+    - AppCenterReactNativeShared (~> 5.0)
+    - React-Core
+  - AppCenter/Core (5.0.3)
+  - AppCenterReactNativeShared (5.0.0):
+    - AppCenter/Core (= 5.0.3)
   - Base64 (1.1.2)
   - boost (1.76.0)
   - BVLinearGradient (2.8.3):
@@ -447,8 +453,6 @@ PODS:
   - react-native-static-server (0.5.0):
     - GCDWebServer (~> 3.0)
     - React
-  - react-native-version-number (0.3.6):
-    - React
   - react-native-video (5.2.1):
     - React-Core
     - react-native-video/Video (= 5.2.1)
@@ -578,8 +582,6 @@ PODS:
     - React-Core
   - RNCMaskedView (0.2.9):
     - React-Core
-  - RNCPicker (2.6.1):
-    - React-Core
   - RNDeviceInfo (10.12.0):
     - React-Core
   - RNFastImage (8.6.3):
@@ -628,6 +630,7 @@ PODS:
   - ZXingObjC/All (3.6.5)
 
 DEPENDENCIES:
+  - appcenter-core (from `../node_modules/appcenter`)
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - CodePush (from `../node_modules/react-native-code-push`)
@@ -691,7 +694,6 @@ DEPENDENCIES:
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-static-server (from `../node_modules/react-native-static-server`)
-  - react-native-version-number (from `../node_modules/react-native-version-number`)
   - react-native-video (from `../node_modules/react-native-video`)
   - react-native-view-shot (from `../node_modules/react-native-view-shot`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -717,7 +719,6 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
-  - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNFS (from `../node_modules/react-native-fs`)
@@ -734,6 +735,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - AppCenter
+    - AppCenterReactNativeShared
     - Base64
     - CocoaAsyncSocket
     - Flipper
@@ -760,6 +763,8 @@ SPEC REPOS:
     - ZXingObjC
 
 EXTERNAL SOURCES:
+  appcenter-core:
+    :path: "../node_modules/appcenter"
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
   BVLinearGradient:
@@ -839,8 +844,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-splash-screen"
   react-native-static-server:
     :path: "../node_modules/react-native-static-server"
-  react-native-version-number:
-    :path: "../node_modules/react-native-version-number"
   react-native-video:
     :path: "../node_modules/react-native-video"
   react-native-view-shot:
@@ -891,8 +894,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-clipboard/clipboard"
   RNCMaskedView:
     :path: "../node_modules/@react-native-masked-view/masked-view"
-  RNCPicker:
-    :path: "../node_modules/@react-native-picker/picker"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNFastImage:
@@ -921,6 +922,9 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  AppCenter: a4070ec3d4418b5539067a51f57155012e486ebd
+  appcenter-core: e192ea8b373bebd3e44998882b43311078bd7dda
+  AppCenterReactNativeShared: 01df23849b1c3c6eb8c4049f54322635650e98f0
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
@@ -978,7 +982,6 @@ SPEC CHECKSUMS:
   react-native-slider: cc89964e1432fa31aa9db7a0fa9b21e26b5d5152
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-static-server: 201b2a945a35096be3ae7f43e367c65bcbd61343
-  react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
   react-native-webview: 88293a0f23eca8465c0433c023ec632930e644d0
@@ -1004,7 +1007,6 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 618d03a5f52fbccb3d7010076bc54712844c18ef
   RNCClipboard: 90e241893de33a2f5962fc34d76ada4576033e49
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
-  RNCPicker: b18aaf30df596e9b1738e7c1f9ee55402a229dca
   RNDeviceInfo: db5c64a060e66e5db3102d041ebe3ef307a85120
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
