@@ -37,7 +37,7 @@ export default (theme: ThemeTypes) => {
     scrollButton: {
       position: 'absolute',
       top: -(theme.sizeXXL + theme.sizeSM),
-      right: 0
+      right: 0,
     },
     faqText: {
       ...FontMedium,
