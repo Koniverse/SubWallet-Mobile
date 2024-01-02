@@ -677,7 +677,13 @@
     "substrateDApp": "Substrate dApp",
     "evmDApp": "以太坊dApp",
     "blockedDApp": "已封锁dApp",
-    "connectedDApp": "已连接dApp"
+    "connectedDApp": "已连接dApp",
+    "nominationPool": "Nomination pool",
+    "nativeStaking": "Native staking",
+    "liquidStaking": "Liquid staking",
+    "lending": "Lending",
+    "parachainStaking": "Parachain staking",
+    "singleFarming": "Single farming"
   },
   "header": {
     "selectAccount": "选择账户",

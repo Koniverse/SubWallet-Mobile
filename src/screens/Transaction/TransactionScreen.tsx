@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { TransactionActionStackParamList } from 'routes/transaction/transactionAction';
+import EarnTransaction from 'screens/Transaction/Earn';
 import { Stake } from 'screens/Transaction/Stake';
 import { Unbond } from 'screens/Transaction/Unbond';
 import ClaimReward from 'screens/Transaction/ClaimReward';
@@ -22,6 +23,7 @@ const TransactionScreen = () => {
       <TransactionActionStack.Screen name="Unbond" component={Unbond} />
       <TransactionActionStack.Screen name="ClaimReward" component={ClaimReward} />
       <TransactionActionStack.Screen name="CancelUnstake" component={CancelUnstake} />
+      <TransactionActionStack.Screen name="Earning" component={EarnTransaction} />
     </TransactionActionStack.Navigator>
   );
 };

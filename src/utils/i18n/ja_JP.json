@@ -677,7 +677,13 @@
     "substrateDApp": "Substrate dApp",
     "evmDApp": "EVM の dApp",
     "blockedDApp": "ブロックされたdApp",
-    "connectedDApp": "接続されたdApp"
+    "connectedDApp": "接続されたdApp",
+    "nominationPool": "Nomination pool",
+    "nativeStaking": "Native staking",
+    "liquidStaking": "Liquid staking",
+    "lending": "Lending",
+    "parachainStaking": "Parachain staking",
+    "singleFarming": "Single farming"
   },
   "header": {
     "selectAccount": "アカウントを選択",

@@ -1,6 +1,7 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
-import { YieldPoolInfo } from '@subwallet/extension-base/types';
+import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
+import BigN from 'bignumber.js';
 import { FlatListScreen } from 'components/FlatListScreen';
 import EarningPoolItem from 'components/Item/Earning/EarningPoolItem';
 import EarningPoolDetailModal from 'components/Modal/Earning/EarningPoolDetailModal';
@@ -20,6 +21,61 @@ import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import createStyles from './style';
+
+const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
+  if (!filters.length) {
+    return items;
+  }
+
+  return items.filter(item => {
+    if (!filters.length) {
+      return true;
+    }
+
+    for (const filter of filters) {
+      if (filter === '') {
+        return true;
+      }
+
+      if (filter === YieldPoolType.NOMINATION_POOL) {
+        if (item.type === YieldPoolType.NOMINATION_POOL) {
+          return true;
+        }
+      } else if (filter === YieldPoolType.NATIVE_STAKING) {
+        if (item.type === YieldPoolType.NATIVE_STAKING) {
+          return true;
+        }
+      } else if (filter === YieldPoolType.LIQUID_STAKING) {
+        if (item.type === YieldPoolType.LIQUID_STAKING) {
+          return true;
+        }
+      } else if (filter === YieldPoolType.LENDING) {
+        if (item.type === YieldPoolType.LENDING) {
+          return true;
+        }
+        // } else if (filter === YieldPoolType.PARACHAIN_STAKING) {
+        //   if (item.type === YieldPoolType.PARACHAIN_STAKING) {
+        //     return true;
+        //   }
+        // } else if (filter === YieldPoolType.SINGLE_FARMING) {
+        //   if (item.type === YieldPoolType.SINGLE_FARMING) {
+        //     return true;
+        //   }
+      }
+    }
+
+    return false;
+  });
+};
+
+const FILTER_OPTIONS = [
+  { label: i18n.filterOptions.nominationPool, value: YieldPoolType.NOMINATION_POOL },
+  { label: i18n.filterOptions.nativeStaking, value: YieldPoolType.NATIVE_STAKING },
+  { label: i18n.filterOptions.liquidStaking, value: YieldPoolType.LIQUID_STAKING },
+  { label: i18n.filterOptions.lending, value: YieldPoolType.LENDING },
+  { label: i18n.filterOptions.parachainStaking, value: YieldPoolType.PARACHAIN_STAKING },
+  { label: i18n.filterOptions.singleFarming, value: YieldPoolType.SINGLE_FARMING },
+];
 
 export const PoolList: React.FC<EarningPoolListProps> = ({
   route: {
@@ -57,24 +113,20 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         if (totalApr) {
           const rs = calculateReward(totalApr);
 
-          return rs.apy;
+          return rs.apy || -1;
         }
 
-        return undefined;
+        return -1;
       };
 
-      const aApy = getApy(a);
-      const bApy = getApy(b);
+      const getTotal = (pool: YieldPoolInfo) => {
+        const {
+          metadata: { tvl },
+        } = pool;
+        return tvl ? new BigN(tvl).toNumber() : -1;
+      };
 
-      if (aApy === undefined && bApy === undefined) {
-        return 0;
-      } else if (aApy === undefined) {
-        return 1;
-      } else if (bApy === undefined) {
-        return -1;
-      } else {
-        return bApy - aApy;
-      }
+      return getTotal(b) - getTotal(a) || getApy(b) - getApy(a);
     });
 
     return result;
@@ -83,13 +135,13 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const handleOnStakeMore = useCallback(
     (slug: string): void => {
       Keyboard.dismiss();
-      // navigation.navigate('Drawer', {
-      //   screen: 'TransactionAction',
-      //   params: {
-      //     screen: 'Stake',
-      //     params: { slug },
-      //   },
-      // });
+      navigation.navigate('Drawer', {
+        screen: 'TransactionAction',
+        params: {
+          screen: 'Earning',
+          params: { slug },
+        },
+      });
     },
     [navigation],
   );
@@ -144,10 +196,13 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
 
   const searchFunction = useCallback(
     (_items: YieldPoolInfo[], searchString: string) => {
-      return _items.filter(({ chain: _chain }) => {
+      return _items.filter(({ chain: _chain, shortName }) => {
         const chainInfo = chainInfoMap[_chain];
 
-        return chainInfo?.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase());
+        return (
+          chainInfo?.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase()) ||
+          shortName.toLowerCase().includes(searchString.toLowerCase())
+        );
       });
     },
     [chainInfoMap],
@@ -176,6 +231,8 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
         flatListStyle={styles.container}
+        filterOptions={FILTER_OPTIONS}
+        filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onBack}
         // rightIconOption={rightIconOption}

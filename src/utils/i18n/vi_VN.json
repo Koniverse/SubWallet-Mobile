@@ -677,7 +677,13 @@
     "substrateDApp": "Substrate dApp",
     "evmDApp": "DApp EVM",
     "blockedDApp": "dApp bị chặn",
-    "connectedDApp": "dApp được kết nối"
+    "connectedDApp": "dApp được kết nối",
+    "nominationPool": "Nomination pool",
+    "nativeStaking": "Native staking",
+    "liquidStaking": "Liquid staking",
+    "lending": "Lending",
+    "parachainStaking": "Parachain staking",
+    "singleFarming": "Single farming"
   },
   "header": {
     "selectAccount": "Chọn tài khoản",

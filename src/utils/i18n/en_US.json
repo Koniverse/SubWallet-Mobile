@@ -677,7 +677,13 @@
     "substrateDApp": "Substrate DApp",
     "evmDApp": "EVM DApp",
     "blockedDApp": "Blocked DApp",
-    "connectedDApp": "Connected DApp"
+    "connectedDApp": "Connected DApp",
+    "nominationPool": "Nomination pool",
+    "nativeStaking": "Native staking",
+    "liquidStaking": "Liquid staking",
+    "lending": "Lending",
+    "parachainStaking": "Parachain staking",
+    "singleFarming": "Single farming"
   },
   "header": {
     "selectAccount": "Select account",

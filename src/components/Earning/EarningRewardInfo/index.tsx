@@ -7,7 +7,7 @@ import MetaInfo from 'components/MetaInfo';
 import { StakingStatusUi } from 'constants/stakingStatusUi';
 import useYieldRewardTotal from 'hooks/earning/useYieldRewardTotal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { BN_ZERO } from 'utils/chainBalances';
@@ -21,7 +21,7 @@ type Props = {
 };
 
 const EarningRewardInfo: React.FC<Props> = (props: Props) => {
-  const { inputAsset, poolInfo, compound } = props;
+  const { inputAsset, compound } = props;
   const { slug, type } = compound;
 
   const navigation = useNavigation<RootNavigationProps>();
@@ -30,7 +30,7 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const total = useYieldRewardTotal(slug);
 
-  const [showDetail, setShowDetail] = useState(false);
+  // const [showDetail, setShowDetail] = useState(false);
 
   const canClaim = useMemo((): boolean => {
     switch (type) {
@@ -62,9 +62,9 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
     return stakingStatusUi.inactive;
   }, [compound.status]);
 
-  const toggleDetail = useCallback(() => {
-    setShowDetail(old => !old);
-  }, []);
+  // const toggleDetail = useCallback(() => {
+  //   setShowDetail(old => !old);
+  // }, []);
 
   const onPressWithdraw = useCallback(() => {
     navigation.navigate('Drawer', {

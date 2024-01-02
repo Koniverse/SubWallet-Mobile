@@ -110,8 +110,11 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   }, []);
 
   const onPress = useCallback(() => {
-    onStakeMore?.(slug);
-  }, [onStakeMore, slug]);
+    setVisible(false);
+    setTimeout(() => {
+      onStakeMore?.(slug);
+    }, 300);
+  }, [onStakeMore, setVisible, slug]);
 
   useEffect(() => {
     if (!poolInfo) {
