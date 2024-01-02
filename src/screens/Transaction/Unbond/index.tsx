@@ -1,12 +1,13 @@
-import { YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
+import { SpecialYieldPoolInfo, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
 import { RequestYieldLeave } from '@subwallet/extension-base/types/yield/actions/others';
+import AlertBoxBase from 'components/design-system-ui/alert-box/base';
+import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 import { useYieldPositionDetail } from 'hooks/earning';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useSelector } from 'react-redux';
 import { accountFilterFunc } from 'screens/Transaction/helper/earning';
 import { RootState } from 'stores/index';
-import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import useGetChainStakingMetadata from 'hooks/screen/Staking/useGetChainStakingMetadata';
 import { AmountData, NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
@@ -14,19 +15,20 @@ import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransac
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { ScrollView, View } from 'react-native';
-import { MinusCircle } from 'phosphor-react-native';
+import { ClockClockwise, Coins, DownloadSimple, MinusCircle } from 'phosphor-react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { NominationSelector } from 'components/Modal/common/NominationSelector';
 import { InputAmount } from 'components/Input/InputAmount';
+import { PhosphorIcon } from 'utils/campaign';
 import { formatBalance } from 'utils/number';
 import { BN_ZERO } from 'utils/chainBalances';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import { Button, Icon, Typography } from 'components/design-system-ui';
+import { Button, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { yieldSubmitLeavePool } from 'messaging/index';
-import { FontMedium, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { UnbondProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
@@ -43,6 +45,13 @@ import { isActionFromValidator } from '@subwallet/extension-base/services/earnin
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
+}
+
+interface BoxProps {
+  title: string;
+  description: React.ReactNode;
+  iconColor: string;
+  icon: PhosphorIcon;
 }
 
 const _accountFilterFunc = (
@@ -101,11 +110,24 @@ export const Unbond = ({
   const poolChain = poolInfo.chain;
 
   const [isTransactionDone, setTransactionDone] = useState(false);
-  const { decimals, symbol } = useGetNativeTokenBasicInfo(poolChain || '');
   const chainStakingMetadata = useGetChainStakingMetadata(poolChain);
   const { list: allPositions } = useYieldPositionDetail(slug);
   const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
   const accountInfo = useGetAccountByAddress(fromValue);
+
+  const derivateSlug = useMemo(() => {
+    if ([YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(poolInfo.type)) {
+      const _pool = poolInfo as SpecialYieldPoolInfo;
+      return _pool.metadata.derivativeAssets?.[0];
+    } else {
+      return undefined;
+    }
+  }, [poolInfo]);
+
+  const bondedAsset = useGetChainAssetInfo(derivateSlug || poolInfo.metadata.inputAsset);
+  const decimals = bondedAsset?.decimals || 0;
+  const symbol = bondedAsset?.symbol || '';
+
   const selectedValidator = useMemo((): NominationInfo | undefined => {
     if (positionInfo) {
       return positionInfo.nominations.find(item => item.validatorAddress === currentValidator);
@@ -152,8 +174,8 @@ export const Unbond = ({
   ]);
 
   const unBondedTime = useMemo((): string => {
-    if (chainStakingMetadata) {
-      const time = chainStakingMetadata.unstakingPeriod;
+    if ('unstakingPeriod' in poolInfo.metadata) {
+      const time = poolInfo.metadata.unstakingPeriod;
 
       if (time >= 24) {
         const days = Math.floor(time / 24);
@@ -166,7 +188,34 @@ export const Unbond = ({
     } else {
       return 'unknown time';
     }
-  }, [chainStakingMetadata]);
+  }, [poolInfo.metadata]);
+
+  const boxesProps: BoxProps[] = useMemo(() => {
+    const result: BoxProps[] = [];
+
+    result.push({
+      title: 'Meantime',
+      description: 'Once unbonded, your funds to become available after '.concat(unBondedTime),
+      icon: ClockClockwise,
+      iconColor: theme['blue-7'],
+    });
+
+    result.push({
+      title: 'Rewards',
+      description: 'During unstaking period tokens produce no rewards',
+      icon: Coins,
+      iconColor: theme['yellow-7'],
+    });
+
+    result.push({
+      title: 'Redeem',
+      description: 'After unstaking period don’t forget  to redeem your token',
+      icon: DownloadSimple,
+      iconColor: theme['lime-7'],
+    });
+
+    return result;
+  }, [theme, unBondedTime]);
 
   const [loading, setLoading] = useState(false);
   const accountList = useMemo(() => {
@@ -210,6 +259,10 @@ export const Unbond = ({
       slug: slug,
     };
 
+    if ([YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(poolType)) {
+      request.fastLeave = true;
+    }
+
     if (mustChooseValidator) {
       request.selectedTarget = currentValidator || '';
     }
@@ -226,7 +279,17 @@ export const Unbond = ({
           setLoading(false);
         });
     }, 300);
-  }, [positionInfo, fromValue, currentValue, slug, mustChooseValidator, currentValidator, onSuccess, onError]);
+  }, [
+    positionInfo,
+    fromValue,
+    currentValue,
+    slug,
+    poolType,
+    mustChooseValidator,
+    currentValidator,
+    onSuccess,
+    onError,
+  ]);
 
   const nominators = useMemo(() => {
     if (fromValue && positionInfo?.nominations && positionInfo.nominations.length) {
@@ -235,10 +298,6 @@ export const Unbond = ({
 
     return [];
   }, [fromValue, positionInfo?.nominations]);
-
-  useEffect(() => {
-    setChain(poolChain || '');
-  }, [setChain, poolChain]);
 
   const amountInputRules = useMemo(
     () => ({
@@ -282,6 +341,10 @@ export const Unbond = ({
   );
 
   useEffect(() => {
+    setChain(poolChain || '');
+  }, [setChain, poolChain]);
+
+  useEffect(() => {
     if (!fromValue && accountList.length === 1) {
       setFrom(accountList[0].address);
     }
@@ -312,7 +375,7 @@ export const Unbond = ({
                 accountSelectorRef={accountSelectorRef}
               />
 
-              <GeneralFreeBalance address={fromValue} chain={chainValue} />
+              <GeneralFreeBalance address={fromValue} chain={chainValue} tokenSlug={derivateSlug} />
 
               {mustChooseValidator && (
                 <>
@@ -345,16 +408,21 @@ export const Unbond = ({
 
               {!mustChooseValidator && renderBounded()}
 
-              <Typography.Text
-                style={{
-                  color: theme.colorTextTertiary,
-                  ...FontMedium,
-                }}>
-                {/*todo: i18n this */}
-                Once unbonded, your funds will be available for withdrawal after around {unBondedTime}. Keep in mind
-                that you need to withdraw manually.
-                {/*{i18n.formatString(i18n.message.unBondMessage, unBondedTime)}*/}
-              </Typography.Text>
+              {!!boxesProps.length && (
+                <View style={{ gap: theme.sizeSM }}>
+                  {boxesProps.map((_props, index) => {
+                    return (
+                      <AlertBoxBase
+                        key={index}
+                        title={_props.title}
+                        description={_props.description}
+                        iconColor={_props.iconColor}
+                        icon={_props.icon}
+                      />
+                    );
+                  })}
+                </View>
+              )}
             </ScrollView>
 
             <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>

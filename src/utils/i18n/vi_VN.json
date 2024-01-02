@@ -523,7 +523,8 @@
     "name": "Name",
     "totalSupply": "Total supply",
     "totalWinner": "Total winner",
-    "timeline": "Time line"
+    "timeline": "Time line",
+    "derivativeTokenBalance": "Derivative token balance"
   },
   "placeholder": {
     "password": "Mật khẩu",

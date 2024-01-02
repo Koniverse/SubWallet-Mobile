@@ -6,6 +6,8 @@ export interface ComponentStyle {
   wrapper: ViewStyle;
   infoContainer: ViewStyle;
   headerText: TextStyle;
+  faqContainer: ViewStyle;
+  scrollButton: ViewStyle;
   faqText: TextStyle;
   lightText: TextStyle;
   highlightText: TextStyle;
@@ -28,6 +30,14 @@ export default (theme: ThemeTypes) => {
       color: theme.colorTextBase,
       fontSize: theme.fontSizeHeading4,
       lineHeight: theme.fontSizeHeading4 * theme.lineHeightHeading4,
+    },
+    faqContainer: {
+      position: 'relative',
+    },
+    scrollButton: {
+      position: 'absolute',
+      top: -(theme.sizeXXL + theme.sizeSM),
+      right: 0
     },
     faqText: {
       ...FontMedium,

@@ -126,7 +126,7 @@ const ClaimReward = ({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      bondReward: '1',
+      bondReward: '',
     },
   });
 

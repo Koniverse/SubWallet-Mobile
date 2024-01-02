@@ -4,9 +4,9 @@ import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { deviceHeight } from 'constants/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CheckCircle, Coins, Eye, PlusCircle, ThumbsUp } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { Linking, ScrollView, Text, View } from 'react-native';
+import { CaretDown, CheckCircle, Coins, Eye, PlusCircle, ThumbsUp } from 'phosphor-react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Linking, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -32,6 +32,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
   const theme = useSubWalletTheme().swThemes;
   const inset = useSafeAreaInsets();
+  const scrollRef = useRef<ScrollView>(null);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
@@ -102,6 +103,32 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     return result;
   }, [poolInfo?.type, styles.lightText, theme]);
 
+  const [showScrollEnd, setShowScrollEnd] = useState(false);
+  const [isScrollEnd, setIsScrollEnd] = useState(true);
+
+  const isCloseToBottom = useCallback(({ layoutMeasurement, contentOffset, contentSize }: NativeScrollEvent) => {
+    const paddingToBottom = 20;
+    return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+  }, []);
+
+  const calculateShowScroll = useCallback(
+    (width: number, height: number) => {
+      setShowScrollEnd(height > maxScrollHeight);
+    },
+    [maxScrollHeight],
+  );
+
+  const onScroll = useCallback(
+    ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (isCloseToBottom(nativeEvent)) {
+        setIsScrollEnd(false);
+      } else {
+        setIsScrollEnd(true);
+      }
+    },
+    [isCloseToBottom],
+  );
+
   const onPressFaq = useCallback(() => {
     // TODO
     Linking.openURL(
@@ -115,6 +142,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       onStakeMore?.(slug);
     }, 300);
   }, [onStakeMore, setVisible, slug]);
+
+  const scrollBottom = useCallback(() => {
+    scrollRef.current?.scrollToEnd();
+  }, []);
 
   useEffect(() => {
     if (!poolInfo) {
@@ -133,9 +164,15 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
           Stake to earn up to 20% so easily with SubWallet Official
         </Typography.Text>
         <ScrollView
+          ref={scrollRef}
           style={{ maxHeight: maxScrollHeight }}
           contentContainerStyle={styles.infoContainer}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+          alwaysBounceVertical={false}
+          nestedScrollEnabled={true}
+          scrollEventThrottle={400}
+          onContentSizeChange={calculateShowScroll}
+          onScroll={onScroll}>
           {boxesProps.map((_props, index) => {
             return (
               <AlertBoxBase
@@ -148,12 +185,25 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             );
           })}
         </ScrollView>
-        <Typography.Text style={styles.faqText}>
-          For more information and staking instructions, read&nbsp;
-          <Text onPress={onPressFaq} style={styles.highlightText}>
-            this FAQ.
-          </Text>
-        </Typography.Text>
+        <View>
+          <Typography.Text style={styles.faqText}>
+            For more information and staking instructions, read&nbsp;
+            <Text onPress={onPressFaq} style={styles.highlightText}>
+              this FAQ.
+            </Text>
+          </Typography.Text>
+          {showScrollEnd && (
+            <Button
+              size="xs"
+              icon={<Icon phosphorIcon={CaretDown} />}
+              style={styles.scrollButton}
+              type="primary"
+              shape="circle"
+              disabled={!isScrollEnd}
+              onPress={scrollBottom}
+            />
+          )}
+        </View>
         {!!onStakeMore && (
           <Button icon={<Icon phosphorIcon={PlusCircle} weight="fill" />} size="sm" onPress={onPress}>
             Stake to earn

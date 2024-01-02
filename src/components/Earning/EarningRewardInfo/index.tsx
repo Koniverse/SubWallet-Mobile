@@ -62,6 +62,14 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
     return stakingStatusUi.inactive;
   }, [compound.status]);
 
+  const title = useMemo(() => {
+    if (type === YieldPoolType.NOMINATION_POOL) {
+      return i18n.inputLabel.unclaimedRewards;
+    } else {
+      return 'Rewards';
+    }
+  }, [type]);
+
   // const toggleDetail = useCallback(() => {
   //   setShowDetail(old => !old);
   // }, []);
@@ -76,7 +84,7 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   return (
     <MetaInfo hasBackgroundWrapper={true} labelColorScheme="gray">
       <MetaInfo.Status
-        label={i18n.inputLabel.unclaimedRewards}
+        label={title}
         statusIcon={earningStatus.icon}
         statusName={earningStatus.name}
         valueColorSchema={earningStatus.schema}
