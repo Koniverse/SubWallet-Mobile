@@ -138,7 +138,7 @@ const Number: React.FC<SwNumberProps> = props => {
   }, [formatted]);
 
   return (
-    <View style={[{ flexDirection: 'row', alignItems: 'baseline' }, style]}>
+    <View style={[{ flexDirection: 'row', alignItems: 'flex-end' }, style]}>
       {prefix && (
         <Typography.Text
           style={{

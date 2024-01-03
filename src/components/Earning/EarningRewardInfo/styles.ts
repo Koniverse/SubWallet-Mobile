@@ -50,7 +50,7 @@ export default (theme: ThemeTypes) => {
     },
     totalUnstake: {
       ...FontSemiBold,
-      lineHeight: theme.fontSizeHeading4 * theme.lineHeightHeading4,
+      lineHeight: theme.fontSizeHeading4,
     },
     // body: {
     //   flex: 1,

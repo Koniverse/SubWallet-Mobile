@@ -31,7 +31,7 @@ export default (theme: ThemeTypes) => {
     },
     activeTokenBalance: {
       ...FontSemiBold,
-      lineHeight: theme.fontSizeHeading2 * theme.lineHeightHeading2,
+      lineHeight: theme.fontSizeHeading2,
     },
     activeTokenValue: {
       ...FontMedium,

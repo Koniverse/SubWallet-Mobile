@@ -21,6 +21,7 @@ import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
 import { RootState } from 'stores/index';
 import { BN_TEN } from 'utils/number';
+import { HideBalanceItem } from 'components/HideBalanceItem';
 
 interface Props {
   compound: YieldPositionInfo;
@@ -31,7 +32,7 @@ interface Props {
 const Component: React.FC<Props> = (props: Props) => {
   const { list, poolInfo, compound } = props;
   const navigation = useNavigation<RootNavigationProps>();
-
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { priceMap } = useSelector((state: RootState) => state.price);
 
@@ -93,20 +94,32 @@ const Component: React.FC<Props> = (props: Props) => {
       <ScrollView contentContainerStyle={styles.wrapper} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Typography.Text style={styles.activeTitle}>Active stake</Typography.Text>
-          <Number
-            value={activeStake}
-            decimal={inputAsset?.decimals || 0}
-            suffix={inputAsset?.symbol}
-            size={theme.fontSizeHeading2}
-            textStyle={styles.activeTokenBalance}
-            subFloatNumber={true}
-            decimalOpacity={0.65}
-            unitOpacity={0.65}
-          />
-          <Number value={convertActiveStake} decimal={0} prefix={'$'} textStyle={styles.activeTokenValue} />
+          {isShowBalance ? (
+            <>
+              <Number
+                value={activeStake}
+                decimal={inputAsset?.decimals || 0}
+                suffix={inputAsset?.symbol}
+                size={theme.fontSizeHeading2}
+                textStyle={styles.activeTokenBalance}
+                subFloatNumber={true}
+                decimalOpacity={0.65}
+                unitOpacity={0.65}
+              />
+
+              <Number value={convertActiveStake} decimal={0} prefix={'$'} textStyle={styles.activeTokenValue} />
+            </>
+          ) : (
+            <HideBalanceItem />
+          )}
         </View>
         <View style={styles.infoContainer}>
-          <EarningRewardInfo inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} />
+          <EarningRewardInfo
+            inputAsset={inputAsset}
+            compound={compound}
+            poolInfo={poolInfo}
+            isShowBalance={isShowBalance}
+          />
           <View style={styles.buttonContainer}>
             <Button
               block={true}

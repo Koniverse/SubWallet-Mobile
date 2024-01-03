@@ -13,15 +13,17 @@ import { RootNavigationProps } from 'routes/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
+import { HideBalanceItem } from 'components/HideBalanceItem';
 
 type Props = {
   compound: YieldPositionInfo;
   poolInfo: YieldPoolInfo;
   inputAsset: _ChainAsset;
+  isShowBalance: boolean;
 };
 
 const EarningRewardInfo: React.FC<Props> = (props: Props) => {
-  const { inputAsset, compound } = props;
+  const { inputAsset, compound, isShowBalance } = props;
   const { slug, type } = compound;
 
   const navigation = useNavigation<RootNavigationProps>();
@@ -91,16 +93,20 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
       />
       <View style={styles.withdrawSeparator} />
       <View style={styles.withdrawButtonContainer}>
-        <Number
-          value={total}
-          decimal={inputAsset.decimals || 0}
-          suffix={inputAsset.symbol}
-          size={theme.fontSizeHeading4}
-          textStyle={styles.totalUnstake}
-          subFloatNumber={true}
-          decimalOpacity={0.45}
-          unitOpacity={0.45}
-        />
+        {isShowBalance ? (
+          <Number
+            value={total}
+            decimal={inputAsset.decimals || 0}
+            suffix={inputAsset.symbol}
+            size={theme.fontSizeHeading4}
+            textStyle={styles.totalUnstake}
+            subFloatNumber={true}
+            decimalOpacity={0.45}
+            unitOpacity={0.45}
+          />
+        ) : (
+          <HideBalanceItem isShowConvertedBalance={false} />
+        )}
         {canClaim && (
           <Button size="xs" onPress={onPressWithdraw}>
             {i18n.buttonTitles.claimRewards}
