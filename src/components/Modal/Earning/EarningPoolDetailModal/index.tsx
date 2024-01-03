@@ -104,7 +104,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   }, [poolInfo?.type, styles.lightText, theme]);
 
   const [showScrollEnd, setShowScrollEnd] = useState(false);
-  const [isScrollEnd, setIsScrollEnd] = useState(true);
+  const [isScrollEnd, setIsScrollEnd] = useState(false);
 
   const isCloseToBottom = useCallback(({ layoutMeasurement, contentOffset, contentSize }: NativeScrollEvent) => {
     const paddingToBottom = 20;
@@ -121,9 +121,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   const onScroll = useCallback(
     ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
       if (isCloseToBottom(nativeEvent)) {
-        setIsScrollEnd(false);
-      } else {
         setIsScrollEnd(true);
+      } else {
+        setIsScrollEnd(false);
       }
     },
     [isCloseToBottom],
@@ -195,17 +195,29 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
           {showScrollEnd && (
             <Button
               size="xs"
-              icon={<Icon phosphorIcon={CaretDown} />}
+              icon={
+                <Icon phosphorIcon={CaretDown} iconColor={isScrollEnd ? theme.colorTextLight5 : theme.colorWhite} />
+              }
               style={styles.scrollButton}
               type="primary"
               shape="circle"
-              disabled={!isScrollEnd}
+              disabled={isScrollEnd}
               onPress={scrollBottom}
             />
           )}
         </View>
         {!!onStakeMore && (
-          <Button icon={<Icon phosphorIcon={PlusCircle} weight="fill" />} size="sm" onPress={onPress}>
+          <Button
+            icon={
+              <Icon
+                phosphorIcon={PlusCircle}
+                weight="fill"
+                iconColor={!isScrollEnd ? theme.colorTextLight5 : theme.colorWhite}
+              />
+            }
+            size="sm"
+            onPress={onPress}
+            disabled={!isScrollEnd}>
             Stake to earn
           </Button>
         )}

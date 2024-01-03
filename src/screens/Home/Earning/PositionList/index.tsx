@@ -70,7 +70,7 @@ export const PositionList = () => {
       })
       .sort((firstItem, secondItem) => {
         const getValue = (item: ExtraYieldPositionInfo): number => {
-          return new BigNumber(firstItem.totalStake)
+          return new BigNumber(item.totalStake)
             .multipliedBy(item.exchangeRate)
             .dividedBy(BN_TEN.pow(item.asset.decimals || 0))
             .multipliedBy(item.price)

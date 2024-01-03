@@ -104,10 +104,16 @@ const EarningPoolItem = (props: Props) => {
 
   useEffect(() => {
     if (autoOpen && isFocused) {
-      onPress();
+      if (compound) {
+        onStakeMore(slug);
+      } else {
+        setTimeout(() => {
+          onOpenPopup(slug);
+        }, 300);
+      }
       setAutoOpen(false);
     }
-  }, [autoOpen, isFocused, onPress]);
+  }, [autoOpen, compound, isFocused, onOpenPopup, onStakeMore, slug]);
 
   return (
     <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={onPress}>

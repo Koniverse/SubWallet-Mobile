@@ -32,6 +32,10 @@ const testnetOrdinal = (group: YieldGroupInfo): number => {
   return group.isTestnet ? 0 : 1;
 };
 
+const balanceOrdinal = (group: YieldGroupInfo): number => {
+  return group.balance.value.toNumber();
+};
+
 const apyOrdinal = (group: YieldGroupInfo): number => {
   return !group.maxApy ? -1 : group.maxApy;
 };
@@ -50,7 +54,9 @@ export const GroupList = () => {
   const items = useMemo(() => {
     return [...data].sort((a, b) => {
       return (
-        groupOrdinal(b) - groupOrdinal(a) || testnetOrdinal(b) - testnetOrdinal(a) || apyOrdinal(b) - apyOrdinal(a)
+        groupOrdinal(b) - groupOrdinal(a) ||
+        testnetOrdinal(b) - testnetOrdinal(a) ||
+        balanceOrdinal(b) - balanceOrdinal(a)
       );
     });
   }, [data]);
