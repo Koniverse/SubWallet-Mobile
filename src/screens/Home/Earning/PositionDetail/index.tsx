@@ -8,9 +8,7 @@ import {
 import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, Number, Typography } from 'components/design-system-ui';
-import { EarningWithdrawMeta } from 'components/Earning';
-import EarningBaseInfo from 'components/Earning/EarningBaseInfo';
-import EarningRewardInfo from 'components/Earning/EarningRewardInfo';
+import { EarningWithdrawMeta, EarningBaseInfo, EarningRewardInfo } from 'components/Earning';
 import { useYieldPositionDetail } from 'hooks/earning';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MinusCircle, Plus, PlusCircle } from 'phosphor-react-native';

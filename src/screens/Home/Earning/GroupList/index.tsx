@@ -37,21 +37,15 @@ const apyOrdinal = (group: YieldGroupInfo): number => {
 };
 
 export const GroupList = () => {
+  const isFocused = useIsFocused();
   const theme = useSubWalletTheme().swThemes;
-  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const [isRefresh, refresh] = useRefresh();
   const navigation = useNavigation<EarningScreenNavigationProps>();
-  const styles = useMemo(() => createStyles(theme), [theme]);
   const data = useYieldGroupInfo();
-  const handleOnPress = useCallback(
-    (poolGroup: YieldGroupInfo): (() => void) => {
-      return () => {
-        Keyboard.dismiss();
-        navigation.navigate('EarningPoolList', { group: poolGroup.group });
-      };
-    },
-    [navigation],
-  );
+
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const items = useMemo(() => {
     return [...data].sort((a, b) => {
@@ -61,7 +55,7 @@ export const GroupList = () => {
     });
   }, [data]);
 
-  const renderEmpty = () => {
+  const renderEmpty = useCallback(() => {
     return (
       <EmptyList
         title={i18n.emptyScreen.stakingEmptyTitle}
@@ -73,14 +67,17 @@ export const GroupList = () => {
         // onPressAddBtn={handlePressStartStaking}
       />
     );
-  };
+  }, [isRefresh, refresh]);
 
-  const isFocused = useIsFocused();
-  useEffect(() => {
-    if (isFocused) {
-      setAdjustPan();
-    }
-  }, [isFocused]);
+  const handleOnPress = useCallback(
+    (poolGroup: YieldGroupInfo): (() => void) => {
+      return () => {
+        Keyboard.dismiss();
+        navigation.navigate('EarningPoolList', { group: poolGroup.group });
+      };
+    },
+    [navigation],
+  );
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<YieldGroupInfo>) => {
@@ -90,6 +87,10 @@ export const GroupList = () => {
     },
     [handleOnPress, isShowBalance],
   );
+
+  const onBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
 
   // const handlePressStartStaking = useCallback(
   //   () =>
@@ -119,6 +120,12 @@ export const GroupList = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (isFocused) {
+      setAdjustPan();
+    }
+  }, [isFocused]);
+
   return (
     <>
       <FlatListScreen
@@ -126,13 +133,14 @@ export const GroupList = () => {
         title={i18n.header.earning}
         titleTextAlign={'left'}
         items={items}
-        showLeftBtn={false}
+        showLeftBtn={true}
         placeholder={i18n.placeholder.searchToken}
         autoFocus={false}
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
         flatListStyle={styles.container}
         renderItem={renderItem}
+        onPressBack={onBack}
         // rightIconOption={rightIconOption}
         isShowFilterBtn
         isShowMainHeader

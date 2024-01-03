@@ -6,7 +6,7 @@ import MetaInfo from 'components/MetaInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CaretDown, CaretUp } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { isAccountAll } from 'utils/accountAll';
 import { toShort } from 'utils/index';
 import createStyles from './styles';
@@ -44,7 +44,7 @@ const EarningNominationInfo: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <View style={styles.header}>
+      <TouchableOpacity style={styles.header} onPress={toggleDetail} activeOpacity={1}>
         <Typography.Text style={styles.headerText}>Nomination info</Typography.Text>
         <Button
           type="ghost"
@@ -52,7 +52,7 @@ const EarningNominationInfo: React.FC<Props> = (props: Props) => {
           icon={<Icon phosphorIcon={showDetail ? CaretUp : CaretDown} size="sm" iconColor={theme['gray-5']} />}
           onPress={toggleDetail}
         />
-      </View>
+      </TouchableOpacity>
       {showDetail && (
         <MetaInfo style={styles.infoContainer}>
           {compound.nominations.map(item => {

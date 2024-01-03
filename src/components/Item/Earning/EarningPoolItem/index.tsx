@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { YieldPoolInfo } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
@@ -5,7 +6,7 @@ import { Number, Typography } from 'components/design-system-ui';
 import EarningTypeTag from 'components/Tag/EarningTypeTag';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 import { useYieldPositionDetail } from 'hooks/earning';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -19,12 +20,15 @@ interface Props {
   poolInfo: YieldPoolInfo;
   onStakeMore: (value: string) => void;
   onOpenPopup: (value: string) => void;
+  standAlone: boolean;
 }
 
 const EarningPoolItem = (props: Props) => {
-  const { poolInfo, onOpenPopup, onStakeMore } = props;
+  const { standAlone, poolInfo, onOpenPopup, onStakeMore } = props;
   const { metadata, chain, type, logo, shortName, group, slug } = poolInfo;
   const { inputAsset, tvl, totalApy, totalApr } = metadata;
+
+  const isFocused = useIsFocused();
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
   const asset = useGetChainAssetInfo(inputAsset);
@@ -84,6 +88,8 @@ const EarningPoolItem = (props: Props) => {
     }
   }, [asset, priceMap, tvl]);
 
+  const [autoOpen, setAutoOpen] = useState(standAlone);
+
   const onPress = useCallback(() => {
     if (compound) {
       onStakeMore(slug);
@@ -91,6 +97,17 @@ const EarningPoolItem = (props: Props) => {
       onOpenPopup(slug);
     }
   }, [compound, onOpenPopup, onStakeMore, slug]);
+
+  useEffect(() => {
+    setAutoOpen(standAlone);
+  }, [standAlone]);
+
+  useEffect(() => {
+    if (autoOpen && isFocused) {
+      onPress();
+      setAutoOpen(false);
+    }
+  }, [autoOpen, isFocused, onPress]);
 
   return (
     <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={onPress}>

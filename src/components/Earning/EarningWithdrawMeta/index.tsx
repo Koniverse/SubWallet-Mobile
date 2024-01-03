@@ -6,7 +6,7 @@ import MetaInfo from 'components/MetaInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CaretDown, CaretUp, CheckCircle, ProhibitInset } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { getWaitingTime } from 'screens/Transaction/helper/staking';
 import { BN_ZERO } from 'utils/chainBalances';
@@ -114,7 +114,10 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
 
   return (
     <View style={[styles.wrapper, !showDetail ? styles.spaceXS : undefined]}>
-      <View style={[styles.header, !canWithdraw ? styles.headerBottom : undefined]}>
+      <TouchableOpacity
+        style={[styles.header, !canWithdraw ? styles.headerBottom : undefined]}
+        onPress={toggleDetail}
+        activeOpacity={1}>
         <Typography.Text style={styles.headerText}>Withdraw info</Typography.Text>
         <Button
           type="ghost"
@@ -122,7 +125,7 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
           icon={<Icon phosphorIcon={showDetail ? CaretUp : CaretDown} size="sm" iconColor={theme['gray-5']} />}
           onPress={toggleDetail}
         />
-      </View>
+      </TouchableOpacity>
       {showDetail && (
         <MetaInfo spaceSize="ms" labelFontWeight="regular" labelColorScheme="gray" style={styles.infoContainer}>
           {items.map((item, index) => {

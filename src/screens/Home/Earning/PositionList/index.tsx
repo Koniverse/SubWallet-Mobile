@@ -9,7 +9,7 @@ import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
 import { Plus, Trophy } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
@@ -20,31 +20,29 @@ import { ExtraYieldPositionInfo } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './style';
 
+let cacheData: Record<string, boolean> = {};
+
 export const PositionList = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<EarningScreenNavigationProps>();
+  const isFocused = useIsFocused();
+  const [isRefresh, refresh] = useRefresh();
+  const data = useGroupYieldPosition();
+
   const { isShowBalance } = useSelector((state: RootState) => state.settings);
   const { priceMap } = useSelector((state: RootState) => state.price);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry: assetInfoMap } = useSelector((state: RootState) => state.assetRegistry);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const [isRefresh, refresh] = useRefresh();
+  const { currentAccount } = useSelector((state: RootState) => state.accountState);
+
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const data = useGroupYieldPosition();
-  const handleOnPress = useCallback(
-    (positionInfo: ExtraYieldPositionInfo): (() => void) => {
-      return () => {
-        Keyboard.dismiss();
-        navigation.navigate('EarningPositionDetail', { slug: positionInfo.slug });
-      };
-    },
-    [navigation],
-  );
 
   const items: ExtraYieldPositionInfo[] = useMemo(() => {
     if (!data.length) {
       return [];
     }
+
     const BN_TEN = new BigNumber(10);
     return data
       .map((item): ExtraYieldPositionInfo => {
@@ -82,7 +80,21 @@ export const PositionList = () => {
       });
   }, [assetInfoMap, data, poolInfoMap, priceMap]);
 
-  const renderEmpty = () => {
+  const [autoNavigate, setAutoNavigate] = useState<boolean>(cacheData[currentAccount?.address || ''] || false);
+
+  const handleOnPress = useCallback(
+    (positionInfo: ExtraYieldPositionInfo): (() => void) => {
+      return () => {
+        Keyboard.dismiss();
+        navigation.navigate('EarningPositionDetail', { slug: positionInfo.slug });
+      };
+    },
+    [navigation],
+  );
+
+  const handlePressStartStaking = useCallback(() => navigation.navigate('EarningGroupList'), [navigation]);
+
+  const renderEmpty = useCallback(() => {
     return (
       <EmptyList
         title={i18n.emptyScreen.stakingEmptyTitle}
@@ -94,14 +106,7 @@ export const PositionList = () => {
         onPressAddBtn={handlePressStartStaking}
       />
     );
-  };
-
-  const isFocused = useIsFocused();
-  useEffect(() => {
-    if (isFocused) {
-      setAdjustPan();
-    }
-  }, [isFocused]);
+  }, [handlePressStartStaking, isRefresh, refresh]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<ExtraYieldPositionInfo>) => {
@@ -111,8 +116,6 @@ export const PositionList = () => {
     },
     [handleOnPress, isShowBalance],
   );
-
-  const handlePressStartStaking = useCallback(() => navigation.navigate('EarningGroupList'), [navigation]);
 
   const rightIconOption = useMemo(() => {
     return {
@@ -135,6 +138,31 @@ export const PositionList = () => {
     },
     [assetInfoMap, chainInfoMap],
   );
+
+  useEffect(() => {
+    const address = currentAccount?.address || '';
+    if (cacheData[address] === undefined && isFocused) {
+      cacheData = { [address]: !items.length };
+      setAutoNavigate(!items.length);
+    }
+  }, [items.length, currentAccount, isFocused]);
+
+  useEffect(() => {
+    if (autoNavigate && isFocused) {
+      Keyboard.dismiss();
+      navigation.navigate('EarningGroupList');
+      setAutoNavigate(false);
+      for (const address of Object.keys(cacheData)) {
+        cacheData[address] = false;
+      }
+    }
+  }, [autoNavigate, navigation, isFocused]);
+
+  useEffect(() => {
+    if (isFocused) {
+      setAdjustPan();
+    }
+  }, [isFocused]);
 
   return (
     <>

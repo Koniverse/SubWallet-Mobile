@@ -12,7 +12,7 @@ import MetaInfo from 'components/MetaInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CaretDown, CaretUp } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { EarningTagType } from 'types/earning';
@@ -86,7 +86,7 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <View style={styles.header}>
+      <TouchableOpacity style={styles.header} onPress={toggleDetail} activeOpacity={1}>
         <Typography.Text style={styles.headerText}>Account info</Typography.Text>
         <Button
           type="ghost"
@@ -94,7 +94,7 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
           icon={<Icon phosphorIcon={showDetail ? CaretUp : CaretDown} size="sm" iconColor={theme['gray-5']} />}
           onPress={toggleDetail}
         />
-      </View>
+      </TouchableOpacity>
       {showDetail && (
         <MetaInfo
           labelColorScheme="gray"

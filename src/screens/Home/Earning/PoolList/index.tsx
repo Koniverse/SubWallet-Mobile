@@ -181,10 +181,11 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
           onStakeMore={handleOnStakeMore}
           onOpenPopup={handleOpenDetailModal}
           poolInfo={item}
+          standAlone={items.length === 1}
         />
       );
     },
-    [handleOnStakeMore, handleOpenDetailModal],
+    [handleOnStakeMore, handleOpenDetailModal, items.length],
   );
 
   // const rightIconOption = useMemo(() => {
