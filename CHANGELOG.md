@@ -1,5 +1,11 @@
 ## 1.1.22 (285)
 - Update disable popup backup seed phrase on Android
+# bundle-av9-iv5
+- Remove unused packages & check TODO comments in project (#1270)
+- Fix bugs related to Access Camera permission when using WalletConnect feature (#1267)
+- Do not show Transfer NFT history details (on all account mode) - Bug related to EVM history (#1263)
+- Add flag 'not show again' for MKT Campaign when resetting event iOS 17 is triggered (#1291)
+- Add the select language on the Welcome screen (#1172)
 
 ## 1.1.22 (284)
 - Add bundle release config

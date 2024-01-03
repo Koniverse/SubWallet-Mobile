@@ -1,0 +1,186 @@
+name: Release builds
+
+on:
+  push:
+    tags: [ "*" ]
+
+jobs:
+  build-ios:
+    name: iOS builds
+    runs-on: mac-worker
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
+      KS_PASSWORD: ${{ secrets.KS_PASSWORD }}
+      NEXTCLOUD_CONFIG: ${{ secrets.NEXTCLOUD_CONFIG }}
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      COMMIT_MESSAGE: ${{ github.event.pull_request.title }}
+      REF_NAME: ${{ github.ref_name }}
+      TRANSAK_API_KEY: ${{ secrets.TRANSAK_API_KEY }}
+      COINBASE_PAY_ID: ${{ secrets.COINBASE_PAY_ID }}
+      IOS_CODEPUSH_KEY: ${{ secrets.IOS_CODEPUSH_KEY }}
+      ANDROID_CODEPUSH_KEY: ${{ secrets.ANDROID_CODEPUSH_KEY }}
+      BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+
+    - name: Autocheck
+      run: node ./scripts/autocheck.mjs
+
+    - name: Add APP ENV
+      run: |
+          cp .env.development.example .env.production
+          if [ -f .env.production ]; then
+            sed -i '' "s/^TRANSAK_API_KEY=.*/TRANSAK_API_KEY=$TRANSAK_API_KEY/" .env.production
+            sed -i '' "s/^COINBASE_PAY_ID=.*/COINBASE_PAY_ID=$COINBASE_PAY_ID/" .env.production
+            sed -i '' "s/^IOS_CODEPUSH_KEY=.*/IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY/" .env.production
+            sed -i '' "s/^ANDROID_CODEPUSH_KEY=.*/ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY/" .env.production
+            sed -i '' "s/^BUNDLE_ENV=.*/BUNDLE_ENV=PRODUCTION/" .env.production
+            else
+            echo "TRANSAK_API_KEY=$TRANSAK_API_KEY" >> .env.production
+            echo "COINBASE_PAY_ID=$COINBASE_PAY_ID" >> .env.production
+            echo "IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY" >> .env.production
+            echo "ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY" >> .env.production
+            echo "BUNDLE_ENV=PRODUCTION" >> .env.production
+          fi
+
+    - name: Cache Dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install dependencies
+      run: yarn install --immutable | grep -v 'YN0013'
+
+    - name: Install Pods
+      run: cd ios && pod update hermes-engine --no-repo-update && cd ..
+
+    # Build IPA file
+    - name: iOS Build Action
+      uses: yukiarrr/ios-build-action@v1.11.0
+      with:
+        project-path: ios/SubWalletMobile.xcodeproj
+        export-method: 'app-store'
+        p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+        certificate-password: ${{ secrets.P12_PASSWORD }}
+        mobileprovision-base64: ${{ secrets.BUILD_APPSTORE_PROVISION_PROFILE_BASE64 }}
+        code-signing-identity: 'Apple Distribution: CDM SOFTWARE DEVELOPMENT COMPANY LIMITED (ZUZ7T3GQMT)'
+        team-id: ${{ secrets.APPLE_TEAM_ID }}
+        workspace-path: ios/SubWalletMobile.xcworkspace
+        scheme: SubWalletMobile-Production
+
+    - name: 'Upload app to TestFlight'
+      uses: apple-actions/upload-testflight-build@v1
+      with:
+        app-path: 'output.ipa'
+        issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+        api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
+    # Notify to Discord
+    - name: Notify to Discord
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        status: ${{ job.status }}
+        username: GitHub Actions Test Notifier
+        title: ${{ github.workflow }}
+        description: |
+          iOS: Published on Appstore!
+          Click [here](https://appstoreconnect.apple.com/apps/1633050285/testflight) to check TestFlight
+
+  build-android:
+    name: Android builds
+    runs-on: android-worker
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
+      KS_PASSWORD: ${{ secrets.KS_PASSWORD }}
+      NEXTCLOUD_CONFIG: ${{ secrets.NEXTCLOUD_CONFIG }}
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      COMMIT_MESSAGE: ${{ github.event.pull_request.title }}
+      REF_NAME: ${{ github.ref_name }}
+      TRANSAK_API_KEY: ${{ secrets.TRANSAK_API_KEY }}
+      COINBASE_PAY_ID: ${{ secrets.COINBASE_PAY_ID }}
+      BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+
+    - name: Autocheck
+      run: node ./scripts/autocheck.mjs
+
+    - name: Add APP ENV
+      run: |
+          cp .env.development.example .env.production
+          if [ -f .env.production ]; then
+            sed -i '' "s/^TRANSAK_API_KEY=.*/TRANSAK_API_KEY=$TRANSAK_API_KEY/" .env.production
+            sed -i '' "s/^COINBASE_PAY_ID=.*/COINBASE_PAY_ID=$COINBASE_PAY_ID/" .env.production
+            sed -i '' "s/^IOS_CODEPUSH_KEY=.*/IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY/" .env.production
+            sed -i '' "s/^ANDROID_CODEPUSH_KEY=.*/ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY/" .env.production
+            sed -i '' "s/^BUNDLE_ENV=.*/BUNDLE_ENV=PRODUCTION/" .env.production
+            else
+            echo "TRANSAK_API_KEY=$TRANSAK_API_KEY" >> .env.production
+            echo "COINBASE_PAY_ID=$COINBASE_PAY_ID" >> .env.production
+            echo "IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY" >> .env.production
+            echo "ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY" >> .env.production
+            echo "BUNDLE_ENV=PRODUCTION" >> .env.production
+          fi
+
+    - name: Cache Dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install dependencies
+      run: yarn install --immutable | grep -v 'YN0013'
+
+    - name: Prepare sign datarun
+      run: |
+        echo "${{ secrets.ANDROID_KEY_STORE_BASE64 }}" | base64 --decode > android/app/${{ secrets.MYAPP_UPLOAD_STORE_FILE }}
+
+        recent_tag=$(git describe --tags --abbrev=0 HEAD^)
+        commit_messages=$(git log --pretty=format:"%s" $recent_tag..HEAD)
+        filtered_messages=$(echo "$commit_messages" | grep -oE '\[issue-[0-9a-zA-Z]+\] .+' | sed -E 's/\[issue-([0-9a-zA-Z]+)\] (.+)/- \2 (#\1)/')
+        mkdir -p whatsNewDirectory
+        echo "$filtered_messages" > whatsNewDirectory/whatsnew-en-US
+
+    # Build AAB file
+    - name: Generate App AAB
+      run: |
+        cd android && export ENVFILE=.env.production && ./gradlew bundleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
+
+    - name: Upload to Play Store Internal Testing
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON_CONTENT }}
+        packageName: app.subwallet.mobile
+        releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+        track: internal
+        status: completed
+        whatsNewDirectory: whatsNewDirectory
+
+    # Notify to Discord
+    - name: Notify to Discord
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        status: ${{ job.status }}
+        username: GitHub Actions Test Notifier
+        title: ${{ github.workflow }}
+        description: |
+          Android: Published on Play Console.
+          Click [here](https://play.google.com/console/u/0/developers/5178189030889328266/app/4973509903908456575/tracks/internal-testing) to check internal testing
