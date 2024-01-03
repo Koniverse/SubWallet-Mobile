@@ -309,11 +309,14 @@
     "connectAKeystoneDevice": "连接Keystone设备",
     "attachAWatchOnlyAccount": "附加仅供查看的帐户",
     "connectPolkadotVaultMessage1": "在手机上打开Polkadot Vault连接钱包",
-    "connectPolkadotVaultMessage2": "Polkadot Vault将为你提供二维码供。 请阅读说明以了解更多详细信息。",
+    "connectPolkadotVaultMessage2": "Polkadot Vault将为你提供二维码供。",
     "connectKeystoneMessage1": "打开Keystone上的“软件钱包”部分并选择SubWallet",
-    "connectKeystoneMessage2": "Keystone将为你提供二维码供。 请阅读说明以了解更多详细信息。",
+    "connectKeystoneMessage2": "Keystone将为你提供二维码供。",
     "scanQrCode": "扫描二维码",
-    "attachWatchOnlyAccMessage": "追踪任何没有私钥的钱包的活动"
+    "attachWatchOnlyAccMessage": "追踪任何没有私钥的钱包的活动",
+    "readThisInstructionForMoreDetailsP1": "请阅读",
+    "readThisInstructionForMoreDetailsP2": "说明",
+    "readThisInstructionForMoreDetailsP3": "以了解更多详细信息。"
   },
   "createPassword": {
     "createPasswordMessage": "请使用此密码来解锁你的账户。"
