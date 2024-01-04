@@ -1,6 +1,3 @@
-// Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
-// SPDX-License-Identifier: Apache-2.0
-
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ImageLogosMap } from 'assets/logo';
@@ -18,7 +15,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { createAccountExternalV2 } from 'messaging/index';
 import { QrCode, X } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ImageRequireSource, Text, View } from 'react-native';
+import { ImageRequireSource, Linking, Text, View } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import { useToast } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'routes/index';
@@ -41,9 +38,7 @@ const imageProps: Omit<SWImageProps, 'src'> = {
 };
 
 const ConnectQrSigner: React.FC<Props> = (props: Props) => {
-  // useAutoNavigateToCreatePassword();
-
-  const { description, logoUrl, subTitle, title } = props;
+  const { description, logoUrl, subTitle, title, instructionUrl } = props;
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const theme = useSubWalletTheme().swThemes;
@@ -110,11 +105,13 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
         </View>
         <View>
           <Text style={styles.description}>{description}</Text>
-          {/*<Text style={styles.description}>*/}
-          {/*  <Text>&nbsp;Follow&nbsp;</Text>*/}
-          {/*  <Text style={styles.highLight}>this instructions</Text>*/}
-          {/*  <Text>&nbsp; for more details</Text>*/}
-          {/*</Text>*/}
+          <Text style={styles.description}>
+            <Text>{i18n.attachAccount.readThisInstructionForMoreDetailsP1}</Text>
+            <Text style={styles.highLight} onPress={() => Linking.openURL(instructionUrl)}>
+              {i18n.attachAccount.readThisInstructionForMoreDetailsP2}
+            </Text>
+            <Text>{i18n.attachAccount.readThisInstructionForMoreDetailsP3}</Text>
+          </Text>
         </View>
       </View>
       <View style={styles.footer}>
@@ -134,7 +131,6 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
         setQrModalVisible={setIsScanning}
       />
     </ContainerWithSubHeader>
-    // </Layout.WithSubHeaderOnly>
   );
 };
 

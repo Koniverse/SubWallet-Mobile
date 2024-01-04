@@ -309,11 +309,14 @@
     "connectAKeystoneDevice": "Connect a Keystone device",
     "attachAWatchOnlyAccount": "Attach a watch-only account",
     "connectPolkadotVaultMessage1": "Open Polkadot Vault on your phone to connect wallet",
-    "connectPolkadotVaultMessage2": "Polkadot Vault will provide you with a QR code to scan. Read this instruction for more details.",
+    "connectPolkadotVaultMessage2": "Polkadot Vault will provide you with a QR code to scan.",
     "connectKeystoneMessage1": "Open “Software Wallet” section on your Keystone and choose SubWallet",
-    "connectKeystoneMessage2": "Keystone will provide you with a QR code to scan. Read this instruction for more details.",
+    "connectKeystoneMessage2": "Keystone will provide you with a QR code to scan.",
     "scanQrCode": "Scan QR code",
-    "attachWatchOnlyAccMessage": "Track the activity of any wallet without a private key"
+    "attachWatchOnlyAccMessage": "Track the activity of any wallet without a private key",
+    "readThisInstructionForMoreDetailsP1": "Read ",
+    "readThisInstructionForMoreDetailsP2": "this instruction ",
+    "readThisInstructionForMoreDetailsP3": "for more details"
   },
   "createPassword": {
     "createPasswordMessage": "This password can only unlock your SubWallet on this device"
