@@ -53,7 +53,7 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
   }, []);
 
   return (
-    <>
+    <MetaInfo hasBackgroundWrapper={true} labelColorScheme="gray" spaceSize="sm" style={styles.wrapper}>
       <TouchableOpacity
         style={[styles.header, showDetail ? undefined : styles.headerBottom]}
         activeOpacity={1}
@@ -90,6 +90,7 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
             label={i18n.inputLabel.minimumStaked}
             value={poolInfo.metadata.minJoinPool}
             decimals={inputAsset?.decimals || 0}
+            valueColorSchema="even-odd"
             suffix={inputAsset?.symbol}
           />
           {unstakePeriod !== undefined && (
@@ -99,7 +100,7 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
           )}
         </MetaInfo>
       )}
-    </>
+    </MetaInfo>
   );
 };
 

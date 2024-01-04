@@ -8,7 +8,7 @@ import {
 import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, Number, Typography } from 'components/design-system-ui';
-import { EarningWithdrawMeta, EarningBaseInfo, EarningRewardInfo } from 'components/Earning';
+import { EarningWithdrawMeta, EarningBaseInfo, EarningRewardInfo, EarningPoolInfo } from 'components/Earning';
 import { useYieldPositionDetail } from 'hooks/earning';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MinusCircle, Plus, PlusCircle } from 'phosphor-react-native';
@@ -133,6 +133,7 @@ const Component: React.FC<Props> = (props: Props) => {
             </Button>
           </View>
           <EarningWithdrawMeta inputAsset={inputAsset} unstakings={compound.unstakings} poolInfo={poolInfo} />
+          <EarningPoolInfo inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} />
           <EarningBaseInfo inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} list={list} />
         </View>
       </ScrollView>

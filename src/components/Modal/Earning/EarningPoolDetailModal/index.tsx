@@ -1,3 +1,5 @@
+import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
+import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { YieldPoolType } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
@@ -11,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { PhosphorIcon } from 'utils/campaign';
+import { balanceFormatter, formatNumber } from 'utils/number';
 import createStyles from './style';
 
 interface Props {
@@ -36,6 +39,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
 
   const maxScrollHeight = useMemo(() => {
     const haveButton = !!onStakeMore;
@@ -50,25 +54,196 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       .toNumber();
   }, [inset.top, onStakeMore, theme.size, theme.sizeXL, theme.sizeXXL]);
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
+  const title = useMemo(() => {
+    if (!poolInfo) {
+      return '';
+    }
+
+    const {
+      type,
+      metadata: { totalApy, totalApr, minJoinPool, inputAsset },
+    } = poolInfo;
+
+    const getOrigin = () => {
+      switch (type) {
+        case YieldPoolType.NOMINATION_POOL:
+        case YieldPoolType.NATIVE_STAKING:
+        case YieldPoolType.LIQUID_STAKING:
+          return 'Stake to earn from {{minActiveStake}} up to {{apy}} easily with SubWallet';
+        case YieldPoolType.LENDING:
+          return 'Supply to earn from {{minActiveStake}} up to {{apy}} easily with SubWallet';
+      }
+    };
+
+    const getApy = () => {
+      if (totalApy) {
+        return totalApy;
+      }
+
+      if (totalApr) {
+        const rs = calculateReward(totalApr);
+
+        return rs.apy;
+      }
+
+      return undefined;
+    };
+
+    let result = getOrigin();
+    const apy = getApy();
+    const asset = assetRegistry[inputAsset];
+
+    if (asset) {
+      const string = formatNumber(minJoinPool, asset.decimals || 0, balanceFormatter);
+      result = result.replace('{{minActiveStake}}', `${string} ${asset.symbol}`);
+    } else {
+      result = result.replace('from ', '');
+    }
+
+    if (apy) {
+      const string = formatNumber(apy, 0, balanceFormatter);
+      result = result.replace('{{apy}}', `${string}%`);
+    } else {
+      result = result.replace('up to {{apy}} ', '');
+    }
+
+    return result;
+  }, [assetRegistry, poolInfo]);
 
   const boxesProps: BoxProps[] = useMemo(() => {
     const result: BoxProps[] = [];
+    if (!poolInfo) {
+      return result;
+    }
 
-    if ([YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo?.type)) {
-      result.push({
-        title: 'Unstake and withdraw',
-        description: (
-          <Typography.Text>
-            Once staked, your funds will be locked. Unstake your funds anytime and withdraw after &nbsp;
-            <Typography.Text style={styles.lightText}>a 7-day period</Typography.Text>
-            &nbsp;. Keep in mind that these actions are&nbsp;
-            <Typography.Text style={styles.lightText}>not automated</Typography.Text>
-            &nbsp;and will incur network fees.
-          </Typography.Text>
-        ),
-        icon: Coins,
-        iconColor: theme['yellow-7'],
-      });
+    /* First */
+    {
+      const icon = ThumbsUp;
+      const iconColor = theme['lime-7'];
+
+      switch (poolInfo.type) {
+        case YieldPoolType.NOMINATION_POOL:
+          result.push({
+            title: 'Select active pool',
+            description:
+              'It is recommended that you select an active pool with the Earning status to earn staking rewards.',
+            icon,
+            iconColor,
+          });
+          break;
+        case YieldPoolType.NATIVE_STAKING: {
+          const _label = getValidatorLabel(poolInfo.chain);
+          const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
+          result.push({
+            title: 'Select {{number}} {{label}}'
+              .replace('{{number}}', poolInfo.metadata.maxCandidatePerFarmer.toString())
+              .replace('{{label}}', label),
+            description: 'It is recommended that you select {{number}} {{label}} to optimize your staking rewards.'
+              .replace('{{number}}', poolInfo.metadata.maxCandidatePerFarmer.toString())
+              .replace('{{label}}', label),
+            icon,
+            iconColor,
+          });
+          break;
+        }
+        case YieldPoolType.LIQUID_STAKING: {
+          const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
+          const derivative = assetRegistry[derivativeSlug];
+          const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+          if (derivative && inputAsset) {
+            result.push({
+              title: 'Receive {{derivative}}'.replace('{{derivative}}', derivative.symbol),
+              description:
+                'Once staked, you will receive {{derivative}} as a representation of your staked {{inputToken}}.'
+                  .replace('{{derivative}}', derivative.symbol)
+                  .replace('{{inputToken}}', inputAsset.symbol),
+              icon,
+              iconColor,
+            });
+          }
+          break;
+        }
+        case YieldPoolType.LENDING: {
+          const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
+          const derivative = assetRegistry[derivativeSlug];
+          const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+          if (derivative && inputAsset) {
+            result.push({
+              title: 'Receive {{derivative}}'.replace('{{derivative}}', derivative.symbol),
+              description:
+                'Once supplied, you will receive {{derivative}} as a representation of your staked {{inputToken}}.'
+                  .replace('{{derivative}}', derivative.symbol)
+                  .replace('{{inputToken}}', inputAsset.symbol),
+              icon,
+              iconColor,
+            });
+          }
+          break;
+        }
+      }
+    }
+
+    /* Second */
+    {
+      const icon = Coins;
+      const iconColor = theme['yellow-7'];
+
+      switch (poolInfo.type) {
+        case YieldPoolType.NOMINATION_POOL:
+        case YieldPoolType.NATIVE_STAKING: {
+          const unstakingPeriod = poolInfo.metadata.unstakingPeriod;
+          const isDay = unstakingPeriod > 24;
+          const time = isDay ? Math.floor(unstakingPeriod / 24) : unstakingPeriod;
+          const unit = isDay ? 'day' : 'hour';
+          const string = [time, unit].join('-');
+          result.push({
+            title: 'Unstake and withdraw',
+            description: (
+              <Typography.Text>
+                Once staked, your funds will be locked. Unstake your funds anytime and withdraw after&nbsp;
+                <Typography.Text style={styles.lightText}>a {string} period</Typography.Text>
+                &nbsp;. Keep in mind that these actions are&nbsp;
+                <Typography.Text style={styles.lightText}>not automated</Typography.Text>
+                &nbsp;and will incur network fees.
+              </Typography.Text>
+            ),
+            icon,
+            iconColor,
+          });
+          break;
+        }
+        case YieldPoolType.LIQUID_STAKING: {
+          const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
+          const derivative = assetRegistry[derivativeSlug];
+          const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+          if (derivative && inputAsset) {
+            result.push({
+              title: 'Unstake and withdraw',
+              description:
+                'Once staked, you will receive {{derivative}} as a representation of your staked {{inputToken}}.'
+                  .replace('{{derivative}}', derivative.symbol)
+                  .replace('{{inputToken}}', inputAsset.symbol),
+              icon,
+              iconColor,
+            });
+          }
+          break;
+        }
+        case YieldPoolType.LENDING: {
+          const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
+          const derivative = assetRegistry[derivativeSlug];
+          const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+          if (derivative && inputAsset) {
+            result.push({
+              title: 'Withdraw anytime',
+              description: 'Once supplied, your funds will be locked. Withdraw your funds anytime with a fee.',
+              icon,
+              iconColor,
+            });
+          }
+          break;
+        }
+      }
     }
 
     result.push({
@@ -91,17 +266,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       iconColor: theme.blue,
     });
 
-    if (poolInfo?.type === YieldPoolType.NOMINATION_POOL) {
-      result.push({
-        title: 'Select active pool',
-        description: 'It is recommended that you select an active pool. Check out the list of active pools in our FAQ.',
-        icon: ThumbsUp,
-        iconColor: theme['lime-7'],
-      });
-    }
-
     return result;
-  }, [poolInfo?.type, styles.lightText, theme]);
+  }, [assetRegistry, poolInfo, styles.lightText, theme]);
 
   const [showScrollEnd, setShowScrollEnd] = useState(false);
   const [isScrollEnd, setIsScrollEnd] = useState(false);
@@ -160,9 +326,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   return (
     <SwModal isUseModalV2 modalVisible={modalVisible} setVisible={setVisible} isAllowSwipeDown={false}>
       <View style={styles.wrapper}>
-        <Typography.Text style={styles.headerText}>
-          Stake to earn up to 20% so easily with SubWallet Official
-        </Typography.Text>
+        <Typography.Text style={styles.headerText}>{title}</Typography.Text>
         <ScrollView
           ref={scrollRef}
           style={{ maxHeight: maxScrollHeight }}
@@ -187,21 +351,18 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         </ScrollView>
         <View>
           <Typography.Text style={styles.faqText}>
-            For more information and staking instructions, read&nbsp;
+            Scroll down to continue. For more information and staking instructions, read&nbsp;
             <Text onPress={onPressFaq} style={styles.highlightText}>
               this FAQ.
             </Text>
           </Typography.Text>
-          {showScrollEnd && (
+          {showScrollEnd && !isScrollEnd && (
             <Button
               size="xs"
-              icon={
-                <Icon phosphorIcon={CaretDown} iconColor={isScrollEnd ? theme.colorTextLight5 : theme.colorWhite} />
-              }
+              icon={<Icon phosphorIcon={CaretDown} />}
               style={styles.scrollButton}
               type="primary"
               shape="circle"
-              disabled={isScrollEnd}
               onPress={scrollBottom}
             />
           )}
@@ -212,12 +373,12 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               <Icon
                 phosphorIcon={PlusCircle}
                 weight="fill"
-                iconColor={!isScrollEnd ? theme.colorTextLight5 : theme.colorWhite}
+                iconColor={isScrollEnd || !showScrollEnd ? theme.colorWhite : theme.colorTextLight5}
               />
             }
             size="sm"
             onPress={onPress}
-            disabled={!isScrollEnd}>
+            disabled={!isScrollEnd && showScrollEnd}>
             Stake to earn
           </Button>
         )}

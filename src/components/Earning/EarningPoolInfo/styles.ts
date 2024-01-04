@@ -3,6 +3,7 @@ import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {
+  wrapper: ViewStyle;
   header: ViewStyle;
   headerBottom: ViewStyle;
   headerText: TextStyle;
@@ -15,11 +16,15 @@ export interface ComponentStyle {
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
+    wrapper: {
+      padding: theme.padding,
+    },
     header: {
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginRight: -theme.margin,
+      marginTop: -theme.marginSM,
       alignItems: 'center',
     },
     headerBottom: {

@@ -28,23 +28,29 @@ const EarningNominationInfo: React.FC<Props> = (props: Props) => {
 
   const [showDetail, setShowDetail] = useState(false);
 
+  const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(poolInfo.chain), [poolInfo.chain]);
   const haveNomination = useMemo(() => {
     return [YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo.type);
   }, [poolInfo.type]);
-
-  const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(poolInfo.chain), [poolInfo.chain]);
+  const noNomination = useMemo(
+    () => !haveNomination || isAllAccount || !compound.nominations.length,
+    [compound.nominations.length, haveNomination, isAllAccount],
+  );
 
   const toggleDetail = useCallback(() => {
     setShowDetail(old => !old);
   }, []);
 
-  if (!haveNomination || isAllAccount || !compound.nominations.length) {
+  if (noNomination) {
     return null;
   }
 
   return (
     <>
-      <TouchableOpacity style={styles.header} onPress={toggleDetail} activeOpacity={1}>
+      <TouchableOpacity
+        style={[styles.header, showDetail ? undefined : styles.headerBottom]}
+        onPress={toggleDetail}
+        activeOpacity={1}>
         <Typography.Text style={styles.headerText}>Nomination info</Typography.Text>
         <Button
           type="ghost"
@@ -71,6 +77,7 @@ const EarningNominationInfo: React.FC<Props> = (props: Props) => {
                     value={item.activeStake}
                     decimal={inputAsset?.decimals || 0}
                     suffix={inputAsset?.symbol}
+                    decimalOpacity={0.45}
                   />
                 )}
               </View>

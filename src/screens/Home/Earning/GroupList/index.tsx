@@ -56,7 +56,8 @@ export const GroupList = () => {
       return (
         groupOrdinal(b) - groupOrdinal(a) ||
         testnetOrdinal(b) - testnetOrdinal(a) ||
-        balanceOrdinal(b) - balanceOrdinal(a)
+        balanceOrdinal(b) - balanceOrdinal(a) ||
+        apyOrdinal(b) - apyOrdinal(a)
       );
     });
   }, [data]);

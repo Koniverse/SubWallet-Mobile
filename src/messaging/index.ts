@@ -144,6 +144,7 @@ import {
   Message,
   NominationPoolInfo,
   OptimalYieldPathParams,
+  RequestEarlyValidateYield,
   RequestStakeCancelWithdrawal,
   RequestStakeClaimReward,
   RequestYieldLeave,
@@ -1273,6 +1274,10 @@ export async function completeConfirmation<CT extends ConfirmationType>(
   return sendMessage('pri(confirmations.complete)', { [type]: payload });
 }
 
+export async function getNominationPoolOptions(chain: string): Promise<NominationPoolInfo[]> {
+  return sendMessage('pri(bonding.getNominationPoolOptions)', chain);
+}
+
 export async function getBondingOptions(networkKey: string, type: StakingType): Promise<ValidatorInfo[]> {
   return sendMessage('pri(bonding.getBondingOptions)', { chain: networkKey, type });
 }
@@ -1466,8 +1471,8 @@ export async function subscribeTransactionHistory(
 
 /* Earning */
 
-export async function subscribeYieldPoolInfo(callback: (data: YieldPoolInfo[]) => void): Promise<YieldPoolInfo[]> {
-  return sendMessage('pri(yield.subscribePoolInfo)', null, callback);
+export async function earlyValidateJoin(request: RequestEarlyValidateYield) {
+  return sendMessage('pri(yield.join.earlyValidate)', request);
 }
 
 export async function getOptimalYieldPath(data: OptimalYieldPathParams) {

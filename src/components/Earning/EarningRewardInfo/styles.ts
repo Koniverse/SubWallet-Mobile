@@ -3,6 +3,7 @@ import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {
+  wrapper: ViewStyle;
   infoContainer: ViewStyle;
   timeRow: ViewStyle;
   timeText: TextStyle;
@@ -14,6 +15,9 @@ export interface ComponentStyle {
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
+    wrapper: {
+      padding: theme.padding,
+    },
     infoContainer: {
       marginLeft: 10,
     },

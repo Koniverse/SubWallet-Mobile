@@ -527,7 +527,8 @@
     "totalSupply": "Total supply",
     "totalWinner": "Total winner",
     "timeline": "Time line",
-    "derivativeTokenBalance": "Derivative token balance"
+    "derivativeTokenBalance": "Derivative token balance",
+    "nominationInfo": "Nomination info"
   },
   "placeholder": {
     "password": "Password",

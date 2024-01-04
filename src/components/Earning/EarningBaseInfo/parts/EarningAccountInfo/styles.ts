@@ -1,3 +1,4 @@
+import { deviceWidth } from 'constants/index';
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
@@ -5,11 +6,17 @@ import { ThemeTypes } from 'styles/themes';
 export interface ComponentStyle {
   header: ViewStyle;
   headerText: TextStyle;
+  headerBottom: ViewStyle;
+  infoWrapper: ViewStyle;
+  infoContentWrapper: ViewStyle;
   infoContainer: ViewStyle;
+  infoContainerMulti: ViewStyle;
   infoRow: ViewStyle;
   accountRow: ViewStyle;
   accountText: TextStyle;
   infoText: TextStyle;
+  separator: ViewStyle;
+  buttonDisable: ViewStyle;
 }
 
 export default (theme: ThemeTypes) => {
@@ -28,8 +35,22 @@ export default (theme: ThemeTypes) => {
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
     },
+    headerBottom: {
+      marginBottom: -theme.marginSM,
+    },
+    infoWrapper: {
+      marginHorizontal: -theme.margin,
+    },
+    infoContentWrapper: {
+      gap: theme.sizeSM,
+      paddingHorizontal: theme.padding,
+    },
     infoContainer: {
       marginLeft: 10,
+    },
+    infoContainerMulti: {
+      width: deviceWidth - 90,
+      backgroundColor: theme.colorBgDefault,
     },
     infoRow: {
       display: 'flex',
@@ -58,6 +79,14 @@ export default (theme: ThemeTypes) => {
       color: theme.colorTextTertiary,
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
+    },
+    separator: {
+      height: 2,
+      backgroundColor: theme.colorBgDivider,
+      marginBottom: -2,
+    },
+    buttonDisable: {
+      opacity: theme.opacityDisable,
     },
   });
 };

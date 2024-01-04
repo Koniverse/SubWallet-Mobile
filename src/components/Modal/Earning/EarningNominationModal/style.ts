@@ -1,11 +1,8 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { FontMedium } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {
-  header: ViewStyle;
-  headerBottom: ViewStyle;
-  headerText: TextStyle;
   infoContainer: ViewStyle;
   infoRow: ViewStyle;
   accountRow: ViewStyle;
@@ -15,22 +12,6 @@ export interface ComponentStyle {
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
-    header: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginRight: -theme.margin,
-      alignItems: 'center',
-    },
-    headerBottom: {
-      marginBottom: -theme.marginSM,
-    },
-    headerText: {
-      ...FontSemiBold,
-      color: theme.colorText,
-      fontSize: theme.fontSizeHeading6,
-      lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
-    },
     infoContainer: {
       marginLeft: 10,
     },

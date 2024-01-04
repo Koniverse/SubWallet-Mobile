@@ -355,7 +355,10 @@ export const Unbond = ({
       {!isTransactionDone ? (
         <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
           <>
-            <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }} keyboardShouldPersistTaps="handled">
+            <ScrollView
+              style={{ flex: 1, paddingHorizontal: 16 }}
+              contentContainerStyle={{ paddingTop: 16 }}
+              keyboardShouldPersistTaps="handled">
               <AccountSelector
                 items={accountList}
                 selectedValueMap={{ [fromValue]: true }}

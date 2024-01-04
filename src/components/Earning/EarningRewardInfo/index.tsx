@@ -84,7 +84,7 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   }, [navigation, slug]);
 
   return (
-    <MetaInfo hasBackgroundWrapper={true} labelColorScheme="gray">
+    <MetaInfo hasBackgroundWrapper={true} labelColorScheme="gray" style={styles.wrapper}>
       <MetaInfo.Status
         label={title}
         statusIcon={earningStatus.icon}
