@@ -206,7 +206,8 @@
     "noFaceIdPermission": "This app use Face ID to unlock password",
     "tooManyAttemps": "Too many failed attempts. Please try again later or enter password.",
     "ratingAlertTitle": "Rate our app!",
-    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday."
+    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday.",
+    "updateChainMessage": "Your selected network has lost connection. Update it by re-enabling it or changing network provider."
   },
   "title": {
     "exportAccount": "エクスポートアカウント",
@@ -417,7 +418,8 @@
     "enable": "Enable",
     "rateSubwallet": "Rate SubWallet",
     "sendFeedback": "Send feedback",
-    "notNow": "Not now"
+    "notNow": "Not now",
+    "update": "Update"
   },
   "inputLabel": {
     "selectAcc": "アカウントを選択",
@@ -794,7 +796,8 @@
     "walletConnect": "WalletConnect",
     "disconnect": "切断",
     "connectedNetworks": "接続されたネットワーク",
-    "missionPools": "Mission Pools"
+    "missionPools": "Mission Pools",
+    "updateChain": "Update network"
   },
   "cryptoScreen": {
     "address": "アドレス",

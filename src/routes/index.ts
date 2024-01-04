@@ -42,7 +42,7 @@ export type RootStackParamList = {
   NetworkSelect: undefined;
   ImportSecretPhrase: undefined;
   ImportPrivateKey: undefined;
-  NetworksSetting: undefined;
+  NetworksSetting: { chainName?: string };
   NetworkSettingDetail: { chainSlug: string };
   ImportNetwork: undefined;
   SendFund: { slug?: string; recipient?: string };
@@ -120,3 +120,4 @@ export type TransactionDoneProps = NativeStackScreenProps<RootStackParamList, 'T
 export type AddProviderProps = NativeStackScreenProps<RootStackParamList, 'AddProvider'>;
 export type TransactionActionProps = NativeStackScreenProps<RootStackParamList, 'TransactionAction'>;
 export type HistoryProps = NativeStackScreenProps<RootStackParamList, 'History'>;
+export type NetworksSettingProps = NativeStackScreenProps<RootStackParamList, 'NetworksSetting'>;
