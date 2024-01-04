@@ -488,7 +488,7 @@ export const Stake = ({
               keyboardShouldPersistTaps={'handled'}>
               {_stakingType === ALL_KEY && (
                 <StakingTab
-                  disabled={chainStateMap[chain].connectionStatus === _ChainConnectionStatus.CONNECTING}
+                  disabled={chainStateMap?.[chain]?.connectionStatus === _ChainConnectionStatus.CONNECTING}
                   from={from}
                   selectedType={currentStakingType as StakingType}
                   onSelectType={onChangeStakingType}
