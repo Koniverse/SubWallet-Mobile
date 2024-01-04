@@ -81,6 +81,7 @@ import { connectWalletConnect } from 'utils/walletConnect';
 import { useToast } from 'react-native-toast-notifications';
 import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview';
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
+import { DeriveAccount } from 'screens/Account/DeriveAccount';
 
 interface Props {
   isAppReady: boolean;
@@ -511,6 +512,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
                 <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ImportQrCode" component={ImportQrCode} />
+                <Stack.Screen name="DeriveAccount" component={DeriveAccount} />
               </Stack.Group>
               <Stack.Group
                 screenOptions={{

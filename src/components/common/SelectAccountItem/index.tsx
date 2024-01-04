@@ -56,16 +56,17 @@ export const SelectAccountItem = ({
         paddingRight: 4,
         backgroundColor: theme.colorBgSecondary,
         borderRadius: theme.borderRadiusLG,
+        flex: 1,
       }}
       onPress={() => onSelectAccount && onSelectAccount(address)}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 2 }}>
         {isAllAccount ? (
           <AvatarGroup />
         ) : (
           <Avatar value={address} size={40} theme={isEthereumAddress(address) ? 'ethereum' : 'polkadot'} />
         )}
 
-        <View style={{ paddingLeft: theme.paddingXS, justifyContent: 'center' }}>
+        <View style={{ paddingLeft: theme.paddingXS, justifyContent: 'center', flex: 1 }}>
           <Typography.Text
             style={{
               fontSize: theme.fontSizeLG,
@@ -81,19 +82,21 @@ export const SelectAccountItem = ({
 
           {!isAllAccount && (
             <Typography.Text
+              ellipsis
               style={{
                 fontSize: theme.fontSizeSM,
                 lineHeight: theme.fontSizeSM * theme.lineHeightSM,
                 ...FontMedium,
                 color: theme.colorTextTertiary,
-                paddingRight: theme.paddingXS,
+                paddingRight: 16,
+                flex: 1,
               }}>
               {toShort(address, 9, 9)}
             </Typography.Text>
           )}
         </View>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
         {isSelected && (
           <View style={{ paddingHorizontal: theme.paddingSM - 2 }}>
             <Icon phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} size={'sm'} weight={'fill'} />

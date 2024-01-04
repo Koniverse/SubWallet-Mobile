@@ -1,5 +1,5 @@
 import React, { useMemo, useRef } from 'react';
-import { Linking, Platform, Share, StyleProp, View } from 'react-native';
+import { Linking, Share, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import reformatAddress, { getNetworkLogo, getScanExplorerAddressInfoUrl, toShort } from 'utils/index';
@@ -47,7 +47,7 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalV
         // @ts-ignore
         toastRef.current.hideAll();
         // @ts-ignore
-        Platform.OS === 'ios' && toastRef.current.show(i18n.common.copiedToClipboard);
+        toastRef.current.show(i18n.common.copiedToClipboard);
       }
     };
   };

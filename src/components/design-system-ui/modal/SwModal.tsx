@@ -90,7 +90,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
   ) => {
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible();
     const theme = useSubWalletTheme().swThemes;
-    const [contentHeight, setContentHeight] = useState<number>(400);
+    const [contentHeight, setContentHeight] = useState<number>(0);
     const [childrenHeight, setChildrenHeight] = useState<number>(contentHeight);
     const insets = useSafeAreaInsets();
 
