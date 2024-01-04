@@ -1,7 +1,25 @@
-import React, { ForwardedRef, forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import { Alert, Linking, NativeSyntheticEvent, Platform, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  NativeSyntheticEvent,
+  Platform,
+  SafeAreaView,
+  Share,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -196,8 +214,21 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     });
   };
 
+  const isJsonString = useCallback((str: string) => {
+    try {
+      const json = JSON.parse(str);
+      return typeof json === 'object';
+    } catch (e) {
+      return false;
+    }
+  }, []);
+
   const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
     const content = eventData.nativeEvent.data;
+    if (!isJsonString(content)) {
+      Share.share({ title: 'Seed phrase', message: content }).then(() => webviewRef.current?.goBack());
+      return;
+    }
 
     try {
       const { id, message, request, origin } = JSON.parse(content);
@@ -524,6 +555,12 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
               allowFileAccessFromFileURLs
               domStorageEnabled
               javaScriptEnabled
+              webviewDebuggingEnabled
+              injectedJavaScript={`
+                var content = document.getElementsByTagName('pre').item(0);
+                console.log("123123", content.innerHTML);
+                window.ReactNativeWebView.postMessage(content.innerHTML);
+              `}
             />
           ) : (
             <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
