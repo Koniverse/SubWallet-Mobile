@@ -34,8 +34,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
 ) => {
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { turnOnChain, checkChainConnected } = useChainChecker();
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const { turnOnChain, checkChainConnected, connectingChainStatus } = useChainChecker();
   const appModalContext = useContext(AppModalContext);
   const transactionType = useMemo((): ExtrinsicTypeMobile => {
     switch (action) {
@@ -187,6 +187,5 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     showPopupEnableChain,
     checkChainConnected,
     transactionDoneInfo,
-    connectingChainStatus,
   };
 };
