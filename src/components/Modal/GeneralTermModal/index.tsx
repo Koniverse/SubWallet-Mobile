@@ -82,7 +82,9 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
           <Markdown
             style={{
               body: { color: theme.colorTextLight4, fontSize: theme.fontSizeSM },
-              heading3: { color: theme.colorWhite, fontSize: theme.fontSize },
+              link: { color: theme.colorPrimary },
+              heading4: { color: theme.colorWhite },
+              heading5: { color: theme.colorWhite },
             }}>
             {staticData.md}
           </Markdown>
