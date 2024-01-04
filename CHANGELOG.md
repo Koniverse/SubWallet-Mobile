@@ -1,3 +1,11 @@
+## 1.1.23 (286)
+- Fix bug crash app when Stake from All account (#1144)
+- Update web-runner v1.1.29 (#1302)
+- Add hyperlink when connect Polkadot Vault (#1261)
+- Fix some UI bugs (#1281)
+- Add requires enable network in case select token when buy token (#1144)
+- Fix bug do not dowload seedPhrase from web.subwallet.app in webview (#1173)
+
 ## 1.1.22 (285)
 - Update disable popup backup seed phrase on Android
 # bundle-av9-iv5
