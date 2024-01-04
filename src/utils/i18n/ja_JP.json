@@ -311,11 +311,14 @@
     "connectAKeystoneDevice": "Keystone デバイスを接続",
     "attachAWatchOnlyAccount": "ウォッチのみのアカウントをアタッチ",
     "connectPolkadotVaultMessage1": "携帯電話でPolkadot Vaultを開き、ウォレットに接続します。",
-    "connectPolkadotVaultMessage2": "Polkadot Vaultがスキャン用のQRコードを提供します。詳しくはこちらの説明をお読みください",
+    "connectPolkadotVaultMessage2": "Polkadot Vaultがスキャン用のQRコードを提供します。",
     "connectKeystoneMessage1": "Keystoneの \"Software Wallet \"セクションを開き、SubWalletを選択します。",
-    "connectKeystoneMessage2": "Keystoneがスキャン用のQRコードを提供します。詳しくはこちらの説明をお読みください。",
+    "connectKeystoneMessage2": "Keystoneがスキャン用のQRコードを提供します。",
     "scanQrCode": "QRコードをスキャン",
-    "attachWatchOnlyAccMessage": "秘密鍵のないウォレットのアクティビティを追跡する"
+    "attachWatchOnlyAccMessage": "秘密鍵のないウォレットのアクティビティを追跡する",
+    "readThisInstructionForMoreDetailsP1": "詳しくは",
+    "readThisInstructionForMoreDetailsP2": "こちら",
+    "readThisInstructionForMoreDetailsP3": "の説明をお読みください。"
   },
   "createPassword": {
     "createPasswordMessage": "このパスワードを使用して、アカウントのロックを解除"

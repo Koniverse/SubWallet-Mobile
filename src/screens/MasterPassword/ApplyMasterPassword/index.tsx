@@ -108,6 +108,7 @@ const ApplyMasterPassword = () => {
               } else {
                 setIsError(false);
                 onUpdateErrors('password')(undefined);
+                setTimeout(() => formState.refs.password.current?.focus(), 300);
               }
             })
             .catch((e: Error) => {
@@ -334,6 +335,7 @@ const ApplyMasterPassword = () => {
             <AddressField address={migrateAccount.address} label={i18n.inputLabel.accountAddress} />
 
             <PasswordField
+              autoFocus={true}
               ref={formState.refs.password}
               label={formState.labels.password}
               defaultValue={formState.data.password}

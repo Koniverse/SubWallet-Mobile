@@ -311,11 +311,14 @@
     "connectAKeystoneDevice": "Подключить устройство Keystone",
     "attachAWatchOnlyAccount": "Прикрепить аккаунт только для просмотра",
     "connectPolkadotVaultMessage1": "Откройте Polkadot Vault на телефоне, чтобы подключить кошелек",
-    "connectPolkadotVaultMessage2": "Polkadot Vault предоставит вам QR-код для сканирования. Прочтите эту инструкцию для более подробной информации.",
+    "connectPolkadotVaultMessage2": "Polkadot Vault предоставит вам QR-код для сканирования.",
     "connectKeystoneMessage1": "Открыть раздел «Программный кошелек» на вашем Keystone и выбрать SubWallet.",
-    "connectKeystoneMessage2": "Keystone предоставит вам QR-код для сканирования. Прочтите эту инструкцию для более подробной информации.",
+    "connectKeystoneMessage2": "Keystone предоставит вам QR-код для сканирования.",
     "scanQrCode": "Отсканировать QR-код",
-    "attachWatchOnlyAccMessage": "Отслеживать активность любого кошелька без закрытого ключа"
+    "attachWatchOnlyAccMessage": "Отслеживать активность любого кошелька без закрытого ключа",
+    "readThisInstructionForMoreDetailsP1": "Прочтите ",
+    "readThisInstructionForMoreDetailsP2": "эту инструкцию",
+    "readThisInstructionForMoreDetailsP3": "для более подробной информации."
   },
   "createPassword": {
     "createPasswordMessage": "Используйте этот пароль, чтобы разблокировать свой аккаунт."

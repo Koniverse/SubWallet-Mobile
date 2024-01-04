@@ -15,6 +15,10 @@ export const WIKI_URL = 'https://docs.subwallet.app/';
 export const PRIVACY_AND_POLICY_URL = 'https://docs.subwallet.app/privacy-and-security/privacy-policy';
 export const TERMS_OF_SERVICE_URL = 'https://docs.subwallet.app/privacy-and-security/terms-of-service';
 export const TERMS_OF_USE_URL = 'https://docs.subwallet.app/main/privacy-and-security/terms-of-use';
+export const POLKADOT_VAULT_INSTRUCTION_URL =
+  'https://docs.subwallet.app/main/extension-user-guide/account-management/attach-a-polkadot-vault-previously-parity-signer-account';
+export const KEYSTONE_INSTRUCTION_URL =
+  'https://docs.subwallet.app/main/extension-user-guide/account-management/connect-keystone-device';
 export const WEBSITE_URL = 'https://subwallet.app/';
 export const TELEGRAM_URL = 'https://t.me/subwallet';
 export const TWITTER_URL = 'https://twitter.com/subwalletapp';
@@ -35,7 +39,7 @@ export enum BitLengthOption {
   CHAIN_SPEC = 128,
   NORMAL_NUMBERS = 32,
 }
-export const TOAST_DURATION = getBrand().toLowerCase() === 'xiaomi' ? 5000 : 1500;
+export const TOAST_DURATION = getBrand().toLowerCase() === 'xiaomi' ? 5000 : 4000;
 export const CELL_COUNT = 6;
 export const DEVICE: DeviceInfo = {
   isIos: Platform.OS === 'ios',

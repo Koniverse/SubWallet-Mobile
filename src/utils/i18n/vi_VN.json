@@ -311,11 +311,14 @@
     "connectAKeystoneDevice": "Kết nối thiết bị Keystone",
     "attachAWatchOnlyAccount": "Kết nối tài khoản chỉ xem",
     "connectPolkadotVaultMessage1": "Mở Polkadot Vault trên điện thoại của bạn để kết nối ví",
-    "connectPolkadotVaultMessage2": "Polkadot Vault sẽ cung cấp cho bạn mã QR để quét. Đọc hướng dẫn này để biết thêm chi tiết.",
+    "connectPolkadotVaultMessage2": "Polkadot Vault sẽ cung cấp cho bạn mã QR để quét.",
     "connectKeystoneMessage1": "Mở mục \"Software Wallet\" trên Keystone của bạn và chọn SubWallet",
-    "connectKeystoneMessage2": "Keystone sẽ cung cấp cho bạn mã QR để quét. Đọc hướng dẫn này để biết thêm chi tiết.",
+    "connectKeystoneMessage2": "Keystone sẽ cung cấp cho bạn mã QR để quét.",
     "scanQrCode": "Quét mã QR",
-    "attachWatchOnlyAccMessage": "Theo dõi hoạt động của bất kỳ ví nào mà không cần private key"
+    "attachWatchOnlyAccMessage": "Theo dõi hoạt động của bất kỳ ví nào mà không cần private key",
+    "readThisInstructionForMoreDetailsP1": "Đọc ",
+    "readThisInstructionForMoreDetailsP2": "hướng dẫn này ",
+    "readThisInstructionForMoreDetailsP3": "để biết thêm chi tiết."
   },
   "createPassword": {
     "createPasswordMessage": "Sử dụng mật khẩu này để mở khóa tài khoản của bạn."

@@ -351,7 +351,8 @@ export default function useBuyToken(currentSymbol?: string) {
         }
       }
     }
-  }, [buyTokenSelectorItems, fixedTokenKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buyTokenSelectorItems.toString(), fixedTokenKey]);
 
   return {
     openSelectBuyAccount,

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
 import { ShoppingCartSimple } from 'phosphor-react-native';
@@ -22,6 +22,8 @@ import { BuyTokenProps } from 'routes/wrapper';
 import { DisclaimerModal } from 'components/Buy/DisclaimerModal';
 import { SupportService } from 'types/buy';
 import useChainChecker from 'hooks/chain/useChainChecker';
+import { AppModalContext } from 'providers/AppModalContext';
+import { TokenItemType } from 'components/Modal/common/TokenSelector';
 
 const submitButtonIcon = (iconColor: string) => (
   <Icon phosphorIcon={ShoppingCartSimple} weight={'fill'} iconColor={iconColor} />
@@ -35,6 +37,7 @@ export const BuyToken = ({
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
   const { tokens } = useSelector((state: RootState) => state.buyService);
+  const appModalContext = useContext(AppModalContext);
   const {
     openSelectBuyAccount,
     openSelectBuyToken,
@@ -61,7 +64,7 @@ export const BuyToken = ({
   const [isVisible, setVisible] = useState(false);
   const { isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { contactUrl, name: serviceName, policyUrl, termUrl, url } = disclaimerData;
-  const { checkChainConnected } = useChainChecker();
+  const { checkChainConnected, turnOnChain } = useChainChecker();
   const sortedBuyTokenSelectorItems = useMemo(() => {
     return buyTokenSelectorItems.sort((a, b) => {
       if (checkChainConnected(a.originChain)) {
@@ -89,6 +92,43 @@ export const BuyToken = ({
     return () => backHandler.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const showPopupEnableChain = useCallback(
+    (chain: string) => {
+      if (!chain) {
+        return;
+      }
+      const isConnected = checkChainConnected(chain);
+
+      if (!isConnected) {
+        setTimeout(() => {
+          appModalContext.setConfirmModal({
+            visible: true,
+            completeBtnTitle: i18n.buttonTitles.enable,
+            message: i18n.common.enableChainMessage,
+            title: i18n.common.enableChain,
+            onCancelModal: () => {
+              appModalContext.hideConfirmModal();
+            },
+            onCompleteModal: () => {
+              turnOnChain(chain);
+              setTimeout(() => appModalContext.hideConfirmModal(), 300);
+            },
+            messageIcon: chain,
+          });
+        }, 700);
+      }
+    },
+    [appModalContext, checkChainConnected, turnOnChain],
+  );
+
+  const onSelectBuyToken = useCallback(
+    (item: TokenItemType) => {
+      openSelectBuyToken(item);
+      showPopupEnableChain(item.originChain);
+    },
+    [openSelectBuyToken, showPopupEnableChain],
+  );
 
   const selectedAccount = useGetAccountByAddress(selectedBuyAccount);
   const selectedBuyTokenInfo = useMemo(() => {
@@ -151,7 +191,7 @@ export const BuyToken = ({
                 disabled={!selectedBuyAccount}
                 items={sortedBuyTokenSelectorItems}
                 selectedValueMap={selectedBuyToken ? { [selectedBuyToken]: true } : {}}
-                onSelectItem={openSelectBuyToken}
+                onSelectItem={onSelectBuyToken}
                 tokenSelectorRef={tokenBuyRef}
                 renderSelected={() => (
                   <TokenSelectField logoKey={selectedBuyTokenInfo.slug} value={selectedBuyTokenInfo.symbol} showIcon />
