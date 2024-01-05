@@ -15,6 +15,7 @@ import { RootState } from 'stores/index';
 import { PhosphorIcon } from 'utils/campaign';
 import { balanceFormatter, formatNumber } from 'utils/number';
 import createStyles from './style';
+import { EARNING_DATA_RAW } from '../../../../../EarningDataRaw';
 
 interface Props {
   slug: string;
@@ -111,6 +112,167 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     }
 
     return result;
+  }, [assetRegistry, poolInfo]);
+
+  const data: BoxProps[] = useMemo(() => {
+    if (!poolInfo) {
+      return [];
+    }
+
+    switch (poolInfo.type) {
+      case YieldPoolType.NOMINATION_POOL: {
+        const _label = getValidatorLabel(poolInfo.chain);
+        const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
+        const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
+
+        const unstakingPeriod = poolInfo.statistic?.unstakingPeriod || 0;
+        const isDay = unstakingPeriod > 24;
+        const time = isDay ? Math.floor(unstakingPeriod / 24) : unstakingPeriod;
+        const unit = isDay ? 'day' : 'hour';
+        const periodNumb = [time, unit].join('-');
+
+        return EARNING_DATA_RAW[YieldPoolType.NOMINATION_POOL].map(item => {
+          const _item = item;
+          if (_item.description.includes('{validatorNumber}')) {
+            _item.title = _item.title.replace('{validatorNumber}', maxCandidatePerFarmer.toString());
+          }
+
+          if (_item.description.includes('{validatorType}')) {
+            _item.title = _item.title.replace('{validatorType}', label);
+          }
+
+          if (_item.description.includes('{periodNumb}')) {
+            _item.description = _item.description.replace('{periodNumb}', periodNumb);
+          }
+
+          if (_item.description.includes('{paidOutNumb}')) {
+            _item.description = _item.description.replace('{periodNumb}', '12');
+          }
+
+          if (_item.description.includes('{existentialDeposit}')) {
+            _item.description = _item.description.replace('{existentialDeposit}', '12');
+          }
+
+          if (_item.description.includes('{symbol}')) {
+            _item.description = _item.description.replace('{symbol}', 'VARA');
+          }
+
+          return _item;
+        });
+      }
+      case YieldPoolType.NATIVE_STAKING: {
+        const _label = getValidatorLabel(poolInfo.chain);
+        const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
+        const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
+
+        const unstakingPeriod = poolInfo.statistic?.unstakingPeriod || 0;
+        const isDay = unstakingPeriod > 24;
+        const time = isDay ? Math.floor(unstakingPeriod / 24) : unstakingPeriod;
+        const unit = isDay ? 'day' : 'hour';
+        const periodNumb = [time, unit].join('-');
+
+        return EARNING_DATA_RAW[YieldPoolType.NATIVE_STAKING].map(item => {
+          const _item = item;
+          if (_item.title.includes('{validatorNumber}')) {
+            _item.title = _item.title.replace('{validatorNumber}', maxCandidatePerFarmer.toString());
+          }
+
+          if (_item.title.includes('{validatorType}')) {
+            _item.title = _item.title.replace('{validatorType}', label);
+          }
+
+          if (_item.description.includes('{validatorNumber}')) {
+            _item.description = _item.description.replace('{validatorNumber}', maxCandidatePerFarmer.toString());
+          }
+
+          if (_item.description.includes('{validatorType}')) {
+            _item.description = _item.description.replace('{validatorType}', label);
+          }
+
+          if (_item.description.includes('{periodNumb}')) {
+            _item.description = _item.description.replace('{periodNumb}', periodNumb);
+          }
+
+          if (_item.description.includes('{existentialDeposit}')) {
+            _item.description = _item.description.replace('{existentialDeposit}', '12');
+          }
+
+          if (_item.description.includes('{symbol}')) {
+            _item.description = _item.description.replace('{symbol}', 'VARA');
+          }
+
+          return _item;
+        });
+      }
+      case YieldPoolType.LIQUID_STAKING: {
+        const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
+        const derivative = assetRegistry[derivativeSlug];
+        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+
+        if (derivative && inputAsset) {
+          return EARNING_DATA_RAW[YieldPoolType.LIQUID_STAKING].map(item => {
+            const _item = item;
+            if (_item.title.includes('{derivative}')) {
+              _item.title = _item.title.replace('{derivative}', derivative.symbol);
+            }
+
+            if (_item.description.includes('{derivative}')) {
+              _item.description = _item.description.replace('{derivative}', derivative.symbol);
+            }
+
+            if (_item.description.includes('{inputToken}')) {
+              _item.description = _item.description.replace('{inputToken}', inputAsset.symbol);
+            }
+
+            if (_item.description.includes('{existentialDeposit}')) {
+              _item.description = _item.description.replace('{existentialDeposit}', '12');
+            }
+
+            if (_item.description.includes('{symbol}')) {
+              _item.description = _item.description.replace('{symbol}', 'VARA');
+            }
+
+            return _item;
+          });
+        } else {
+          return [];
+        }
+      }
+      case YieldPoolType.LENDING: {
+        const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
+        const derivative = assetRegistry[derivativeSlug];
+        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+
+        if (derivative && inputAsset) {
+          return EARNING_DATA_RAW[YieldPoolType.LENDING].map(item => {
+            const _item = item;
+            if (_item.title.includes('{derivative}')) {
+              _item.title = _item.title.replace('{derivative}', derivative.symbol);
+            }
+
+            if (_item.description.includes('{derivative}')) {
+              _item.description = _item.description.replace('{derivative}', derivative.symbol);
+            }
+
+            if (_item.description.includes('{inputToken}')) {
+              _item.description = _item.description.replace('{inputToken}', inputAsset.symbol);
+            }
+
+            if (_item.description.includes('{existentialDeposit}')) {
+              _item.description = _item.description.replace('{existentialDeposit}', '12');
+            }
+
+            if (_item.description.includes('{symbol}')) {
+              _item.description = _item.description.replace('{symbol}', 'VARA');
+            }
+
+            return _item;
+          });
+        } else {
+          return [];
+        }
+      }
+    }
   }, [assetRegistry, poolInfo]);
 
   const boxesProps: BoxProps[] = useMemo(() => {
@@ -341,7 +503,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
           scrollEventThrottle={400}
           onContentSizeChange={calculateShowScroll}
           onScroll={onScroll}>
-          {boxesProps.map((_props, index) => {
+          {data.map((_props, index) => {
             return (
               <AlertBoxBase
                 key={index}
