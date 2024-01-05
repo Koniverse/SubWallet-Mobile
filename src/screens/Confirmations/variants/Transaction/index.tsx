@@ -19,6 +19,7 @@ import LeavePoolTransactionConfirmation from 'screens/Confirmations/variants/Tra
 import UnbondTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Unbond';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
+import FastWithdrawTransactionConfirmation from './variants/FastWithdraw';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
@@ -47,6 +48,12 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
       return ClaimRewardTransactionConfirmation;
     case ExtrinsicType.STAKING_CANCEL_UNSTAKE:
       return CancelUnstakeTransactionConfirmation;
+    case ExtrinsicType.REDEEM_QDOT:
+    case ExtrinsicType.REDEEM_VDOT:
+    case ExtrinsicType.REDEEM_LDOT:
+    case ExtrinsicType.REDEEM_SDOT:
+    case ExtrinsicType.REDEEM_STDOT:
+      return FastWithdrawTransactionConfirmation;
     default:
       return BaseTransactionConfirmation;
   }

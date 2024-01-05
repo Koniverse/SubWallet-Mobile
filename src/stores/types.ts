@@ -251,4 +251,5 @@ export interface EarningStore extends BaseReduxStore {
   poolInfoMap: Record<string, YieldPoolInfo>;
   yieldPositions: YieldPositionInfo[];
   earningRewards: EarningRewardItem[];
+  minAmountPercentMap: Record<string, number>;
 }

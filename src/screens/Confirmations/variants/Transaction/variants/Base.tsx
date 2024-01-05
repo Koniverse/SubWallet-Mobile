@@ -1,7 +1,7 @@
 import { ConfirmationContent } from 'components/common/Confirmation';
+import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import React from 'react';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
-import { Text } from 'react-native';
 
 export interface BaseTransactionConfirmationProps {
   transaction: SWTransactionResult;
@@ -12,7 +12,7 @@ export const BaseTransactionConfirmation: React.FC<BaseTransactionConfirmationPr
 }: BaseTransactionConfirmationProps) => {
   return (
     <ConfirmationContent>
-      <Text>{transaction.extrinsicType}</Text>
+      <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
     </ConfirmationContent>
   );
 };

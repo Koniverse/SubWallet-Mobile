@@ -81,8 +81,14 @@ const Component: React.FC<Props> = (props: Props) => {
   }, [navigation, poolInfo.slug]);
 
   const onEarnMore = useCallback(() => {
-    // Empty
-  }, []);
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: {
+        screen: 'Earning',
+        params: { slug: compound.slug },
+      },
+    });
+  }, [compound.slug, navigation]);
 
   return (
     <ContainerWithSubHeader
@@ -128,7 +134,11 @@ const Component: React.FC<Props> = (props: Props) => {
               onPress={onLeavePool}>
               {i18n.buttonTitles.unstake}
             </Button>
-            <Button block={true} type="secondary" icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
+            <Button
+              block={true}
+              type="secondary"
+              icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}
+              onPress={onEarnMore}>
               {i18n.buttonTitles.stakeMore}
             </Button>
           </View>

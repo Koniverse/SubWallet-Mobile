@@ -38,7 +38,7 @@ import {
   subscribeBuyServices,
   subscribeYieldPoolInfo,
   subscribeYieldPositionInfo,
-  subscribeYieldReward,
+  subscribeYieldReward, subscribeYieldMinAmountPercent
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -434,6 +434,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
         _DataContext.addHandler({
           ...subscribeYieldReward,
           name: 'subscribeYieldReward',
+          relatedStores: ['earning'],
+        });
+
+        _DataContext.addHandler({
+          ...subscribeYieldMinAmountPercent,
+          name: 'subscribeYieldMinAmountPercent',
           relatedStores: ['earning'],
         });
 

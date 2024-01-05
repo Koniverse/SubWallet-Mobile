@@ -257,6 +257,7 @@ export const Unbond = ({
       amount: currentValue,
       fastLeave: false,
       slug: slug,
+      poolInfo: poolInfo,
     };
 
     if ([YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(poolType)) {
@@ -280,6 +281,7 @@ export const Unbond = ({
         });
     }, 300);
   }, [
+    poolInfo,
     positionInfo,
     fromValue,
     currentValue,

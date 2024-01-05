@@ -449,6 +449,17 @@ export const subscribeYieldReward = lazySubscribeMessage(
   updateYieldReward,
 );
 
+export const updateMinAmountPercent = (data: Record<string, number>) => {
+  store.dispatch({ type: 'earning/updateMinAmountPercent', payload: data });
+};
+
+export const subscribeYieldMinAmountPercent = lazySubscribeMessage(
+  'pri(yield.minAmountPercent)',
+  null,
+  updateMinAmountPercent,
+  updateMinAmountPercent,
+);
+
 /* Earning */
 
 export const updateTxHistory = (data: TransactionHistoryItem[]) => {

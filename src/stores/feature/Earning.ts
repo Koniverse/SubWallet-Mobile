@@ -10,6 +10,7 @@ const initialState: EarningStore = {
   yieldPositions: [],
   reduxStatus: ReduxStatus.INIT,
   earningRewards: [],
+  minAmountPercentMap: {},
 };
 
 const earningSlice = createSlice({
@@ -43,8 +44,16 @@ const earningSlice = createSlice({
         reduxStatus: ReduxStatus.READY,
       };
     },
+    updateMinAmountPercent(state, action: PayloadAction<Record<string, number>>): EarningStore {
+      return {
+        ...state,
+        minAmountPercentMap: action.payload,
+        reduxStatus: ReduxStatus.READY,
+      };
+    },
   },
 });
 
-export const { updateYieldPoolInfo, updateYieldPositionInfo, updateYieldReward } = earningSlice.actions;
+export const { updateYieldPoolInfo, updateYieldPositionInfo, updateYieldReward, updateMinAmountPercent } =
+  earningSlice.actions;
 export default earningSlice.reducer;

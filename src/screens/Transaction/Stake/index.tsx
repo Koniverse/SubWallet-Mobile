@@ -1,3 +1,4 @@
+import { NominationPoolInfo } from '@subwallet/extension-base/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { StakingTab } from 'components/common/StakingTab';
@@ -7,7 +8,6 @@ import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/
 import useGetSupportedStakingTokens from 'hooks/screen/Staking/useGetSupportedStakingTokens';
 import {
   AmountData,
-  NominationPoolInfo,
   NominatorMetadata,
   StakingType,
   ValidatorInfo,
@@ -37,7 +37,6 @@ import { PlusCircle } from 'phosphor-react-native';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { isAccountAll } from 'utils/accountAll';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { BN_TEN } from 'utils/number';
 import { NetworkDetailModal } from 'screens/Transaction/Stake/NetworkDetailModal';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
@@ -59,6 +58,7 @@ import { mmkvStore } from 'utils/storage';
 import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 
 interface StakeFormValues extends TransactionFormValues {
   stakingType: StakingType;
