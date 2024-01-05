@@ -53,7 +53,7 @@ const Component: React.FC<Props> = (props: Props) => {
       const balanceToken = _item.balanceToken;
 
       if (_poolInfo) {
-        const asset = _poolInfo.metadata.assetEarning.find(i => i.slug === balanceToken);
+        const asset = _poolInfo.statistic?.assetEarning.find(i => i.slug === balanceToken);
         rate = asset?.exchangeRate || 1;
       }
     }

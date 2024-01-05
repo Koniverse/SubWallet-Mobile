@@ -46,7 +46,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
 
   return (
     <TouchableOpacity style={styleSheet.infoContainer} activeOpacity={0.5} onPress={onPress(positionInfo)}>
-      {getTokenLogo(balanceToken, showSubLogo ? poolInfo.logo || poolInfo.chain : undefined, 40)}
+      {getTokenLogo(balanceToken, showSubLogo ? poolInfo.metadata.logo || poolInfo.chain : undefined, 40)}
       <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>
         <View style={styleSheet.balanceInfoRow}>
           <Text style={styleSheet.networkName} numberOfLines={1} ellipsizeMode={'tail'}>

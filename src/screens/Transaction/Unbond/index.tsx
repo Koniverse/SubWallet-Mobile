@@ -174,8 +174,8 @@ export const Unbond = ({
   ]);
 
   const unBondedTime = useMemo((): string => {
-    if ('unstakingPeriod' in poolInfo.metadata) {
-      const time = poolInfo.metadata.unstakingPeriod;
+    if (poolInfo.statistic && 'unstakingPeriod' in poolInfo.statistic) {
+      const time = poolInfo.statistic.unstakingPeriod;
 
       if (time >= 24) {
         const days = Math.floor(time / 24);
@@ -188,7 +188,7 @@ export const Unbond = ({
     } else {
       return 'unknown time';
     }
-  }, [poolInfo.metadata]);
+  }, [poolInfo.statistic]);
 
   const boxesProps: BoxProps[] = useMemo(() => {
     const result: BoxProps[] = [];
@@ -412,7 +412,7 @@ export const Unbond = ({
               {!mustChooseValidator && renderBounded()}
 
               {!!boxesProps.length && (
-                <View style={{ gap: theme.sizeSM }}>
+                <View style={{ gap: theme.sizeSM, marginTop: mustChooseValidator ? theme.marginSM : 0 }}>
                   {boxesProps.map((_props, index) => {
                     return (
                       <AlertBoxBase

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { BN_ZERO } from '@polkadot/util';
+import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
@@ -30,10 +31,20 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
         const chainInfo = chainInfoMap[chain];
 
         if (exists) {
-          if (pool.metadata.totalApy) {
-            exists.maxApy = Math.max(exists.maxApy || 0, pool.metadata.totalApy);
-            exists.isTestnet = exists.isTestnet || chainInfo.isTestnet;
+          let apy: undefined | number;
+
+          if (pool.statistic?.totalApy) {
+            apy = pool.statistic?.totalApy;
           }
+
+          if (pool.statistic?.totalApr) {
+            apy = calculateReward(pool.statistic?.totalApr).apy;
+          }
+
+          if (apy !== undefined) {
+            exists.maxApy = Math.max(exists.maxApy || 0, apy);
+          }
+          exists.isTestnet = exists.isTestnet || chainInfo.isTestnet;
         } else {
           const token = multiChainAssetMap[group] || assetRegistry[group];
           const balance = tokenGroupBalanceMap[group] || tokenBalanceMap[group];
@@ -46,7 +57,7 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
           result[group] = {
             group: group,
             token: token.slug,
-            maxApy: pool.metadata.totalApy,
+            maxApy: pool.statistic?.totalApy,
             symbol: token.symbol,
             balance: freeBalance,
             isTestnet: chainInfo.isTestnet,

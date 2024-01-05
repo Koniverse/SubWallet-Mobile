@@ -103,9 +103,8 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
 
     result.sort((a, b) => {
       const getApy = (pool: YieldPoolInfo) => {
-        const {
-          metadata: { totalApy, totalApr },
-        } = pool;
+        const totalApy = pool.statistic?.totalApy;
+        const totalApr = pool.statistic?.totalApr;
         if (totalApy) {
           return totalApy;
         }
@@ -120,9 +119,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
       };
 
       const getTotal = (pool: YieldPoolInfo) => {
-        const {
-          metadata: { tvl },
-        } = pool;
+        const tvl = pool.statistic?.tvl;
         return tvl ? new BigN(tvl).toNumber() : -1;
       };
 
@@ -197,7 +194,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
 
   const searchFunction = useCallback(
     (_items: YieldPoolInfo[], searchString: string) => {
-      return _items.filter(({ chain: _chain, shortName }) => {
+      return _items.filter(({ chain: _chain, metadata: { shortName } }) => {
         const chainInfo = chainInfoMap[_chain];
 
         return (

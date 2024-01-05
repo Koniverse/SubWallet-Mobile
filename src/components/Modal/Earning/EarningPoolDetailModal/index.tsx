@@ -61,8 +61,11 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
     const {
       type,
-      metadata: { totalApy, totalApr, minJoinPool, inputAsset },
+      metadata: { inputAsset },
     } = poolInfo;
+    const totalApy = poolInfo.statistic?.totalApy;
+    const totalApr = poolInfo.statistic?.totalApr;
+    const minJoinPool = poolInfo.statistic?.minJoinPool || '0';
 
     const getOrigin = () => {
       switch (type) {
@@ -134,12 +137,13 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         case YieldPoolType.NATIVE_STAKING: {
           const _label = getValidatorLabel(poolInfo.chain);
           const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
+          const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
           result.push({
             title: 'Select {{number}} {{label}}'
-              .replace('{{number}}', poolInfo.metadata.maxCandidatePerFarmer.toString())
+              .replace('{{number}}', maxCandidatePerFarmer.toString())
               .replace('{{label}}', label),
             description: 'It is recommended that you select {{number}} {{label}} to optimize your staking rewards.'
-              .replace('{{number}}', poolInfo.metadata.maxCandidatePerFarmer.toString())
+              .replace('{{number}}', maxCandidatePerFarmer.toString())
               .replace('{{label}}', label),
             icon,
             iconColor,
@@ -191,7 +195,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       switch (poolInfo.type) {
         case YieldPoolType.NOMINATION_POOL:
         case YieldPoolType.NATIVE_STAKING: {
-          const unstakingPeriod = poolInfo.metadata.unstakingPeriod;
+          const unstakingPeriod = poolInfo.statistic?.unstakingPeriod || 0;
           const isDay = unstakingPeriod > 24;
           const time = isDay ? Math.floor(unstakingPeriod / 24) : unstakingPeriod;
           const unit = isDay ? 'day' : 'hour';

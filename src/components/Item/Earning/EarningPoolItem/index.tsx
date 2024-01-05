@@ -25,8 +25,11 @@ interface Props {
 
 const EarningPoolItem = (props: Props) => {
   const { standAlone, poolInfo, onOpenPopup, onStakeMore } = props;
-  const { metadata, chain, type, logo, shortName, group, slug } = poolInfo;
-  const { inputAsset, tvl, totalApy, totalApr } = metadata;
+  const { metadata, chain, type, group, slug } = poolInfo;
+  const { inputAsset, logo, shortName } = metadata;
+  const totalApy = poolInfo.statistic?.totalApy;
+  const totalApr = poolInfo.statistic?.totalApr;
+  const tvl = poolInfo.statistic?.tvl;
 
   const isFocused = useIsFocused();
   const theme = useSubWalletTheme().swThemes;

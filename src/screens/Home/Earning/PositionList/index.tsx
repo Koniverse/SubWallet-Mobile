@@ -56,7 +56,7 @@ export const PositionList = () => {
           const balanceToken = _item.balanceToken;
 
           if (poolInfo) {
-            const asset = poolInfo.metadata.assetEarning.find(i => i.slug === balanceToken);
+            const asset = poolInfo.statistic?.assetEarning.find(i => i.slug === balanceToken);
             rate = asset?.exchangeRate || 1;
           }
         }

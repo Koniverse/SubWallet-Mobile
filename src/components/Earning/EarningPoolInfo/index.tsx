@@ -1,7 +1,7 @@
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import {
-  NormalYieldPoolMetadata,
+  NormalYieldPoolStatistic,
   YieldCompoundingPeriod,
   YieldPoolInfo,
   YieldPositionInfo,
@@ -31,20 +31,20 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
 
   const totalApy = useMemo((): number | undefined => {
     return (
-      poolInfo.metadata.totalApy ||
-      (poolInfo.metadata.totalApr
-        ? calculateReward(poolInfo.metadata.totalApr, undefined, YieldCompoundingPeriod.YEARLY).apy
+      poolInfo.statistic?.totalApy ||
+      (poolInfo.statistic?.totalApr
+        ? calculateReward(poolInfo.statistic.totalApr, undefined, YieldCompoundingPeriod.YEARLY).apy
         : undefined)
     );
-  }, [poolInfo.metadata.totalApr, poolInfo.metadata.totalApy]);
+  }, [poolInfo.statistic?.totalApr, poolInfo.statistic?.totalApy]);
 
   const unstakePeriod = useMemo((): number | undefined => {
-    if ('unstakingPeriod' in poolInfo.metadata) {
-      return (poolInfo.metadata as NormalYieldPoolMetadata).unstakingPeriod;
+    if (poolInfo.statistic && 'unstakingPeriod' in poolInfo.statistic) {
+      return (poolInfo.statistic as NormalYieldPoolStatistic).unstakingPeriod;
     } else {
       return undefined;
     }
-  }, [poolInfo.metadata]);
+  }, [poolInfo.statistic]);
 
   const [showDetail, setShowDetail] = useState(false);
 
@@ -88,7 +88,7 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
 
           <MetaInfo.Number
             label={i18n.inputLabel.minimumStaked}
-            value={poolInfo.metadata.minJoinPool}
+            value={poolInfo.statistic?.minJoinPool || '0'}
             decimals={inputAsset?.decimals || 0}
             valueColorSchema="even-odd"
             suffix={inputAsset?.symbol}
