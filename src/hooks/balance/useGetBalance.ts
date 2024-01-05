@@ -1,15 +1,15 @@
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
+import { AmountData, AmountDataWithId } from '@subwallet/extension-base/background/KoniTypes';
 import { _getChainNativeTokenSlug } from '@subwallet/extension-base/services/chain-service/utils';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { getFreeBalance, updateAssetSetting } from 'messaging/index';
+import { getFreeBalance, subscribeFreeBalance, updateAssetSetting } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
 
 const DEFAULT_BALANCE = { value: '0', symbol: '', decimals: 18 };
 
-const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
+const useGetBalance = (chain = '', address = '', tokenSlug = '', isSubscribe = false) => {
   const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
   const { assetSettingMap, assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
 
@@ -34,6 +34,8 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
 
     setIsLoading(true);
     setTokenBalance(DEFAULT_BALANCE);
+
+    const idMap: Record<string, string> = {};
 
     if (address && chain) {
       const promiseList = [] as Promise<any>[];
@@ -65,28 +67,63 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
           );
         }
 
-        promiseList.push(
-          getFreeBalance({ address, networkKey: chain })
-            .then(balance => {
-              !cancel && setNativeTokenBalance(balance);
-            })
-            .catch((e: Error) => {
-              !cancel && setError(i18n.message.cannotGetBalance);
-              console.error(e);
-            }),
-        );
+        const onCreateHandleResultSubscribe = (setter: Dispatch<SetStateAction<AmountData>>) => {
+          return (res: AmountDataWithId) => {
+            const { id, ...balance } = res;
+
+            !cancel && setter(balance);
+
+            if (!cancel) {
+              idMap[id] = id;
+            }
+          };
+        };
+
+        const onCreateHandleResult = (setter: Dispatch<SetStateAction<AmountData>>) => {
+          return (balance: AmountData) => {
+            !cancel && setter(balance);
+          };
+        };
+
+        const onCreateHandleError = (setter: Dispatch<SetStateAction<AmountData>>) => {
+          return (e: Error) => {
+            !cancel && setError('Unable to get balance. Please re-enable the network');
+            !cancel && setter(DEFAULT_BALANCE);
+            console.error(e);
+          };
+        };
+
+        const onNativeBalance = onCreateHandleResult(setNativeTokenBalance);
+        const onTokenBalance = onCreateHandleResult(setTokenBalance);
+
+        const onNativeBalanceSubscribe = onCreateHandleResultSubscribe(setNativeTokenBalance);
+        const onTokenBalanceSubscribe = onCreateHandleResultSubscribe(setTokenBalance);
+
+        const onNativeError = onCreateHandleError(setNativeTokenBalance);
+        const onTokenError = onCreateHandleError(setTokenBalance);
+
+        if (isSubscribe) {
+          promiseList.push(
+            subscribeFreeBalance({ address, networkKey: chain }, onNativeBalanceSubscribe)
+              .then(onNativeBalanceSubscribe)
+              .catch(onNativeError),
+          );
+        } else {
+          promiseList.push(getFreeBalance({ address, networkKey: chain }).then(onNativeBalance).catch(onNativeError));
+        }
 
         if (tokenSlug && tokenSlug !== nativeTokenSlug) {
-          promiseList.push(
-            getFreeBalance({ address, networkKey: chain, token: tokenSlug })
-              .then(balance => {
-                !cancel && setTokenBalance(balance);
-              })
-              .catch((e: Error) => {
-                !cancel && setError(i18n.message.cannotGetBalance);
-                console.error(e);
-              }),
-          );
+          if (isSubscribe) {
+            promiseList.push(
+              subscribeFreeBalance({ address, networkKey: chain, token: tokenSlug }, onTokenBalanceSubscribe)
+                .then(onTokenBalanceSubscribe)
+                .catch(onTokenError),
+            );
+          } else {
+            promiseList.push(
+              getFreeBalance({ address, networkKey: chain, token: tokenSlug }).then(onTokenBalance).catch(onTokenError),
+            );
+          }
         }
 
         Promise.all(promiseList).finally(() => {
@@ -129,6 +166,7 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
     isChainActive,
     isTokenActive,
     nativeTokenActive,
+    isSubscribe,
   ]);
 
   return { refreshBalance, tokenBalance, nativeTokenBalance, nativeTokenSlug, isLoading, error, chainInfo };

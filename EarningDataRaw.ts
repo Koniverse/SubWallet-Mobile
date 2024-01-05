@@ -6,7 +6,8 @@ export const EARNING_DATA_RAW = {
     {
       icon: ThumbsUp,
       title: 'Select active pool',
-      description: `It is recommended that you select an active pool with the <strong>Earning</strong> status to earn staking rewards.`,
+      description:
+        'It is recommended that you select an active pool with the <strong>Earning</strong> status to earn staking rewards.',
       iconColor: '#aada62',
     },
     {
@@ -34,7 +35,8 @@ export const EARNING_DATA_RAW = {
     {
       icon: ThumbsUp,
       title: 'Select {validatorNumber} {validatorType}',
-      description: 'It is recommended that you select {validatorNumber} {validatorType} to optimize your staking rewards.',
+      description:
+        'It is recommended that you select {validatorNumber} {validatorType} to optimize your staking rewards.',
       iconColor: '#aada62',
     },
     {

@@ -1,6 +1,6 @@
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
-import { StyleProp, TextStyle, View } from 'react-native';
+import { View } from 'react-native';
 import { PhosphorIcon } from 'utils/campaign';
 import { convertHexColorToRGBA } from 'utils/color';
 import BackgroundIcon from '../../background-icon';
@@ -40,21 +40,21 @@ const tagStyles = {
 };
 
 const AlertBoxBase: React.FC<Props> = (props: Props) => {
-  const { description, title, titleColor, iconColor, icon } = props;
+  const { description, title, iconColor, icon } = props;
 
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const titleStyle = useMemo(() => {
-    const result: StyleProp<TextStyle> = [styles.title];
-
-    if (titleColor) {
-      result.push({ color: titleColor });
-    }
-
-    return result;
-  }, [styles.title, titleColor]);
+  // const titleStyle = useMemo(() => {
+  //   const result: StyleProp<TextStyle> = [styles.title];
+  //
+  //   if (titleColor) {
+  //     result.push({ color: titleColor });
+  //   }
+  //
+  //   return result;
+  // }, [styles.title, titleColor]);
 
   return (
     <View style={styles.wrapper}>

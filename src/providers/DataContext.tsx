@@ -38,7 +38,8 @@ import {
   subscribeBuyServices,
   subscribeYieldPoolInfo,
   subscribeYieldPositionInfo,
-  subscribeYieldReward, subscribeYieldMinAmountPercent
+  subscribeYieldReward,
+  subscribeYieldMinAmountPercent,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';

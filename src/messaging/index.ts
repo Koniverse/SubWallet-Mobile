@@ -33,6 +33,7 @@ import {
   AccountsWithCurrentAddress,
   ActiveCronAndSubscriptionMap,
   AmountData,
+  AmountDataWithId,
   AssetSettingUpdateReq,
   BrowserConfirmationType,
   ChainStakingMetadata,
@@ -1214,15 +1215,15 @@ export async function getFreeBalance(request: RequestFreeBalance): Promise<Amoun
   return sendMessage('pri(freeBalance.get)', request);
 }
 
-export async function getMaxTransfer(request: RequestMaxTransferable): Promise<AmountData> {
-  return sendMessage('pri(transfer.getMaxTransferable)', request);
-}
-
 export async function subscribeFreeBalance(
   request: RequestFreeBalance,
-  callback: (balance: AmountData) => void,
-): Promise<AmountData> {
+  callback: (balance: AmountDataWithId) => void,
+): Promise<AmountDataWithId> {
   return sendMessage('pri(freeBalance.subscribe)', request, callback);
+}
+
+export async function getMaxTransfer(request: RequestMaxTransferable): Promise<AmountData> {
+  return sendMessage('pri(transfer.getMaxTransferable)', request);
 }
 
 export async function substrateNftSubmitTransaction(request: NftTransactionRequest): Promise<SWTransactionResponse> {

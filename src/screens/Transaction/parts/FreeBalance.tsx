@@ -11,20 +11,32 @@ interface Props {
   chain?: string;
   onBalanceReady?: (rs: boolean) => void;
   style?: StyleProp<ViewStyle>;
+  hidden?: boolean;
+  isSubscribe?: boolean;
 }
 
-export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug, style }: Props) => {
+export const FreeBalance = ({
+  address,
+  chain,
+  label,
+  onBalanceReady,
+  tokenSlug,
+  style,
+  hidden,
+  isSubscribe,
+}: Props) => {
   const { error, isLoading, nativeTokenBalance, nativeTokenSlug, tokenBalance } = useGetBalance(
     chain,
     address,
     tokenSlug,
+    isSubscribe,
   );
 
   useEffect(() => {
     onBalanceReady?.(!isLoading && !error);
   }, [error, isLoading, onBalanceReady]);
 
-  if (!address && !chain) {
+  if ((!address && !chain) || hidden) {
     return <></>;
   }
 
