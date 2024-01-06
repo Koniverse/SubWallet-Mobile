@@ -206,7 +206,8 @@
     "noFaceIdPermission": "This app use Face ID to unlock password",
     "tooManyAttemps": "Thất bại quá nhiều lần. Vui lòng thử lại sau hoặc nhập mật khẩu",
     "ratingAlertTitle": "Rate our app!",
-    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday."
+    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday.",
+    "updateChainMessage": "Mạng bạn chọn đã mất kết nối. Vui lòng cập nhật bằng cách bật lại mạng hoặc đổi provider."
   },
   "title": {
     "exportAccount": "Xuất tài khoản  ",
@@ -418,7 +419,8 @@
     "enable": "Bật mạng",
     "rateSubwallet": "Rate SubWallet",
     "sendFeedback": "Send feedback",
-    "notNow": "Not now"
+    "notNow": "Not now",
+    "update": "Cập nhật"
   },
   "inputLabel": {
     "selectAcc": "Chọn tài khoản",
@@ -795,7 +797,8 @@
     "walletConnect": "WalletConnect",
     "disconnect": "Ngắt kết nối",
     "connectedNetworks": "Connected networks",
-    "missionPools": "Mission Pools"
+    "missionPools": "Mission Pools",
+    "updateChain": "Cập nhật mạng"
   },
   "cryptoScreen": {
     "address": "Địa chỉ",
