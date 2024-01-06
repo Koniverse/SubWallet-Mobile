@@ -206,7 +206,8 @@
     "noFaceIdPermission": "This app use Face ID to unlock password",
     "tooManyAttemps": "尝试的失败次数过多。请稍后重试或输入密码。",
     "ratingAlertTitle": "Rate our app!",
-    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday."
+    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday.",
+    "updateChainMessage": "您选择的网络已失去链接。通过重新启用它或更改网络提供商来更新它。"
   },
   "title": {
     "exportAccount": "导出账户",
@@ -421,6 +422,7 @@
     "rateSubwallet": "Rate SubWallet",
     "sendFeedback": "Send feedback",
     "notNow": "Not now",
+    "update":  "重新网络",
     "withdraw": "Withdraw",
     "cancelUnstake": "Cancel unstake"
   },
@@ -808,6 +810,7 @@
     "disconnect": "断开",
     "connectedNetworks": "Connected networks",
     "missionPools": "Mission Pools",
+    "updateChain": "更新网络",
     "earning": "Earning"
   },
   "cryptoScreen": {

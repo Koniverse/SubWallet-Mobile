@@ -1,3 +1,7 @@
+## 1.1.24 (287)
+- Update web-runner v1.1.30 (#1322)
+- Update new layout for mission pool (#1280)
+
 ## 1.1.23 (286)
 - Fix bug crash app when Stake from All account (#1144)
 - Update web-runner v1.1.29 (#1302)

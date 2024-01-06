@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getFreeBalance, subscribeFreeBalance, updateAssetSetting } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
+import { useIsFocused } from '@react-navigation/native';
 
 const DEFAULT_BALANCE = { value: '0', symbol: '', decimals: 18 };
 
@@ -24,6 +25,7 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '', isSubscribe = f
   const isChainActive = chainStateMap[chain]?.active;
   const nativeTokenActive = nativeTokenSlug && assetSettingMap[nativeTokenSlug]?.visible;
   const isTokenActive = assetSettingMap[tokenSlug]?.visible;
+  const isFocused = useIsFocused();
 
   const refreshBalance = useCallback(() => {
     setIsRefresh({});
@@ -46,25 +48,27 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '', isSubscribe = f
       }
 
       if (isChainActive) {
-        if (!childTokenActive) {
-          promiseList.push(
-            updateAssetSetting({
-              tokenSlug,
-              assetSetting: {
-                visible: true,
-              },
-              autoEnableNativeToken: true,
-            }),
-          );
-        } else if (nativeTokenSlug && !nativeTokenActive) {
-          promiseList.push(
-            updateAssetSetting({
-              tokenSlug: nativeTokenSlug,
-              assetSetting: {
-                visible: true,
-              },
-            }),
-          );
+        if (isFocused) {
+          if (!childTokenActive) {
+            promiseList.push(
+              updateAssetSetting({
+                tokenSlug,
+                assetSetting: {
+                  visible: true,
+                },
+                autoEnableNativeToken: true,
+              }),
+            );
+          } else if (nativeTokenSlug && !nativeTokenActive) {
+            promiseList.push(
+              updateAssetSetting({
+                tokenSlug: nativeTokenSlug,
+                assetSetting: {
+                  visible: true,
+                },
+              }),
+            );
+          }
         }
 
         const onCreateHandleResultSubscribe = (setter: Dispatch<SetStateAction<AmountData>>) => {
@@ -167,6 +171,7 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '', isSubscribe = f
     isTokenActive,
     nativeTokenActive,
     isSubscribe,
+    isFocused,
   ]);
 
   return { refreshBalance, tokenBalance, nativeTokenBalance, nativeTokenSlug, isLoading, error, chainInfo };

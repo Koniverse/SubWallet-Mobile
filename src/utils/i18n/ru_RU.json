@@ -206,7 +206,8 @@
     "noFaceIdPermission": "This app use Face ID to unlock password",
     "tooManyAttemps": "Too many failed attempts. Please try again later or enter password.",
     "ratingAlertTitle": "Rate our app!",
-    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday."
+    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday.",
+    "updateChainMessage": "Your selected network has lost connection. Update it by re-enabling it or changing network provider."
   },
   "title": {
     "exportAccount": "Экспорт аккаунта",
@@ -421,6 +422,7 @@
     "rateSubwallet": "Rate SubWallet",
     "sendFeedback": "Send feedback",
     "notNow": "Not now",
+    "update": "Update",
     "withdraw": "Withdraw",
     "cancelUnstake": "Cancel unstake"
   },
@@ -808,6 +810,7 @@
     "disconnect": "Отключить",
     "connectedNetworks": "Подключенные сети",
     "missionPools": "Mission Pools",
+    "updateChain": "Update network",
     "earning": "Earning"
   },
   "cryptoScreen": {

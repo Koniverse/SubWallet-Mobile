@@ -192,6 +192,7 @@
     "chainConnected": "{0} is connected!",
     "enableChain": "Enable network?",
     "enableChainMessage": "Your selected network is currently disabled. Enable it to start using.",
+    "updateChainMessage": "Your selected network has lost connection. Update it by re-enabling it or changing network provider.",
     "provider": "Provider",
     "pools": "Pool",
     "nominate": "Nominate",
@@ -421,6 +422,7 @@
     "rateSubwallet": "Rate SubWallet",
     "sendFeedback": "Send feedback",
     "notNow": "Not now",
+    "update": "Update",
     "withdraw": "Withdraw",
     "cancelUnstake": "Cancel unstake"
   },
@@ -808,6 +810,7 @@
     "disconnect": "Disconnect",
     "connectedNetworks": "Connected networks",
     "missionPools": "Mission Pools",
+    "updateChain": "Update network",
     "earning": "Earning"
   },
   "cryptoScreen": {
