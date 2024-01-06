@@ -185,6 +185,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const isDisabledButton = useMemo(
     () =>
       checkMintLoading ||
+      stepLoading ||
       !!connectionError ||
       !currentAmount ||
       !isBalanceReady ||
@@ -202,6 +203,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       poolTarget,
       targetLoading,
       checkMintLoading,
+      stepLoading,
     ],
   );
 
