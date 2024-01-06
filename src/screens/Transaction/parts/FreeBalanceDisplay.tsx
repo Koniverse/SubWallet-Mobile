@@ -15,6 +15,7 @@ interface Props {
   tokenSlug?: string;
   tokenBalance?: AmountData;
   isLoading: boolean;
+  hidden?: boolean;
 }
 
 export const FreeBalanceDisplay = ({
@@ -26,11 +27,22 @@ export const FreeBalanceDisplay = ({
   tokenBalance,
   nativeTokenSlug,
   nativeTokenBalance,
+  hidden,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   return (
-    <View style={[{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }, style]}>
+    <View
+      style={[
+        {
+          flexDirection: 'row',
+          marginBottom: 12,
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          display: hidden ? 'none' : 'flex',
+        },
+        style,
+      ]}>
       {!error && (
         <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
           {label || `${i18n.sendToken.senderAvailableBalance}:`}

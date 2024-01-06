@@ -10,7 +10,6 @@ import { getValidatorKey } from 'utils/transaction/stake';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { useSelectValidators } from 'hooks/screen/Transaction/useSelectValidators';
 import useGetChainStakingMetadata from 'hooks/screen/Staking/useGetChainStakingMetadata';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { ArrowsClockwise, CheckCircle, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ValidatorSelectorField } from 'components/Field/ValidatorSelector';
@@ -29,6 +28,7 @@ import BigN from 'bignumber.js';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { EmptyValidator } from 'components/EmptyValidator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 
 enum SortKey {
   COMMISSION = 'commission',

@@ -36,7 +36,7 @@ export const FreeBalance = ({
     onBalanceReady?.(!isLoading && !error);
   }, [error, isLoading, onBalanceReady]);
 
-  if ((!address && !chain) || hidden) {
+  if (!address && !chain) {
     return <></>;
   }
 
@@ -50,6 +50,7 @@ export const FreeBalance = ({
       style={style}
       tokenBalance={tokenBalance}
       tokenSlug={tokenSlug}
+      hidden={hidden}
     />
   );
 };

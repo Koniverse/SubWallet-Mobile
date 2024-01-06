@@ -193,12 +193,22 @@ const FreeBalanceToYield = (props: Props) => {
     onBalanceReady?.(!isLoading && !error);
   }, [error, isLoading, onBalanceReady]);
 
-  if ((!address && !tokens.length) || hidden) {
+  if (!address && !tokens.length) {
     return <></>;
   }
 
   return (
-    <View style={[{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }, style]}>
+    <View
+      style={[
+        {
+          flexDirection: 'row',
+          marginBottom: 12,
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          display: hidden ? 'none' : 'flex',
+        },
+        style,
+      ]}>
       {!error && (
         <Typography.Text
           style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
