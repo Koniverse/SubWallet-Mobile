@@ -1431,16 +1431,6 @@
     abort-controller "^3.0.0"
     isomorphic-fetch "^3.0.0"
 
-"@equilab/api@~1.14.25":
-  version "1.14.25"
-  resolved "https://registry.yarnpkg.com/@equilab/api/-/api-1.14.25.tgz#51a6386e7cfe032b815be1716ecfef4a0608a3c5"
-  integrity sha512-D6KrRmwjhdIPfznpstPO/FaBe9CsGr4wJ05kn2EKxJ6R5lOuvBylkzCtN2EhLC+yQ6xBMknFOsiit9vNGmUiSA==
-  dependencies:
-    "@equilab/definitions" "1.4.18"
-    "@polkadot/api" "9.11.1"
-    abort-controller "^3.0.0"
-    isomorphic-fetch "^3.0.0"
-
 "@equilab/definitions@1.4.18":
   version "1.4.18"
   resolved "https://registry.yarnpkg.com/@equilab/definitions/-/definitions-1.4.18.tgz#e544951b50278705af3d9fa4ba91e04df53a3d06"
@@ -2672,7 +2662,7 @@
     "@polkadot/util" "^12.6.2"
     tslib "^2.6.2"
 
-"@polkadot/api-base@10.11.2", "@polkadot/api-base@^10.9.1":
+"@polkadot/api-base@10.11.2":
   version "10.11.2"
   resolved "https://registry.yarnpkg.com/@polkadot/api-base/-/api-base-10.11.2.tgz#135de5ab83769a1fd3ad9f845f27338a65b0ffe3"
   integrity sha512-4LIjaUfO9nOzilxo7XqzYKCNMtmUypdk8oHPdrRnSjKEsnK7vDsNi+979z2KXNXd2KFSCFHENmI523fYnMnReg==
@@ -2714,7 +2704,7 @@
     rxjs "^7.8.1"
     tslib "^2.6.2"
 
-"@polkadot/api@10.11.2", "@polkadot/api@10.7.1", "@polkadot/api@9.11.1", "@polkadot/api@^10.1.4", "@polkadot/api@^10.11.1", "@polkadot/api@^10.7.2", "@polkadot/api@^10.7.3", "@polkadot/api@^10.9.1", "@polkadot/api@^7.2.1", "@polkadot/api@^9.13.2", "@polkadot/api@^9.14.1", "@polkadot/api@latest":
+"@polkadot/api@10.11.2", "@polkadot/api@10.7.1", "@polkadot/api@^10.1.4", "@polkadot/api@^10.11.1", "@polkadot/api@^10.7.2", "@polkadot/api@^10.7.3", "@polkadot/api@^10.9.1", "@polkadot/api@^7.2.1", "@polkadot/api@^9.13.2", "@polkadot/api@^9.14.1", "@polkadot/api@latest":
   version "10.11.2"
   resolved "https://registry.yarnpkg.com/@polkadot/api/-/api-10.11.2.tgz#16cd07062d51cc9cf77a3a6afa3cb4e526e44a82"
   integrity sha512-AorCZxCWCoTtdbl4DPUZh+ACe/pbLIS1BkdQY0AFJuZllm0x/yWzjgampcPd5jQAA/O3iKShRBkZqj6Mk9yG/A==
@@ -4283,18 +4273,9 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.44.0.tgz#54f214e2a44f450b7bbc9252891c1879a54e0606"
   integrity sha512-7lQ/7mMCzVNSEfDS4BCqnRnKCFKpcOaPrxMeGTXHX1YQzM/m2BBHjbK2C3dJvjv7GYxMiaTq/HdWQj1xS6ss+A==
 
-"@subwallet/chain-list@0.2.33":
-  version "0.2.33"
-  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/chain-list/-/chain-list-0.2.33.tgz#f905ca6752931935e82accd3df043248676f5f12"
-  integrity sha512-RbQbgUL/7MUkjthsX5YN4wNU/hAJ/1mLEh2SoU+CbewRixqlqaBC12zJKzuzRYoML6AXVLQio779d7vd6WJWMA==
-  dependencies:
-    "@polkadot/dev" "0.67.167"
-    "@polkadot/util" "^12.5.1"
-    eventemitter3 "^5.0.1"
-
-"@subwallet/chain-list@^0.2.33":
+"@subwallet/chain-list@0.2.33", "@subwallet/chain-list@0.2.34":
   version "0.2.34"
-  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/chain-list/-/chain-list-0.2.34.tgz#9493df142054806de6dac629b786ef699bf0daef"
+  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.2.34.tgz#9493df142054806de6dac629b786ef699bf0daef"
   integrity sha512-f8k8xmklN/NGIQCtbmyq9n8MZwtTGp99sMTD39mO/nhLQGe+UkFOSi5yM8HDMlK5IhinMZ0EXbjLcnmZZBlAyg==
   dependencies:
     "@polkadot/dev" "0.67.167"
@@ -4303,13 +4284,13 @@
 
 "@subwallet/extension-base@^1.1.29-0":
   version "1.1.29-0"
-  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-base/-/extension-base-1.1.29-0.tgz#44a5dc93dbc3969bb8206742bf61fd6253c77522"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.1.29-0.tgz#44a5dc93dbc3969bb8206742bf61fd6253c77522"
   integrity sha512-JXtC9nE1rnHaOG6o35pLKgbewQGrjvjGGTEa+0cQnGjRUkIcc1e7qzO8ogmpc6a9h98giyky6+LfNc60jFL4bg==
   dependencies:
     "@acala-network/api" "^5.0.2"
     "@apollo/client" "^3.7.14"
     "@azns/resolver-core" "^1.4.0"
-    "@equilab/api" "~1.14.25"
+    "@equilab/api" "^1.14.25"
     "@ethereumjs/common" "^2.6.5"
     "@ethereumjs/tx" "^4.0.2"
     "@ethersproject/abi" "^5.7.0"
@@ -4318,7 +4299,6 @@
     "@metaverse-network-sdk/type-definitions" "^0.0.1-13"
     "@oak-foundation/types" "^0.0.23"
     "@polkadot/api" "^10.11.1"
-    "@polkadot/api-base" "^10.9.1"
     "@polkadot/api-contract" "^10.11.1"
     "@polkadot/api-derive" "^10.11.1"
     "@polkadot/apps-config" "^0.133.1"
