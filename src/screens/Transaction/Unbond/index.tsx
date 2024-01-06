@@ -42,6 +42,8 @@ import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { useGetBalance } from 'hooks/balance';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import { isActionFromValidator } from '@subwallet/extension-base/services/earning-service/utils';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
+import { UNSTAKE_ALERT_DATA } from '../../../../EarningDataRaw';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -414,7 +416,12 @@ export const Unbond = ({
               {!mustChooseValidator && renderBounded()}
 
               {!!boxesProps.length && (
-                <View style={{ gap: theme.sizeSM, marginTop: mustChooseValidator ? theme.marginSM : 0 }}>
+                <View
+                  style={{
+                    gap: theme.sizeSM,
+                    marginTop: mustChooseValidator ? theme.marginSM : 0,
+                    marginBottom: theme.marginSM,
+                  }}>
                   {boxesProps.map((_props, index) => {
                     return (
                       <AlertBoxBase
@@ -428,6 +435,21 @@ export const Unbond = ({
                   })}
                 </View>
               )}
+
+              {/*<AlertBox*/}
+              {/*  type={'warning'}*/}
+              {/*  title={STAKE_ALERT_DATA.title}*/}
+              {/*  description={STAKE_ALERT_DATA.description.replace(*/}
+              {/*    '{tokenAmount}',*/}
+              {/*    `${getInputValuesFromString(existentialDeposit, decimals)} ${symbol}`,*/}
+              {/*  )}*/}
+              {/*/>*/}
+
+              <AlertBox
+                type={'warning'}
+                title={UNSTAKE_ALERT_DATA.title}
+                description={UNSTAKE_ALERT_DATA.description.replaceAll('{periodNumb}', unBondedTime)}
+              />
             </ScrollView>
 
             <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>

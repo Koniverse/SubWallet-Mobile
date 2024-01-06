@@ -1,11 +1,12 @@
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import { PhosphorIcon } from 'utils/campaign';
 import { convertHexColorToRGBA } from 'utils/color';
 import BackgroundIcon from '../../background-icon';
 import createStyles from './style';
 import RenderHtml from 'react-native-render-html';
+import { deviceWidth } from 'constants/index';
 
 interface Props {
   title: string;
@@ -15,7 +16,7 @@ interface Props {
   icon: PhosphorIcon;
 }
 
-const classesStyles = {
+const classesStyles: StyleProp<any> = {
   title: {
     color: 'white',
     fontSize: 16,
@@ -31,7 +32,7 @@ const classesStyles = {
   },
 };
 
-const tagStyles = {
+const tagStyles: StyleProp<any> = {
   body: { fontFamily: 'PlusJakartaSans-Medium' },
   strong: {
     color: 'white',
@@ -45,16 +46,6 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyles(theme), [theme]);
-
-  // const titleStyle = useMemo(() => {
-  //   const result: StyleProp<TextStyle> = [styles.title];
-  //
-  //   if (titleColor) {
-  //     result.push({ color: titleColor });
-  //   }
-  //
-  //   return result;
-  // }, [styles.title, titleColor]);
 
   return (
     <View style={styles.wrapper}>
@@ -70,20 +61,19 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
       </View>
       <View style={styles.content}>
         <RenderHtml
+          contentWidth={deviceWidth}
           systemFonts={['PlusJakartaSans-Medium']}
           classesStyles={classesStyles}
           tagsStyles={tagStyles}
           source={{ html: `<span class="title">${title}</span>` }}
         />
         <RenderHtml
+          contentWidth={100}
           systemFonts={['PlusJakartaSans-Medium']}
           classesStyles={classesStyles}
           tagsStyles={tagStyles}
           source={{ html: `<span class="description">${description}</span>` }}
         />
-
-        {/*<Typography.Text style={titleStyle}>{title}</Typography.Text>*/}
-        {/*<Typography.Text style={styles.description}>{description}</Typography.Text>*/}
       </View>
     </View>
   );

@@ -16,6 +16,7 @@ import { PhosphorIcon } from 'utils/campaign';
 import { balanceFormatter, formatNumber } from 'utils/number';
 import createStyles from './style';
 import { EARNING_DATA_RAW } from '../../../../../EarningDataRaw';
+import { getInputValuesFromString } from 'components/Input/InputAmount';
 
 interface Props {
   slug: string;
@@ -24,7 +25,7 @@ interface Props {
   onStakeMore?: (value: string) => void;
 }
 
-interface BoxProps {
+export interface BoxProps {
   title: string;
   description: React.ReactNode;
   iconColor: string;
@@ -73,9 +74,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         case YieldPoolType.NOMINATION_POOL:
         case YieldPoolType.NATIVE_STAKING:
         case YieldPoolType.LIQUID_STAKING:
-          return 'Stake to earn from {{minActiveStake}} up to {{apy}} easily with SubWallet';
+          return 'Stake to earn up to {{apy}} from {{minActiveStake}} easily with SubWallet';
         case YieldPoolType.LENDING:
-          return 'Supply to earn from {{minActiveStake}} up to {{apy}} easily with SubWallet';
+          return 'Supply to earn up to {{apy}} from {{minActiveStake}} easily with SubWallet';
       }
     };
 
@@ -114,6 +115,29 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     return result;
   }, [assetRegistry, poolInfo]);
 
+  const replaceEarningValue = useCallback((target: BoxProps, searchString: string, replaceValue: string) => {
+    if (target.title.includes(searchString)) {
+      target.title = target.title.replace(searchString, replaceValue);
+    }
+
+    if (typeof target.description === 'string' && target.description?.includes(searchString)) {
+      target.description = target.description.replace(searchString, replaceValue);
+    }
+  }, []);
+
+  const unBondedTime = useMemo((): string => {
+    if (poolInfo.statistic && 'unstakingPeriod' in poolInfo.statistic) {
+      const unstakingPeriod = poolInfo.statistic.unstakingPeriod;
+
+      const isDay = unstakingPeriod > 24;
+      const time = isDay ? Math.floor(unstakingPeriod / 24) : unstakingPeriod;
+      const unit = isDay ? 'day' : 'hour';
+      return [time, unit].join('-');
+    } else {
+      return 'unknown time';
+    }
+  }, [poolInfo.statistic]);
+
   const data: BoxProps[] = useMemo(() => {
     if (!poolInfo) {
       return [];
@@ -125,84 +149,52 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
         const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
 
-        const unstakingPeriod = poolInfo.statistic?.unstakingPeriod || 0;
-        const isDay = unstakingPeriod > 24;
-        const time = isDay ? Math.floor(unstakingPeriod / 24) : unstakingPeriod;
-        const unit = isDay ? 'day' : 'hour';
-        const periodNumb = [time, unit].join('-');
+        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+        if (inputAsset) {
+          const { decimals, minAmount, symbol } = inputAsset;
+          return EARNING_DATA_RAW[YieldPoolType.NOMINATION_POOL].map(item => {
+            const _item = { ...item };
+            replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
+            replaceEarningValue(_item, '{validatorType}', label);
+            replaceEarningValue(_item, '{periodNumb}', unBondedTime);
+            replaceEarningValue(
+              _item,
+              '{existentialDeposit}',
+              getInputValuesFromString(minAmount || '0', decimals || 0),
+            );
+            replaceEarningValue(_item, '{symbol}', symbol);
 
-        return EARNING_DATA_RAW[YieldPoolType.NOMINATION_POOL].map(item => {
-          const _item = item;
-          if (_item.description.includes('{validatorNumber}')) {
-            _item.title = _item.title.replace('{validatorNumber}', maxCandidatePerFarmer.toString());
-          }
-
-          if (_item.description.includes('{validatorType}')) {
-            _item.title = _item.title.replace('{validatorType}', label);
-          }
-
-          if (_item.description.includes('{periodNumb}')) {
-            _item.description = _item.description.replace('{periodNumb}', periodNumb);
-          }
-
-          if (_item.description.includes('{paidOutNumb}')) {
-            _item.description = _item.description.replace('{periodNumb}', '12');
-          }
-
-          if (_item.description.includes('{existentialDeposit}')) {
-            _item.description = _item.description.replace('{existentialDeposit}', '12');
-          }
-
-          if (_item.description.includes('{symbol}')) {
-            _item.description = _item.description.replace('{symbol}', 'VARA');
-          }
-
-          return _item;
-        });
+            return _item;
+          });
+        } else {
+          return [];
+        }
       }
       case YieldPoolType.NATIVE_STAKING: {
         const _label = getValidatorLabel(poolInfo.chain);
         const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
         const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
 
-        const unstakingPeriod = poolInfo.statistic?.unstakingPeriod || 0;
-        const isDay = unstakingPeriod > 24;
-        const time = isDay ? Math.floor(unstakingPeriod / 24) : unstakingPeriod;
-        const unit = isDay ? 'day' : 'hour';
-        const periodNumb = [time, unit].join('-');
+        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
 
-        return EARNING_DATA_RAW[YieldPoolType.NATIVE_STAKING].map(item => {
-          const _item = item;
-          if (_item.title.includes('{validatorNumber}')) {
-            _item.title = _item.title.replace('{validatorNumber}', maxCandidatePerFarmer.toString());
-          }
-
-          if (_item.title.includes('{validatorType}')) {
-            _item.title = _item.title.replace('{validatorType}', label);
-          }
-
-          if (_item.description.includes('{validatorNumber}')) {
-            _item.description = _item.description.replace('{validatorNumber}', maxCandidatePerFarmer.toString());
-          }
-
-          if (_item.description.includes('{validatorType}')) {
-            _item.description = _item.description.replace('{validatorType}', label);
-          }
-
-          if (_item.description.includes('{periodNumb}')) {
-            _item.description = _item.description.replace('{periodNumb}', periodNumb);
-          }
-
-          if (_item.description.includes('{existentialDeposit}')) {
-            _item.description = _item.description.replace('{existentialDeposit}', '12');
-          }
-
-          if (_item.description.includes('{symbol}')) {
-            _item.description = _item.description.replace('{symbol}', 'VARA');
-          }
-
-          return _item;
-        });
+        if (inputAsset) {
+          const { decimals, minAmount, symbol } = inputAsset;
+          return EARNING_DATA_RAW[YieldPoolType.NATIVE_STAKING].map(item => {
+            const _item = { ...item };
+            replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
+            replaceEarningValue(_item, '{validatorType}', label);
+            replaceEarningValue(_item, '{periodNumb}', unBondedTime);
+            replaceEarningValue(
+              _item,
+              '{existentialDeposit}',
+              getInputValuesFromString(minAmount || '0', decimals || 0),
+            );
+            replaceEarningValue(_item, '{symbol}', symbol);
+            return _item;
+          });
+        } else {
+          return [];
+        }
       }
       case YieldPoolType.LIQUID_STAKING: {
         const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
@@ -211,26 +203,17 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
         if (derivative && inputAsset) {
           return EARNING_DATA_RAW[YieldPoolType.LIQUID_STAKING].map(item => {
-            const _item = item;
-            if (_item.title.includes('{derivative}')) {
-              _item.title = _item.title.replace('{derivative}', derivative.symbol);
-            }
+            const _item = { ...item };
 
-            if (_item.description.includes('{derivative}')) {
-              _item.description = _item.description.replace('{derivative}', derivative.symbol);
-            }
-
-            if (_item.description.includes('{inputToken}')) {
-              _item.description = _item.description.replace('{inputToken}', inputAsset.symbol);
-            }
-
-            if (_item.description.includes('{existentialDeposit}')) {
-              _item.description = _item.description.replace('{existentialDeposit}', '12');
-            }
-
-            if (_item.description.includes('{symbol}')) {
-              _item.description = _item.description.replace('{symbol}', 'VARA');
-            }
+            replaceEarningValue(_item, '{derivative}', derivative.symbol);
+            replaceEarningValue(_item, '{periodNumb}', unBondedTime);
+            replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);
+            replaceEarningValue(
+              _item,
+              '{existentialDeposit}',
+              getInputValuesFromString(inputAsset.minAmount || '0', inputAsset.decimals || 0),
+            );
+            replaceEarningValue(_item, '{symbol}', inputAsset.symbol);
 
             return _item;
           });
@@ -245,26 +228,16 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
         if (derivative && inputAsset) {
           return EARNING_DATA_RAW[YieldPoolType.LENDING].map(item => {
-            const _item = item;
-            if (_item.title.includes('{derivative}')) {
-              _item.title = _item.title.replace('{derivative}', derivative.symbol);
-            }
+            const _item = { ...item };
 
-            if (_item.description.includes('{derivative}')) {
-              _item.description = _item.description.replace('{derivative}', derivative.symbol);
-            }
-
-            if (_item.description.includes('{inputToken}')) {
-              _item.description = _item.description.replace('{inputToken}', inputAsset.symbol);
-            }
-
-            if (_item.description.includes('{existentialDeposit}')) {
-              _item.description = _item.description.replace('{existentialDeposit}', '12');
-            }
-
-            if (_item.description.includes('{symbol}')) {
-              _item.description = _item.description.replace('{symbol}', 'VARA');
-            }
+            replaceEarningValue(_item, '{derivative}', derivative.symbol);
+            replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);
+            replaceEarningValue(
+              _item,
+              '{existentialDeposit}',
+              getInputValuesFromString(inputAsset.minAmount || '0', inputAsset.decimals || 0),
+            );
+            replaceEarningValue(_item, '{symbol}', inputAsset.symbol);
 
             return _item;
           });
@@ -273,7 +246,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         }
       }
     }
-  }, [assetRegistry, poolInfo]);
+  }, [assetRegistry, poolInfo, replaceEarningValue, unBondedTime]);
 
   const [showScrollEnd, setShowScrollEnd] = useState(false);
   const [isScrollEnd, setIsScrollEnd] = useState(false);
@@ -302,11 +275,32 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   );
 
   const onPressFaq = useCallback(() => {
-    // TODO
-    Linking.openURL(
-      'https://subwallet.notion.site/subwallet/Coinbase-VARA-Quests-FAQs-855c4425812046449125e1f7805e6a16',
-    );
-  }, []);
+    let urlParam = '';
+    switch (poolInfo.metadata.shortName) {
+      case 'Polkadot': {
+        urlParam = '#polkadot-nomination-pool';
+        break;
+      }
+      case 'Acala': {
+        urlParam = '#acala';
+        break;
+      }
+      case 'Bifrost Polkadot': {
+        urlParam = '#bifrost';
+        break;
+      }
+      case 'Interlay': {
+        urlParam = '#interlay';
+        break;
+      }
+      case 'Moonwell': {
+        urlParam = '#moonwell';
+        break;
+      }
+    }
+
+    Linking.openURL(`https://docs.subwallet.app/main/web-dashboard-user-guide/earning/faqs${urlParam}`);
+  }, [poolInfo.metadata.shortName]);
 
   const onPress = useCallback(() => {
     setVisible(false);

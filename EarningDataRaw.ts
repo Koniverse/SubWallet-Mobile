@@ -1,7 +1,8 @@
 import { YieldPoolType } from '@subwallet/extension-base/types';
 import { CheckCircle, Coins, Eye, ThumbsUp } from 'phosphor-react-native';
+import { BoxProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 
-export const EARNING_DATA_RAW = {
+export const EARNING_DATA_RAW: Record<YieldPoolType, BoxProps[]> = {
   [YieldPoolType.NOMINATION_POOL]: [
     {
       icon: ThumbsUp,
@@ -14,7 +15,7 @@ export const EARNING_DATA_RAW = {
       icon: Coins,
       title: 'Unstake and withdraw',
       description:
-        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after <strong>a {periodNumb}-day period</strong>. Keep in mind that these actions are not automated and will incur network fees.',
+        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after <strong>a {periodNumb} period</strong>. Keep in mind that these actions are not automated and will incur network fees.',
       iconColor: '#e6dc25',
     },
     {
@@ -43,7 +44,7 @@ export const EARNING_DATA_RAW = {
       icon: Coins,
       title: 'Unstake and withdraw',
       description:
-        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after <strong>a {periodNumb}-day period</strong>. Keep in mind that these actions are <strong>not automated</strong> and will incur network fees.',
+        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after <strong>a {periodNumb} period</strong>. Keep in mind that these actions are <strong>not automated</strong> and will incur network fees.',
       iconColor: '#e6dc25',
     },
     {
@@ -72,7 +73,7 @@ export const EARNING_DATA_RAW = {
       icon: Coins,
       title: 'Unstake and withdraw',
       description:
-        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw immediately with a higher fee or wait {number} days before withdrawing with a lower fee.',
+        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw immediately with a higher fee or wait {periodNumb} days before withdrawing with a lower fee.',
       iconColor: '#e6dc25',
     },
     {
@@ -118,4 +119,16 @@ export const EARNING_DATA_RAW = {
       iconColor: '#008dff',
     },
   ],
+};
+
+export const STAKE_ALERT_DATA = {
+  title: 'Pay attention!',
+  description:
+    'Don’t stake all your funds. Keep in mind that you need at least {tokenAmount} in your free balance to pay gas fees for claiming rewards, unstaking and withdrawing',
+};
+
+export const UNSTAKE_ALERT_DATA = {
+  title: 'Pay attention!',
+  description:
+    'Once unstaked, your funds will become available for withdrawal after {periodNumb}. Keep in mind that you need to withdraw manually, and no rewards are available during the {periodNumb} unstaking period.',
 };
