@@ -146,8 +146,10 @@ import {
   NominationPoolInfo,
   OptimalYieldPathParams,
   RequestEarlyValidateYield,
+  RequestGetYieldPoolTargets,
   RequestStakeCancelWithdrawal,
   RequestStakeClaimReward,
+  RequestUnlockDotCheckCanMint,
   RequestYieldLeave,
   RequestYieldStepSubmit,
   RequestYieldWithdrawal,
@@ -1472,6 +1474,10 @@ export async function subscribeTransactionHistory(
 
 /* Earning */
 
+export async function fetchPoolTarget(request: RequestGetYieldPoolTargets) {
+  return sendMessage('pri(yield.getTargets)', request);
+}
+
 export async function earlyValidateJoin(request: RequestEarlyValidateYield) {
   return sendMessage('pri(yield.join.earlyValidate)', request);
 }
@@ -1521,3 +1527,11 @@ export async function yieldSubmitRedeem(data: RequestYieldFastWithdrawal) {
 }
 
 /* Earning */
+
+/* Mint campaign */
+
+export async function unlockDotCheckCanMint(request: RequestUnlockDotCheckCanMint): Promise<boolean> {
+  return sendMessage('pri(campaign.unlockDot.canMint)', request);
+}
+
+/* Mint campaign */

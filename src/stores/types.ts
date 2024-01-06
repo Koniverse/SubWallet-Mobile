@@ -38,6 +38,7 @@ import {
   EarningRewardItem,
   NominationPoolInfo,
   YieldPoolInfo,
+  YieldPoolTarget,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
 import { SessionTypes } from '@walletconnect/types';
@@ -252,4 +253,5 @@ export interface EarningStore extends BaseReduxStore {
   yieldPositions: YieldPositionInfo[];
   earningRewards: EarningRewardItem[];
   minAmountPercentMap: Record<string, number>;
+  poolTargetsMap: Record<string, YieldPoolTarget[]>;
 }
