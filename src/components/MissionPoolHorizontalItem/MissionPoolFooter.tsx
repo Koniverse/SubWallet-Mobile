@@ -10,9 +10,10 @@ interface Props {
   data: MissionInfo;
   style: StyleProp<ViewStyle>;
   closeDetailModal?: () => void;
+  disabledJoinNowBtn?: boolean;
 }
 
-export const MissionPoolFooter = ({ data, style, closeDetailModal }: Props) => {
+export const MissionPoolFooter = ({ data, style, closeDetailModal, disabledJoinNowBtn }: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   const onPressJoinNow = async (url: string) => {
@@ -40,7 +41,15 @@ export const MissionPoolFooter = ({ data, style, closeDetailModal }: Props) => {
         onPress={() => data.twitter_url && Linking.openURL(data.twitter_url)}
       />
       <Button
-        icon={<Icon phosphorIcon={PlusCircle} size={'sm'} weight={'fill'} />}
+        disabled={disabledJoinNowBtn}
+        icon={
+          <Icon
+            iconColor={disabledJoinNowBtn ? theme.colorTextLight5 : theme.colorWhite}
+            phosphorIcon={PlusCircle}
+            size={'sm'}
+            weight={'fill'}
+          />
+        }
         size={'xs'}
         shape={'round'}
         onPress={() => onPressJoinNow(data.url)}>

@@ -4283,19 +4283,28 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.44.0.tgz#54f214e2a44f450b7bbc9252891c1879a54e0606"
   integrity sha512-7lQ/7mMCzVNSEfDS4BCqnRnKCFKpcOaPrxMeGTXHX1YQzM/m2BBHjbK2C3dJvjv7GYxMiaTq/HdWQj1xS6ss+A==
 
-"@subwallet/chain-list@0.2.32", "@subwallet/chain-list@0.2.33", "@subwallet/chain-list@^0.2.33":
+"@subwallet/chain-list@0.2.33":
   version "0.2.33"
-  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.2.33.tgz#f905ca6752931935e82accd3df043248676f5f12"
+  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/chain-list/-/chain-list-0.2.33.tgz#f905ca6752931935e82accd3df043248676f5f12"
   integrity sha512-RbQbgUL/7MUkjthsX5YN4wNU/hAJ/1mLEh2SoU+CbewRixqlqaBC12zJKzuzRYoML6AXVLQio779d7vd6WJWMA==
   dependencies:
     "@polkadot/dev" "0.67.167"
     "@polkadot/util" "^12.5.1"
     eventemitter3 "^5.0.1"
 
-"@subwallet/extension-base@^1.1.28-1", "@subwallet/extension-base@^1.1.28-beta.1", "@subwallet/extension-base@^1.1.29-0":
-  version "1.1.28-beta.1"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.1.28-beta.1.tgz#04ae22245947e2c920f47ec47985a6f4a025661d"
-  integrity sha512-ZKFYsTjEW3yLcO/nMLgcTEHDsEx9F6mn3GBWjz4XJq2ds6dgofSQpOeYRfT0mtLaSTMz3ii84KFeu0znwoWePA==
+"@subwallet/chain-list@^0.2.33":
+  version "0.2.34"
+  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/chain-list/-/chain-list-0.2.34.tgz#9493df142054806de6dac629b786ef699bf0daef"
+  integrity sha512-f8k8xmklN/NGIQCtbmyq9n8MZwtTGp99sMTD39mO/nhLQGe+UkFOSi5yM8HDMlK5IhinMZ0EXbjLcnmZZBlAyg==
+  dependencies:
+    "@polkadot/dev" "0.67.167"
+    "@polkadot/util" "^12.5.1"
+    eventemitter3 "^5.0.1"
+
+"@subwallet/extension-base@^1.1.29-0":
+  version "1.1.29-0"
+  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-base/-/extension-base-1.1.29-0.tgz#44a5dc93dbc3969bb8206742bf61fd6253c77522"
+  integrity sha512-JXtC9nE1rnHaOG6o35pLKgbewQGrjvjGGTEa+0cQnGjRUkIcc1e7qzO8ogmpc6a9h98giyky6+LfNc60jFL4bg==
   dependencies:
     "@acala-network/api" "^5.0.2"
     "@apollo/client" "^3.7.14"
@@ -4325,11 +4334,11 @@
     "@reduxjs/toolkit" "^1.9.1"
     "@sora-substrate/type-definitions" "^1.17.7"
     "@substrate/connect" "^0.7.26"
-    "@subwallet/chain-list" "0.2.32"
-    "@subwallet/extension-base" "^1.1.28-1"
-    "@subwallet/extension-chains" "^1.1.28-1"
-    "@subwallet/extension-dapp" "^1.1.28-1"
-    "@subwallet/extension-inject" "^1.1.28-1"
+    "@subwallet/chain-list" "0.2.33"
+    "@subwallet/extension-base" "^1.1.29-0"
+    "@subwallet/extension-chains" "^1.1.29-0"
+    "@subwallet/extension-dapp" "^1.1.29-0"
+    "@subwallet/extension-inject" "^1.1.29-0"
     "@subwallet/keyring" "^0.1.1"
     "@subwallet/ui-keyring" "^0.1.1"
     "@walletconnect/sign-client" "^2.8.4"
@@ -4367,20 +4376,9 @@
     web3-eth-contract "^1.10.0"
     web3-utils "^1.10.0"
 
-"@subwallet/extension-chains@^1.1.28-1":
-  version "1.1.28-1"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.1.28-1.tgz#774c103d1189c15722c990d8eba089dd493077c2"
-  integrity sha512-X1UMO+VpXH7F3iu9isjDoUbUNlVzSILcFbA4GsGlNLS7FN6Ywtehk8q0ICV/49WdQeotY3P0rZgRFSidEwBq3Q==
-  dependencies:
-    "@babel/runtime" "^7.20.6"
-    "@polkadot/networks" "^12.6.1"
-    "@polkadot/util" "^12.6.1"
-    "@polkadot/util-crypto" "^12.6.1"
-    "@subwallet/extension-inject" "^1.1.28-1"
-
 "@subwallet/extension-chains@^1.1.29-0":
   version "1.1.29-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.1.29-0.tgz#21767779a8231ee0098bec56df17888d71fc1608"
+  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-chains/-/extension-chains-1.1.29-0.tgz#21767779a8231ee0098bec56df17888d71fc1608"
   integrity sha512-vIaWq8j58MbQigTKQ74QzBdfmR7X7UXFQ0wSCL1Vg+wcjVlOabQr6S5LCazch6J0Rvz2dqv9NjEAicaSapdQig==
   dependencies:
     "@babel/runtime" "^7.20.6"
@@ -4389,19 +4387,9 @@
     "@polkadot/util-crypto" "^12.6.1"
     "@subwallet/extension-inject" "^1.1.29-0"
 
-"@subwallet/extension-dapp@^1.1.28-1":
-  version "1.1.28-1"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.1.28-1.tgz#10893f19895fabb5afa73dcec249b9bf8e2f8281"
-  integrity sha512-xU6pR+dUcOEPAmsnSXhBHADPpfRWkfsSTr1khjmn+krhr/pRTOnIdOhG4H8lsPWFIye7qbWY+Farv6qveBDhTw==
-  dependencies:
-    "@babel/runtime" "^7.20.6"
-    "@polkadot/util" "^12.6.1"
-    "@polkadot/util-crypto" "^12.6.1"
-    "@subwallet/extension-inject" "^1.1.28-1"
-
 "@subwallet/extension-dapp@^1.1.29-0":
   version "1.1.29-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.1.29-0.tgz#e51351fee8dba102549a42c1f01daa222285c363"
+  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-dapp/-/extension-dapp-1.1.29-0.tgz#e51351fee8dba102549a42c1f01daa222285c363"
   integrity sha512-7hlaqV9b9O7W81ADqMGS8khs2n4zQTNdag2rnG1j2RCRU/fLFsxVahq1jllebvadhFvM6x1HTxIndD2wOFj7Pw==
   dependencies:
     "@babel/runtime" "^7.20.6"
@@ -4409,22 +4397,9 @@
     "@polkadot/util-crypto" "^12.6.1"
     "@subwallet/extension-inject" "^1.1.29-0"
 
-"@subwallet/extension-inject@^1.1.28-1":
-  version "1.1.28-1"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.1.28-1.tgz#51fbe6e2fa78a70cc1a5defcc29f25a6c48936e1"
-  integrity sha512-dxPJ9u+8ugL8aVzkbph+x0iy47XOgWf+UC0XYkd/fOWDSwif2YgqDjHpvmgDTJ3PP9fZTSKaMiDiVw8pM4mvXg==
-  dependencies:
-    "@babel/runtime" "^7.20.6"
-    "@polkadot/rpc-provider" "^10.11.1"
-    "@polkadot/types" "^10.11.1"
-    "@polkadot/util" "^12.6.1"
-    "@polkadot/util-crypto" "^12.6.1"
-    "@polkadot/x-global" "^12.2.1"
-    web3-core "^1.10.0"
-
 "@subwallet/extension-inject@^1.1.29-0":
   version "1.1.29-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.1.29-0.tgz#9c68a1c69c78531836aec1348f742a8921b293a9"
+  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-inject/-/extension-inject-1.1.29-0.tgz#9c68a1c69c78531836aec1348f742a8921b293a9"
   integrity sha512-A+0/cEoj3Dhr/WBvOjOG76abMX7f3ETzNR8mCFMituCC3FAfZSZW0y1T0vRFOR6YOP+oKFK1Kexl/AjGCZj43w==
   dependencies:
     "@babel/runtime" "^7.20.6"
@@ -10753,6 +10728,11 @@ humps@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/humps/-/humps-2.0.1.tgz#dd02ea6081bd0568dc5d073184463957ba9ef9aa"
   integrity sha512-E0eIbrFWUhwfXJmsbdjRQFQPrl5pTEoKlz163j1mTqqUnU9PgR4AgB8AIITzuB3vLBdxZXyZ9TDIrwB2OASz4g==
+
+husky@^8.0.3:
+  version "8.0.3"
+  resolved "https://repo.huaweicloud.com/repository/npm/husky/-/husky-8.0.3.tgz#4936d7212e46d1dea28fef29bb3a108872cd9184"
+  integrity sha512-+dQSyqPh4x1hlO1swXBiNb2HzTDN1I2IGLQx1GrBuiqFJfoMrnZWwVmatvSiO+Iz8fBUnf+lekwNo4c2LlXItg==
 
 i18next@^21.9.2:
   version "21.10.0"

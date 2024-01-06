@@ -16,7 +16,8 @@ export default (theme: ThemeTypes) =>
       left: 0,
       bottom: 0,
       right: 0,
-      height: 70,
+      width: 32,
+      height: 100,
       borderRadius: theme.borderRadiusLG,
     },
     linerGradientStyle: {
@@ -37,18 +38,15 @@ export default (theme: ThemeTypes) =>
       borderRadius: theme.borderRadiusLG,
     },
     missionItemContent: {
-      paddingTop: theme.paddingXXL - 8,
+      paddingVertical: theme.paddingXS,
       paddingHorizontal: theme.paddingSM,
-      paddingBottom: theme.paddingXL,
-      alignItems: 'center',
+      flexDirection: 'row',
       borderRadius: theme.borderRadiusLG,
     },
     missionItemTopContent: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
     missionItemBottomContent: { gap: theme.paddingXS },
     missionItemName: {
       color: theme.colorWhite,
-      paddingTop: theme.padding,
-      paddingBottom: theme.paddingXXS,
       ...FontSemiBold,
     },
     missionItemBottomText: { color: theme.colorWhite, ...FontSemiBold },
@@ -58,10 +56,10 @@ export default (theme: ThemeTypes) =>
       paddingTop: theme.paddingXS,
       paddingBottom: theme.padding,
     },
-    missionItemTimeline: { color: theme.colorSuccess, textAlign: 'center', ...FontSemiBold },
+    missionItemTimeline: { color: theme.colorTextTertiary, ...FontSemiBold },
     missionItemRow: {
       flexDirection: 'row',
-      alignItems: 'center',
+      alignItems: 'flex-end',
       gap: theme.paddingXXS,
     },
   });
