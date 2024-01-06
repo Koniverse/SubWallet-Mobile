@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform, TouchableOpacity, View } from 'react-native';
-import { Image, Typography } from 'components/design-system-ui';
+import { Divider, Image, Typography } from 'components/design-system-ui';
 import { BlurView } from '@react-native-community/blur';
 import { IconWeight } from 'phosphor-react-native';
 import { MissionInfo } from 'types/missionPool';
@@ -10,8 +10,6 @@ import createStyles from './style';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useMissionPools } from 'hooks/useMissionPools';
 import { MissionPoolTag } from 'components/MissionPoolHorizontalItem/MissionPoolTag';
-import { MissionPoolFooter } from 'components/MissionPoolHorizontalItem/MissionPoolFooter';
-import LinearGradient from 'react-native-linear-gradient';
 
 export enum TagType {
   FCFS = 'fcfs',
@@ -45,34 +43,26 @@ export const MissionPoolHorizontalItem = ({ data, onPressItem }: Props) => {
       {!isAndroid && (
         <BlurView style={styles.backdropImgBlurView} blurType={'dark'} blurAmount={10} overlayColor={'transparent'} />
       )}
-      <LinearGradient
-        locations={isAndroid ? [0, 0.03, 0.15] : [0, 0.035, 0.3]}
-        colors={['#0C0C0C', isAndroid ? theme.colorBgMask : 'transparent', '#0C0C0C']}
-        style={styles.linerGradientStyle}
-      />
       <View style={styles.missionItemContent}>
-        <Image src={{ uri: data.logo }} style={{ width: 64, height: 64 }} />
-        <Typography.Text size={'lg'} ellipsis style={styles.missionItemName}>
-          {data.name}
-        </Typography.Text>
-        <View style={styles.missionItemRow}>
-          <Typography.Text style={{ color: theme.colorTextTertiary, ...FontSemiBold }}>{'Rewards:'}</Typography.Text>
-          <Typography.Text style={{ color: theme.colorSuccess, ...FontSemiBold }}>{data.reward}</Typography.Text>
-        </View>
-        <Typography.Text ellipsis numberOfLines={2} size={'sm'} style={styles.missionItemDescription}>
-          {data.description}
-        </Typography.Text>
-        <View style={[styles.missionItemRow, { paddingBottom: theme.padding }]}>
-          <Typography.Text style={{ color: theme.colorTextTertiary, ...FontSemiBold }}>{'Timeline:'}</Typography.Text>
-          <Typography.Text ellipsis style={styles.missionItemTimeline}>
+        <Image src={{ uri: data.logo }} style={{ width: 40, height: 40, marginTop: theme.paddingXS }} />
+        <View style={{ flex: 1, paddingLeft: theme.paddingSM }}>
+          <Typography.Text size={'md'} ellipsis style={styles.missionItemName}>
+            {data.name}
+          </Typography.Text>
+          <Typography.Text size={'sm'} ellipsis style={styles.missionItemTimeline}>
             {timeline}
           </Typography.Text>
+          <View style={styles.missionItemRow}>
+            <Typography.Text size={'sm'} style={{ color: theme.colorTextTertiary, ...FontSemiBold }}>
+              {'Rewards:'}
+            </Typography.Text>
+            <Typography.Text style={{ color: theme.colorSuccess, ...FontSemiBold }}>{data.reward}</Typography.Text>
+          </View>
+          <Divider color={theme.colorBgDivider} style={{ marginVertical: theme.marginXS }} />
+          <View style={{ alignItems: 'flex-start' }}>
+            <MissionPoolTag data={data} />
+          </View>
         </View>
-        <MissionPoolTag data={data} />
-        <MissionPoolFooter
-          data={data}
-          style={{ flexDirection: 'row', paddingTop: theme.paddingXXL - 8, gap: theme.padding }}
-        />
       </View>
     </TouchableOpacity>
   );
