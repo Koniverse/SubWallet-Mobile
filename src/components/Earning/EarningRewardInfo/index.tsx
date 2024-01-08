@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { EarningStatus, YieldPoolInfo, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
-import { Button, Number } from 'components/design-system-ui';
+import { ActivityIndicator, Button, Number } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
 import { StakingStatusUi } from 'constants/stakingStatusUi';
 import useYieldRewardTotal from 'hooks/earning/useYieldRewardTotal';
@@ -42,7 +42,10 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
       case YieldPoolType.NATIVE_STAKING:
         return false;
       case YieldPoolType.NOMINATION_POOL:
-        return new BigN(total).gt(BN_ZERO);
+        if (total) {
+          return new BigN(total).gt(BN_ZERO);
+        }
+        return false;
     }
   }, [total, type]);
 
@@ -94,16 +97,20 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
       <View style={styles.withdrawSeparator} />
       <View style={styles.withdrawButtonContainer}>
         {isShowBalance ? (
-          <Number
-            value={total}
-            decimal={inputAsset.decimals || 0}
-            suffix={inputAsset.symbol}
-            size={theme.fontSizeHeading4}
-            textStyle={styles.totalUnstake}
-            subFloatNumber={true}
-            decimalOpacity={0.45}
-            unitOpacity={0.45}
-          />
+          total ? (
+            <Number
+              value={total}
+              decimal={inputAsset.decimals || 0}
+              suffix={inputAsset.symbol}
+              size={theme.fontSizeHeading4}
+              textStyle={styles.totalUnstake}
+              subFloatNumber={true}
+              decimalOpacity={0.45}
+              unitOpacity={0.45}
+            />
+          ) : (
+            <ActivityIndicator size={20} />
+          )
         ) : (
           <HideBalanceItem isShowConvertedBalance={false} />
         )}

@@ -121,8 +121,28 @@ export const Confirmations = () => {
           return i18n.header.claimRewardsConfirmation;
         case ExtrinsicType.STAKING_CANCEL_UNSTAKE:
           return i18n.header.cancelUnstakeConfirmation;
+        case ExtrinsicType.MINT_VDOT:
+          return i18n.header.mintVDOTTransaction;
+        case ExtrinsicType.MINT_LDOT:
+          return i18n.header.mintLDOTTransaction;
+        case ExtrinsicType.MINT_SDOT:
+          return i18n.header.mintSDOTTransaction;
+        case ExtrinsicType.MINT_QDOT:
+          return i18n.header.mintQDOTTransaction;
+        case ExtrinsicType.MINT_STDOT:
+          return i18n.header.mintSTDOTTransaction;
+        case ExtrinsicType.REDEEM_VDOT:
+          return i18n.header.redeemVDOTTransaction;
+        case ExtrinsicType.REDEEM_LDOT:
+          return i18n.header.redeemLDOTTransaction;
+        case ExtrinsicType.REDEEM_SDOT:
+          return i18n.header.redeemSDOTTransaction;
+        case ExtrinsicType.REDEEM_QDOT:
+          return i18n.header.redeemQDOTTransaction;
+        case ExtrinsicType.REDEEM_STDOT:
+          return i18n.header.redeemSTDOTTransaction;
         default:
-          return 'Transaction confirm';
+          return i18n.header.transactionConfirmation;
       }
     } else {
       return titleMap[confirmation.type] || '';

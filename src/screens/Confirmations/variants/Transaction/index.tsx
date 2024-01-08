@@ -4,6 +4,7 @@ import { BaseTransactionConfirmation } from 'screens/Confirmations/variants/Tran
 import BondTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Bond';
 import CancelUnstakeTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/CancelUnstake';
 import ClaimRewardTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/ClaimReward';
+import JoinYieldPoolConfirmation from 'screens/Confirmations/variants/Transaction/variants/JoinYieldPool';
 import TransferBlock from 'screens/Confirmations/variants/Transaction/variants/TransferBlock';
 import WithdrawTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Withdraw';
 import { ConfirmationQueueItem } from 'stores/base/RequestState';
@@ -48,6 +49,12 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
       return ClaimRewardTransactionConfirmation;
     case ExtrinsicType.STAKING_CANCEL_UNSTAKE:
       return CancelUnstakeTransactionConfirmation;
+    case ExtrinsicType.MINT_QDOT:
+    case ExtrinsicType.MINT_VDOT:
+    case ExtrinsicType.MINT_LDOT:
+    case ExtrinsicType.MINT_SDOT:
+    case ExtrinsicType.MINT_STDOT:
+      return JoinYieldPoolConfirmation;
     case ExtrinsicType.REDEEM_QDOT:
     case ExtrinsicType.REDEEM_VDOT:
     case ExtrinsicType.REDEEM_LDOT:

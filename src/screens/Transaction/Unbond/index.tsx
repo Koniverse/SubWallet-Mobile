@@ -1,4 +1,4 @@
-import { SpecialYieldPoolInfo, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
+import { YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
 import { RequestYieldLeave } from '@subwallet/extension-base/types/yield/actions/others';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
@@ -116,16 +116,19 @@ export const Unbond = ({
   const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
   const accountInfo = useGetAccountByAddress(fromValue);
 
-  const derivateSlug = useMemo(() => {
-    if ([YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(poolInfo.type)) {
-      const _pool = poolInfo as SpecialYieldPoolInfo;
-      return _pool.metadata.derivativeAssets?.[0];
-    } else {
-      return undefined;
+  const bondedSlug = useMemo(() => {
+    switch (poolInfo.type) {
+      case YieldPoolType.LIQUID_STAKING:
+        return poolInfo.metadata.derivativeAssets[0];
+      case YieldPoolType.LENDING:
+      case YieldPoolType.NATIVE_STAKING:
+      case YieldPoolType.NOMINATION_POOL:
+      default:
+        return poolInfo.metadata.inputAsset;
     }
   }, [poolInfo]);
 
-  const bondedAsset = useGetChainAssetInfo(derivateSlug || poolInfo.metadata.inputAsset);
+  const bondedAsset = useGetChainAssetInfo(bondedSlug || poolInfo.metadata.inputAsset);
   const decimals = bondedAsset?.decimals || 0;
   const symbol = bondedAsset?.symbol || '';
 
@@ -151,12 +154,25 @@ export const Unbond = ({
   }, [poolChain, poolType]);
 
   const bondedValue = useMemo((): string => {
-    if (!mustChooseValidator) {
-      return positionInfo?.activeStake || '0';
-    } else {
-      return selectedValidator?.activeStake || '0';
+    switch (poolInfo.type) {
+      case YieldPoolType.NATIVE_STAKING:
+        if (!mustChooseValidator) {
+          return positionInfo?.activeStake || '0';
+        } else {
+          return selectedValidator?.activeStake || '0';
+        }
+      case YieldPoolType.LENDING: {
+        const input = poolInfo.metadata.inputAsset;
+        const exchaneRate = poolInfo.statistic?.assetEarning.find(item => item.slug === input)?.exchangeRate || 1;
+
+        return new BigN(positionInfo?.activeStake || '0').multipliedBy(exchaneRate).toFixed(0);
+      }
+      case YieldPoolType.LIQUID_STAKING:
+      case YieldPoolType.NOMINATION_POOL:
+      default:
+        return positionInfo?.activeStake || '0';
     }
-  }, [mustChooseValidator, positionInfo?.activeStake, selectedValidator?.activeStake]);
+  }, [poolInfo, mustChooseValidator, positionInfo?.activeStake, selectedValidator?.activeStake]);
 
   const minValue = useMemo((): string => {
     if (poolType === YieldPoolType.NOMINATION_POOL) {
@@ -173,6 +189,16 @@ export const Unbond = ({
     selectedValidator?.validatorMinStake,
     poolType,
   ]);
+
+  const minWithdraw = useMemo((): string => {
+    switch (poolInfo.type) {
+      case YieldPoolType.LENDING:
+      case YieldPoolType.LIQUID_STAKING:
+        return poolInfo.statistic?.minWithdrawal || '0';
+      default:
+        return '0';
+    }
+  }, [poolInfo]);
 
   const unBondedTime = useMemo((): string => {
     if (poolInfo.statistic && 'unstakingPeriod' in poolInfo.statistic) {
@@ -278,6 +304,8 @@ export const Unbond = ({
   const amountInputRules = useMemo(
     () => ({
       validate: (value: string): Promise<ValidateResult> => {
+        const _minWithdraw = new BigN(minWithdraw);
+        const _minWithdrawString = formatBalance(_minWithdraw, decimals);
         const _minValue = new BigN(minValue);
         const _maxValue = new BigN(bondedValue);
         const _middleValue = _maxValue.minus(_minValue);
@@ -293,6 +321,12 @@ export const Unbond = ({
           return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeGreaterThanZero, name));
         }
 
+        if (val.lt(_minWithdraw)) {
+          return Promise.resolve(
+            i18n.formatString(i18n.errorMessage.unbondMustBeEqualOrGreaterThan, name, _minWithdrawString),
+          );
+        }
+
         if (_middleValue.lt(BN_ZERO) && !val.eq(_maxValue)) {
           return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeEqual, name, _maxString));
         }
@@ -304,7 +338,7 @@ export const Unbond = ({
         return Promise.resolve(undefined);
       },
     }),
-    [bondedValue, decimals, minValue],
+    [bondedValue, decimals, minValue, minWithdraw],
   );
 
   const onChangeNominator = (value: string) => {
@@ -354,7 +388,7 @@ export const Unbond = ({
                 accountSelectorRef={accountSelectorRef}
               />
 
-              <GeneralFreeBalance address={fromValue} chain={chainValue} tokenSlug={derivateSlug} />
+              <GeneralFreeBalance address={fromValue} chain={chainValue} />
 
               {mustChooseValidator && (
                 <>
