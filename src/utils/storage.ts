@@ -1,6 +1,8 @@
 import { mobileBackup, mobileRestore } from 'messaging/index';
 import { MMKV } from 'react-native-mmkv';
 import { Storage } from 'redux-persist';
+import { Platform } from 'react-native';
+import { getSystemVersion } from 'react-native-device-info';
 import { addLazy } from '@subwallet/extension-base/utils/lazy';
 
 const storage = new MMKV();
@@ -131,17 +133,17 @@ export const backupStorageData = (forceBackup: boolean = false, markAppIsSetup: 
     .catch(e => console.debug('** Backup storage data error:', e));
 };
 
-// const isIOS17 = Platform.OS === 'ios' && getSystemVersion().startsWith('17');
+const isIOS17 = Platform.OS === 'ios' && getSystemVersion().startsWith('17');
 
 export const triggerBackup = (message = '*** Backup storage') => {
   // Backup logic with device not ios 17
-  // if (!isIOS17) {
-  const now = new Date().getTime();
-  const lastBackupTimestamp = mmkvStore.getNumber('webRunnerLastBackupTimestamp');
-  if (lastBackupTimestamp && now - lastBackupTimestamp < 3600000) {
-    return;
+  if (!isIOS17) {
+    const now = new Date().getTime();
+    const lastBackupTimestamp = mmkvStore.getNumber('webRunnerLastBackupTimestamp');
+    if (lastBackupTimestamp && now - lastBackupTimestamp < 3600000) {
+      return;
+    }
   }
-  // }
 
   addLazy(
     'backupStorageData',
@@ -165,11 +167,11 @@ export const triggerBackupOnInit = () => {
 
 export const restoreStorageData = () => {
   // Todo: Consider to remove this condition
-  // if (!isIOS17) {
-  //   // Restore empty storage
-  //   mobileRestore({}).catch(console.error);
-  //   return;
-  // }
+  if (!isIOS17) {
+    // Restore empty storage
+    mobileRestore({}).catch(console.error);
+    return;
+  }
 
   const indexedDB = mmkvStore.getString('backup-indexedDB');
   const localstorage = mmkvStore.getString('backup-localstorage');
