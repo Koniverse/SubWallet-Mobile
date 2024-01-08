@@ -1,3 +1,8 @@
+## 1.1.24 (288)
+- Update hyperlink instruction for some screens (#1329)
+- Show incorrect screen in case Attach account (#1333)
+- Implement auto recover on android and ios lower than 17 (#1330)
+
 ## 1.1.24 (287)
 - Update web-runner v1.1.30 (#1322)
 - Update new layout for mission pool (#1280)
