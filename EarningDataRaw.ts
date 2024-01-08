@@ -59,7 +59,7 @@ export const EARNING_DATA_RAW: Record<YieldPoolType, BoxProps[]> = {
       icon: Eye,
       title: 'Manage your stake',
       description:
-        'You need to monitor your stake constantly and change validators/collators when needed as staking status can fluctuate over time.',
+        'You need to monitor your stake constantly and change {validatorType} when needed as staking status can fluctuate over time.',
       iconColor: '#008dff',
     },
   ],

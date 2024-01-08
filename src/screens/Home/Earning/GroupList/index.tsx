@@ -90,7 +90,9 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         if (poolGroup.poolListLength > 1) {
           navigation.navigate('EarningPoolList', { group: poolGroup.group });
         } else if (poolGroup.poolListLength === 1) {
-          const standAloneTokenSlug = Object.values(poolInfoMap).find(i => i.group === poolGroup.group)?.slug;
+          const standAloneTokenSlug = Object.values(poolInfoMap).find(
+            i => i.group === poolGroup.group && i.chain === poolGroup.chain,
+          )?.slug;
           rootNavigation.navigate('Drawer', {
             screen: 'TransactionAction',
             params: {

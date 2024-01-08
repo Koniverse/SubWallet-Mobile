@@ -15,6 +15,7 @@ const EarningScreen = () => {
       screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <StakingScreenStack.Screen
         name="EarningList"
+        initialParams={{ step: 1 }}
         component={withPageWrapper(EarningList, ['earning', 'price', 'balance'])}
       />
       <StakingScreenStack.Screen name="EarningPoolList" component={withPageWrapper(PoolList, ['earning', 'price'])} />

@@ -177,7 +177,10 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   );
 
   const onBack = useCallback(() => {
-    navigation.goBack();
+    navigation.navigate('Home', {
+      screen: 'Main',
+      params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 2 } } },
+    });
   }, [navigation]);
 
   useEffect(() => {

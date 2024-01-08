@@ -19,6 +19,7 @@ export interface YieldGroupInfo {
   balance: BalanceValueInfo;
   isTestnet: boolean;
   name?: string;
+  chain: string;
   poolListLength: number;
 }
 

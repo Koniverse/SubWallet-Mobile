@@ -1,7 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type EarningScreenStackParamList = {
-  EarningList: undefined;
+  EarningList: { step: number };
   EarningPoolList: {
     group: string;
   };
@@ -17,5 +17,6 @@ export type EarningScreenNavigationProps = NavigationProps['navigation'];
 // export type ClaimRewardScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'ClaimReward'>;
 // export type WithDrawScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'Withdraw'>;
 // export type CancelUnstakeScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'CancelUnstake'>;
+export type EarningListProps = NativeStackScreenProps<EarningScreenStackParamList, 'EarningList'>;
 export type EarningPoolListProps = NativeStackScreenProps<EarningScreenStackParamList, 'EarningPoolList'>;
 export type EarningPositionDetailProps = NativeStackScreenProps<EarningScreenStackParamList, 'EarningPositionDetail'>;

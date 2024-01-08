@@ -62,6 +62,7 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
             balance: freeBalance,
             isTestnet: chainInfo.isTestnet,
             name: token.name,
+            chain: chain,
             poolListLength: 1,
           };
         }
