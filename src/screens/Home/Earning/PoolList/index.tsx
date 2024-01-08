@@ -139,17 +139,6 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     [navigation],
   );
 
-  // const handleOpenDetailModal = useCallback((slug: string): void => {
-  //   Keyboard.dismiss();
-  //   setSelectedSlug(slug);
-  //   setDetailModalVisible(true);
-  // }, []);
-
-  // const onChangeModalVisible = useCallback((value: boolean) => {
-  //   setSelectedSlug('');
-  //   setDetailModalVisible(value);
-  // }, []);
-
   const handleBack = useCallback(() => navigation.goBack(), [navigation]);
 
   const renderEmpty = useCallback(() => {
@@ -172,13 +161,6 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     },
     [handleOnStakeMore],
   );
-
-  // const rightIconOption = useMemo(() => {
-  //   return {
-  //     icon: Plus,
-  //     onPress: handlePressStartStaking,
-  //   };
-  // }, [handlePressStartStaking]);
 
   const searchFunction = useCallback(
     (_items: YieldPoolInfo[], searchString: string) => {
@@ -205,46 +187,35 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   }, [isFocused]);
 
   return (
-    <>
-      <FlatListScreen
-        style={styles.wrapper}
-        title={i18n.header.earning}
-        titleTextAlign={'left'}
-        items={items}
-        showLeftBtn={true}
-        placeholder={i18n.placeholder.searchToken}
-        autoFocus={false}
-        renderListEmptyComponent={renderEmpty}
-        searchFunction={searchFunction}
-        flatListStyle={styles.container}
-        filterOptions={FILTER_OPTIONS}
-        filterFunction={filterFunction}
-        renderItem={renderItem}
-        onPressBack={onBack}
-        // rightIconOption={rightIconOption}
-        isShowFilterBtn
-        isShowMainHeader
-        refreshControl={
-          <RefreshControl
-            style={styles.refreshIndicator}
-            tintColor={ColorMap.light}
-            refreshing={isRefresh}
-            onRefresh={() => {
-              refresh(reloadCron({ data: 'staking' }));
-            }}
-          />
-        }
-      />
-
-      {/*{selectedSlug && (*/}
-      {/*  <EarningPoolDetailModal*/}
-      {/*    modalVisible={detailModalVisible}*/}
-      {/*    slug={selectedSlug}*/}
-      {/*    setVisible={onChangeModalVisible}*/}
-      {/*    onStakeMore={handleOnStakeMore}*/}
-      {/*  />*/}
-      {/*)}*/}
-    </>
+    <FlatListScreen
+      style={styles.wrapper}
+      title={i18n.header.earning}
+      titleTextAlign={'left'}
+      items={items}
+      showLeftBtn={true}
+      placeholder={i18n.placeholder.searchToken}
+      autoFocus={false}
+      renderListEmptyComponent={renderEmpty}
+      searchFunction={searchFunction}
+      flatListStyle={styles.container}
+      filterOptions={FILTER_OPTIONS}
+      filterFunction={filterFunction}
+      renderItem={renderItem}
+      onPressBack={onBack}
+      // rightIconOption={rightIconOption}
+      isShowFilterBtn
+      isShowMainHeader
+      refreshControl={
+        <RefreshControl
+          style={styles.refreshIndicator}
+          tintColor={ColorMap.light}
+          refreshing={isRefresh}
+          onRefresh={() => {
+            refresh(reloadCron({ data: 'staking' }));
+          }}
+        />
+      }
+    />
   );
 };
 

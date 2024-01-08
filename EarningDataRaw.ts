@@ -1,6 +1,7 @@
 import { YieldPoolType } from '@subwallet/extension-base/types';
-import { CheckCircle, Coins, Eye, ThumbsUp } from 'phosphor-react-native';
+import { CheckCircle, ClockClockwise, Coins, DownloadSimple, Eye, ThumbsUp } from 'phosphor-react-native';
 import { BoxProps } from 'components/Modal/Earning/EarningPoolDetailModal';
+import { UnbondBoxProps } from 'screens/Transaction/Unbond';
 
 export const EARNING_DATA_RAW: Record<YieldPoolType, BoxProps[]> = {
   [YieldPoolType.NOMINATION_POOL]: [
@@ -127,8 +128,23 @@ export const STAKE_ALERT_DATA = {
     'Don’t stake all your funds. Keep in mind that you need at least {tokenAmount} in your free balance to pay gas fees for claiming rewards, unstaking and withdrawing',
 };
 
-export const UNSTAKE_ALERT_DATA = {
-  title: 'Pay attention!',
-  description:
-    'Once unstaked, your funds will become available for withdrawal after {periodNumb}. Keep in mind that you need to withdraw manually, and no rewards are available during the {periodNumb} unstaking period.',
-};
+export const UNSTAKE_ALERT_DATA: UnbondBoxProps[] = [
+  {
+    title: 'Wait time',
+    description: 'Once unstaked, your funds will become available for withdrawal after {unBondedTime}',
+    icon: ClockClockwise,
+    iconColor: '#2595e6',
+  },
+  {
+    title: 'No rewards',
+    description: 'During the unstaking period of {unBondedTime}, your tokens produce no rewards',
+    icon: Coins,
+    iconColor: '#e6dc25',
+  },
+  {
+    title: 'Manual withdrawal',
+    description: 'Keep in mind that you need to withdraw manually after the wait time is over',
+    icon: DownloadSimple,
+    iconColor: '#aada62',
+  },
+];

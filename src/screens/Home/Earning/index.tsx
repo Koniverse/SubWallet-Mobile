@@ -18,10 +18,6 @@ const EarningScreen = () => {
         component={withPageWrapper(EarningList, ['earning', 'price', 'balance'])}
       />
       <StakingScreenStack.Screen name="EarningPoolList" component={withPageWrapper(PoolList, ['earning', 'price'])} />
-      {/*<StakingScreenStack.Screen*/}
-      {/*  name="EarningPositionList"*/}
-      {/*  component={withPageWrapper(PositionList, ['earning', 'price', 'balance'])}*/}
-      {/*/>*/}
       <StakingScreenStack.Screen
         name="EarningPositionDetail"
         component={withPageWrapper(PositionDetail, ['earning', 'price', 'balance'])}

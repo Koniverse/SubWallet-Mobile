@@ -84,8 +84,6 @@ export const PositionList = ({ setStep }: Props) => {
       });
   }, [assetInfoMap, data, poolInfoMap, priceMap]);
 
-  // const [autoNavigate, setAutoNavigate] = useState<boolean>(cacheData[currentAccount?.address || ''] || false);
-
   const handleOnPress = useCallback(
     (positionInfo: ExtraYieldPositionInfo): (() => void) => {
       return () => {
@@ -149,17 +147,6 @@ export const PositionList = ({ setStep }: Props) => {
       cacheData = { [address]: !items.length };
     }
   }, [items.length, currentAccount, isFocused]);
-
-  // useEffect(() => {
-  //   if (autoNavigate && isFocused) {
-  //     Keyboard.dismiss();
-  //     navigation.navigate('EarningGroupList');
-  //     setAutoNavigate(false);
-  //     for (const address of Object.keys(cacheData)) {
-  //       cacheData[address] = false;
-  //     }
-  //   }
-  // }, [autoNavigate, navigation, isFocused]);
 
   useEffect(() => {
     if (isFocused) {

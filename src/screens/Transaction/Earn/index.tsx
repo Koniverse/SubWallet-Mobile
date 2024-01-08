@@ -22,7 +22,7 @@ import { addLazy } from '@subwallet/extension-base/utils/lazy';
 import { FormItem } from 'components/common/FormItem';
 import { ActivityIndicator, Button, Divider, Icon, Number, Typography } from 'components/design-system-ui';
 import { AccountSelectField } from 'components/Field/AccountSelect';
-import { InputAmount } from 'components/Input/InputAmount';
+import { getInputValuesFromString, InputAmount } from 'components/Input/InputAmount';
 import EarningProcessItem from 'components/Item/Earning/EarningProcessItem';
 import MetaInfo from 'components/MetaInfo';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
@@ -64,6 +64,8 @@ import createStyle from './style';
 import { useYieldPositionDetail } from 'hooks/earning';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
+import { STAKE_ALERT_DATA } from '../../../../EarningDataRaw';
 
 interface _YieldAssetExpectedEarning extends YieldAssetExpectedEarning {
   symbol: string;
@@ -186,6 +188,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [checkMintLoading, setCheckMintLoading] = useState(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const isDisabledButton = useMemo(
     () =>
@@ -290,6 +293,15 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
     return _totalFee;
   }, [chainAsset, priceMap, processState.feeStructure]);
+
+  const existentialDeposit = useMemo(() => {
+    const assetInfo = Object.values(chainAsset).find(v => v.originChain === chain);
+    if (assetInfo) {
+      return assetInfo.minAmount || '0';
+    }
+
+    return '0';
+  }, [chainAsset, chain]);
 
   const handleOpenDetailModal = useCallback((): void => {
     Keyboard.dismiss();
@@ -535,6 +547,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [getValues, onError, onSuccess, poolInfo, poolTargetsMap, processState, slug]);
 
   useEffect(() => {
+    setTimeout(() => setIsLoading(false), 350);
+  }, []);
+
+  useEffect(() => {
     setAsset(inputAsset.slug || '');
   }, [inputAsset.slug, setAsset]);
 
@@ -650,135 +666,156 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           // disableRightButton={!chainStakingMetadata || loading}
           onPressRightHeaderBtn={handleOpenDetailModal}>
           <>
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              style={{ flex: 1, paddingHorizontal: 16, marginTop: 16 }}
-              keyboardShouldPersistTaps={'handled'}>
-              {processState.steps && (
+            <>
+              {!isLoading ? (
                 <>
-                  <View>
-                    {stepLoading ? (
-                      <View style={styles.loadingStepContainer}>
-                        <ActivityIndicator size={theme.sizeLG} />
-                      </View>
-                    ) : (
-                      <EarningProcessItem
-                        index={processState.currentStep}
-                        stepName={processState.steps[processState.currentStep]?.name}
-                        stepStatus={processState.stepResults[processState.currentStep]?.status}
-                      />
+                  <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    style={{ flex: 1, paddingHorizontal: 16, marginTop: 16 }}
+                    keyboardShouldPersistTaps={'handled'}>
+                    {processState.steps && (
+                      <>
+                        <View>
+                          {stepLoading ? (
+                            <View style={styles.loadingStepContainer}>
+                              <ActivityIndicator size={theme.sizeLG} />
+                            </View>
+                          ) : (
+                            <EarningProcessItem
+                              index={processState.currentStep}
+                              stepName={processState.steps[processState.currentStep]?.name}
+                              stepStatus={processState.stepResults[processState.currentStep]?.status}
+                            />
+                          )}
+                        </View>
+
+                        <Divider style={{ marginVertical: theme.marginSM }} />
+                      </>
                     )}
-                  </View>
-
-                  <Divider style={{ marginVertical: theme.marginSM }} />
-                </>
-              )}
-              <AccountSelector
-                items={accountSelectorList}
-                selectedValueMap={{ [currentFrom]: true }}
-                accountSelectorRef={accountSelectorRef}
-                disabled={!isAllAccount}
-                onSelectItem={item => {
-                  setFrom(item.address);
-                  fromRef.current = item.address;
-                  accountSelectorRef && accountSelectorRef.current?.onCloseModal();
-                }}
-                renderSelected={() => (
-                  <AccountSelectField accountName={accountInfo?.name || ''} value={currentFrom} showIcon />
-                )}
-              />
-              <FreeBalanceToYield
-                address={currentFrom}
-                label={`${i18n.inputLabel.availableBalance}:`}
-                onBalanceReady={setIsBalanceReady}
-                tokens={balanceTokens}
-                hidden={nextStepType !== YieldStepType.XCM}
-              />
-              <View>
-                <FreeBalance
-                  address={currentFrom}
-                  chain={poolInfo.chain}
-                  hidden={[YieldStepType.XCM].includes(nextStepType)}
-                  isSubscribe={true}
-                  label={`${i18n.inputLabel.availableBalance}:`}
-                  tokenSlug={inputAsset.slug}
-                />
-
-                <FormItem
-                  style={{ marginBottom: theme.marginXS }}
-                  control={control}
-                  // rules={amountInputRules}
-                  render={({ field: { value, ref, onChange } }) => (
-                    <InputAmount
-                      ref={ref}
-                      value={value}
-                      maxValue={'1'} // TODO
-                      onChangeValue={onChange}
-                      decimals={assetDecimals}
-                      disable={processState.currentStep !== 0}
-                      showMaxButton={false}
+                    <AccountSelector
+                      items={accountSelectorList}
+                      selectedValueMap={{ [currentFrom]: true }}
+                      accountSelectorRef={accountSelectorRef}
+                      disabled={!isAllAccount}
+                      onSelectItem={item => {
+                        setFrom(item.address);
+                        fromRef.current = item.address;
+                        accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                      }}
+                      renderSelected={() => (
+                        <AccountSelectField accountName={accountInfo?.name || ''} value={currentFrom} showIcon />
+                      )}
                     />
-                  )}
-                  name={'value'}
-                />
+                    <FreeBalanceToYield
+                      address={currentFrom}
+                      label={`${i18n.inputLabel.availableBalance}:`}
+                      onBalanceReady={setIsBalanceReady}
+                      tokens={balanceTokens}
+                      hidden={nextStepType !== YieldStepType.XCM}
+                    />
+                    <View>
+                      <FreeBalance
+                        address={currentFrom}
+                        chain={poolInfo.chain}
+                        hidden={[YieldStepType.XCM].includes(nextStepType)}
+                        isSubscribe={true}
+                        label={`${i18n.inputLabel.availableBalance}:`}
+                        tokenSlug={inputAsset.slug}
+                      />
 
-                <Number
-                  decimal={0}
-                  decimalColor={theme.colorTextLight4}
-                  intColor={theme.colorTextLight4}
-                  prefix={'$'}
-                  unitColor={theme.colorTextLight4}
-                  value={transformAmount}
-                  style={{ marginBottom: theme.marginSM }}
-                />
+                      <FormItem
+                        style={{ marginBottom: theme.marginXS }}
+                        control={control}
+                        // rules={amountInputRules}
+                        render={({ field: { value, ref, onChange } }) => (
+                          <InputAmount
+                            ref={ref}
+                            value={value}
+                            maxValue={'1'} // TODO
+                            onChangeValue={onChange}
+                            decimals={assetDecimals}
+                            disable={processState.currentStep !== 0}
+                            showMaxButton={false}
+                          />
+                        )}
+                        name={'value'}
+                      />
 
-                {poolType === YieldPoolType.NOMINATION_POOL && (
-                  <EarningPoolSelector
-                    from={currentFrom}
-                    slug={slug}
-                    chain={poolChain}
-                    onSelectItem={(value: string) => {
-                      setValue('target', value);
-                    }}
-                    poolLoading={targetLoading}
-                    targetPool={poolTarget}
-                    disabled={submitLoading}
-                    setForceFetchValidator={setForceFetchValidator}
-                  />
-                )}
+                      <Number
+                        decimal={0}
+                        decimalColor={theme.colorTextLight4}
+                        intColor={theme.colorTextLight4}
+                        prefix={'$'}
+                        unitColor={theme.colorTextLight4}
+                        value={transformAmount}
+                        style={{ marginBottom: theme.marginSM }}
+                      />
 
-                {poolType === YieldPoolType.NATIVE_STAKING && (
-                  <EarningValidatorSelector
-                    from={currentFrom}
-                    chain={chain}
-                    slug={slug}
-                    setForceFetchValidator={setForceFetchValidator}
-                    validatorLoading={targetLoading}
-                    selectedValidator={poolTarget}
-                    onSelectItem={(value: string) => setValue('target', value)}
-                    disabled={submitLoading}
-                    ref={validatorSelectorRef}
-                  />
-                )}
-              </View>
-              {renderMetaInfo()}
-            </ScrollView>
-            <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
-              <Button
-                disabled={isDisabledButton}
-                loading={submitLoading}
-                icon={
-                  <Icon
-                    phosphorIcon={PlusCircle}
-                    weight={'fill'}
-                    size={'lg'}
-                    iconColor={isDisabledButton ? theme.colorTextLight5 : theme.colorWhite}
-                  />
-                }
-                onPress={preCheckAction(onSubmit, ExtrinsicType.JOIN_YIELD_POOL)}>
-                {i18n.buttonTitles.stake}
-              </Button>
-            </View>
+                      {poolType === YieldPoolType.NOMINATION_POOL && (
+                        <EarningPoolSelector
+                          from={currentFrom}
+                          slug={slug}
+                          chain={poolChain}
+                          onSelectItem={(value: string) => {
+                            setValue('target', value);
+                          }}
+                          poolLoading={targetLoading}
+                          targetPool={poolTarget}
+                          disabled={submitLoading}
+                          setForceFetchValidator={setForceFetchValidator}
+                        />
+                      )}
+
+                      {poolType === YieldPoolType.NATIVE_STAKING && (
+                        <EarningValidatorSelector
+                          from={currentFrom}
+                          chain={chain}
+                          slug={slug}
+                          setForceFetchValidator={setForceFetchValidator}
+                          validatorLoading={targetLoading}
+                          selectedValidator={poolTarget}
+                          onSelectItem={(value: string) => setValue('target', value)}
+                          disabled={submitLoading}
+                          ref={validatorSelectorRef}
+                        />
+                      )}
+                    </View>
+                    {renderMetaInfo()}
+
+                    <View style={{ marginTop: theme.marginSM }}>
+                      <AlertBox
+                        type={'warning'}
+                        title={STAKE_ALERT_DATA.title}
+                        description={STAKE_ALERT_DATA.description.replace(
+                          '{tokenAmount}',
+                          `${getInputValuesFromString(existentialDeposit, assetDecimals)} ${inputAsset.symbol}`,
+                        )}
+                      />
+                    </View>
+                  </ScrollView>
+                  <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
+                    <Button
+                      disabled={isDisabledButton}
+                      loading={submitLoading}
+                      icon={
+                        <Icon
+                          phosphorIcon={PlusCircle}
+                          weight={'fill'}
+                          size={'lg'}
+                          iconColor={isDisabledButton ? theme.colorTextLight5 : theme.colorWhite}
+                        />
+                      }
+                      onPress={preCheckAction(onSubmit, ExtrinsicType.JOIN_YIELD_POOL)}>
+                      {i18n.buttonTitles.stake}
+                    </Button>
+                  </View>
+                </>
+              ) : (
+                <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                  <ActivityIndicator size={32} />
+                </View>
+              )}
+            </>
             <EarningPoolDetailModal
               modalVisible={detailModalVisible}
               slug={slug}

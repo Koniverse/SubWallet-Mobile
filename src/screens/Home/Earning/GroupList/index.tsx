@@ -79,7 +79,6 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}
         addBtnLabel={i18n.buttonTitles.startStaking}
-        // onPressAddBtn={handlePressStartStaking}
       />
     );
   }, [isRefresh, refresh]);
@@ -122,25 +121,6 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
     }
   }, [isHasAnyPosition, navigation, setStep]);
 
-  // const handlePressStartStaking = useCallback(
-  //   () =>
-  //     navigation.navigate('Drawer', {
-  //       screen: 'TransactionAction',
-  //       params: {
-  //         screen: 'Stake',
-  //         params: {},
-  //       },
-  //     }),
-  //   [navigation],
-  // );
-  //
-  // const rightIconOption = useMemo(() => {
-  //   return {
-  //     icon: Plus,
-  //     onPress: handlePressStartStaking,
-  //   };
-  // }, [handlePressStartStaking]);
-  //
   const searchFunction = useCallback((_items: YieldGroupInfo[], searchString: string) => {
     return _items.filter(({ name, symbol }) => {
       return (
@@ -171,7 +151,6 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         flatListStyle={styles.container}
         renderItem={renderItem}
         onPressBack={onBack}
-        // rightIconOption={rightIconOption}
         isShowFilterBtn
         isShowMainHeader
         refreshControl={

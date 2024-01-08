@@ -1,15 +1,13 @@
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { YieldPoolType } from '@subwallet/extension-base/types';
-import BigN from 'bignumber.js';
 import { Button, Icon, SwFullSizeModal, Typography } from 'components/design-system-ui';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
-import { deviceHeight } from 'constants/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CaretDown, PlusCircle, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Linking, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Linking, NativeScrollEvent, NativeSyntheticEvent, Platform, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { PhosphorIcon } from 'utils/campaign';
@@ -39,25 +37,13 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   const { slug, setVisible, modalVisible, onStakeMore, isShowStakeMoreBtn = true, onPressBack } = props;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
-  const inset = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+  const [contentHeight, setContentHeight] = useState<number>(0);
 
-  const maxScrollHeight = useMemo(() => {
-    const haveButton = !!onStakeMore;
-    return new BigN(deviceHeight) // screen height
-      .minus(inset.top) // safe area top
-      .minus(theme.sizeXXL) // modal padding top
-      .minus(theme.sizeXL) // modal padding bottom
-      .minus(44) // faq
-      .minus(60) // header
-      .minus(haveButton ? 52 : 0) // button
-      .minus(theme.size * (haveButton ? 3 : 2)) // gap
-      .toNumber();
-  }, [inset.top, onStakeMore, theme.size, theme.sizeXL, theme.sizeXXL]);
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
   const title = useMemo(() => {
     if (!poolInfo) {
@@ -102,8 +88,12 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     const asset = assetRegistry[inputAsset];
 
     if (asset) {
-      const string = formatNumber(minJoinPool, asset.decimals || 0, balanceFormatter);
-      result = result.replace('{{minActiveStake}}', `${string} ${asset.symbol}`);
+      if (Number(minJoinPool) === 0) {
+        result = result.replace(' from {{minActiveStake}}', '');
+      } else {
+        const string = formatNumber(minJoinPool, asset.decimals || 0, balanceFormatter);
+        result = result.replace('{{minActiveStake}}', `${string} ${asset.symbol}`);
+      }
     } else {
       result = result.replace('from ', '');
     }
@@ -259,19 +249,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
   }, []);
 
-  const calculateShowScroll = useCallback(
-    (width: number, height: number) => {
-      setShowScrollEnd(height > maxScrollHeight);
-    },
-    [maxScrollHeight],
-  );
-
   const onScroll = useCallback(
     ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
       if (isCloseToBottom(nativeEvent)) {
         setIsScrollEnd(true);
-      } else {
-        setIsScrollEnd(false);
       }
     },
     [isCloseToBottom],
@@ -316,6 +297,12 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     scrollRef.current?.scrollToEnd();
   }, []);
 
+  const closeModal = useCallback(() => {
+    setVisible(false);
+    setIsScrollEnd(false);
+    setShowScrollEnd(false);
+  }, [setVisible]);
+
   useEffect(() => {
     if (!poolInfo) {
       setVisible(false);
@@ -341,7 +328,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
                 type={'ghost'}
                 size={'xs'}
                 icon={<Icon phosphorIcon={X} weight={'bold'} size={'md'} iconColor={theme.colorWhite} />}
-                onPress={() => (!isShowStakeMoreBtn ? setVisible(false) : !!onPressBack && onPressBack())}
+                onPress={() => (!isShowStakeMoreBtn ? closeModal() : !!onPressBack && onPressBack())}
               />
             </View>
             <Typography.Text style={styles.headerText}>{title}</Typography.Text>
@@ -354,19 +341,30 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             alwaysBounceVertical={false}
             nestedScrollEnabled={true}
             scrollEventThrottle={400}
-            onContentSizeChange={calculateShowScroll}
+            onLayout={event => {
+              let { height: scrollHeight } = event.nativeEvent.layout;
+              const currentScrollHeight = scrollHeight + (Platform.OS === 'ios' ? 16 : -16);
+              setShowScrollEnd(contentHeight > currentScrollHeight);
+            }}
             onScroll={onScroll}>
-            {data.map((_props, index) => {
-              return (
-                <AlertBoxBase
-                  key={index}
-                  title={_props.title}
-                  description={_props.description}
-                  iconColor={_props.iconColor}
-                  icon={_props.icon}
-                />
-              );
-            })}
+            <View
+              style={{ gap: theme.sizeSM }}
+              onLayout={event => {
+                let { height } = event.nativeEvent.layout;
+                !!height && setContentHeight(height + (Platform.OS === 'ios' ? 16 : -16));
+              }}>
+              {data.map((_props, index) => {
+                return (
+                  <AlertBoxBase
+                    key={index}
+                    title={_props.title}
+                    description={_props.description}
+                    iconColor={_props.iconColor}
+                    icon={_props.icon}
+                  />
+                );
+              })}
+            </View>
           </ScrollView>
           <View>
             <Typography.Text style={styles.faqText}>

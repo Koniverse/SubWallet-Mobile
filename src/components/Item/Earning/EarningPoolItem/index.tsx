@@ -27,14 +27,12 @@ const EarningPoolItem = (props: Props) => {
   const totalApr = poolInfo.statistic?.totalApr;
   const tvl = poolInfo.statistic?.tvl;
 
-  // const isFocused = useIsFocused();
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
   const asset = useGetChainAssetInfo(inputAsset);
 
   const { priceMap } = useSelector((state: RootState) => state.price);
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
-  // const { compound } = useYieldPositionDetail(slug);
 
   const showSubLogo = useMemo(() => {
     const isGroup = group in multiChainAssetMap;
@@ -86,33 +84,6 @@ const EarningPoolItem = (props: Props) => {
       return '';
     }
   }, [asset, priceMap, tvl]);
-
-  // const [autoOpen, setAutoOpen] = useState(standAlone);
-
-  // const onPress = useCallback(() => {
-  //   if (compound) {
-  //     onStakeMore(slug);
-  //   } else {
-  //     onOpenPopup(slug);
-  //   }
-  // }, [compound, onOpenPopup, onStakeMore, slug]);
-
-  // useEffect(() => {
-  //   setAutoOpen(standAlone);
-  // }, [standAlone]);
-
-  // useEffect(() => {
-  //   if (autoOpen && isFocused) {
-  //     if (compound) {
-  //       onStakeMore(slug);
-  //     } else {
-  //       setTimeout(() => {
-  //         onOpenPopup(slug);
-  //       }, 300);
-  //     }
-  //     setAutoOpen(false);
-  //   }
-  // }, [autoOpen, compound, isFocused, onOpenPopup, onStakeMore, slug]);
 
   return (
     <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={() => onStakeMore(slug)}>
@@ -183,10 +154,6 @@ const EarningPoolItem = (props: Props) => {
             )}
           </View>
         </View>
-
-        {/*<View style={styleSheet.iconWrapper}>*/}
-        {/*  <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'sm'} />*/}
-        {/*</View>*/}
       </View>
 
       <View style={styleSheet.poolTypeRow}>

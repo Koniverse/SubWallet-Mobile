@@ -15,7 +15,7 @@ import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransac
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { ScrollView, View } from 'react-native';
-import { ClockClockwise, Coins, DownloadSimple, MinusCircle } from 'phosphor-react-native';
+import { MinusCircle } from 'phosphor-react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { NominationSelector } from 'components/Modal/common/NominationSelector';
@@ -42,14 +42,13 @@ import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { useGetBalance } from 'hooks/balance';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import { isActionFromValidator } from '@subwallet/extension-base/services/earning-service/utils';
-import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { UNSTAKE_ALERT_DATA } from '../../../../EarningDataRaw';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
 }
 
-interface BoxProps {
+export interface UnbondBoxProps {
   title: string;
   description: React.ReactNode;
   iconColor: string;
@@ -191,33 +190,6 @@ export const Unbond = ({
       return 'unknown time';
     }
   }, [poolInfo.statistic]);
-
-  const boxesProps: BoxProps[] = useMemo(() => {
-    const result: BoxProps[] = [];
-
-    result.push({
-      title: 'Meantime',
-      description: 'Once unbonded, your funds to become available after '.concat(unBondedTime),
-      icon: ClockClockwise,
-      iconColor: theme['blue-7'],
-    });
-
-    result.push({
-      title: 'Rewards',
-      description: 'During unstaking period tokens produce no rewards',
-      icon: Coins,
-      iconColor: theme['yellow-7'],
-    });
-
-    result.push({
-      title: 'Redeem',
-      description: 'After unstaking period don’t forget  to redeem your token',
-      icon: DownloadSimple,
-      iconColor: theme['lime-7'],
-    });
-
-    return result;
-  }, [theme, unBondedTime]);
 
   const [loading, setLoading] = useState(false);
   const accountList = useMemo(() => {
@@ -415,19 +387,19 @@ export const Unbond = ({
 
               {!mustChooseValidator && renderBounded()}
 
-              {!!boxesProps.length && (
+              {!!UNSTAKE_ALERT_DATA.length && (
                 <View
                   style={{
                     gap: theme.sizeSM,
                     marginTop: mustChooseValidator ? theme.marginSM : 0,
                     marginBottom: theme.marginSM,
                   }}>
-                  {boxesProps.map((_props, index) => {
+                  {UNSTAKE_ALERT_DATA.map((_props, index) => {
                     return (
                       <AlertBoxBase
                         key={index}
                         title={_props.title}
-                        description={_props.description}
+                        description={(_props.description as string)?.replace('{unBondedTime}', unBondedTime)}
                         iconColor={_props.iconColor}
                         icon={_props.icon}
                       />
@@ -435,21 +407,6 @@ export const Unbond = ({
                   })}
                 </View>
               )}
-
-              {/*<AlertBox*/}
-              {/*  type={'warning'}*/}
-              {/*  title={STAKE_ALERT_DATA.title}*/}
-              {/*  description={STAKE_ALERT_DATA.description.replace(*/}
-              {/*    '{tokenAmount}',*/}
-              {/*    `${getInputValuesFromString(existentialDeposit, decimals)} ${symbol}`,*/}
-              {/*  )}*/}
-              {/*/>*/}
-
-              <AlertBox
-                type={'warning'}
-                title={UNSTAKE_ALERT_DATA.title}
-                description={UNSTAKE_ALERT_DATA.description.replaceAll('{periodNumb}', unBondedTime)}
-              />
             </ScrollView>
 
             <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
