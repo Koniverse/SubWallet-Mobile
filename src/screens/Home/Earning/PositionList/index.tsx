@@ -9,7 +9,7 @@ import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
 import { Plus, Trophy } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
@@ -22,7 +22,11 @@ import createStyles from './style';
 
 let cacheData: Record<string, boolean> = {};
 
-export const PositionList = () => {
+interface Props {
+  setStep: (value: number) => void;
+}
+
+export const PositionList = ({ setStep }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<EarningScreenNavigationProps>();
   const isFocused = useIsFocused();
@@ -80,7 +84,7 @@ export const PositionList = () => {
       });
   }, [assetInfoMap, data, poolInfoMap, priceMap]);
 
-  const [autoNavigate, setAutoNavigate] = useState<boolean>(cacheData[currentAccount?.address || ''] || false);
+  // const [autoNavigate, setAutoNavigate] = useState<boolean>(cacheData[currentAccount?.address || ''] || false);
 
   const handleOnPress = useCallback(
     (positionInfo: ExtraYieldPositionInfo): (() => void) => {
@@ -92,7 +96,7 @@ export const PositionList = () => {
     [navigation],
   );
 
-  const handlePressStartStaking = useCallback(() => navigation.navigate('EarningGroupList'), [navigation]);
+  const handlePressStartStaking = useCallback(() => setStep(2), [setStep]);
 
   const renderEmpty = useCallback(() => {
     return (
@@ -143,20 +147,19 @@ export const PositionList = () => {
     const address = currentAccount?.address || '';
     if (cacheData[address] === undefined && isFocused) {
       cacheData = { [address]: !items.length };
-      setAutoNavigate(!items.length);
     }
   }, [items.length, currentAccount, isFocused]);
 
-  useEffect(() => {
-    if (autoNavigate && isFocused) {
-      Keyboard.dismiss();
-      navigation.navigate('EarningGroupList');
-      setAutoNavigate(false);
-      for (const address of Object.keys(cacheData)) {
-        cacheData[address] = false;
-      }
-    }
-  }, [autoNavigate, navigation, isFocused]);
+  // useEffect(() => {
+  //   if (autoNavigate && isFocused) {
+  //     Keyboard.dismiss();
+  //     navigation.navigate('EarningGroupList');
+  //     setAutoNavigate(false);
+  //     for (const address of Object.keys(cacheData)) {
+  //       cacheData[address] = false;
+  //     }
+  //   }
+  // }, [autoNavigate, navigation, isFocused]);
 
   useEffect(() => {
     if (isFocused) {

@@ -19,6 +19,7 @@ export interface YieldGroupInfo {
   balance: BalanceValueInfo;
   isTestnet: boolean;
   name?: string;
+  poolListLength: number;
 }
 
 export interface EarningTagType {

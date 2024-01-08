@@ -2,14 +2,14 @@ import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bo
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { YieldPoolType } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
-import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
+import { Button, Icon, SwFullSizeModal, Typography } from 'components/design-system-ui';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { deviceHeight } from 'constants/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CaretDown, PlusCircle } from 'phosphor-react-native';
+import { CaretDown, PlusCircle, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { PhosphorIcon } from 'utils/campaign';
@@ -17,12 +17,15 @@ import { balanceFormatter, formatNumber } from 'utils/number';
 import createStyles from './style';
 import { EARNING_DATA_RAW } from '../../../../../EarningDataRaw';
 import { getInputValuesFromString } from 'components/Input/InputAmount';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   slug: string;
   setVisible: (value: boolean) => void;
   modalVisible: boolean;
   onStakeMore?: (value: string) => void;
+  isShowStakeMoreBtn?: boolean;
+  onPressBack?: () => void;
 }
 
 export interface BoxProps {
@@ -33,8 +36,8 @@ export interface BoxProps {
 }
 
 const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
-  const { slug, setVisible, modalVisible, onStakeMore } = props;
-
+  const { slug, setVisible, modalVisible, onStakeMore, isShowStakeMoreBtn = true, onPressBack } = props;
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
   const inset = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
@@ -324,66 +327,83 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   }
 
   return (
-    <SwModal isUseModalV2 modalVisible={modalVisible} setVisible={setVisible} isAllowSwipeDown={false}>
-      <View style={styles.wrapper}>
-        <Typography.Text style={styles.headerText}>{title}</Typography.Text>
-        <ScrollView
-          ref={scrollRef}
-          style={{ maxHeight: maxScrollHeight }}
-          contentContainerStyle={styles.infoContainer}
-          showsVerticalScrollIndicator={false}
-          alwaysBounceVertical={false}
-          nestedScrollEnabled={true}
-          scrollEventThrottle={400}
-          onContentSizeChange={calculateShowScroll}
-          onScroll={onScroll}>
-          {data.map((_props, index) => {
-            return (
-              <AlertBoxBase
-                key={index}
-                title={_props.title}
-                description={_props.description}
-                iconColor={_props.iconColor}
-                icon={_props.icon}
+    <SwFullSizeModal modalBaseV2Ref={modalBaseV2Ref} isUseModalV2 modalVisible={modalVisible} setVisible={setVisible}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          width: '100%',
+          marginBottom: theme.padding,
+        }}>
+        <View style={styles.wrapper}>
+          <View>
+            <View style={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+              <Button
+                type={'ghost'}
+                size={'xs'}
+                icon={<Icon phosphorIcon={X} weight={'bold'} size={'md'} iconColor={theme.colorWhite} />}
+                onPress={() => (!isShowStakeMoreBtn ? setVisible(false) : !!onPressBack && onPressBack())}
               />
-            );
-          })}
-        </ScrollView>
-        <View>
-          <Typography.Text style={styles.faqText}>
-            Scroll down to continue. For more information and staking instructions, read&nbsp;
-            <Text onPress={onPressFaq} style={styles.highlightText}>
-              this FAQ.
-            </Text>
-          </Typography.Text>
-          {showScrollEnd && !isScrollEnd && (
+            </View>
+            <Typography.Text style={styles.headerText}>{title}</Typography.Text>
+          </View>
+          <ScrollView
+            ref={scrollRef}
+            style={{ flex: 1 }}
+            contentContainerStyle={styles.infoContainer}
+            showsVerticalScrollIndicator={false}
+            alwaysBounceVertical={false}
+            nestedScrollEnabled={true}
+            scrollEventThrottle={400}
+            onContentSizeChange={calculateShowScroll}
+            onScroll={onScroll}>
+            {data.map((_props, index) => {
+              return (
+                <AlertBoxBase
+                  key={index}
+                  title={_props.title}
+                  description={_props.description}
+                  iconColor={_props.iconColor}
+                  icon={_props.icon}
+                />
+              );
+            })}
+          </ScrollView>
+          <View>
+            <Typography.Text style={styles.faqText}>
+              Scroll down to continue. For more information and staking instructions, read&nbsp;
+              <Text onPress={onPressFaq} style={styles.highlightText}>
+                this FAQ.
+              </Text>
+            </Typography.Text>
+            {showScrollEnd && !isScrollEnd && (
+              <Button
+                size="xs"
+                icon={<Icon phosphorIcon={CaretDown} />}
+                style={styles.scrollButton}
+                type="primary"
+                shape="circle"
+                onPress={scrollBottom}
+              />
+            )}
+          </View>
+          {!!onStakeMore && isShowStakeMoreBtn && (
             <Button
-              size="xs"
-              icon={<Icon phosphorIcon={CaretDown} />}
-              style={styles.scrollButton}
-              type="primary"
-              shape="circle"
-              onPress={scrollBottom}
-            />
+              icon={
+                <Icon
+                  phosphorIcon={PlusCircle}
+                  weight="fill"
+                  iconColor={isScrollEnd || !showScrollEnd ? theme.colorWhite : theme.colorTextLight5}
+                />
+              }
+              size="sm"
+              onPress={onPress}
+              disabled={!isScrollEnd && showScrollEnd}>
+              Stake to earn
+            </Button>
           )}
         </View>
-        {!!onStakeMore && (
-          <Button
-            icon={
-              <Icon
-                phosphorIcon={PlusCircle}
-                weight="fill"
-                iconColor={isScrollEnd || !showScrollEnd ? theme.colorWhite : theme.colorTextLight5}
-              />
-            }
-            size="sm"
-            onPress={onPress}
-            disabled={!isScrollEnd && showScrollEnd}>
-            Stake to earn
-          </Button>
-        )}
-      </View>
-    </SwModal>
+      </SafeAreaView>
+    </SwFullSizeModal>
   );
 };
 

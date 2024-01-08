@@ -17,6 +17,7 @@ import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import createStyles from './style';
+import { RootNavigationProps } from 'routes/index';
 
 const groupOrdinal = (group: YieldGroupInfo): number => {
   if (group.group === 'DOT-Polkadot') {
@@ -40,11 +41,18 @@ const apyOrdinal = (group: YieldGroupInfo): number => {
   return !group.maxApy ? -1 : group.maxApy;
 };
 
-export const GroupList = () => {
+interface Props {
+  isHasAnyPosition: boolean;
+  setStep: (value: number) => void;
+}
+
+export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const isFocused = useIsFocused();
   const theme = useSubWalletTheme().swThemes;
   const [isRefresh, refresh] = useRefresh();
   const navigation = useNavigation<EarningScreenNavigationProps>();
+  const rootNavigation = useNavigation<RootNavigationProps>();
+  const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const data = useYieldGroupInfo();
 
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
@@ -80,10 +88,21 @@ export const GroupList = () => {
     (poolGroup: YieldGroupInfo): (() => void) => {
       return () => {
         Keyboard.dismiss();
-        navigation.navigate('EarningPoolList', { group: poolGroup.group });
+        if (poolGroup.poolListLength > 1) {
+          navigation.navigate('EarningPoolList', { group: poolGroup.group });
+        } else if (poolGroup.poolListLength === 1) {
+          const standAloneTokenSlug = Object.values(poolInfoMap).find(i => i.group === poolGroup.group)?.slug;
+          rootNavigation.navigate('Drawer', {
+            screen: 'TransactionAction',
+            params: {
+              screen: 'Earning',
+              params: { slug: standAloneTokenSlug || '' },
+            },
+          });
+        }
       };
     },
-    [navigation],
+    [navigation, poolInfoMap, rootNavigation],
   );
 
   const renderItem = useCallback(
@@ -96,8 +115,12 @@ export const GroupList = () => {
   );
 
   const onBack = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
+    if (isHasAnyPosition) {
+      setStep(1);
+    } else {
+      navigation.goBack();
+    }
+  }, [isHasAnyPosition, navigation, setStep]);
 
   // const handlePressStartStaking = useCallback(
   //   () =>
@@ -140,7 +163,7 @@ export const GroupList = () => {
         title={i18n.header.earning}
         titleTextAlign={'left'}
         items={items}
-        showLeftBtn={true}
+        showLeftBtn={isHasAnyPosition}
         placeholder={i18n.placeholder.searchToken}
         autoFocus={false}
         renderListEmptyComponent={renderEmpty}

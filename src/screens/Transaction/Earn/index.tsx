@@ -61,6 +61,9 @@ import { balanceFormatter, formatNumber } from 'utils/number';
 import { parseNominations } from 'utils/transaction/stake';
 import { accountFilterFunc, getJoinYieldParams } from '../helper/earning';
 import createStyle from './style';
+import { useYieldPositionDetail } from 'hooks/earning';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 interface _YieldAssetExpectedEarning extends YieldAssetExpectedEarning {
   symbol: string;
@@ -79,7 +82,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       params: { slug },
     },
   } = props;
-
+  const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { show, hideAll } = useToast();
 
@@ -112,6 +115,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const accountSelectorRef = useRef<ModalRef>();
   const validatorSelectorRef = useRef<ValidatorSelectorRef>(null);
   const fromRef = useRef<string>(currentFrom);
+  const isPressInfoBtnRef = useRef<boolean>(false);
 
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
@@ -126,6 +130,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const accountInfo = useGetAccountByAddress(currentFrom);
   const preCheckAction = usePreCheckAction(currentFrom);
+  const { compound } = useYieldPositionDetail(slug);
 
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo.type;
@@ -288,6 +293,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const handleOpenDetailModal = useCallback((): void => {
     Keyboard.dismiss();
+    isPressInfoBtnRef.current = true;
     setDetailModalVisible(true);
   }, []);
 
@@ -626,6 +632,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     };
   }, [chain, chainState?.active, forceFetchValidator, currentFrom, slug]);
 
+  useEffect(() => {
+    if (!compound) {
+      isPressInfoBtnRef.current = false;
+      setTimeout(() => setDetailModalVisible(true), 300);
+    }
+  }, [compound]);
+
   return (
     <>
       {!isTransactionDone ? (
@@ -766,7 +779,16 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                 {i18n.buttonTitles.stake}
               </Button>
             </View>
-            <EarningPoolDetailModal modalVisible={detailModalVisible} slug={slug} setVisible={setDetailModalVisible} />
+            <EarningPoolDetailModal
+              modalVisible={detailModalVisible}
+              slug={slug}
+              setVisible={setDetailModalVisible}
+              onStakeMore={() => setDetailModalVisible(false)}
+              isShowStakeMoreBtn={!isPressInfoBtnRef.current}
+              onPressBack={() => {
+                navigation.goBack();
+              }}
+            />
           </>
         </TransactionLayout>
       ) : (

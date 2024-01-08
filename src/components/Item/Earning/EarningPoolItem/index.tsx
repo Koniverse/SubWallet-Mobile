@@ -1,12 +1,10 @@
-import { useIsFocused } from '@react-navigation/native';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { YieldPoolInfo } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { Number, Typography } from 'components/design-system-ui';
 import EarningTypeTag from 'components/Tag/EarningTypeTag';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
-import { useYieldPositionDetail } from 'hooks/earning';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -19,26 +17,24 @@ import { BN_TEN } from 'utils/number';
 interface Props {
   poolInfo: YieldPoolInfo;
   onStakeMore: (value: string) => void;
-  onOpenPopup: (value: string) => void;
-  standAlone: boolean;
 }
 
 const EarningPoolItem = (props: Props) => {
-  const { standAlone, poolInfo, onOpenPopup, onStakeMore } = props;
+  const { poolInfo, onStakeMore } = props;
   const { metadata, chain, type, group, slug } = poolInfo;
   const { inputAsset, logo, shortName } = metadata;
   const totalApy = poolInfo.statistic?.totalApy;
   const totalApr = poolInfo.statistic?.totalApr;
   const tvl = poolInfo.statistic?.tvl;
 
-  const isFocused = useIsFocused();
+  // const isFocused = useIsFocused();
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
   const asset = useGetChainAssetInfo(inputAsset);
 
   const { priceMap } = useSelector((state: RootState) => state.price);
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
-  const { compound } = useYieldPositionDetail(slug);
+  // const { compound } = useYieldPositionDetail(slug);
 
   const showSubLogo = useMemo(() => {
     const isGroup = group in multiChainAssetMap;
@@ -91,35 +87,35 @@ const EarningPoolItem = (props: Props) => {
     }
   }, [asset, priceMap, tvl]);
 
-  const [autoOpen, setAutoOpen] = useState(standAlone);
+  // const [autoOpen, setAutoOpen] = useState(standAlone);
 
-  const onPress = useCallback(() => {
-    if (compound) {
-      onStakeMore(slug);
-    } else {
-      onOpenPopup(slug);
-    }
-  }, [compound, onOpenPopup, onStakeMore, slug]);
+  // const onPress = useCallback(() => {
+  //   if (compound) {
+  //     onStakeMore(slug);
+  //   } else {
+  //     onOpenPopup(slug);
+  //   }
+  // }, [compound, onOpenPopup, onStakeMore, slug]);
 
-  useEffect(() => {
-    setAutoOpen(standAlone);
-  }, [standAlone]);
+  // useEffect(() => {
+  //   setAutoOpen(standAlone);
+  // }, [standAlone]);
 
-  useEffect(() => {
-    if (autoOpen && isFocused) {
-      if (compound) {
-        onStakeMore(slug);
-      } else {
-        setTimeout(() => {
-          onOpenPopup(slug);
-        }, 300);
-      }
-      setAutoOpen(false);
-    }
-  }, [autoOpen, compound, isFocused, onOpenPopup, onStakeMore, slug]);
+  // useEffect(() => {
+  //   if (autoOpen && isFocused) {
+  //     if (compound) {
+  //       onStakeMore(slug);
+  //     } else {
+  //       setTimeout(() => {
+  //         onOpenPopup(slug);
+  //       }, 300);
+  //     }
+  //     setAutoOpen(false);
+  //   }
+  // }, [autoOpen, compound, isFocused, onOpenPopup, onStakeMore, slug]);
 
   return (
-    <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={onPress}>
+    <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={() => onStakeMore(slug)}>
       <View style={styleSheet.infoContainer}>
         {getTokenLogo(inputAsset, showSubLogo ? logo || chain : undefined, 40)}
         <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>

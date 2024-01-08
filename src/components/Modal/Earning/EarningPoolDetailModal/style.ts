@@ -19,6 +19,8 @@ export default (theme: ThemeTypes) => {
       display: 'flex',
       flexDirection: 'column',
       gap: theme.size,
+      paddingHorizontal: theme.padding,
+      flex: 1,
     },
     infoContainer: {
       gap: theme.sizeXS,

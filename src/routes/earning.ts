@@ -1,11 +1,12 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type EarningScreenStackParamList = {
-  EarningGroupList: undefined;
+  EarningList: undefined;
+  // EarningGroupList: undefined;
+  // EarningPositionList: undefined;
   EarningPoolList: {
     group: string;
   };
-  EarningPositionList: undefined;
   EarningPositionDetail: {
     slug: string;
   };

@@ -32,7 +32,7 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
 
         if (exists) {
           let apy: undefined | number;
-
+          exists.poolListLength = exists.poolListLength + 1;
           if (pool.statistic?.totalApy) {
             apy = pool.statistic?.totalApy;
           }
@@ -62,6 +62,7 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
             balance: freeBalance,
             isTestnet: chainInfo.isTestnet,
             name: token.name,
+            poolListLength: 1,
           };
         }
       }

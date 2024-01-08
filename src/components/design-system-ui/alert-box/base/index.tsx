@@ -1,5 +1,5 @@
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleProp, View } from 'react-native';
 import { PhosphorIcon } from 'utils/campaign';
 import { convertHexColorToRGBA } from 'utils/color';
@@ -79,4 +79,4 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default AlertBoxBase;
+export default memo(AlertBoxBase);

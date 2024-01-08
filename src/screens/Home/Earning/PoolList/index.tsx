@@ -4,10 +4,9 @@ import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { FlatListScreen } from 'components/FlatListScreen';
 import EarningPoolItem from 'components/Item/Earning/EarningPoolItem';
-import EarningPoolDetailModal from 'components/Modal/Earning/EarningPoolDetailModal';
 import useYieldPoolInfoByGroup from 'hooks/earning/useYieldPoolInfoByGroup';
 import { Trophy } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { EarningPoolListProps } from 'routes/earning';
 import i18n from 'utils/i18n/i18n';
@@ -92,9 +91,6 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [selectedSlug, setSelectedSlug] = useState<string>('');
-  const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
-
   const items: YieldPoolInfo[] = useMemo(() => {
     if (!pools.length) {
       return [];
@@ -143,16 +139,16 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     [navigation],
   );
 
-  const handleOpenDetailModal = useCallback((slug: string): void => {
-    Keyboard.dismiss();
-    setSelectedSlug(slug);
-    setDetailModalVisible(true);
-  }, []);
+  // const handleOpenDetailModal = useCallback((slug: string): void => {
+  //   Keyboard.dismiss();
+  //   setSelectedSlug(slug);
+  //   setDetailModalVisible(true);
+  // }, []);
 
-  const onChangeModalVisible = useCallback((value: boolean) => {
-    setSelectedSlug('');
-    setDetailModalVisible(value);
-  }, []);
+  // const onChangeModalVisible = useCallback((value: boolean) => {
+  //   setSelectedSlug('');
+  //   setDetailModalVisible(value);
+  // }, []);
 
   const handleBack = useCallback(() => navigation.goBack(), [navigation]);
 
@@ -172,17 +168,9 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<YieldPoolInfo>) => {
-      return (
-        <EarningPoolItem
-          key={item.slug}
-          onStakeMore={handleOnStakeMore}
-          onOpenPopup={handleOpenDetailModal}
-          poolInfo={item}
-          standAlone={items.length === 1}
-        />
-      );
+      return <EarningPoolItem key={item.slug} onStakeMore={handleOnStakeMore} poolInfo={item} />;
     },
-    [handleOnStakeMore, handleOpenDetailModal, items.length],
+    [handleOnStakeMore],
   );
 
   // const rightIconOption = useMemo(() => {
@@ -248,14 +236,14 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         }
       />
 
-      {selectedSlug && (
-        <EarningPoolDetailModal
-          modalVisible={detailModalVisible}
-          slug={selectedSlug}
-          setVisible={onChangeModalVisible}
-          onStakeMore={handleOnStakeMore}
-        />
-      )}
+      {/*{selectedSlug && (*/}
+      {/*  <EarningPoolDetailModal*/}
+      {/*    modalVisible={detailModalVisible}*/}
+      {/*    slug={selectedSlug}*/}
+      {/*    setVisible={onChangeModalVisible}*/}
+      {/*    onStakeMore={handleOnStakeMore}*/}
+      {/*  />*/}
+      {/*)}*/}
     </>
   );
 };
