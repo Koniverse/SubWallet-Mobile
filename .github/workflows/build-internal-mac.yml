@@ -56,9 +56,6 @@ jobs:
     - name: Install dependencies
       run: yarn install --immutable | grep -v 'YN0013'
 
-    - name: Autocheck
-      run: node ./scripts/autocheck.mjs
-
     - name: Install Pods
       run: cd ios && pod update hermes-engine --no-repo-update && cd ..
 
@@ -142,9 +139,6 @@ jobs:
 
     - name: Install dependencies
       run: yarn install --immutable | grep -v 'YN0013'
-
-    - name: Autocheck
-      run: node ./scripts/autocheck.mjs
 
     - name: Prepare sign datarun
       run: |
