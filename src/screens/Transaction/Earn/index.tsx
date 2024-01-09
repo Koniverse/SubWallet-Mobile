@@ -16,6 +16,7 @@ import {
 } from '@subwallet/extension-base/types/yield/actions/join/submit';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import { addLazy } from '@subwallet/extension-base/utils/lazy';
+import BigN from 'bignumber.js';
 import { FormItem } from 'components/common/FormItem';
 import { ActivityIndicator, Button, Divider, Icon, Number } from 'components/design-system-ui';
 import { AccountSelectField } from 'components/Field/AccountSelect';
@@ -142,7 +143,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   );
 
   const mustChooseTarget = useMemo(
-    () => [YieldPoolType.NATIVE_STAKING, YieldPoolType.NATIVE_STAKING].includes(poolType),
+    () => [YieldPoolType.NATIVE_STAKING, YieldPoolType.NOMINATION_POOL].includes(poolType),
     [poolType],
   );
 
@@ -404,6 +405,25 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     const derivativeAssets = 'derivativeAssets' in poolInfo.metadata ? poolInfo.metadata.derivativeAssets : [];
     const showFee = [YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(poolInfo.type);
 
+    let minJoinPool: string | undefined;
+
+    if (poolInfo.statistic) {
+      const minPoolJoin = poolInfo.statistic.minJoinPool;
+      const targeted = getTargetedPool(poolTarget)[0];
+
+      if (targeted) {
+        if ('minBond' in targeted) {
+          const minTargetJoin = new BigN(targeted.minBond || '0');
+
+          minJoinPool = minTargetJoin.gt(minJoinPool || '0') ? minTargetJoin.toString() : minJoinPool;
+        } else {
+          minJoinPool = minPoolJoin;
+        }
+      } else {
+        minJoinPool = minPoolJoin;
+      }
+    }
+
     return (
       <MetaInfo labelColorScheme={'gray'} spaceSize={'sm'} valueColorScheme={'gray'}>
         {!!assetEarnings.length &&
@@ -425,12 +445,12 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
               />
             );
           })}
-        {poolInfo.statistic?.minJoinPool && (
+        {minJoinPool && (
           <MetaInfo.Number
             decimals={assetDecimals}
             label={'Minimum active stake'}
             suffix={assetSymbol}
-            value={poolInfo.statistic.minJoinPool}
+            value={minJoinPool}
           />
         )}
 
@@ -439,7 +459,18 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         )}
       </MetaInfo>
     );
-  }, [currentAmount, assetDecimals, inputAsset.symbol, poolInfo, estimatedFee, chainAsset]);
+  }, [
+    currentAmount,
+    assetDecimals,
+    inputAsset.symbol,
+    poolInfo.statistic,
+    poolInfo.metadata,
+    poolInfo.type,
+    estimatedFee,
+    getTargetedPool,
+    poolTarget,
+    chainAsset,
+  ]);
 
   const onSubmit = useCallback(() => {
     setSubmitLoading(true);

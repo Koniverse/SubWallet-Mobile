@@ -20,7 +20,7 @@ import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { NominationSelector } from 'components/Modal/common/NominationSelector';
 import { InputAmount } from 'components/Input/InputAmount';
-import { PhosphorIcon } from 'utils/campaign';
+import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { formatBalance } from 'utils/number';
 import { BN_ZERO } from 'utils/chainBalances';
 import { _ChainInfo } from '@subwallet/chain-list/types';
@@ -201,7 +201,11 @@ export const Unbond = ({
   }, [poolInfo]);
 
   const unBondedTime = useMemo((): string => {
-    if (poolInfo.statistic && 'unstakingPeriod' in poolInfo.statistic) {
+    if (
+      poolInfo.statistic &&
+      'unstakingPeriod' in poolInfo.statistic &&
+      poolInfo.statistic.unstakingPeriod !== undefined
+    ) {
       const time = poolInfo.statistic.unstakingPeriod;
 
       if (time >= 24) {
@@ -435,7 +439,7 @@ export const Unbond = ({
                         title={_props.title}
                         description={(_props.description as string)?.replace('{unBondedTime}', unBondedTime)}
                         iconColor={_props.iconColor}
-                        icon={_props.icon}
+                        icon={getBannerButtonIcon(_props.icon) as PhosphorIcon}
                       />
                     );
                   })}
