@@ -10,7 +10,7 @@ import { Linking, NativeScrollEvent, NativeSyntheticEvent, Platform, ScrollView,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { PhosphorIcon } from 'utils/campaign';
+import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { balanceFormatter, formatNumber } from 'utils/number';
 import createStyles from './style';
 import { EARNING_DATA_RAW } from '../../../../../EarningDataRaw';
@@ -42,6 +42,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+  const [scrollHeight, setScrollHeight] = useState<number>(0);
   const [contentHeight, setContentHeight] = useState<number>(0);
 
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
@@ -63,9 +64,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         case YieldPoolType.NOMINATION_POOL:
         case YieldPoolType.NATIVE_STAKING:
         case YieldPoolType.LIQUID_STAKING:
-          return 'Stake to earn up to {{apy}} from {{minActiveStake}} easily with SubWallet';
+          return 'Stake to earn up to {{apy}} from {{minActiveStake}} easily with {{shortName}}';
         case YieldPoolType.LENDING:
-          return 'Supply to earn up to {{apy}} from {{minActiveStake}} easily with SubWallet';
+          return 'Supply to earn up to {{apy}} from {{minActiveStake}} easily with {{shortName}}';
       }
     };
 
@@ -86,6 +87,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     let result = getOrigin();
     const apy = getApy();
     const asset = assetRegistry[inputAsset];
+    const shortName = poolInfo.metadata.shortName;
 
     if (asset) {
       if (Number(minJoinPool) === 0) {
@@ -103,6 +105,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       result = result.replace('{{apy}}', `${string}%`);
     } else {
       result = result.replace('up to {{apy}} ', '');
+    }
+
+    if (shortName) {
+      result = result.replace('{{shortName}}', shortName);
     }
 
     return result;
@@ -146,7 +152,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         if (inputAsset) {
           const { decimals, minAmount, symbol } = inputAsset;
           return EARNING_DATA_RAW[YieldPoolType.NOMINATION_POOL].map(item => {
-            const _item = { ...item };
+            const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
             replaceEarningValue(_item, '{validatorType}', label);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
@@ -173,7 +179,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         if (inputAsset) {
           const { decimals, minAmount, symbol } = inputAsset;
           return EARNING_DATA_RAW[YieldPoolType.NATIVE_STAKING].map(item => {
-            const _item = { ...item };
+            const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
             replaceEarningValue(_item, '{validatorType}', label);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
@@ -196,7 +202,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
         if (derivative && inputAsset) {
           return EARNING_DATA_RAW[YieldPoolType.LIQUID_STAKING].map(item => {
-            const _item = { ...item };
+            const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
 
             replaceEarningValue(_item, '{derivative}', derivative.symbol);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
@@ -221,7 +227,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
         if (derivative && inputAsset) {
           return EARNING_DATA_RAW[YieldPoolType.LENDING].map(item => {
-            const _item = { ...item };
+            const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
 
             replaceEarningValue(_item, '{derivative}', derivative.symbol);
             replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);
@@ -243,6 +249,11 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
   const [showScrollEnd, setShowScrollEnd] = useState(false);
   const [isScrollEnd, setIsScrollEnd] = useState(false);
+
+  useEffect(() => {
+    setShowScrollEnd(contentHeight > scrollHeight);
+    setIsScrollEnd(contentHeight < scrollHeight);
+  }, [contentHeight, scrollHeight]);
 
   const isCloseToBottom = useCallback(({ layoutMeasurement, contentOffset, contentSize }: NativeScrollEvent) => {
     const paddingToBottom = 20;
@@ -303,6 +314,12 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     setShowScrollEnd(false);
   }, [setVisible]);
 
+  const goBack = useCallback(() => {
+    setVisible(false);
+    setIsScrollEnd(false);
+    !!onPressBack && onPressBack();
+  }, [onPressBack, setVisible]);
+
   useEffect(() => {
     if (!poolInfo) {
       setVisible(false);
@@ -328,7 +345,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
                 type={'ghost'}
                 size={'xs'}
                 icon={<Icon phosphorIcon={X} weight={'bold'} size={'md'} iconColor={theme.colorWhite} />}
-                onPress={() => (!isShowStakeMoreBtn ? closeModal() : !!onPressBack && onPressBack())}
+                onPress={() => (!isShowStakeMoreBtn ? closeModal() : goBack())}
               />
             </View>
             <Typography.Text style={styles.headerText}>{title}</Typography.Text>
@@ -342,16 +359,17 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             nestedScrollEnabled={true}
             scrollEventThrottle={400}
             onLayout={event => {
-              let { height: scrollHeight } = event.nativeEvent.layout;
-              const currentScrollHeight = scrollHeight + (Platform.OS === 'ios' ? 16 : -16);
-              setShowScrollEnd(contentHeight > currentScrollHeight);
+              let { height: _scrollHeight } = event.nativeEvent.layout;
+              const currentScrollHeight = _scrollHeight + (Platform.OS === 'ios' ? 16 : -16);
+              setScrollHeight(currentScrollHeight);
             }}
             onScroll={onScroll}>
             <View
               style={{ gap: theme.sizeSM }}
               onLayout={event => {
                 let { height } = event.nativeEvent.layout;
-                !!height && setContentHeight(height + (Platform.OS === 'ios' ? 16 : -16));
+                const _contentHeight = height + (Platform.OS === 'ios' ? 16 : -16);
+                setContentHeight(_contentHeight);
               }}>
               {data.map((_props, index) => {
                 return (

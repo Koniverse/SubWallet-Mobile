@@ -9,7 +9,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
-import { getTokenLogo } from 'utils/index';
+import { getNetworkLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import { BN_TEN } from 'utils/number';
@@ -21,7 +21,7 @@ interface Props {
 
 const EarningPoolItem = (props: Props) => {
   const { poolInfo, onStakeMore } = props;
-  const { metadata, chain, type, group, slug } = poolInfo;
+  const { metadata, chain, type, slug } = poolInfo;
   const { inputAsset, logo, shortName } = metadata;
   const totalApy = poolInfo.statistic?.totalApy;
   const totalApr = poolInfo.statistic?.totalApr;
@@ -32,26 +32,6 @@ const EarningPoolItem = (props: Props) => {
   const asset = useGetChainAssetInfo(inputAsset);
 
   const { priceMap } = useSelector((state: RootState) => state.price);
-  const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
-
-  const showSubLogo = useMemo(() => {
-    const isGroup = group in multiChainAssetMap;
-    if (isGroup) {
-      const _group = multiChainAssetMap[group];
-
-      if (_group.originChainAsset) {
-        const _asset = assetRegistry[_group.originChainAsset];
-
-        return _asset.originChain !== chain;
-      } else {
-        return true;
-      }
-    } else {
-      const _asset = assetRegistry[group];
-
-      return _asset.originChain !== chain;
-    }
-  }, [assetRegistry, chain, group, multiChainAssetMap]);
 
   const apy = useMemo((): number | undefined => {
     if (totalApy) {
@@ -88,7 +68,7 @@ const EarningPoolItem = (props: Props) => {
   return (
     <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={() => onStakeMore(slug)}>
       <View style={styleSheet.infoContainer}>
-        {getTokenLogo(inputAsset, showSubLogo ? logo || chain : undefined, 40)}
+        {getNetworkLogo(logo || chain, 40)}
         <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>
           <View style={styleSheet.containerRow}>
             <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>
