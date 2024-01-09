@@ -158,7 +158,7 @@ export const PositionList = ({ setStep }: Props) => {
     <>
       <FlatListScreen
         style={styles.wrapper}
-        title={i18n.header.earning}
+        title={i18n.header.positionList}
         titleTextAlign={'left'}
         items={items}
         showLeftBtn={false}

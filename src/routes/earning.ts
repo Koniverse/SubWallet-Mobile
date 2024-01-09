@@ -4,6 +4,7 @@ export type EarningScreenStackParamList = {
   EarningList: { step: number };
   EarningPoolList: {
     group: string;
+    symbol: string;
   };
   EarningPositionDetail: {
     slug: string;

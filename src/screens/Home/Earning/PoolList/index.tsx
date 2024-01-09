@@ -77,7 +77,7 @@ const FILTER_OPTIONS = [
 
 export const PoolList: React.FC<EarningPoolListProps> = ({
   route: {
-    params: { group: poolGroup },
+    params: { group: poolGroup, symbol },
   },
 }: EarningPoolListProps) => {
   const theme = useSubWalletTheme().swThemes;
@@ -183,7 +183,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   return (
     <FlatListScreen
       style={styles.wrapper}
-      title={i18n.header.earning}
+      title={i18n.header.poolList.replace('{{symbol}}', symbol)}
       titleTextAlign={'left'}
       items={items}
       showLeftBtn={true}

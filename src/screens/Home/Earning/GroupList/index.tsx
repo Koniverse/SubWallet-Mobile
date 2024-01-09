@@ -88,7 +88,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
       return () => {
         Keyboard.dismiss();
         if (poolGroup.poolListLength > 1) {
-          navigation.navigate('EarningPoolList', { group: poolGroup.group });
+          navigation.navigate('EarningPoolList', { group: poolGroup.group, symbol: poolGroup.symbol });
         } else if (poolGroup.poolListLength === 1) {
           const standAloneTokenSlug = Object.values(poolInfoMap).find(
             i => i.group === poolGroup.group && i.chain === poolGroup.chain,
@@ -142,7 +142,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
     <>
       <FlatListScreen
         style={styles.wrapper}
-        title={i18n.header.earning}
+        title={i18n.header.groupList}
         titleTextAlign={'left'}
         items={items}
         showLeftBtn={isHasAnyPosition}

@@ -13,14 +13,14 @@ export const EARNING_DATA_RAW = {
       icon: 'Coins',
       title: 'Unstake and withdraw',
       description:
-        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after <strong>a {periodNumb} period</strong>. Keep in mind that these actions are not automated and will incur network fees.',
+        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after a period of <strong>{periodNumb}</strong>. Keep in mind that these actions are not automated and will incur network fees.',
       iconColor: '#e6dc25',
     },
     {
       icon: 'CheckCircle',
-      title: 'Keep your free balance',
+      title: 'Keep your transferable balance',
       description:
-        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
       iconColor: '#4cd9ac',
     },
     {
@@ -42,14 +42,14 @@ export const EARNING_DATA_RAW = {
       icon: 'Coins',
       title: 'Unstake and withdraw',
       description:
-        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after <strong>a {periodNumb} period</strong>. Keep in mind that these actions are <strong>not automated</strong> and will incur network fees.',
+        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after a period of <strong>{periodNumb}</strong>. Keep in mind that these actions are <strong>not automated</strong> and will incur network fees.',
       iconColor: '#e6dc25',
     },
     {
       icon: 'CheckCircle',
-      title: 'Keep your free balance',
+      title: 'Keep your transferable balance',
       description:
-        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
       iconColor: '#4cd9ac',
     },
     {
@@ -71,14 +71,14 @@ export const EARNING_DATA_RAW = {
       icon: 'Coins',
       title: 'Unstake and withdraw',
       description:
-        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw immediately with a higher fee or wait {periodNumb} days before withdrawing with a lower fee.',
+        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw immediately with a higher fee or wait {periodNumb} before withdrawing with a lower fee.',
       iconColor: '#e6dc25',
     },
     {
       icon: 'CheckCircle',
-      title: 'Keep your free balance',
+      title: 'Keep your transferable balance',
       description:
-        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
       iconColor: '#4cd9ac',
     },
     {
@@ -104,9 +104,9 @@ export const EARNING_DATA_RAW = {
     },
     {
       icon: 'CheckCircle',
-      title: 'Keep your free balance',
+      title: 'Keep your transferable balance',
       description:
-        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
       iconColor: '#4cd9ac',
     },
     {

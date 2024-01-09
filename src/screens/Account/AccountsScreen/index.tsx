@@ -167,7 +167,7 @@ export const AccountsScreen = ({
           params: { screen: 'Tokens', params: { screen: 'TokenGroups' } },
         });
         navigation.goBack();
-      } else if (pathName === 'EarningList' || pathName === 'EarningPoolList') {
+      } else if (pathName === 'EarningList' || pathName === 'EarningPoolList' || pathName === 'Earning') {
         navigation.navigate('Home', {
           screen: 'Main',
           params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 1 } } },

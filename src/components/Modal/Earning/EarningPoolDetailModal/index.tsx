@@ -1,7 +1,7 @@
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { YieldPoolType } from '@subwallet/extension-base/types';
-import { Button, Icon, SwFullSizeModal, Typography } from 'components/design-system-ui';
+import { Button, Icon, SwFullSizeModal, Tag, Typography } from 'components/design-system-ui';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CaretDown, PlusCircle, X } from 'phosphor-react-native';
@@ -16,6 +16,8 @@ import createStyles from './style';
 import { EARNING_DATA_RAW } from '../../../../../EarningDataRaw';
 import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { getTokenLogo } from 'utils/index';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 interface Props {
   slug: string;
@@ -64,9 +66,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         case YieldPoolType.NOMINATION_POOL:
         case YieldPoolType.NATIVE_STAKING:
         case YieldPoolType.LIQUID_STAKING:
-          return 'Stake to earn up to {{apy}} from {{minActiveStake}} easily with {{shortName}}';
+          return 'Earn up to {{apy}} yearly from {{minActiveStake}} with {{shortName}}';
         case YieldPoolType.LENDING:
-          return 'Supply to earn up to {{apy}} from {{minActiveStake}} easily with {{shortName}}';
+          return 'Earn up to {{apy}} yearly from {{minActiveStake}} with {{shortName}}';
       }
     };
 
@@ -114,6 +116,44 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     return result;
   }, [assetRegistry, poolInfo]);
 
+  const buttonTitle = useMemo(() => {
+    if (!poolInfo) {
+      return '';
+    }
+
+    const { type } = poolInfo;
+    switch (type) {
+      case YieldPoolType.NOMINATION_POOL:
+      case YieldPoolType.NATIVE_STAKING:
+      case YieldPoolType.LIQUID_STAKING:
+        return 'Stake to earn';
+      case YieldPoolType.LENDING:
+        return 'Supply to earn';
+    }
+  }, [poolInfo]);
+
+  const tags = useMemo(() => {
+    const asset = assetRegistry[poolInfo.metadata.inputAsset];
+    const symbol = asset.symbol;
+    if (poolInfo.statistic && 'assetEarning' in poolInfo.statistic && poolInfo.statistic?.assetEarning) {
+      const assetEarning = poolInfo.statistic?.assetEarning;
+      const data = assetEarning.map(item => {
+        let result: { slug: string; apy: number; symbol: string } = { slug: item.slug, apy: 0, symbol: symbol };
+        result.slug = item.slug;
+        if (!item.apy) {
+          const rs = calculateReward(item?.apr || 0);
+          result.apy = rs.apy || 0;
+        } else {
+          result.apy = item.apy;
+        }
+
+        return result;
+      });
+
+      return data;
+    }
+  }, [assetRegistry, poolInfo.metadata.inputAsset, poolInfo.statistic]);
+
   const replaceEarningValue = useCallback((target: BoxProps, searchString: string, replaceValue: string) => {
     if (target.title.includes(searchString)) {
       target.title = target.title.replace(searchString, replaceValue);
@@ -134,8 +174,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
       const isDay = unstakingPeriod > 24;
       const time = isDay ? Math.floor(unstakingPeriod / 24) : unstakingPeriod;
-      const unit = isDay ? 'day' : 'hour';
-      return [time, unit].join('-');
+      const unit = isDay ? 'days' : 'hours';
+      return [time, unit].join(' ');
     } else {
       return 'unknown time';
     }
@@ -383,6 +423,21 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               />
             </View>
             <Typography.Text style={styles.headerText}>{title}</Typography.Text>
+            {tags && tags.length && (
+              <View style={{ alignItems: 'center', marginTop: theme.paddingXS }}>
+                {tags.map(({ slug: tagSlug, apy, symbol }) => (
+                  <Tag key={tagSlug} bgType={'gray'} shape={'round'} icon={getTokenLogo(tagSlug, undefined, 16)}>
+                    <Typography.Text
+                      size={'sm'}
+                      style={{ color: theme.colorSecondaryText, paddingLeft: 4, ...FontSemiBold }}>{`${formatNumber(
+                      apy,
+                      0,
+                      balanceFormatter,
+                    )}% ${symbol}`}</Typography.Text>
+                  </Tag>
+                ))}
+              </View>
+            )}
           </View>
           <ScrollView
             ref={scrollRef}
@@ -448,7 +503,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               size="sm"
               onPress={onPress}
               disabled={!isScrollEnd && showScrollEnd}>
-              Stake to earn
+              {buttonTitle}
             </Button>
           )}
         </View>
