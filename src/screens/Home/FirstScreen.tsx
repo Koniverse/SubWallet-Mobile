@@ -135,7 +135,7 @@ export const FirstScreen = () => {
       icon: Swatches,
       title: i18n.welcomeScreen.attachAccLabel,
       subTitle: i18n.welcomeScreen.attachAccMessage,
-      onPress: !isOpenGeneralTermFirstTime ? onShowGeneralTermModal('importAcc') : onPressActionButton('attachAcc'),
+      onPress: !isOpenGeneralTermFirstTime ? onShowGeneralTermModal('attachAcc') : onPressActionButton('attachAcc'),
     },
   ];
 

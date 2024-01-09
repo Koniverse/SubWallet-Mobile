@@ -15,10 +15,12 @@ export const WIKI_URL = 'https://docs.subwallet.app/';
 export const PRIVACY_AND_POLICY_URL = 'https://docs.subwallet.app/privacy-and-security/privacy-policy';
 export const TERMS_OF_SERVICE_URL = 'https://docs.subwallet.app/privacy-and-security/terms-of-service';
 export const TERMS_OF_USE_URL = 'https://docs.subwallet.app/main/privacy-and-security/terms-of-use';
+export const IMPORT_QR_CODE_URL =
+  'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/import-restore-an-account#import-by-qr-code';
 export const POLKADOT_VAULT_INSTRUCTION_URL =
-  'https://docs.subwallet.app/main/extension-user-guide/account-management/attach-a-polkadot-vault-previously-parity-signer-account';
+  'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/attach-a-polkadot-vault-previously-parity-signer-account';
 export const KEYSTONE_INSTRUCTION_URL =
-  'https://docs.subwallet.app/main/extension-user-guide/account-management/connect-keystone-device';
+  'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/connect-keystone-device';
 export const WEBSITE_URL = 'https://subwallet.app/';
 export const TELEGRAM_URL = 'https://t.me/subwallet';
 export const TWITTER_URL = 'https://twitter.com/subwalletapp';

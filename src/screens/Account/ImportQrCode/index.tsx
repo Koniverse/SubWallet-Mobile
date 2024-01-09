@@ -17,12 +17,13 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { checkPublicAndPrivateKey, createAccountWithSecret } from 'messaging/index';
 import { QrCode, Scan } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
 import createStyle from './styles';
 import i18n from 'utils/i18n/i18n';
+import { IMPORT_QR_CODE_URL } from 'constants/index';
 
 type Props = {};
 
@@ -121,7 +122,14 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
           />
         </View>
         <View>
-          <Text style={styles.description}>{i18n.importAccount.importQrCodeMessage2}</Text>
+          <Text style={styles.description}>
+            <Text>{i18n.importAccount.importQrCodeMessage2}</Text>
+            <Text style={styles.highLight} onPress={() => Linking.openURL(IMPORT_QR_CODE_URL)}>
+              {' '}
+              {i18n.attachAccount.readThisInstructionForMoreDetailsP2}
+            </Text>
+            <Text>{i18n.attachAccount.readThisInstructionForMoreDetailsP3}</Text>
+          </Text>
         </View>
       </View>
       <View style={styles.footer}>
