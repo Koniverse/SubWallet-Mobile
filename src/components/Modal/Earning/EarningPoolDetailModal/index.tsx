@@ -125,7 +125,11 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   }, []);
 
   const unBondedTime = useMemo((): string => {
-    if (poolInfo.statistic && 'unstakingPeriod' in poolInfo.statistic) {
+    if (
+      poolInfo.statistic &&
+      'unstakingPeriod' in poolInfo.statistic &&
+      poolInfo.statistic.unstakingPeriod !== undefined
+    ) {
       const unstakingPeriod = poolInfo.statistic.unstakingPeriod;
 
       const isDay = unstakingPeriod > 24;
@@ -147,10 +151,16 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const _label = getValidatorLabel(poolInfo.chain);
         const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
         const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
-
         const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
-        if (inputAsset) {
+        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
+
+        if (inputAsset && maintainAsset) {
           const { decimals, minAmount, symbol } = inputAsset;
+          const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
+          const maintainBalance = getInputValuesFromString(
+            poolInfo.metadata.maintainBalance || '0',
+            maintainDecimals || 0,
+          );
           return EARNING_DATA_RAW[YieldPoolType.NOMINATION_POOL].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
@@ -162,6 +172,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               getInputValuesFromString(minAmount || '0', decimals || 0),
             );
             replaceEarningValue(_item, '{symbol}', symbol);
+            replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
+            replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
 
             return _item;
           });
@@ -173,11 +185,16 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const _label = getValidatorLabel(poolInfo.chain);
         const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
         const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
-
         const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
 
-        if (inputAsset) {
+        if (inputAsset && maintainAsset) {
           const { decimals, minAmount, symbol } = inputAsset;
+          const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
+          const maintainBalance = getInputValuesFromString(
+            poolInfo.metadata.maintainBalance || '0',
+            maintainDecimals || 0,
+          );
           return EARNING_DATA_RAW[YieldPoolType.NATIVE_STAKING].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
@@ -189,6 +206,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               getInputValuesFromString(minAmount || '0', decimals || 0),
             );
             replaceEarningValue(_item, '{symbol}', symbol);
+            replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
+            replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
             return _item;
           });
         } else {
@@ -199,8 +218,14 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
         const derivative = assetRegistry[derivativeSlug];
         const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
 
-        if (derivative && inputAsset) {
+        if (derivative && inputAsset && maintainAsset) {
+          const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
+          const maintainBalance = getInputValuesFromString(
+            poolInfo.metadata.maintainBalance || '0',
+            maintainDecimals || 0,
+          );
           return EARNING_DATA_RAW[YieldPoolType.LIQUID_STAKING].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
 
@@ -213,7 +238,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               getInputValuesFromString(inputAsset.minAmount || '0', inputAsset.decimals || 0),
             );
             replaceEarningValue(_item, '{symbol}', inputAsset.symbol);
-
+            replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
+            replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
             return _item;
           });
         } else {
@@ -224,8 +250,15 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
         const derivative = assetRegistry[derivativeSlug];
         const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
 
-        if (derivative && inputAsset) {
+        if (derivative && inputAsset && maintainAsset) {
+          const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
+          const maintainBalance = getInputValuesFromString(
+            poolInfo.metadata.maintainBalance || '0',
+            maintainDecimals || 0,
+          );
+
           return EARNING_DATA_RAW[YieldPoolType.LENDING].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
 
@@ -237,7 +270,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               getInputValuesFromString(inputAsset.minAmount || '0', inputAsset.decimals || 0),
             );
             replaceEarningValue(_item, '{symbol}', inputAsset.symbol);
-
+            replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
+            replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
             return _item;
           });
         } else {

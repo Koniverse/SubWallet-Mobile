@@ -20,7 +20,7 @@ export const EARNING_DATA_RAW = {
       icon: 'CheckCircle',
       title: 'Keep your free balance',
       description:
-        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {existentialDeposit} {symbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
       iconColor: '#4cd9ac',
     },
     {
@@ -49,7 +49,7 @@ export const EARNING_DATA_RAW = {
       icon: 'CheckCircle',
       title: 'Keep your free balance',
       description:
-        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {existentialDeposit} {symbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
       iconColor: '#4cd9ac',
     },
     {
@@ -78,7 +78,7 @@ export const EARNING_DATA_RAW = {
       icon: 'CheckCircle',
       title: 'Keep your free balance',
       description:
-        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {existentialDeposit} {symbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
       iconColor: '#4cd9ac',
     },
     {
@@ -106,7 +106,7 @@ export const EARNING_DATA_RAW = {
       icon: 'CheckCircle',
       title: 'Keep your free balance',
       description:
-        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {existentialDeposit} {symbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your free balance (transferrable balance) includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
       iconColor: '#4cd9ac',
     },
     {
@@ -117,6 +117,8 @@ export const EARNING_DATA_RAW = {
       iconColor: '#008dff',
     },
   ],
+  [YieldPoolType.PARACHAIN_STAKING]: [],
+  [YieldPoolType.SINGLE_FARMING]: [],
 };
 
 export const STAKE_ALERT_DATA = {

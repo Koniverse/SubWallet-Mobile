@@ -1,10 +1,11 @@
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { YieldPoolType } from '@subwallet/extension-base/types';
 import { Database, HandsClapping, Leaf, User, Users } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import { EarningTagType } from 'types/earning';
 import { convertHexColorToRGBA } from 'utils/color';
 
-export const createEarningTypeTags = (theme: ThemeTypes): Record<YieldPoolType, EarningTagType> => {
+export const createEarningTypeTags = (theme: ThemeTypes, chain: string): Record<YieldPoolType, EarningTagType> => {
   return {
     [YieldPoolType.LIQUID_STAKING]: {
       label: 'Liquid staking',
@@ -42,7 +43,7 @@ export const createEarningTypeTags = (theme: ThemeTypes): Record<YieldPoolType, 
       weight: 'bold',
     },
     [YieldPoolType.NATIVE_STAKING]: {
-      label: 'Native staking',
+      label: _STAKING_CHAIN_GROUP.astar.includes(chain) ? 'dApp staking' : 'Direct nomination',
       icon: Database,
       bgColor: convertHexColorToRGBA(theme['gold-6'], 0.1),
       color: theme['gold-6'],

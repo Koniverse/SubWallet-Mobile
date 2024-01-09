@@ -54,8 +54,8 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
   }, [assetRegistry, compound]);
 
   const earningTagType: EarningTagType = useMemo(() => {
-    return createEarningTypeTags(theme)[compound.type];
-  }, [compound.type, theme]);
+    return createEarningTypeTags(theme, compound.chain)[compound.type];
+  }, [compound.chain, compound.type, theme]);
 
   const isAllAccount = useMemo(() => isAccountAll(compound.address), [compound.address]);
   const isSpecial = useMemo(() => [YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(type), [type]);

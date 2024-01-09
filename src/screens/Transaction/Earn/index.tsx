@@ -290,14 +290,12 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     return _totalFee;
   }, [chainAsset, priceMap, processState.feeStructure]);
 
-  const existentialDeposit = useMemo(() => {
-    const assetInfo = Object.values(chainAsset).find(v => v.originChain === chain);
-    if (assetInfo) {
-      return assetInfo.minAmount || '0';
-    }
+  const maintainString = useMemo(() => {
+    const maintainAsset = chainAsset[poolInfo.metadata.maintainAsset];
+    const maintainBalance = poolInfo.metadata.maintainBalance;
 
-    return '0';
-  }, [chainAsset, chain]);
+    return `${getInputValuesFromString(maintainBalance, maintainAsset.decimals || 0)} ${maintainAsset.symbol}`;
+  }, [poolInfo.metadata.maintainAsset, poolInfo.metadata.maintainBalance, chainAsset]);
 
   const getTargetedPool = useCallback(
     (target: string) => {
@@ -367,7 +365,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         if (_errors.length || warnings.length) {
           if (_errors[0]?.message !== 'Rejected by user') {
             hideAll();
-            show(_errors[0]?.message || warnings[0]?.message, { type: 'danger' });
             onError(_errors[0]);
             return false;
           } else {
@@ -395,7 +392,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         }
       };
     },
-    [hideAll, onDone, onError, show],
+    [hideAll, onDone, onError],
   );
 
   const renderMetaInfo = useCallback(() => {
@@ -404,8 +401,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
     const assetEarnings =
       poolInfo.statistic && 'assetEarning' in poolInfo.statistic ? poolInfo.statistic.assetEarning : [];
-    const derivativeAssets =
-      poolInfo.statistic && 'derivativeAssets' in poolInfo.metadata ? poolInfo.metadata.derivativeAssets : [];
+    const derivativeAssets = 'derivativeAssets' in poolInfo.metadata ? poolInfo.metadata.derivativeAssets : [];
+    const showFee = [YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(poolInfo.type);
 
     return (
       <MetaInfo labelColorScheme={'gray'} spaceSize={'sm'} valueColorScheme={'gray'}>
@@ -437,7 +434,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           />
         )}
 
-        <MetaInfo.Number decimals={0} label={i18n.inputLabel.estimatedFee} prefix={'$'} value={estimatedFee} />
+        {showFee && (
+          <MetaInfo.Number decimals={0} label={i18n.inputLabel.estimatedFee} prefix={'$'} value={estimatedFee} />
+        )}
       </MetaInfo>
     );
   }, [currentAmount, assetDecimals, inputAsset.symbol, poolInfo, estimatedFee, chainAsset]);
@@ -545,6 +544,12 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   useEffect(() => {
     setAsset(inputAsset.slug || '');
   }, [inputAsset.slug, setAsset]);
+
+  useEffect(() => {
+    if (!currentFrom && accountSelectorList.length >= 1) {
+      setFrom(accountSelectorList[0].address);
+    }
+  }, [accountSelectorList, currentFrom, setFrom]);
 
   useEffect(() => {
     if (currentStep === 0) {
@@ -700,7 +705,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       items={accountSelectorList}
                       selectedValueMap={{ [currentFrom]: true }}
                       accountSelectorRef={accountSelectorRef}
-                      disabled={!isAllAccount}
+                      disabled={submitLoading || !isAllAccount}
                       onSelectItem={item => {
                         setFrom(item.address);
                         fromRef.current = item.address;
@@ -790,10 +795,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       <AlertBox
                         type={'warning'}
                         title={STAKE_ALERT_DATA.title}
-                        description={STAKE_ALERT_DATA.description.replace(
-                          '{tokenAmount}',
-                          `${getInputValuesFromString(existentialDeposit, assetDecimals)} ${inputAsset.symbol}`,
-                        )}
+                        description={STAKE_ALERT_DATA.description.replace('{tokenAmount}', maintainString)}
                       />
                     </View>
                   </ScrollView>

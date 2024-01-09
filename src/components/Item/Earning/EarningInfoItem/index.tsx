@@ -21,7 +21,7 @@ interface Props {
 }
 
 const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
-  const { balanceToken, type, slug, group, asset, totalStake, price, exchangeRate } = positionInfo;
+  const { balanceToken, type, slug, group, asset, totalStake, price, exchangeRate, chain } = positionInfo;
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
@@ -73,7 +73,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
           )}
         </View>
         <View style={styleSheet.balanceInfoRow}>
-          <EarningTypeTag type={type} />
+          <EarningTypeTag type={type} chain={chain} />
 
           {/*<View style={{ alignItems: 'flex-start' }}>*/}
           {/*  <Tag*/}

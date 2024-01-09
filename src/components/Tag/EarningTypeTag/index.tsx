@@ -10,16 +10,17 @@ import { createEarningTypeTags } from 'utils/earning';
 type Props = {
   type?: YieldPoolType;
   comingSoon?: boolean;
+  chain: string;
 };
 
 const EarningTypeTag: React.FC<Props> = (props: Props) => {
-  const { type, comingSoon } = props;
+  const { type, comingSoon, chain } = props;
 
   const theme = useSubWalletTheme().swThemes;
 
   const earningTagTypes: Record<YieldPoolType, EarningTagType> = useMemo(() => {
-    return createEarningTypeTags(theme);
-  }, [theme]);
+    return createEarningTypeTags(theme, chain);
+  }, [chain, theme]);
 
   const earningTag = useMemo(
     (): EarningTagType =>

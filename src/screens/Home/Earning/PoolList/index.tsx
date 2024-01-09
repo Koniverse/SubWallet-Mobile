@@ -1,24 +1,23 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
+import { EmptyList } from 'components/EmptyList';
 import { FlatListScreen } from 'components/FlatListScreen';
 import EarningPoolItem from 'components/Item/Earning/EarningPoolItem';
 import useYieldPoolInfoByGroup from 'hooks/earning/useYieldPoolInfoByGroup';
+import { useRefresh } from 'hooks/useRefresh';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { reloadCron } from 'messaging/index';
 import { Trophy } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
-import { EarningPoolListProps } from 'routes/earning';
-import i18n from 'utils/i18n/i18n';
-import { ColorMap } from 'styles/color';
-import { reloadCron } from 'messaging/index';
-import { useRefresh } from 'hooks/useRefresh';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { RootNavigationProps } from 'routes/index';
-import { EmptyList } from 'components/EmptyList';
-import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { useSelector } from 'react-redux';
+import { setAdjustPan } from 'rn-android-keyboard-adjust';
+import { EarningPoolListProps } from 'routes/earning';
+import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
+import { ColorMap } from 'styles/color';
+import i18n from 'utils/i18n/i18n';
 import createStyles from './style';
 
 const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
@@ -98,20 +97,12 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     const result = [...pools];
 
     result.sort((a, b) => {
-      const getApy = (pool: YieldPoolInfo) => {
-        const totalApy = pool.statistic?.totalApy;
-        const totalApr = pool.statistic?.totalApr;
-        if (totalApy) {
-          return totalApy;
+      const getType = (pool: YieldPoolInfo) => {
+        if (pool.type === YieldPoolType.NOMINATION_POOL) {
+          return 1;
+        } else {
+          return -1;
         }
-
-        if (totalApr) {
-          const rs = calculateReward(totalApr);
-
-          return rs.apy || -1;
-        }
-
-        return -1;
       };
 
       const getTotal = (pool: YieldPoolInfo) => {
@@ -119,7 +110,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         return tvl ? new BigN(tvl).toNumber() : -1;
       };
 
-      return getTotal(b) - getTotal(a) || getApy(b) - getApy(a);
+      return getTotal(b) - getTotal(a) || getType(b) - getType(a);
     });
 
     return result;

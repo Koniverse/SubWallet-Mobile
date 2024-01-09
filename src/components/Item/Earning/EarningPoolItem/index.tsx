@@ -137,7 +137,7 @@ const EarningPoolItem = (props: Props) => {
       </View>
 
       <View style={styleSheet.poolTypeRow}>
-        <EarningTypeTag type={type} />
+        <EarningTypeTag type={type} chain={chain} />
       </View>
     </TouchableOpacity>
   );
