@@ -54,6 +54,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const rootNavigation = useNavigation<RootNavigationProps>();
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const data = useYieldGroupInfo();
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
@@ -108,11 +109,18 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<YieldGroupInfo>) => {
+      const chainName = chainInfoMap[item.chain].name;
       return (
-        <EarningGroupItem key={item.group} poolGroup={item} onPress={handleOnPress} isShowBalance={isShowBalance} />
+        <EarningGroupItem
+          key={item.group}
+          poolGroup={item}
+          onPress={handleOnPress}
+          isShowBalance={isShowBalance}
+          chainName={item.chain === 'bifrost' ? chainName : undefined}
+        />
       );
     },
-    [handleOnPress, isShowBalance],
+    [chainInfoMap, handleOnPress, isShowBalance],
   );
 
   const onBack = useCallback(() => {

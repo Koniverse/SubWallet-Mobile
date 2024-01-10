@@ -160,7 +160,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     }
 
     if (typeof target.description === 'string' && target.description?.includes(searchString)) {
-      target.description = target.description.replace(searchString, replaceValue);
+      // @ts-ignore
+      target.description = target.description.replaceAll(searchString, replaceValue);
     }
   }, []);
 

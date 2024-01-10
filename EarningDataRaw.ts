@@ -24,6 +24,13 @@ export const EARNING_DATA_RAW = {
       iconColor: '#4cd9ac',
     },
     {
+      icon: 'Wallet',
+      title: 'Claim your rewards',
+      description:
+        'Your staking rewards will be paid out every {paidOut} hour. Make sure to claim them <strong>manually</strong>.',
+      iconColor: '#51BC5E',
+    },
+    {
       icon: 'Eye',
       title: 'Track your stake',
       description: 'Keep an eye on your stake periodically, as rewards and staking status can fluctuate over time.',
@@ -51,6 +58,13 @@ export const EARNING_DATA_RAW = {
       description:
         'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
       iconColor: '#4cd9ac',
+    },
+    {
+      icon: 'Wallet',
+      title: 'Check your rewards',
+      description:
+        'Your staking rewards will be paid out every {paidOut} hour and will be automatically compounded to your stake.',
+      iconColor: '#51BC5E',
     },
     {
       icon: 'Eye',
@@ -82,6 +96,13 @@ export const EARNING_DATA_RAW = {
       iconColor: '#4cd9ac',
     },
     {
+      icon: 'Wallet',
+      title: 'Check your {derivative}',
+      description:
+        'The amount of {derivative} doesn’t increase over time, only its value in {inputToken} does. This means that by the time you decide to withdraw {inputToken} from {derivative}, your {derivative} should be worth more than your originally staked {inputToken}.',
+      iconColor: '#51BC5E',
+    },
+    {
       icon: 'Eye',
       title: 'Track your APY',
       description:
@@ -108,6 +129,13 @@ export const EARNING_DATA_RAW = {
       description:
         'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
       iconColor: '#4cd9ac',
+    },
+    {
+      icon: 'Wallet',
+      title: 'Check your {derivative}',
+      description:
+        'The amount of {derivative} doesn’t increase over time, only its value in {inputToken} does. This means that by the time you decide to withdraw {inputToken} from {derivative}, your {derivative} should be worth more than your originally supplied {inputToken}.',
+      iconColor: '#51BC5E',
     },
     {
       icon: 'Eye',

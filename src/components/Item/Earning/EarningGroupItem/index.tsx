@@ -12,9 +12,10 @@ interface Props {
   poolGroup: YieldGroupInfo;
   onPress: (value: YieldGroupInfo) => () => void;
   isShowBalance?: boolean;
+  chainName?: string;
 }
 
-const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
+const EarningGroupItem = ({ poolGroup, onPress, isShowBalance, chainName }: Props) => {
   const { maxApy, symbol, token, balance } = poolGroup;
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
@@ -24,9 +25,16 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
       {getTokenLogo(token, undefined, 40)}
       <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>
         <View style={styleSheet.containerRow}>
-          <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>
-            {symbol}
-          </Text>
+          <View style={{ flexDirection: 'row', flex: 1 }}>
+            <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>
+              {symbol}
+            </Text>
+            {chainName && (
+              <Text style={styleSheet.groupChainName} numberOfLines={1} ellipsizeMode={'tail'}>
+                {` (${chainName})`}
+              </Text>
+            )}
+          </View>
 
           {maxApy && (
             <View style={styleSheet.dataRow}>
@@ -122,6 +130,12 @@ function createStyleSheet(theme: ThemeTypes) {
       lineHeight: theme.fontSizeLG * theme.lineHeightLG,
       ...FontSemiBold,
       color: theme.colorTextLight1,
+    },
+    groupChainName: {
+      fontSize: theme.fontSizeLG,
+      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+      ...FontSemiBold,
+      color: theme.colorTextTertiary,
       flex: 1,
     },
 

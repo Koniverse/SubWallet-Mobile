@@ -454,6 +454,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           />
         )}
 
+        <MetaInfo.Chain chain={chainInfoMap[chain].slug} label={i18n.inputLabel.network} />
+
         {showFee && (
           <MetaInfo.Number decimals={0} label={i18n.inputLabel.estimatedFee} prefix={'$'} value={estimatedFee} />
         )}
@@ -466,6 +468,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     poolInfo.statistic,
     poolInfo.metadata,
     poolInfo.type,
+    chainInfoMap,
+    chain,
     estimatedFee,
     getTargetedPool,
     poolTarget,
