@@ -62,7 +62,7 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
       disabledOnPressBackDrop={disabledOnPressBackDrop}
       isAllowSwipeDown={Platform.OS === 'ios' && !disabledOnPressBackDrop}
       titleTextAlign={'center'}
-      modalTitle={'Terms of Use'}>
+      modalTitle={i18n.header.generalTermTitle}>
       <View style={{ position: 'relative' }}>
         <ScrollView
           ref={scrollRef}

@@ -798,7 +798,8 @@
     "disconnect": "Ngắt kết nối",
     "connectedNetworks": "Connected networks",
     "missionPools": "Mission Pools",
-    "updateChain": "Cập nhật mạng"
+    "updateChain": "Cập nhật mạng",
+    "generalTermTitle": "Điều khoản sử dụng"
   },
   "cryptoScreen": {
     "address": "Địa chỉ",

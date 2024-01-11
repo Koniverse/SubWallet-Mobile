@@ -798,7 +798,8 @@
     "disconnect": "断开",
     "connectedNetworks": "Connected networks",
     "missionPools": "Mission Pools",
-    "updateChain": "更新网络"
+    "updateChain": "更新网络",
+    "generalTermTitle": "使用条款"
   },
   "cryptoScreen": {
     "address": "地址",

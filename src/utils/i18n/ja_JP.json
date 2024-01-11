@@ -797,7 +797,8 @@
     "disconnect": "切断",
     "connectedNetworks": "接続されたネットワーク",
     "missionPools": "Mission Pools",
-    "updateChain": "Update network"
+    "updateChain": "Update network",
+    "generalTermTitle": "利用規約"
   },
   "cryptoScreen": {
     "address": "アドレス",

@@ -797,7 +797,8 @@
     "disconnect": "Отключить",
     "connectedNetworks": "Подключенные сети",
     "missionPools": "Mission Pools",
-    "updateChain": "Update network"
+    "updateChain": "Update network",
+    "generalTermTitle": "Terms of Use"
   },
   "cryptoScreen": {
     "address": "Адрес",
