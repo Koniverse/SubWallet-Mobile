@@ -621,6 +621,8 @@
   "{{time}} days": "",
   "Available for withdrawal": "",
   "Withdraw in {{time}}": "",
+  "Pools": "集合",
+  "Nominate": "提名",
   "Token is not supported": "",
   "Unable to sign": "",
   "Unable to send": "",
@@ -721,7 +723,6 @@
   "support site": "",
   "You are now leaving SubWallet for <mainUrl/>. Services related to card payments are provided by {{service}}, a separate third-party platform. By proceeding and procuring services from {{service}}, you acknowledge that you have read and agreed to {{service}}'s <termUrl/> and <policyUrl/>. For any question related to {{service}}'s services, please visit {{service}}'s <contactUrl/>.": "",
   "{{deviceName}} will provide you with a QR code to scan. Read <highlight>this instruction</highlight>, for more details.": "",
-  "Click the \"Scan QR\" button, or read <highlight>this instruction</highlight>, for more details.": "",
   "Transaction completed": "",
   "Transaction {{info}} completed": "",
   "Transaction failed": "",
@@ -987,5 +988,9 @@
   "Inscriptions": "",
   "Back to Security settings": "",
   "Danger ahead!": "",
-  "Attackers might trick you into doing something dangerous like installing software or revealing your personal information. Stay away from this page!": ""
+  "Attackers might trick you into doing something dangerous like installing software or revealing your personal information. Stay away from this page!": "",
+  "Unable to fetch staking data. Re-enable current network and try again": "",
+  "Unable to fetch staking data. Re-enable \"{{chainName}}\" and try again.": "",
+  "Click the \"Scan QR\" button, or read <highlight>this instruction</highlight>, for more details": "",
+  "Withdrawable in {{time}}": ""
 }
