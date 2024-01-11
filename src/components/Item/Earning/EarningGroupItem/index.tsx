@@ -7,21 +7,22 @@ import { YieldGroupInfo } from 'types/earning';
 import { getTokenLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
+import { _ChainInfo } from '@subwallet/chain-list/types';
 
 interface Props {
   poolGroup: YieldGroupInfo;
-  onPress: (value: YieldGroupInfo) => () => void;
+  onPress: () => void;
   isShowBalance?: boolean;
-  chainName?: string;
+  chain: _ChainInfo;
 }
 
-const EarningGroupItem = ({ poolGroup, onPress, isShowBalance, chainName }: Props) => {
+const EarningGroupItem = ({ poolGroup, onPress, isShowBalance, chain }: Props) => {
   const { maxApy, symbol, token, balance } = poolGroup;
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
 
   return (
-    <TouchableOpacity style={styleSheet.infoContainer} activeOpacity={0.5} onPress={onPress(poolGroup)}>
+    <TouchableOpacity style={styleSheet.infoContainer} activeOpacity={0.5} onPress={onPress}>
       {getTokenLogo(token, undefined, 40)}
       <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>
         <View style={styleSheet.containerRow}>
@@ -29,9 +30,9 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance, chainName }: Prop
             <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>
               {symbol}
             </Text>
-            {chainName && (
+            {chain.slug === 'bifrost' && (
               <Text style={styleSheet.groupChainName} numberOfLines={1} ellipsizeMode={'tail'}>
-                {` (${chainName})`}
+                {` (${chain.name})`}
               </Text>
             )}
           </View>

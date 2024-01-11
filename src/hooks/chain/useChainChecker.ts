@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 
-export default function useChainChecker() {
+export default function useChainChecker(isShowToast = true) {
   const { chainInfoMap, chainStateMap } = useSelector((root: RootState) => root.chainStore);
   const connectingChain = useRef<string | null>(null);
   const { show } = useToast();
@@ -20,10 +20,10 @@ export default function useChainChecker() {
       chainStateMap[connectingChain.current]?.connectionStatus === _ChainConnectionStatus.CONNECTED
     ) {
       const chainName = chainInfoMap[connectingChain.current].name;
-      show(i18n.formatString(i18n.common.chainConnected, chainName) as string, { type: 'success' });
+      isShowToast && show(i18n.formatString(i18n.common.chainConnected, chainName) as string, { type: 'success' });
       connectingChain.current = null;
     }
-  }, [chainInfoMap, chainStateMap, show]);
+  }, [chainInfoMap, chainStateMap, isShowToast, show]);
 
   const checkChainConnected = useCallback(
     (chain: string) => {
@@ -44,11 +44,11 @@ export default function useChainChecker() {
       connectingChain.current = chain;
       enableChain(chain, false)
         .then(() => {
-          show(i18n.common.connecting, { type: 'warning' });
+          isShowToast && show(i18n.common.connecting, { type: 'warning' });
         })
         .catch(console.error);
     },
-    [show],
+    [isShowToast, show],
   );
   return { turnOnChain, checkChainConnected };
 }

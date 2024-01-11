@@ -13,10 +13,12 @@ import { getNetworkLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import { BN_TEN } from 'utils/number';
+import { _ChainInfo } from '@subwallet/chain-list/types';
 
 interface Props {
   poolInfo: YieldPoolInfo;
   onStakeMore: (value: string) => void;
+  chain: _ChainInfo;
 }
 
 const EarningPoolItem = (props: Props) => {
