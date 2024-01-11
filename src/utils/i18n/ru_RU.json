@@ -936,7 +936,22 @@
       "claimRewardTransaction": "Tранзакция требования награды",
       "withdrawTransaction": "Транзакция вывода",
       "cancelUnstakeTransaction": "Отменить транзакцию анстейк",
-      "evmTransaction": "EVM Транзакция"
+      "evmTransaction": "EVM Транзакция",
+      "mintVDOTTransaction": "Mint vDOT transaction",
+      "mintLDOTTransaction": "Mint LDOT transaction",
+      "mintSDOTTransaction": "Mint sDOT transaction",
+      "mintQDOTTransaction": "Mint qDOT transaction",
+      "mintSTDOTTransaction": "Mint stDOT transaction",
+      "redeemVDOTTransaction": "Redeem vDOT transaction",
+      "redeemLDOTTransaction": "Redeem LDOT transaction",
+      "redeemSDOTTransaction": "Redeem sDOT transaction",
+      "redeemQDOTTransaction": "Redeem qDOT transaction",
+      "redeemSTDOTTransaction": "Redeem stDOT transaction",
+      "unstakeVDOTTransaction": "Unstake vDOT transaction",
+      "unstakeLDOTTransaction": "Unstake LDOT transaction",
+      "unstakeSDOTTransaction": "Unstake sDOT transaction",
+      "unstakeSTDOTTransaction": "Unstake stDOT transaction",
+      "unstakeQDOTTransaction": "Unstake qDOT transaction"
     }
   },
   "importEvmNft": {
