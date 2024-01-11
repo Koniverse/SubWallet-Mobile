@@ -5,8 +5,11 @@ import { RequestYieldWithdrawal } from '@subwallet/extension-base/types';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import { ConfirmationContent } from 'components/common/Confirmation';
 import MetaInfo from 'components/MetaInfo';
+import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 import { BaseTransactionConfirmationProps } from './Base';
 import i18n from 'utils/i18n/i18n';
@@ -15,18 +18,28 @@ type Props = BaseTransactionConfirmationProps;
 
 const WithdrawTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const { transaction } = props;
+
   const data = transaction.data as RequestYieldWithdrawal;
 
+  const { poolInfoMap } = useSelector((state: RootState) => state.earning);
+
+  const poolInfo = useMemo(() => poolInfoMap[data.slug], [poolInfoMap, data.slug]);
+
+  const inputAsset = useGetChainAssetInfo(poolInfo.metadata.inputAsset);
+
   const { decimals, symbol } = useGetNativeTokenBasicInfo(data.unstakingInfo.chain);
+
+  const amountDecimals = inputAsset?.decimals || 0;
+  const amountSymbol = inputAsset?.symbol || '';
 
   return (
     <ConfirmationContent isFullHeight>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Number
-          decimals={decimals}
+          decimals={amountDecimals}
           label={i18n.inputLabel.amount}
-          suffix={symbol}
+          suffix={amountSymbol}
           value={data.unstakingInfo.claimable}
         />
 

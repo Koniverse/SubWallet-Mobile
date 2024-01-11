@@ -42,7 +42,13 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { SessionTypes } from '@walletconnect/types';
 import { MissionInfo } from 'types/missionPool';
 import { BuyServiceInfo, BuyTokenInfo } from 'types/buy';
-import { BalanceJson, EarningRewardJson, YieldPoolInfo, YieldPositionInfo } from '@subwallet/extension-base/types';
+import {
+  BalanceJson,
+  EarningRewardHistoryItem,
+  EarningRewardJson,
+  YieldPoolInfo,
+  YieldPositionInfo,
+} from '@subwallet/extension-base/types';
 // Setup redux stores
 
 function voidFn() {
@@ -447,6 +453,25 @@ export const subscribeYieldReward = lazySubscribeMessage(
   null,
   updateYieldReward,
   updateYieldReward,
+);
+
+export const updateRewardHistory = (data: Record<string, EarningRewardHistoryItem>) => {
+  if (Object.keys(data).length > 0) {
+    addLazy(
+      'updateRewardHistory',
+      () => {
+        store.dispatch({ type: 'earning/updateRewardHistory', payload: Object.values(data) });
+      },
+      900,
+    );
+  }
+};
+
+export const subscribeRewardHistory = lazySubscribeMessage(
+  'pri(yield.subscribeRewardHistory)',
+  null,
+  updateRewardHistory,
+  updateRewardHistory,
 );
 
 export const updateMinAmountPercent = (data: Record<string, number>) => {

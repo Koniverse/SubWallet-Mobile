@@ -165,22 +165,24 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     }
   }, []);
 
-  const unBondedTime = useMemo((): string => {
-    if (
-      poolInfo.statistic &&
-      'unstakingPeriod' in poolInfo.statistic &&
-      poolInfo.statistic.unstakingPeriod !== undefined
-    ) {
-      const unstakingPeriod = poolInfo.statistic.unstakingPeriod;
-
-      const isDay = unstakingPeriod > 24;
-      const time = isDay ? Math.floor(unstakingPeriod / 24) : unstakingPeriod;
+  const convertTime = useCallback((_number?: number): string => {
+    if (_number !== undefined) {
+      const isDay = _number > 24;
+      const time = isDay ? Math.floor(_number / 24) : _number;
       const unit = isDay ? 'days' : 'hours';
       return [time, unit].join(' ');
     } else {
       return 'unknown time';
     }
-  }, [poolInfo.statistic]);
+  }, []);
+
+  const unBondedTime = useMemo((): string => {
+    let time: number | undefined;
+    if (poolInfo.statistic && 'unstakingPeriod' in poolInfo.statistic) {
+      time = poolInfo.statistic.unstakingPeriod;
+    }
+    return convertTime(time);
+  }, [poolInfo.statistic, convertTime]);
 
   const data: BoxProps[] = useMemo(() => {
     if (!poolInfo) {
@@ -194,6 +196,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
         const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
         const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
+        const paidOut = poolInfo.statistic?.eraTime;
 
         if (inputAsset && maintainAsset) {
           const { decimals, minAmount, symbol } = inputAsset;
@@ -215,6 +218,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             replaceEarningValue(_item, '{symbol}', symbol);
             replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
             replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
+            if (paidOut !== undefined) {
+              replaceEarningValue(_item, '{paidOut}', paidOut.toString());
+            }
 
             return _item;
           });
@@ -228,6 +234,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
         const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
         const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
+        const paidOut = poolInfo.statistic?.eraTime;
 
         if (inputAsset && maintainAsset) {
           const { decimals, minAmount, symbol } = inputAsset;
@@ -249,6 +256,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             replaceEarningValue(_item, '{symbol}', symbol);
             replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
             replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
+            if (paidOut !== undefined) {
+              replaceEarningValue(_item, '{paidOut}', paidOut.toString());
+            }
             return _item;
           });
         } else {

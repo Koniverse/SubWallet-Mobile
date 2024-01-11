@@ -3,6 +3,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
 import {
+  EarningRewardHistoryItem,
   EarningRewardItem,
   ResponseGetYieldPoolTargets,
   YieldPoolInfo,
@@ -15,6 +16,7 @@ const initialState: EarningStore = {
   yieldPositions: [],
   reduxStatus: ReduxStatus.INIT,
   earningRewards: [],
+  rewardHistories: [],
   minAmountPercentMap: {},
   poolTargetsMap: {},
 };
@@ -50,6 +52,13 @@ const earningSlice = createSlice({
         reduxStatus: ReduxStatus.READY,
       };
     },
+    updateRewardHistory(state, action: PayloadAction<EarningRewardHistoryItem[]>): EarningStore {
+      return {
+        ...state,
+        rewardHistories: action.payload,
+        reduxStatus: ReduxStatus.READY,
+      };
+    },
     updateMinAmountPercent(state, action: PayloadAction<Record<string, number>>): EarningStore {
       return {
         ...state,
@@ -78,6 +87,7 @@ export const {
   updateYieldPoolInfo,
   updateYieldPositionInfo,
   updateYieldReward,
+  updateRewardHistory,
   updateMinAmountPercent,
   updatePoolTargets,
 } = earningSlice.actions;

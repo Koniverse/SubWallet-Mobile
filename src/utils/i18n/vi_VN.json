@@ -530,7 +530,8 @@
     "totalWinner": "Total winner",
     "timeline": "Time line",
     "derivativeTokenBalance": "Derivative token balance",
-    "nominationInfo": "Nomination info"
+    "nominationInfo": "Nomination info",
+    "fastUnstake": "Fast Unstake"
   },
   "placeholder": {
     "password": "Mật khẩu",

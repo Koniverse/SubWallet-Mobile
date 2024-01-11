@@ -35,6 +35,7 @@ import {
   BalanceMap,
   BuyServiceInfo,
   BuyTokenInfo,
+  EarningRewardHistoryItem,
   EarningRewardItem,
   NominationPoolInfo,
   YieldPoolInfo,
@@ -252,6 +253,7 @@ export interface EarningStore extends BaseReduxStore {
   poolInfoMap: Record<string, YieldPoolInfo>;
   yieldPositions: YieldPositionInfo[];
   earningRewards: EarningRewardItem[];
+  rewardHistories: EarningRewardHistoryItem[];
   minAmountPercentMap: Record<string, number>;
   poolTargetsMap: Record<string, YieldPoolTarget[]>;
 }

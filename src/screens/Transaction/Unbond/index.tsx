@@ -1,6 +1,7 @@
 import { YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
 import { RequestYieldLeave } from '@subwallet/extension-base/types/yield/actions/others';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
+import InputCheckBox from 'components/Input/InputCheckBox';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 import { useYieldPositionDetail } from 'hooks/earning';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -46,6 +47,7 @@ import { UNSTAKE_ALERT_DATA } from '../../../../EarningDataRaw';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
+  fastLeave: string;
 }
 
 export interface UnbondBoxProps {
@@ -82,6 +84,7 @@ export const Unbond = ({
     title,
     form: {
       setValue,
+      getValues,
       control,
       formState: { errors },
     },
@@ -94,6 +97,7 @@ export const Unbond = ({
     reValidateMode: 'onChange',
     defaultValues: {
       nomination: '',
+      fastLeave: '',
     },
   });
 
@@ -101,6 +105,7 @@ export const Unbond = ({
   const currentValidator = useWatch<UnstakeFormValues>({ name: 'nomination', control });
   const chainValue = useWatch<UnstakeFormValues>({ name: 'chain', control });
   const currentValue = useWatch<UnstakeFormValues>({ name: 'value', control });
+  const fastLeave = useWatch<UnstakeFormValues>({ name: 'fastLeave', control });
 
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
@@ -148,6 +153,10 @@ export const Unbond = ({
 
     return '0';
   }, [assetRegistry, chainValue]);
+
+  const showFastLeave = useMemo(() => {
+    return poolInfo.metadata.availableMethod.defaultUnstake && poolInfo.metadata.availableMethod.fastUnstake;
+  }, [poolInfo.metadata]);
 
   const mustChooseValidator = useMemo(() => {
     return isActionFromValidator(poolType, poolChain || '');
@@ -256,17 +265,15 @@ export const Unbond = ({
       return;
     }
 
+    const { from, value, fastLeave: _fastLeave } = getValues();
+
     const request: RequestYieldLeave = {
-      address: fromValue,
-      amount: currentValue,
-      fastLeave: false,
+      address: from,
+      amount: value,
+      fastLeave: !!_fastLeave,
       slug: slug,
       poolInfo: poolInfo,
     };
-
-    if ([YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(poolType)) {
-      request.fastLeave = true;
-    }
 
     if (mustChooseValidator) {
       request.selectedTarget = currentValidator || '';
@@ -284,18 +291,7 @@ export const Unbond = ({
           setLoading(false);
         });
     }, 300);
-  }, [
-    poolInfo,
-    positionInfo,
-    fromValue,
-    currentValue,
-    slug,
-    poolType,
-    mustChooseValidator,
-    currentValidator,
-    onSuccess,
-    onError,
-  ]);
+  }, [positionInfo, getValues, slug, poolInfo, mustChooseValidator, currentValidator, onSuccess, onError]);
 
   const nominators = useMemo(() => {
     if (fromValue && positionInfo?.nominations && positionInfo.nominations.length) {
@@ -307,7 +303,8 @@ export const Unbond = ({
 
   const amountInputRules = useMemo(
     () => ({
-      validate: (value: string): Promise<ValidateResult> => {
+      validate: (value: string, formValues: UnstakeFormValues): Promise<ValidateResult> => {
+        const { fastLeave: _fastLeave } = formValues;
         const _minWithdraw = new BigN(minWithdraw);
         const _minWithdrawString = formatBalance(_minWithdraw, decimals);
         const _minValue = new BigN(minValue);
@@ -316,6 +313,7 @@ export const Unbond = ({
         const _maxString = formatBalance(_maxValue, decimals);
         const val = new BigN(value);
         const name = 'Value';
+        const isRedeem = !!_fastLeave;
 
         if (val.gt(_maxValue)) {
           return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeEqualOrLessThan, name, _maxString));
@@ -325,7 +323,7 @@ export const Unbond = ({
           return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeGreaterThanZero, name));
         }
 
-        if (val.lt(_minWithdraw)) {
+        if (isRedeem && val.lt(_minWithdraw)) {
           return Promise.resolve(
             i18n.formatString(i18n.errorMessage.unbondMustBeEqualOrGreaterThan, name, _minWithdrawString),
           );
@@ -353,6 +351,25 @@ export const Unbond = ({
     () => !!errors.value || !currentValue || !fromValue || loading,
     [currentValue, errors.value, fromValue, loading],
   );
+
+  const onChangeFastLeave = useCallback(
+    (value: string) => {
+      setValue('fastLeave', value);
+    },
+    [setValue],
+  );
+
+  useEffect(() => {
+    if (poolInfo.metadata.availableMethod.defaultUnstake && poolInfo.metadata.availableMethod.fastUnstake) {
+      return;
+    } else {
+      if (poolInfo.metadata.availableMethod.defaultUnstake) {
+        setValue('fastLeave', '');
+      } else {
+        setValue('fastLeave', '1');
+      }
+    }
+  }, [poolInfo.metadata, setValue]);
 
   useEffect(() => {
     setChain(poolChain || '');
@@ -424,6 +441,23 @@ export const Unbond = ({
               />
 
               {!mustChooseValidator && renderBounded()}
+
+              {showFastLeave && (
+                <InputCheckBox
+                  checked={!!fastLeave}
+                  label={i18n.inputLabel.fastUnstake}
+                  disable={loading}
+                  onPress={() => {
+                    if (!fastLeave) {
+                      onChangeFastLeave('1');
+                    } else {
+                      onChangeFastLeave('');
+                    }
+                  }}
+                  checkBoxSize={20}
+                  wrapperStyle={{ paddingTop: 0 }}
+                />
+              )}
 
               {!!UNSTAKE_ALERT_DATA.length && (
                 <View

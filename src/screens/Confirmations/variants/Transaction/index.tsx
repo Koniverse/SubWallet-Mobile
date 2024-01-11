@@ -1,26 +1,30 @@
 import React, { useCallback, useMemo } from 'react';
 import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { BaseTransactionConfirmation } from 'screens/Confirmations/variants/Transaction/variants/Base';
-import BondTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Bond';
-import CancelUnstakeTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/CancelUnstake';
-import ClaimRewardTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/ClaimReward';
-import JoinYieldPoolConfirmation from 'screens/Confirmations/variants/Transaction/variants/JoinYieldPool';
-import TransferBlock from 'screens/Confirmations/variants/Transaction/variants/TransferBlock';
-import WithdrawTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Withdraw';
+
 import { ConfirmationQueueItem } from 'stores/base/RequestState';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SigningRequest } from '@subwallet/extension-base/background/types';
 import useParseSubstrateRequestPayload from 'hooks/transaction/confirmation/useParseSubstrateRequestPayload';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
-import { JoinPoolTransactionConfirmation, SendNftTransactionConfirmation } from './variants';
-import { SubstrateSignArea } from 'screens/Confirmations/parts/Sign/Substrate';
-import { EvmSignArea } from 'screens/Confirmations/parts/Sign/Evm';
-import LeavePoolTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/LeavePool';
-import UnbondTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Unbond';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
-import FastWithdrawTransactionConfirmation from './variants/FastWithdraw';
+import { EvmSignArea, SubstrateSignArea } from '../../parts';
+import {
+  JoinPoolTransactionConfirmation,
+  SendNftTransactionConfirmation,
+  FastWithdrawTransactionConfirmation,
+  DefaultWithdrawTransactionConfirmation,
+  BaseTransactionConfirmation,
+  BondTransactionConfirmation,
+  CancelUnstakeTransactionConfirmation,
+  ClaimRewardTransactionConfirmation,
+  JoinYieldPoolConfirmation,
+  LeavePoolTransactionConfirmation,
+  UnbondTransactionConfirmation,
+  TransferBlock,
+  WithdrawTransactionConfirmation,
+} from './variants';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
@@ -61,6 +65,11 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
     case ExtrinsicType.REDEEM_SDOT:
     case ExtrinsicType.REDEEM_STDOT:
       return FastWithdrawTransactionConfirmation;
+    case ExtrinsicType.UNSTAKE_QDOT:
+    case ExtrinsicType.UNSTAKE_VDOT:
+    case ExtrinsicType.UNSTAKE_LDOT:
+    case ExtrinsicType.UNSTAKE_SDOT:
+      return DefaultWithdrawTransactionConfirmation;
     default:
       return BaseTransactionConfirmation;
   }

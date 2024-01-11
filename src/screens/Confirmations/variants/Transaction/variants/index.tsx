@@ -1,5 +1,14 @@
 export type { BaseTransactionConfirmationProps } from './Base';
+export { BaseTransactionConfirmation } from './Base';
+export { default as BondTransactionConfirmation } from './Bond';
+export { default as CancelUnstakeTransactionConfirmation } from './CancelUnstake';
+export { default as ClaimRewardTransactionConfirmation } from './ClaimReward';
+export { default as DefaultWithdrawTransactionConfirmation } from './DefaultWithdraw';
+export { default as FastWithdrawTransactionConfirmation } from './FastWithdraw';
 export { default as JoinPoolTransactionConfirmation } from './JoinPool';
+export { default as JoinYieldPoolConfirmation } from './JoinYieldPool';
+export { default as LeavePoolTransactionConfirmation } from './LeavePool';
 export { default as SendNftTransactionConfirmation } from './SendNft';
 export { default as TransferBlock } from './TransferBlock';
-export { default as FastWithdrawTransactionConfirmation } from './FastWithdraw';
+export { default as UnbondTransactionConfirmation } from './Unbond';
+export { default as WithdrawTransactionConfirmation } from './Withdraw';

@@ -6,6 +6,7 @@ import {
   YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
+import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
@@ -22,7 +23,6 @@ import { AmountData, ExtrinsicType } from '@subwallet/extension-base/background/
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import MetaInfo from 'components/MetaInfo';
 import { isAccountAll } from 'utils/accountAll';
-import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -103,6 +103,10 @@ export const Withdraw = ({
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
   const stakingChain = useMemo(() => poolInfo?.chain || '', [poolInfo?.chain]);
 
+  const inputAsset = useGetChainAssetInfo(poolInfo.metadata.inputAsset);
+  const decimals = inputAsset?.decimals || 0;
+  const symbol = inputAsset?.symbol || '';
+
   const accountSelectorRef = useRef<ModalRef>();
   const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
   const existentialDeposit = useMemo(() => {
@@ -133,19 +137,6 @@ export const Withdraw = ({
       : undefined,
   );
 
-  useEffect(() => {
-    // Trick to trigger validate when case single account
-    setTimeout(() => {
-      if (fromValue || !errors.from) {
-        setIsDisabled(false);
-      }
-    }, 500);
-  }, [errors.from, fromValue]);
-
-  useEffect(() => {
-    setChain(stakingChain || '');
-  }, [setChain, stakingChain]);
-
   const accountList = useMemo(() => {
     return accounts.filter(filterAccount(chainInfoMap, allPositionInfos, poolInfo.type));
   }, [accounts, allPositionInfos, chainInfoMap, poolInfo.type]);
@@ -160,8 +151,6 @@ export const Withdraw = ({
 
     return undefined;
   }, [fromValue, yieldPosition]);
-
-  const { decimals, symbol } = useGetNativeTokenBasicInfo(chainValue);
 
   const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
 
@@ -189,6 +178,19 @@ export const Withdraw = ({
         });
     }, 300);
   }, [unstakingInfo, fromValue, slug, onSuccess, onError]);
+
+  useEffect(() => {
+    // Trick to trigger validate when case single account
+    setTimeout(() => {
+      if (fromValue || !errors.from) {
+        setIsDisabled(false);
+      }
+    }, 500);
+  }, [errors.from, fromValue]);
+
+  useEffect(() => {
+    setChain(stakingChain || '');
+  }, [setChain, stakingChain]);
 
   useEffect(() => {
     if (!fromValue && accountList.length === 1) {
