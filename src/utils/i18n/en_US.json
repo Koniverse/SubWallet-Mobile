@@ -245,7 +245,8 @@
     "authorizeMessage": "Authorize message",
     "serviceSelect": "Select service",
     "login": "Login",
-    "slogan": "Polkadot, Substrate & Ethereum wallet"
+    "slogan": "Polkadot, Substrate & Ethereum wallet",
+    "tickTheCheckbox": "Tick the checkbox"
   },
   "tabName": {
     "tokens": "Tokens",
@@ -420,7 +421,12 @@
     "rateSubwallet": "Rate SubWallet",
     "sendFeedback": "Send feedback",
     "notNow": "Not now",
-    "update": "Update"
+    "update": "Update",
+    "generalTermCheckbox": "I understand and agree to the Terms of Use, which apply to my use of SubWallet and all of its feature",
+    "scrollInstruction": "Scroll to read all sections",
+    "iUnderStand": "I understand",
+    "masterPasswordCheckbox": "I understand that SubWallet can't recover this password for me. ",
+    "learnMore": "Learn more."
   },
   "inputLabel": {
     "selectAcc": "Select account",
@@ -650,7 +656,9 @@
     "noticeForNewLoginMethod": "For easier password management, master password will be applied in place of PIN code in previous versions. You need to enter your master password to unlock SubWallet.",
     "migrateMasterPasswordForBiometric": "For easier password management, master password will be applied in place of PIN code in previous versions. To keep using biometric authentication, please enter your master password and verify your biometric again.",
     "xcmTransferWarningTitle": "Pay attention!",
-    "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance."
+    "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
+    "generalTermWarning": "Make sure to tick the checkbox \"I understand and agree to the Terms of Use, which apply to my use of SubWallet and all of its feature\" to be able to click Continue",
+    "masterPasswordWarning": "Make sure to tick the checkbox \"I understand that SubWallet can\\'t recover the password for me\" to be able to click Continue"
   },
   "filterOptions": {
     "polkadotParachain": "Polkadot parachain",
@@ -753,11 +761,11 @@
     "manageTokens": "Manage tokens",
     "importToken": "Import token",
     "tokenDetails": "Token details",
-    "connectWithSubwallet": "Connect with Subwallet",
+    "connectWithSubwallet": "Connect with SubWallet",
     "signatureRequired": "Signature required",
     "messageDetails": "Message details",
     "signatureRequest": "Signature request",
-    "connectSubwallet": "Connect Subwallet",
+    "connectSubwallet": "Connect SubWallet",
     "connectWebsite": "Connect website",
     "dAppConfiguration": "Dapp configuration",
     "accessConfiguration": "Access configuration",
@@ -798,7 +806,8 @@
     "disconnect": "Disconnect",
     "connectedNetworks": "Connected networks",
     "missionPools": "Mission Pools",
-    "updateChain": "Update network"
+    "updateChain": "Update network",
+    "generalTermTitle": "Terms of Use"
   },
   "cryptoScreen": {
     "address": "Address",
@@ -1007,7 +1016,7 @@
     "whenCloseApp": "When close app",
     "networksAndTokens": "Networks & tokens",
     "communityAndSupport": "Community & support",
-    "aboutSubwallet": "About Subwallet",
+    "aboutSubwallet": "About SubWallet",
     "pinCode": "PIN code",
     "faceId": "Face ID / Touch ID",
     "changeYourPinCode": "Change your PIN code",
@@ -1047,7 +1056,7 @@
     "trustSiteMessage": "Make sure you trust this site before connecting.",
     "ethSignWarningMessage": "Signing this message can be dangerous. This signature could potentially perform any operation on your account's behalf, including granting complete control of your account and all of its assets to the requesting site. Only sign this message if you know what you're doing or completely trust the requesting site.",
     "clearHistoryWarningMessage": "Make sure you want to clear all history",
-    "phishingMessage": "This site is blocked because the Subwallet app believes that this website could compromise the security of your accounts and your tokens.",
+    "phishingMessage": "This site is blocked because the SubWallet app believes that this website could compromise the security of your accounts and your tokens.",
     "balanceTooLow": "Your balance is too low to cover fees",
     "thresholdLagerThan": "The threshold must be larger than",
     "invalidQRCode": "Invalid QR code",
