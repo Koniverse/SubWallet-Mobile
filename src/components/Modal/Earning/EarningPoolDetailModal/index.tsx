@@ -5,7 +5,7 @@ import { Button, Icon, SwFullSizeModal, Tag, Typography } from 'components/desig
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { earlyValidateJoin } from 'messaging/index';
-import { CaretDown, PlusCircle, X } from 'phosphor-react-native';
+import { CaretDown, Medal, PlusCircle, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
@@ -474,21 +474,39 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               />
             </View>
             <Typography.Text style={styles.headerText}>{title}</Typography.Text>
-            {!!(tags && tags.length) && (
-              <View style={{ alignItems: 'center', marginTop: theme.paddingXS }}>
-                {tags.map(({ slug: tagSlug, apy, symbol }) => (
-                  <Tag key={tagSlug} bgType={'gray'} shape={'round'} icon={getTokenLogo(tagSlug, undefined, 16)}>
-                    <Typography.Text
-                      size={'sm'}
-                      style={{ color: theme.colorSecondaryText, paddingLeft: 4, ...FontSemiBold }}>{`${formatNumber(
-                      apy,
-                      0,
-                      balanceFormatter,
-                    )}% ${symbol}`}</Typography.Text>
-                  </Tag>
-                ))}
-              </View>
-            )}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: theme.paddingXS,
+                gap: theme.sizeXS,
+                justifyContent: 'center',
+              }}>
+              {!!(tags && tags.length) && (
+                <View style={{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
+                  {tags.map(({ slug: tagSlug, apy, symbol }) => (
+                    <Tag key={tagSlug} bgType={'gray'} shape={'round'} icon={getTokenLogo(tagSlug, undefined, 16)}>
+                      <Typography.Text
+                        size={'sm'}
+                        style={{ color: theme.colorSecondaryText, paddingLeft: 4, ...FontSemiBold }}>{`${formatNumber(
+                        apy,
+                        0,
+                        balanceFormatter,
+                      )}% ${symbol}`}</Typography.Text>
+                    </Tag>
+                  ))}
+                </View>
+              )}
+              {poolInfo.slug === 'xcDOT___liquid_staking___stellaswap' && (
+                <Tag
+                  color={'lime'}
+                  bgType={'gray'}
+                  shape={'round'}
+                  icon={<Icon size={'xxs'} phosphorIcon={Medal} iconColor={theme['lime-7']} weight={'fill'} />}>
+                  Exclusive rewards
+                </Tag>
+              )}
+            </View>
           </View>
           <ScrollView
             ref={scrollRef}

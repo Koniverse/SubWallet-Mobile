@@ -135,14 +135,14 @@ const Component: React.FC<Props> = (props: Props) => {
               type="secondary"
               icon={<Icon phosphorIcon={MinusCircle} weight="fill" />}
               onPress={onLeavePool}>
-              {i18n.buttonTitles.unstake}
+              {poolInfo.slug === 'DOT___lending___interlay' ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
             </Button>
             <Button
               block={true}
               type="secondary"
               icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}
               onPress={onEarnMore}>
-              {i18n.buttonTitles.stakeMore}
+              {poolInfo.slug === 'DOT___lending___interlay' ? 'Supply more' : i18n.buttonTitles.stakeMore}
             </Button>
           </View>
           <EarningWithdrawMeta inputAsset={inputAsset} unstakings={compound.unstakings} poolInfo={poolInfo} />
