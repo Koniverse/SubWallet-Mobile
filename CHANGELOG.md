@@ -1,3 +1,7 @@
+## 1.1.25 (289)
+- Update web-runner v1.1.31 for mobile app (#1337)
+- Implement auto recover on android and ios lower than 17 (#1330)
+
 ## 1.1.24 (288)
 - Update hyperlink instruction for some screens (#1329)
 - Show incorrect screen in case Attach account (#1333)
