@@ -840,10 +840,12 @@
     "unstakeVDOT": "Unstake vDOT",
     "unstakeLDOT": "Unstake LDOT",
     "unstakeSDOT": "Unstake sDOT",
+    "unstakeSTDOT": "Unstake stDOT",
     "unstakeQDOT": "Unstake qDOT",
     "unstakeVDOTTransaction": "Unstake vDOT transaction",
     "unstakeLDOTTransaction": "Unstake LDOT transaction",
     "unstakeSDOTTransaction": "Unstake sDOT transaction",
+    "unstakeSTDOTTransaction": "Unstake stDOT transaction",
     "unstakeQDOTTransaction": "Unstake qDOT transaction"
   },
   "cryptoScreen": {
@@ -888,6 +890,7 @@
       "unstakeVDOT": "Unstake vDOT",
       "unstakeLDOT": "Unstake LDOT",
       "unstakeSDOT": "Unstake sDOT",
+      "unstakeSTDOT": "Unstake stDOT",
       "unstakeQDOT": "Unstake qDOT"
     },
     "extrinsicStatus": {

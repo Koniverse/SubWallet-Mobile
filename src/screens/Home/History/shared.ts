@@ -22,6 +22,7 @@ export const StakingTypeNameMap = (): Record<string, string> => ({
   [ExtrinsicType.UNSTAKE_VDOT]: i18n.historyScreen.extrinsicType.unstakeVDOT,
   [ExtrinsicType.UNSTAKE_LDOT]: i18n.historyScreen.extrinsicType.unstakeLDOT,
   [ExtrinsicType.UNSTAKE_SDOT]: i18n.historyScreen.extrinsicType.unstakeSDOT,
+  [ExtrinsicType.UNSTAKE_STDOT]: i18n.historyScreen.extrinsicType.unstakeSTDOT,
   [ExtrinsicType.UNSTAKE_QDOT]: i18n.historyScreen.extrinsicType.unstakeQDOT,
   [ExtrinsicType.REDEEM_VDOT]: i18n.historyScreen.extrinsicType.redeemVDOT,
   [ExtrinsicType.REDEEM_LDOT]: i18n.historyScreen.extrinsicType.redeemLDOT,

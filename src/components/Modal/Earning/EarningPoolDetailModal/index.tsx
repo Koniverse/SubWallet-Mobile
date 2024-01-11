@@ -4,9 +4,19 @@ import { YieldPoolType } from '@subwallet/extension-base/types';
 import { Button, Icon, SwFullSizeModal, Tag, Typography } from 'components/design-system-ui';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { earlyValidateJoin } from 'messaging/index';
 import { CaretDown, PlusCircle, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Linking, NativeScrollEvent, NativeSyntheticEvent, Platform, ScrollView, Text, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -44,8 +54,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+  const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const [scrollHeight, setScrollHeight] = useState<number>(0);
   const [contentHeight, setContentHeight] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
 
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
   const title = useMemo(() => {
@@ -383,11 +395,39 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   }, [poolInfo.metadata.shortName]);
 
   const onPress = useCallback(() => {
-    setVisible(false);
-    setTimeout(() => {
-      onStakeMore?.(slug);
-    }, 300);
-  }, [onStakeMore, setVisible, slug]);
+    setLoading(true);
+
+    const onError = (message: string) => {
+      Alert.alert('i18n.warningTitle.insufficientBalance', message, [
+        {
+          text: 'I understand',
+        },
+      ]);
+    };
+
+    earlyValidateJoin({
+      slug: slug,
+      address: currentAccount?.address || '',
+    })
+      .then(rs => {
+        if (rs.passed) {
+          setVisible(false);
+          setTimeout(() => {
+            onStakeMore?.(slug);
+          }, 300);
+        } else {
+          const message = rs.errorMessage || '';
+          onError(message);
+        }
+      })
+      .catch(e => {
+        const message = (e as Error).message || '';
+        onError(message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [currentAccount?.address, onStakeMore, setVisible, slug]);
 
   const scrollBottom = useCallback(() => {
     scrollRef.current?.scrollToEnd();
@@ -513,6 +553,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               }
               size="sm"
               onPress={onPress}
+              loading={loading}
               disabled={!isScrollEnd && showScrollEnd}>
               {buttonTitle}
             </Button>

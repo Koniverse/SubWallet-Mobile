@@ -147,6 +147,8 @@ export const Confirmations = () => {
           return i18n.header.unstakeLDOTTransaction;
         case ExtrinsicType.UNSTAKE_SDOT:
           return i18n.header.unstakeSDOTTransaction;
+        case ExtrinsicType.UNSTAKE_STDOT:
+          return i18n.header.unstakeSTDOTTransaction;
         case ExtrinsicType.UNSTAKE_QDOT:
           return i18n.header.unstakeQDOTTransaction;
         default:

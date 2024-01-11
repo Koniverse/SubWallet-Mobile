@@ -69,6 +69,7 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
     case ExtrinsicType.UNSTAKE_VDOT:
     case ExtrinsicType.UNSTAKE_LDOT:
     case ExtrinsicType.UNSTAKE_SDOT:
+    case ExtrinsicType.UNSTAKE_STDOT:
       return DefaultWithdrawTransactionConfirmation;
     default:
       return BaseTransactionConfirmation;
