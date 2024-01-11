@@ -2,7 +2,6 @@ import { useNavigation } from '@react-navigation/native';
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { EarningStatus, YieldPoolInfo, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
-import { ActivityIndicator, Button, Number } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
 import { StakingStatusUi } from 'constants/stakingStatusUi';
 import useYieldRewardTotal from 'hooks/earning/useYieldRewardTotal';
@@ -13,6 +12,7 @@ import { RootNavigationProps } from 'routes/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
+import { ActivityIndicator, Button, Number } from 'components/design-system-ui';
 import { HideBalanceItem } from 'components/HideBalanceItem';
 
 type Props = {
@@ -94,32 +94,37 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
         statusName={earningStatus.name}
         valueColorSchema={earningStatus.schema}
       />
-      <View style={styles.withdrawSeparator} />
-      <View style={styles.withdrawButtonContainer}>
-        {isShowBalance ? (
-          total ? (
-            <Number
-              value={total}
-              decimal={inputAsset.decimals || 0}
-              suffix={inputAsset.symbol}
-              size={theme.fontSizeHeading4}
-              textStyle={styles.totalUnstake}
-              subFloatNumber={true}
-              decimalOpacity={0.45}
-              unitOpacity={0.45}
-            />
-          ) : (
-            <ActivityIndicator size={20} />
-          )
-        ) : (
-          <HideBalanceItem isShowConvertedBalance={false} />
-        )}
-        {canClaim && (
-          <Button size="xs" onPress={onPressWithdraw}>
-            {i18n.buttonTitles.claimRewards}
-          </Button>
-        )}
-      </View>
+
+      {(type === YieldPoolType.NOMINATION_POOL || type === YieldPoolType.NATIVE_STAKING) && (
+        <>
+          <View style={styles.withdrawSeparator} />
+          <View style={styles.withdrawButtonContainer}>
+            {isShowBalance ? (
+              total ? (
+                <Number
+                  value={total}
+                  decimal={inputAsset.decimals || 0}
+                  suffix={inputAsset.symbol}
+                  size={theme.fontSizeHeading4}
+                  textStyle={styles.totalUnstake}
+                  subFloatNumber={true}
+                  decimalOpacity={0.45}
+                  unitOpacity={0.45}
+                />
+              ) : (
+                <ActivityIndicator size={20} />
+              )
+            ) : (
+              <HideBalanceItem isShowConvertedBalance={false} />
+            )}
+            {canClaim && (
+              <Button size="xs" onPress={onPressWithdraw}>
+                {i18n.buttonTitles.claimRewards}
+              </Button>
+            )}
+          </View>
+        </>
+      )}
     </MetaInfo>
   );
 };

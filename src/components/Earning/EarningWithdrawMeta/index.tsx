@@ -93,16 +93,25 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
   const renderWithdrawTime = useCallback(
     (item: UnstakingInfo) => {
       return () => {
-        return (
-          <View style={styles.timeRow}>
-            <Typography.Text style={styles.timeText}>
-              {getWaitingTime(item.waitingTime || 0, item.status)}
-            </Typography.Text>
-            {item.status === UnstakingStatus.CLAIMABLE && (
-              <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />
-            )}
-          </View>
-        );
+        if (item.waitingTime === undefined) {
+          return (
+            <View style={styles.timeRow}>
+              <Typography.Text style={styles.timeText}>Waiting for withdrawal</Typography.Text>
+              {item.status === UnstakingStatus.CLAIMABLE && (
+                <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />
+              )}
+            </View>
+          );
+        } else {
+          return (
+            <View style={styles.timeRow}>
+              <Typography.Text style={styles.timeText}>{getWaitingTime(item.waitingTime, item.status)}</Typography.Text>
+              {item.status === UnstakingStatus.CLAIMABLE && (
+                <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />
+              )}
+            </View>
+          );
+        }
       };
     },
     [styles, theme],

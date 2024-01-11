@@ -70,7 +70,10 @@ const Component: React.FC<Props> = (props: Props) => {
   }, [activeStake, inputAsset?.decimals, price]);
 
   const _goBack = useCallback(() => {
-    navigation.goBack();
+    navigation.navigate('Home', {
+      screen: 'Main',
+      params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 1 } } },
+    });
   }, [navigation]);
 
   const onLeavePool = useCallback(() => {
@@ -165,7 +168,7 @@ const PositionDetail: React.FC<EarningPositionDetailProps> = (props: EarningPosi
 
   useEffect(() => {
     if (!data.compound || !poolInfo) {
-      navigation.navigate('EarningPositionList');
+      navigation.navigate('EarningList', { step: 1 });
     }
   }, [data.compound, navigation, poolInfo]);
 

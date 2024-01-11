@@ -150,7 +150,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         return result;
       });
 
-      return data;
+      return data.filter(item => item.apy);
     }
   }, [assetRegistry, poolInfo.metadata.inputAsset, poolInfo.statistic]);
 
@@ -424,7 +424,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               />
             </View>
             <Typography.Text style={styles.headerText}>{title}</Typography.Text>
-            {tags && tags.length && (
+            {!!(tags && tags.length) && (
               <View style={{ alignItems: 'center', marginTop: theme.paddingXS }}>
                 {tags.map(({ slug: tagSlug, apy, symbol }) => (
                   <Tag key={tagSlug} bgType={'gray'} shape={'round'} icon={getTokenLogo(tagSlug, undefined, 16)}>
