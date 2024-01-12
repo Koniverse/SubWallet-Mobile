@@ -408,7 +408,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     let minJoinPool: string | undefined;
 
     if (poolInfo.statistic) {
-      const minPoolJoin = poolInfo.statistic.minJoinPool;
+      const minPoolJoin = poolInfo.statistic.earningThreshold.join;
       const targeted = getTargetedPool(poolTarget)[0];
 
       if (targeted) {

@@ -71,7 +71,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     } = poolInfo;
     const totalApy = poolInfo.statistic?.totalApy;
     const totalApr = poolInfo.statistic?.totalApr;
-    const minJoinPool = poolInfo.statistic?.minJoinPool || '0';
+    const minJoinPool = poolInfo.statistic?.earningThreshold.join || '0';
 
     const getOrigin = () => {
       switch (type) {
@@ -211,7 +211,6 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const paidOut = poolInfo.statistic?.eraTime;
 
         if (inputAsset && maintainAsset) {
-          const { decimals, minAmount, symbol } = inputAsset;
           const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
           const maintainBalance = getInputValuesFromString(
             poolInfo.metadata.maintainBalance || '0',
@@ -222,12 +221,6 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
             replaceEarningValue(_item, '{validatorType}', label);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
-            replaceEarningValue(
-              _item,
-              '{existentialDeposit}',
-              getInputValuesFromString(minAmount || '0', decimals || 0),
-            );
-            replaceEarningValue(_item, '{symbol}', symbol);
             replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
             replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
             if (paidOut !== undefined) {
@@ -249,7 +242,6 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const paidOut = poolInfo.statistic?.eraTime;
 
         if (inputAsset && maintainAsset) {
-          const { decimals, minAmount, symbol } = inputAsset;
           const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
           const maintainBalance = getInputValuesFromString(
             poolInfo.metadata.maintainBalance || '0',
@@ -260,12 +252,6 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
             replaceEarningValue(_item, '{validatorType}', label);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
-            replaceEarningValue(
-              _item,
-              '{existentialDeposit}',
-              getInputValuesFromString(minAmount || '0', decimals || 0),
-            );
-            replaceEarningValue(_item, '{symbol}', symbol);
             replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
             replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
             if (paidOut !== undefined) {
@@ -295,12 +281,6 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             replaceEarningValue(_item, '{derivative}', derivative.symbol);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
             replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);
-            replaceEarningValue(
-              _item,
-              '{existentialDeposit}',
-              getInputValuesFromString(inputAsset.minAmount || '0', inputAsset.decimals || 0),
-            );
-            replaceEarningValue(_item, '{symbol}', inputAsset.symbol);
             replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
             replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
             return _item;
@@ -327,12 +307,6 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
             replaceEarningValue(_item, '{derivative}', derivative.symbol);
             replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);
-            replaceEarningValue(
-              _item,
-              '{existentialDeposit}',
-              getInputValuesFromString(inputAsset.minAmount || '0', inputAsset.decimals || 0),
-            );
-            replaceEarningValue(_item, '{symbol}', inputAsset.symbol);
             replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
             replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
             return _item;

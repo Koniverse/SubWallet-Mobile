@@ -86,6 +86,7 @@ export const Unbond = ({
       setValue,
       getValues,
       control,
+      trigger: formTrigger,
       formState: { errors },
     },
     onChangeChainValue: setChain,
@@ -203,7 +204,7 @@ export const Unbond = ({
     switch (poolInfo.type) {
       case YieldPoolType.LENDING:
       case YieldPoolType.LIQUID_STAKING:
-        return poolInfo.statistic?.minWithdrawal || '0';
+        return poolInfo.statistic?.earningThreshold.fastUnstake || '0';
       default:
         return '0';
     }
@@ -355,8 +356,9 @@ export const Unbond = ({
   const onChangeFastLeave = useCallback(
     (value: string) => {
       setValue('fastLeave', value);
+      formTrigger('value').catch(console.error);
     },
-    [setValue],
+    [setValue, formTrigger],
   );
 
   useEffect(() => {

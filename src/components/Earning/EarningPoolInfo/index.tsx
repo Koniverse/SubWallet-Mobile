@@ -88,7 +88,7 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
 
           <MetaInfo.Number
             label={i18n.inputLabel.minimumStaked}
-            value={poolInfo.statistic?.minJoinPool || '0'}
+            value={poolInfo.statistic?.earningThreshold.join || '0'}
             decimals={inputAsset?.decimals || 0}
             valueColorSchema="even-odd"
             suffix={inputAsset?.symbol}
