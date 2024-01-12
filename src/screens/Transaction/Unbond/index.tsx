@@ -416,14 +416,14 @@ export const Unbond = ({
                   <AlertBox
                     title={'Withdraw'}
                     description={'You can withdraw your supplied funds immediately'}
-                    type={'warning'}
+                    type={'info'}
                   />
                 )
               ) : (
                 <AlertBox
                   title={'Fast unstake'}
                   description={'With fast unstake, you will receive your funds immediately with a higher fee'}
-                  type={'warning'}
+                  type={'info'}
                 />
               )}
             </ScrollView>

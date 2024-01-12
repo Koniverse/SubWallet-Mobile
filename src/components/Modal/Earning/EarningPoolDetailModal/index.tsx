@@ -190,7 +190,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     if (_number !== undefined) {
       const isDay = _number > 24;
       const time = isDay ? Math.floor(_number / 24) : _number;
-      const unit = isDay ? 'days' : 'hours';
+      const unit = isDay ? (time === 1 ? 'day' : 'days') : time === 1 ? 'hour' : 'hours';
       return [time, unit].join(' ');
     } else {
       return 'unknown time';
@@ -256,8 +256,33 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             poolInfo.metadata.maintainBalance || '0',
             maintainDecimals || 0,
           );
+
           return EARNING_DATA_RAW[YieldPoolType.NATIVE_STAKING].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
+            if (poolInfo.slug === 'ASTR___native_staking___astar') {
+              if (_item.title.includes('Manage your stake')) {
+                _item.title = 'Track your stake';
+              }
+
+              if (_item.title.includes('Check your rewards')) {
+                _item.title = 'Claim your rewards';
+              }
+
+              if ((_item.description as string).includes('You need to monitor your stake constantly and change')) {
+                _item.description =
+                  'Keep an eye on your stake periodically, as rewards and staking status can fluctuate over time';
+              }
+
+              if (
+                (_item.description as string).includes(
+                  'Your staking rewards will be paid out every {paidOut} hour and will be automatically compounded to your stake',
+                )
+              ) {
+                _item.description =
+                  'Your staking rewards will be paid out every {paidOut} hour. Make sure to claim them <strong>manually</strong>';
+              }
+            }
+
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
             replaceEarningValue(_item, '{validatorType}', label);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
@@ -541,7 +566,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             <Typography.Text style={styles.faqText}>
               Scroll down to continue. For more information and staking instructions, read&nbsp;
               <Text onPress={onPressFaq} style={styles.highlightText}>
-                this FAQ.
+                this FAQ
               </Text>
             </Typography.Text>
             {showScrollEnd && !isScrollEnd && (

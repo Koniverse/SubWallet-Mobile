@@ -156,9 +156,9 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
           spaceSize="sm"
           labelFontWeight="regular"
           style={styles.infoContainer}>
-          {rewardHistories.map(item => (
+          {rewardHistories.map((item, index) => (
             <MetaInfo.Number
-              key={item.slug}
+              key={`${item.slug}-${index}`}
               label={customFormatDate(new Date(item.blockTimestamp), '#DD# #MMM#, #YYYY#')}
               value={item.amount}
               decimals={inputAsset.decimals || 0}

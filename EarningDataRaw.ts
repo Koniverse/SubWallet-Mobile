@@ -6,34 +6,34 @@ export const EARNING_DATA_RAW = {
       icon: 'ThumbsUp',
       title: 'Select active pool',
       description:
-        'It is recommended that you select an active pool with the <strong>Earning</strong> status to earn staking rewards.',
+        'It is recommended that you select an active pool with the <strong>Earning</strong> status to earn staking rewards',
       iconColor: '#aada62',
     },
     {
       icon: 'Coins',
       title: 'Unstake and withdraw',
       description:
-        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after a period of <strong>{periodNumb}</strong>. Keep in mind that these actions are not automated and will incur network fees.',
+        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after a period of <strong>{periodNumb}</strong>. Keep in mind that these actions are not automated and will incur network fees',
       iconColor: '#e6dc25',
     },
     {
       icon: 'CheckCircle',
       title: 'Keep your transferable balance',
       description:
-        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals',
       iconColor: '#4cd9ac',
     },
     {
       icon: 'Wallet',
       title: 'Claim your rewards',
       description:
-        'Your staking rewards will be paid out every {paidOut} hour. Make sure to claim them <strong>manually</strong>.',
+        'Your staking rewards will be paid out every {paidOut} hour. Make sure to claim them <strong>manually</strong>',
       iconColor: '#51BC5E',
     },
     {
       icon: 'Eye',
       title: 'Track your stake',
-      description: 'Keep an eye on your stake periodically, as rewards and staking status can fluctuate over time.',
+      description: 'Keep an eye on your stake periodically, as rewards and staking status can fluctuate over time',
       iconColor: '#008dff',
     },
   ],
@@ -42,35 +42,35 @@ export const EARNING_DATA_RAW = {
       icon: 'ThumbsUp',
       title: 'Select {validatorNumber} {validatorType}',
       description:
-        'It is recommended that you select {validatorNumber} {validatorType} to optimize your staking rewards.',
+        'It is recommended that you select {validatorNumber} {validatorType} to optimize your staking rewards',
       iconColor: '#aada62',
     },
     {
       icon: 'Coins',
       title: 'Unstake and withdraw',
       description:
-        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after a period of <strong>{periodNumb}</strong>. Keep in mind that these actions are <strong>not automated</strong> and will incur network fees.',
+        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after a period of <strong>{periodNumb}</strong>. Keep in mind that these actions are <strong>not automated</strong> and will incur network fees',
       iconColor: '#e6dc25',
     },
     {
       icon: 'CheckCircle',
       title: 'Keep your transferable balance',
       description:
-        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals',
       iconColor: '#4cd9ac',
     },
     {
       icon: 'Wallet',
       title: 'Check your rewards',
       description:
-        'Your staking rewards will be paid out every {paidOut} hour and will be automatically compounded to your stake.',
+        'Your staking rewards will be paid out every {paidOut} hour and will be automatically compounded to your stake',
       iconColor: '#51BC5E',
     },
     {
       icon: 'Eye',
       title: 'Manage your stake',
       description:
-        'You need to monitor your stake constantly and change {validatorType} when needed as staking status can fluctuate over time.',
+        'You need to monitor your stake constantly and change {validatorType} when needed as staking status can fluctuate over time',
       iconColor: '#008dff',
     },
   ],
@@ -78,14 +78,14 @@ export const EARNING_DATA_RAW = {
     {
       icon: 'ThumbsUp',
       title: 'Receive {derivative}',
-      description: 'Once staked, you will receive {derivative} as a representation of your staked {inputToken}.',
+      description: 'You will receive {derivative} as a representation of your staked {inputToken}',
       iconColor: '#aada62',
     },
     {
       icon: 'Coins',
       title: 'Unstake and withdraw',
       description:
-        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw immediately with a higher fee or wait {periodNumb} before withdrawing with a lower fee.',
+        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw immediately with a higher fee or wait {periodNumb} before withdrawing with a lower fee',
       iconColor: '#e6dc25',
     },
     {
@@ -99,14 +99,14 @@ export const EARNING_DATA_RAW = {
       icon: 'Wallet',
       title: 'Check your {derivative}',
       description:
-        'The amount of {derivative} doesn’t increase over time, only its value in {inputToken} does. This means that by the time you decide to withdraw {inputToken} from {derivative}, your {derivative} should be worth more than your originally staked {inputToken}.',
+        'The amount of {derivative} doesn’t increase over time, only its value in {inputToken} does. This means that by the time you decide to withdraw {inputToken} from {derivative}, your {derivative} should be worth more than your originally staked {inputToken}',
       iconColor: '#51BC5E',
     },
     {
       icon: 'Eye',
       title: 'Track your APY',
       description:
-        'Keep an eye on your stake as APY can fluctuate over time. APY fluctuation is determined by the protocol beyond SubWallet’s control.',
+        'Keep an eye on your stake as APY can fluctuate over time. APY fluctuation is determined by the protocol beyond SubWallet’s control',
       iconColor: '#008dff',
     },
   ],
@@ -114,34 +114,34 @@ export const EARNING_DATA_RAW = {
     {
       icon: 'ThumbsUp',
       title: 'Receive {derivative}',
-      description: 'Once supplied, you will receive {derivative} as a representation of your supplied {inputToken}.',
+      description: 'You will receive {derivative} as a representation of your supplied {inputToken}',
       iconColor: '#aada62',
     },
     {
       icon: 'Coins',
       title: 'Withdraw anytime',
-      description: 'Once supplied, your funds will be locked. Withdraw your funds anytime with a fee.',
+      description: 'Once supplied, your funds will be locked. Withdraw your funds anytime with a fee',
       iconColor: '#e6dc25',
     },
     {
       icon: 'CheckCircle',
       title: 'Keep your transferable balance',
       description:
-        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
+        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals',
       iconColor: '#4cd9ac',
     },
     {
       icon: 'Wallet',
       title: 'Check your {derivative}',
       description:
-        'The amount of {derivative} doesn’t increase over time, only its value in {inputToken} does. This means that by the time you decide to withdraw {inputToken} from {derivative}, your {derivative} should be worth more than your originally supplied {inputToken}.',
+        'The amount of {derivative} doesn’t increase over time, only its value in {inputToken} does. This means that by the time you decide to withdraw {inputToken} from {derivative}, your {derivative} should be worth more than your originally supplied {inputToken}',
       iconColor: '#51BC5E',
     },
     {
       icon: 'Eye',
       title: 'Track your APY',
       description:
-        'Keep an eye on your supply as APY can fluctuate over time. APY fluctuation is determined by the protocol beyond SubWallet’s control.',
+        'Keep an eye on your supply as APY can fluctuate over time. APY fluctuation is determined by the protocol beyond SubWallet’s control',
       iconColor: '#008dff',
     },
   ],

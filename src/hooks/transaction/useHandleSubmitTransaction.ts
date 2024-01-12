@@ -63,19 +63,6 @@ const useHandleSubmitTransaction = (
                 },
               ],
             );
-          } else if (handleDataForClaimRewardAlert && estimateFee) {
-            const unclaimedReward = handleDataForClaimRewardAlert();
-            if (Number(unclaimedReward) <= Number(estimateFee.value)) {
-              Alert.alert(
-                'Pay attention!',
-                'The rewards you are about to claim are smaller than/equal to the transaction fee. This means that you won’t receive any rewards after claiming. Do you wish to continue?',
-                [
-                  {
-                    text: 'Go back',
-                  },
-                ],
-              );
-            }
           } else {
             hideAll();
             show(errors[0]?.message || warnings[0]?.message, { type: 'danger' });
@@ -85,6 +72,24 @@ const useHandleSubmitTransaction = (
         setTransactionDone(false);
         warnings[0] && setIgnoreWarnings?.(true);
       } else if (id) {
+        if (handleDataForClaimRewardAlert && estimateFee) {
+          const unclaimedReward = handleDataForClaimRewardAlert();
+          const isRewardLteFee = Number(unclaimedReward) <= Number(estimateFee.value);
+          const isRewardLtFee = Number(unclaimedReward) < Number(estimateFee.value);
+          if (isRewardLteFee) {
+            Alert.alert(
+              'Pay attention!',
+              `The rewards you are about to claim are ${
+                isRewardLtFee ? 'smaller than' : 'equal'
+              } to the transaction fee. This means that you won’t receive any rewards after claiming. Do you wish to continue?`,
+              [
+                {
+                  text: 'I understand',
+                },
+              ],
+            );
+          }
+        }
         setTransactionDone(true);
         onDone(id);
       }
