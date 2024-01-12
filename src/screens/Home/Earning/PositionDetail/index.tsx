@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import {
+  EarningRewardHistoryItem,
   SpecialYieldPoolInfo,
   SpecialYieldPositionInfo,
   YieldPoolInfo,
@@ -13,7 +14,7 @@ import { useYieldPositionDetail } from 'hooks/earning';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MinusCircle, Plus, PlusCircle } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { EarningPositionDetailProps } from 'routes/earning';
 import { RootNavigationProps } from 'routes/index';
@@ -22,15 +23,17 @@ import createStyles from './styles';
 import { RootState } from 'stores/index';
 import { BN_TEN } from 'utils/number';
 import { HideBalanceItem } from 'components/HideBalanceItem';
+import { BN_ZERO } from 'utils/chainBalances';
 
 interface Props {
   compound: YieldPositionInfo;
   list: YieldPositionInfo[];
   poolInfo: YieldPoolInfo;
+  rewardHistories: EarningRewardHistoryItem[];
 }
 
 const Component: React.FC<Props> = (props: Props) => {
-  const { list, poolInfo, compound } = props;
+  const { list, poolInfo, compound, rewardHistories } = props;
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
@@ -76,12 +79,31 @@ const Component: React.FC<Props> = (props: Props) => {
     });
   }, [navigation]);
 
+  const isActiveStakeZero = useMemo(() => {
+    return BN_ZERO.eq(activeStake);
+  }, [activeStake]);
+
   const onLeavePool = useCallback(() => {
+    if (isActiveStakeZero) {
+      // todo: i18n this
+      Alert.alert(
+        'Unstaking not available',
+        "You don't have any staked funds left to unstake. Check withdrawal status (how long left until the unstaking period ends) by checking the Withdraw info. Keep in mind that you need to withdraw manually.",
+        [
+          {
+            text: 'OK',
+          },
+        ],
+      );
+
+      return;
+    }
+
     navigation.navigate('Drawer', {
       screen: 'TransactionAction',
       params: { screen: 'Unbond', params: { slug: poolInfo.slug } },
     });
-  }, [navigation, poolInfo.slug]);
+  }, [isActiveStakeZero, navigation, poolInfo.slug]);
 
   const onEarnMore = useCallback(() => {
     navigation.navigate('Drawer', {
@@ -128,6 +150,7 @@ const Component: React.FC<Props> = (props: Props) => {
             compound={compound}
             poolInfo={poolInfo}
             isShowBalance={isShowBalance}
+            rewardHistories={rewardHistories}
           />
           <View style={styles.buttonContainer}>
             <Button
@@ -162,7 +185,7 @@ const PositionDetail: React.FC<EarningPositionDetailProps> = (props: EarningPosi
     navigation,
   } = props;
 
-  const { poolInfoMap } = useSelector((state: RootState) => state.earning);
+  const { poolInfoMap, rewardHistories } = useSelector((state: RootState) => state.earning);
   const data = useYieldPositionDetail(slug);
   const poolInfo = poolInfoMap[slug];
 
@@ -176,7 +199,7 @@ const PositionDetail: React.FC<EarningPositionDetailProps> = (props: EarningPosi
     return null;
   }
 
-  return <Component compound={data.compound} list={data.list} poolInfo={poolInfo} />;
+  return <Component compound={data.compound} list={data.list} poolInfo={poolInfo} rewardHistories={rewardHistories} />;
 };
 
 export default PositionDetail;

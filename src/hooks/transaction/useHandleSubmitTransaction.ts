@@ -5,7 +5,6 @@ import { Alert } from 'react-native';
 import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 import { AppModalContext } from 'providers/AppModalContext';
-// import { WifiX } from 'phosphor-react-native';
 import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
 
@@ -17,6 +16,7 @@ const useHandleSubmitTransaction = (
   triggerOnChangeValue?: () => void,
   setIgnoreWarnings?: (value: boolean) => void,
   handleDataForInsufficientAlert?: (estimateFee: AmountData) => Record<string, string>,
+  handleDataForClaimRewardAlert?: () => string,
 ) => {
   const navigation = useNavigation<RootNavigationProps>();
   const { show, hideAll } = useToast();
@@ -63,6 +63,19 @@ const useHandleSubmitTransaction = (
                 },
               ],
             );
+          } else if (handleDataForClaimRewardAlert && estimateFee) {
+            const unclaimedReward = handleDataForClaimRewardAlert();
+            if (Number(unclaimedReward) <= Number(estimateFee.value)) {
+              Alert.alert(
+                'Pay attention!',
+                'The rewards you are about to claim are smaller than/equal to the transaction fee. This means that you won’t receive any rewards after claiming. Do you wish to continue?',
+                [
+                  {
+                    text: 'Go back',
+                  },
+                ],
+              );
+            }
           } else {
             hideAll();
             show(errors[0]?.message || warnings[0]?.message, { type: 'danger' });
@@ -78,6 +91,7 @@ const useHandleSubmitTransaction = (
     },
     [
       appModalContext,
+      handleDataForClaimRewardAlert,
       handleDataForInsufficientAlert,
       hideAll,
       navigation,

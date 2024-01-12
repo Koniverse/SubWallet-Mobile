@@ -10,13 +10,33 @@ export interface ComponentStyle {
   cancelWithdrawContainer: ViewStyle;
   withdrawButtonContainer: ViewStyle;
   withdrawSeparator: ViewStyle;
+  header: ViewStyle;
+  headerBottom: ViewStyle;
   totalUnstake: TextStyle;
+  headerText: TextStyle;
 }
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
     wrapper: {
       padding: theme.padding,
+    },
+    header: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginRight: -theme.marginSM,
+      marginTop: -theme.marginSM,
+      alignItems: 'center',
+    },
+    headerBottom: {
+      marginBottom: -theme.marginSM,
+    },
+    headerText: {
+      ...FontSemiBold,
+      color: theme.colorText,
+      fontSize: theme.fontSizeHeading6,
+      lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
     },
     infoContainer: {
       marginLeft: 10,

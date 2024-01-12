@@ -44,6 +44,7 @@ import { useGetBalance } from 'hooks/balance';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import { isActionFromValidator } from '@subwallet/extension-base/services/earning-service/utils';
 import { UNSTAKE_ALERT_DATA } from '../../../../EarningDataRaw';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -460,26 +461,43 @@ export const Unbond = ({
                   wrapperStyle={{ paddingTop: 0 }}
                 />
               )}
-
-              {!!UNSTAKE_ALERT_DATA.length && (
-                <View
-                  style={{
-                    gap: theme.sizeSM,
-                    marginTop: mustChooseValidator ? theme.marginSM : 0,
-                    marginBottom: theme.marginSM,
-                  }}>
-                  {UNSTAKE_ALERT_DATA.map((_props, index) => {
-                    return (
-                      <AlertBoxBase
-                        key={index}
-                        title={_props.title}
-                        description={(_props.description as string)?.replace('{unBondedTime}', unBondedTime)}
-                        iconColor={_props.iconColor}
-                        icon={getBannerButtonIcon(_props.icon) as PhosphorIcon}
-                      />
-                    );
-                  })}
-                </View>
+              {!fastLeave || !showFastLeave ? (
+                poolInfo.type !== YieldPoolType.LENDING ? (
+                  <>
+                    {!!UNSTAKE_ALERT_DATA.length && (
+                      <View
+                        style={{
+                          gap: theme.sizeSM,
+                          marginTop: mustChooseValidator ? theme.marginSM : 0,
+                          marginBottom: theme.marginSM,
+                        }}>
+                        {UNSTAKE_ALERT_DATA.map((_props, index) => {
+                          return (
+                            <AlertBoxBase
+                              key={index}
+                              title={_props.title}
+                              description={(_props.description as string)?.replace('{unBondedTime}', unBondedTime)}
+                              iconColor={_props.iconColor}
+                              icon={getBannerButtonIcon(_props.icon) as PhosphorIcon}
+                            />
+                          );
+                        })}
+                      </View>
+                    )}
+                  </>
+                ) : (
+                  <AlertBox
+                    title={'Withdraw'}
+                    description={'You can withdraw your supplied funds immediately'}
+                    type={'warning'}
+                  />
+                )
+              ) : (
+                <AlertBox
+                  title={'Fast unstake'}
+                  description={'With fast unstake, you will receive your funds immediately with a higher fee'}
+                  type={'warning'}
+                />
               )}
             </ScrollView>
 

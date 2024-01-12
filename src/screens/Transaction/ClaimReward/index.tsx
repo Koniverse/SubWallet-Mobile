@@ -165,6 +165,11 @@ const ClaimReward = ({
     },
     [existentialDeposit, nativeTokenBalance.value],
   );
+
+  const handleDataForClaimRewardAlert = useCallback(() => {
+    return reward?.unclaimedReward || '0';
+  }, [reward?.unclaimedReward]);
+
   const { onError, onSuccess } = useHandleSubmitTransaction(
     onDone,
     setTransactionDone,
@@ -173,6 +178,7 @@ const ClaimReward = ({
     chainValue === 'vara_network' && poolType === YieldPoolType.NOMINATION_POOL
       ? handleDataForInsufficientAlert
       : undefined,
+    handleDataForClaimRewardAlert,
   );
 
   const rewardList = useMemo((): EarningRewardItem[] => {

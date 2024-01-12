@@ -5,7 +5,7 @@ import { Button, Icon, SwFullSizeModal, Tag, Typography } from 'components/desig
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { earlyValidateJoin } from 'messaging/index';
-import { CaretDown, Medal, PlusCircle, X } from 'phosphor-react-native';
+import { CaretDown, PlusCircle, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
@@ -471,15 +471,15 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
                   ))}
                 </View>
               )}
-              {poolInfo.slug === 'xcDOT___liquid_staking___stellaswap' && (
-                <Tag
-                  color={'lime'}
-                  bgType={'gray'}
-                  shape={'round'}
-                  icon={<Icon size={'xxs'} phosphorIcon={Medal} iconColor={theme['lime-7']} weight={'fill'} />}>
-                  Exclusive rewards
-                </Tag>
-              )}
+              {/*{poolInfo.slug === 'xcDOT___liquid_staking___stellaswap' && (*/}
+              {/*  <Tag*/}
+              {/*    color={'lime'}*/}
+              {/*    bgType={'gray'}*/}
+              {/*    shape={'round'}*/}
+              {/*    icon={<Icon size={'xxs'} phosphorIcon={Medal} iconColor={theme['lime-7']} weight={'fill'} />}>*/}
+              {/*    Exclusive rewards*/}
+              {/*  </Tag>*/}
+              {/*)}*/}
             </View>
           </View>
           <ScrollView
