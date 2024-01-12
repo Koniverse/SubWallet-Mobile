@@ -125,7 +125,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
 
   const currentStep = processState.currentStep;
-  const nextStepType = processState.steps?.[currentStep + 1]?.type;
+  const submitStepType = processState.steps?.[!currentStep ? currentStep + 1 : currentStep]?.type;
 
   const accountInfo = useGetAccountByAddress(currentFrom);
   const preCheckAction = usePreCheckAction(currentFrom);
@@ -220,57 +220,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const priceValue = priceMap[inputAsset.priceId || ''] || 0;
   const convertValue = currentAmount ? parseFloat(currentAmount) / 10 ** assetDecimals : 0;
   const transformAmount = convertValue * priceValue;
-
-  // const _assetEarnings: Record<string, _YieldAssetExpectedEarning> = useMemo(() => {
-  //   const yearlyEarnings: Record<string, _YieldAssetExpectedEarning> = {};
-  //
-  //   if (poolInfo) {
-  //     const decimals = _getAssetDecimals(inputAsset);
-  //     const currentAmountNumb = currentAmount ? parseFloat(currentAmount) / 10 ** decimals : 0;
-  //
-  //     if (poolInfo.statistic) {
-  //       if ('assetEarning' in poolInfo.statistic) {
-  //         poolInfo.statistic?.assetEarning.forEach(assetEarningStats => {
-  //           const assetSlug = assetEarningStats.slug;
-  //           const rewardAsset = chainAsset[assetSlug];
-  //
-  //           if (assetEarningStats.apy !== undefined) {
-  //             yearlyEarnings[assetSlug] = {
-  //               apy: assetEarningStats.apy,
-  //               rewardInToken: (assetEarningStats.apy / 100) * currentAmountNumb,
-  //               symbol: rewardAsset.symbol,
-  //             };
-  //           } else {
-  //             const assetApr = assetEarningStats?.apr || 0;
-  //
-  //             yearlyEarnings[assetSlug] = {
-  //               ...calculateReward(assetApr, currentAmountNumb, YieldCompoundingPeriod.YEARLY),
-  //               symbol: rewardAsset.symbol,
-  //             };
-  //           }
-  //         });
-  //       } else {
-  //         const assetSlug = inputAsset.slug;
-  //         if (poolInfo.statistic.totalApy !== undefined) {
-  //           yearlyEarnings[assetSlug] = {
-  //             apy: poolInfo.statistic.totalApy,
-  //             rewardInToken: (poolInfo.statistic.totalApy / 100) * currentAmountNumb,
-  //             symbol: inputAsset.symbol,
-  //           };
-  //         } else {
-  //           const assetApr = poolInfo.statistic.totalApr || 0;
-  //
-  //           yearlyEarnings[assetSlug] = {
-  //             ...calculateReward(assetApr, currentAmountNumb, YieldCompoundingPeriod.YEARLY),
-  //             symbol: inputAsset.symbol,
-  //           };
-  //         }
-  //       }
-  //     }
-  //   }
-  //
-  //   return yearlyEarnings;
-  // }, [chainAsset, currentAmount, inputAsset, poolInfo]);
 
   const estimatedFee = useMemo(() => {
     let _totalFee = 0;
@@ -755,13 +704,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       label={`${i18n.inputLabel.availableBalance}:`}
                       onBalanceReady={setIsBalanceReady}
                       tokens={balanceTokens}
-                      hidden={nextStepType !== YieldStepType.XCM}
+                      hidden={submitStepType !== YieldStepType.XCM}
                     />
                     <View>
                       <FreeBalance
                         address={currentFrom}
                         chain={poolInfo.chain}
-                        hidden={[YieldStepType.XCM].includes(nextStepType)}
+                        hidden={[YieldStepType.XCM].includes(submitStepType)}
                         isSubscribe={true}
                         label={`${i18n.inputLabel.availableBalance}:`}
                         tokenSlug={inputAsset.slug}

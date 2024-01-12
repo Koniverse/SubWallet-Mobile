@@ -46,10 +46,11 @@ export interface BoxProps {
 }
 
 const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
-  const { slug, setVisible, modalVisible, onStakeMore, isShowStakeMoreBtn = true, onPressBack } = props;
+  const { slug, setVisible: _setVisible, modalVisible, onStakeMore, isShowStakeMoreBtn = true, onPressBack } = props;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
   const scrollRef = useRef<ScrollView>(null);
+  const checkRef = useRef<number>(Date.now());
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
@@ -165,6 +166,14 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       return data.filter(item => item.apy);
     }
   }, [assetRegistry, poolInfo.metadata.inputAsset, poolInfo.statistic]);
+
+  const setVisible = useCallback(
+    (value: boolean) => {
+      _setVisible(value);
+      checkRef.current = Date.now();
+    },
+    [_setVisible],
+  );
 
   const replaceEarningValue = useCallback((target: BoxProps, searchString: string, replaceValue: string) => {
     if (target.title.includes(searchString)) {
@@ -369,10 +378,16 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   }, [poolInfo.metadata.shortName]);
 
   const onPress = useCallback(() => {
+    const time = Date.now();
+    checkRef.current = time;
     setLoading(true);
 
+    const isValid = () => {
+      return time === checkRef.current;
+    };
+
     const onError = (message: string) => {
-      Alert.alert('i18n.warningTitle.insufficientBalance', message, [
+      Alert.alert('Pay attention!', message, [
         {
           text: 'I understand',
         },
@@ -384,22 +399,28 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       address: currentAccount?.address || '',
     })
       .then(rs => {
-        if (rs.passed) {
-          setVisible(false);
-          setTimeout(() => {
-            onStakeMore?.(slug);
-          }, 300);
-        } else {
-          const message = rs.errorMessage || '';
-          onError(message);
+        if (isValid()) {
+          if (rs.passed) {
+            setVisible(false);
+            setTimeout(() => {
+              onStakeMore?.(slug);
+            }, 300);
+          } else {
+            const message = rs.errorMessage || '';
+            onError(message);
+          }
         }
       })
       .catch(e => {
-        const message = (e as Error).message || '';
-        onError(message);
+        if (isValid()) {
+          const message = (e as Error).message || '';
+          onError(message);
+        }
       })
       .finally(() => {
-        setLoading(false);
+        if (isValid()) {
+          setLoading(false);
+        }
       });
   }, [currentAccount?.address, onStakeMore, setVisible, slug]);
 

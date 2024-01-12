@@ -169,8 +169,8 @@ const Component: React.FC<Props> = (props: Props) => {
             </Button>
           </View>
           <EarningWithdrawMeta inputAsset={inputAsset} unstakings={compound.unstakings} poolInfo={poolInfo} />
-          <EarningPoolInfo inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} />
           <EarningBaseInfo inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} list={list} />
+          <EarningPoolInfo inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} />
         </View>
       </ScrollView>
     </ContainerWithSubHeader>

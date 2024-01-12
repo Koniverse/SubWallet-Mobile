@@ -8,7 +8,7 @@ import { PhosphorIcon } from 'utils/campaign';
 export interface ExtraYieldPositionInfo extends AbstractYieldPositionInfo {
   asset: _ChainAsset;
   price: number;
-  exchangeRate: number;
+  // exchangeRate: number;
 }
 
 export interface YieldGroupInfo {

@@ -21,7 +21,7 @@ interface Props {
 }
 
 const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
-  const { balanceToken, type, slug, group, asset, totalStake, price, exchangeRate, chain } = positionInfo;
+  const { balanceToken, type, slug, group, asset, totalStake, price, chain } = positionInfo;
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
@@ -37,8 +37,8 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
   }, [assetRegistry, group, multiChainAssetMap]);
 
   const balanceValue = useMemo(() => {
-    return new BigN(totalStake).multipliedBy(exchangeRate);
-  }, [exchangeRate, totalStake]);
+    return new BigN(totalStake);
+  }, [totalStake]);
 
   const convertedBalanceValue = useMemo(() => {
     return new BigN(balanceValue).div(BN_TEN.pow(asset.decimals || 0)).multipliedBy(price);

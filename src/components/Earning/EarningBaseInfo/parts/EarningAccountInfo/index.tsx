@@ -1,7 +1,6 @@
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import {
   EarningStatus,
-  SpecialYieldPoolInfo,
   SpecialYieldPositionInfo,
   YieldPoolInfo,
   YieldPoolType,
@@ -66,22 +65,6 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
     () => !haveNomination || isAllAccount || !compound.nominations.length,
     [compound.nominations.length, haveNomination, isAllAccount],
   );
-
-  const exchangeRate = useMemo(() => {
-    let rate = 1;
-    if ('derivativeToken' in compound) {
-      const _item = compound as SpecialYieldPositionInfo;
-      const _poolInfo = poolInfo as SpecialYieldPoolInfo;
-      const balanceToken = _item.balanceToken;
-
-      if (_poolInfo) {
-        const asset = _poolInfo.statistic?.assetEarning.find(i => i.slug === balanceToken);
-        rate = asset?.exchangeRate || 1;
-      }
-    }
-
-    return rate;
-  }, [compound, poolInfo]);
 
   const [showDetail, setShowDetail] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState('');
@@ -190,7 +173,7 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
                   <>
                     <MetaInfo.Number
                       label={i18n.inputLabel.totalStake}
-                      value={new BigN(item.totalStake).multipliedBy(exchangeRate)}
+                      value={new BigN(item.totalStake)}
                       decimals={inputAsset?.decimals || 0}
                       suffix={inputAsset?.symbol}
                       valueColorSchema="even-odd"
@@ -214,7 +197,7 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
                   <>
                     <MetaInfo.Number
                       label={i18n.inputLabel.totalStake}
-                      value={new BigN(item.totalStake).multipliedBy(exchangeRate)}
+                      value={new BigN(item.totalStake)}
                       decimals={inputAsset?.decimals || 0}
                       suffix={inputAsset?.symbol}
                       valueColorSchema="even-odd"

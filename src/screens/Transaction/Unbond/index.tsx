@@ -9,7 +9,6 @@ import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/
 import { useSelector } from 'react-redux';
 import { accountFilterFunc } from 'screens/Transaction/helper/earning';
 import { RootState } from 'stores/index';
-import useGetChainStakingMetadata from 'hooks/screen/Staking/useGetChainStakingMetadata';
 import { AmountData, NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
@@ -22,7 +21,6 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { NominationSelector } from 'components/Modal/common/NominationSelector';
 import { InputAmount } from 'components/Input/InputAmount';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
-import { formatBalance } from 'utils/number';
 import { BN_ZERO } from 'utils/chainBalances';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { AccountJson } from '@subwallet/extension-base/background/types';
@@ -36,7 +34,6 @@ import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useWatch } from 'react-hook-form';
-import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { FormItem } from 'components/common/FormItem';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { getInputValuesFromString } from 'components/Input/InputAmount';
@@ -118,7 +115,6 @@ export const Unbond = ({
   const poolChain = poolInfo.chain;
 
   const [isTransactionDone, setTransactionDone] = useState(false);
-  const chainStakingMetadata = useGetChainStakingMetadata(poolChain);
   const { list: allPositions } = useYieldPositionDetail(slug);
   const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
   const accountInfo = useGetAccountByAddress(fromValue);
@@ -184,32 +180,6 @@ export const Unbond = ({
         return positionInfo?.activeStake || '0';
     }
   }, [poolInfo, mustChooseValidator, positionInfo?.activeStake, selectedValidator?.activeStake]);
-
-  const minValue = useMemo((): string => {
-    if (poolType === YieldPoolType.NOMINATION_POOL) {
-      return chainStakingMetadata?.minJoinNominationPool || '0';
-    } else {
-      const minChain = new BigN(chainStakingMetadata?.minStake || '0');
-      const minValidator = new BigN(selectedValidator?.validatorMinStake || '0');
-
-      return minChain.gt(minValidator) ? minChain.toString() : minValidator.toString();
-    }
-  }, [
-    chainStakingMetadata?.minJoinNominationPool,
-    chainStakingMetadata?.minStake,
-    selectedValidator?.validatorMinStake,
-    poolType,
-  ]);
-
-  const minWithdraw = useMemo((): string => {
-    switch (poolInfo.type) {
-      case YieldPoolType.LENDING:
-      case YieldPoolType.LIQUID_STAKING:
-        return poolInfo.statistic?.earningThreshold.fastUnstake || '0';
-      default:
-        return '0';
-    }
-  }, [poolInfo]);
 
   const unBondedTime = useMemo((): string => {
     if (
@@ -303,48 +273,6 @@ export const Unbond = ({
     return [];
   }, [fromValue, positionInfo?.nominations]);
 
-  const amountInputRules = useMemo(
-    () => ({
-      validate: (value: string, formValues: UnstakeFormValues): Promise<ValidateResult> => {
-        const { fastLeave: _fastLeave } = formValues;
-        const _minWithdraw = new BigN(minWithdraw);
-        const _minWithdrawString = formatBalance(_minWithdraw, decimals);
-        const _minValue = new BigN(minValue);
-        const _maxValue = new BigN(bondedValue);
-        const _middleValue = _maxValue.minus(_minValue);
-        const _maxString = formatBalance(_maxValue, decimals);
-        const val = new BigN(value);
-        const name = 'Value';
-        const isRedeem = !!_fastLeave;
-
-        if (val.gt(_maxValue)) {
-          return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeEqualOrLessThan, name, _maxString));
-        }
-
-        if (val.lte(BN_ZERO)) {
-          return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeGreaterThanZero, name));
-        }
-
-        if (isRedeem && val.lt(_minWithdraw)) {
-          return Promise.resolve(
-            i18n.formatString(i18n.errorMessage.unbondMustBeEqualOrGreaterThan, name, _minWithdrawString),
-          );
-        }
-
-        if (_middleValue.lt(BN_ZERO) && !val.eq(_maxValue)) {
-          return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeEqual, name, _maxString));
-        }
-
-        if (val.gt(_middleValue) && val.lt(_maxValue)) {
-          return Promise.resolve(i18n.errorMessage.unbondInvalidAmount);
-        }
-
-        return Promise.resolve(undefined);
-      },
-    }),
-    [bondedValue, decimals, minValue, minWithdraw],
-  );
-
   const onChangeNominator = (value: string) => {
     setValue('nomination', value);
   };
@@ -428,7 +356,6 @@ export const Unbond = ({
 
               <FormItem
                 control={control}
-                rules={amountInputRules}
                 render={({ field: { onChange, value, ref } }) => (
                   <InputAmount
                     ref={ref}

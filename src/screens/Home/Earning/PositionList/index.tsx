@@ -1,5 +1,4 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { SpecialYieldPoolInfo, SpecialYieldPositionInfo } from '@subwallet/extension-base/types';
 import BigNumber from 'bignumber.js';
 import { EmptyList } from 'components/EmptyList';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -35,7 +34,6 @@ export const PositionList = ({ setStep }: Props) => {
 
   const { isShowBalance } = useSelector((state: RootState) => state.settings);
   const { priceMap } = useSelector((state: RootState) => state.price);
-  const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry: assetInfoMap } = useSelector((state: RootState) => state.assetRegistry);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
@@ -50,39 +48,25 @@ export const PositionList = ({ setStep }: Props) => {
     const BN_TEN = new BigNumber(10);
     return data
       .map((item): ExtraYieldPositionInfo => {
-        let rate = 1;
         const priceToken = assetInfoMap[item.balanceToken];
         const price = priceMap[priceToken?.priceId || ''] || 0;
-
-        if ('derivativeToken' in item) {
-          const _item = item as SpecialYieldPositionInfo;
-          const poolInfo = poolInfoMap[item.slug] as SpecialYieldPoolInfo;
-          const balanceToken = _item.balanceToken;
-
-          if (poolInfo) {
-            const asset = poolInfo.statistic?.assetEarning.find(i => i.slug === balanceToken);
-            rate = asset?.exchangeRate || 1;
-          }
-        }
 
         return {
           ...item,
           asset: priceToken,
           price,
-          exchangeRate: rate,
         };
       })
       .sort((firstItem, secondItem) => {
         const getValue = (item: ExtraYieldPositionInfo): number => {
           return new BigNumber(item.totalStake)
-            .multipliedBy(item.exchangeRate)
             .dividedBy(BN_TEN.pow(item.asset.decimals || 0))
             .multipliedBy(item.price)
             .toNumber();
         };
         return getValue(secondItem) - getValue(firstItem);
       });
-  }, [assetInfoMap, data, poolInfoMap, priceMap]);
+  }, [assetInfoMap, data, priceMap]);
 
   const handleOnPress = useCallback(
     (positionInfo: ExtraYieldPositionInfo): (() => void) => {
