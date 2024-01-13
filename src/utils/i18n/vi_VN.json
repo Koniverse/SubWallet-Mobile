@@ -847,6 +847,8 @@
     "unstakeSDOTTransaction": "Unstake sDOT transaction",
     "unstakeSTDOTTransaction": "Unstake stDOT transaction",
     "unstakeQDOTTransaction": "Unstake qDOT transaction",
+    "tokenApprove": "Token approve",
+    "tokenApproveTransaction": "Token approve transaction",
     "stake": "Stake",
     "unstake": "Unstake",
     "withdraw": "Withdraw",
@@ -895,7 +897,8 @@
       "unstakeLDOT": "Unstake LDOT",
       "unstakeSDOT": "Unstake sDOT",
       "unstakeSTDOT": "Unstake stDOT",
-      "unstakeQDOT": "Unstake qDOT"
+      "unstakeQDOT": "Unstake qDOT",
+      "tokenApprove": "Token approve"
     },
     "extrinsicStatus": {
       "completed": "Hoàn thành",
@@ -925,7 +928,8 @@
       "destinationFee": "Phí mạng đích",
       "fromAccount": "Từ tài khoản",
       "transactionFail": " thất bại",
-      "estimatedReceivables": " Estimated receivables"
+      "estimatedReceivables": "Estimated receivables",
+      "minimumReceivables": "Minimum receivables"
     },
     "title": {
       "transaction": "Giao dịch",
@@ -955,7 +959,8 @@
       "unstakeLDOTTransaction": "Unstake LDOT transaction",
       "unstakeSDOTTransaction": "Unstake sDOT transaction",
       "unstakeSTDOTTransaction": "Unstake stDOT transaction",
-      "unstakeQDOTTransaction": "Unstake qDOT transaction"
+      "unstakeQDOTTransaction": "Unstake qDOT transaction",
+      "tokenApproveTransaction": "Token approve transaction"
     }
   },
   "importEvmNft": {

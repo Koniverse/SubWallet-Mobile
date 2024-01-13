@@ -6,8 +6,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { TransactionHistoryDisplayItem } from 'types/history';
 import { BN_TEN } from 'utils/number';
-import { isTypeMint, isTypeStaking } from 'utils/transaction/detectType';
+import { isPoolLeave, isTypeMint, isTypeStaking } from 'utils/transaction/detectType';
 import i18n from 'utils/i18n/i18n';
+import PoolLeaveAmount from './PoolLeaveAmount';
 
 interface Props {
   data: TransactionHistoryDisplayItem;
@@ -23,6 +24,7 @@ const HistoryDetailAmount: React.FC<Props> = (props: Props) => {
   const isCrowdloan = data.type === ExtrinsicType.CROWDLOAN;
   const isNft = data.type === ExtrinsicType.SEND_NFT;
   const isMint = isTypeMint(data.type);
+  const isLeavePool = isPoolLeave(data.type);
 
   const additionalInfo = data.additionalInfo;
 
@@ -72,6 +74,10 @@ const HistoryDetailAmount: React.FC<Props> = (props: Props) => {
   const derivativeSymbol = useMemo(() => {
     return derivativeTokenSlug ? assetRegistry[derivativeTokenSlug].symbol : '';
   }, [assetRegistry, derivativeTokenSlug]);
+
+  if (isLeavePool && data.additionalInfo) {
+    return <PoolLeaveAmount data={data} />;
+  }
 
   return (
     <>

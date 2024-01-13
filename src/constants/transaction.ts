@@ -39,6 +39,7 @@ export const TRANSACTION_TITLE_MAP = (): Record<ExtrinsicTypeMobile, string> => 
   [ExtrinsicType.UNSTAKE_SDOT]: i18n.header.unstakeSDOT,
   [ExtrinsicType.UNSTAKE_STDOT]: i18n.header.unstakeSTDOT,
   [ExtrinsicType.UNSTAKE_QDOT]: i18n.header.unstakeQDOT,
+  [ExtrinsicType.TOKEN_APPROVE]: i18n.header.tokenApprove,
   [ExtrinsicType.STAKING_COMPOUNDING]: 'Compound',
   [ExtrinsicType.STAKING_CANCEL_COMPOUNDING]: 'Cancel Compound',
   [ExtrinsicType.EVM_EXECUTE]: 'Execute',

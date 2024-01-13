@@ -24,6 +24,7 @@ import {
   UnbondTransactionConfirmation,
   TransferBlock,
   WithdrawTransactionConfirmation,
+  TokenApproveConfirmation,
 } from './variants';
 
 interface Props {
@@ -71,6 +72,8 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
     case ExtrinsicType.UNSTAKE_SDOT:
     case ExtrinsicType.UNSTAKE_STDOT:
       return DefaultWithdrawTransactionConfirmation;
+    case ExtrinsicType.TOKEN_APPROVE:
+      return TokenApproveConfirmation;
     default:
       return BaseTransactionConfirmation;
   }

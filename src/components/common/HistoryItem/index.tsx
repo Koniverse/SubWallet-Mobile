@@ -1,19 +1,19 @@
-import React from 'react';
-import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { TransactionHistoryDisplayItem } from 'types/history';
-import { CaretRight } from 'phosphor-react-native';
-import { Icon, Logo, Typography } from 'components/design-system-ui';
-import { Number } from 'components/design-system-ui';
 import {
   ExtrinsicStatus,
+  ExtrinsicType,
   TransactionDirection,
   TransactionHistoryItem,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import HistoryItemStyles from './style';
-import { ThemeTypes } from 'styles/themes';
-import { HistoryStatusMap } from 'screens/Home/History/shared';
+import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
 import { HideBalanceItem } from 'components/HideBalanceItem';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { CaretRight } from 'phosphor-react-native';
+import React, { useMemo } from 'react';
+import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { HistoryStatusMap } from 'screens/Home/History/shared';
+import { ThemeTypes } from 'styles/themes';
+import { TransactionHistoryDisplayItem } from 'types/history';
+import HistoryItemStyles from './style';
 
 interface Props {
   item: TransactionHistoryDisplayItem;
@@ -37,6 +37,8 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const displayData = item.displayData;
   const _style = HistoryItemStyles(theme);
+
+  const showAmount = useMemo(() => item.type !== ExtrinsicType.TOKEN_APPROVE, [item.type]);
 
   return (
     <>
@@ -68,7 +70,8 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
               <>
                 <Number
                   decimal={item?.amount?.decimals || 0}
-                  decimalOpacity={0.45}
+                  intOpacity={showAmount ? 1 : 0}
+                  decimalOpacity={showAmount ? 0.45 : 0}
                   suffix={item?.amount?.symbol}
                   value={item?.amount?.value || '0'}
                   textStyle={_style.upperText}
