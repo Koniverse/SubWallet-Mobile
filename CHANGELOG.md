@@ -1,3 +1,6 @@
+## 1.1.26 (291)
+
+
 ## 1.1.26 (290)
 - Add history data for leave pool and approve token transaction (#1251)
 - Fix some UI and message for Earning feature (#1251)
