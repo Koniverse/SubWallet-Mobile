@@ -105,6 +105,12 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     const shortName = poolInfo.metadata.shortName;
 
     if (asset) {
+      if (Number(minJoinPool) === 0 && !apy) {
+        result = 'Earn {{token}} with {{network}}';
+        result = result.replace('{{token}}', asset.symbol);
+        result = result.replace('{{network}}', shortName);
+      }
+
       if (Number(minJoinPool) === 0) {
         result = result.replace(' from {{minActiveStake}}', '');
       } else {
