@@ -7,10 +7,11 @@ import BackgroundIcon from '../../background-icon';
 import createStyles from './style';
 import RenderHtml from 'react-native-render-html';
 import { deviceWidth } from 'constants/index';
+import Typography from 'components/design-system-ui/typography';
 
 interface Props {
   title: string;
-  description: React.ReactNode;
+  description: React.ReactNode | string;
   iconColor: string;
   titleColor?: string;
   icon: PhosphorIcon;
@@ -67,13 +68,17 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
           tagsStyles={tagStyles}
           source={{ html: `<span class="title">${title}</span>` }}
         />
-        <RenderHtml
-          contentWidth={100}
-          systemFonts={['PlusJakartaSans-Medium']}
-          classesStyles={classesStyles}
-          tagsStyles={tagStyles}
-          source={{ html: `<span class="description">${description}</span>` }}
-        />
+        {typeof description === 'string' ? (
+          <RenderHtml
+            contentWidth={100}
+            systemFonts={['PlusJakartaSans-Medium']}
+            classesStyles={classesStyles}
+            tagsStyles={tagStyles}
+            source={{ html: `<span class="description">${description}</span>` }}
+          />
+        ) : (
+          <Typography.Text style={styles.description}>{description}</Typography.Text>
+        )}
       </View>
     </View>
   );
