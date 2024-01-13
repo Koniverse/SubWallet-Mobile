@@ -108,6 +108,8 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
         valueColorSchema={earningStatus.schema}
       />
 
+      {!rewardHistories.length && <View style={styles.withdrawSeparator} />}
+
       {(type === YieldPoolType.NOMINATION_POOL || type === YieldPoolType.NATIVE_STAKING) && (
         <View style={styles.withdrawButtonContainer}>
           {isShowBalance ? (
@@ -136,19 +138,24 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
         </View>
       )}
 
-      <View style={styles.withdrawSeparator} />
-      <TouchableOpacity
-        style={[styles.header, showDetail ? undefined : styles.headerBottom]}
-        activeOpacity={1}
-        onPress={toggleDetail}>
-        <Typography.Text style={styles.headerText}>Reward history</Typography.Text>
-        <Button
-          type="ghost"
-          size="xs"
-          icon={<Icon phosphorIcon={showDetail ? CaretUp : CaretDown} size="sm" iconColor={theme['gray-5']} />}
-          onPress={toggleDetail}
-        />
-      </TouchableOpacity>
+      {!!(rewardHistories && rewardHistories.length) && (
+        <>
+          <View style={styles.withdrawSeparator} />
+
+          <TouchableOpacity
+            style={[styles.header, showDetail ? undefined : styles.headerBottom]}
+            activeOpacity={1}
+            onPress={toggleDetail}>
+            <Typography.Text style={styles.headerText}>Reward history</Typography.Text>
+            <Button
+              type="ghost"
+              size="xs"
+              icon={<Icon phosphorIcon={showDetail ? CaretUp : CaretDown} size="sm" iconColor={theme['gray-5']} />}
+              onPress={toggleDetail}
+            />
+          </TouchableOpacity>
+        </>
+      )}
       {showDetail && (
         <MetaInfo
           labelColorScheme="gray"

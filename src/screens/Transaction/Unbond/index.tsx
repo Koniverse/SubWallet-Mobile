@@ -227,9 +227,7 @@ export const Unbond = ({
     setTransactionDone,
     undefined,
     undefined,
-    chainValue === 'vara_network' && poolType === YieldPoolType.NOMINATION_POOL
-      ? handleDataForInsufficientAlert
-      : undefined,
+    handleDataForInsufficientAlert,
   );
 
   const onSubmit = useCallback(() => {

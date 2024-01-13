@@ -38,6 +38,7 @@ const Component: React.FC<Props> = (props: Props) => {
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { priceMap } = useSelector((state: RootState) => state.price);
+  const { isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
 
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -71,6 +72,14 @@ const Component: React.FC<Props> = (props: Props) => {
   const convertActiveStake = useMemo(() => {
     return activeStake.div(BN_TEN.pow(inputAsset?.decimals || 0)).multipliedBy(price);
   }, [activeStake, inputAsset?.decimals, price]);
+
+  const filteredRewardHistories = useMemo(() => {
+    if (!isAllAccount && currentAccount) {
+      return rewardHistories.filter(item => item.slug === poolInfo.slug && item.address === currentAccount.address);
+    } else {
+      return [];
+    }
+  }, [currentAccount, isAllAccount, poolInfo.slug, rewardHistories]);
 
   const _goBack = useCallback(() => {
     navigation.navigate('Home', {
@@ -150,7 +159,7 @@ const Component: React.FC<Props> = (props: Props) => {
             compound={compound}
             poolInfo={poolInfo}
             isShowBalance={isShowBalance}
-            rewardHistories={rewardHistories}
+            rewardHistories={filteredRewardHistories}
           />
           <View style={styles.buttonContainer}>
             <Button

@@ -145,6 +145,41 @@ export const EARNING_DATA_RAW = {
       iconColor: '#008dff',
     },
   ],
+  DAPP_STAKING: [
+    {
+      icon: 'ThumbsUp',
+      title: 'Select {validatorNumber} dApps',
+      description: 'It is recommended that you select {validatorNumber} dApp to optimize your staking rewards',
+      iconColor: '#aada62',
+    },
+    {
+      icon: 'Coins',
+      title: 'Unstake and withdraw',
+      description:
+        'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after a period of <strong>{periodNumb}</strong>. Keep in mind that these actions are <strong>not automated</strong> and will incur network fees',
+      iconColor: '#e6dc25',
+    },
+    {
+      icon: 'CheckCircle',
+      title: 'Keep your transferable balance',
+      description:
+        'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, reward claiming, unstaking and withdrawals',
+      iconColor: '#4cd9ac',
+    },
+    {
+      icon: 'Wallet',
+      title: 'Claim your rewards',
+      description:
+        'Your staking rewards will be paid out every {paidOut} hour. Make sure to claim them <strong>manually</strong>',
+      iconColor: '#51BC5E',
+    },
+    {
+      icon: 'Eye',
+      title: 'Track your stake',
+      description: 'Keep an eye on your stake periodically, as rewards and staking status can fluctuate over time.',
+      iconColor: '#008dff',
+    },
+  ],
   [YieldPoolType.PARACHAIN_STAKING]: [],
   [YieldPoolType.SINGLE_FARMING]: [],
 };

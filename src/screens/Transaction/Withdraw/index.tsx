@@ -132,9 +132,7 @@ export const Withdraw = ({
     setTransactionDone,
     undefined,
     undefined,
-    chainValue === 'vara_network' && poolInfo?.type === YieldPoolType.NOMINATION_POOL
-      ? handleDataForInsufficientAlert
-      : undefined,
+    handleDataForInsufficientAlert,
   );
 
   const accountList = useMemo(() => {

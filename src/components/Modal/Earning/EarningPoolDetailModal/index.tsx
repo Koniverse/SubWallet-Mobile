@@ -123,7 +123,11 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     }
 
     if (shortName) {
-      result = result.replace('{{shortName}}', shortName);
+      if (shortName === 'Stellaswap') {
+        result = result.replace('{{shortName}}', 'StellaSwap');
+      } else {
+        result = result.replace('{{shortName}}', shortName);
+      }
     }
 
     return result;
@@ -257,31 +261,24 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             maintainDecimals || 0,
           );
 
+          if (poolInfo.slug === 'ASTR___native_staking___astar') {
+            return EARNING_DATA_RAW.DAPP_STAKING.map(item => {
+              const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
+              replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
+              replaceEarningValue(_item, '{periodNumb}', unBondedTime);
+              replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
+              replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
+
+              if (paidOut !== undefined) {
+                replaceEarningValue(_item, '{paidOut}', paidOut.toString());
+              }
+
+              return _item;
+            });
+          }
+
           return EARNING_DATA_RAW[YieldPoolType.NATIVE_STAKING].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
-            if (poolInfo.slug === 'ASTR___native_staking___astar') {
-              if (_item.title.includes('Manage your stake')) {
-                _item.title = 'Track your stake';
-              }
-
-              if (_item.title.includes('Check your rewards')) {
-                _item.title = 'Claim your rewards';
-              }
-
-              if ((_item.description as string).includes('You need to monitor your stake constantly and change')) {
-                _item.description =
-                  'Keep an eye on your stake periodically, as rewards and staking status can fluctuate over time';
-              }
-
-              if (
-                (_item.description as string).includes(
-                  'Your staking rewards will be paid out every {paidOut} hour and will be automatically compounded to your stake',
-                )
-              ) {
-                _item.description =
-                  'Your staking rewards will be paid out every {paidOut} hour. Make sure to claim them <strong>manually</strong>';
-              }
-            }
 
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
             replaceEarningValue(_item, '{validatorType}', label);
@@ -311,7 +308,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
           );
           return EARNING_DATA_RAW[YieldPoolType.LIQUID_STAKING].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
-
+            console.log('derivative', derivative);
             replaceEarningValue(_item, '{derivative}', derivative.symbol);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
             replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);

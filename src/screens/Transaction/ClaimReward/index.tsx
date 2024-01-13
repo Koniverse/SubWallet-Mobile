@@ -175,9 +175,7 @@ const ClaimReward = ({
     setTransactionDone,
     undefined,
     undefined,
-    chainValue === 'vara_network' && poolType === YieldPoolType.NOMINATION_POOL
-      ? handleDataForInsufficientAlert
-      : undefined,
+    handleDataForInsufficientAlert,
     handleDataForClaimRewardAlert,
   );
 
