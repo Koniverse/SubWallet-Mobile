@@ -18,7 +18,7 @@ import { ModalRef } from 'types/modalRef';
 import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import { mmkvStore } from 'utils/storage';
 import { Image } from 'components/design-system-ui';
-// import { SelectLanguageModal } from 'components/Modal/SelectLanguageModal';
+import { SelectLanguageModal } from 'components/Modal/SelectLanguageModal';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -71,7 +71,7 @@ export const FirstScreen = () => {
   const attachAccountRef = useRef<ModalRef>();
   const theme = useSubWalletTheme().swThemes;
   const [generalTermVisible, setGeneralTermVisible] = useState<boolean>(false);
-  // const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false);
+  const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false);
   const [selectedActionType, setSelectedActionType] = useState<SelectedActionType>('createAcc');
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
 
@@ -97,7 +97,7 @@ export const FirstScreen = () => {
   };
 
   const onPressPolicy = () => {
-    Linking.openURL('https://docs.subwallet.app/main/privacy-and-security/privacy-policy');
+    Linking.openURL('https://docs.subwallet.app/main/privacy-and-security/terms-of-use#privacy-policy');
   };
 
   const onShowGeneralTermModal = (action: SelectedActionType) => {
@@ -172,7 +172,7 @@ export const FirstScreen = () => {
             <Image src={Images.SubWalletLogoGradient} style={{ width: 66, height: 100 }} />
             <Text style={logoTextStyle}>SubWallet</Text>
             <Text style={logoSubTextStyle}>{i18n.title.slogan}</Text>
-            {/* <SelectLanguageModal setShowLanguageModal={setShowLanguageModal} showLanguageModal={showLanguageModal} /> */}
+            <SelectLanguageModal setShowLanguageModal={setShowLanguageModal} showLanguageModal={showLanguageModal} />
           </View>
 
           <View style={{ width: '100%' }}>

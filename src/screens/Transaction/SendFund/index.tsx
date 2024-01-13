@@ -856,7 +856,6 @@ export const SendFund = ({
 
       if (isTransferAll) {
         doTransferAll();
-
         return;
       }
 
@@ -877,6 +876,9 @@ export const SendFund = ({
               return;
             }
             if (currentErrors?.[0]?.message.startsWith('You must transfer at least')) {
+              onError(currentErrors[0]);
+            }
+            if (currentErrors?.[0]?.message.startsWith('This feature is not available with this token')) {
               onError(currentErrors[0]);
             }
           }

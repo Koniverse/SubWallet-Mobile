@@ -245,7 +245,8 @@
     "authorizeMessage": "授权消息",
     "serviceSelect": "选择服务",
     "login": "登录",
-    "slogan": "Polkadot, Substrate & Ethereum wallet"
+    "slogan": "Polkadot, Substrate & Ethereum wallet",
+    "tickTheCheckbox": "确认阅读"
   },
   "tabName": {
     "tokens": "通证",
@@ -420,7 +421,12 @@
     "rateSubwallet": "Rate SubWallet",
     "sendFeedback": "Send feedback",
     "notNow": "Not now",
-    "update":  "重新网络"
+    "update":  "重新网络",
+    "generalTermCheckbox": "我理解并同意本协议的条款，该条款适用于我对 SubWallet 及其所有功能的使用",
+    "scrollInstruction": "滚动阅读所有部分",
+    "iUnderStand": "我明白",
+    "masterPasswordCheckbox": "我了解 SubWallet 无法为我恢复此密码。",
+    "learnMore": "了解更多"
   },
   "inputLabel": {
     "selectAcc": "选择账户",
@@ -528,7 +534,7 @@
   },
   "placeholder": {
     "password": "密码",
-    "typeYourSubwalletPassword": "填充你的Subwallet密码",
+    "typeYourSubwalletPassword": "填充你的SubWallet密码",
     "accountName": "账户名字",
     "secretPhrase": "助记词",
     "currentPassword": "当前密码",
@@ -650,7 +656,9 @@
     "noticeForNewLoginMethod": "为了更方便地进行密码管理，将使用主密码来代替以前版本中的 PIN 码。 您需要输入主密码才能解锁 SubWallet。",
     "migrateMasterPasswordForBiometric": "为了更方便地进行密码管理，将使用主密码来代替以前版本中的 PIN 码。 要继续使用生物识别身份验证，请输入您的主密码并再次验证您的生物识别。",
     "xcmTransferWarningTitle": "Pay attention!",
-    "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance."
+    "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
+    "generalTermWarning": "请选中“我理解并同意本协议的条款，该条款适用于我对 SubWallet 及其所有功能的使用”框以继续",
+    "masterPasswordWarning": "请选中“我了解 SubWallet 无法为我恢复此密码”框以继续"
   },
   "filterOptions": {
     "polkadotParachain": "Polkadot平行链",
@@ -798,7 +806,8 @@
     "disconnect": "断开",
     "connectedNetworks": "Connected networks",
     "missionPools": "Mission Pools",
-    "updateChain": "更新网络"
+    "updateChain": "更新网络",
+    "generalTermTitle": "使用条款"
   },
   "cryptoScreen": {
     "address": "地址",
@@ -1047,7 +1056,7 @@
     "trustSiteMessage": "连接前请确保您信任此网站",
     "ethSignWarningMessage": "签署此消息可能存在风险。此签名有可能代表你的账户执行任何操作，包括将你的账户以及所有资产完全控制权授予请求的网站。只有在你知晓自己在做任何事项或完全信任请求的网站时才签署此消息。",
     "clearHistoryWarningMessage": "确认是否需要清档记录",
-    "phishingMessage": "该网站被阻止是因Subwallet应用损害了该网站可能会影响你的帐户和通证的安全。",
+    "phishingMessage": "该网站被阻止是因SubWallet应用损害了该网站可能会影响你的帐户和通证的安全。",
     "balanceTooLow": "你的余额过低，无法支付费用",
     "thresholdLagerThan": "T必须大于",
     "invalidQRCode": "二维码无效",

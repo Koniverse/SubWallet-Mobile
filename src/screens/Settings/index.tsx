@@ -123,7 +123,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         },
         {
           icon: Parachute,
-          title: 'Missions pool',
+          title: i18n.header.missionPools,
           rightIcon: (
             <View style={{ flexDirection: 'row', gap: theme.paddingSM + 2, alignItems: 'center' }}>
               {!!activeMissionPoolNumb && <Badge value={activeMissionPoolNumb} />}
