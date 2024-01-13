@@ -104,11 +104,9 @@ const CreateMasterPassword = ({
   });
 
   const showAlertWarning = () => {
-    Alert.alert(
-      'Tick the checkbox',
-      'Make sure to tick the checkbox "I understand that SubWallet can\'t recover the password for me" to be able to click Continue',
-      [{ text: 'I understand' }],
-    );
+    Alert.alert(i18n.title.tickTheCheckbox, i18n.message.masterPasswordWarning, [
+      { text: i18n.buttonTitles.iUnderStand },
+    ]);
   };
 
   const _onChangePasswordValue = (currentValue: string) => {
@@ -172,7 +170,7 @@ const CreateMasterPassword = ({
           checked={checked}
           label={
             <Typography.Text style={{ color: theme.colorWhite, marginLeft: theme.marginXS, flex: 1 }}>
-              I understand that SubWallet can't recover this password for me.{' '}
+              {i18n.buttonTitles.masterPasswordCheckbox}
               <Text
                 style={{
                   textDecorationStyle: 'solid',
@@ -185,7 +183,7 @@ const CreateMasterPassword = ({
                     'https://docs.subwallet.app/main/mobile-app-user-guide/getting-started/create-apply-change-and-what-to-do-when-forgot-password',
                   )
                 }>
-                {'Learn more.'}
+                {i18n.buttonTitles.learnMore}
               </Text>
             </Typography.Text>
           }

@@ -246,6 +246,7 @@
     "serviceSelect": "サービスを選択",
     "login": "ログイン",
     "slogan": "Polkadot, Substrate & Ethereum wallet",
+    "tickTheCheckbox": "読み取りの確認",
     "earning": "Earning"
   },
   "tabName": {
@@ -261,7 +262,7 @@
     "welcomeMessage": "",
     "welcomeBackMessage": "パスワードを入力して、ウォレットのロックを解除",
     "createAccLabel": "新しいアカウントを作成",
-    "createAccMessage": "Subwalletで新しいアカウントを作成",
+    "createAccMessage": "SubWalletで新しいアカウントを作成",
     "importAccLabel": "アカウントをインポート",
     "importAccMessage": "既存のアカウントをインポート",
     "attachAccLabel": "アカウントをアタッチ",
@@ -423,6 +424,11 @@
     "sendFeedback": "Send feedback",
     "notNow": "Not now",
     "update": "Update",
+    "generalTermCheckbox": "私は、SubWallet とそのすべての機能の使用を規定する本契約の条件を理解し、これに同意します",
+    "scrollInstruction": "スクロールしてすべてのセクションを読みます",
+    "iUnderStand": "なるほど",
+    "masterPasswordCheckbox": "SubWallet ではこのパスワードを回復できないことを理解しています。",
+    "learnMore": "もっと詳しく知る",
     "withdraw": "Withdraw",
     "cancelUnstake": "Cancel unstake"
   },
@@ -657,7 +663,9 @@
     "noticeForNewLoginMethod": "For easier password management, master password will be applied in place of PIN code in previous versions. You need to enter your master password to unlock SubWallet",
     "migrateMasterPasswordForBiometric": "For easier password management, master password will be applied in place of PIN code in previous versions. To keep using biometric authentication, please enter your master password and verify your biometric again",
     "xcmTransferWarningTitle": "Pay attention!",
-    "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance."
+    "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
+    "generalTermWarning": "「私は、SubWallet とそのすべての機能の使用を規定する本契約の条件を理解し、これに同意します」ボックスにチェックを入れて続行してください",
+    "masterPasswordWarning": "「SubWallet ではこのパスワードを回復できないことを理解しています」ボックスにチェックを入れて続行してください"
   },
   "filterOptions": {
     "polkadotParachain": "Polkadot パラチェーン",
@@ -812,6 +820,7 @@
     "connectedNetworks": "接続されたネットワーク",
     "missionPools": "Mission Pools",
     "updateChain": "Update network",
+    "generalTermTitle": "利用規約",
     "earning": "Earning",
     "positionList": "Your earning positions",
     "groupList": "Earning options",
@@ -1171,7 +1180,7 @@
     "errorConfigureNetwork": "ネットワークを設定時のエラー",
     "noProviderAvailable": "利用可能なプロバイダーなし",
     "qrCodeNotSupport": "QRコードはサポートされていません。サポートされているソフトウェアからトランザクションをスキャンしていることを確認してください",
-    "noNetwork": "Subwalletは現在、Genesis Hashのあるチェーンを認識していません。最初にネットワークを追加してください",
+    "noNetwork": "SubWalletは現在、Genesis Hashのあるチェーンを認識していません。最初にネットワークを追加してください",
     "noSenderFound": "アプリ内に関連するアカウントはありません",
     "externalAccount": "外部アカウントがあります",
     "framesToBig": "フレーム数が大きすぎるため、QRは外部Rawデータとして認識されていないようです",

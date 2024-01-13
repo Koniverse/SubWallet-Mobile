@@ -9,6 +9,8 @@ import { deviceHeight } from 'constants/index';
 import Markdown from 'react-native-markdown-display';
 import { baseStaticDataUrl } from 'hooks/static-content/useGetDAppList';
 import { GENERAL_TERM_AND_CONDITION } from 'constants/termAndCondition';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   modalVisible: boolean;
@@ -19,19 +21,20 @@ interface Props {
 
 export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, disabledOnPressBackDrop }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const language = useSelector((state: RootState) => state.settings.language);
   const [checked, setChecked] = useState<boolean>(false);
   const [disableAcceptBtn, setDisableAcceptBtn] = useState<boolean>(true);
   const [staticData, setStaticData] = useState({ md: '' });
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    fetch(`${baseStaticDataUrl}/term-and-condition/index.md`)
+    fetch(`${baseStaticDataUrl}/term-and-condition/${language}.md`)
       .then(rs => rs.text())
       .then(md => setStaticData({ md }))
       .catch(() => {
         setStaticData({ md: GENERAL_TERM_AND_CONDITION });
       });
-  }, []);
+  }, [language]);
 
   const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }: NativeScrollEvent) => {
     const paddingToBottom = 20;
@@ -39,11 +42,7 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
   };
 
   const showAlertWarning = () => {
-    Alert.alert(
-      'Tick the checkbox',
-      'Make sure to tick the checkbox "I understand and agree to the Terms of Use, which apply to my use of SubWallet and all of its feature" to be able to click Continue',
-      [{ text: 'I understand' }],
-    );
+    Alert.alert(i18n.title.tickTheCheckbox, i18n.message.generalTermWarning, [{ text: i18n.buttonTitles.iUnderStand }]);
   };
 
   return (
@@ -62,7 +61,7 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
       disabledOnPressBackDrop={disabledOnPressBackDrop}
       isAllowSwipeDown={Platform.OS === 'ios' && !disabledOnPressBackDrop}
       titleTextAlign={'center'}
-      modalTitle={'Terms of Use'}>
+      modalTitle={i18n.header.generalTermTitle}>
       <View style={{ position: 'relative' }}>
         <ScrollView
           ref={scrollRef}
@@ -94,9 +93,7 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
             needFocusCheckBox
             labelStyle={{ flex: 1 }}
             checked={checked}
-            label={
-              'I understand and agree to the Terms of Use, which apply to my use of SubWallet and all of its feature'
-            }
+            label={i18n.buttonTitles.generalTermCheckbox}
             onPress={() => setChecked(!checked)}
             checkBoxSize={20}
           />
@@ -127,7 +124,7 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
           {i18n.buttonTitles.continue}
         </Button>
         <Typography.Text style={{ color: theme.colorTextLight4, textAlign: 'center', paddingTop: theme.padding }}>
-          {'Scroll to read all sections'}
+          {i18n.buttonTitles.scrollInstruction}
         </Typography.Text>
       </View>
     </SwModal>

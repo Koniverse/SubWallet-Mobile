@@ -246,6 +246,7 @@
     "serviceSelect": "Chọn dịch vụ",
     "login": "Đăng nhập",
     "slogan": "Polkadot, Substrate & Ethereum wallet",
+    "tickTheCheckbox": "Xác nhận đã đọc",
     "earning": "Earning"
   },
   "tabName": {
@@ -423,6 +424,11 @@
     "sendFeedback": "Send feedback",
     "notNow": "Not now",
     "update": "Cập nhật",
+    "generalTermCheckbox": "Tôi đã hiểu và đồng ý với bản Điều khoản sử dụng, và chấp thuận rằng tất cả các điều khoản kể trên áp dụng cho việc tôi sử dụng SubWallet và toàn bộ tính năng của ứng dụng này",
+    "scrollInstruction": "Cuộn xuống để đọc toàn bộ nội dung",
+    "iUnderStand": "Tôi đã hiểu",
+    "masterPasswordCheckbox": "Tôi hiểu rằng SubWallet không thể khôi phục mật khẩu này cho tôi. ",
+    "learnMore": "Tìm hiểu thêm",
     "withdraw": "Withdraw",
     "cancelUnstake": "Cancel unstake"
   },
@@ -657,7 +663,9 @@
     "noticeForNewLoginMethod": "Để việc quản lý mật khẩu trở nên dễ dàng hơn, master password sẽ được áp dụng thay thế PIN code trong bản cũ. Bạn cần nhập master password để mở khoá ứng dụng.",
     "migrateMasterPasswordForBiometric": "Để việc quản lý mật khẩu trở nên dễ dàng hơn, master password sẽ được áp dụng thay thế PIN code trong bản cũ. Bạn đang sử dụng phương thức mở khóa bằng sinh trắc học, để tiếp tục áp dụng phương thức này, bạn cần nhập master password và xác nhận lại sinh trắc học.",
     "xcmTransferWarningTitle": "Pay attention!",
-    "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance."
+    "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
+    "generalTermWarning": "Vui lòng đánh dấu vào ô \"Tôi đã hiểu và đồng ý với bản Điều khoản sử dụng, và chấp thuận rằng tất cả các điều khoản kể trên áp dụng cho việc tôi sử dụng SubWallet và toàn bộ tính năng của ứng dụng này\" để đi tiếp",
+    "masterPasswordWarning": "Vui lòng đánh dấu vào ô \"Tôi hiểu rằng SubWallet không thể khôi phục mật khẩu này cho tôi\" để đi tiếp"
   },
   "filterOptions": {
     "polkadotParachain": "Polkadot Parachain",
@@ -812,6 +820,7 @@
     "connectedNetworks": "Connected networks",
     "missionPools": "Mission Pools",
     "updateChain": "Cập nhật mạng",
+    "generalTermTitle": "Điều khoản sử dụng",
     "earning": "Earning",
     "positionList": "Your earning positions",
     "groupList": "Earning options",
