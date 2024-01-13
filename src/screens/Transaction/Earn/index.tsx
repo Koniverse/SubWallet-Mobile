@@ -42,7 +42,7 @@ import {
 import { PlusCircle } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
-import { Keyboard, ScrollView, View } from 'react-native';
+import { Alert, Keyboard, ScrollView, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { DEFAULT_YIELD_PROCESS, EarningActionType, earningReducer } from 'reducers/earning';
@@ -63,6 +63,8 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { STAKE_ALERT_DATA } from '../../../../EarningDataRaw';
+import { insufficientMessages } from 'hooks/transaction/useHandleSubmitTransaction';
+import { useGetBalance } from 'hooks/balance';
 
 // interface _YieldAssetExpectedEarning extends YieldAssetExpectedEarning {
 //   symbol: string;
@@ -121,6 +123,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const { poolInfoMap, poolTargetsMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const { priceMap } = useSelector((state: RootState) => state.price);
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
 
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
 
@@ -130,6 +133,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const accountInfo = useGetAccountByAddress(currentFrom);
   const preCheckAction = usePreCheckAction(currentFrom);
   const { compound } = useYieldPositionDetail(slug);
+  const { nativeTokenBalance } = useGetBalance(chain, currentFrom);
 
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo.type;
@@ -295,8 +299,54 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     setDetailModalVisible(true);
   }, []);
 
+  const existentialDeposit = useMemo(() => {
+    const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chain);
+    if (assetInfo) {
+      return assetInfo.minAmount || '0';
+    }
+
+    return '0';
+  }, [assetRegistry, chain]);
+
+  const handleDataForInsufficientAlert = useCallback(() => {
+    return {
+      existentialDeposit: getInputValuesFromString(existentialDeposit, assetDecimals),
+      availableBalance: getInputValuesFromString(nativeTokenBalance.value, assetDecimals),
+      maintainBalance: getInputValuesFromString(poolInfo.metadata.maintainBalance || '0', assetDecimals),
+      symbol: inputAsset.symbol,
+    };
+  }, [
+    assetDecimals,
+    existentialDeposit,
+    inputAsset.symbol,
+    nativeTokenBalance.value,
+    poolInfo.metadata.maintainBalance,
+  ]);
+
   const onError = useCallback(
     (error: Error) => {
+      if (insufficientMessages.some(v => error.message.includes(v))) {
+        const _data = handleDataForInsufficientAlert();
+
+        Alert.alert(
+          i18n.warningTitle.insufficientBalance,
+          i18n.formatString(
+            i18n.warningMessage.insufficientBalanceMessage,
+            _data.availableBalance,
+            _data.symbol,
+            _data.existentialDeposit,
+            _data.maintainBalance || '0',
+          ) as string,
+          [
+            {
+              text: 'I understand',
+            },
+          ],
+        );
+
+        return;
+      }
+
       setTransactionDone(false);
       hideAll();
       show(error.message, { type: 'danger', duration: 8000 });
@@ -305,7 +355,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         payload: error,
       });
     },
-    [hideAll, show],
+    [handleDataForInsufficientAlert, hideAll, show],
   );
 
   const onSuccess = useCallback(
@@ -316,13 +366,16 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           if (_errors[0]?.message !== 'Rejected by user') {
             if (
               _errors[0]?.message.startsWith('UnknownError Connection to Indexed DataBase server lost') ||
-              'Provided address is invalid, the capitalization checksum test failed'
+              'Provided address is invalid, the capitalization checksum test failed' ||
+              'connection not open on send()'
             ) {
               hideAll();
-              onError({
-                message:
-                  'Your selected network has lost connection. Update it by re-enabling it or changing network provider',
-              } as Error);
+              show(
+                'Your selected network has lost connection. Update it by re-enabling it or changing network provider',
+                { type: 'danger', duration: 8000 },
+              );
+
+              return false;
             }
 
             hideAll();
@@ -353,7 +406,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         }
       };
     },
-    [hideAll, onDone, onError],
+    [hideAll, onDone, onError, show],
   );
 
   const renderMetaInfo = useCallback(() => {

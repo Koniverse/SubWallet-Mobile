@@ -33,7 +33,6 @@ const useHandleSubmitTransaction = (
               completeBtnTitle: i18n.buttonTitles.update,
               message: i18n.common.updateChainMessage,
               title: i18n.header.updateChain,
-              // customIcon: { icon: WifiX, color: '#D9D9D9', weight: 'bold' },
               onCancelModal: () => {
                 appModalContext.hideConfirmModal();
               },
@@ -42,6 +41,15 @@ const useHandleSubmitTransaction = (
                 appModalContext.hideConfirmModal();
               },
             });
+          } else if (
+            errors[0]?.message.startsWith('UnknownError Connection to Indexed DataBase server lost') ||
+            'Provided address is invalid, the capitalization checksum test failed' ||
+            'connection not open on send()'
+          ) {
+            show(
+              'Your selected network has lost connection. Update it by re-enabling it or changing network provider',
+              { type: 'danger', duration: 8000 },
+            );
           } else if (
             handleDataForInsufficientAlert &&
             insufficientMessages.some(v => errors[0]?.message.includes(v)) &&
@@ -55,7 +63,7 @@ const useHandleSubmitTransaction = (
                 _data.availableBalance,
                 _data.symbol,
                 _data.existentialDeposit,
-                '12', // ED + 2 for Vara Network
+                _data.maintainBalance || '12', // ED + 2 for Vara Network
               ) as string,
               [
                 {

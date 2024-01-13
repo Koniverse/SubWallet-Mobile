@@ -215,10 +215,11 @@ export const Unbond = ({
       return {
         existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
         availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
+        maintainBalance: getInputValuesFromString(poolInfo.metadata.maintainBalance || '0', estimateFee.decimals),
         symbol: estimateFee.symbol,
       };
     },
-    [existentialDeposit, nativeTokenBalance.value],
+    [existentialDeposit, nativeTokenBalance.value, poolInfo.metadata.maintainBalance],
   );
   const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
   const { onError, onSuccess } = useHandleSubmitTransaction(
@@ -441,7 +442,7 @@ export const Unbond = ({
                   />
                 }
                 onPress={onPreCheckReadOnly(onSubmit)}>
-                {i18n.buttonTitles.unbond}
+                {poolInfo.type === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
               </Button>
             </View>
           </>

@@ -122,10 +122,11 @@ export const Withdraw = ({
       return {
         existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
         availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
+        maintainBalance: getInputValuesFromString(poolInfo.metadata.maintainBalance || '0', estimateFee.decimals),
         symbol: estimateFee.symbol,
       };
     },
-    [existentialDeposit, nativeTokenBalance.value],
+    [existentialDeposit, nativeTokenBalance.value, poolInfo.metadata.maintainBalance],
   );
   const { onError, onSuccess } = useHandleSubmitTransaction(
     onDone,

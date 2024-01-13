@@ -1001,7 +1001,7 @@
     "lowestMember": "Lowest total member",
     "highestBonded": "Highest total bond",
     "selectedPool": "Selected pool",
-    "bonded": "Bonded",
+    "bonded": "Staked",
     "selectUnstakeRequest": "Select unstake request",
     "afterInflation": "after inflation",
     "earningReward": "Earning reward",
