@@ -314,6 +314,17 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         const { errors: _errors, id, warnings } = rs;
         if (_errors.length || warnings.length) {
           if (_errors[0]?.message !== 'Rejected by user') {
+            if (
+              _errors[0]?.message.startsWith('UnknownError Connection to Indexed DataBase server lost') ||
+              'Provided address is invalid, the capitalization checksum test failed'
+            ) {
+              hideAll();
+              onError({
+                message:
+                  'Your selected network has lost connection. Update it by re-enabling it or changing network provider',
+              } as Error);
+            }
+
             hideAll();
             onError(_errors[0]);
             return false;

@@ -13,14 +13,14 @@ import { StakingStatusUi } from 'constants/stakingStatusUi';
 import useYieldRewardTotal from 'hooks/earning/useYieldRewardTotal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useCallback, useMemo, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Linking, TouchableOpacity, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
 import { ActivityIndicator, Button, Icon, Number, Typography } from 'components/design-system-ui';
 import { HideBalanceItem } from 'components/HideBalanceItem';
-import { CaretDown, CaretUp } from 'phosphor-react-native';
+import { ArrowSquareOut, CaretDown, CaretUp } from 'phosphor-react-native';
 import { customFormatDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -34,11 +34,13 @@ type Props = {
 };
 
 const EarningRewardInfo: React.FC<Props> = (props: Props) => {
-  const { inputAsset, compound, isShowBalance, rewardHistories } = props;
+  const { inputAsset, compound, isShowBalance, rewardHistories, poolInfo } = props;
   const { slug, type } = compound;
-  const { isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const { isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
+  console.log('123123123123', chainInfoMap[poolInfo.chain].extraInfo?.subscanSlug);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const total = useYieldRewardTotal(slug);
@@ -180,6 +182,22 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
               suffix={inputAsset.symbol}
             />
           ))}
+
+          <Button
+            size={'sm'}
+            type={'ghost'}
+            onPress={() => {
+              currentAccount &&
+                chainInfoMap[poolInfo.chain].extraInfo &&
+                Linking.openURL(
+                  `https://${chainInfoMap[poolInfo.chain].extraInfo?.subscanSlug}.subscan.io/account/${
+                    currentAccount.address
+                  }?tab=reward`,
+                );
+            }}
+            icon={<Icon phosphorIcon={ArrowSquareOut} iconColor={theme.colorTextLight4} />}>
+            {i18n.common.viewOnExplorer}
+          </Button>
         </MetaInfo>
       )}
     </MetaInfo>

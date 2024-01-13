@@ -79,7 +79,6 @@ export const Unbond = ({
   const theme = useSubWalletTheme().swThemes;
   const accountSelectorRef = useRef<ModalRef>();
   const {
-    title,
     form: {
       setValue,
       getValues,
@@ -313,7 +312,10 @@ export const Unbond = ({
   return (
     <>
       {!isTransactionDone ? (
-        <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
+        <TransactionLayout
+          title={poolInfo.type === YieldPoolType.LENDING ? i18n.header.withdraw : i18n.header.unstake}
+          disableLeftButton={loading}
+          disableMainHeader={loading}>
           <>
             <ScrollView
               style={{ flex: 1, paddingHorizontal: 16 }}

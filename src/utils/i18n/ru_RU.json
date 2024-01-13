@@ -846,7 +846,11 @@
     "unstakeLDOTTransaction": "Unstake LDOT transaction",
     "unstakeSDOTTransaction": "Unstake sDOT transaction",
     "unstakeSTDOTTransaction": "Unstake stDOT transaction",
-    "unstakeQDOTTransaction": "Unstake qDOT transaction"
+    "unstakeQDOTTransaction": "Unstake qDOT transaction",
+    "stake": "Stake",
+    "unstake": "Unstake",
+    "withdraw": "Withdraw",
+    "supply": "Supply"
   },
   "cryptoScreen": {
     "address": "Адрес",

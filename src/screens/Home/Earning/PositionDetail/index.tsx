@@ -4,12 +4,13 @@ import {
   SpecialYieldPoolInfo,
   SpecialYieldPositionInfo,
   YieldPoolInfo,
+  YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, Number, Typography } from 'components/design-system-ui';
-import { EarningWithdrawMeta, EarningBaseInfo, EarningRewardInfo, EarningPoolInfo } from 'components/Earning';
+import { EarningBaseInfo, EarningPoolInfo, EarningRewardInfo, EarningWithdrawMeta } from 'components/Earning';
 import { useYieldPositionDetail } from 'hooks/earning';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MinusCircle, Plus, PlusCircle } from 'phosphor-react-native';
@@ -167,14 +168,14 @@ const Component: React.FC<Props> = (props: Props) => {
               type="secondary"
               icon={<Icon phosphorIcon={MinusCircle} weight="fill" />}
               onPress={onLeavePool}>
-              {poolInfo.slug === 'DOT___lending___interlay' ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
+              {poolInfo.type === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
             </Button>
             <Button
               block={true}
               type="secondary"
               icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}
               onPress={onEarnMore}>
-              {poolInfo.slug === 'DOT___lending___interlay' ? 'Supply more' : i18n.buttonTitles.stakeMore}
+              {poolInfo.type === YieldPoolType.LENDING ? 'Supply more' : i18n.buttonTitles.stakeMore}
             </Button>
           </View>
           <EarningWithdrawMeta inputAsset={inputAsset} unstakings={compound.unstakings} poolInfo={poolInfo} />
