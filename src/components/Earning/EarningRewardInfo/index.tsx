@@ -22,6 +22,8 @@ import { ActivityIndicator, Button, Icon, Number, Typography } from 'components/
 import { HideBalanceItem } from 'components/HideBalanceItem';
 import { CaretDown, CaretUp } from 'phosphor-react-native';
 import { customFormatDate } from 'utils/customFormatDate';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -34,7 +36,7 @@ type Props = {
 const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   const { inputAsset, compound, isShowBalance, rewardHistories } = props;
   const { slug, type } = compound;
-
+  const { isAllAccount } = useSelector((state: RootState) => state.accountState);
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
 
@@ -108,35 +110,41 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
         valueColorSchema={earningStatus.schema}
       />
 
-      {!rewardHistories.length && <View style={styles.withdrawSeparator} />}
+      {!rewardHistories.length &&
+        !isAllAccount &&
+        (type === YieldPoolType.NOMINATION_POOL || type === YieldPoolType.NATIVE_STAKING) && (
+          <View style={styles.withdrawSeparator} />
+        )}
 
-      {(type === YieldPoolType.NOMINATION_POOL || type === YieldPoolType.NATIVE_STAKING) && (
-        <View style={styles.withdrawButtonContainer}>
-          {isShowBalance ? (
-            total ? (
-              <Number
-                value={total}
-                decimal={inputAsset.decimals || 0}
-                suffix={inputAsset.symbol}
-                size={theme.fontSizeHeading4}
-                textStyle={styles.totalUnstake}
-                subFloatNumber={true}
-                decimalOpacity={0.45}
-                unitOpacity={0.45}
-              />
+      {(type === YieldPoolType.NOMINATION_POOL || type === YieldPoolType.NATIVE_STAKING) &&
+        !rewardHistories.length &&
+        !isAllAccount && (
+          <View style={styles.withdrawButtonContainer}>
+            {isShowBalance ? (
+              total ? (
+                <Number
+                  value={total}
+                  decimal={inputAsset.decimals || 0}
+                  suffix={inputAsset.symbol}
+                  size={theme.fontSizeHeading4}
+                  textStyle={styles.totalUnstake}
+                  subFloatNumber={true}
+                  decimalOpacity={0.45}
+                  unitOpacity={0.45}
+                />
+              ) : (
+                <ActivityIndicator size={20} />
+              )
             ) : (
-              <ActivityIndicator size={20} />
-            )
-          ) : (
-            <HideBalanceItem isShowConvertedBalance={false} />
-          )}
-          {canClaim && (
-            <Button size="xs" onPress={onPressWithdraw}>
-              {i18n.buttonTitles.claimRewards}
-            </Button>
-          )}
-        </View>
-      )}
+              <HideBalanceItem isShowConvertedBalance={false} />
+            )}
+            {canClaim && (
+              <Button size="xs" onPress={onPressWithdraw}>
+                {i18n.buttonTitles.claimRewards}
+              </Button>
+            )}
+          </View>
+        )}
 
       {!!(rewardHistories && rewardHistories.length) && (
         <>
