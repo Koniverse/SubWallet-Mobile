@@ -184,11 +184,9 @@ export const restoreStorageData = () => {
 // MKT Campaign flags for iOS 17 when reset data happen
 const bannerSlugKey = 'bannerSlugs';
 export const setBannerSlugs = (newSlug: string) => {
-  const bannerSlugs = getBannerSlugs();
-  if (bannerSlugs) {
-    bannerSlugs.push(newSlug);
-    mmkvStore.set(bannerSlugKey, JSON.stringify(bannerSlugs));
-  }
+  const bannerSlugs = getBannerSlugs() || [];
+  bannerSlugs.push(newSlug);
+  mmkvStore.set(bannerSlugKey, JSON.stringify(bannerSlugs));
 };
 export const getBannerSlugs = () => {
   let bannerSlugs = mmkvStore.getString(bannerSlugKey);
@@ -199,4 +197,21 @@ export const getBannerSlugs = () => {
   }
 
   return bannerSlugs as string[] | undefined;
+};
+
+export const tokenDetailBannerKey = 'hideTokenDetailBanner';
+export const setHideBanner = (key: string, value: string) => {
+  const campaignId = getHideBanner(key) || [];
+  campaignId.push(value);
+  mmkvStore.set(key, JSON.stringify(campaignId));
+};
+export const getHideBanner = (key: string) => {
+  let campaignId = mmkvStore.getString(key);
+  try {
+    campaignId = JSON.parse(campaignId ?? '');
+  } catch (error) {
+    campaignId = undefined;
+  }
+
+  return campaignId as string[] | undefined;
 };
