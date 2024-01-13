@@ -74,7 +74,7 @@ const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
 
 const FILTER_OPTIONS = [
   { label: i18n.filterOptions.nominationPool, value: YieldPoolType.NOMINATION_POOL },
-  { label: i18n.filterOptions.nativeStaking, value: YieldPoolType.NATIVE_STAKING },
+  { label: i18n.filterOptions.directNomination, value: YieldPoolType.NATIVE_STAKING },
   { label: i18n.filterOptions.liquidStaking, value: YieldPoolType.LIQUID_STAKING },
   { label: i18n.filterOptions.lending, value: YieldPoolType.LENDING },
   { label: i18n.filterOptions.parachainStaking, value: YieldPoolType.PARACHAIN_STAKING },

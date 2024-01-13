@@ -1,4 +1,5 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { YieldPoolType } from '@subwallet/extension-base/types';
 import BigNumber from 'bignumber.js';
 import { EmptyList } from 'components/EmptyList';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -24,6 +25,61 @@ let cacheData: Record<string, boolean> = {};
 interface Props {
   setStep: (value: number) => void;
 }
+
+const filterFunction = (items: ExtraYieldPositionInfo[], filters: string[]) => {
+  if (!filters.length) {
+    return items;
+  }
+
+  return items.filter(item => {
+    if (!filters.length) {
+      return true;
+    }
+
+    for (const filter of filters) {
+      if (filter === '') {
+        return true;
+      }
+
+      if (filter === YieldPoolType.NOMINATION_POOL) {
+        if (item.type === YieldPoolType.NOMINATION_POOL) {
+          return true;
+        }
+      } else if (filter === YieldPoolType.NATIVE_STAKING) {
+        if (item.type === YieldPoolType.NATIVE_STAKING) {
+          return true;
+        }
+      } else if (filter === YieldPoolType.LIQUID_STAKING) {
+        if (item.type === YieldPoolType.LIQUID_STAKING) {
+          return true;
+        }
+      } else if (filter === YieldPoolType.LENDING) {
+        if (item.type === YieldPoolType.LENDING) {
+          return true;
+        }
+        // } else if (filter === YieldPoolType.PARACHAIN_STAKING) {
+        //   if (item.type === YieldPoolType.PARACHAIN_STAKING) {
+        //     return true;
+        //   }
+        // } else if (filter === YieldPoolType.SINGLE_FARMING) {
+        //   if (item.type === YieldPoolType.SINGLE_FARMING) {
+        //     return true;
+        //   }
+      }
+    }
+
+    return false;
+  });
+};
+
+const FILTER_OPTIONS = [
+  { label: i18n.filterOptions.nominationPool, value: YieldPoolType.NOMINATION_POOL },
+  { label: i18n.filterOptions.directNomination, value: YieldPoolType.NATIVE_STAKING },
+  { label: i18n.filterOptions.liquidStaking, value: YieldPoolType.LIQUID_STAKING },
+  { label: i18n.filterOptions.lending, value: YieldPoolType.LENDING },
+  { label: i18n.filterOptions.parachainStaking, value: YieldPoolType.PARACHAIN_STAKING },
+  { label: i18n.filterOptions.singleFarming, value: YieldPoolType.SINGLE_FARMING },
+];
 
 export const PositionList = ({ setStep }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -150,6 +206,8 @@ export const PositionList = ({ setStep }: Props) => {
         autoFocus={false}
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
+        filterOptions={FILTER_OPTIONS}
+        filterFunction={filterFunction}
         flatListStyle={styles.container}
         renderItem={renderItem}
         rightIconOption={rightIconOption}

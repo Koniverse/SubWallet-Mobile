@@ -695,11 +695,13 @@
     "blockedDApp": "已封锁dApp",
     "connectedDApp": "已连接dApp",
     "nominationPool": "Nomination pool",
-    "nativeStaking": "Native staking",
+    "directNomination": "Direct nomination",
     "liquidStaking": "Liquid staking",
     "lending": "Lending",
     "parachainStaking": "Parachain staking",
-    "singleFarming": "Single farming"
+    "singleFarming": "Single farming",
+    "mainnet": "Mainnet",
+    "testnet": "Testnet"
   },
   "header": {
     "selectAccount": "选择账户",

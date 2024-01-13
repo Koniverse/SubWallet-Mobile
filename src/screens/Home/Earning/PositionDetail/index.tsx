@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import {
   EarningRewardHistoryItem,
   SpecialYieldPoolInfo,
@@ -195,15 +195,18 @@ const PositionDetail: React.FC<EarningPositionDetailProps> = (props: EarningPosi
     navigation,
   } = props;
 
+  const isFocused = useIsFocused();
   const { poolInfoMap, rewardHistories } = useSelector((state: RootState) => state.earning);
   const data = useYieldPositionDetail(slug);
   const poolInfo = poolInfoMap[slug];
 
   useEffect(() => {
-    if (!data.compound || !poolInfo) {
-      navigation.navigate('EarningList', { step: 1 });
+    if (isFocused) {
+      if (!data.compound || !poolInfo) {
+        navigation.navigate('EarningList', { step: 1 });
+      }
     }
-  }, [data.compound, navigation, poolInfo]);
+  }, [data.compound, navigation, poolInfo, isFocused]);
 
   if (!data.compound || !poolInfo) {
     return null;

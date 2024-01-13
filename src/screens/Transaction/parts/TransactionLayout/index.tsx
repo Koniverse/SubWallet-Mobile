@@ -13,6 +13,7 @@ interface Props {
   disableMainHeader?: boolean;
   onPressRightHeaderBtn?: () => void;
   children: React.ReactNode;
+  onPressBack?: () => void;
 }
 
 export const TransactionLayout = ({
@@ -23,6 +24,7 @@ export const TransactionLayout = ({
   disableLeftButton,
   disableRightButton,
   disableMainHeader,
+  onPressBack,
 }: Props) => {
   const navigation = useNavigation<StakingScreenNavigationProps>();
 
@@ -38,6 +40,7 @@ export const TransactionLayout = ({
             disableRightButton={disableRightButton}
             disableLeftButton={disableLeftButton}
             disableMainHeader={disableMainHeader}
+            onPressBack={onPressBack}
           />
 
           {children}

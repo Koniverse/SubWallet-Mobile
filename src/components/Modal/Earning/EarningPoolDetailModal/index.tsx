@@ -308,7 +308,6 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
           );
           return EARNING_DATA_RAW[YieldPoolType.LIQUID_STAKING].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
-            console.log('derivative', derivative);
             replaceEarningValue(_item, '{derivative}', derivative.symbol);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
             replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);

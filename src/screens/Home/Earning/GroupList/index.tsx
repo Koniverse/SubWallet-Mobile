@@ -25,6 +25,11 @@ import { FontMedium } from 'styles/sharedStyles';
 import { AppModalContext } from 'providers/AppModalContext';
 import useChainChecker from 'hooks/chain/useChainChecker';
 
+enum FilterOptionType {
+  MAIN_NETWORK = 'MAIN_NETWORK',
+  TEST_NETWORK = 'TEST_NETWORK',
+}
+
 const groupOrdinal = (group: YieldGroupInfo): number => {
   if (group.group === 'DOT-Polkadot') {
     return 2;
@@ -39,6 +44,14 @@ const testnetOrdinal = (group: YieldGroupInfo): number => {
   return group.isTestnet ? 0 : 1;
 };
 
+const availOrdinal = (group: YieldGroupInfo): number => {
+  if (group.chain === 'goldberg_testnet') {
+    return 1;
+  } else {
+    return 0;
+  }
+};
+
 const balanceOrdinal = (group: YieldGroupInfo): number => {
   return group.balance.value.toNumber();
 };
@@ -46,6 +59,37 @@ const balanceOrdinal = (group: YieldGroupInfo): number => {
 const apyOrdinal = (group: YieldGroupInfo): number => {
   return !group.maxApy ? -1 : group.maxApy;
 };
+
+const filterFunction = (items: YieldGroupInfo[], filters: string[]) => {
+  if (!filters.length) {
+    return items;
+  }
+
+  return items.filter(item => {
+    if (!filters.length) {
+      return true;
+    }
+
+    for (const filter of filters) {
+      if (filter === '') {
+        return true;
+      }
+
+      if (filter === FilterOptionType.MAIN_NETWORK) {
+        return !item.isTestnet;
+      } else if (filter === FilterOptionType.TEST_NETWORK) {
+        return item.isTestnet;
+      }
+    }
+
+    return false;
+  });
+};
+
+const FILTER_OPTIONS = [
+  { label: i18n.filterOptions.mainnet, value: FilterOptionType.MAIN_NETWORK },
+  { label: i18n.filterOptions.testnet, value: FilterOptionType.TEST_NETWORK },
+];
 
 interface Props {
   isHasAnyPosition: boolean;
@@ -77,6 +121,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
       return (
         groupOrdinal(b) - groupOrdinal(a) ||
         testnetOrdinal(b) - testnetOrdinal(a) ||
+        availOrdinal(b) - availOrdinal(a) ||
         balanceOrdinal(b) - balanceOrdinal(a) ||
         apyOrdinal(b) - apyOrdinal(a)
       );
@@ -228,6 +273,8 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         autoFocus={false}
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
+        filterOptions={FILTER_OPTIONS}
+        filterFunction={filterFunction}
         flatListStyle={styles.container}
         renderItem={renderItem}
         onPressBack={onBack}

@@ -128,6 +128,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
 
   const currentStep = processState.currentStep;
+  const firstStep = currentStep === 0;
   const submitStepType = processState.steps?.[!currentStep ? currentStep + 1 : currentStep]?.type;
 
   const accountInfo = useGetAccountByAddress(currentFrom);
@@ -363,7 +364,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   );
 
   const onSuccess = useCallback(
-    (lastStep: boolean): ((rs: SWTransactionResponse) => boolean) => {
+    (lastStep: boolean, needRollback: boolean): ((rs: SWTransactionResponse) => boolean) => {
       return (rs: SWTransactionResponse): boolean => {
         const { errors: _errors, id, warnings } = rs;
         if (_errors.length || warnings.length) {
@@ -389,7 +390,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             return false;
           } else {
             dispatchProcessState({
-              type: EarningActionType.STEP_ERROR_ROLLBACK,
+              type: needRollback ? EarningActionType.STEP_ERROR_ROLLBACK : EarningActionType.STEP_ERROR,
               payload: _errors[0],
             });
             setTransactionDone(false);
@@ -536,6 +537,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       });
       const isFirstStep = step === 0;
       const isLastStep = step === processState.steps.length - 1;
+      const needRollback = step === 1;
       const data = getData(step);
 
       try {
@@ -571,7 +573,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           });
 
           const rs = await submitPromise;
-          const success = onSuccess(isLastStep)(rs);
+          const success = onSuccess(isLastStep, needRollback)(rs);
           if (success) {
             return await submitData(step + 1);
           } else {
@@ -590,6 +592,28 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         setSubmitLoading(false);
       });
   }, [currentStep, getTargetedPool, getValues, onError, onSuccess, poolInfo, processState, slug]);
+
+  const onBack = useCallback(() => {
+    if (firstStep) {
+      navigation.goBack();
+    } else {
+      Alert.alert(
+        'Cancel earning process?',
+        'Going back will cancel the current earning process. Do you wish to cancel?',
+        [
+          {
+            text: 'Cancel earning',
+            onPress: () => {
+              navigation.goBack();
+            },
+          },
+          {
+            text: 'Not now',
+          },
+        ],
+      );
+    }
+  }, [firstStep, navigation]);
 
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 350);
@@ -727,6 +751,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           showRightHeaderButton
           disableLeftButton={submitLoading}
           disableRightButton={!poolInfo.statistic || submitLoading}
+          onPressBack={onBack}
           onPressRightHeaderBtn={handleOpenDetailModal}>
           <>
             <>

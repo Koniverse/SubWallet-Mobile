@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Header } from 'components/Header';
 import { View } from 'react-native';
 import { SubHeader } from 'components/SubHeader';
@@ -13,6 +13,7 @@ interface Props {
   disableRightButton?: boolean;
   disableLeftButton?: boolean;
   disableMainHeader?: boolean;
+  onPressBack?: () => void;
 }
 
 const TransactionHeader = ({
@@ -23,14 +24,23 @@ const TransactionHeader = ({
   disableRightButton,
   disableLeftButton,
   disableMainHeader,
+  onPressBack,
 }: Props) => {
+  const onBack = useCallback(() => {
+    if (onPressBack) {
+      onPressBack();
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, onPressBack]);
+
   return (
     <>
       <Header disabled={disableMainHeader} />
 
       <View style={{ marginTop: 16 }}>
         <SubHeader
-          onPressBack={() => navigation.goBack()}
+          onPressBack={onBack}
           title={title}
           titleTextAlign={'left'}
           rightIcon={showRightIcon ? Info : undefined}
