@@ -40,7 +40,6 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
-  console.log('123123123123', chainInfoMap[poolInfo.chain].extraInfo?.subscanSlug);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const total = useYieldRewardTotal(slug);

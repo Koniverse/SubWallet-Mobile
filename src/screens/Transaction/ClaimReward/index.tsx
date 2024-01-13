@@ -167,17 +167,12 @@ const ClaimReward = ({
     [existentialDeposit, nativeTokenBalance.value, poolInfo.metadata.maintainBalance],
   );
 
-  const handleDataForClaimRewardAlert = useCallback(() => {
-    return reward?.unclaimedReward || '0';
-  }, [reward?.unclaimedReward]);
-
   const { onError, onSuccess } = useHandleSubmitTransaction(
     onDone,
     setTransactionDone,
     undefined,
     undefined,
     handleDataForInsufficientAlert,
-    handleDataForClaimRewardAlert,
   );
 
   const rewardList = useMemo((): EarningRewardItem[] => {
