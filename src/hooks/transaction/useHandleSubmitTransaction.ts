@@ -42,9 +42,11 @@ const useHandleSubmitTransaction = (
               },
             });
           } else if (
-            errors[0]?.message.startsWith('UnknownError Connection to Indexed DataBase server lost') ||
-            'Provided address is invalid, the capitalization checksum test failed' ||
-            'connection not open on send()'
+            errors[0]?.message.startsWith(
+              'UnknownError Connection to Indexed DataBase server lost' ||
+                'Provided address is invalid, the capitalization checksum test failed' ||
+                'connection not open on send()',
+            )
           ) {
             show(
               'Your selected network has lost connection. Update it by re-enabling it or changing network provider',

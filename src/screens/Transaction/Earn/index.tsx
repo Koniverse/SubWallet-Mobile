@@ -343,6 +343,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             },
           ],
         );
+        dispatchProcessState({
+          type: EarningActionType.STEP_ERROR_ROLLBACK,
+          payload: error,
+        });
 
         return;
       }
@@ -365,9 +369,11 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         if (_errors.length || warnings.length) {
           if (_errors[0]?.message !== 'Rejected by user') {
             if (
-              _errors[0]?.message.startsWith('UnknownError Connection to Indexed DataBase server lost') ||
-              'Provided address is invalid, the capitalization checksum test failed' ||
-              'connection not open on send()'
+              _errors[0]?.message.startsWith(
+                'UnknownError Connection to Indexed DataBase server lost' ||
+                  'Provided address is invalid, the capitalization checksum test failed' ||
+                  'connection not open on send()',
+              )
             ) {
               hideAll();
               show(
