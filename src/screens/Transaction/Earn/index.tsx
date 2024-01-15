@@ -370,11 +370,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         if (_errors.length || warnings.length) {
           if (_errors[0]?.message !== 'Rejected by user') {
             if (
-              _errors[0]?.message.startsWith(
-                'UnknownError Connection to Indexed DataBase server lost' ||
-                  'Provided address is invalid, the capitalization checksum test failed' ||
-                  'connection not open on send()',
-              )
+              _errors[0]?.message.startsWith('UnknownError Connection to Indexed DataBase server lost') ||
+              _errors[0]?.message.startsWith('Provided address is invalid, the capitalization checksum test failed') ||
+              _errors[0]?.message.startsWith('connection not open on send()')
             ) {
               hideAll();
               show(

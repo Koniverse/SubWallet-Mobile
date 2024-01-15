@@ -190,15 +190,15 @@ const Component: React.FC<Props> = (props: Props) => {
 const PositionDetail: React.FC<EarningPositionDetailProps> = (props: EarningPositionDetailProps) => {
   const {
     route: {
-      params: { slug },
+      params: { earningSlug },
     },
     navigation,
   } = props;
 
   const isFocused = useIsFocused();
   const { poolInfoMap, rewardHistories } = useSelector((state: RootState) => state.earning);
-  const data = useYieldPositionDetail(slug);
-  const poolInfo = poolInfoMap[slug];
+  const data = useYieldPositionDetail(earningSlug);
+  const poolInfo = poolInfoMap[earningSlug];
 
   useEffect(() => {
     if (isFocused) {

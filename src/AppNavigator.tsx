@@ -82,6 +82,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview';
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { DeriveAccount } from 'screens/Account/DeriveAccount';
+import { useGroupYieldPosition } from 'hooks/earning';
 
 interface Props {
   isAppReady: boolean;
@@ -147,14 +148,16 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
             Crowdloans: {
               path: 'crowdloans',
             },
-            Staking: {
-              path: 'staking',
+            Earning: {
+              path: 'earning',
               screens: {
-                StakingBalances: {
-                  path: 'staking-balances',
+                EarningList: {
+                  path: 'earning-list',
+                },
+                EarningPositionDetail: {
+                  path: 'earning-position-detail',
                   stringify: {
-                    chain: (chain: string) => chain,
-                    type: (type: string) => type,
+                    earningSlug: (earningSlug: string) => earningSlug,
                   },
                 },
               },
@@ -213,8 +216,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const Stack = createNativeStackNavigator<RootStackParamList>();
   const [currentRoute, setCurrentRoute] = useState<RootRouteProps | undefined>(undefined);
   const isEmptyAccounts = useCheckEmptyAccounts();
+  const data = useGroupYieldPosition();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
-  const { accounts, hasMasterPassword, isReady, isLocked } = useSelector((state: RootState) => state.accountState);
+  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount } = useSelector(
+    (state: RootState) => state.accountState,
+  );
   const { isLocked: isLogin } = useAppLock();
   const [isNavigationReady, setNavigationReady] = useState<boolean>(false);
   const appModalContext = useContext(AppModalContext);
@@ -329,6 +335,35 @@ const AppNavigator = ({ isAppReady }: Props) => {
             saveCurrentAccountAddress({ address: 'ALL' }).catch(e => {
               console.error('There is a problem when set Current Account', e);
             });
+          }
+        }
+
+        if (parseUrl.pathname.startsWith('/main/staking/staking-balances')) {
+          listener('subwallet://home/main/earning/earning-list');
+          return;
+        }
+
+        if (parseUrl.pathname.startsWith('/main/earning/earning-position-detail')) {
+          const isPositionExist = data.find(i => {
+            return urlQuery.includes(i.slug);
+          });
+
+          if (isAllAccount) {
+            if (!isPositionExist) {
+              listener('subwallet://home/main/earning/earning-list');
+              return;
+            }
+          } else {
+            if (!isPositionExist) {
+              saveCurrentAccountAddress({ address: 'ALL' })
+                .then(() => {
+                  listener('subwallet://home/main/earning/earning-list');
+                })
+                .catch(e => {
+                  console.error('There is a problem when set Current Account', e);
+                });
+              return;
+            }
           }
         }
 
