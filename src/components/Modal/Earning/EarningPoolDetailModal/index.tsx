@@ -28,6 +28,7 @@ import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { getTokenLogo } from 'utils/index';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { mmkvStore } from 'utils/storage';
 
 interface Props {
   slug: string;
@@ -37,6 +38,12 @@ interface Props {
   isShowStakeMoreBtn?: boolean;
   onPressBack?: () => void;
 }
+export interface StaticDataProps {
+  icon: string;
+  title: string;
+  description: string;
+  iconColor: string;
+}
 
 export interface BoxProps {
   title: string;
@@ -44,6 +51,8 @@ export interface BoxProps {
   iconColor: string;
   icon: PhosphorIcon;
 }
+
+const earningStaticData: Record<string, StaticDataProps[]> = JSON.parse(mmkvStore.getString('earningStaticData') || '');
 
 const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   const { slug, setVisible: _setVisible, modalVisible, onStakeMore, isShowStakeMoreBtn = true, onPressBack } = props;
@@ -268,7 +277,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
           );
 
           if (poolInfo.slug === 'ASTR___native_staking___astar') {
-            return EARNING_DATA_RAW.DAPP_STAKING.map(item => {
+            return earningStaticData.DAPP_STAKING.map(item => {
               const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
               replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
               replaceEarningValue(_item, '{periodNumb}', unBondedTime);
@@ -283,7 +292,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             });
           }
 
-          return EARNING_DATA_RAW[YieldPoolType.NATIVE_STAKING].map(item => {
+          return earningStaticData[YieldPoolType.NATIVE_STAKING].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
 
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
@@ -312,7 +321,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             poolInfo.metadata.maintainBalance || '0',
             maintainDecimals || 0,
           );
-          return EARNING_DATA_RAW[YieldPoolType.LIQUID_STAKING].map(item => {
+          return earningStaticData[YieldPoolType.LIQUID_STAKING].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
             replaceEarningValue(_item, '{derivative}', derivative.symbol);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
@@ -338,7 +347,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             maintainDecimals || 0,
           );
 
-          return EARNING_DATA_RAW[YieldPoolType.LENDING].map(item => {
+          return earningStaticData[YieldPoolType.LENDING].map(item => {
             const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
 
             replaceEarningValue(_item, '{derivative}', derivative.symbol);

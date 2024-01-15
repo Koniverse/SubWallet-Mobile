@@ -40,19 +40,13 @@ import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { useGetBalance } from 'hooks/balance';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import { isActionFromValidator } from '@subwallet/extension-base/services/earning-service/utils';
-import { UNSTAKE_ALERT_DATA } from '../../../../EarningDataRaw';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
+import { mmkvStore } from 'utils/storage';
+import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
   fastLeave: string;
-}
-
-export interface UnbondBoxProps {
-  title: string;
-  description: React.ReactNode;
-  iconColor: string;
-  icon: PhosphorIcon;
 }
 
 const _accountFilterFunc = (
@@ -70,6 +64,8 @@ const _accountFilterFunc = (
     );
   };
 };
+
+const unstakeDataRaw: StaticDataProps[] = JSON.parse(mmkvStore.getString('unstakeStaticData') || '');
 
 export const Unbond = ({
   route: {
@@ -392,14 +388,14 @@ export const Unbond = ({
               {!fastLeave || !showFastLeave ? (
                 poolInfo.type !== YieldPoolType.LENDING ? (
                   <>
-                    {!!UNSTAKE_ALERT_DATA.length && (
+                    {!!unstakeDataRaw.length && (
                       <View
                         style={{
                           gap: theme.sizeSM,
                           marginTop: mustChooseValidator ? theme.marginSM : 0,
                           marginBottom: theme.marginSM,
                         }}>
-                        {UNSTAKE_ALERT_DATA.map((_props, index) => {
+                        {unstakeDataRaw.map((_props, index) => {
                           return (
                             <AlertBoxBase
                               key={index}
