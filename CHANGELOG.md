@@ -1,5 +1,6 @@
 ## 1.1.26 (292)
-
+# bundle-av10-iv6
+- Update deeplink for Earning feature (#1251)
 
 ## 1.1.26 (291)
 
