@@ -7,7 +7,7 @@ export type EarningScreenStackParamList = {
     symbol: string;
   };
   EarningPositionDetail: {
-    slug: string;
+    earningSlug: string;
   };
 };
 

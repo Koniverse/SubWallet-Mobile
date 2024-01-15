@@ -128,7 +128,7 @@ export const PositionList = ({ setStep }: Props) => {
     (positionInfo: ExtraYieldPositionInfo): (() => void) => {
       return () => {
         Keyboard.dismiss();
-        navigation.navigate('EarningPositionDetail', { slug: positionInfo.slug });
+        navigation.navigate('EarningPositionDetail', { earningSlug: positionInfo.slug });
       };
     },
     [navigation],
