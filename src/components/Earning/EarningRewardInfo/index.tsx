@@ -13,7 +13,7 @@ import { StakingStatusUi } from 'constants/stakingStatusUi';
 import useYieldRewardTotal from 'hooks/earning/useYieldRewardTotal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Linking, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, TouchableOpacity, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
@@ -36,7 +36,7 @@ type Props = {
 const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   const { inputAsset, compound, isShowBalance, rewardHistories, poolInfo } = props;
   const { slug, type } = compound;
-  const { isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
@@ -58,12 +58,9 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
       case YieldPoolType.NATIVE_STAKING:
         return false;
       case YieldPoolType.NOMINATION_POOL:
-        if (total) {
-          return new BigN(total).gt(BN_ZERO);
-        }
-        return false;
+        return true;
     }
-  }, [total, type]);
+  }, [type]);
 
   const earningStatus = useMemo(() => {
     const stakingStatusUi = StakingStatusUi();
@@ -96,11 +93,17 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   // }, []);
 
   const onPressWithdraw = useCallback(() => {
-    navigation.navigate('Drawer', {
-      screen: 'TransactionAction',
-      params: { screen: 'ClaimReward', params: { slug } },
-    });
-  }, [navigation, slug]);
+    if (total && new BigN(total).gt(BN_ZERO)) {
+      navigation.navigate('Drawer', {
+        screen: 'TransactionAction',
+        params: { screen: 'ClaimReward', params: { slug } },
+      });
+    } else {
+      Alert.alert('Rewards unavailable', "You don't have any rewards to claim at the moment. Try again later.", [
+        { text: 'I understand' },
+      ]);
+    }
+  }, [navigation, slug, total]);
 
   return (
     <MetaInfo hasBackgroundWrapper={true} labelColorScheme="gray" style={styles.wrapper}>
@@ -111,15 +114,10 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
         valueColorSchema={earningStatus.schema}
       />
 
-      {!rewardHistories.length &&
-        !isAllAccount &&
-        (type === YieldPoolType.NOMINATION_POOL || type === YieldPoolType.NATIVE_STAKING) && (
+      {(type === YieldPoolType.NOMINATION_POOL || type === YieldPoolType.NATIVE_STAKING) && !rewardHistories.length && (
+        <>
           <View style={styles.withdrawSeparator} />
-        )}
 
-      {(type === YieldPoolType.NOMINATION_POOL || type === YieldPoolType.NATIVE_STAKING) &&
-        !rewardHistories.length &&
-        !isAllAccount && (
           <View style={styles.withdrawButtonContainer}>
             {isShowBalance ? (
               total ? (
@@ -145,7 +143,8 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
               </Button>
             )}
           </View>
-        )}
+        </>
+      )}
 
       {!!(rewardHistories && rewardHistories.length) && (
         <>

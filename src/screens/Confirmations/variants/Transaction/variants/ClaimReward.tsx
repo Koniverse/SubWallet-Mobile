@@ -36,8 +36,8 @@ const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
       Alert.alert(
         'Pay attention!',
         `The rewards you are about to claim are ${
-          isRewardLtFee ? 'smaller than' : 'equal'
-        } to the transaction fee. This means that you won’t receive any rewards after claiming. Do you wish to continue?`,
+          isRewardLtFee ? 'smaller than' : 'equal to'
+        } the transaction fee. This means that you won’t receive any rewards after claiming. Do you wish to continue?`,
         [
           {
             text: 'I understand',
