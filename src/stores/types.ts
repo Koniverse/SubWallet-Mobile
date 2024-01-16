@@ -150,6 +150,7 @@ export interface AppSettings extends UiSettings, Omit<SettingsStruct, 'camera' |
   authUrls: Record<string, AuthUrlInfo>;
   mediaAllowed: boolean;
   isDeepLinkConnect: boolean;
+  isNoticeNewVersion: boolean;
   isShowBuyToken: boolean;
   browserDApps: {
     dApps: DAppInfo[] | undefined;
