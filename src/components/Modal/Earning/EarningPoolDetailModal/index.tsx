@@ -399,6 +399,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         urlParam = '#moonwell';
         break;
       }
+      case 'Stellaswap': {
+        urlParam = '#stellaswap';
+        break;
+      }
     }
 
     Linking.openURL(`https://docs.subwallet.app/main/web-dashboard-user-guide/earning/faqs${urlParam}`);
