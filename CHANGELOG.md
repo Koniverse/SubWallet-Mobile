@@ -1,4 +1,6 @@
 ## 1.1.26 (292)
+# bundle-av11-iv7
+- Add banner in token detail (#1346)
 # bundle-av10-iv6
 - Update deeplink for Earning feature (#1251)
 

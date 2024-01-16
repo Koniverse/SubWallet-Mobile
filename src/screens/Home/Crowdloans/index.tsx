@@ -19,6 +19,7 @@ import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 import { useRefresh } from 'hooks/useRefresh';
 import { reloadCron } from 'messaging/index';
+import { deeplinks } from 'utils/browser';
 
 const renderListEmptyComponent = () => {
   return (
@@ -55,6 +56,12 @@ export const CrowdloansScreen = () => {
   };
 
   const openBanner = async (url: string) => {
+    const isDeeplink = deeplinks.some(deeplink => url.startsWith(deeplink));
+    if (isDeeplink) {
+      Linking.openURL(url);
+      return;
+    }
+
     const transformUrl = `subwallet://browser?url=${encodeURIComponent(url)}`;
     Linking.openURL(transformUrl);
   };

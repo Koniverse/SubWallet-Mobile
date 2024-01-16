@@ -8,6 +8,7 @@ import { CampaignBanner, CampaignButton } from '@subwallet/extension-base/backgr
 import { completeBannerCampaign } from 'messaging/index';
 import { getBannerButtonIcon } from 'utils/campaign';
 import { setBannerSlugs } from 'utils/storage';
+import { deeplinks } from 'utils/browser';
 
 interface Props {
   visible: boolean;
@@ -21,11 +22,15 @@ const CampaignBannerModal = ({ visible, banner, setVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = ModalStyle(theme);
 
-  const onPressJoinNow = async (url?: string) => {
-    if (url) {
-      const transformUrl = `subwallet://browser?url=${encodeURIComponent(url)}`;
-      Linking.openURL(transformUrl);
+  const onPressJoinNow = async (url: string) => {
+    const isDeeplink = deeplinks.some(deeplink => url.startsWith(deeplink));
+    if (isDeeplink) {
+      Linking.openURL(url);
+      return;
     }
+
+    const transformUrl = `subwallet://browser?url=${encodeURIComponent(url)}`;
+    Linking.openURL(transformUrl);
   };
 
   const onCloseBanner = useCallback(() => {
