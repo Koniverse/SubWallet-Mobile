@@ -3,10 +3,9 @@ import { Divider, Image, SwFullSizeModal, Typography } from 'components/design-s
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { MissionInfo } from 'types/missionPool';
-import { BlurView } from '@react-native-community/blur';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStyles from './style';
-import { ScrollView, View } from 'react-native';
+import { ImageBackground, ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MetaInfo from 'components/MetaInfo';
 import { missionCategoryMap, MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
@@ -34,11 +33,10 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
     <SwFullSizeModal isUseModalV2 modalVisible={modalVisible} setVisible={setVisible} modalBaseV2Ref={modalBaseV2Ref}>
       <ContainerWithSubHeader title={data.name as string} style={{ flex: 1 }} onPressBack={() => setVisible(false)}>
         <ScrollView style={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
-          <Image key={'blurryImage'} src={{ uri: data.backdrop_image }} style={styles.backdropImgStyle} />
-          {!isAndroid && <BlurView style={styles.backdropImgBlurView} blurType={'dark'} blurAmount={8} />}
+          <ImageBackground style={styles.backdropImgBlurView} source={{ uri: data.backdrop_image }} blurRadius={30} />
           <LinearGradient
-            locations={isAndroid ? [0, 0.03, 0.07] : [0, 0.035, 0.3]}
-            colors={['#0C0C0C', isAndroid ? theme.colorBgMask : 'transparent', '#0C0C0C']}
+            locations={isAndroid ? [0, 0.02, 0.09] : [0, 0.035, 0.3]}
+            colors={['#0C0C0C', 'transparent', '#0C0C0C']}
             style={styles.linerGradientStyle}
           />
           <View style={styles.contentContainer}>

@@ -9,6 +9,8 @@ export default (theme: ThemeTypes) =>
       borderRadius: theme.borderRadiusLG,
       backgroundColor: theme.colorBgSecondary,
       overflow: 'hidden',
+      flexDirection: 'row',
+      flex: 1,
     },
     backdropImgStyle: {
       position: 'absolute',
@@ -34,7 +36,7 @@ export default (theme: ThemeTypes) =>
       top: 0,
       left: 0,
       bottom: 0,
-      right: 0,
+      width: 40,
       borderRadius: theme.borderRadiusLG,
     },
     missionItemContent: {
@@ -42,6 +44,7 @@ export default (theme: ThemeTypes) =>
       paddingHorizontal: theme.paddingSM,
       flexDirection: 'row',
       borderRadius: theme.borderRadiusLG,
+      flex: 1,
     },
     missionItemTopContent: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
     missionItemBottomContent: { gap: theme.paddingXS },
