@@ -1,6 +1,6 @@
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
-import { ArrowSquareUpRight, IconProps, Star, StarHalf } from 'phosphor-react-native';
+import { ArrowSquareUpRight, Desktop, IconProps, Star, StarHalf } from 'phosphor-react-native';
 import { SiteInfo } from 'stores/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -10,10 +10,13 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SelectItem, SwModal } from 'components/design-system-ui';
 import { searchDomain } from 'utils/browser';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import WebView from 'react-native-webview';
+import { ToggleItem } from 'components/ToggleItem';
 
 interface Props {
   visibleModal: boolean;
   setVisibleModal: (arg: boolean) => void;
+  webviewRef: WebView;
 }
 
 interface OptionType {
@@ -28,10 +31,11 @@ export interface BrowserOptionModalRef {
   onUpdateSiteInfo: (siteInfo: SiteInfo) => void;
 }
 
-const Component = ({ visibleModal, setVisibleModal }: Props, ref: ForwardedRef<BrowserOptionModalRef>) => {
+const Component = ({ visibleModal, setVisibleModal, webviewRef }: Props, ref: ForwardedRef<BrowserOptionModalRef>) => {
   const theme = useSubWalletTheme().swThemes;
   const bookmarks = useSelector((state: RootState) => state.browser.bookmarks);
   const modalRef = useRef<SWModalRefProps>(null);
+  const [isDesktopModeOn, setIsDesktopModeOn] = useState(false);
 
   const onClose = () => modalRef?.current?.close();
 
@@ -97,6 +101,24 @@ const Component = ({ visibleModal, setVisibleModal }: Props, ref: ForwardedRef<B
             backgroundColor={opt.iconBackgroundColor}
           />
         ))}
+        <ToggleItem
+          isEnabled={isDesktopModeOn}
+          label={i18n.common.desktopMode}
+          onValueChange={(isOn: boolean) => {
+            if (isOn) {
+              webviewRef.current?.injectJavaScript(
+                "const meta = document.createElement('meta'); meta.setAttribute('content', 'width=device-width, initial-scale=0.1, maximum-scale=10, user-scalable=1'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); ",
+              );
+            } else {
+              webviewRef.current?.reload();
+            }
+
+            onClose();
+            setIsDesktopModeOn(prevState => !prevState);
+          }}
+          backgroundIcon={Desktop}
+          backgroundIconColor={theme['geekblue-7']}
+        />
       </View>
     </SwModal>
   );

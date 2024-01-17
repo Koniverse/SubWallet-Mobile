@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -178,20 +179,23 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     browserSv.current?.onDisconnect();
   };
 
-  const initBrowserSv = (nativeEvent: WebViewNavigation) => {
-    if (eventEmitter) {
-      browserSv.current = new BrowserService({
-        webRunnerEventEmitter: eventEmitter,
-        browserWebviewRef: webviewRef,
-        url: nativeEvent.url,
-        onHandlePhishing: () => {
-          // clear content of the phishing site
-          webviewRef.current?.injectJavaScript("(function(){document.documentElement.innerHTML='' })()");
-          setIsShowPhishingWarning(true);
-        },
-      });
-    }
-  };
+  const initBrowserSv = useCallback(
+    (nativeEvent: WebViewNavigation) => {
+      if (eventEmitter) {
+        browserSv.current = new BrowserService({
+          webRunnerEventEmitter: eventEmitter,
+          browserWebviewRef: webviewRef,
+          url: nativeEvent.url,
+          onHandlePhishing: () => {
+            // clear content of the phishing site
+            webviewRef.current?.injectJavaScript("(function(){document.documentElement.innerHTML='' })()");
+            setIsShowPhishingWarning(true);
+          },
+        });
+      }
+    },
+    [eventEmitter],
+  );
 
   const updateSiteInfo = ({ url, name }: SiteInfo) => {
     siteUrl.current = url;
@@ -223,81 +227,90 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     }
   }, []);
 
-  const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
-    const content = eventData.nativeEvent.data;
-    if (!isJsonString(content)) {
-      Share.share({ title: 'Seed phrase', message: content }).then(() => webviewRef.current?.goBack());
-      return;
-    }
-
-    try {
-      const { id, message, request, origin } = JSON.parse(content);
-
-      // doesn't need 'request' check here
-      if (id && message && origin) {
-        browserSv.current?.onMessage({ id, message, request, origin });
+  const onWebviewMessage = useCallback(
+    (eventData: NativeSyntheticEvent<WebViewMessage>) => {
+      const content = eventData.nativeEvent.data;
+      if (!isJsonString(content)) {
+        Share.share({ title: 'Seed phrase', message: content }).then(() => webviewRef.current?.goBack());
+        return;
       }
 
-      if (id === '-2') {
-        console.log('### Browser Tab console', content);
-      }
-    } catch (e) {
-      console.log('onWebviewMessage Error', e);
-    }
-  };
+      try {
+        const { id, message, request, origin } = JSON.parse(content);
 
-  const onLoad = ({ nativeEvent }: WebViewNavigationEvent) => {
-    if (nativeEvent.url !== siteUrl.current || nativeEvent.title !== siteName.current) {
+        // doesn't need 'request' check here
+        if (id && message && origin) {
+          browserSv.current?.onMessage({ id, message, request, origin });
+        }
+
+        if (id === '-2') {
+          console.log('### Browser Tab console', content);
+        }
+      } catch (e) {
+        console.log('onWebviewMessage Error', e);
+      }
+    },
+    [isJsonString],
+  );
+
+  const onLoad = useCallback(
+    ({ nativeEvent }: WebViewNavigationEvent) => {
+      if (nativeEvent.url !== siteUrl.current || nativeEvent.title !== siteName.current) {
+        if (nativeEvent.url !== siteUrl.current) {
+          updateTab({ id: tabId, url: nativeEvent.url });
+        }
+
+        updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
+        updateNavigationInfo(nativeEvent);
+
+        setTimeout(() => {
+          if (getHostName(nativeEvent.url) !== searchDomain) {
+            const isHistoryItemExisted = historyItems.length > 0 && historyItems[0].url !== nativeEvent.url;
+            if (isHistoryItemExisted) {
+              updateLatestItemInHistory({
+                url: nativeEvent.url,
+                name: nativeEvent.title || nativeEvent.url,
+              });
+            }
+          }
+        }, 800);
+        updateBrowserOptionModalRef(nativeEvent);
+      }
+    },
+    [historyItems, tabId],
+  );
+
+  const onLoadStart = useCallback(
+    ({ nativeEvent }: WebViewNavigationEvent) => {
       if (nativeEvent.url !== siteUrl.current) {
         updateTab({ id: tabId, url: nativeEvent.url });
+        updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
       }
 
-      updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
       updateNavigationInfo(nativeEvent);
 
-      setTimeout(() => {
-        if (getHostName(nativeEvent.url) !== searchDomain) {
-          const isHistoryItemExisted = historyItems.length > 0 && historyItems[0].url !== nativeEvent.url;
-          if (isHistoryItemExisted) {
-            updateLatestItemInHistory({
-              url: nativeEvent.url,
-              name: nativeEvent.title || nativeEvent.url,
-            });
-          }
+      if (getHostName(nativeEvent.url) !== searchDomain) {
+        const isNotDuplicated =
+          historyItems.length === 0 || (historyItems.length > 0 && historyItems[0].url !== nativeEvent.url);
+        console.log('isNotDuplicated', isNotDuplicated, historyItems[0], nativeEvent.url);
+        if (isNotDuplicated) {
+          addToHistory({
+            url: nativeEvent.url,
+            name: nativeEvent.title || nativeEvent.url,
+          });
         }
-      }, 800);
-      updateBrowserOptionModalRef(nativeEvent);
-    }
-  };
-
-  const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
-    if (nativeEvent.url !== siteUrl.current) {
-      updateTab({ id: tabId, url: nativeEvent.url });
-      updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
-    }
-
-    updateNavigationInfo(nativeEvent);
-
-    if (getHostName(nativeEvent.url) !== searchDomain) {
-      const isNotDuplicated =
-        historyItems.length === 0 || (historyItems.length > 0 && historyItems[0].url !== nativeEvent.url);
-      console.log('isNotDuplicated', isNotDuplicated, historyItems[0], nativeEvent.url);
-      if (isNotDuplicated) {
-        addToHistory({
-          url: nativeEvent.url,
-          name: nativeEvent.title || nativeEvent.url,
-        });
       }
-    }
 
-    updateBrowserOptionModalRef(nativeEvent);
+      updateBrowserOptionModalRef(nativeEvent);
 
-    setIsShowPhishingWarning(false);
+      setIsShowPhishingWarning(false);
 
-    // clear the current service and init the new one
-    clearCurrentBrowserSv();
-    initBrowserSv(nativeEvent);
-  };
+      // clear the current service and init the new one
+      clearCurrentBrowserSv();
+      initBrowserSv(nativeEvent);
+    },
+    [historyItems, initBrowserSv, tabId],
+  );
 
   const goBack = () => {
     if (navigation.canGoBack()) {
@@ -441,62 +454,111 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     },
   }));
 
-  const onShouldStartLoadWithRequest = ({ url }: WebViewNavigation) => {
-    if (
-      url.startsWith('tel:') ||
-      url.startsWith('mailto:') ||
-      url.startsWith('maps:') ||
-      url.startsWith('geo:') ||
-      url.startsWith('sms:')
-    ) {
-      Linking.openURL(url).catch(er => {
-        Alert.alert('Failed to open Link: ' + er.message);
-      });
-      return false;
-    }
-    const urlParsed = new urlParse(url);
-    if (url.startsWith('wc:')) {
-      if (urlParsed.query.startsWith('?requestId')) {
+  const onShouldStartLoadWithRequest = useCallback(
+    ({ url }: WebViewNavigation) => {
+      if (
+        url.startsWith('tel:') ||
+        url.startsWith('mailto:') ||
+        url.startsWith('maps:') ||
+        url.startsWith('geo:') ||
+        url.startsWith('sms:')
+      ) {
+        Linking.openURL(url).catch(er => {
+          Alert.alert('Failed to open Link: ' + er.message);
+        });
         return false;
       }
-      connectWalletConnect(url, toast);
-      return false;
-    }
+      const urlParsed = new urlParse(url);
+      if (url.startsWith('wc:')) {
+        if (urlParsed.query.startsWith('?requestId')) {
+          return false;
+        }
+        connectWalletConnect(url, toast);
+        return false;
+      }
 
-    if (urlParsed.href.startsWith(deeplinks[0]) || urlParsed.href.startsWith(deeplinks[1])) {
-      let nativeDeeplink = transformUniversalToNative(url);
-      nativeDeeplink = nativeDeeplink.replace(`${deeplinks[0]}/`, `${deeplinks[0]}`);
+      if (urlParsed.href.startsWith(deeplinks[0]) || urlParsed.href.startsWith(deeplinks[1])) {
+        let nativeDeeplink = transformUniversalToNative(url);
+        nativeDeeplink = nativeDeeplink.replace(`${deeplinks[0]}/`, `${deeplinks[0]}`);
 
-      Linking.canOpenURL(nativeDeeplink)
-        .then(supported => {
-          if (supported) {
-            return Linking.openURL(nativeDeeplink).finally(() =>
-              setTimeout(() => dispatch(updateIsDeepLinkConnect(false)), 100),
-            );
-          }
-          console.warn(`Can't open url: ${nativeDeeplink}`);
-          return null;
-        })
-        .catch(e => {
-          console.warn(`Error opening URL: ${e}`);
-        });
-      return false;
-    }
+        Linking.canOpenURL(nativeDeeplink)
+          .then(supported => {
+            if (supported) {
+              return Linking.openURL(nativeDeeplink).finally(() =>
+                setTimeout(() => dispatch(updateIsDeepLinkConnect(false)), 100),
+              );
+            }
+            console.warn(`Can't open url: ${nativeDeeplink}`);
+            return null;
+          })
+          .catch(e => {
+            console.warn(`Error opening URL: ${e}`);
+          });
+        return false;
+      }
 
-    if (urlParsed.href.includes('wc?requestId')) {
-      return false;
-    }
+      if (urlParsed.href.includes('wc?requestId')) {
+        return false;
+      }
 
-    if (urlParsed.href.startsWith('itms-appss://')) {
-      return false;
-    }
+      if (urlParsed.href.startsWith('itms-appss://')) {
+        return false;
+      }
 
-    return true;
-  };
+      return true;
+    },
+    [dispatch, toast],
+  );
 
   const onOutOfMemmories = () => {
     webviewRef.current?.reload();
   };
+
+  const renderWebview = useMemo(() => {
+    if (!isNetConnected) {
+      return <NoInternetScreen />;
+    }
+    if (!isWebviewReady) {
+      return <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />;
+    }
+
+    return (
+      <WebView
+        style={stylesheet.colorBlack}
+        ref={webviewRef}
+        originWhitelist={['*']}
+        source={{ uri: initWebViewSource }}
+        injectedJavaScriptBeforeContentLoaded={injectedScripts}
+        onLoadStart={onLoadStart}
+        onLoad={onLoad}
+        onLoadProgress={onLoadProgress}
+        onMessage={onWebviewMessage}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+        onContentProcessDidTerminate={onOutOfMemmories}
+        allowFileAccess
+        allowsInlineMediaPlayback
+        allowUniversalAccessFromFileURLs
+        allowFileAccessFromFileURLs
+        domStorageEnabled
+        javaScriptEnabled
+        injectedJavaScript={`
+        var content = document.getElementsByTagName('pre').item(0);
+        console.log("123123", content.innerHTML);
+        window.ReactNativeWebView.postMessage(content.innerHTML);
+      `}
+      />
+    );
+  }, [
+    initWebViewSource,
+    injectedScripts,
+    isNetConnected,
+    isWebviewReady,
+    onLoad,
+    onLoadStart,
+    onShouldStartLoadWithRequest,
+    onWebviewMessage,
+    stylesheet.colorBlack,
+  ]);
 
   return (
     <ScreenContainer backgroundColor={theme.colorBgDefault}>
@@ -535,39 +597,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
         />
       </View>
       <View style={stylesheet.webViewWrapper}>
-        {isNetConnected ? (
-          isWebviewReady ? (
-            <WebView
-              style={stylesheet.colorBlack}
-              ref={webviewRef}
-              originWhitelist={['*']}
-              source={{ uri: initWebViewSource }}
-              injectedJavaScriptBeforeContentLoaded={injectedScripts}
-              onLoadStart={onLoadStart}
-              onLoad={onLoad}
-              onLoadProgress={onLoadProgress}
-              onMessage={onWebviewMessage}
-              onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-              onContentProcessDidTerminate={onOutOfMemmories}
-              allowFileAccess
-              allowsInlineMediaPlayback
-              allowUniversalAccessFromFileURLs
-              allowFileAccessFromFileURLs
-              domStorageEnabled
-              javaScriptEnabled
-              webviewDebuggingEnabled
-              injectedJavaScript={`
-                var content = document.getElementsByTagName('pre').item(0);
-                console.log("123123", content.innerHTML);
-                window.ReactNativeWebView.postMessage(content.innerHTML);
-              `}
-            />
-          ) : (
-            <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
-          )
-        ) : (
-          <NoInternetScreen />
-        )}
+        {renderWebview}
 
         {isShowPhishingWarning && <PhishingBlockerLayer />}
         {progressNumber !== 1 && (
@@ -589,7 +619,12 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
 
       <SafeAreaView style={stylesheet.footerAfter} />
 
-      <BrowserOptionModal ref={browserOptionModalRef} visibleModal={modalVisible} setVisibleModal={setModalVisible} />
+      <BrowserOptionModal
+        ref={browserOptionModalRef}
+        webviewRef={webviewRef}
+        visibleModal={modalVisible}
+        setVisibleModal={setModalVisible}
+      />
     </ScreenContainer>
   );
 };
