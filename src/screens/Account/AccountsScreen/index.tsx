@@ -167,7 +167,12 @@ export const AccountsScreen = ({
           params: { screen: 'Tokens', params: { screen: 'TokenGroups' } },
         });
         navigation.goBack();
-      } else if (pathName === 'EarningList' || pathName === 'EarningPoolList' || pathName === 'Earning') {
+      } else if (
+        pathName &&
+        ['EarningList', 'EarningPoolList', 'Earning', 'Unbond', 'ClaimReward', 'CancelUnstake', 'Withdraw'].includes(
+          pathName,
+        )
+      ) {
         navigation.navigate('Home', {
           screen: 'Main',
           params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 1 } } },

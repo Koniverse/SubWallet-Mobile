@@ -22,6 +22,7 @@ export default (theme: ThemeTypes) => {
       justifyContent: 'space-between',
       gap: theme.sizeSM,
       overflow: 'hidden',
+      paddingVertical: theme.paddingXS,
     },
     accountRow: {
       display: 'flex',
