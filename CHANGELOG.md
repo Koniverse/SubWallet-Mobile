@@ -1,3 +1,9 @@
+## 1.1.27 (296)
+- Update web-runner v1.1.32 for mobile app (#1360)
+- Fix some UI bug for Earning feature (#1253)
+- Add desktop mode for dapp browser (#1338)
+- Improve performance Earning feature (#1251)
+
 ## 1.1.26 (292)
 # bundle-av11-iv7
 - Add banner in token detail (#1346)
