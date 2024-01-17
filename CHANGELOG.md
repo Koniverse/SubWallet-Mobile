@@ -1,3 +1,6 @@
+## 1.1.27 (295)
+
+
 ## 1.1.26 (292)
 # bundle-av11-iv7
 - Add banner in token detail (#1346)
