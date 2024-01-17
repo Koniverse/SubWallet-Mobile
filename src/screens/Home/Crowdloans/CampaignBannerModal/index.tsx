@@ -33,8 +33,8 @@ const CampaignBannerModal = ({ visible, banner, setVisible }: Props) => {
     completeBannerCampaign({
       slug: banner.slug,
     })
-      .then(() => setBannerSlugs(banner.slug))
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setBannerSlugs(banner.slug));
   }, [banner.slug, setVisible]);
 
   const onPressBtn = (item: CampaignButton) => {
