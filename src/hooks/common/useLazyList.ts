@@ -7,7 +7,7 @@ export interface useLazyListOptions<T> {
 }
 
 export function useLazyList<T>(items: T[], options: useLazyListOptions<T> = {}) {
-  const { itemPerPage = 20, lazyTime = 300, onAfterSetLazyList } = options;
+  const { itemPerPage = 12, lazyTime = 300, onAfterSetLazyList } = options;
   const [isLoading, setLoading] = useState<boolean>(false);
   const [lazyList, setLazyList] = useState<T[]>(items.slice(0, itemPerPage));
   const [pageNumber, setPageNumber] = useState<number>(1);

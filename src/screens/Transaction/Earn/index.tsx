@@ -31,6 +31,7 @@ import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import useFetchChainState from 'hooks/screen/useFetchChainState';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import useGetNativeTokenSlug from 'hooks/useGetNativeTokenSlug';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import {
   fetchPoolTarget,
@@ -76,6 +77,9 @@ interface StakeFormValues extends TransactionFormValues {
 }
 
 const loadingStepPromiseKey = 'earning.step.loading';
+
+// Not enough balance to xcm;
+export const insufficientXCMMessages = ['You can only enter a maximum'];
 
 const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const {
@@ -123,7 +127,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const { poolInfoMap, poolTargetsMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const { priceMap } = useSelector((state: RootState) => state.price);
-  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+  const nativeTokenSlug = useGetNativeTokenSlug(chain);
 
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
 
@@ -221,6 +225,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     () => chainAsset[poolInfo.metadata.inputAsset],
     [chainAsset, poolInfo.metadata.inputAsset],
   );
+
+  const nativeAsset = useMemo(() => chainAsset[nativeTokenSlug], [chainAsset, nativeTokenSlug]);
+
   const assetDecimals = inputAsset ? _getAssetDecimals(inputAsset) : 0;
   const priceValue = priceMap[inputAsset.priceId || ''] || 0;
   const convertValue = currentAmount ? parseFloat(currentAmount) / 10 ** assetDecimals : 0;
@@ -300,29 +307,16 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     setDetailModalVisible(true);
   }, []);
 
-  const existentialDeposit = useMemo(() => {
-    const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chain);
-    if (assetInfo) {
-      return assetInfo.minAmount || '0';
-    }
-
-    return '0';
-  }, [assetRegistry, chain]);
-
   const handleDataForInsufficientAlert = useCallback(() => {
+    const _assetDecimals = nativeAsset.decimals || 0;
+    const existentialDeposit = nativeAsset.minAmount || '0';
     return {
-      existentialDeposit: getInputValuesFromString(existentialDeposit, assetDecimals),
-      availableBalance: getInputValuesFromString(nativeTokenBalance.value, assetDecimals),
-      maintainBalance: getInputValuesFromString(poolInfo.metadata.maintainBalance || '0', assetDecimals),
-      symbol: inputAsset.symbol,
+      existentialDeposit: getInputValuesFromString(existentialDeposit, _assetDecimals),
+      availableBalance: getInputValuesFromString(nativeTokenBalance.value, _assetDecimals),
+      maintainBalance: getInputValuesFromString(poolInfo.metadata.maintainBalance || '0', _assetDecimals),
+      symbol: nativeAsset.symbol,
     };
-  }, [
-    assetDecimals,
-    existentialDeposit,
-    inputAsset.symbol,
-    nativeTokenBalance.value,
-    poolInfo.metadata.maintainBalance,
-  ]);
+  }, [nativeAsset, nativeTokenBalance.value, poolInfo.metadata.maintainBalance]);
 
   const onError = useCallback(
     (error: Error) => {
@@ -344,6 +338,18 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             },
           ],
         );
+        dispatchProcessState({
+          type: EarningActionType.STEP_ERROR_ROLLBACK,
+          payload: error,
+        });
+
+        return;
+      } else if (insufficientXCMMessages.some(v => error.message.includes(v))) {
+        Alert.alert(i18n.warningTitle.insufficientBalance, error.message, [
+          {
+            text: 'I understand',
+          },
+        ]);
         dispatchProcessState({
           type: EarningActionType.STEP_ERROR_ROLLBACK,
           payload: error,

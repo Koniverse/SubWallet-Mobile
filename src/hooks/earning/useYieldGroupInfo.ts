@@ -1,16 +1,15 @@
-// Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
-// SPDX-License-Identifier: Apache-2.0
-
 import { BN_ZERO } from '@polkadot/util';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BalanceValueInfo } from 'types/balance';
 import { YieldGroupInfo } from 'types/earning';
+import { _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
+import { YieldPoolInfo } from '@subwallet/extension-base/types';
 
 const useYieldGroupInfo = (): YieldGroupInfo[] => {
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
@@ -20,15 +19,27 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenGroupBalanceMap, tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
 
+  const poolInfoMapRef = useRef<Record<string, YieldPoolInfo>>(poolInfoMap);
+  const assetRegistryRef = useRef<Record<string, _ChainAsset>>(assetRegistry);
+  const multiChainAssetMapRef = useRef<Record<string, _MultiChainAsset>>(multiChainAssetMap);
+  const chainInfoMapRef = useRef<Record<string, _ChainInfo>>(chainInfoMap);
+
+  useEffect(() => {
+    poolInfoMapRef.current = poolInfoMap;
+    assetRegistryRef.current = assetRegistry;
+    multiChainAssetMapRef.current = multiChainAssetMap;
+    chainInfoMapRef.current = chainInfoMap;
+  }, [assetRegistry, chainInfoMap, multiChainAssetMap, poolInfoMap]);
+
   return useMemo(() => {
     const result: Record<string, YieldGroupInfo> = {};
 
-    for (const pool of Object.values(poolInfoMap)) {
+    for (const pool of Object.values(poolInfoMapRef.current)) {
       const chain = pool.chain;
       if (chainsByAccountType.includes(chain)) {
         const group = pool.group;
         const exists = result[group];
-        const chainInfo = chainInfoMap[chain];
+        const chainInfo = chainInfoMapRef.current[chain];
 
         if (exists) {
           let apy: undefined | number;
@@ -46,7 +57,7 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
           }
           exists.isTestnet = exists.isTestnet || chainInfo.isTestnet;
         } else {
-          const token = multiChainAssetMap[group] || assetRegistry[group];
+          const token = multiChainAssetMapRef.current[group] || assetRegistryRef.current[group];
           const balance = tokenGroupBalanceMap[group] || tokenBalanceMap[group];
           const freeBalance: BalanceValueInfo = balance?.free || {
             value: BN_ZERO,
@@ -79,15 +90,7 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
     }
 
     return Object.values(result);
-  }, [
-    assetRegistry,
-    chainInfoMap,
-    chainsByAccountType,
-    multiChainAssetMap,
-    poolInfoMap,
-    tokenBalanceMap,
-    tokenGroupBalanceMap,
-  ]);
+  }, [chainsByAccountType, tokenBalanceMap, tokenGroupBalanceMap]);
 };
 
 export default useYieldGroupInfo;
