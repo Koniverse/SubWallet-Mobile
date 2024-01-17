@@ -9,11 +9,12 @@ const useGetBannerByScreen = (screen: string) => {
   const { banners } = useSelector((state: RootState) => state.campaign);
 
   return useMemo(() => {
-    if (banners.length > 0 && bannerSlugs?.includes(banners[0].slug) && screen === 'home') {
+    const displayedBanner = banners.filter(item => item.data.position.includes(screen));
+    if (displayedBanner.length > 0 && bannerSlugs?.includes(displayedBanner[0].slug) && screen === 'home') {
       return [];
     }
 
-    return banners.filter(item => item.data.position.includes(screen));
+    return displayedBanner;
   }, [bannerSlugs, banners, screen]);
 };
 
