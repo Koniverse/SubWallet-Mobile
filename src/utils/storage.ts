@@ -131,6 +131,14 @@ export const backupStorageData = (forceBackup: boolean = false, markAppIsSetup: 
     .catch(e => console.debug('** Backup storage data error:', e));
 };
 
+export const resetStorageData = () => {
+  mmkvStore.set('backup-indexedDB', '{}');
+  mmkvStore.set('backup-localstorage', '{}');
+  mmkvStore.set('webRunnerLastBackupTime', 0);
+  mmkvStore.set('webRunnerLastBackupTimestamp', 0);
+  mmkvStore.set('app-is-setup', false);
+};
+
 export const triggerBackup = (message = '*** Backup storage') => {
   addLazy(
     'backupStorageData',
