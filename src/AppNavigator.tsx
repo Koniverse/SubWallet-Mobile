@@ -247,7 +247,18 @@ const AppNavigator = ({ isAppReady }: Props) => {
   useEffect(() => {
     if (isReady) {
       const unsubscribe = Linking.addEventListener('url', ({ url }) => {
-        const _url = transformUniversalToNative(url);
+        let currentUrl = url;
+        if (url.startsWith('wc:')) {
+          if (url.includes('?requestId')) {
+            const query = encodeURIComponent(url.split('wc')[2]);
+            currentUrl = `subwallet://wc${query}`;
+          } else {
+            const query = encodeURIComponent(url);
+            currentUrl = `subwallet://wc?uri=${query}`;
+          }
+        }
+
+        const _url = transformUniversalToNative(currentUrl);
         if (isPreventDeepLinkRef.current) {
           return;
         }
