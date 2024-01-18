@@ -51,7 +51,7 @@ import SendNFT from 'screens/Transaction/NFT';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { Keyboard, Linking, Platform, StatusBar } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { AppNavigatorDeepLinkStatus, Home } from 'screens/Home';
+import { AppNavigatorDeepLinkStatus, Home, setIsShowRemindBackupModal } from 'screens/Home';
 import { deviceWidth } from 'constants/index';
 import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Settings } from 'screens/Settings';
@@ -62,7 +62,6 @@ import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { ConnectionList } from 'screens/Settings/WalletConnect/ConnectionList';
 import { ConnectWalletConnect } from 'screens/Settings/WalletConnect/ConnectWalletConnect';
 import { ConnectionDetail } from 'screens/Settings/WalletConnect/ConnectionDetail';
-import useAppLock from 'hooks/useAppLock';
 import LoginScreen from 'screens/MasterPassword/Login';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
@@ -223,10 +222,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount } = useSelector(
     (state: RootState) => state.accountState,
   );
-  const { isLocked: isLogin } = useAppLock();
   const [isNavigationReady, setNavigationReady] = useState<boolean>(false);
   const appModalContext = useContext(AppModalContext);
-  const isLockedRef = useRef(isLogin);
+  const isLockedRef = useRef(isLocked);
   const { checkChainConnected } = useChainChecker();
   const toast = useToast();
   const dispatch = useDispatch();
@@ -302,8 +300,8 @@ const AppNavigator = ({ isAppReady }: Props) => {
   }, [isReady]);
 
   useEffect(() => {
-    isLockedRef.current = isLogin;
-  }, [isLogin]);
+    isLockedRef.current = isLocked;
+  }, [isLocked]);
 
   useEffect(() => {
     isPreventDeepLinkRef.current = isEmptyAccounts || !hasMasterPassword || hasConfirmations;
@@ -419,7 +417,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       if (currentRoute.name !== 'Confirmations' && amount) {
         if (
           !['CreateAccount', 'CreatePassword', 'Login', 'UnlockModal'].includes(currentRoute.name) &&
-          !isLogin &&
+          !isLocked &&
           amount
         ) {
           Keyboard.dismiss();
@@ -431,10 +429,10 @@ const AppNavigator = ({ isAppReady }: Props) => {
     return () => {
       amount = false;
     };
-  }, [hasConfirmations, navigationRef, currentRoute, isLogin]);
+  }, [hasConfirmations, navigationRef, currentRoute, isLocked]);
 
   useEffect(() => {
-    if (needMigrateMasterPassword && !isLogin) {
+    if (needMigrateMasterPassword && !isLocked) {
       if (!['MigratePassword', 'UnlockModal', 'Login'].includes(currentRoute.name)) {
         navigationRef.current?.reset({
           index: 1,
@@ -442,19 +440,25 @@ const AppNavigator = ({ isAppReady }: Props) => {
         });
       }
     }
-  }, [currentRoute, isLogin, navigationRef, needMigrateMasterPassword]);
+  }, [currentRoute, isLocked, navigationRef, needMigrateMasterPassword]);
 
   useEffect(() => {
-    if (isLogin && !!accounts.length && isNavigationReady) {
+    if (isLocked && !!accounts.length && isNavigationReady) {
       appModalContext.hideConfirmModal();
       if (currentRoute && currentRoute.name === 'Confirmations') {
-        setTimeout(() => navigationRef.current?.dispatch(StackActions.replace('Login')), 300);
+        setTimeout(() => {
+          navigationRef.current?.dispatch(StackActions.replace('Login'));
+          setIsShowRemindBackupModal(false);
+        }, 300);
       } else {
-        setTimeout(() => navigationRef.current?.navigate('Login'), 300);
+        setTimeout(() => {
+          navigationRef.current?.navigate('Login');
+          setIsShowRemindBackupModal(false);
+        }, 300);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLogin, isNavigationReady, accounts, currentRoute]);
+  }, [isLocked, isNavigationReady, accounts, currentRoute]);
 
   useEffect(() => {
     if (isEmptyAccounts) {

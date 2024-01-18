@@ -37,6 +37,9 @@ import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import IntroducingModal from 'components/Modal/IntroducingModal';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 import { TermAndCondition } from 'constants/termAndCondition';
+import { RemindBackupModal } from 'components/Modal/RemindBackupModal';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import { useIsFocused } from '@react-navigation/native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -197,6 +200,11 @@ export enum AppNavigatorDeepLinkStatus {
 }
 
 let isShowCampaignModal = false;
+export const isShowRemindBackupModal = { current: false };
+
+export function setIsShowRemindBackupModal(value: boolean) {
+  isShowRemindBackupModal.current = value;
+}
 
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
@@ -209,11 +217,16 @@ export const Home = ({ navigation }: Props) => {
   const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
   const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
   const [introducingModalVisible, setIntroducingModalVisible] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
   const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
   const language = useSelector((state: RootState) => state.settings.language);
   const isFocused = useIsFocused();
   mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
+  const storedRemindBackupTimeout = mmkvStore.getNumber('storedRemindBackupTimeout');
+  const lastTimeLogin = mmkvStore.getNumber('lastTimeLogin');
+  const isFocused = useIsFocused();
+
   useEffect(() => {
     if (isReady && isLoading) {
       setTimeout(() => setLoading(false), 1500);
@@ -257,6 +270,14 @@ export const Home = ({ navigation }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!isLocked && lastTimeLogin && storedRemindBackupTimeout) {
+      if (Date.now() - lastTimeLogin > storedRemindBackupTimeout) {
+        setModalVisible(true);
+      }
+    }
+  }, [isLocked, lastTimeLogin, storedRemindBackupTimeout]);
+
   const onPressAcceptBtn = () => {
     mmkvStore.set('isOpenGeneralTermFirstTime', true);
     setGeneralTermVisible(false);
@@ -282,7 +303,7 @@ export const Home = ({ navigation }: Props) => {
       <Wrapper />
 
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
-      {!isLocked && !isEmptyAccounts && !isOpenIntroductionFirstTime && !needMigrate && (
+      {!isLocked && !isEmptyAccounts && !isOpenIntroductionFirstTime && !needMigrate && isFocused && (
         <IntroducingModal visible={introducingModalVisible} setVisible={setIntroducingModalVisible} />
       )}
       {!isLocked &&
@@ -298,13 +319,16 @@ export const Home = ({ navigation }: Props) => {
             setVisible={setCampaignModalVisible}
           />
         )}
-      {!isLocked && !isOpenGeneralTermFirstTime && !needMigrate && (
+      {!isLocked && !isOpenGeneralTermFirstTime && !needMigrate && isFocused && (
         <GeneralTermModal
           modalVisible={generalTermVisible}
           setVisible={setGeneralTermVisible}
           onPressAcceptBtn={onPressAcceptBtn}
           disabledOnPressBackDrop={true}
         />
+      )}
+      {!isEmptyAccounts && !needMigrate && isFocused && (
+        <RemindBackupModal modalVisible={modalVisible} setVisible={setModalVisible} />
       )}
     </>
   );

@@ -36,6 +36,8 @@ import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
 import { useGetEarningStaticData } from 'hooks/static-content/useGetEarningStaticData';
+import { useGetConfig } from 'hooks/static-content/useGetConfig';
+import { mmkvStore } from 'utils/storage';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -110,6 +112,7 @@ AppState.addEventListener('change', (state: string) => {
   }
 
   if (state === 'background') {
+    mmkvStore.set('lastTimeLogin', Date.now());
     if (timeAutoLock === LockTimeout.ALWAYS) {
       // Lock master password incase always require
       keyringLock().catch((e: Error) => console.log(e));
@@ -159,6 +162,7 @@ export const App = () => {
   const isI18nReady = useSetupI18n().isI18nReady;
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
+  const { getConfig } = useGetConfig();
   const { getEarningStaticData } = useGetEarningStaticData(language);
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
 
@@ -196,9 +200,9 @@ export const App = () => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 100);
-
     checkIsShowBuyToken();
     getDAppsData();
+    getConfig();
     getEarningStaticData();
 
     DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {
