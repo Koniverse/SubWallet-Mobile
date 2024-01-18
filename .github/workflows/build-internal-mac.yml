@@ -79,6 +79,13 @@ jobs:
         FILE_URL=$(node ./scripts/upload-ios.mjs)
         echo "::set-output name=fileUrl::${FILE_URL}"
 
+    - name: Upload iOS to Diawi
+      id: upload-diawi-ios
+      uses: rnkdsh/action-upload-diawi@v1.5.4
+      with:
+        token: ${{ secrets.DIAWI_TOKEN }}
+        file: ./dist/SubWalletMobile.ipa
+
     # Notify Discord
     - name: Notify to Discord
       uses: sarisia/actions-status-discord@v1
@@ -91,6 +98,8 @@ jobs:
         description: |
           iOS: The Deployment has been completed.
           URL: ${{ steps.upload-ios.outputs.fileUrl }}
+          Diawi: ${{ steps.upload-diawi-ios.outputs.url }}
+          Diawi QR: ${{ steps.upload-diawi-ios.outputs.qrcode }}
 
   # Android build workflow -------------------------------------------------
   build-android:
@@ -155,6 +164,13 @@ jobs:
         FILE_URL=$(node ./scripts/upload-android.mjs)
         echo "::set-output name=fileUrl::${FILE_URL}"
 
+    - name: Upload Android to Diawi
+      id: upload-diawi-android
+      uses: rnkdsh/action-upload-diawi@v1.5.4
+      with:
+        token: ${{ secrets.DIAWI_TOKEN }}
+        file: ./android/app/build/outputs/apk/release/app-release.apk
+
     # Notify to Discord
     - name: Notify to Discord
       uses: sarisia/actions-status-discord@v1
@@ -167,3 +183,5 @@ jobs:
         description: |
           Android: The Deployment has been completed.
           URL: ${{ steps.upload-android.outputs.fileUrl }}
+          Diawi: ${{ steps.upload-diawi-android.outputs.url }}
+          Diawi QR: ${{ steps.upload-diawi-android.outputs.qrcode }}
