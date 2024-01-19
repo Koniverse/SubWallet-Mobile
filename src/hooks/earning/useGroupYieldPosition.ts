@@ -9,14 +9,13 @@ import {
   LiquidYieldPositionInfo,
   NativeYieldPositionInfo,
   NominationYieldPositionInfo,
-  YieldPoolInfo,
   YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
 import { isAccountAll, isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
@@ -24,14 +23,6 @@ const useGroupYieldPosition = (): YieldPositionInfo[] => {
   const { poolInfoMap, yieldPositions } = useSelector((state: RootState) => state.earning);
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const chainsByAccountType = useGetChainSlugs();
-  const poolInfoMapRef = useRef<Record<string, YieldPoolInfo>>(poolInfoMap);
-  const yieldPositionInfoListRef = useRef<YieldPositionInfo[]>(yieldPositions);
-  const chainsByAccountTypeRef = useRef<string[]>(chainsByAccountType);
-
-  useEffect(() => {
-    poolInfoMapRef.current = poolInfoMap;
-    yieldPositionInfoListRef.current = yieldPositions;
-  }, [poolInfoMap, yieldPositions]);
 
   return useMemo(() => {
     const raw: Record<string, YieldPositionInfo[]> = {};
@@ -48,8 +39,8 @@ const useGroupYieldPosition = (): YieldPositionInfo[] => {
       }
     };
 
-    for (const info of yieldPositionInfoListRef.current) {
-      if (chainsByAccountTypeRef.current.includes(info.chain) && poolInfoMapRef.current[info.slug]) {
+    for (const info of yieldPositions) {
+      if (chainsByAccountType.includes(info.chain) && poolInfoMap[info.slug]) {
         const isValid = checkAddress(info);
         const haveStake = new BigN(info.totalStake).gt(0);
 
@@ -128,7 +119,7 @@ const useGroupYieldPosition = (): YieldPositionInfo[] => {
     }
 
     return result;
-  }, [currentAccount?.address]);
+  }, [chainsByAccountType, currentAccount?.address, poolInfoMap, yieldPositions]);
 };
 
 export default useGroupYieldPosition;

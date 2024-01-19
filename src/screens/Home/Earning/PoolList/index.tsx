@@ -25,7 +25,6 @@ import ModalBase from 'components/Modal/Base/ModalBase';
 import { deviceWidth } from 'constants/index';
 import { ActivityIndicator, Typography } from 'components/design-system-ui';
 import { FontMedium } from 'styles/sharedStyles';
-import { _ChainInfo } from '@subwallet/chain-list/types';
 
 const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
   if (!filters.length) {
@@ -100,11 +99,6 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const [state, setState] = React.useState({ num: 0 });
   const [selectedPoolOpt, setSelectedPoolOpt] = React.useState<YieldPoolInfo | undefined>(undefined);
   const counter = useRef(0);
-  const chainInfoMapRef = useRef<Record<string, _ChainInfo>>(chainInfoMap);
-
-  useEffect(() => {
-    chainInfoMapRef.current = chainInfoMap;
-  }, [chainInfoMap]);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -191,7 +185,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         counter.current += 1;
         timer = setTimeout(() => setState({ num: state.num + 1 }), 1000);
       } else {
-        if (checkChainConnected(chainInfoMapRef.current[selectedPoolOpt.chain].slug)) {
+        if (checkChainConnected(chainInfoMap[selectedPoolOpt.chain].slug)) {
           setLoading(false);
           setTimeout(() => handleOnStakeMore(selectedPoolOpt.slug), 100);
         } else {
@@ -206,7 +200,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     }
 
     return () => clearTimeout(timer);
-  }, [checkChainConnected, handleOnStakeMore, isLoading, selectedPoolOpt, state.num]);
+  }, [chainInfoMap, checkChainConnected, handleOnStakeMore, isLoading, selectedPoolOpt, state.num]);
 
   const handleBack = useCallback(() => navigation.goBack(), [navigation]);
 
@@ -228,26 +222,29 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     ({ item }: ListRenderItemInfo<YieldPoolInfo>) => {
       return (
         <EarningPoolItem
-          chain={chainInfoMapRef.current[item.chain]}
+          chain={chainInfoMap[item.chain]}
           key={item.slug}
-          onStakeMore={() => onPressItem(chainInfoMapRef.current[item.chain].slug, item)}
+          onStakeMore={() => onPressItem(chainInfoMap[item.chain].slug, item)}
           poolInfo={item}
         />
       );
     },
-    [onPressItem],
+    [chainInfoMap, onPressItem],
   );
 
-  const searchFunction = useCallback((_items: YieldPoolInfo[], searchString: string) => {
-    return _items.filter(({ chain: _chain, metadata: { shortName } }) => {
-      const chainInfo = chainInfoMapRef.current[_chain];
+  const searchFunction = useCallback(
+    (_items: YieldPoolInfo[], searchString: string) => {
+      return _items.filter(({ chain: _chain, metadata: { shortName } }) => {
+        const chainInfo = chainInfoMap[_chain];
 
-      return (
-        chainInfo?.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase()) ||
-        shortName.toLowerCase().includes(searchString.toLowerCase())
-      );
-    });
-  }, []);
+        return (
+          chainInfo?.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase()) ||
+          shortName.toLowerCase().includes(searchString.toLowerCase())
+        );
+      });
+    },
+    [chainInfoMap],
+  );
 
   const onBack = useCallback(() => {
     navigation.navigate('Home', {

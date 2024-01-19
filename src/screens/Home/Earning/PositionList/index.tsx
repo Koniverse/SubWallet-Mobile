@@ -9,7 +9,7 @@ import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
 import { Plus, Trophy } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
@@ -19,14 +19,11 @@ import { ColorMap } from 'styles/color';
 import { ExtraYieldPositionInfo } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './style';
-import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 
 let cacheData: Record<string, boolean> = {};
 
 interface Props {
   setStep: (value: number) => void;
-  chainInfoMap: Record<string, _ChainInfo>;
-  isShowBalance: boolean;
 }
 
 const filterFunction = (items: ExtraYieldPositionInfo[], filters: string[]) => {
@@ -84,25 +81,18 @@ const FILTER_OPTIONS = [
   { label: i18n.filterOptions.singleFarming, value: YieldPoolType.SINGLE_FARMING },
 ];
 
-export const PositionList = ({ setStep, chainInfoMap, isShowBalance }: Props) => {
+export const PositionList = ({ setStep }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<EarningScreenNavigationProps>();
   const isFocused = useIsFocused();
   const [isRefresh, refresh] = useRefresh();
   const data = useGroupYieldPosition();
+
+  const { isShowBalance } = useSelector((state: RootState) => state.settings);
   const { priceMap } = useSelector((state: RootState) => state.price);
   const { assetRegistry: assetInfoMap } = useSelector((state: RootState) => state.assetRegistry);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
-
-  const chainInfoMapRef = useRef<Record<string, _ChainInfo>>(chainInfoMap);
-  const assetInfoMapRef = useRef<Record<string, _ChainAsset>>(assetInfoMap);
-  const priceMapRef = useRef<Record<string, number>>(priceMap);
-
-  useEffect(() => {
-    chainInfoMapRef.current = chainInfoMap;
-    assetInfoMapRef.current = assetInfoMap;
-    priceMapRef.current = priceMap;
-  }, [assetInfoMap, chainInfoMap, priceMap]);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -114,8 +104,8 @@ export const PositionList = ({ setStep, chainInfoMap, isShowBalance }: Props) =>
     const BN_TEN = new BigNumber(10);
     return data
       .map((item): ExtraYieldPositionInfo => {
-        const priceToken = assetInfoMapRef.current[item.balanceToken];
-        const price = priceMapRef.current[priceToken?.priceId || ''] || 0;
+        const priceToken = assetInfoMap[item.balanceToken];
+        const price = priceMap[priceToken?.priceId || ''] || 0;
 
         return {
           ...item,
@@ -132,7 +122,7 @@ export const PositionList = ({ setStep, chainInfoMap, isShowBalance }: Props) =>
         };
         return getValue(secondItem) - getValue(firstItem);
       });
-  }, [data]);
+  }, [assetInfoMap, data, priceMap]);
 
   const handleOnPress = useCallback(
     (positionInfo: ExtraYieldPositionInfo): (() => void) => {
@@ -176,17 +166,20 @@ export const PositionList = ({ setStep, chainInfoMap, isShowBalance }: Props) =>
     };
   }, [handlePressStartStaking]);
 
-  const searchFunction = useCallback((_items: ExtraYieldPositionInfo[], searchString: string) => {
-    return _items.filter(({ chain: _chain, balanceToken }) => {
-      const chainInfo = chainInfoMapRef.current[_chain];
-      const assetInfo = assetInfoMapRef.current[balanceToken];
+  const searchFunction = useCallback(
+    (_items: ExtraYieldPositionInfo[], searchString: string) => {
+      return _items.filter(({ chain: _chain, balanceToken }) => {
+        const chainInfo = chainInfoMap[_chain];
+        const assetInfo = assetInfoMap[balanceToken];
 
-      return (
-        chainInfo?.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase()) ||
-        assetInfo?.symbol.toLowerCase().includes(searchString.toLowerCase())
-      );
-    });
-  }, []);
+        return (
+          chainInfo?.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase()) ||
+          assetInfo?.symbol.toLowerCase().includes(searchString.toLowerCase())
+        );
+      });
+    },
+    [assetInfoMap, chainInfoMap],
+  );
 
   useEffect(() => {
     const address = currentAccount?.address || '';

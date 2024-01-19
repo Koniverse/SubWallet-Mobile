@@ -24,8 +24,6 @@ import { ActivityIndicator, Typography } from 'components/design-system-ui';
 import { FontMedium } from 'styles/sharedStyles';
 import { AppModalContext } from 'providers/AppModalContext';
 import useChainChecker from 'hooks/chain/useChainChecker';
-import { _ChainInfo } from '@subwallet/chain-list/types';
-import { YieldPoolInfo } from '@subwallet/extension-base/types';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -96,11 +94,9 @@ const FILTER_OPTIONS = [
 interface Props {
   isHasAnyPosition: boolean;
   setStep: (value: number) => void;
-  chainInfoMap: Record<string, _ChainInfo>;
-  isShowBalance: boolean;
 }
 
-export const GroupList = ({ isHasAnyPosition, setStep, chainInfoMap, isShowBalance }: Props) => {
+export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const isFocused = useIsFocused();
   const theme = useSubWalletTheme().swThemes;
   const [isRefresh, refresh] = useRefresh();
@@ -108,6 +104,9 @@ export const GroupList = ({ isHasAnyPosition, setStep, chainInfoMap, isShowBalan
   const rootNavigation = useNavigation<RootNavigationProps>();
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const data = useYieldGroupInfo();
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const appModalContext = useContext(AppModalContext);
@@ -116,13 +115,6 @@ export const GroupList = ({ isHasAnyPosition, setStep, chainInfoMap, isShowBalan
   const [state, setState] = React.useState({ num: 0 });
   const [selectedPoolGroup, setSelectedPoolGroup] = React.useState<YieldGroupInfo | undefined>(undefined);
   const counter = useRef(0);
-  const chainInfoMapRef = useRef<Record<string, _ChainInfo>>(chainInfoMap);
-  const poolInfoMapRef = useRef<Record<string, YieldPoolInfo>>(poolInfoMap);
-
-  useEffect(() => {
-    chainInfoMapRef.current = chainInfoMap;
-    poolInfoMapRef.current = poolInfoMap;
-  }, [chainInfoMap, poolInfoMap]);
 
   const items = useMemo(() => {
     return [...data].sort((a, b) => {
@@ -174,7 +166,7 @@ export const GroupList = ({ isHasAnyPosition, setStep, chainInfoMap, isShowBalan
 
   const navigateToEarnScreen = useCallback(
     (poolGroup: YieldGroupInfo) => {
-      const standAloneTokenSlug = Object.values(poolInfoMapRef.current).find(
+      const standAloneTokenSlug = Object.values(poolInfoMap).find(
         i => i.group === poolGroup.group && i.chain === poolGroup.chain,
       )?.slug;
 
@@ -186,7 +178,7 @@ export const GroupList = ({ isHasAnyPosition, setStep, chainInfoMap, isShowBalan
         },
       });
     },
-    [rootNavigation],
+    [poolInfoMap, rootNavigation],
   );
 
   const onPressItem = useCallback(
@@ -211,9 +203,10 @@ export const GroupList = ({ isHasAnyPosition, setStep, chainInfoMap, isShowBalan
     if (isLoading && selectedPoolGroup) {
       if (counter.current < 2) {
         counter.current += 1;
+        console.log('counter.current', counter.current);
         timer = setTimeout(() => setState({ num: state.num + 1 }), 1000);
       } else {
-        if (checkChainConnected(chainInfoMapRef.current[selectedPoolGroup.chain].slug)) {
+        if (checkChainConnected(chainInfoMap[selectedPoolGroup.chain].slug)) {
           setLoading(false);
           setTimeout(() => navigateToEarnScreen(selectedPoolGroup), 100);
         } else {
@@ -228,7 +221,7 @@ export const GroupList = ({ isHasAnyPosition, setStep, chainInfoMap, isShowBalan
     }
 
     return () => clearTimeout(timer);
-  }, [checkChainConnected, navigateToEarnScreen, isLoading, selectedPoolGroup, state.num]);
+  }, [chainInfoMap, checkChainConnected, navigateToEarnScreen, isLoading, selectedPoolGroup, state.num]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<YieldGroupInfo>) => {
@@ -236,13 +229,13 @@ export const GroupList = ({ isHasAnyPosition, setStep, chainInfoMap, isShowBalan
         <EarningGroupItem
           key={item.group}
           poolGroup={item}
-          onPress={() => onPressItem(chainInfoMapRef.current[item.chain].slug, item)}
+          onPress={() => onPressItem(chainInfoMap[item.chain].slug, item)}
           isShowBalance={isShowBalance}
-          chain={chainInfoMapRef.current[item.chain]}
+          chain={chainInfoMap[item.chain]}
         />
       );
     },
-    [isShowBalance, onPressItem],
+    [chainInfoMap, isShowBalance, onPressItem],
   );
 
   const onBack = useCallback(() => {

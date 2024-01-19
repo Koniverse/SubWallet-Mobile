@@ -1,6 +1,6 @@
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
-import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
+import { YieldPoolType } from '@subwallet/extension-base/types';
 import { Button, Icon, SwFullSizeModal, Tag, Typography } from 'components/design-system-ui';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -28,7 +28,6 @@ import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { getTokenLogo } from 'utils/index';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { _ChainAsset } from '@subwallet/chain-list/types';
 
 interface Props {
   slug: string;
@@ -61,15 +60,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   const [contentHeight, setContentHeight] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
-  const poolInfoMapRef = useRef<Record<string, YieldPoolInfo>>(poolInfoMap);
-  const assetRegistryRef = useRef<Record<string, _ChainAsset>>(assetRegistry);
-
-  useEffect(() => {
-    poolInfoMapRef.current = poolInfoMap;
-    assetRegistryRef.current = assetRegistry;
-  }, [assetRegistry, poolInfoMap]);
-
-  const poolInfo = useMemo(() => poolInfoMapRef.current[slug], [slug]);
+  const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
   const title = useMemo(() => {
     if (!poolInfo) {
       return '';
@@ -110,7 +101,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
     let result = getOrigin();
     const apy = getApy();
-    const asset = assetRegistryRef.current[inputAsset];
+    const asset = assetRegistry[inputAsset];
     const shortName = poolInfo.metadata.shortName;
 
     if (asset) {
@@ -146,7 +137,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     }
 
     return result;
-  }, [poolInfo]);
+  }, [assetRegistry, poolInfo]);
+
   const buttonTitle = useMemo(() => {
     if (!poolInfo) {
       return '';
@@ -162,8 +154,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         return 'Supply to earn';
     }
   }, [poolInfo]);
+
   const tags = useMemo(() => {
-    const asset = assetRegistryRef.current[poolInfo.metadata.inputAsset];
+    const asset = assetRegistry[poolInfo.metadata.inputAsset];
     const symbol = asset.symbol;
     if (poolInfo.statistic && 'assetEarning' in poolInfo.statistic && poolInfo.statistic?.assetEarning) {
       const assetEarning = poolInfo.statistic?.assetEarning;
@@ -182,7 +175,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
       return data.filter(item => item.apy);
     }
-  }, [poolInfo.metadata.inputAsset, poolInfo.statistic]);
+  }, [assetRegistry, poolInfo.metadata.inputAsset, poolInfo.statistic]);
 
   const setVisible = useCallback(
     (value: boolean) => {
@@ -232,8 +225,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const _label = getValidatorLabel(poolInfo.chain);
         const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
         const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
-        const inputAsset = assetRegistryRef.current[poolInfo.metadata.inputAsset];
-        const maintainAsset = assetRegistryRef.current[poolInfo.metadata.maintainAsset];
+        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
         const paidOut = poolInfo.statistic?.eraTime;
 
         if (inputAsset && maintainAsset) {
@@ -263,8 +256,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         const _label = getValidatorLabel(poolInfo.chain);
         const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
         const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
-        const inputAsset = assetRegistryRef.current[poolInfo.metadata.inputAsset];
-        const maintainAsset = assetRegistryRef.current[poolInfo.metadata.maintainAsset];
+        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
         const paidOut = poolInfo.statistic?.eraTime;
 
         if (inputAsset && maintainAsset) {
@@ -309,9 +302,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       }
       case YieldPoolType.LIQUID_STAKING: {
         const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
-        const derivative = assetRegistryRef.current[derivativeSlug];
-        const inputAsset = assetRegistryRef.current[poolInfo.metadata.inputAsset];
-        const maintainAsset = assetRegistryRef.current[poolInfo.metadata.maintainAsset];
+        const derivative = assetRegistry[derivativeSlug];
+        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
 
         if (derivative && inputAsset && maintainAsset) {
           const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
@@ -334,9 +327,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       }
       case YieldPoolType.LENDING: {
         const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
-        const derivative = assetRegistryRef.current[derivativeSlug];
-        const inputAsset = assetRegistryRef.current[poolInfo.metadata.inputAsset];
-        const maintainAsset = assetRegistryRef.current[poolInfo.metadata.maintainAsset];
+        const derivative = assetRegistry[derivativeSlug];
+        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
 
         if (derivative && inputAsset && maintainAsset) {
           const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
@@ -359,7 +352,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         }
       }
     }
-  }, [poolInfo, replaceEarningValue, unBondedTime]);
+  }, [assetRegistry, poolInfo, replaceEarningValue, unBondedTime]);
 
   const [showScrollEnd, setShowScrollEnd] = useState(false);
   const [isScrollEnd, setIsScrollEnd] = useState(false);
