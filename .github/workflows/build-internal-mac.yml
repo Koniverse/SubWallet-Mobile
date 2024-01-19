@@ -84,7 +84,7 @@ jobs:
       uses: rnkdsh/action-upload-diawi@v1.5.4
       with:
         token: ${{ secrets.DIAWI_TOKEN }}
-        file: ./dist/SubWalletMobile.ipa
+        file: output.ipa
 
     # Notify Discord
     - name: Notify to Discord
