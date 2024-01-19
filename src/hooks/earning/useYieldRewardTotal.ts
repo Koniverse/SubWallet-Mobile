@@ -8,10 +8,11 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BN_ZERO } from 'utils/chainBalances';
+import { findAccountByAddress } from 'utils/index';
 
 const useYieldRewardTotal = (slug: string): string | undefined => {
   const { poolInfoMap, earningRewards } = useSelector((state: RootState) => state.earning);
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { currentAccount, accounts } = useSelector((state: RootState) => state.accountState);
   const chainsByAccountType = useGetChainSlugs();
 
   return useMemo(() => {
@@ -20,7 +21,9 @@ const useYieldRewardTotal = (slug: string): string | undefined => {
 
     const checkAddress = (item: EarningRewardItem) => {
       if (isAll) {
-        return true;
+        const account = findAccountByAddress(accounts, item.address);
+
+        return !!account;
       } else {
         return isSameAddress(address, item.address);
       }
@@ -53,7 +56,7 @@ const useYieldRewardTotal = (slug: string): string | undefined => {
     } else {
       return undefined;
     }
-  }, [chainsByAccountType, currentAccount?.address, earningRewards, poolInfoMap, slug]);
+  }, [accounts, chainsByAccountType, currentAccount?.address, earningRewards, poolInfoMap, slug]);
 };
 
 export default useYieldRewardTotal;
