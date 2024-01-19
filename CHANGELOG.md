@@ -1,3 +1,6 @@
+## 1.1.27 (299)
+- Improve performance Earning feature" (#1251)
+
 ## 1.1.27 (298)
 - Update web-runner v1.1.32 for mobile app - Update marketing campaign content every start up (#1360)
 
