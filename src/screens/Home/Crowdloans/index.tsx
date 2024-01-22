@@ -145,6 +145,7 @@ export const CrowdloansScreen = () => {
         <>
           {banners.map(item => (
             <TouchableOpacity
+              key={item.campaignId}
               onPress={onPressBanner(item)}
               activeOpacity={BUTTON_ACTIVE_OPACITY}
               style={{ marginHorizontal: theme.margin }}>
