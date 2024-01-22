@@ -131,18 +131,7 @@ export const backupStorageData = (forceBackup: boolean = false, markAppIsSetup: 
     .catch(e => console.debug('** Backup storage data error:', e));
 };
 
-// const isIOS17 = Platform.OS === 'ios' && getSystemVersion().startsWith('17');
-
 export const triggerBackup = (message = '*** Backup storage') => {
-  // Backup logic with device not ios 17
-  // if (!isIOS17) {
-  const now = new Date().getTime();
-  const lastBackupTimestamp = mmkvStore.getNumber('webRunnerLastBackupTimestamp');
-  if (lastBackupTimestamp && now - lastBackupTimestamp < 3600000) {
-    return;
-  }
-  // }
-
   addLazy(
     'backupStorageData',
     () => {
