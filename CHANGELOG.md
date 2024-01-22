@@ -1,3 +1,6 @@
+## 1.1.27 (301)
+- Rollback web runner 1.1.31 (#1390)
+
 ## 1.1.27 (300)
 - Rollback web runner 1.1.31 (#1390)
 - Re-check bug reset data on IOS 17 (#1381)
