@@ -1,3 +1,6 @@
+## 1.1.27 (302)
+- Rollback web runner 1.1.31 with withdraw and mkt campaign update (#1390)
+
 ## 1.1.27 (301)
 - Rollback web runner 1.1.31 (#1390)
 
