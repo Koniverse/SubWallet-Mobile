@@ -23,12 +23,13 @@ import { RootState } from 'stores/index';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { balanceFormatter, formatNumber } from 'utils/number';
 import createStyles from './style';
-import { EARNING_DATA_RAW } from 'constants/earning/EarningDataRaw';
 import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { getTokenLogo } from 'utils/index';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { mmkvStore } from 'utils/storage';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { EARNING_POOL_DETAIL_DATA } from 'constants/earning/EarningDataRaw';
 
 interface Props {
   slug: string;
@@ -38,12 +39,18 @@ interface Props {
   isShowStakeMoreBtn?: boolean;
   onPressBack?: () => void;
 }
-
 export interface BoxProps {
+  icon: string;
   title: string;
-  description: React.ReactNode;
-  iconColor: string;
-  icon: PhosphorIcon;
+  description: string;
+  icon_color: string;
+}
+export interface StaticDataProps {
+  group: string;
+  id: string;
+  instructions: BoxProps[];
+  locale?: string;
+  slug: YieldPoolType | 'DAPP_STAKING' | 'UNSTAKE_INFO';
 }
 
 const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
@@ -60,6 +67,13 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   const [scrollHeight, setScrollHeight] = useState<number>(0);
   const [contentHeight, setContentHeight] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const earningStaticData = useMemo(() => {
+    try {
+      return JSON.parse(mmkvStore.getString('earningStaticData') || '') as StaticDataProps[];
+    } catch (e) {
+      return EARNING_POOL_DETAIL_DATA;
+    }
+  }, []);
 
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
   const title = useMemo(() => {
@@ -249,8 +263,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             poolInfo.metadata.maintainBalance || '0',
             maintainDecimals || 0,
           );
-          return EARNING_DATA_RAW[YieldPoolType.NOMINATION_POOL].map(item => {
-            const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
+          const earningData =
+            earningStaticData.find(item => item.slug === YieldPoolType.NOMINATION_POOL)?.instructions || [];
+          return earningData.map(item => {
+            const _item: BoxProps = { ...item, icon: item.icon };
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
             replaceEarningValue(_item, '{validatorType}', label);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
@@ -282,8 +298,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
           );
 
           if (_STAKING_CHAIN_GROUP.astar.includes(poolInfo.chain)) {
-            return EARNING_DATA_RAW.DAPP_STAKING.map(item => {
-              const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
+            const earningData = earningStaticData.find(item => item.slug === 'DAPP_STAKING')?.instructions || [];
+            return earningData.map(item => {
+              const _item: BoxProps = { ...item, icon: item.icon };
               replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
               replaceEarningValue(_item, '{periodNumb}', unBondedTime);
               replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
@@ -296,9 +313,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               return _item;
             });
           }
-
-          return EARNING_DATA_RAW[YieldPoolType.NATIVE_STAKING].map(item => {
-            const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
+          const earningData =
+            earningStaticData.find(item => item.slug === YieldPoolType.NATIVE_STAKING)?.instructions || [];
+          return earningData.map(item => {
+            const _item: BoxProps = { ...item, icon: item.icon };
 
             replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
             replaceEarningValue(_item, '{validatorType}', label);
@@ -326,8 +344,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             poolInfo.metadata.maintainBalance || '0',
             maintainDecimals || 0,
           );
-          return EARNING_DATA_RAW[YieldPoolType.LIQUID_STAKING].map(item => {
-            const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
+          const earningData =
+            earningStaticData.find(item => item.slug === YieldPoolType.LIQUID_STAKING)?.instructions || [];
+          return earningData.map(item => {
+            const _item: BoxProps = { ...item, icon: item.icon };
             replaceEarningValue(_item, '{derivative}', derivative.symbol);
             replaceEarningValue(_item, '{periodNumb}', unBondedTime);
             replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);
@@ -351,9 +371,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             poolInfo.metadata.maintainBalance || '0',
             maintainDecimals || 0,
           );
-
-          return EARNING_DATA_RAW[YieldPoolType.LENDING].map(item => {
-            const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
+          const earningData = earningStaticData.find(item => item.slug === YieldPoolType.LENDING)?.instructions || [];
+          return earningData.map(item => {
+            const _item: BoxProps = { ...item, icon: item.icon };
 
             replaceEarningValue(_item, '{derivative}', derivative.symbol);
             replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);
@@ -366,7 +386,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         }
       }
     }
-  }, [assetRegistry, poolInfo, replaceEarningValue, unBondedTime]);
+  }, [assetRegistry, earningStaticData, poolInfo, replaceEarningValue, unBondedTime]);
 
   const [showScrollEnd, setShowScrollEnd] = useState(false);
   const [isScrollEnd, setIsScrollEnd] = useState(false);
@@ -583,8 +603,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
                     key={index}
                     title={_props.title}
                     description={_props.description}
-                    iconColor={_props.iconColor}
-                    icon={_props.icon}
+                    iconColor={_props.icon_color}
+                    icon={getBannerButtonIcon(_props.icon) as PhosphorIcon}
                   />
                 );
               })}

@@ -35,6 +35,7 @@ import { Warning } from 'phosphor-react-native';
 import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
+import { useGetEarningStaticData } from 'hooks/static-content/useGetEarningStaticData';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -151,12 +152,14 @@ export const App = () => {
 
   const { isUseBiometric, timeAutoLock, isPreventLock } = useSelector((state: RootState) => state.mobileSettings);
   const { hasMasterPassword, isLocked } = useSelector((state: RootState) => state.accountState);
+  const language = useSelector((state: RootState) => state.settings.language);
   const { lock, unlockApp } = useAppLock();
   const dispatch = useDispatch();
   const isCryptoReady = useCryptoReady();
   const isI18nReady = useSetupI18n().isI18nReady;
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
+  const { getEarningStaticData } = useGetEarningStaticData(language);
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
 
   // Enable lock screen on the start app
@@ -196,6 +199,7 @@ export const App = () => {
 
     checkIsShowBuyToken();
     getDAppsData();
+    getEarningStaticData();
 
     DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {
       setNeedUpdateChrome(data);
