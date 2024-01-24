@@ -431,7 +431,8 @@
     "masterPasswordCheckbox": "我了解 SubWallet 无法为我恢复此密码。",
     "learnMore": "了解更多",
     "withdraw": "Withdraw",
-    "cancelUnstake": "Cancel unstake"
+    "cancelUnstake": "Cancel unstake",
+    "exploreEarningOptions": "Explore earning options"
   },
   "inputLabel": {
     "selectAcc": "选择账户",
@@ -603,6 +604,12 @@
     "crowdloanEmptyMessage": "您的众贷将在此处出现",
     "stakingEmptyTitle": "未找到质押",
     "stakingEmptyMessage": "您可以在钱包内方便地进行质押",
+    "positionEmptyTitle": "No earning position found",
+    "positionEmptyMessage": "Change your search or explore other earning options",
+    "groupEmptyTitle": "No earning option found",
+    "groupEmptyMessage": "Change your search and try again",
+    "poolEmptyTitle": "No earning option found",
+    "poolEmptyMessage": "Change your search and try again",
     "historyEmptyTitle": "尚未有交易",
     "historyEmptyMessage": "交易将在此处出现",
     "selectorEmptyTitle": "未找到结果",

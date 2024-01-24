@@ -431,7 +431,8 @@
     "masterPasswordCheckbox": "I understand that SubWallet can't recover this password for me. ",
     "learnMore": "Learn more.",
     "withdraw": "Withdraw",
-    "cancelUnstake": "Cancel unstake"
+    "cancelUnstake": "Cancel unstake",
+    "exploreEarningOptions": "Explore earning options"
   },
   "inputLabel": {
     "selectAcc": "Выбрать аккаунт",
@@ -603,6 +604,12 @@
     "crowdloanEmptyMessage": "Ваш краудлоун появится здесь!",
     "stakingEmptyTitle": "Нет стейкинга",
     "stakingEmptyMessage": "Ваши аккаунты стейкинга появятся здесь!",
+    "positionEmptyTitle": "No earning position found",
+    "positionEmptyMessage": "Change your search or explore other earning options",
+    "groupEmptyTitle": "No earning option found",
+    "groupEmptyMessage": "Change your search and try again",
+    "poolEmptyTitle": "No earning option found",
+    "poolEmptyMessage": "Change your search and try again",
     "historyEmptyTitle": "Транзакция не найдена",
     "historyEmptyMessage": "Здесь появится история ваших транзакций!",
     "selectorEmptyTitle": "Результаты не найдены",

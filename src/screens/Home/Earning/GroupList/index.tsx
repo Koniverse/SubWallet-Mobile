@@ -4,7 +4,7 @@ import EarningGroupItem from 'components/Item/Earning/EarningGroupItem';
 import { useYieldGroupInfo } from 'hooks/earning';
 import { Trophy } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, ListRenderItemInfo, RefreshControl, View } from 'react-native';
+import { Alert, Keyboard, ListRenderItemInfo, RefreshControl, View } from 'react-native';
 import { EarningScreenNavigationProps } from 'routes/earning';
 import { YieldGroupInfo } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
@@ -131,9 +131,9 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const renderEmpty = useCallback(() => {
     return (
       <EmptyList
-        title={i18n.emptyScreen.stakingEmptyTitle}
+        title={i18n.emptyScreen.groupEmptyTitle}
         icon={Trophy}
-        message={i18n.emptyScreen.stakingEmptyMessage}
+        message={i18n.emptyScreen.groupEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}
         addBtnLabel={i18n.buttonTitles.startStaking}
@@ -229,7 +229,10 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         <EarningGroupItem
           key={item.group}
           poolGroup={item}
-          onPress={() => onPressItem(chainInfoMap[item.chain].slug, item)}
+          onPress={() => {
+            Keyboard.dismiss();
+            onPressItem(chainInfoMap[item.chain].slug, item);
+          }}
           isShowBalance={isShowBalance}
           chain={chainInfoMap[item.chain]}
         />

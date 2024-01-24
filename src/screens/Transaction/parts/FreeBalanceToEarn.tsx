@@ -193,6 +193,16 @@ const FreeBalanceToYield = (props: Props) => {
     onBalanceReady?.(!isLoading && !error);
   }, [error, isLoading, onBalanceReady]);
 
+  if (!address && !hidden) {
+    return (
+      <View style={[{ marginBottom: 12 }, style]}>
+        <Typography.Text style={{ color: theme.colorTextTertiary }}>
+          Select account to view available balance
+        </Typography.Text>
+      </View>
+    );
+  }
+
   if (!address && !tokens.length) {
     return <></>;
   }

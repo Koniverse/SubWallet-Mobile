@@ -20,9 +20,9 @@ const defaultAccountFilter = (poolType: YieldPoolType, chain?: _ChainInfo): ((ac
       return false;
     }
 
-    if (account.isReadOnly) {
-      return false;
-    }
+    // if (account.isReadOnly) {
+    //   return false;
+    // }
 
     return !(poolType === YieldPoolType.NOMINATION_POOL && isEthereumAddress(account.address));
   };

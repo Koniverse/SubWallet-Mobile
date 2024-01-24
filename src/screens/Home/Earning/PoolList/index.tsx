@@ -202,21 +202,18 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     return () => clearTimeout(timer);
   }, [chainInfoMap, checkChainConnected, handleOnStakeMore, isLoading, selectedPoolOpt, state.num]);
 
-  const handleBack = useCallback(() => navigation.goBack(), [navigation]);
-
   const renderEmpty = useCallback(() => {
     return (
       <EmptyList
-        title={i18n.emptyScreen.stakingEmptyTitle}
+        title={i18n.emptyScreen.poolEmptyTitle}
         icon={Trophy}
-        message={i18n.emptyScreen.stakingEmptyMessage}
+        message={i18n.emptyScreen.poolEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}
         addBtnLabel={i18n.buttonTitles.backToHome}
-        onPressAddBtn={handleBack}
       />
     );
-  }, [handleBack, isRefresh, refresh]);
+  }, [isRefresh, refresh]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<YieldPoolInfo>) => {
@@ -224,7 +221,10 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         <EarningPoolItem
           chain={chainInfoMap[item.chain]}
           key={item.slug}
-          onStakeMore={() => onPressItem(chainInfoMap[item.chain].slug, item)}
+          onStakeMore={() => {
+            Keyboard.dismiss();
+            onPressItem(chainInfoMap[item.chain].slug, item);
+          }}
           poolInfo={item}
         />
       );
