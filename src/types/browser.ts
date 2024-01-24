@@ -20,6 +20,7 @@ export type DAppInfo = {
   is_substrate: boolean;
   icon: string;
   preview_image: string;
+  desktop_mode: boolean | null;
 };
 
 export type PredefinedDApps = {

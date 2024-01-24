@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { ArrowSquareUpRight, Desktop, IconProps, Star, StarHalf } from 'phosphor-react-native';
 import { SiteInfo } from 'stores/types';
@@ -16,7 +16,11 @@ import { ToggleItem } from 'components/ToggleItem';
 interface Props {
   visibleModal: boolean;
   setVisibleModal: (arg: boolean) => void;
-  webviewRef: WebView;
+  webviewRef: React.RefObject<WebView<{}>>;
+  initWebViewSource: string | null;
+  desktopMode: boolean;
+  addToDesktopMode: () => void;
+  removeFromDesktopMode: () => void;
 }
 
 interface OptionType {
@@ -31,7 +35,18 @@ export interface BrowserOptionModalRef {
   onUpdateSiteInfo: (siteInfo: SiteInfo) => void;
 }
 
-const Component = ({ visibleModal, setVisibleModal, webviewRef }: Props, ref: ForwardedRef<BrowserOptionModalRef>) => {
+const Component = (
+  {
+    visibleModal,
+    setVisibleModal,
+    webviewRef,
+    initWebViewSource,
+    desktopMode,
+    addToDesktopMode,
+    removeFromDesktopMode,
+  }: Props,
+  ref: ForwardedRef<BrowserOptionModalRef>,
+) => {
   const theme = useSubWalletTheme().swThemes;
   const bookmarks = useSelector((state: RootState) => state.browser.bookmarks);
   const modalRef = useRef<SWModalRefProps>(null);
@@ -50,6 +65,12 @@ const Component = ({ visibleModal, setVisibleModal, webviewRef }: Props, ref: Fo
       setSiteInfo(_siteInfo);
     },
   }));
+
+  useEffect(() => {
+    if (desktopMode) {
+      setIsDesktopModeOn(true);
+    }
+  }, [desktopMode]);
 
   const OPTIONS: OptionType[] = [
     {
@@ -81,6 +102,24 @@ const Component = ({ visibleModal, setVisibleModal, webviewRef }: Props, ref: Fo
     },
   ];
 
+  const onValueChange = (isOn: boolean) => {
+    if (!initWebViewSource) {
+      return;
+    }
+    if (isOn) {
+      webviewRef.current?.injectJavaScript(
+        "const meta = document.createElement('meta'); meta.setAttribute('content', 'width=device-width, initial-scale=0.1, maximum-scale=10, user-scalable=1'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); ",
+      );
+      addToDesktopMode();
+    } else {
+      removeFromDesktopMode();
+      webviewRef.current?.reload();
+    }
+
+    onClose();
+    setIsDesktopModeOn(prevState => !prevState);
+  };
+
   return (
     <SwModal
       isUseModalV2={true}
@@ -104,18 +143,7 @@ const Component = ({ visibleModal, setVisibleModal, webviewRef }: Props, ref: Fo
         <ToggleItem
           isEnabled={isDesktopModeOn}
           label={i18n.common.desktopMode}
-          onValueChange={(isOn: boolean) => {
-            if (isOn) {
-              webviewRef.current?.injectJavaScript(
-                "const meta = document.createElement('meta'); meta.setAttribute('content', 'width=device-width, initial-scale=0.1, maximum-scale=10, user-scalable=1'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); ",
-              );
-            } else {
-              webviewRef.current?.reload();
-            }
-
-            onClose();
-            setIsDesktopModeOn(prevState => !prevState);
-          }}
+          onValueChange={onValueChange}
           backgroundIcon={Desktop}
           backgroundIconColor={theme['geekblue-7']}
         />
