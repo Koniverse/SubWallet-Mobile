@@ -4574,10 +4574,10 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.45.0.tgz#8ed56847557413dadb6410c28075c223ed730fbb"
   integrity sha512-NHmOkILimbLRPKvpnR+JGVckc1q4AJjxz9FnzZ3dKAVBL17AKknDy2FxXcwlJbmOXl9u7W3FS3bLDHgfKi4tQw==
 
-"@subwallet/chain-list@0.2.38", "@subwallet/chain-list@^0.2.37":
-  version "0.2.38"
-  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/chain-list/-/chain-list-0.2.38.tgz#577e5c0ee6da825f66aa8dbfe72bd38b9fa09d4f"
-  integrity sha512-hUcQmYkxoSwMO0Y3E/K4gO/ULBe8ppRL6u8H/ljRDGCHR90xPzjoHwvUPNYk+0V707yhqBF9m2ZylGp56n547w==
+"@subwallet/chain-list@0.2.37", "@subwallet/chain-list@^0.2.37":
+  version "0.2.37"
+  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.2.37.tgz#768a07fbeda34e4a5ba4cbe502e84e50bef8dcba"
+  integrity sha512-7ymNZW/1sekmh3huKO/ASsLN41XxJxdiXy6L8AFNynOVtbh+CE5Un7JZaKvk3Sl6/1SyHA2GVIbmQcAJzg9FnA==
   dependencies:
     "@polkadot/dev" "0.67.167"
     "@polkadot/util" "^12.5.1"
@@ -4658,18 +4658,7 @@
     web3-eth-contract "^1.10.0"
     web3-utils "^1.10.0"
 
-"@subwallet/extension-chains@1.1.32-0":
-  version "1.1.32-0"
-  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-chains/-/extension-chains-1.1.32-0.tgz#74c3386342e68d9b7324a7331367d7c597daa448"
-  integrity sha512-l2FkDTcqnL+bLvDM9M9EGovEg1KqL6O0M8FXtaYCOd59nLyoqW841Z/6lXMaCMVYbrhjNDO0HvXTDjZh5dEteA==
-  dependencies:
-    "@babel/runtime" "^7.20.6"
-    "@polkadot/networks" "^12.6.1"
-    "@polkadot/util" "^12.6.1"
-    "@polkadot/util-crypto" "^12.6.1"
-    "@subwallet/extension-inject" "^1.1.32-0"
-
-"@subwallet/extension-chains@^1.1.31-1":
+"@subwallet/extension-chains@1.1.31-1", "@subwallet/extension-chains@^1.1.31-1":
   version "1.1.31-1"
   resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-chains/-/extension-chains-1.1.31-1.tgz#fb1ad0cbc0c57c568efeb3b4027239ad199f8887"
   integrity sha512-7aUgzlL+HJVH+Tb2PeHYsOex5Ai2ve5KFpSXIc5z4Y2yixIY1h8GGQSvg6f3tvH7/Iodq7AoDXgQ/3PDdWSpNA==
@@ -4680,17 +4669,7 @@
     "@polkadot/util-crypto" "^12.6.1"
     "@subwallet/extension-inject" "^1.1.31-1"
 
-"@subwallet/extension-dapp@1.1.32-0":
-  version "1.1.32-0"
-  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-dapp/-/extension-dapp-1.1.32-0.tgz#e6f13224bdd8a2bcabe24549f5215c123778d693"
-  integrity sha512-HNfYA74h67us2fsv05cSb5VadfSp8nA2sfgyvmGS0z02fqFxh+NmVMspqDg3HdxMz8wJXiEx4l/XFTfm9YIw3A==
-  dependencies:
-    "@babel/runtime" "^7.20.6"
-    "@polkadot/util" "^12.6.1"
-    "@polkadot/util-crypto" "^12.6.1"
-    "@subwallet/extension-inject" "^1.1.32-0"
-
-"@subwallet/extension-dapp@^1.1.31-1":
+"@subwallet/extension-dapp@1.1.31-1", "@subwallet/extension-dapp@^1.1.31-1":
   version "1.1.31-1"
   resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-dapp/-/extension-dapp-1.1.31-1.tgz#285778a3a252636014cfff221ea578eb62737240"
   integrity sha512-lJ46iuZJlAwnaenC+wpKNT5XmTfHcdFXt93zDf2i0r4diK688tulOtAzXVpFP+b/zd18ElWvOvjaAjfK6/y/7g==
@@ -4704,19 +4683,6 @@
   version "1.1.31-1"
   resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-inject/-/extension-inject-1.1.31-1.tgz#f1ca72952457add3d90d4ec0e8902427a66e4779"
   integrity sha512-l/t2cYMdHLPDfXLpOcSRvzpS+pCuT1muYFI+xya4jo5gEqlGJPAwCupEMhFpGG73tVtewmCDjkCk6cWWm37ljQ==
-  dependencies:
-    "@babel/runtime" "^7.20.6"
-    "@polkadot/rpc-provider" "^10.11.1"
-    "@polkadot/types" "^10.11.1"
-    "@polkadot/util" "^12.6.1"
-    "@polkadot/util-crypto" "^12.6.1"
-    "@polkadot/x-global" "^12.2.1"
-    web3-core "^1.10.0"
-
-"@subwallet/extension-inject@^1.1.32-0":
-  version "1.1.32-0"
-  resolved "https://repo.huaweicloud.com/repository/npm/@subwallet/extension-inject/-/extension-inject-1.1.32-0.tgz#cffd3a16650da5b7605edc38732edfb69d2ad4e2"
-  integrity sha512-J1zPPDSnZ365+rks+hZA6oPqKxMhENVdQPIknEsXkCRc5laX4Ybd9imN3YFPOWRExnKUFDAZAK/xNfZXnvL0lw==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/rpc-provider" "^10.11.1"
