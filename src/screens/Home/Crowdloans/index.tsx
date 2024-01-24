@@ -21,16 +21,6 @@ import { useRefresh } from 'hooks/useRefresh';
 import { reloadCron } from 'messaging/index';
 import { deeplinks } from 'utils/browser';
 
-const renderListEmptyComponent = () => {
-  return (
-    <EmptyList
-      title={i18n.emptyScreen.crowdloanEmptyTitle}
-      icon={RocketLaunch}
-      message={i18n.emptyScreen.crowdloanEmptyMessage}
-    />
-  );
-};
-
 enum FilterValue {
   POLKADOT_PARACHAIN = 'Polkadot parachain',
   KUSAMA_PARACHAIN = 'Kusama parachain',
@@ -116,6 +106,20 @@ export const CrowdloansScreen = () => {
     return result;
   }
 
+  const onRefresh = useCallback(() => refresh(reloadCron({ data: 'crowdloan' })), [refresh]);
+
+  const renderListEmptyComponent = () => {
+    return (
+      <EmptyList
+        title={i18n.emptyScreen.crowdloanEmptyTitle}
+        icon={RocketLaunch}
+        message={i18n.emptyScreen.crowdloanEmptyMessage}
+        onPressReload={onRefresh}
+        isRefresh={isRefresh}
+      />
+    );
+  };
+
   return (
     <FlatListScreen
       isShowFilterBtn
@@ -132,19 +136,12 @@ export const CrowdloansScreen = () => {
       filterFunction={getListByFilterOpt}
       isShowMainHeader
       placeholder={i18n.placeholder.searchProject}
-      refreshControl={
-        <RefreshControl
-          // tintColor={ColorMap.light}
-          refreshing={isRefresh}
-          onRefresh={() => {
-            refresh(reloadCron({ data: 'crowdloan' }));
-          }}
-        />
-      }
+      refreshControl={<RefreshControl tintColor={theme.colorWhite} refreshing={isRefresh} onRefresh={onRefresh} />}
       beforeListItem={
         <>
           {banners.map(item => (
             <TouchableOpacity
+              key={item.campaignId}
               onPress={onPressBanner(item)}
               activeOpacity={BUTTON_ACTIVE_OPACITY}
               style={{ marginHorizontal: theme.margin }}>
