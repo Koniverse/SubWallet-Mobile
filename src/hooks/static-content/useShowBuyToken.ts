@@ -11,13 +11,13 @@ export function useShowBuyToken() {
   const dispatch = useDispatch();
 
   const checkIsShowBuyToken = () => {
+    if (Platform.OS === 'android') {
+      dispatch(updateIsShowByToken(true));
+      return;
+    }
     const currentAppVersion = getVersion();
     axios.get(TOKEN_CONFIG_URL).then(res => {
       const tokenConfig = res.data;
-      if (Platform.OS === 'android') {
-        dispatch(updateIsShowByToken(true));
-        return;
-      }
 
       if (tokenConfig?.buy?.includes(currentAppVersion)) {
         dispatch(updateIsShowByToken(true));
