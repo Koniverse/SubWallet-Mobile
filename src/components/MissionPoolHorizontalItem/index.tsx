@@ -1,7 +1,6 @@
 import React from 'react';
-import { Platform, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, Platform, TouchableOpacity, View } from 'react-native';
 import { Divider, Image, Typography } from 'components/design-system-ui';
-import { BlurView } from '@react-native-community/blur';
 import { IconWeight } from 'phosphor-react-native';
 import { MissionInfo } from 'types/missionPool';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -10,12 +9,20 @@ import createStyles from './style';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useMissionPools } from 'hooks/useMissionPools';
 import { MissionPoolTag } from 'components/MissionPoolHorizontalItem/MissionPoolTag';
+import LinearGradient from 'react-native-linear-gradient';
+import { MissionPoolStatusTag } from 'components/MissionPoolHorizontalItem/MissionPoolStatusTag';
 
 export enum TagType {
   FCFS = 'fcfs',
   POINTS = 'points',
   LUCKY_DRAW = 'lucky_draw',
   MANUAL_SELECTION = 'manual_selection',
+}
+export enum TagStatusType {
+  UPCOMING = 'upcoming',
+  ARCHIVED = 'archived',
+  LIVE = 'live',
+  CLAIMABLE = 'claimable',
 }
 
 export type TagInfo = {
@@ -39,10 +46,15 @@ export const MissionPoolHorizontalItem = ({ data, onPressItem }: Props) => {
 
   return (
     <TouchableOpacity activeOpacity={1} onPress={onPressItem} style={styles.missionItemWrapper}>
-      <Image key={'blurryImage'} src={{ uri: data.backdrop_image }} style={styles.backdropImgStyle} />
-      {!isAndroid && (
-        <BlurView style={styles.backdropImgBlurView} blurType={'dark'} blurAmount={10} overlayColor={'transparent'} />
-      )}
+      <ImageBackground style={styles.backdropImgBlurView} source={{ uri: data.backdrop_image }} blurRadius={30} />
+      <LinearGradient
+        angle={90}
+        locations={isAndroid ? [0, 0.1] : [0, 0.1]}
+        colors={['transparent', '#1A1A1A']}
+        style={styles.linerGradientStyle}
+        useAngle={true}
+      />
+
       <View style={styles.missionItemContent}>
         <Image src={{ uri: data.logo }} style={{ width: 40, height: 40, marginTop: theme.paddingXS }} />
         <View style={{ flex: 1, paddingLeft: theme.paddingSM }}>
@@ -59,8 +71,10 @@ export const MissionPoolHorizontalItem = ({ data, onPressItem }: Props) => {
             <Typography.Text style={{ color: theme.colorSuccess, ...FontSemiBold }}>{data.reward}</Typography.Text>
           </View>
           <Divider color={theme.colorBgDivider} style={{ marginVertical: theme.marginXS }} />
-          <View style={{ alignItems: 'flex-start' }}>
+          <View
+            style={{ justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'row', gap: theme.paddingXXS }}>
             <MissionPoolTag data={data} />
+            <MissionPoolStatusTag data={data} />
           </View>
         </View>
       </View>

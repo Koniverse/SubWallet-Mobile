@@ -2,7 +2,7 @@ import React, { useContext, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
-import { ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { Keyboard, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import { EmptyList } from 'components/EmptyList';
 import { GlobeHemisphereWest } from 'phosphor-react-native';
 import { useRefresh } from 'hooks/useRefresh';
@@ -68,6 +68,7 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
     <MissionPoolHorizontalItem
       data={item}
       onPressItem={() => {
+        Keyboard.dismiss();
         setSelectedMissionPool(item);
         setVisible(true);
       }}

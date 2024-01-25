@@ -1,8 +1,17 @@
 import { useMemo } from 'react';
 import { customFormatDate } from 'utils/customFormatDate';
 import { MissionInfo } from 'types/missionPool';
-import { Coin, DiceSix, SelectionBackground, User } from 'phosphor-react-native';
-import { TagInfo, TagType } from 'components/MissionPoolHorizontalItem';
+import {
+  CheckCircle,
+  Coin,
+  Cube,
+  DiceSix,
+  MegaphoneSimple,
+  SelectionBackground,
+  Trophy,
+  User,
+} from 'phosphor-react-native';
+import { TagInfo, TagStatusType, TagType } from 'components/MissionPoolHorizontalItem';
 
 export const useMissionPools = (data: MissionInfo) => {
   const timeline = useMemo<string>(() => {
@@ -47,5 +56,36 @@ export const useMissionPools = (data: MissionInfo) => {
     };
   }, []);
 
-  return { timeline, tagMap };
+  const tagStatusMap = useMemo<Record<string, TagInfo>>(() => {
+    return {
+      [TagStatusType.UPCOMING]: {
+        theme: 'gray',
+        name: 'Upcoming',
+        slug: TagStatusType.UPCOMING,
+        icon: MegaphoneSimple,
+      },
+      [TagStatusType.ARCHIVED]: {
+        theme: 'blue',
+        name: 'Archived',
+        slug: TagStatusType.ARCHIVED,
+        icon: Cube,
+        iconWeight: 'fill',
+      },
+      [TagStatusType.LIVE]: {
+        theme: 'cyan',
+        name: 'Live',
+        slug: TagStatusType.LIVE,
+        icon: CheckCircle,
+        iconWeight: 'fill',
+      },
+      [TagStatusType.CLAIMABLE]: {
+        theme: 'lime',
+        name: 'Claimable',
+        slug: TagStatusType.CLAIMABLE,
+        icon: Trophy,
+      },
+    };
+  }, []);
+
+  return { timeline, tagMap, tagStatusMap };
 };

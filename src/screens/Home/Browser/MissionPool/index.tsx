@@ -38,6 +38,7 @@ const screenOptions:
   lazy: true,
   tabBarShowLabel: false,
   tabBarIndicatorStyle: transparent,
+  animationEnabled: false,
 });
 const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
   const wrapperStyle = {
