@@ -57,8 +57,8 @@
     "@react-navigation/native": "^6.1.2",
     "@react-navigation/native-stack": "^6.9.8",
     "@reduxjs/toolkit": "^1.9.2",
-    "@subwallet/extension-chains": "1.1.31-1",
-    "@subwallet/extension-dapp": "1.1.31-1",
+    "@subwallet/extension-chains": "1.1.32-0",
+    "@subwallet/extension-dapp": "1.1.32-0",
     "@subwallet/keyring": "0.1.1",
     "@subwallet/react-ui": "^5.1.2-b72",
     "@subwallet/ui-keyring": "^0.1.1",
@@ -143,7 +143,7 @@
     "@polkadot/types": "^9.9.4",
     "@react-native/eslint-config": "^0.72.2",
     "@react-native/metro-config": "^0.72.11",
-    "@subwallet/chain-list": "0.2.37",
+    "@subwallet/chain-list": "0.2.38",
     "@subwallet/extension-base": "1.1.31-beta.0",
     "@tsconfig/react-native": "^3.0.0",
     "@types/humanize-duration": "^3.27.3",
@@ -195,7 +195,7 @@
     "@polkadot/api": "^10.7.2",
     "@polkadot/util-crypto": "^12.2.1",
     "@subwallet/extension-base": "1.1.31-beta.0",
-    "@subwallet/chain-list": "0.2.37",
+    "@subwallet/chain-list": "0.2.38",
     "react-native-svg": "^13.6.0"
   },
   "engines": {
