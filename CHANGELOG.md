@@ -1,3 +1,6 @@
+## 1.1.28 (305)
+
+
 ## 1.1.28 (304)
 - Update web-runner 1.1.32 (Improve Earning performance) (#1402)
 - Fix some Earning UI bug (#1368)
