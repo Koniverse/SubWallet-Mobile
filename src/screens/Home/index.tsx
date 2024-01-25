@@ -31,10 +31,11 @@ import { handleTriggerDeeplinkAfterLogin } from 'utils/deeplink';
 import { isFirstOpen, setIsFirstOpen } from '../../App';
 import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
-import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { mmkvStore } from 'utils/storage';
 import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
+import IntroducingModal from 'components/Modal/IntroducingModal';
+import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 
 interface tabbarIconColor {
   color: string;
@@ -187,6 +188,8 @@ export enum AppNavigatorDeepLinkStatus {
   RESET = 'reset',
 }
 
+let isShowCampaignModal = false;
+
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasMasterPassword, isReady, isLocked } = useSelector((state: RootState) => state.accountState);
@@ -196,8 +199,9 @@ export const Home = ({ navigation }: Props) => {
   const banners = useGetBannerByScreen('home');
   const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
   const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
+  const [introducingModalVisible, setIntroducingModalVisible] = useState<boolean>(false);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
-
+  const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
   useEffect(() => {
     if (isReady && isLoading) {
       setTimeout(() => setLoading(false), 1500);
@@ -213,14 +217,30 @@ export const Home = ({ navigation }: Props) => {
   }, [isReady, isLoading, isLocked]);
 
   useEffect(() => {
+    if (isShowCampaignModal) {
+      return;
+    }
+    if (!isOpenIntroductionFirstTime) {
+      return;
+    }
     if (firstBanner) {
+      isShowCampaignModal = true;
       setCampaignModalVisible(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firstBanner]);
 
   useEffect(() => {
     if (!isOpenGeneralTermFirstTime) {
+      isShowCampaignModal = false;
       setGeneralTermVisible(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isOpenIntroductionFirstTime) {
+      setIntroducingModalVisible(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -243,7 +263,10 @@ export const Home = ({ navigation }: Props) => {
       <Wrapper />
 
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
-      {!isLocked && firstBanner && !isEmptyAccounts && (
+      {!isLocked && !isEmptyAccounts && !isOpenIntroductionFirstTime && (
+        <IntroducingModal visible={introducingModalVisible} setVisible={setIntroducingModalVisible} />
+      )}
+      {!isLocked && firstBanner && isShowCampaignModal && !isEmptyAccounts && isOpenIntroductionFirstTime && (
         <CampaignBannerModal visible={campaignModalVisible} banner={firstBanner} setVisible={setCampaignModalVisible} />
       )}
       {!isLocked && !isOpenGeneralTermFirstTime && (
