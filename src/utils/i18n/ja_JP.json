@@ -431,7 +431,8 @@
     "masterPasswordCheckbox": "SubWallet ではこのパスワードを回復できないことを理解しています。",
     "learnMore": "もっと詳しく知る",
     "withdraw": "Withdraw",
-    "cancelUnstake": "Cancel unstake"
+    "cancelUnstake": "Cancel unstake",
+    "exploreEarningOptions": "Explore earning options"
   },
   "inputLabel": {
     "selectAcc": "アカウントを選択",
@@ -603,6 +604,12 @@
     "crowdloanEmptyMessage": "クラウドローンはこちらに表示されます！",
     "stakingEmptyTitle": "ステーキングはありません",
     "stakingEmptyMessage": "あなたのステーキングアカウントがここに表示されます！",
+    "positionEmptyTitle": "No earning position found",
+    "positionEmptyMessage": "Change your search or explore other earning options",
+    "groupEmptyTitle": "No earning option found",
+    "groupEmptyMessage": "Change your search and try again",
+    "poolEmptyTitle": "No earning option found",
+    "poolEmptyMessage": "Change your search and try again",
     "historyEmptyTitle": "トランザクションは見つかりませんでした",
     "historyEmptyMessage": "トランザクションの履歴がここに表示されます！",
     "selectorEmptyTitle": "結果が見つかりません",

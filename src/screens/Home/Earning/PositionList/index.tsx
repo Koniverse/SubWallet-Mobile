@@ -139,12 +139,12 @@ export const PositionList = ({ setStep }: Props) => {
   const renderEmpty = useCallback(() => {
     return (
       <EmptyList
-        title={i18n.emptyScreen.stakingEmptyTitle}
+        title={i18n.emptyScreen.positionEmptyTitle}
         icon={Trophy}
-        message={i18n.emptyScreen.stakingEmptyMessage}
+        message={i18n.emptyScreen.positionEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}
-        addBtnLabel={i18n.buttonTitles.startStaking}
+        addBtnLabel={i18n.buttonTitles.exploreEarningOptions}
         onPressAddBtn={handlePressStartStaking}
       />
     );

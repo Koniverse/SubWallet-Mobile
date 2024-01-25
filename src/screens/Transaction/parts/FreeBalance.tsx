@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { useGetBalance } from 'hooks/balance';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay';
 import i18n from 'utils/i18n/i18n';
+import { Typography } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   address?: string;
@@ -31,10 +33,20 @@ export const FreeBalance = ({
     tokenSlug,
     isSubscribe,
   );
-
+  const theme = useSubWalletTheme().swThemes;
   useEffect(() => {
     onBalanceReady?.(!isLoading && !error);
   }, [error, isLoading, onBalanceReady]);
+
+  if (!address && !hidden) {
+    return (
+      <View style={[{ marginBottom: 12 }, style]}>
+        <Typography.Text style={{ color: theme.colorTextTertiary }}>
+          Select account to view available balance
+        </Typography.Text>
+      </View>
+    );
+  }
 
   if (!address && !chain) {
     return <></>;

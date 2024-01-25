@@ -431,7 +431,8 @@
     "masterPasswordCheckbox": "I understand that SubWallet can't recover this password for me. ",
     "learnMore": "Learn more.",
     "withdraw": "Withdraw",
-    "cancelUnstake": "Cancel unstake"
+    "cancelUnstake": "Cancel unstake",
+    "exploreEarningOptions": "Explore earning options"
   },
   "inputLabel": {
     "selectAcc": "Select account",
@@ -559,7 +560,7 @@
     "destinationNetwork": "Destination network",
     "estimatedFee": "Estimated fee",
     "searchCollectionName": "Search collection name",
-    "searchNftNameOrId": "Seach NFT name or ID",
+    "searchNftNameOrId": "Search NFT name or ID",
     "selectNftType": "Select NFT type",
     "enterOrPasteAnAddress": "Enter or paste an address",
     "searchProject": "Search project",
@@ -603,6 +604,12 @@
     "crowdloanEmptyMessage": "Your crowdloans will show up here",
     "stakingEmptyTitle": "No staking found",
     "stakingEmptyMessage": "You can stake in-app easily",
+    "positionEmptyTitle": "No earning position found",
+    "positionEmptyMessage": "Change your search or explore other earning options",
+    "groupEmptyTitle": "No earning option found",
+    "groupEmptyMessage": "Change your search and try again",
+    "poolEmptyTitle": "No earning option found",
+    "poolEmptyMessage": "Change your search and try again",
     "historyEmptyTitle": "No transactions found",
     "historyEmptyMessage": "Your transactions will show up here",
     "selectorEmptyTitle": "No results found",

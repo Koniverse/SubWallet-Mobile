@@ -208,16 +208,16 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       targetLoading ||
       (mustChooseTarget && !poolTarget),
     [
-      connectionError,
-      currentAmount,
-      errors.value,
-      isBalanceReady,
-      submitLoading,
-      mustChooseTarget,
-      poolTarget,
-      targetLoading,
       checkMintLoading,
       stepLoading,
+      connectionError,
+      currentAmount,
+      isBalanceReady,
+      errors.value,
+      submitLoading,
+      targetLoading,
+      mustChooseTarget,
+      poolTarget,
     ],
   );
 
@@ -628,7 +628,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [inputAsset.slug, setAsset]);
 
   useEffect(() => {
-    if (!currentFrom && accountSelectorList.length >= 1) {
+    if (!currentFrom && accountSelectorList.length === 1) {
       setFrom(accountSelectorList[0].address);
     }
   }, [accountSelectorList, currentFrom, setFrom]);

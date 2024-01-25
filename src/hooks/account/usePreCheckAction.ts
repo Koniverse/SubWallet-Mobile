@@ -98,7 +98,7 @@ const usePreCheckAction = (
 
               if (networkBlock.includes(slug)) {
                 hideAll();
-                show(`Ledger does not support this action with ${networkName}`);
+                show(`Ledger does not support this action with ${networkName}`, { type: 'normal' });
 
                 return;
               }
@@ -109,7 +109,7 @@ const usePreCheckAction = (
             onPress();
           } else {
             hideAll();
-            show((message || defaultMessage).replace('{{accountTitle}}', accountTitle));
+            show((message || defaultMessage).replace('{{accountTitle}}', accountTitle), { type: 'normal' });
           }
         }
       };

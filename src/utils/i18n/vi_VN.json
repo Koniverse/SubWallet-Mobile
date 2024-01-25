@@ -431,7 +431,8 @@
     "masterPasswordCheckbox": "Tôi hiểu rằng SubWallet không thể khôi phục mật khẩu này cho tôi. ",
     "learnMore": "Tìm hiểu thêm",
     "withdraw": "Withdraw",
-    "cancelUnstake": "Cancel unstake"
+    "cancelUnstake": "Cancel unstake",
+    "exploreEarningOptions": "Explore earning options"
   },
   "inputLabel": {
     "selectAcc": "Chọn tài khoản",
@@ -603,6 +604,12 @@
     "crowdloanEmptyMessage": "Crowdloan của bạn sẽ hiển thị tại đây",
     "stakingEmptyTitle": "Không tìm thấy stake",
     "stakingEmptyMessage": "Bạn có thể stake dễ dàng trong ví",
+    "positionEmptyTitle": "No earning position found",
+    "positionEmptyMessage": "Change your search or explore other earning options",
+    "groupEmptyTitle": "No earning option found",
+    "groupEmptyMessage": "Change your search and try again",
+    "poolEmptyTitle": "No earning option found",
+    "poolEmptyMessage": "Change your search and try again",
     "historyEmptyTitle": "Chưa có giao dịch",
     "historyEmptyMessage": "Giao dịch của bạn sẽ hiển thị tại đây",
     "selectorEmptyTitle": "Không tìm thấy kết quả",
