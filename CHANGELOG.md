@@ -1,3 +1,12 @@
+## 1.1.28 (304)
+- Update web-runner 1.1.32 (Improve Earning performance) (#1402)
+- Fix some Earning UI bug (#1368)
+- Fix bug cannot connect WalletConnect from external Browser (#1373)
+- Fix bug UI on Mission Pools screen (#1332)
+- Add a temporary popup to introduce the earning feature (#1388)
+- Fix bug Android can't show Buy and Browser tab (#1374)
+- Improve performance Browser (#1152)
+
 ## 1.1.27 (302)
 - Rollback web runner 1.1.31 with withdraw and mkt campaign update (#1390)
 
