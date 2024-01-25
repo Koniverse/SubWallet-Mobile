@@ -28,6 +28,7 @@ import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { getTokenLogo } from 'utils/index';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 
 interface Props {
   slug: string;
@@ -267,7 +268,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             maintainDecimals || 0,
           );
 
-          if (poolInfo.slug === 'ASTR___native_staking___astar') {
+          if (_STAKING_CHAIN_GROUP.astar.includes(poolInfo.chain)) {
             return EARNING_DATA_RAW.DAPP_STAKING.map(item => {
               const _item: BoxProps = { ...item, icon: getBannerButtonIcon(item.icon) as PhosphorIcon };
               replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
