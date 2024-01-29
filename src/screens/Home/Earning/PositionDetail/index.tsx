@@ -14,7 +14,7 @@ import { EarningBaseInfo, EarningPoolInfo, EarningRewardInfo, EarningWithdrawMet
 import { useYieldPositionDetail } from 'hooks/earning';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MinusCircle, Plus, PlusCircle } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { EarningPositionDetailProps } from 'routes/earning';
@@ -25,6 +25,9 @@ import { RootState } from 'stores/index';
 import { BN_TEN } from 'utils/number';
 import { HideBalanceItem } from 'components/HideBalanceItem';
 import { BN_ZERO } from 'utils/chainBalances';
+import WarningModal from 'components/Modal/WarningModal';
+import { mmkvStore } from 'utils/storage';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 
 interface Props {
   compound: YieldPositionInfo;
@@ -40,6 +43,15 @@ const Component: React.FC<Props> = (props: Props) => {
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { priceMap } = useSelector((state: RootState) => state.price);
   const { isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
+  const [dAppStakingWarningModalVisible, setDAppStakingWarningModalVisible] = useState<boolean>(false);
+  const isOpenDAppWarningInPositionDetail = mmkvStore.getBoolean('isOpenDAppWarningInPositionDetail');
+
+  useEffect(() => {
+    if (!isOpenDAppWarningInPositionDetail && _STAKING_CHAIN_GROUP.astar.includes(poolInfo.chain)) {
+      setDAppStakingWarningModalVisible(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -183,6 +195,19 @@ const Component: React.FC<Props> = (props: Props) => {
           <EarningPoolInfo inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} />
         </View>
       </ScrollView>
+
+      {!isOpenDAppWarningInPositionDetail ? (
+        <WarningModal
+          visible={dAppStakingWarningModalVisible}
+          setVisible={setDAppStakingWarningModalVisible}
+          onPressBtn={() => {
+            mmkvStore.set('isOpenDAppWarningInPositionDetail', true);
+            setDAppStakingWarningModalVisible(false);
+          }}
+        />
+      ) : (
+        <></>
+      )}
     </ContainerWithSubHeader>
   );
 };
