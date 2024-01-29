@@ -1,3 +1,8 @@
+## 1.1.29 (307)
+- Add popup want to user claim reward when Astar update dApp staking v3 (#1410)
+- Improve desktop mode for dApp browser (#1371)
+- Bug performance on Start eanring screen with direct nomination (#1399)
+
 ## 1.1.28 (306)
 
 
