@@ -36,6 +36,7 @@ import { mmkvStore } from 'utils/storage';
 import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import IntroducingModal from 'components/Modal/IntroducingModal';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
+import WarningModal from 'components/Modal/WarningModal';
 
 interface tabbarIconColor {
   color: string;
@@ -200,8 +201,10 @@ export const Home = ({ navigation }: Props) => {
   const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
   const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
   const [introducingModalVisible, setIntroducingModalVisible] = useState<boolean>(false);
+  const [dAppStakingWarningModalVisible, setDAppStakingWarningModalVisible] = useState<boolean>(false);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
   const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
+  const isOpenDAppWarningFirstTime = mmkvStore.getBoolean('isOpenDAppWarningFirstTime');
   useEffect(() => {
     if (isReady && isLoading) {
       setTimeout(() => setLoading(false), 1500);
@@ -245,6 +248,13 @@ export const Home = ({ navigation }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!isOpenDAppWarningFirstTime) {
+      setDAppStakingWarningModalVisible(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const onPressAcceptBtn = () => {
     mmkvStore.set('isOpenGeneralTermFirstTime', true);
     setGeneralTermVisible(false);
@@ -275,6 +285,17 @@ export const Home = ({ navigation }: Props) => {
           setVisible={setGeneralTermVisible}
           onPressAcceptBtn={onPressAcceptBtn}
           disabledOnPressBackDrop={true}
+        />
+      )}
+
+      {!isLocked && !isEmptyAccounts && !isOpenDAppWarningFirstTime && (
+        <WarningModal
+          visible={dAppStakingWarningModalVisible}
+          setVisible={setDAppStakingWarningModalVisible}
+          onPressBtn={() => {
+            mmkvStore.set('isOpenDAppWarningFirstTime', true);
+            setDAppStakingWarningModalVisible(false);
+          }}
         />
       )}
     </>
