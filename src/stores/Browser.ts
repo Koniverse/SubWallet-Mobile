@@ -7,6 +7,8 @@ const initialState: BrowserSlice = {
   whitelist: [],
   history: [],
   bookmarks: [],
+  defaultDesktopMode: [],
+  desktopMode: [],
 };
 
 function generateId(prefix?: string): string {
@@ -124,8 +126,15 @@ const browserSlice = createSlice({
       state.history = [];
       state.bookmarks = [];
     },
+    updateDesktopMode: (state, { payload }: PayloadAction<BrowserSlice['desktopMode']>) => {
+      console.log('payload ', payload);
+      state.desktopMode = payload;
+    },
+    updateDefaultDesktopMode: (state, { payload }: PayloadAction<BrowserSlice['defaultDesktopMode']>) => {
+      state.defaultDesktopMode = payload;
+    },
   },
 });
 
-export const { resetBrowserSetting } = browserSlice.actions;
+export const { resetBrowserSetting, updateDesktopMode, updateDefaultDesktopMode } = browserSlice.actions;
 export default browserSlice.reducer;

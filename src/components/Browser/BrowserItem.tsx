@@ -1,6 +1,6 @@
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Image, Tag, Typography } from 'components/design-system-ui';
+import { Icon, Image, Tag, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -8,6 +8,8 @@ import createStylesheet from './styles/BrowserItem';
 import { getHostName, searchDomain } from 'utils/browser';
 import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 import { BookmarkItem } from './BookmarkItem';
+import { Desktop } from 'phosphor-react-native';
+import { useGetDesktopMode } from 'hooks/screen/Home/Browser/DesktopMode/useGetDesktopMode';
 
 interface Props {
   logo?: string;
@@ -66,13 +68,16 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, 
       <TouchableOpacity onPress={onPress} style={stylesheet.contentWrapper}>
         <View style={stylesheet.logoWrapper}>
           {image && (
-            <Image
-              src={image}
-              onError={onLoadImageError}
-              style={stylesheet.logo}
-              shape={'squircle'}
-              squircleSize={44}
-            />
+            <>
+              <Image
+                src={image}
+                onError={onLoadImageError}
+                style={stylesheet.logo}
+                shape={'squircle'}
+                squircleSize={44}
+              />
+              <DesktopMode url={url} />
+            </>
           )}
         </View>
         <View style={stylesheet.textContentWrapper}>
@@ -91,6 +96,31 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, 
       </TouchableOpacity>
 
       {!url.startsWith(`https://${searchDomain}`) && <BookmarkItem url={url} title={title} />}
+    </View>
+  );
+};
+
+interface DesktopModeProps {
+  url: string;
+}
+const DesktopMode: React.FC<DesktopModeProps> = ({ url }) => {
+  const { desktopMode } = useGetDesktopMode(url);
+  const theme = useSubWalletTheme().swThemes;
+  if (!desktopMode) {
+    return null;
+  }
+
+  const subIconStyle: StyleProp<ViewStyle> = {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: theme.colorPrimary,
+    borderRadius: 10,
+    padding: 2,
+  };
+  return (
+    <View style={subIconStyle}>
+      <Icon phosphorIcon={Desktop} size="xxs" />
     </View>
   );
 };

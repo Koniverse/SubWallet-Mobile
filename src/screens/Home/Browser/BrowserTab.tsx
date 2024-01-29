@@ -67,6 +67,7 @@ import { connectWalletConnect } from 'utils/walletConnect';
 import { useToast } from 'react-native-toast-notifications';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import { transformUniversalToNative } from 'utils/deeplink';
+import { useGetDesktopMode } from 'hooks/screen/Home/Browser/DesktopMode/useGetDesktopMode';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -174,6 +175,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   const isWebviewReady = !!(initWebViewSource && injectedScripts);
   const toast = useToast();
   const dispatch = useDispatch();
+  const { desktopMode, addToDesktopMode, removeFromDesktopMode } = useGetDesktopMode(initWebViewSource);
 
   const clearCurrentBrowserSv = () => {
     browserSv.current?.onDisconnect();
@@ -404,9 +406,18 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     };
   }, [tabId]);
 
-  const onLoadProgress = ({ nativeEvent: { progress } }: WebViewProgressEvent) => {
-    setProgressNumber(progress);
-  };
+  const onLoadProgress = useCallback(
+    ({ nativeEvent: { progress } }: WebViewProgressEvent) => {
+      setProgressNumber(progress);
+      // Inject desktop mode script by default when current url is set
+      if (desktopMode) {
+        webviewRef.current?.injectJavaScript(
+          "const meta = document.createElement('meta'); meta.setAttribute('content', 'width=device-width, initial-scale=0.1, maximum-scale=10, user-scalable=1'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); ",
+        );
+      }
+    },
+    [desktopMode],
+  );
 
   const renderBrowserTabBar = (button: BrowserActionButtonType) => {
     if (!button.icon) {
@@ -554,6 +565,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     isNetConnected,
     isWebviewReady,
     onLoad,
+    onLoadProgress,
     onLoadStart,
     onShouldStartLoadWithRequest,
     onWebviewMessage,
@@ -622,6 +634,10 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
       <BrowserOptionModal
         ref={browserOptionModalRef}
         webviewRef={webviewRef}
+        desktopMode={desktopMode}
+        addToDesktopMode={addToDesktopMode}
+        removeFromDesktopMode={removeFromDesktopMode}
+        initWebViewSource={initWebViewSource}
         visibleModal={modalVisible}
         setVisibleModal={setModalVisible}
       />

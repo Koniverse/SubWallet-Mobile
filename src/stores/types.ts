@@ -131,6 +131,8 @@ export type BrowserSlice = {
   whitelist: string[];
   history: StoredSiteInfo[];
   bookmarks: StoredSiteInfo[];
+  defaultDesktopMode: string[];
+  desktopMode: string[];
 };
 
 export type BackgroundServiceSlice = {
