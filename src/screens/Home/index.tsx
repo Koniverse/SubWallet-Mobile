@@ -190,6 +190,7 @@ export enum AppNavigatorDeepLinkStatus {
 }
 
 let isShowCampaignModal = false;
+let isShowDAppWarningModal = false;
 
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
@@ -226,6 +227,9 @@ export const Home = ({ navigation }: Props) => {
     if (!isOpenIntroductionFirstTime) {
       return;
     }
+    if (!isOpenDAppWarningFirstTime) {
+      return;
+    }
     if (firstBanner) {
       isShowCampaignModal = true;
       setCampaignModalVisible(true);
@@ -234,8 +238,20 @@ export const Home = ({ navigation }: Props) => {
   }, [firstBanner]);
 
   useEffect(() => {
+    if (isShowDAppWarningModal) {
+      return;
+    }
+    if (!isOpenDAppWarningFirstTime) {
+      isShowDAppWarningModal = true;
+      setDAppStakingWarningModalVisible(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (!isOpenGeneralTermFirstTime) {
       isShowCampaignModal = false;
+      isShowDAppWarningModal = false;
       setGeneralTermVisible(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -243,14 +259,8 @@ export const Home = ({ navigation }: Props) => {
 
   useEffect(() => {
     if (!isOpenIntroductionFirstTime) {
+      isShowDAppWarningModal = false;
       setIntroducingModalVisible(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!isOpenDAppWarningFirstTime) {
-      setDAppStakingWarningModalVisible(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -288,7 +298,7 @@ export const Home = ({ navigation }: Props) => {
         />
       )}
 
-      {!isLocked && !isEmptyAccounts && !isOpenDAppWarningFirstTime && (
+      {!isLocked && !isEmptyAccounts && isShowDAppWarningModal && !isOpenDAppWarningFirstTime && (
         <WarningModal
           visible={dAppStakingWarningModalVisible}
           setVisible={setDAppStakingWarningModalVisible}
