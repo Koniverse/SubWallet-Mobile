@@ -1,3 +1,8 @@
+## 1.1.29 (308)
+- Multilingual processing for Terms of use on mobile app (#1299)
+- Add popup want to user claim reward when Astar update dApp staking v3 (#1410)
+- Add Rating pop-up for Fast Unstake action (#1401)
+
 ## 1.1.29 (307)
 - Add popup want to user claim reward when Astar update dApp staking v3 (#1410)
 - Improve desktop mode for dApp browser (#1371)
