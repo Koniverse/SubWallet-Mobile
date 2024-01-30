@@ -1,8 +1,11 @@
 import axios from 'axios';
+import { getStaticContentByDevMode } from './storage';
+import { STATIC_DATA_DOMAIN } from 'constants/index';
 
 export async function fetchStaticData<T>(slug: string, targetFile?: string) {
-  const fetchFile = targetFile || 'list.json';
-  const rs = await axios.get(`https://static-data.subwallet.app/${slug}/${fetchFile}`);
+  const dataByDevModeStatus = getStaticContentByDevMode();
+  const fetchFile = targetFile || dataByDevModeStatus;
+  const rs = await axios.get(`${STATIC_DATA_DOMAIN}/${slug}/${fetchFile}`);
 
   return rs.data as T;
 }

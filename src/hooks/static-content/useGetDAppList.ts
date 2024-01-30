@@ -5,22 +5,31 @@ import axios from 'axios';
 import { updateBrowserDApps } from 'stores/base/Settings';
 import { DAppInfo } from 'types/browser';
 import { useGetDesktopMode } from 'hooks/screen/Home/Browser/DesktopMode/useGetDesktopMode';
+import { getStaticContentByDevMode } from 'utils/storage';
+import { STATIC_DATA_DOMAIN } from 'constants/index';
 
-export const baseStaticDataUrl = 'https://static-data.subwallet.app';
+const dataByDevModeStatus = getStaticContentByDevMode();
 export function useGetDAppList() {
   const browserDApps = useSelector((state: RootState) => state.settings.browserDApps);
-  const { desktopModeData, defaultDesktopModeData, addToDesktopMode, addToDefaultDesktopMode } = useGetDesktopMode();
+  const {
+    desktopModeData,
+    defaultDesktopModeData,
+    addToDesktopMode,
+    addToDefaultDesktopMode,
+    removeFromDesktopMode,
+    removeFromDefaultDesktopMode,
+  } = useGetDesktopMode();
   const dispatch = useDispatch();
 
   const getDAppsData = useCallback(async () => {
-    const dApps = await axios.get(`${baseStaticDataUrl}/dapps/preview.json`);
-    const dAppCategories = await axios.get(`${baseStaticDataUrl}/categories/list.json`);
+    const dApps = await axios.get(`${STATIC_DATA_DOMAIN}/dapps/${dataByDevModeStatus}.json`);
+    const dAppCategories = await axios.get(`${STATIC_DATA_DOMAIN}/categories/${dataByDevModeStatus}.json`);
     const payload = { dApps: dApps.data, dAppCategories: dAppCategories.data };
     if (!!dApps && dApps.data.length) {
       dispatch(updateBrowserDApps(payload));
     }
     if (dApps.data) {
-      // Get not flaged DApps
+      // Add default desktop mode DApps.
       const notFlagedDApps = dApps.data.filter((dApp: DAppInfo) => desktopModeData.indexOf(dApp.url || '') === -1);
       const needFlagedDApps = notFlagedDApps.filter((dApp: DAppInfo) => !!dApp.desktop_mode);
       needFlagedDApps.forEach((dApp: DAppInfo) => {
@@ -30,12 +39,30 @@ export function useGetDAppList() {
           addToDefaultDesktopMode(dApp.url);
         }
       });
+      // Remove not default desktop mode DApps.
+      const flagedDApps = dApps.data.filter((dApp: DAppInfo) => desktopModeData.indexOf(dApp.url || '') !== -1);
+      const needRemoveFlaggedDapps = flagedDApps.filter((dApp: DAppInfo) => !dApp.desktop_mode);
+      needRemoveFlaggedDapps.forEach((dApp: DAppInfo) => {
+        const storedDefaultUrl = defaultDesktopModeData.find(url => dApp.url === url);
+        if (storedDefaultUrl) {
+          removeFromDesktopMode(dApp.url);
+          removeFromDefaultDesktopMode(dApp.url);
+        }
+      });
     }
-  }, [addToDefaultDesktopMode, addToDesktopMode, defaultDesktopModeData, desktopModeData, dispatch]);
+  }, [
+    addToDefaultDesktopMode,
+    addToDesktopMode,
+    defaultDesktopModeData,
+    desktopModeData,
+    dispatch,
+    removeFromDefaultDesktopMode,
+    removeFromDesktopMode,
+  ]);
 
   return { browserDApps, getDAppsData };
 }
 
 export async function getTermAndCondition(): Promise<string> {
-  return await axios.get(`${baseStaticDataUrl}/term-and-condition/index.md`);
+  return await axios.get(`${STATIC_DATA_DOMAIN}/term-and-condition/index.md`);
 }

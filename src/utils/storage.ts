@@ -204,3 +204,13 @@ export const getHideBanner = (key: string) => {
 
   return campaignId as string[] | undefined;
 };
+export const devMode = (isDevMode: boolean) => {
+  mmkvStore.set('DEV_MODE', isDevMode);
+};
+export const getDevMode = () => {
+  return mmkvStore.getBoolean('DEV_MODE') ?? false;
+};
+export const getStaticContentByDevMode = () => {
+  const isDevMode = getDevMode();
+  return isDevMode ? 'preview' : 'list';
+};

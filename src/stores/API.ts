@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { STATIC_DATA_DOMAIN } from 'constants/index';
 import { DAppInfo, DAPPCategory } from 'types/browser';
 import { TokenConfig } from 'types/tokenConfig';
 
-const baseQuery = fetchBaseQuery({ baseUrl: 'https://static-data.subwallet.app' });
+const baseQuery = fetchBaseQuery({ baseUrl: STATIC_DATA_DOMAIN });
 
 export const browserDAPPs = createApi({
   reducerPath: 'dApps',

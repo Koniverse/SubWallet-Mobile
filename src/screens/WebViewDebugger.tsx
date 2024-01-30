@@ -8,13 +8,16 @@ import { sharedStyles } from 'styles/sharedStyles';
 import { WebRunnerContext } from 'providers/contexts';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Input } from 'react-native-elements';
-import { mmkvStore } from 'utils/storage';
+import { devMode, getDevMode, mmkvStore } from 'utils/storage';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { Button } from 'components/design-system-ui';
 import env from 'react-native-config';
+import { ToggleItem } from 'components/ToggleItem';
+import { Bug } from 'phosphor-react-native';
 
 const BUNDLE_ENV = env.BUNDLE_ENV;
 export const WebViewDebugger = () => {
+  const isDevMode = getDevMode();
   const navigation = useNavigation<RootNavigationProps>();
   const { webState, reload } = useContext(WebRunnerContext);
   const [input, setInput] = useState('');
@@ -23,6 +26,7 @@ export const WebViewDebugger = () => {
   const [lastBackup, setLastBackup] = useState('');
   const [lastRestore, setLastRestore] = useState('');
   const [lastMigration, setLastMigration] = useState('');
+  const [devModeStatus, setDevModeStatus] = useState(false);
 
   const [showQr, setShowQr] = useState(false);
   const containerStyle = { marginBottom: 30 };
@@ -61,6 +65,8 @@ export const WebViewDebugger = () => {
   };
 
   useEffect(() => {
+    setDevModeStatus(isDevMode);
+
     const fetchData = () => {
       setLastBackup(mmkvStore.getString('webRunnerLastBackupTime') || '');
       setLastRestore(mmkvStore.getString('webRunnerLastRestoreTime') || '');
@@ -74,7 +80,14 @@ export const WebViewDebugger = () => {
     }, 3000);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const onValueChange = (isOn: boolean) => {
+    setDevModeStatus(prevState => !prevState);
+    devMode(isOn);
+    setNotification("OK, Let's restart app!");
+  };
 
   return (
     <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.settings.webViewDebugger}>
@@ -106,6 +119,12 @@ export const WebViewDebugger = () => {
           <Button style={{ marginBottom: 5 }} onPress={useDefaultWebRunner}>
             Use Default
           </Button>
+          <ToggleItem
+            isEnabled={devModeStatus}
+            label={i18n.common.devMode}
+            onValueChange={onValueChange}
+            backgroundIcon={Bug}
+          />
           <Text style={textStyle}>{notification}</Text>
         </View>
       </ScrollView>

@@ -41,6 +41,16 @@ export const useGetDesktopMode = (defaultUrl = '') => {
     dispatch(updateDefaultDesktopMode(newDefaultDesktopModeData));
   };
 
+  const removeFromDefaultDesktopMode = (url?: string) => {
+    const newDefaultDesktopModeData = [...defaultDesktopModeData];
+
+    const flagContainingIdx = defaultDesktopModeData.indexOf(url ?? defaultUrl);
+    if (flagContainingIdx !== -1) {
+      newDefaultDesktopModeData.splice(flagContainingIdx, 1);
+    }
+    dispatch(updateDefaultDesktopMode(newDefaultDesktopModeData));
+  };
+
   return {
     desktopMode,
     addToDesktopMode,
@@ -48,5 +58,6 @@ export const useGetDesktopMode = (defaultUrl = '') => {
     desktopModeData,
     defaultDesktopModeData,
     addToDefaultDesktopMode,
+    removeFromDefaultDesktopMode,
   };
 };

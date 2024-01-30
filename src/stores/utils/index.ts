@@ -49,6 +49,8 @@ import {
   YieldPoolInfo,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
+import { getStaticContentByDevMode } from 'utils/storage';
+import { STATIC_DATA_DOMAIN } from 'constants/index';
 // Setup redux stores
 
 function voidFn() {
@@ -577,6 +579,7 @@ export const updateMissionPoolStore = (missions: MissionInfo[]) => {
 };
 
 export const getMissionPoolData = (() => {
+  const dataByDevModeStatus = getStaticContentByDevMode();
   const handler: {
     resolve?: (value: unknown[]) => void;
     reject?: (reason?: any) => void;
@@ -591,7 +594,7 @@ export const getMissionPoolData = (() => {
     promise,
     start: () => {
       (async () => {
-        const res = await fetch('https://static-data.subwallet.app/airdrop-campaigns/list.json');
+        const res = await fetch(`${STATIC_DATA_DOMAIN}/airdrop-campaigns/${dataByDevModeStatus}.json`);
 
         return (await res.json()) as [];
       })()
