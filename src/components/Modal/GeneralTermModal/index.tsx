@@ -7,10 +7,8 @@ import i18n from 'utils/i18n/i18n';
 import { ArrowCircleRight, CaretDown } from 'phosphor-react-native';
 import { deviceHeight } from 'constants/index';
 import Markdown from 'react-native-markdown-display';
-import { baseStaticDataUrl } from 'hooks/static-content/useGetDAppList';
-import { GENERAL_TERM_AND_CONDITION } from 'constants/termAndCondition';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
+import { mmkvStore } from 'utils/storage';
+import { useGetTermAndCondition } from 'hooks/static-content/useGetTermAndConditionData';
 
 interface Props {
   modalVisible: boolean;
@@ -21,25 +19,19 @@ interface Props {
 
 export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, disabledOnPressBackDrop }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const language = useSelector((state: RootState) => state.settings.language);
   const [checked, setChecked] = useState<boolean>(false);
   const [disableAcceptBtn, setDisableAcceptBtn] = useState<boolean>(true);
-  const [staticData, setStaticData] = useState({ md: '' });
   const scrollRef = useRef<ScrollView>(null);
-
-  useEffect(() => {
-    fetch(`${baseStaticDataUrl}/term-and-condition/${language}.md`)
-      .then(rs => rs.text())
-      .then(md => setStaticData({ md }))
-      .catch(() => {
-        setStaticData({ md: GENERAL_TERM_AND_CONDITION });
-      });
-  }, [language]);
-
+  const { getTermAndCondition } = useGetTermAndCondition();
+  const generalTermContent = mmkvStore.getString('generalTermContent');
   const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }: NativeScrollEvent) => {
     const paddingToBottom = 20;
     return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
   };
+
+  useEffect(() => {
+    getTermAndCondition();
+  }, [getTermAndCondition]);
 
   const showAlertWarning = () => {
     Alert.alert(i18n.title.tickTheCheckbox, i18n.message.generalTermWarning, [{ text: i18n.buttonTitles.iUnderStand }]);
@@ -85,7 +77,7 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
               heading4: { color: theme.colorWhite },
               heading5: { color: theme.colorWhite },
             }}>
-            {staticData.md}
+            {generalTermContent}
           </Markdown>
         </ScrollView>
         <View style={{ position: 'relative' }}>
