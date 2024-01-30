@@ -9,7 +9,7 @@ import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/
 import { useSelector } from 'react-redux';
 import { accountFilterFunc } from 'screens/Transaction/helper/earning';
 import { RootState } from 'stores/index';
-import { AmountData, NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { AmountData, ExtrinsicType, NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
@@ -448,7 +448,10 @@ export const Unbond = ({
           </>
         </TransactionLayout>
       ) : (
-        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+        <TransactionDone
+          transactionDoneInfo={transactionDoneInfo}
+          extrinsicType={fastLeave ? ExtrinsicType.STAKING_WITHDRAW : undefined}
+        />
       )}
     </>
   );
