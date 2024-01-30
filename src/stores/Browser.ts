@@ -127,7 +127,6 @@ const browserSlice = createSlice({
       state.bookmarks = [];
     },
     updateDesktopMode: (state, { payload }: PayloadAction<BrowserSlice['desktopMode']>) => {
-      console.log('payload ', payload);
       state.desktopMode = payload;
     },
     updateDefaultDesktopMode: (state, { payload }: PayloadAction<BrowserSlice['defaultDesktopMode']>) => {

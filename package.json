@@ -144,7 +144,7 @@
     "@react-native/eslint-config": "^0.72.2",
     "@react-native/metro-config": "^0.72.11",
     "@subwallet/chain-list": "0.2.39",
-    "@subwallet/extension-base": "1.1.32-beta.0",
+    "@subwallet/extension-base": "1.1.33-beta.0",
     "@tsconfig/react-native": "^3.0.0",
     "@types/humanize-duration": "^3.27.3",
     "@types/jest": "^29.2.3",
@@ -194,7 +194,7 @@
     "@polkadot/util": "^12.2.1",
     "@polkadot/api": "^10.7.2",
     "@polkadot/util-crypto": "^12.2.1",
-    "@subwallet/extension-base": "1.1.32-beta.0",
+    "@subwallet/extension-base": "1.1.33-beta.0",
     "@subwallet/chain-list": "0.2.39",
     "react-native-svg": "^13.6.0"
   },

@@ -17,14 +17,11 @@ export const useGetDesktopMode = (defaultUrl = '') => {
   const desktopModeData = useSelector((state: RootState) => state.browser.desktopMode);
   const defaultDesktopModeData = useSelector((state: RootState) => state.browser.defaultDesktopMode);
   const dispatch = useDispatch();
-  console.log('desktop data', desktopModeData);
-  console.log('defaultDesktopModeData', defaultDesktopModeData);
   const desktopMode = isDesktopMode(defaultUrl, desktopModeData);
 
   const addToDesktopMode = (url?: string) => {
     const newDesktopModeData = [...desktopModeData];
     newDesktopModeData.push(url ?? defaultUrl);
-    console.log('new desk top', newDesktopModeData);
     dispatch(updateDesktopMode(newDesktopModeData));
   };
 
