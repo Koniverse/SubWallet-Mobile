@@ -1,4 +1,13 @@
-import { CheckCircle, PaperPlaneTilt, ProhibitInset, Queue, Record, Spinner, StopCircle } from 'phosphor-react-native';
+import {
+  CheckCircle,
+  ClockCounterClockwise,
+  PaperPlaneTilt,
+  ProhibitInset,
+  Queue,
+  Record,
+  Spinner,
+  StopCircle,
+} from 'phosphor-react-native';
 import { ExtrinsicStatus, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 import { StatusType } from 'screens/Home/History/Detail';
@@ -104,5 +113,11 @@ export const HistoryStatusMap = (): Record<string, StatusType> => ({
     icon: StopCircle,
     name: i18n.historyScreen.extrinsicStatus.unknown,
     color: 'gray-6',
+  },
+  [ExtrinsicStatus.TIMEOUT]: {
+    schema: 'gold',
+    icon: ClockCounterClockwise,
+    name: i18n.historyScreen.extrinsicStatus.timeout,
+    color: 'gold-6',
   },
 });

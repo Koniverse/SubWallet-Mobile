@@ -927,7 +927,8 @@
       "submitting": "提出中",
       "processing": "処理中...",
       "cancelled": "キャンセルされた",
-      "unknown": "不明"
+      "unknown": "不明",
+      "timeout": "Time-out"
     },
     "label": {
       "transactionType": "トランザクションタイプ",
