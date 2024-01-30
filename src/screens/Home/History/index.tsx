@@ -176,59 +176,66 @@ enum FilterValue {
 }
 
 const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[]) => {
-  const filteredChainList: TransactionHistoryDisplayItem[] = [];
-
   if (!filters.length) {
     return items;
   }
 
-  items.forEach(item => {
+  return items.filter(item => {
+    if (!filters.length) {
+      return true;
+    }
+
     for (const filter of filters) {
+      if (filter === '') {
+        return true;
+      }
+
       switch (filter) {
         case FilterValue.SEND:
           if (isTypeTransfer(item.type) && item.direction === TransactionDirection.SEND) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.RECEIVED:
           if (isTypeTransfer(item.type) && item.direction === TransactionDirection.RECEIVED) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.NFT:
           if (item.type === ExtrinsicType.SEND_NFT) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.STAKE:
           if (isTypeStaking(item.type)) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.CLAIM:
           if (item.type === ExtrinsicType.STAKING_CLAIM_REWARD) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.CROWDLOAN:
           if (item.type === ExtrinsicType.CROWDLOAN) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.SUCCESSFUL:
           if (item.status === ExtrinsicStatus.SUCCESS) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.FAILED:
           if (item.status === ExtrinsicStatus.FAIL) {
-            filteredChainList.push(item);
+            return true;
           }
+          break;
       }
     }
-  });
 
-  return filteredChainList;
+    return false;
+  });
 };
 
 function findLedgerChainOfSelectedAccount(
