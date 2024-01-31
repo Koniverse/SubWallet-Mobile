@@ -1,15 +1,15 @@
-import { baseStaticDataUrl } from 'hooks/static-content/useGetDAppList';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useCallback } from 'react';
 import { TermAndCondition } from 'constants/termAndCondition';
 import { mmkvStore } from 'utils/storage';
+import { STATIC_DATA_DOMAIN } from 'constants/index';
 
 export function useGetTermAndCondition() {
   const language = useSelector((state: RootState) => state.settings.language);
 
   const getTermAndCondition = useCallback(async () => {
-    fetch(`${baseStaticDataUrl}/term-and-condition/${language}.md`)
+    fetch(`${STATIC_DATA_DOMAIN}/term-and-condition/${language}.md`)
       .then(rs => rs.text())
       .then(md => mmkvStore.set('generalTermContent', md))
       .catch(() => {
