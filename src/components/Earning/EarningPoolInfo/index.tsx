@@ -73,13 +73,13 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
           spaceSize="sm"
           labelFontWeight="regular"
           style={styles.infoContainer}>
-          <MetaInfo.Chain label={i18n.common.network} chain={compound.chain} valueColorSchema="gray" />
+          <MetaInfo.Chain label={i18n.common.network} chain={compound.chain} />
           {totalApy !== undefined && (
             <MetaInfo.Number
               label={i18n.inputLabel.estimatedEarnings}
               valueColorSchema="even-odd"
               value={totalApy}
-              suffix={'%'}
+              suffix={'% per year'}
             />
           )}
           {/*{poolInfo.metadata.farmerCount !== undefined && (*/}
