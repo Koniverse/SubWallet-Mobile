@@ -123,6 +123,8 @@ export const Confirmations = () => {
           return i18n.header.cancelUnstakeConfirmation;
         case ExtrinsicType.MINT_VDOT:
           return i18n.header.mintVDOTTransaction;
+        case ExtrinsicType.MINT_VMANTA:
+          return i18n.header.mintVMANTATransaction;
         case ExtrinsicType.MINT_LDOT:
           return i18n.header.mintLDOTTransaction;
         case ExtrinsicType.MINT_SDOT:
@@ -133,6 +135,8 @@ export const Confirmations = () => {
           return i18n.header.mintSTDOTTransaction;
         case ExtrinsicType.REDEEM_VDOT:
           return i18n.header.redeemVDOTTransaction;
+        case ExtrinsicType.REDEEM_VMANTA:
+          return i18n.header.redeemVMANTATransaction;
         case ExtrinsicType.REDEEM_LDOT:
           return i18n.header.redeemLDOTTransaction;
         case ExtrinsicType.REDEEM_SDOT:
@@ -143,6 +147,8 @@ export const Confirmations = () => {
           return i18n.header.redeemSTDOTTransaction;
         case ExtrinsicType.UNSTAKE_VDOT:
           return i18n.header.unstakeVDOTTransaction;
+        case ExtrinsicType.UNSTAKE_VMANTA:
+          return i18n.header.unstakeVMANTATransaction;
         case ExtrinsicType.UNSTAKE_LDOT:
           return i18n.header.unstakeLDOTTransaction;
         case ExtrinsicType.UNSTAKE_SDOT:
