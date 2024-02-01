@@ -1,3 +1,12 @@
+## 1.1.30 (309)
+- Add per year suffix on Estimated earnings on Earning position detail (#1408)
+- Add network for Available balance when earning (#1419)
+- Fix bug of history filter (#1345)
+- Fix bug reload Your earning positions screen (#1405)
+- Fix UI bug for EarningPoolDetailModal (#1372)
+- Add CTA Earn now on the PositionList screen (#1379)
+- Update wait time for Liquid staking (#1362)
+
 ## 1.1.29 (308)
 - Multilingual processing for Terms of use on mobile app (#1299)
 - Add popup want to user claim reward when Astar update dApp staking v3 (#1410)
