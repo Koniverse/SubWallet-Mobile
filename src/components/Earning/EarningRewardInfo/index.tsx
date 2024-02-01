@@ -19,11 +19,12 @@ import { BN_ZERO } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
 import { ActivityIndicator, Button, Icon, Number, Typography } from 'components/design-system-ui';
-import { HideBalanceItem } from 'components/HideBalanceItem';
 import { ArrowSquareOut, CaretDown, CaretUp } from 'phosphor-react-native';
 import { customFormatDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { HideBalanceItem } from 'components/HideBalanceItem';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -50,17 +51,23 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   }, []);
   // const [showDetail, setShowDetail] = useState(false);
 
+  const isDAppStaking = useMemo(() => _STAKING_CHAIN_GROUP.astar.includes(poolInfo.chain), [poolInfo.chain]);
+
   const canClaim = useMemo((): boolean => {
     switch (type) {
       case YieldPoolType.LENDING:
       case YieldPoolType.LIQUID_STAKING:
         return false;
       case YieldPoolType.NATIVE_STAKING:
-        return false;
+        if (isDAppStaking) {
+          return true;
+        } else {
+          return false;
+        }
       case YieldPoolType.NOMINATION_POOL:
         return true;
     }
-  }, [type]);
+  }, [isDAppStaking, type]);
 
   const earningStatus = useMemo(() => {
     const stakingStatusUi = StakingStatusUi();
@@ -93,6 +100,11 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   // }, []);
 
   const onPressWithdraw = useCallback(() => {
+    if (type === YieldPoolType.NATIVE_STAKING && isDAppStaking) {
+      navigation.navigate('BrowserTabsManager', { url: 'https://portal.astar.network/', name: 'Astar Portal' });
+      return;
+    }
+
     if (total && new BigN(total).gt(BN_ZERO)) {
       navigation.navigate('Drawer', {
         screen: 'TransactionAction',
@@ -103,7 +115,7 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
         { text: 'I understand' },
       ]);
     }
-  }, [navigation, slug, total]);
+  }, [isDAppStaking, navigation, slug, total, type]);
 
   return (
     <MetaInfo hasBackgroundWrapper={true} labelColorScheme="gray" style={styles.wrapper}>
@@ -114,32 +126,38 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
         valueColorSchema={earningStatus.schema}
       />
 
-      {(type === YieldPoolType.NOMINATION_POOL || type === YieldPoolType.NATIVE_STAKING) && !rewardHistories.length && (
+      {(type === YieldPoolType.NOMINATION_POOL || (type === YieldPoolType.NATIVE_STAKING && isDAppStaking)) && (
         <>
-          <View style={styles.withdrawSeparator} />
-
           <View style={styles.withdrawButtonContainer}>
-            {isShowBalance ? (
-              total ? (
-                <Number
-                  value={total}
-                  decimal={inputAsset.decimals || 0}
-                  suffix={inputAsset.symbol}
-                  size={theme.fontSizeHeading4}
-                  textStyle={styles.totalUnstake}
-                  subFloatNumber={true}
-                  decimalOpacity={0.45}
-                  unitOpacity={0.45}
-                />
-              ) : (
-                <ActivityIndicator size={20} />
-              )
+            {type === YieldPoolType.NOMINATION_POOL ? (
+              <>
+                {isShowBalance ? (
+                  total ? (
+                    <Number
+                      value={total}
+                      decimal={inputAsset.decimals || 0}
+                      suffix={inputAsset.symbol}
+                      size={theme.fontSizeHeading4}
+                      textStyle={styles.totalUnstake}
+                      subFloatNumber={true}
+                      decimalOpacity={0.45}
+                      unitOpacity={0.45}
+                    />
+                  ) : (
+                    <ActivityIndicator size={20} />
+                  )
+                ) : (
+                  <HideBalanceItem isShowConvertedBalance={false} />
+                )}
+              </>
             ) : (
-              <HideBalanceItem isShowConvertedBalance={false} />
+              <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Visit Astar portal'}</Typography.Text>
             )}
             {canClaim && (
               <Button size="xs" onPress={onPressWithdraw}>
-                {i18n.buttonTitles.claimRewards}
+                {type === YieldPoolType.NATIVE_STAKING && isDAppStaking
+                  ? 'Check rewards'
+                  : i18n.buttonTitles.claimRewards}
               </Button>
             )}
           </View>
