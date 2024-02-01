@@ -10,7 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
 import { Plus, Trophy } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
+import { Keyboard, ListRenderItemInfo, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { EarningScreenNavigationProps } from 'routes/earning';
@@ -19,6 +19,7 @@ import { ColorMap } from 'styles/color';
 import { ExtraYieldPositionInfo } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './style';
+import { LeftIconButton } from 'components/LeftIconButton';
 
 let cacheData: Record<string, boolean> = {};
 
@@ -151,12 +152,24 @@ export const PositionList = ({ setStep }: Props) => {
   }, [handlePressStartStaking, isRefresh, refresh]);
 
   const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<ExtraYieldPositionInfo>) => {
+    ({ item, index }: ListRenderItemInfo<ExtraYieldPositionInfo>) => {
       return (
-        <EarningInfoItem key={item.slug} positionInfo={item} onPress={handleOnPress} isShowBalance={isShowBalance} />
+        <>
+          <EarningInfoItem key={item.slug} positionInfo={item} onPress={handleOnPress} isShowBalance={isShowBalance} />
+
+          {index === items.length - 1 && (
+            <View style={{ alignItems: 'center', paddingTop: theme.paddingXS }}>
+              <LeftIconButton
+                icon={Plus}
+                title={i18n.buttonTitles.exploreEarningOptions}
+                onPress={handlePressStartStaking}
+              />
+            </View>
+          )}
+        </>
       );
     },
-    [handleOnPress, isShowBalance],
+    [handleOnPress, handlePressStartStaking, isShowBalance, items.length, theme.paddingXS],
   );
 
   const rightIconOption = useMemo(() => {
