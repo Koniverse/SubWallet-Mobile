@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleProp, Text, View, ViewStyle } from 'react-native';
 import { ActivityIndicator, Number, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -13,9 +13,11 @@ interface Props {
   nativeTokenSlug?: string;
   nativeTokenBalance?: AmountData;
   tokenSlug?: string;
+  chainName?: string;
   tokenBalance?: AmountData;
   isLoading: boolean;
   hidden?: boolean;
+  showNetwork?: boolean;
 }
 
 export const FreeBalanceDisplay = ({
@@ -28,8 +30,21 @@ export const FreeBalanceDisplay = ({
   nativeTokenSlug,
   nativeTokenBalance,
   hidden,
+  showNetwork,
+  chainName,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+
+  const renderSuffix = useCallback(
+    (data: AmountData) => {
+      if (showNetwork) {
+        return `${data.symbol} (${chainName})`;
+      }
+
+      return data.symbol;
+    },
+    [chainName, showNetwork],
+  );
 
   return (
     <View
@@ -61,7 +76,7 @@ export const FreeBalanceDisplay = ({
           intColor={theme.colorTextTertiary}
           size={14}
           textStyle={{ ...FontMedium }}
-          suffix={nativeTokenBalance.symbol}
+          suffix={renderSuffix(nativeTokenBalance)}
           unitColor={theme.colorTextTertiary}
           value={nativeTokenBalance.value}
         />
@@ -75,7 +90,7 @@ export const FreeBalanceDisplay = ({
             intColor={theme.colorTextTertiary}
             size={14}
             textStyle={{ ...FontMedium }}
-            suffix={tokenBalance.symbol}
+            suffix={renderSuffix(tokenBalance)}
             unitColor={theme.colorTextTertiary}
             value={tokenBalance.value}
           />

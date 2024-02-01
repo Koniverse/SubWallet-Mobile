@@ -15,6 +15,7 @@ interface Props {
   style?: StyleProp<ViewStyle>;
   hidden?: boolean;
   isSubscribe?: boolean;
+  showNetwork?: boolean;
 }
 
 export const FreeBalance = ({
@@ -26,8 +27,9 @@ export const FreeBalance = ({
   style,
   hidden,
   isSubscribe,
+  showNetwork,
 }: Props) => {
-  const { error, isLoading, nativeTokenBalance, nativeTokenSlug, tokenBalance } = useGetBalance(
+  const { error, isLoading, nativeTokenBalance, nativeTokenSlug, tokenBalance, chainInfo } = useGetBalance(
     chain,
     address,
     tokenSlug,
@@ -63,6 +65,8 @@ export const FreeBalance = ({
       tokenBalance={tokenBalance}
       tokenSlug={tokenSlug}
       hidden={hidden}
+      chainName={chainInfo?.name}
+      showNetwork={showNetwork}
     />
   );
 };

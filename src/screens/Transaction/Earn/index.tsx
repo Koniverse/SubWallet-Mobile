@@ -831,6 +831,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       isSubscribe={true}
                       label={`${i18n.inputLabel.availableBalance}:`}
                       tokenSlug={inputAsset.slug}
+                      showNetwork
                     />
 
                     <FormItem
