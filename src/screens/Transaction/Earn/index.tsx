@@ -62,7 +62,7 @@ import { useYieldPositionDetail } from 'hooks/earning';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
-import { STAKE_ALERT_DATA } from '../../../../EarningDataRaw';
+import { STAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
 import { insufficientMessages } from 'hooks/transaction/useHandleSubmitTransaction';
 import { useGetBalance } from 'hooks/balance';
 import reformatAddress from 'utils/index';

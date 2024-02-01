@@ -40,7 +40,7 @@ import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { useGetBalance } from 'hooks/balance';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import { isActionFromValidator } from '@subwallet/extension-base/services/earning-service/utils';
-import { UNSTAKE_ALERT_DATA } from '../../../../EarningDataRaw';
+import { UNSTAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 
 interface UnstakeFormValues extends TransactionFormValues {

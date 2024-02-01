@@ -23,7 +23,7 @@ import { RootState } from 'stores/index';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { balanceFormatter, formatNumber } from 'utils/number';
 import createStyles from './style';
-import { EARNING_DATA_RAW } from '../../../../../EarningDataRaw';
+import { EARNING_DATA_RAW } from 'constants/earning/EarningDataRaw';
 import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { getTokenLogo } from 'utils/index';
