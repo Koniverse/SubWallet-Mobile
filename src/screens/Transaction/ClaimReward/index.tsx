@@ -141,7 +141,7 @@ const ClaimReward = ({
   const { list: allPositions } = useYieldPositionDetail(slug);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chainValue);
   const [isTransactionDone, setTransactionDone] = useState(false);
-
+  const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
   const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
   const existentialDeposit = useMemo(() => {
     const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
@@ -246,7 +246,7 @@ const ClaimReward = ({
                 accountSelectorRef={accountSelectorRef}
               />
 
-              <GeneralFreeBalance address={fromValue} chain={chainValue} />
+              <GeneralFreeBalance address={fromValue} chain={chainValue} onBalanceReady={setIsBalanceReady} />
 
               <MetaInfo hasBackgroundWrapper>
                 <MetaInfo.Chain chain={chainValue} label={i18n.inputLabel.network} />
@@ -294,14 +294,16 @@ const ClaimReward = ({
               </Button>
               <Button
                 style={{ flex: 1, marginLeft: 4 }}
-                disabled={!fromValue || isDisabled || loading}
+                disabled={!fromValue || isDisabled || loading || !isBalanceReady}
                 loading={loading}
                 icon={
                   <Icon
                     phosphorIcon={ArrowCircleRight}
                     weight={'fill'}
                     size={'lg'}
-                    iconColor={!fromValue || isDisabled ? theme.colorTextLight5 : theme.colorWhite}
+                    iconColor={
+                      !fromValue || isDisabled || loading || !isBalanceReady ? theme.colorTextLight5 : theme.colorWhite
+                    }
                   />
                 }
                 onPress={onPreCheckReadOnly(onSubmit)}>
