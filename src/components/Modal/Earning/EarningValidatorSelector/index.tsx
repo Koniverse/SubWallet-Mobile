@@ -262,7 +262,7 @@ export const EarningValidatorSelector = forwardRef(
       onSelectItem && onSelectItem(selected);
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [nominations, onInitValidators, isSingleSelect]);
+    }, [isSingleSelect, from]);
 
     const applyBtn = useMemo(
       () => ({

@@ -141,8 +141,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const { nativeTokenBalance } = useGetBalance(chain, currentFrom);
 
   const poolInfo = poolInfoMap[slug];
-  const poolType = poolInfo.type;
-  const poolChain = poolInfo.chain;
+  const poolType = poolInfo?.type || '';
+  const poolChain = poolInfo?.chain || '';
 
   const styles = useMemo(() => createStyle(theme), [theme]);
 
@@ -159,15 +159,18 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const balanceTokens = useMemo(() => {
     const result: Array<{ chain: string; token: string }> = [];
 
-    const _chain = poolInfo.chain;
+    if (!poolInfo) {
+      return [];
+    }
+    const _chain = poolInfo?.chain;
 
     result.push({
-      token: poolInfo.metadata.inputAsset,
+      token: poolInfo?.metadata.inputAsset,
       chain: _chain,
     });
 
-    if (poolInfo.type === YieldPoolType.LENDING || poolInfo.type === YieldPoolType.LIQUID_STAKING) {
-      const altAsset = poolInfo.metadata.altInputAssets;
+    if (poolInfo?.type === YieldPoolType.LENDING || poolInfo?.type === YieldPoolType.LIQUID_STAKING) {
+      const altAsset = poolInfo?.metadata?.altInputAssets;
       const asset = chainAsset[altAsset || ''];
 
       if (asset) {
@@ -181,7 +184,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     return result;
   }, [chainAsset, poolInfo]);
 
-  const chainState = useFetchChainState(poolInfo.chain);
+  const chainState = useFetchChainState(poolInfo?.chain || '');
 
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
@@ -222,8 +225,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   );
 
   const inputAsset = useMemo(
-    () => chainAsset[poolInfo.metadata.inputAsset],
-    [chainAsset, poolInfo.metadata.inputAsset],
+    () => chainAsset[poolInfo?.metadata?.inputAsset],
+    [chainAsset, poolInfo?.metadata?.inputAsset],
   );
 
   const nativeAsset = useMemo(() => chainAsset[nativeTokenSlug], [chainAsset, nativeTokenSlug]);
@@ -253,11 +256,14 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [chainAsset, priceMap, processState.feeStructure]);
 
   const maintainString = useMemo(() => {
-    const maintainAsset = chainAsset[poolInfo.metadata.maintainAsset];
-    const maintainBalance = poolInfo.metadata.maintainBalance;
+    if (!poolInfo) {
+      return '';
+    }
+    const maintainAsset = chainAsset[poolInfo?.metadata?.maintainAsset];
+    const maintainBalance = poolInfo?.metadata?.maintainBalance;
 
     return `${getInputValuesFromString(maintainBalance, maintainAsset.decimals || 0)} ${maintainAsset.symbol}`;
-  }, [poolInfo.metadata.maintainAsset, poolInfo.metadata.maintainBalance, chainAsset]);
+  }, [chainAsset, poolInfo]);
 
   const getTargetedPool = useMemo(() => {
     const _poolTargets = poolTargetsMap[slug];
@@ -313,10 +319,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     return {
       existentialDeposit: getInputValuesFromString(existentialDeposit, _assetDecimals),
       availableBalance: getInputValuesFromString(nativeTokenBalance.value, _assetDecimals),
-      maintainBalance: getInputValuesFromString(poolInfo.metadata.maintainBalance || '0', _assetDecimals),
+      maintainBalance: getInputValuesFromString(poolInfo?.metadata?.maintainBalance || '0', _assetDecimals),
       symbol: nativeAsset.symbol,
     };
-  }, [nativeAsset, nativeTokenBalance.value, poolInfo.metadata.maintainBalance]);
+  }, [nativeAsset, nativeTokenBalance.value, poolInfo?.metadata?.maintainBalance]);
 
   const onError = useCallback(
     (error: Error) => {
@@ -428,18 +434,21 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   );
 
   const renderMetaInfo = useCallback(() => {
+    if (!poolInfo) {
+      Alert.alert('Unable to get earning data', 'Please, go back and try again later');
+    }
     const value = currentAmount ? parseFloat(currentAmount) / 10 ** assetDecimals : 0;
     const assetSymbol = inputAsset.symbol;
 
     const assetEarnings =
-      poolInfo.statistic && 'assetEarning' in poolInfo.statistic ? poolInfo.statistic.assetEarning : [];
-    const derivativeAssets = 'derivativeAssets' in poolInfo.metadata ? poolInfo.metadata.derivativeAssets : [];
-    const showFee = [YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(poolInfo.type);
+      poolInfo?.statistic && 'assetEarning' in poolInfo?.statistic ? poolInfo?.statistic.assetEarning : [];
+    const derivativeAssets = 'derivativeAssets' in poolInfo?.metadata ? poolInfo?.metadata.derivativeAssets : [];
+    const showFee = [YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(poolInfo?.type);
 
     let minJoinPool: string | undefined;
 
-    if (poolInfo.statistic) {
-      const minPoolJoin = poolInfo.statistic.earningThreshold.join;
+    if (poolInfo?.statistic) {
+      const minPoolJoin = poolInfo?.statistic.earningThreshold.join;
       const targeted = getTargetedPool?.[0];
 
       if (targeted) {
@@ -493,12 +502,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       </MetaInfo>
     );
   }, [
+    poolInfo,
     currentAmount,
     assetDecimals,
     inputAsset.symbol,
-    poolInfo.statistic,
-    poolInfo.metadata,
-    poolInfo.type,
     chainInfoMap,
     chain,
     estimatedFee,
@@ -507,14 +514,17 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   ]);
 
   const onSubmit = useCallback(() => {
+    if (!poolInfo) {
+      Alert.alert('Unable to get earning data', 'Please, go back and try again later');
+    }
     setSubmitLoading(true);
     const values = getValues();
     const { from, value: _currentAmount } = values;
 
     const getData = (submitStep: number): SubmitYieldJoinData => {
-      if ([YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo.type) && poolTarget) {
+      if ([YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo?.type) && poolTarget) {
         const targets = getTargetedPool;
-        if (poolInfo.type === YieldPoolType.NOMINATION_POOL) {
+        if (poolInfo?.type === YieldPoolType.NOMINATION_POOL) {
           const selectedPool = targets[0];
           return {
             slug: slug,
@@ -717,9 +727,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     setCheckMintLoading(true);
 
     unlockDotCheckCanMint({
-      slug: poolInfo.slug,
+      slug: poolInfo?.slug || '',
       address: currentFrom,
-      network: poolInfo.chain,
+      network: poolInfo?.chain || '',
     })
       .then(value => {
         setCanMint(value);
@@ -731,7 +741,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     return () => {
       setCanMint(false);
     };
-  }, [currentFrom, poolInfo.chain, poolInfo.slug]);
+  }, [currentFrom, poolInfo?.chain, poolInfo?.slug]);
 
   useEffect(() => {
     let unmount = false;
@@ -773,7 +783,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           disableMainHeader={submitLoading}
           showRightHeaderButton
           disableLeftButton={submitLoading}
-          disableRightButton={!poolInfo.statistic || submitLoading}
+          disableRightButton={!poolInfo?.statistic || submitLoading}
           onPressBack={onBack}
           onPressRightHeaderBtn={handleOpenDetailModal}>
           <>
@@ -826,7 +836,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                   <View>
                     <FreeBalance
                       address={currentFrom}
-                      chain={poolInfo.chain}
+                      chain={poolInfo?.chain || ''}
                       hidden={[YieldStepType.XCM].includes(submitStepType)}
                       isSubscribe={true}
                       label={`${i18n.inputLabel.availableBalance}:`}
