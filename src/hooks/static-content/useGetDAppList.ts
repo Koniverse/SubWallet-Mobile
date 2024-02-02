@@ -32,23 +32,33 @@ export function useGetDAppList() {
       // Add default desktop mode DApps.
       const notFlagedDApps = dApps.data.filter((dApp: DAppInfo) => desktopModeData.indexOf(dApp.url || '') === -1);
       const needFlagedDApps = notFlagedDApps.filter((dApp: DAppInfo) => !!dApp.desktop_mode);
+      const newDefaultDesktopModeDApps: string[] = [];
       needFlagedDApps.forEach((dApp: DAppInfo) => {
         const storedDefaultUrl = defaultDesktopModeData.find(url => dApp.url === url);
         if (!storedDefaultUrl) {
-          addToDesktopMode(dApp.url);
-          addToDefaultDesktopMode(dApp.url);
+          newDefaultDesktopModeDApps.push(dApp.url);
         }
       });
+      if (newDefaultDesktopModeDApps.length > 0) {
+        addToDesktopMode(newDefaultDesktopModeDApps);
+        addToDefaultDesktopMode(newDefaultDesktopModeDApps);
+      }
+
       // Remove not default desktop mode DApps.
       const flagedDApps = dApps.data.filter((dApp: DAppInfo) => desktopModeData.indexOf(dApp.url || '') !== -1);
       const needRemoveFlaggedDapps = flagedDApps.filter((dApp: DAppInfo) => !dApp.desktop_mode);
+      const newRemoveDefaultDesktopModeDApps: string[] = [];
       needRemoveFlaggedDapps.forEach((dApp: DAppInfo) => {
         const storedDefaultUrl = defaultDesktopModeData.find(url => dApp.url === url);
         if (storedDefaultUrl) {
-          removeFromDesktopMode(dApp.url);
-          removeFromDefaultDesktopMode(dApp.url);
+          newRemoveDefaultDesktopModeDApps.push(dApp.url);
         }
       });
+
+      if (newRemoveDefaultDesktopModeDApps.length > 0) {
+        removeFromDesktopMode(newRemoveDefaultDesktopModeDApps);
+        removeFromDefaultDesktopMode(newRemoveDefaultDesktopModeDApps);
+      }
     }
   }, [
     addToDefaultDesktopMode,

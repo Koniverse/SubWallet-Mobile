@@ -19,35 +19,42 @@ export const useGetDesktopMode = (defaultUrl = '') => {
   const dispatch = useDispatch();
   const desktopMode = isDesktopMode(defaultUrl, desktopModeData);
 
-  const addToDesktopMode = (url?: string) => {
+  const addToDesktopMode = (urls?: string[]) => {
     const newDesktopModeData = [...desktopModeData];
-    newDesktopModeData.push(url ?? defaultUrl);
+    newDesktopModeData.push(...(urls ?? [defaultUrl]));
     dispatch(updateDesktopMode(newDesktopModeData));
   };
 
-  const removeFromDesktopMode = (url?: string) => {
+  const removeFromDesktopMode = (urls?: string[]) => {
     const newDesktopModeData = [...desktopModeData];
 
-    const flagContainingIdx = desktopModeData.indexOf(url ?? defaultUrl);
-    if (flagContainingIdx !== -1) {
-      newDesktopModeData.splice(flagContainingIdx, 1);
-    }
+    const newUrls = urls ?? [defaultUrl];
+    newUrls.forEach(url => {
+      const flagContainingIdx = desktopModeData.indexOf(url ?? defaultUrl);
+      if (flagContainingIdx !== -1) {
+        newDesktopModeData.splice(flagContainingIdx, 1);
+      }
+    });
     dispatch(updateDesktopMode(newDesktopModeData));
   };
 
-  const addToDefaultDesktopMode = (url?: string) => {
+  const addToDefaultDesktopMode = (urls?: string[]) => {
     const newDefaultDesktopModeData = [...defaultDesktopModeData];
-    newDefaultDesktopModeData.push(url ?? defaultUrl);
+    newDefaultDesktopModeData.push(...(urls ?? [defaultUrl]));
     dispatch(updateDefaultDesktopMode(newDefaultDesktopModeData));
   };
 
-  const removeFromDefaultDesktopMode = (url?: string) => {
+  const removeFromDefaultDesktopMode = (urls?: string[]) => {
     const newDefaultDesktopModeData = [...defaultDesktopModeData];
 
-    const flagContainingIdx = defaultDesktopModeData.indexOf(url ?? defaultUrl);
-    if (flagContainingIdx !== -1) {
-      newDefaultDesktopModeData.splice(flagContainingIdx, 1);
-    }
+    const newUrls = urls ?? [defaultUrl];
+    newUrls.forEach(url => {
+      const flagContainingIdx = defaultDesktopModeData.indexOf(url ?? defaultUrl);
+      if (flagContainingIdx !== -1) {
+        newDefaultDesktopModeData.splice(flagContainingIdx, 1);
+      }
+    });
+
     dispatch(updateDefaultDesktopMode(newDefaultDesktopModeData));
   };
 

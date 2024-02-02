@@ -175,7 +175,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   const isWebviewReady = !!(initWebViewSource && injectedScripts);
   const toast = useToast();
   const dispatch = useDispatch();
-  const { desktopMode, addToDesktopMode, removeFromDesktopMode } = useGetDesktopMode(initWebViewSource);
+  const { desktopMode, addToDesktopMode, removeFromDesktopMode } = useGetDesktopMode(initWebViewSource || '');
 
   const clearCurrentBrowserSv = () => {
     browserSv.current?.onDisconnect();
