@@ -25,7 +25,6 @@ let cacheData: Record<string, boolean> = {};
 
 interface Props {
   setStep: (value: number) => void;
-  setLoading: (value: boolean) => void;
   loading: boolean;
 }
 
@@ -84,7 +83,7 @@ const FILTER_OPTIONS = [
   { label: i18n.filterOptions.singleFarming, value: YieldPoolType.SINGLE_FARMING },
 ];
 
-export const PositionList = ({ setStep, setLoading, loading }: Props) => {
+export const PositionList = ({ setStep, loading }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<EarningScreenNavigationProps>();
   const isFocused = useIsFocused();
@@ -219,7 +218,7 @@ export const PositionList = ({ setStep, setLoading, loading }: Props) => {
         showLeftBtn={false}
         placeholder={i18n.placeholder.searchToken}
         autoFocus={false}
-        loading={loading}
+        loading={loading || isRefresh}
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
         filterOptions={FILTER_OPTIONS}
@@ -235,7 +234,6 @@ export const PositionList = ({ setStep, setLoading, loading }: Props) => {
             tintColor={ColorMap.light}
             refreshing={isRefresh}
             onRefresh={() => {
-              setLoading(true);
               refresh(reloadCron({ data: 'staking' }));
             }}
           />
