@@ -1,3 +1,6 @@
+## 1.1.30 (311)
+
+
 ## 1.1.30 (310)
 - Improve navigation and animation PositionList and GroupList when Change Account or Pull to Refresh (#1433)
 - Error page on Earning screen (#1427)
