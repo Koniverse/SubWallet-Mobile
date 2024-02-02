@@ -10,23 +10,37 @@ export const EarningList = ({
   },
 }: EarningListProps) => {
   const data = useGroupYieldPosition();
-  const positionLengthRef = useRef<number>(data.length);
-  const [loading, setLoading] = useState(false);
+  const hasData = !!data?.length;
+  const hasDataFlag = useRef(hasData);
+  const [firstLoading, setFirstLoading] = useState(true);
+  const [positionLoading, setPositionLoading] = useState(false);
 
   useEffect(() => {
-    if (loading && data.length) {
-      setTimeout(() => {
-        positionLengthRef.current = data.length;
-        setLoading(false);
+    let timeout: NodeJS.Timeout | undefined;
+    hasDataFlag.current = hasData;
+    if (hasData) {
+      setFirstLoading(false);
+      setPositionLoading(false);
+    } else {
+      setFirstLoading(true);
+      setPositionLoading(true);
+
+      timeout = setTimeout(() => {
+        setFirstLoading(false);
+        setPositionLoading(false);
       }, 3000);
     }
-  }, [data.length, loading]);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [hasData]);
 
   const [currentStep, setCurrentStep] = useState(step || 1);
   return (
     <>
-      {!!positionLengthRef.current && currentStep === 1 ? (
-        <PositionList setStep={setCurrentStep} setLoading={setLoading} loading={loading} />
+      {(hasDataFlag.current || firstLoading) && currentStep === 1 ? (
+        <PositionList setStep={setCurrentStep} loading={positionLoading} />
       ) : (
         <GroupList isHasAnyPosition={!!data.length} setStep={setCurrentStep} />
       )}
