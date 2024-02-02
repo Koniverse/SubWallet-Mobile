@@ -7,16 +7,14 @@ import { YieldGroupInfo } from 'types/earning';
 import { getTokenLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
-import { _ChainInfo } from '@subwallet/chain-list/types';
 
 interface Props {
   poolGroup: YieldGroupInfo;
   onPress: () => void;
   isShowBalance?: boolean;
-  chain: _ChainInfo;
 }
 
-const EarningGroupItem = ({ poolGroup, onPress, isShowBalance, chain }: Props) => {
+const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
   const { maxApy, symbol, token, balance } = poolGroup;
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
@@ -30,9 +28,9 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance, chain }: Props) =
             <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>
               {symbol}
             </Text>
-            {chain.slug === 'bifrost' && (
+            {poolGroup.chain === 'bifrost' && (
               <Text style={styleSheet.groupChainName} numberOfLines={1} ellipsizeMode={'tail'}>
-                {` (${chain.name})`}
+                {` (${poolGroup.name})`}
               </Text>
             )}
           </View>
