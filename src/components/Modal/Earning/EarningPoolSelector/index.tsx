@@ -249,7 +249,6 @@ export const EarningPoolSelector = ({
         renderListEmptyComponent={renderListEmptyComponent}
         disabled={isDisabled}
         isShowFilterBtn={true}
-        onBackButtonPress={() => poolSelectorRef?.current?.onCloseModal()}
         filterOptions={FILTER_OPTIONS}
         filterFunction={filterFunction}
         onCloseModal={() => setSortSelection(SortKey.DEFAULT)}
@@ -283,6 +282,7 @@ export const EarningPoolSelector = ({
             title={i18n.header.sorting}
             items={sortingOptions}
             selectedValueMap={{ [sortSelection]: true }}
+            onBackButtonPress={() => sortingModalRef.current?.onCloseModal()}
             renderCustomItem={renderSortingItem}>
             {
               <Button

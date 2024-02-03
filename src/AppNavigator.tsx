@@ -500,7 +500,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
-                <Stack.Screen name="MissionPoolsByTabview" component={MissionPoolsByTabview} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
               </Stack.Group>
@@ -511,6 +510,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ConnectList" component={ConnectionListScreen} />
                 <Stack.Screen name="ConnectDetail" component={ConnectionDetail} />
                 <Stack.Screen name="ConnectWalletConnect" component={ConnectWalletConnect} />
+                <Stack.Screen name="MissionPoolsByTabview" component={MissionPoolsByTabview} />
                 <Stack.Screen
                   name="CreatePassword"
                   component={CreateMasterPassword}

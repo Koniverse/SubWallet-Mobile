@@ -350,7 +350,6 @@ export const EarningValidatorSelector = forwardRef(
         ref={validatorSelectModalRef}
         disabled={!chain || !from || disabled}
         applyBtn={applyBtn}
-        onBackButtonPress={() => validatorSelectModalRef?.current?.onCloseModal()}
         onCloseModal={() => {
           setSortSelection(SortKey.DEFAULT);
           onCancelSelectValidator();
@@ -392,6 +391,7 @@ export const EarningValidatorSelector = forwardRef(
             title={i18n.header.sorting}
             items={sortingOptions}
             selectedValueMap={{ [sortSelection]: true }}
+            onBackButtonPress={() => sortingModalRef.current?.onCloseModal()}
             renderCustomItem={renderSortingItem}>
             <Button
               style={{ marginTop: 16 }}

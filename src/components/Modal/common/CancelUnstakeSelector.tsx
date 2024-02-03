@@ -75,7 +75,6 @@ export const CancelUnstakeSelector = ({ nominators, onSelectItem, selectedValue,
         title={i18n.header.unstakeRequest}
         disabled={disabled}
         ref={cancelUnstakeRef}
-        onBackButtonPress={() => cancelUnstakeRef?.current?.onCloseModal()}
         renderSelected={() => (
           <CancelUnstakeSelectorField item={selectedItem} label={i18n.inputLabel.selectAnUnstakeRequest} />
         )}

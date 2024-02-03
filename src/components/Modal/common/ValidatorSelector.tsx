@@ -298,7 +298,6 @@ export const ValidatorSelector = forwardRef(
             },
             applyBtnDisabled: !changeValidators.length,
           }}
-          onBackButtonPress={() => validatorSelectModalRef?.current?.onCloseModal()}
           onCloseModal={() => {
             setSortSelection(SortKey.DEFAULT);
             onCancelSelectValidator();

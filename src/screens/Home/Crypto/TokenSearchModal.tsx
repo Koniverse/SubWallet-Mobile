@@ -65,7 +65,6 @@ export const TokenSearchModal = ({ onSelectItem, items, isShowBalance, tokenSear
       title={i18n.header.selectToken}
       placeholder={i18n.placeholder.searchToken}
       closeModalAfterSelect={true}
-      onBackButtonPress={() => tokenSearchRef?.current?.onCloseModal()}
       renderListEmptyComponent={() => (
         <EmptyList
           icon={Coins}

@@ -1,5 +1,5 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
-import { Platform, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
+import { BackHandler, DeviceEventEmitter, Platform, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import Typography from '../typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -95,6 +95,23 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
     const insets = useSafeAreaInsets();
 
     useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (modalVisible) {
+          if (onBackButtonPress) {
+            onBackButtonPress();
+          } else {
+            DeviceEventEmitter.emit('closeModal');
+          }
+
+          return true;
+        } else {
+          return false;
+        }
+      });
+      return () => backHandler.remove();
+    }, [modalVisible, onBackButtonPress]);
+
+    useEffect(() => {
       if (isKeyboardVisible) {
         setChildrenHeight(keyboardHeight + contentHeight - insets.bottom);
       } else {
@@ -142,6 +159,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
               isUseForceHidden={Platform.OS === 'android'}
               onChangeModalVisible={onChangeModalVisible}
               isAllowSwipeDown={isAllowSwipeDown}
+              onBackButtonPress={onBackButtonPress}
               level={level}>
               <View
                 style={{ paddingHorizontal: 16, paddingTop: 22 }}

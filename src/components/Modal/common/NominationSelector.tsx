@@ -58,7 +58,6 @@ export const NominationSelector = ({ nominators, selectedValue, onSelectItem, di
         renderSelected={() => (
           <NominationSelectorField label={i18n.inputLabel.selectCollator} item={selectedCollator} />
         )}
-        onBackButtonPress={() => collatorRef?.current?.onCloseModal()}
         ref={collatorRef}
         renderCustomItem={renderItem}
         searchFunc={searchFunction}
