@@ -96,6 +96,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const appModalContext = useContext(AppModalContext);
   const { checkChainConnected, turnOnChain } = useChainChecker(false);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const loadingRef = useRef(isLoading);
   const [state, setState] = React.useState({ num: 0 });
   const [selectedPoolOpt, setSelectedPoolOpt] = React.useState<YieldPoolInfo | undefined>(undefined);
   const counter = useRef(0);
@@ -180,15 +181,16 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
 
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
-    if (isLoading && selectedPoolOpt) {
+    if (loadingRef.current && selectedPoolOpt) {
       if (counter.current < 2) {
         counter.current += 1;
         timer = setTimeout(() => setState({ num: state.num + 1 }), 1000);
       } else {
-        if (checkChainConnected(chainInfoMap[selectedPoolOpt.chain].slug)) {
+        if (checkChainConnected(selectedPoolOpt.chain)) {
           setLoading(false);
           setTimeout(() => handleOnStakeMore(selectedPoolOpt.slug), 100);
         } else {
+          setLoading(false);
           Alert.alert('Error', 'Failed to get data. Please try again later', [
             {
               text: 'Continue',
@@ -200,7 +202,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     }
 
     return () => clearTimeout(timer);
-  }, [chainInfoMap, checkChainConnected, handleOnStakeMore, isLoading, selectedPoolOpt, state.num]);
+  }, [checkChainConnected, handleOnStakeMore, selectedPoolOpt, state.num]);
 
   const renderEmpty = useCallback(() => {
     return (

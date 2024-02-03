@@ -104,7 +104,6 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const rootNavigation = useNavigation<RootNavigationProps>();
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const data = useYieldGroupInfo();
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
@@ -112,9 +111,14 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const appModalContext = useContext(AppModalContext);
   const { checkChainConnected, turnOnChain } = useChainChecker(false);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const loadingRef = useRef(isLoading);
   const [state, setState] = React.useState({ num: 0 });
   const [selectedPoolGroup, setSelectedPoolGroup] = React.useState<YieldGroupInfo | undefined>(undefined);
   const counter = useRef(0);
+
+  useEffect(() => {
+    loadingRef.current = isLoading;
+  }, [isLoading]);
 
   const items = useMemo(() => {
     return [...data].sort((a, b) => {
@@ -200,16 +204,16 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
 
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
-    if (isLoading && selectedPoolGroup) {
+    if (loadingRef.current && selectedPoolGroup) {
       if (counter.current < 2) {
         counter.current += 1;
-        console.log('counter.current', counter.current);
         timer = setTimeout(() => setState({ num: state.num + 1 }), 1000);
       } else {
-        if (checkChainConnected(chainInfoMap[selectedPoolGroup.chain].slug)) {
+        if (checkChainConnected(selectedPoolGroup.chain)) {
           setLoading(false);
           setTimeout(() => navigateToEarnScreen(selectedPoolGroup), 100);
         } else {
+          setLoading(false);
           Alert.alert('Error', 'Failed to get data. Please try again later', [
             {
               text: 'Continue',
@@ -221,7 +225,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
     }
 
     return () => clearTimeout(timer);
-  }, [chainInfoMap, checkChainConnected, navigateToEarnScreen, isLoading, selectedPoolGroup, state.num]);
+  }, [checkChainConnected, navigateToEarnScreen, selectedPoolGroup, state.num]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<YieldGroupInfo>) => {
@@ -231,14 +235,13 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
           poolGroup={item}
           onPress={() => {
             Keyboard.dismiss();
-            onPressItem(chainInfoMap[item.chain].slug, item);
+            onPressItem(item.chain, item);
           }}
           isShowBalance={isShowBalance}
-          chain={chainInfoMap[item.chain]}
         />
       );
     },
-    [chainInfoMap, isShowBalance, onPressItem],
+    [isShowBalance, onPressItem],
   );
 
   const onBack = useCallback(() => {

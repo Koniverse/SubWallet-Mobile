@@ -497,7 +497,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
                 type={'ghost'}
                 size={'xs'}
                 icon={<Icon phosphorIcon={X} weight={'bold'} size={'md'} iconColor={theme.colorWhite} />}
-                onPress={() => (!isShowStakeMoreBtn ? closeModal() : goBack())}
+                onPress={!isShowStakeMoreBtn ? closeModal : goBack}
               />
             </View>
             <Typography.Text style={styles.headerText}>{title}</Typography.Text>

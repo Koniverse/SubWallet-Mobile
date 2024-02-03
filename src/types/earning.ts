@@ -1,4 +1,4 @@
-import { _ChainAsset } from '@subwallet/chain-list/types';
+import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import { AbstractYieldPositionInfo } from '@subwallet/extension-base/types';
 import { NominationPoolInfo, ValidatorInfo } from '@subwallet/extension-base/types/yield/info/chain/target';
 import { SWIconProps } from 'components/design-system-ui/icon';
@@ -7,6 +7,7 @@ import { PhosphorIcon } from 'utils/campaign';
 
 export interface ExtraYieldPositionInfo extends AbstractYieldPositionInfo {
   asset: _ChainAsset;
+  chainInfo: _ChainInfo;
   price: number;
   // exchangeRate: number;
 }
