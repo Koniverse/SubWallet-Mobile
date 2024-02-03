@@ -927,7 +927,8 @@
       "submitting": "提交中",
       "processing": "处理中",
       "cancelled": "已取消",
-      "unknown": "未知"
+      "unknown": "未知",
+      "timeout": "Time-out"
     },
     "label": {
       "transactionType": "交易类型",

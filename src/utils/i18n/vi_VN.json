@@ -927,7 +927,8 @@
       "submitting": "Đang nộp",
       "processing": "Đang xử lý",
       "cancelled": "Hủy",
-      "unknown": "không xác định"
+      "unknown": "không xác định",
+      "timeout": "Time-out"
     },
     "label": {
       "transactionType": "Loại giao dịch",

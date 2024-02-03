@@ -927,7 +927,8 @@
       "submitting": "Отправка",
       "processing": "В процессе ",
       "cancelled": "Отменено",
-      "unknown": "Неизвестно"
+      "unknown": "Неизвестно",
+      "timeout": "Time-out"
     },
     "label": {
       "transactionType": "Тип транзакции",
