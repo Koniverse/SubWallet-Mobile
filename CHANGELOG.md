@@ -1,3 +1,9 @@
+## 1.1.31 (312)
+- Update web-runner v1.1.35 (#1426)
+- Fix bug alert popup display continuously when turn on chain in earning pool (#1440)
+- Add time-out status for transaction history (#1396)
+- Show incorrect tokens on the balance screen in case an account with the type 'ed25519' is imported (#1442)
+
 ## 1.1.30 (311)
 
 
