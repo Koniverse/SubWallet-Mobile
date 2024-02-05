@@ -1,6 +1,6 @@
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
-import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
-import { YieldPoolType } from '@subwallet/extension-base/types';
+import { calculateReward, isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
+import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import { Button, Icon, SwFullSizeModal, Tag, Typography } from 'components/design-system-ui';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -177,6 +177,19 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       return data.filter(item => item.apy);
     }
   }, [assetRegistry, poolInfo.metadata.inputAsset, poolInfo.statistic]);
+
+  const getAltChain = useCallback(
+    (_poolInfo?: YieldPoolInfo) => {
+      if (!!_poolInfo && (isLiquidPool(_poolInfo) || isLendingPool(_poolInfo))) {
+        const asset = assetRegistry[_poolInfo.metadata.altInputAssets || ''];
+
+        return asset ? { chain: asset.originChain, name: asset.name } : { chain: '', name: '' };
+      }
+
+      return { chain: '', name: '' };
+    },
+    [assetRegistry],
+  );
 
   const setVisible = useCallback(
     (value: boolean) => {
@@ -390,6 +403,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       }
       case 'Bifrost Polkadot': {
         urlParam = '#bifrost';
+        const altChain = getAltChain(poolInfo);
+        if (altChain && altChain.chain === 'manta_network') {
+          urlParam = '#vmanta-on-bifrost';
+        }
         break;
       }
       case 'Interlay': {
@@ -404,10 +421,14 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         urlParam = '#stellaswap';
         break;
       }
+      case 'Parallel': {
+        urlParam = '#parallel';
+        break;
+      }
     }
 
     Linking.openURL(`https://docs.subwallet.app/main/web-dashboard-user-guide/earning/faqs${urlParam}`);
-  }, [poolInfo.metadata.shortName]);
+  }, [getAltChain, poolInfo]);
 
   const onPress = useCallback(() => {
     const time = Date.now();

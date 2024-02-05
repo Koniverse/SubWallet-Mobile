@@ -36,7 +36,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { turnOnChain, checkChainConnected } = useChainChecker();
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const appModalContext = useContext(AppModalContext);
+  const { hideConfirmModal, setConfirmModal } = useContext(AppModalContext);
   const transactionType = useMemo((): ExtrinsicTypeMobile => {
     switch (action) {
       case 'stake':
@@ -121,17 +121,17 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
       const isConnected = checkChainConnected(chain);
       if (!isConnected) {
         setTimeout(() => {
-          appModalContext.setConfirmModal({
+          setConfirmModal({
             visible: true,
             completeBtnTitle: i18n.buttonTitles.enable,
             message: i18n.common.enableChainMessage,
             title: i18n.common.enableChain,
             onCancelModal: () => {
-              appModalContext.hideConfirmModal();
+              hideConfirmModal();
             },
             onCompleteModal: () => {
               turnOnChain(chain);
-              setTimeout(() => appModalContext.hideConfirmModal(), 300);
+              setTimeout(() => hideConfirmModal(), 300);
             },
             messageIcon: chain,
           });
@@ -139,7 +139,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [appModalContext, chainInfoMap],
+    [hideConfirmModal, setConfirmModal, chainInfoMap],
   );
 
   const onChangeFromValue = useCallback(

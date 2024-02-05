@@ -3,8 +3,8 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import EarningGroupItem from 'components/Item/Earning/EarningGroupItem';
 import { useYieldGroupInfo } from 'hooks/earning';
 import { Trophy } from 'phosphor-react-native';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Keyboard, ListRenderItemInfo, RefreshControl, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { EarningScreenNavigationProps } from 'routes/earning';
 import { YieldGroupInfo } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
@@ -18,12 +18,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import createStyles from './style';
 import { RootNavigationProps } from 'routes/index';
-import ModalBase from 'components/Modal/Base/ModalBase';
-import { deviceWidth } from 'constants/index';
-import { ActivityIndicator, Typography } from 'components/design-system-ui';
-import { FontMedium } from 'styles/sharedStyles';
-import { AppModalContext } from 'providers/AppModalContext';
-import useChainChecker from 'hooks/chain/useChainChecker';
+import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
+import { YieldPoolInfo } from '@subwallet/extension-base/types';
+import { GettingDataModal } from 'components/Modal/GettingDataModal';
+import { useHandleChainConnection } from 'hooks/earning/useHandleChainConnection';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -104,21 +102,58 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const rootNavigation = useNavigation<RootNavigationProps>();
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const data = useYieldGroupInfo();
-
+  const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const appModalContext = useContext(AppModalContext);
-  const { checkChainConnected, turnOnChain } = useChainChecker(false);
-  const [isLoading, setLoading] = useState<boolean>(false);
-  const loadingRef = useRef(isLoading);
-  const [state, setState] = React.useState({ num: 0 });
   const [selectedPoolGroup, setSelectedPoolGroup] = React.useState<YieldGroupInfo | undefined>(undefined);
-  const counter = useRef(0);
 
-  useEffect(() => {
-    loadingRef.current = isLoading;
-  }, [isLoading]);
+  const getAltChain = useCallback(
+    (poolInfo?: YieldPoolInfo) => {
+      if (!!poolInfo && (isLiquidPool(poolInfo) || isLendingPool(poolInfo))) {
+        const asset = chainAsset[poolInfo.metadata.altInputAssets || ''];
+
+        return asset ? { chain: asset.originChain, name: asset.name } : { chain: '', name: '' };
+      }
+
+      return { chain: '', name: '' };
+    },
+    [chainAsset],
+  );
+
+  const altChainData = useMemo(() => {
+    const poolInfo =
+      selectedPoolGroup &&
+      Object.values(poolInfoMap).find(i => i.group === selectedPoolGroup.group && i.chain === selectedPoolGroup.chain);
+
+    return getAltChain(poolInfo);
+  }, [getAltChain, poolInfoMap, selectedPoolGroup]);
+
+  const navigateToEarnScreen = useCallback(
+    (poolGroup: YieldGroupInfo) => {
+      const standAloneTokenSlug = Object.values(poolInfoMap).find(
+        i => i.group === poolGroup.group && i.chain === poolGroup.chain,
+      )?.slug;
+
+      rootNavigation.navigate('Drawer', {
+        screen: 'TransactionAction',
+        params: {
+          screen: 'Earning',
+          params: { slug: standAloneTokenSlug || '' },
+        },
+      });
+    },
+    [poolInfoMap, rootNavigation],
+  );
+
+  const { checkChainConnected, onConnectChain, isLoading, turnOnChain, setLoading } = useHandleChainConnection(
+    selectedPoolGroup?.chain,
+    selectedPoolGroup?.name,
+    () => {
+      setTimeout(() => selectedPoolGroup && navigateToEarnScreen(selectedPoolGroup), 100);
+    },
+    altChainData,
+  );
 
   const items = useMemo(() => {
     return [...data].sort((a, b) => {
@@ -145,87 +180,45 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
     );
   }, [isRefresh, refresh]);
 
-  const connectChain = useCallback(
-    (chainSlug: string) => {
-      setTimeout(() => {
-        appModalContext.setConfirmModal({
-          visible: true,
-          completeBtnTitle: i18n.buttonTitles.enable,
-          message: i18n.common.enableChainMessage,
-          title: i18n.common.enableChain,
-          onCancelModal: () => {
-            appModalContext.hideConfirmModal();
-          },
-          onCompleteModal: () => {
-            turnOnChain(chainSlug);
-            setLoading(true);
-            setTimeout(() => appModalContext.hideConfirmModal(), 0);
-          },
-          messageIcon: chainSlug,
-        });
-      }, 300);
-    },
-    [appModalContext, turnOnChain],
-  );
-
-  const navigateToEarnScreen = useCallback(
-    (poolGroup: YieldGroupInfo) => {
-      const standAloneTokenSlug = Object.values(poolInfoMap).find(
-        i => i.group === poolGroup.group && i.chain === poolGroup.chain,
-      )?.slug;
-
-      rootNavigation.navigate('Drawer', {
-        screen: 'TransactionAction',
-        params: {
-          screen: 'Earning',
-          params: { slug: standAloneTokenSlug || '' },
-        },
-      });
-    },
-    [poolInfoMap, rootNavigation],
-  );
-
   const onPressItem = useCallback(
     (chainSlug: string, poolGroup: YieldGroupInfo) => {
-      counter.current = 0;
       setSelectedPoolGroup(poolGroup);
       if (poolGroup.poolListLength > 1) {
         navigation.navigate('EarningPoolList', { group: poolGroup.group, symbol: poolGroup.symbol });
       } else if (poolGroup.poolListLength === 1) {
+        const poolInfo = Object.values(poolInfoMap).find(
+          i => i.group === poolGroup.group && i.chain === poolGroup.chain,
+        );
+
+        if (!poolInfo) {
+          // will not happen
+
+          return;
+        }
+
+        const currentAltChainData = getAltChain(poolInfo);
+
         if (!checkChainConnected(chainSlug)) {
-          connectChain(chainSlug);
+          onConnectChain(chainSlug, currentAltChainData.chain);
+        } else if (!checkChainConnected(currentAltChainData.chain)) {
+          turnOnChain(currentAltChainData.chain);
+          setLoading(true);
         } else {
           navigateToEarnScreen(poolGroup);
         }
       }
     },
-    [checkChainConnected, connectChain, navigateToEarnScreen, navigation],
+    [
+      checkChainConnected,
+      getAltChain,
+      navigateToEarnScreen,
+      navigation,
+      onConnectChain,
+      poolInfoMap,
+      setLoading,
+      turnOnChain,
+    ],
   );
-
-  useEffect(() => {
-    let timer: string | number | NodeJS.Timeout | undefined;
-    if (loadingRef.current && selectedPoolGroup) {
-      if (counter.current < 2) {
-        counter.current += 1;
-        timer = setTimeout(() => setState({ num: state.num + 1 }), 1000);
-      } else {
-        if (checkChainConnected(selectedPoolGroup.chain)) {
-          setLoading(false);
-          setTimeout(() => navigateToEarnScreen(selectedPoolGroup), 100);
-        } else {
-          setLoading(false);
-          Alert.alert('Error', 'Failed to get data. Please try again later', [
-            {
-              text: 'Continue',
-              style: 'destructive',
-            },
-          ]);
-        }
-      }
-    }
-
-    return () => clearTimeout(timer);
-  }, [checkChainConnected, navigateToEarnScreen, selectedPoolGroup, state.num]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<YieldGroupInfo>) => {
@@ -298,31 +291,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         }
       />
 
-      <ModalBase
-        isVisible={isLoading}
-        style={{ margin: 0, justifyContent: 'center', alignItems: 'center' }}
-        backdropColor={'#1A1A1A'}
-        backdropOpacity={0.8}
-        animationIn={'slideInUp'}
-        animationOut={'slideOutDown'}
-        hideModalContentWhileAnimating>
-        <View
-          style={{
-            width: deviceWidth * 0.6,
-            backgroundColor: theme.colorBgDefault,
-            borderRadius: theme.borderRadiusXL,
-            paddingHorizontal: theme.padding,
-            paddingTop: theme.padding,
-            paddingBottom: theme.padding,
-            gap: theme.padding,
-            alignItems: 'center',
-          }}>
-          <>
-            <ActivityIndicator size={32} />
-            <Typography.Text style={{ color: theme.colorTextLight1, ...FontMedium }}>Getting data</Typography.Text>
-          </>
-        </View>
-      </ModalBase>
+      <GettingDataModal isLoading={isLoading} />
     </>
   );
 };

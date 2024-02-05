@@ -116,14 +116,15 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
 
   useEffect(() => {
     setPendingChainMap(prevPendingChainMap => {
-      Object.entries(prevPendingChainMap).forEach(([key, val]) => {
+      const _prevPendingChainMap = { ...prevPendingChainMap };
+      Object.entries(_prevPendingChainMap).forEach(([key, val]) => {
         if (chainInfoMap[key].active === val) {
           // @ts-ignore
-          delete prevPendingChainMap[key];
+          delete _prevPendingChainMap[key];
         }
       });
 
-      return { ...prevPendingChainMap };
+      return _prevPendingChainMap;
     });
   }, [chainInfoMap]);
 

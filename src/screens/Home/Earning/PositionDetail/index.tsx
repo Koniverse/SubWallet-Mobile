@@ -14,7 +14,7 @@ import { EarningBaseInfo, EarningPoolInfo, EarningRewardInfo, EarningWithdrawMet
 import { useYieldPositionDetail } from 'hooks/earning';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MinusCircle, Plus, PlusCircle } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { EarningPositionDetailProps } from 'routes/earning';
@@ -28,6 +28,9 @@ import { BN_ZERO } from 'utils/chainBalances';
 import WarningModal from 'components/Modal/WarningModal';
 import { mmkvStore } from 'utils/storage';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import useChainChecker from 'hooks/chain/useChainChecker';
+import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
+import { GettingDataModal } from 'components/Modal/GettingDataModal';
 
 interface Props {
   compound: YieldPositionInfo;
@@ -45,6 +48,61 @@ const Component: React.FC<Props> = (props: Props) => {
   const { isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
   const [dAppStakingWarningModalVisible, setDAppStakingWarningModalVisible] = useState<boolean>(false);
   const isOpenDAppWarningInPositionDetail = mmkvStore.getBoolean('isOpenDAppWarningInPositionDetail');
+  const { checkChainConnected, turnOnChain } = useChainChecker(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const loadingRef = useRef(isLoading);
+  const [state, setState] = React.useState({ num: 0 });
+  const counter = useRef(0);
+
+  useEffect(() => {
+    loadingRef.current = isLoading;
+  }, [isLoading]);
+
+  const getAltChain = useCallback(() => {
+    if (isLiquidPool(poolInfo) || isLendingPool(poolInfo)) {
+      const asset = assetRegistry[poolInfo.metadata.altInputAssets || ''];
+
+      return asset ? asset.originChain : '';
+    }
+
+    return '';
+  }, [assetRegistry, poolInfo]);
+
+  const navigateToEarnScreen = useCallback(() => {
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: {
+        screen: 'Earning',
+        params: { slug: compound.slug },
+      },
+    });
+  }, [compound.slug, navigation]);
+
+  useEffect(() => {
+    let timer: string | number | NodeJS.Timeout | undefined;
+    if (loadingRef.current) {
+      if (counter.current < 2) {
+        counter.current += 1;
+        timer = setTimeout(() => setState({ num: state.num + 1 }), 1000);
+      } else {
+        const altChain = getAltChain();
+        if (checkChainConnected(altChain)) {
+          setLoading(false);
+          setTimeout(() => navigateToEarnScreen(), 100);
+        } else {
+          setLoading(false);
+          Alert.alert('Error', 'Failed to get data. Please try again later', [
+            {
+              text: 'Continue',
+              style: 'destructive',
+            },
+          ]);
+        }
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [checkChainConnected, getAltChain, navigateToEarnScreen, state.num]);
 
   useEffect(() => {
     if (!isOpenDAppWarningInPositionDetail && _STAKING_CHAIN_GROUP.astar.includes(poolInfo.chain)) {
@@ -128,14 +186,14 @@ const Component: React.FC<Props> = (props: Props) => {
   }, [isActiveStakeZero, navigation, poolInfo.slug]);
 
   const onEarnMore = useCallback(() => {
-    navigation.navigate('Drawer', {
-      screen: 'TransactionAction',
-      params: {
-        screen: 'Earning',
-        params: { slug: compound.slug },
-      },
-    });
-  }, [compound.slug, navigation]);
+    const altChain = getAltChain();
+    if (!checkChainConnected(altChain)) {
+      turnOnChain(altChain);
+      setLoading(true);
+    } else {
+      navigateToEarnScreen();
+    }
+  }, [checkChainConnected, getAltChain, navigateToEarnScreen, turnOnChain]);
 
   return (
     <ContainerWithSubHeader
@@ -208,6 +266,8 @@ const Component: React.FC<Props> = (props: Props) => {
       ) : (
         <></>
       )}
+
+      <GettingDataModal isLoading={isLoading} />
     </ContainerWithSubHeader>
   );
 };
