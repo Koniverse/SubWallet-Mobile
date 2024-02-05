@@ -4578,10 +4578,10 @@
     "@polkadot/util" "^12.5.1"
     eventemitter3 "^5.0.1"
 
-"@subwallet/extension-base@1.1.35-beta.0", "@subwallet/extension-base@^1.1.35-0":
-  version "1.1.35-beta.0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.1.35-beta.0.tgz#e382cb19cd02b11981a4dd378a6af65d9066289c"
-  integrity sha512-d7w6ld8ACB5ZaMl3GJUbR+n3C4tisph9ltuK3vT4x9fILZhqIHbB3pSdINE8ob+mGKA/JdO2yFSZhGUc0hMF8Q==
+"@subwallet/extension-base@1.1.35-beta.2", "@subwallet/extension-base@^1.1.35-0":
+  version "1.1.35-beta.2"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.1.35-beta.2.tgz#7b71a452644576cd0c114ea15c0bd24ab31d9f4f"
+  integrity sha512-ZtruJMmI1NqJbpRNJyvUAw0xb5AOr3smxWmnrdqmuj0ED2xwFHzHJNdZnodq023+SrVxFhjAkplqx0azKd8PWA==
   dependencies:
     "@acala-network/api" "^5.0.2"
     "@apollo/client" "^3.7.14"
