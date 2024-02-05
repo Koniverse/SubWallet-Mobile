@@ -46,6 +46,7 @@ import { SessionTypes } from '@walletconnect/types';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { MissionInfo } from 'types/missionPool';
 import { DAPPCategory, DAppInfo } from 'types/browser';
+import { RootRouteProps } from 'routes/index';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -157,6 +158,7 @@ export interface AppSettings extends UiSettings, Omit<SettingsStruct, 'camera' |
     dApps: DAppInfo[] | undefined;
     dAppCategories: DAPPCategory[] | undefined;
   };
+  currentRoute: RootRouteProps | undefined;
 }
 
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {

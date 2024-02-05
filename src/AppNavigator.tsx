@@ -83,6 +83,7 @@ import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview'
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { DeriveAccount } from 'screens/Account/DeriveAccount';
 import { useGroupYieldPosition } from 'hooks/earning';
+import { updateCurrentRoute } from 'stores/utils';
 
 interface Props {
   isAppReady: boolean;
@@ -407,6 +408,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   };
 
   const onUpdateRoute = useCallback((state: NavigationState | undefined) => {
+    updateCurrentRoute(state?.routes[state?.index]);
     setCurrentRoute(state?.routes[state?.index]);
   }, []);
 

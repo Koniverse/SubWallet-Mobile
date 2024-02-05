@@ -37,6 +37,8 @@ import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import IntroducingModal from 'components/Modal/IntroducingModal';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 import { TermAndCondition } from 'constants/termAndCondition';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import { useIsFocused } from '@react-navigation/native';
 
 interface tabbarIconColor {
   color: string;
@@ -198,7 +200,8 @@ let isShowCampaignModal = false;
 
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
-  const { hasMasterPassword, isReady, isLocked } = useSelector((state: RootState) => state.accountState);
+  const { hasMasterPassword, isReady, isLocked, accounts } = useSelector((state: RootState) => state.accountState);
+  const { currentRoute } = useSelector((state: RootState) => state.settings);
   const [isLoading, setLoading] = useState(true);
   const [generalTermVisible, setGeneralTermVisible] = useState<boolean>(false);
   const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
@@ -209,6 +212,7 @@ export const Home = ({ navigation }: Props) => {
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
   const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
   const language = useSelector((state: RootState) => state.settings.language);
+  const isFocused = useIsFocused();
   mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
   useEffect(() => {
     if (isReady && isLoading) {
@@ -258,6 +262,13 @@ export const Home = ({ navigation }: Props) => {
     setGeneralTermVisible(false);
   };
 
+  const needMigrate = useMemo(
+    () =>
+      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
+        .length || currentRoute?.name === 'MigratePassword',
+    [accounts, currentRoute?.name],
+  );
+
   if (isLoading) {
     return (
       <View style={styles.indicatorWrapper}>
@@ -271,13 +282,23 @@ export const Home = ({ navigation }: Props) => {
       <Wrapper />
 
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
-      {!isLocked && !isEmptyAccounts && !isOpenIntroductionFirstTime && (
+      {!isLocked && !isEmptyAccounts && !isOpenIntroductionFirstTime && !needMigrate && (
         <IntroducingModal visible={introducingModalVisible} setVisible={setIntroducingModalVisible} />
       )}
-      {!isLocked && firstBanner && isShowCampaignModal && !isEmptyAccounts && isOpenIntroductionFirstTime && (
-        <CampaignBannerModal visible={campaignModalVisible} banner={firstBanner} setVisible={setCampaignModalVisible} />
-      )}
-      {!isLocked && !isOpenGeneralTermFirstTime && (
+      {!isLocked &&
+        firstBanner &&
+        isShowCampaignModal &&
+        !isEmptyAccounts &&
+        isOpenIntroductionFirstTime &&
+        !needMigrate &&
+        isFocused && (
+          <CampaignBannerModal
+            visible={campaignModalVisible}
+            banner={firstBanner}
+            setVisible={setCampaignModalVisible}
+          />
+        )}
+      {!isLocked && !isOpenGeneralTermFirstTime && !needMigrate && (
         <GeneralTermModal
           modalVisible={generalTermVisible}
           setVisible={setGeneralTermVisible}

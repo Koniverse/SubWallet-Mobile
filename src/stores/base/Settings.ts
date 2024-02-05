@@ -5,6 +5,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { ThemeNames, UiSettings } from '@subwallet/extension-base/background/KoniTypes';
 import { AppSettings, ReduxStatus } from 'stores/types';
+import { RootRouteProps } from 'routes/index';
 
 const initialState = {
   // UI settings
@@ -14,7 +15,7 @@ const initialState = {
   theme: ThemeNames.DARK,
   language: 'en',
   browserConfirmationType: 'extension',
-
+  currentRoute: undefined,
   // AuthUrls
   authUrls: {},
 
@@ -43,6 +44,14 @@ const settingsSlice = createSlice({
         isShowBalance: payload.isShowBalance,
         accountAllLogo: payload.accountAllLogo,
         reduxStatus: ReduxStatus.READY,
+      };
+    },
+    updateCurrentRoute(state, action: PayloadAction<RootRouteProps | undefined>) {
+      const payload = action.payload;
+
+      return {
+        ...state,
+        currentRoute: payload,
       };
     },
     updateToggleBalance(state) {
@@ -135,6 +144,7 @@ export const {
   updateIsDeepLinkConnect,
   updateIsShowByToken,
   updateBrowserDApps,
+  updateCurrentRoute,
   updateLanguage,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;
