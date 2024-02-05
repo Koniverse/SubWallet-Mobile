@@ -5,6 +5,7 @@ import GroupList from 'screens/Home/Earning/GroupList';
 import { EarningListProps } from 'routes/earning';
 
 export const EarningList = ({
+  navigation,
   route: {
     params: { step },
   },
@@ -12,8 +13,18 @@ export const EarningList = ({
   const data = useGroupYieldPosition();
   const hasData = !!data?.length;
   const hasDataFlag = useRef(hasData);
+  const [currentStep, setCurrentStep] = useState(step || 1);
   const [firstLoading, setFirstLoading] = useState(true);
   const [positionLoading, setPositionLoading] = useState(false);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      if (hasDataFlag.current && currentStep === 2) {
+        setCurrentStep(1);
+      }
+    });
+
+    return unsubscribe;
+  }, [currentStep, navigation]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined;
@@ -36,7 +47,6 @@ export const EarningList = ({
     };
   }, [hasData]);
 
-  const [currentStep, setCurrentStep] = useState(step || 1);
   return (
     <>
       {(hasDataFlag.current || firstLoading) && currentStep === 1 ? (

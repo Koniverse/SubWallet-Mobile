@@ -3,7 +3,7 @@ import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-naviga
 import EarningScreen from 'screens/Home/Earning';
 
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, Database, Globe, Rocket, Wallet } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
@@ -60,7 +60,7 @@ const browserTabbarIcon = ({ color }: tabbarIconColor) => {
 const getSettingsContent = (props: DrawerContentComponentProps) => {
   return <Settings {...props} />;
 };
-const MainScreen = () => {
+const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
   const theme = useSubWalletTheme().swThemes;
@@ -142,6 +142,11 @@ const MainScreen = () => {
       <Tab.Screen
         name={'Earning'}
         component={EarningScreen}
+        listeners={{
+          tabPress: () => {
+            navigation.popToTop();
+          },
+        }}
         options={{
           tabBarLabel: i18n.tabName.earning,
           tabBarHideOnKeyboard: Platform.OS === 'android',
