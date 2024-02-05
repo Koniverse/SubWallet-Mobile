@@ -606,6 +606,37 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       }
     };
 
+    const maxCount = poolInfo?.statistic?.maxCandidatePerFarmer ?? 1;
+    const userSelectedPoolCount = poolTarget.split(',').length ?? 1;
+    if (userSelectedPoolCount < maxCount) {
+      return Alert.alert(
+        'Pay attention!',
+        `You are recommended to choose ${maxCount} validators to optimize your earnings. Do you wish to continue with ${userSelectedPoolCount} validator${
+          userSelectedPoolCount === 1 ? '' : 's'
+        }?`,
+        [
+          {
+            text: 'Go back',
+            onPress: () => {
+              setSubmitLoading(false);
+            },
+            style: 'default',
+          },
+          {
+            text: 'Continue',
+            style: 'default',
+            isPreferred: true,
+            onPress: () => {
+              submitData(currentStep)
+                .catch(onError)
+                .finally(() => {
+                  setSubmitLoading(false);
+                });
+            },
+          },
+        ],
+      );
+    }
     submitData(currentStep)
       .catch(onError)
       .finally(() => {
