@@ -1,3 +1,8 @@
+## 1.1.31 (313)
+- Add alert warning when user select yy validator although re-commended xx validators (xx > yy) (#1424)
+- [Earning] Handle the case of switch tab on menu (#1439)
+- Bug extension base have error with window.location and mv3 (#1449)
+
 ## 1.1.31 (312)
 - Update web-runner v1.1.35 (#1426)
 - Fix bug alert popup display continuously when turn on chain in earning pool (#1440)
