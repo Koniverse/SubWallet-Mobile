@@ -5,7 +5,7 @@ import { StyleProp, View, ViewStyle } from 'react-native';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
 import { IconButton } from 'components/IconButton';
-import { CaretLeft, ImageSquare, Info } from 'phosphor-react-native';
+import { CaretLeft, ImageSquare } from 'phosphor-react-native';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { Warning } from 'components/Warning';
 import { Button, Icon } from 'components/design-system-ui';
@@ -16,16 +16,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const CancelButtonStyle: StyleProp<ViewStyle> = {
   position: 'absolute',
   left: 16,
-  zIndex: 10,
-  width: 40,
-  height: 40,
-  justifyContent: 'center',
-  alignItems: 'center',
-};
-
-const LibraryButtonStyle: StyleProp<ViewStyle> = {
-  position: 'absolute',
-  right: 16,
   zIndex: 10,
   width: 40,
   height: 40,
@@ -67,7 +57,7 @@ export const QrCodeScanner = ({ error, onPressLibraryBtn, onPressCancel, onSucce
             <View style={[ScannerStyles.HeaderStyle]}>
               <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanQrCode}</Text>
               <IconButton icon={CaretLeft} size={24} style={CancelButtonStyle} onPress={onPressCancel} />
-              <IconButton icon={Info} size={24} style={LibraryButtonStyle} />
+              {/*<IconButton icon={Info} size={24} style={LibraryButtonStyle} />*/}
             </View>
           </View>
           <View style={ScannerStyles.CenterOverlayStyle}>
