@@ -1,5 +1,6 @@
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { _getAssetDecimals, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
+import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import {
   NominationPoolInfo,
@@ -27,6 +28,7 @@ import EarningPoolDetailModal from 'components/Modal/Earning/EarningPoolDetailMo
 import { EarningPoolSelector } from 'components/Modal/Earning/EarningPoolSelector';
 import { EarningValidatorSelector, ValidatorSelectorRef } from 'components/Modal/Earning/EarningValidatorSelector';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
+import useChainChecker from 'hooks/chain/useChainChecker';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import useFetchChainState from 'hooks/screen/useFetchChainState';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
@@ -40,7 +42,8 @@ import {
   validateYieldProcess,
 } from 'messaging/index';
 import { PlusCircle } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { AppModalContext } from 'providers/AppModalContext';
+import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Alert, Keyboard, ScrollView, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -87,9 +90,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       params: { slug },
     },
   } = props;
+
+  const { setConfirmModal, hideConfirmModal } = useContext(AppModalContext);
+
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { show, hideAll } = useToast();
+  const { turnOnChain, checkChainConnected } = useChainChecker();
 
   const {
     title,
@@ -155,6 +162,20 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     () => [YieldPoolType.NATIVE_STAKING, YieldPoolType.NOMINATION_POOL].includes(poolType),
     [poolType],
   );
+
+  const altChain = useMemo(() => {
+    if (poolInfo) {
+      if (isLiquidPool(poolInfo) || isLendingPool(poolInfo)) {
+        const asset = chainAsset[poolInfo.metadata.altInputAssets || ''];
+
+        return asset ? asset.originChain : '';
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }, [chainAsset, poolInfo]);
 
   const balanceTokens = useMemo(() => {
     const result: Array<{ chain: string; token: string }> = [];
@@ -306,6 +327,36 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       }
     }
   }, [poolTarget, poolTargetsMap, poolType, slug]);
+
+  // TODO: Move to hook
+  const showPopupEnableChain = useCallback(
+    (_chain: string) => {
+      if (!chainInfoMap[_chain]) {
+        return;
+      }
+      const isConnected = checkChainConnected(_chain);
+      if (!isConnected) {
+        setTimeout(() => {
+          setConfirmModal({
+            visible: true,
+            completeBtnTitle: i18n.buttonTitles.enable,
+            message: i18n.common.enableChainMessage,
+            title: i18n.common.enableChain,
+            onCancelModal: () => {
+              hideConfirmModal();
+            },
+            onCompleteModal: () => {
+              turnOnChain(_chain);
+              setTimeout(() => hideConfirmModal(), 300);
+            },
+            messageIcon: _chain,
+          });
+        }, 700);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [hideConfirmModal, setConfirmModal, chainInfoMap],
+  );
 
   const handleOpenDetailModal = useCallback((): void => {
     Keyboard.dismiss();
@@ -805,6 +856,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       setTimeout(() => setDetailModalVisible(true), 300);
     }
   }, [compound]);
+
+  useEffect(() => {
+    showPopupEnableChain(altChain);
+  }, [showPopupEnableChain, altChain]);
 
   return (
     <>
