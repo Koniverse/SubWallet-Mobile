@@ -144,7 +144,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
         component={EarningScreen}
         listeners={{
           tabPress: () => {
-            navigation.popToTop();
+            navigation.canGoBack() && navigation.popToTop();
           },
         }}
         options={{
