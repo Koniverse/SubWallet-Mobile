@@ -13,6 +13,7 @@ const PresetBrandColorRegex = new RegExp(`^(${PresetBrandColorTypes.join('|')})$
 
 export interface TagNativeProps extends TagPropsType {
   style?: StyleProp<ViewStyle>;
+  tagStyle?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
 }
 
@@ -22,6 +23,7 @@ const Tag: React.FC<TagNativeProps> = props => {
     onClose,
     afterClose,
     style,
+    tagStyle,
     children,
     bgColor,
     color = 'secondary',
@@ -92,6 +94,7 @@ const Tag: React.FC<TagNativeProps> = props => {
           _styles.wrap,
           (presetColor || bgColor) && wrapStyle,
           shape && _styles[`shape${capitalize(shape)}Style`],
+          tagStyle,
         ]}>
         {icon}
         {React.isValidElement(children) ? (

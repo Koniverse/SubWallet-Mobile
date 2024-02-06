@@ -35,6 +35,9 @@ export default (theme: ThemeTypes) => {
     tagContainer: {
       flexDirection: 'row',
       gap: theme.sizeXXS,
+      overflow: 'hidden',
+      maxWidth: '50%',
+      justifyContent: 'flex-end',
     },
 
     subtitle: {
