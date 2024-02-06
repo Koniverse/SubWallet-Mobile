@@ -51,3 +51,14 @@ export const createEarningTypeTags = (theme: ThemeTypes, chain: string): Record<
     },
   };
 };
+
+export function isRelatedToAstar(slug: string) {
+  return [
+    'ASTR___native_staking___astar',
+    'SDN___native_staking___shiden',
+    'SBY___native_staking___shibuya',
+    'SDN-Shiden',
+    'ASTR-Astar',
+    'shibuya-NATIVE-SBY',
+  ].includes(slug);
+}

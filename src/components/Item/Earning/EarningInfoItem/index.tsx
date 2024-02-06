@@ -27,6 +27,9 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
   const poolInfo = poolInfoMap[slug];
+  const isTempEarningCondition = ['ASTR___native_staking___astar', 'SDN___native_staking___shiden'].includes(
+    positionInfo.slug,
+  );
 
   const showSubLogo = useMemo(() => {
     return ![YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(type);
@@ -53,24 +56,25 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
             {poolName}
           </Text>
 
-          {isShowBalance ? (
-            <Number
-              value={balanceValue}
-              decimal={asset.decimals || 0}
-              suffix={asset.symbol}
-              textStyle={{ ...FontSemiBold }}
-            />
-          ) : (
-            <Typography.Text
-              style={{
-                fontSize: theme.fontSizeLG,
-                ...FontSemiBold,
-                lineHeight: theme.lineHeightLG * theme.fontSizeLG,
-                color: theme.colorTextLight1,
-              }}>
-              ******
-            </Typography.Text>
-          )}
+          {!isTempEarningCondition &&
+            (isShowBalance ? (
+              <Number
+                value={balanceValue}
+                decimal={asset.decimals || 0}
+                suffix={asset.symbol}
+                textStyle={{ ...FontSemiBold }}
+              />
+            ) : (
+              <Typography.Text
+                style={{
+                  fontSize: theme.fontSizeLG,
+                  ...FontSemiBold,
+                  lineHeight: theme.lineHeightLG * theme.fontSizeLG,
+                  color: theme.colorTextLight1,
+                }}>
+                ******
+              </Typography.Text>
+            ))}
         </View>
         <View style={styleSheet.balanceInfoRow}>
           <EarningTypeTag type={type} chain={chain} />
@@ -91,32 +95,45 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
           {/*  </Tag>*/}
           {/*</View>*/}
 
-          {isShowBalance ? (
-            <Number
-              value={convertedBalanceValue}
-              decimal={0}
-              prefix={'$'}
-              size={theme.fontSizeSM}
-              intOpacity={0.45}
-              decimalOpacity={0.45}
-              unitOpacity={0.45}
-              textStyle={{ ...FontMedium, lineHeight: theme.fontSizeSM * theme.lineHeightSM }}
-            />
-          ) : (
-            <Typography.Text
-              style={{
-                ...FontMedium,
-                fontSize: theme.fontSizeSM,
-                lineHeight: theme.lineHeightSM * theme.fontSizeSM,
-                color: theme.colorTextLight4,
-              }}>
-              ******
-            </Typography.Text>
-          )}
+          {!isTempEarningCondition &&
+            (isShowBalance ? (
+              <Number
+                value={convertedBalanceValue}
+                decimal={0}
+                prefix={'$'}
+                size={theme.fontSizeSM}
+                intOpacity={0.45}
+                decimalOpacity={0.45}
+                unitOpacity={0.45}
+                textStyle={{ ...FontMedium, lineHeight: theme.fontSizeSM * theme.lineHeightSM }}
+              />
+            ) : (
+              <Typography.Text
+                style={{
+                  ...FontMedium,
+                  fontSize: theme.fontSizeSM,
+                  lineHeight: theme.lineHeightSM * theme.fontSizeSM,
+                  color: theme.colorTextLight4,
+                }}>
+                ******
+              </Typography.Text>
+            ))}
         </View>
       </View>
 
-      <View style={styleSheet.iconWrapper}>
+      <View
+        style={[
+          styleSheet.iconWrapper,
+          isTempEarningCondition && {
+            flexDirection: 'row',
+            width: '38%',
+          },
+        ]}>
+        {isTempEarningCondition && (
+          <Typography.Text style={{ color: 'rgba(255,255,255, 0.45)', marginRight: 12, fontSize: 12, lineHeight: 20 }}>
+            View on dApp
+          </Typography.Text>
+        )}
         <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'sm'} />
       </View>
     </TouchableOpacity>

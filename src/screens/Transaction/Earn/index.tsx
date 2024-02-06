@@ -625,7 +625,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           {
             text: 'Continue',
             style: 'default',
-            isPreferred: true,
+            isPreferred: false,
             onPress: () => {
               submitData(currentStep)
                 .catch(onError)

@@ -4,7 +4,7 @@ import EarningGroupItem from 'components/Item/Earning/EarningGroupItem';
 import { useYieldGroupInfo } from 'hooks/earning';
 import { Trophy } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Keyboard, ListRenderItemInfo, RefreshControl, View } from 'react-native';
+import { Alert, Keyboard, Linking, ListRenderItemInfo, RefreshControl, View } from 'react-native';
 import { EarningScreenNavigationProps } from 'routes/earning';
 import { YieldGroupInfo } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
@@ -24,6 +24,7 @@ import { ActivityIndicator, Typography } from 'components/design-system-ui';
 import { FontMedium } from 'styles/sharedStyles';
 import { AppModalContext } from 'providers/AppModalContext';
 import useChainChecker from 'hooks/chain/useChainChecker';
+import { isRelatedToAstar } from 'utils/earning';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -234,6 +235,28 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
           key={item.group}
           poolGroup={item}
           onPress={() => {
+            if (isRelatedToAstar(item.group)) {
+              Keyboard.dismiss();
+              Alert.alert(
+                'Enter Astar portal',
+                'You are navigating to Astar portal to view and manage your stake in Astar dApp staking v3. SubWallet will offer support for Astar dApp staking v3 soon.',
+                [
+                  {
+                    text: 'Cancel',
+                    style: 'default',
+                  },
+                  {
+                    text: 'Enter Astar portal',
+                    style: 'default',
+                    isPreferred: false,
+                    onPress: () => {
+                      Linking.openURL('subwallet://browser?url=portal.astar.network');
+                    },
+                  },
+                ],
+              );
+              return;
+            }
             Keyboard.dismiss();
             onPressItem(item.chain, item);
           }}
