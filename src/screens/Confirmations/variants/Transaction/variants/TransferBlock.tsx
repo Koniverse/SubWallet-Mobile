@@ -28,6 +28,7 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
 
   const { decimals: chainDecimals, symbol: chainSymbol } = useGetNativeTokenBasicInfo(transaction.chain);
   const senderPrefix = useGetChainPrefixBySlug(transaction.chain);
+  const network = useMemo(() => chainInfoMap[transaction.chain], [chainInfoMap, transaction.chain]);
 
   return (
     <ConfirmationContent isFullHeight>
@@ -64,6 +65,16 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
           value={transaction.estimateFee?.value || 0}
         />
       </MetaInfo>
+      {!!transaction.estimateFee?.tooHigh && (
+        <AlertBox
+          description={'Gas fees on {{networkName}} are high due to high demands, so gas estimates are less accurate.'.replace(
+            '{{networkName}}',
+            network.name,
+          )}
+          title={'Pay attention!'}
+          type="warning"
+        />
+      )}
 
       {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && (
         <AlertBox

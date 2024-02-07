@@ -10,6 +10,7 @@ import {
   _getTokenMinAmount,
   _isAssetFungibleToken,
   _isChainEvmCompatible,
+  _isNativeToken,
   _isTokenTransferredByEvm,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
@@ -390,7 +391,6 @@ export const SendFund = ({
     true,
     'The account you are using is {{accountTitle}}, you cannot send assets with it',
   );
-
   const [loading, setLoading] = useState(false);
   const [isTransferAll, setIsTransferAll] = useState(false);
   const [, update] = useState({});
@@ -457,6 +457,19 @@ export const SendFund = ({
   // const fromChainNetworkPrefix = useGetChainPrefixBySlug(chainValue); // will use it for account selector later
   const destChainNetworkPrefix = useGetChainPrefixBySlug(destChainValue);
   const destChainGenesisHash = chainInfoMap[destChainValue]?.substrateInfo?.genesisHash || '';
+
+  const hideMaxButton = useMemo(() => {
+    const _chainInfo = chainInfoMap[chainValue];
+    const assetInfo = assetRegistry[assetValue];
+
+    return (
+      !!_chainInfo &&
+      !!assetInfo &&
+      _isChainEvmCompatible(_chainInfo) &&
+      destChainValue === chainValue &&
+      _isNativeToken(assetInfo)
+    );
+  }, [chainInfoMap, chainValue, assetRegistry, assetValue, destChainValue]);
 
   const tokenItems = useMemo<TokenItemType[]>(() => {
     return getTokenItems(
@@ -1244,7 +1257,7 @@ export const SendFund = ({
                           isLoading={isGetBalanceLoading}
                         />
 
-                        {viewStep === 2 && (
+                        {viewStep === 2 && !hideMaxButton && (
                           <TouchableOpacity
                             onPress={() => {
                               setFocus('value');

@@ -13,6 +13,9 @@ import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   type: EvmSignatureSupportType;
@@ -39,7 +42,10 @@ const EvmTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const recipient = useGetAccountByAddress(recipientAddress);
   const theme = useSubWalletTheme().swThemes;
 
+  const { transactionRequest } = useSelector((state: RootState) => state.requestState);
+
   const styles = useMemo(() => createStyle(theme), [theme]);
+  const transaction = useMemo(() => transactionRequest[id], [transactionRequest, id]);
 
   const amount = useMemo((): number => {
     return new BigN(convertToBigN(request.payload.value) || 0).toNumber();
@@ -74,6 +80,16 @@ const EvmTransactionConfirmation: React.FC<Props> = (props: Props) => {
             />
           )}
         </MetaInfo>
+        {!!transaction.estimateFee?.tooHigh && (
+          <AlertBox
+            description={'Gas fees on {{networkName}} are high due to high demands, so gas estimates are less accurate.'.replace(
+              '{{networkName}}',
+              chainInfo?.name || '',
+            )}
+            title={'Pay attention!'}
+            type="warning"
+          />
+        )}
         <BaseDetailModal title={i18n.confirmation.messageDetail}>
           <EvmTransactionDetail account={account} request={request.payload} />
         </BaseDetailModal>
