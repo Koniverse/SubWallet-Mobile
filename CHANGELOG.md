@@ -1,3 +1,11 @@
+## 1.1.31 (314)
+- Update UX turn on network when perform liquid staking, lending staking (#1429)
+- Add modal enable alt chain (#1429)
+- Add vManta pool (#1429)
+- Update web-runner and page.js (#1458)
+- Update position and options actions for Astar Staking DApp (#1455)
+- Fix bug Tooltip button doesn't work (#1350)
+
 ## 1.1.31 (313)
 - Add alert warning when user select yy validator although re-commended xx validators (xx > yy) (#1424)
 - [Earning] Handle the case of switch tab on menu (#1439)
