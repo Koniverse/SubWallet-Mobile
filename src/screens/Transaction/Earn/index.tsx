@@ -66,6 +66,7 @@ import { STAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
 import { insufficientMessages } from 'hooks/transaction/useHandleSubmitTransaction';
 import { useGetBalance } from 'hooks/balance';
 import reformatAddress from 'utils/index';
+import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 
 // interface _YieldAssetExpectedEarning extends YieldAssetExpectedEarning {
 //   symbol: string;
@@ -609,7 +610,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
     const maxCount = poolInfo?.statistic?.maxCandidatePerFarmer ?? 1;
     const userSelectedPoolCount = poolTarget.split(',').length ?? 1;
-    if (userSelectedPoolCount < maxCount) {
+    const label = getValidatorLabel(chain);
+    if (userSelectedPoolCount < maxCount && label === 'Validator') {
       return Alert.alert(
         'Pay attention!',
         `You are recommended to choose ${maxCount} validators to optimize your earnings. Do you wish to continue with ${userSelectedPoolCount} validator${
@@ -644,6 +646,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         setSubmitLoading(false);
       });
   }, [
+    chain,
     currentStep,
     getTargetedPool,
     getValues,
