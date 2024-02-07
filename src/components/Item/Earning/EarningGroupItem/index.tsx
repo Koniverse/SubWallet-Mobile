@@ -7,6 +7,7 @@ import { YieldGroupInfo } from 'types/earning';
 import { getTokenLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
+import { isRelatedToAstar } from 'utils/earning';
 
 interface Props {
   poolGroup: YieldGroupInfo;
@@ -18,6 +19,7 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
   const { maxApy, symbol, token, balance } = poolGroup;
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
+  const isTempEarningCondition = isRelatedToAstar(poolGroup.group);
 
   return (
     <TouchableOpacity style={styleSheet.infoContainer} activeOpacity={0.5} onPress={onPress}>
@@ -34,8 +36,7 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
               </Text>
             )}
           </View>
-
-          {maxApy && (
+          {!isTempEarningCondition && maxApy && (
             <View style={styleSheet.dataRow}>
               <Typography.Text
                 style={{
@@ -79,7 +80,7 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
               ******
             </Typography.Text>
           )}
-          {maxApy && (
+          {!isTempEarningCondition && maxApy && (
             <View style={styleSheet.dataRow}>
               <Typography.Text
                 style={{
@@ -95,7 +96,19 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
         </View>
       </View>
 
-      <View style={styleSheet.iconWrapper}>
+      <View
+        style={[
+          styleSheet.iconWrapper,
+          isTempEarningCondition && {
+            flexDirection: 'row',
+            width: '38%',
+          },
+        ]}>
+        {isTempEarningCondition && (
+          <Typography.Text style={{ color: 'rgba(255,255,255, 0.45)', marginRight: 12, fontSize: 12, lineHeight: 20 }}>
+            View on dApp
+          </Typography.Text>
+        )}
         <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'sm'} />
       </View>
     </TouchableOpacity>

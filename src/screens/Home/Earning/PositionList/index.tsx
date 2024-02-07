@@ -10,7 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
 import { Plus, Trophy } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Keyboard, ListRenderItemInfo, RefreshControl, View } from 'react-native';
+import { Alert, Keyboard, Linking, ListRenderItemInfo, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { EarningScreenNavigationProps } from 'routes/earning';
@@ -20,6 +20,7 @@ import { ExtraYieldPositionInfo } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './style';
 import { LeftIconButton } from 'components/LeftIconButton';
+import { isRelatedToAstar } from 'utils/earning';
 
 let cacheData: Record<string, boolean> = {};
 
@@ -130,6 +131,29 @@ export const PositionList = ({ setStep, loading }: Props) => {
 
   const handleOnPress = useCallback(
     (positionInfo: ExtraYieldPositionInfo): (() => void) => {
+      if (isRelatedToAstar(positionInfo.slug)) {
+        return () => {
+          Keyboard.dismiss();
+          Alert.alert(
+            'Enter Astar portal',
+            'You are navigating to Astar portal to view and manage your stake in Astar dApp staking v3. SubWallet will offer support for Astar dApp staking v3 soon.',
+            [
+              {
+                text: 'Cancel',
+                style: 'default',
+              },
+              {
+                text: 'Enter Astar portal',
+                style: 'default',
+                isPreferred: false,
+                onPress: () => {
+                  Linking.openURL('subwallet://browser?url=portal.astar.network');
+                },
+              },
+            ],
+          );
+        };
+      }
       return () => {
         Keyboard.dismiss();
         navigation.navigate('EarningPositionDetail', { earningSlug: positionInfo.slug });
@@ -205,37 +229,35 @@ export const PositionList = ({ setStep, loading }: Props) => {
   }, [isFocused]);
 
   return (
-    <>
-      <FlatListScreen
-        style={styles.wrapper}
-        title={i18n.header.positionList}
-        titleTextAlign={'left'}
-        items={items}
-        showLeftBtn={false}
-        placeholder={i18n.placeholder.searchToken}
-        autoFocus={false}
-        loading={loading || isRefresh}
-        renderListEmptyComponent={renderEmpty}
-        searchFunction={searchFunction}
-        filterOptions={FILTER_OPTIONS}
-        filterFunction={filterFunction}
-        flatListStyle={styles.container}
-        renderItem={renderItem}
-        rightIconOption={rightIconOption}
-        isShowFilterBtn
-        isShowMainHeader
-        refreshControl={
-          <RefreshControl
-            style={styles.refreshIndicator}
-            tintColor={ColorMap.light}
-            refreshing={isRefresh}
-            onRefresh={() => {
-              refresh(reloadCron({ data: 'staking' }));
-            }}
-          />
-        }
-      />
-    </>
+    <FlatListScreen
+      style={styles.wrapper}
+      title={i18n.header.positionList}
+      titleTextAlign={'left'}
+      items={items}
+      showLeftBtn={false}
+      placeholder={i18n.placeholder.searchToken}
+      autoFocus={false}
+      loading={loading || isRefresh}
+      renderListEmptyComponent={renderEmpty}
+      searchFunction={searchFunction}
+      filterOptions={FILTER_OPTIONS}
+      filterFunction={filterFunction}
+      flatListStyle={styles.container}
+      renderItem={renderItem}
+      rightIconOption={rightIconOption}
+      isShowFilterBtn
+      isShowMainHeader
+      refreshControl={
+        <RefreshControl
+          style={styles.refreshIndicator}
+          tintColor={ColorMap.light}
+          refreshing={isRefresh}
+          onRefresh={() => {
+            refresh(reloadCron({ data: 'staking' }));
+          }}
+        />
+      }
+    />
   );
 };
 
