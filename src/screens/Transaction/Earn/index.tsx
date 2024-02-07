@@ -87,6 +87,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       params: { slug },
     },
   } = props;
+
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { show, hideAll } = useToast();
@@ -732,7 +733,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
                 setConnectionError(errorNetwork);
               })
-              .catch(console.error)
+              .catch((e: Error) => console.log('eeee', e.message))
               .finally(() => setStepLoading(false));
           },
           1000,
@@ -785,7 +786,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             store.dispatch({ type: 'earning/updatePoolTargets', payload: result });
           }
         })
-        .catch(console.error)
+        .catch((e: Error) => console.log('eeee', e.message))
         .finally(() => {
           if (!unmount) {
             setTargetLoading(false);

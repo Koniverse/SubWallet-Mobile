@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import ConfirmModal from 'components/common/Modal/ConfirmModal';
 
 interface AppModalContextProviderProps {
@@ -25,7 +25,7 @@ export const AppModalContext = React.createContext({} as AppModal);
 export const AppModalContextProvider = ({ children }: AppModalContextProviderProps) => {
   const [confirmModal, setConfirmModal] = useState<ConfirmModalInfo>({});
 
-  function hideConfirmModal() {
+  const hideConfirmModal = useCallback(() => {
     setConfirmModal(prevState => ({ ...prevState, visible: false }));
     setTimeout(
       () =>
@@ -40,7 +40,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         })),
       300,
     );
-  }
+  }, []);
 
   return (
     <AppModalContext.Provider value={{ setConfirmModal, hideConfirmModal }}>
