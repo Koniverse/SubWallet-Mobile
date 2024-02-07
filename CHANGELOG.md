@@ -1,3 +1,7 @@
+## 1.1.31 (315)
+- Show alert network busy for evm network (#1459)
+- Hide max button on Send Fund screen (#1459)
+
 ## 1.1.31 (314)
 - Update UX turn on network when perform liquid staking, lending staking (#1429)
 - Add modal enable alt chain (#1429)
