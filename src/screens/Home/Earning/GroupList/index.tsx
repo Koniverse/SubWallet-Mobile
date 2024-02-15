@@ -201,7 +201,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
 
         if (!checkChainConnected(chainSlug)) {
           onConnectChain(chainSlug, currentAltChainData.chain);
-        } else if (!checkChainConnected(currentAltChainData.chain)) {
+        } else if (!checkChainConnected(currentAltChainData.chain) && !!currentAltChainData.chain) {
           turnOnChain(currentAltChainData.chain);
           setLoading(true);
         } else {

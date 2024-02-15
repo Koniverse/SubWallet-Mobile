@@ -187,7 +187,7 @@ const Component: React.FC<Props> = (props: Props) => {
 
   const onEarnMore = useCallback(() => {
     const altChain = getAltChain();
-    if (!checkChainConnected(altChain)) {
+    if (!checkChainConnected(altChain) && !!altChain) {
       turnOnChain(altChain);
       setLoading(true);
     } else {
