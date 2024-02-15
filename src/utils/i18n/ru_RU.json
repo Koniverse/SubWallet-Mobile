@@ -1182,7 +1182,8 @@
     "enableNetworkMessage": "Выбранная вами сеть не включена. Включите, нажав эту кнопку, или выберите другую сеть",
     "expiredConnectionMessage": "Connection expired. Please create a new connection from dApp",
     "unsupportedNetworkMessage": "There is at least 1 chosen network unavailable",
-    "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed."
+    "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed.",
+    "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance"
   },
   "errorMessage": {
     "invalidPinCode": "Неверный PIN-код",

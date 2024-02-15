@@ -4,6 +4,7 @@ import {
   NormalYieldPoolStatistic,
   YieldCompoundingPeriod,
   YieldPoolInfo,
+  YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
 import { Button, Icon, Typography } from 'components/design-system-ui';
@@ -95,7 +96,7 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
           />
           {unstakePeriod !== undefined && (
             <MetaInfo.Default label={i18n.inputLabel.unstakingPeriod}>
-              {getUnstakingPeriod(unstakePeriod)}
+              {`${poolInfo.type === YieldPoolType.LIQUID_STAKING ? 'Up to ' : ''}${getUnstakingPeriod(unstakePeriod)}`}
             </MetaInfo.Default>
           )}
         </MetaInfo>
