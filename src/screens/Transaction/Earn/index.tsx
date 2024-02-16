@@ -333,13 +333,15 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
         Alert.alert(
           i18n.warningTitle.insufficientBalance,
-          i18n.formatString(
-            i18n.warningMessage.insufficientBalanceMessage,
-            _data.availableBalance,
-            _data.symbol,
-            _data.existentialDeposit,
-            _data.maintainBalance || '0',
-          ) as string,
+          new BigN(_data.availableBalance).isZero()
+            ? (i18n.formatString(
+                i18n.warningMessage.insufficientBalanceMessage,
+                _data.availableBalance,
+                _data.symbol,
+                _data.existentialDeposit,
+                _data.maintainBalance || '0',
+              ) as string)
+            : i18n.warningMessage.insufficientBalanceMessageV2,
           [
             {
               text: 'I understand',
