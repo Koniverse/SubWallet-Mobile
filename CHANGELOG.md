@@ -1,3 +1,8 @@
+## 1.1.32 (316)
+- Setup default filter on earning options screen (#1465)
+- Bug failed to get data when stake more from position details screen (#1461)
+- Update content for earning feature (#1463)
+
 ## 1.1.31 (315)
 - Show alert network busy for evm network (#1459)
 - Hide max button on Send Fund screen (#1459)
