@@ -59,13 +59,18 @@ const apyOrdinal = (group: YieldGroupInfo): number => {
   return !group.maxApy ? -1 : group.maxApy;
 };
 
+const FILTER_OPTIONS = [
+  { label: i18n.filterOptions.mainnet, value: FilterOptionType.MAIN_NETWORK },
+  { label: i18n.filterOptions.testnet, value: FilterOptionType.TEST_NETWORK },
+];
+
 const filterFunction = (items: YieldGroupInfo[], filters: string[]) => {
   if (!filters.length) {
     return items;
   }
 
   return items.filter(item => {
-    if (!filters.length) {
+    if (!filters.length || filters.length === FILTER_OPTIONS.length) {
       return true;
     }
 
@@ -73,7 +78,6 @@ const filterFunction = (items: YieldGroupInfo[], filters: string[]) => {
       if (filter === '') {
         return true;
       }
-
       if (filter === FilterOptionType.MAIN_NETWORK) {
         return !item.isTestnet;
       } else if (filter === FilterOptionType.TEST_NETWORK) {
@@ -85,10 +89,7 @@ const filterFunction = (items: YieldGroupInfo[], filters: string[]) => {
   });
 };
 
-const FILTER_OPTIONS = [
-  { label: i18n.filterOptions.mainnet, value: FilterOptionType.MAIN_NETWORK },
-  { label: i18n.filterOptions.testnet, value: FilterOptionType.TEST_NETWORK },
-];
+const defaultSelectionMap = { [FilterOptionType.MAIN_NETWORK]: true };
 
 interface Props {
   isHasAnyPosition: boolean;
@@ -296,6 +297,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
         filterOptions={FILTER_OPTIONS}
+        defaultSelectionMap={defaultSelectionMap}
         filterFunction={filterFunction}
         flatListStyle={styles.container}
         renderItem={renderItem}

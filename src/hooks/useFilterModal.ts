@@ -2,10 +2,13 @@ import { useCallback, useRef, useState } from 'react';
 import { ModalRef } from 'types/modalRef';
 import { Keyboard } from 'react-native';
 
-export function useFilterModal() {
+export function useFilterModal(defaultSelectionMap?: Record<string, boolean>) {
   const filterModalRef = useRef<ModalRef>();
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [filterSelectionMap, setFilterSelectionMap] = useState<Record<string, boolean>>({});
+  const defaultSelectedFilter = defaultSelectionMap
+    ? Object.keys(defaultSelectionMap).filter(o => defaultSelectionMap[o])
+    : undefined;
+  const [selectedFilters, setSelectedFilters] = useState<string[]>(defaultSelectedFilter || []);
+  const [filterSelectionMap, setFilterSelectionMap] = useState<Record<string, boolean>>(defaultSelectionMap || {});
 
   const openFilterModal = useCallback(() => {
     Keyboard.dismiss();
