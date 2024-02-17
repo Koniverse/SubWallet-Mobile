@@ -5,13 +5,14 @@ import {
 } from '@subwallet/extension-base/services/chain-service/utils';
 
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BN_ZERO } from 'utils/chainBalances';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { getBalanceValue, getConvertedBalanceValue } from 'hooks/screen/useAccountBalance';
 import { _CrowdloanItemType } from 'types/index';
 import { fetchStaticData } from 'utils/fetchStaticData';
+import { updateChainInfoMap } from 'stores/feature/common/ChainInfoMap';
 
 function getCrowdloanContributeList(
   crowdloanMap: Record<string, CrowdloanItem>,
@@ -75,8 +76,9 @@ function getCrowdloanContributeList(
 export default function useGetCrowdloanList() {
   const crowdloanMap = useSelector((state: RootState) => state.crowdloan.crowdloanMap);
   // chainInfoMap needs to be fetched from online for dynamic usage
-  const [chainInfoMap, setChainInfoMap] = useState<Record<string, _ChainInfo>>({});
+  const chainInfoMap = useSelector((state: RootState) => state.chainInfoMap);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchStaticData<_ChainInfo[]>('chains')
@@ -89,12 +91,12 @@ export default function useGetCrowdloanList() {
           }
         });
 
-        setChainInfoMap(result);
+        dispatch(updateChainInfoMap(result));
       })
       .catch(e => {
         console.log('fetch _ChainInfo error:', e);
       });
-  }, []);
+  }, [dispatch]);
 
   return useMemo<_CrowdloanItemType[]>(() => {
     return getCrowdloanContributeList(crowdloanMap, chainInfoMap, priceMap);

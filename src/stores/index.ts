@@ -28,6 +28,7 @@ import MissionPoolReducer from './feature/MissionPool';
 import BuyServiceReducer from './feature/Buy';
 import AssetRegistryReducer from './feature/common/AssetRegistry';
 import ChainStoreReducer from './feature/common/ChainStore';
+import ChainInfoMapReducer from './feature/common/ChainInfoMap';
 import CrowdloanReducer from './feature/Crowdloan';
 import NftReducer from './feature/Nft';
 import PriceReducer from './feature/Price';
@@ -89,6 +90,10 @@ const rootReducer = combineReducers({
   assetRegistry: persistReducer(
     { key: 'assetRegistry', storage: mmkvReduxStore } as PersistConfig<AssetRegistryStore>,
     AssetRegistryReducer,
+  ),
+  chainInfoMap: persistReducer(
+    { key: 'chainInfoMap', storage: mmkvReduxStore } as PersistConfig<ChainStore['chainInfoMap']>,
+    ChainInfoMapReducer,
   ),
 
   // Base
