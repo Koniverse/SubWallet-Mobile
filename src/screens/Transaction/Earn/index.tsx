@@ -330,24 +330,26 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     (error: Error) => {
       if (insufficientMessages.some(v => error.message.includes(v))) {
         const _data = handleDataForInsufficientAlert();
+        const isAvailableBalanceEqualZero = new BigN(_data.availableBalance).isZero();
+        const isAmountGtAvailableBalance = new BigN(convertValue).gt(_data.availableBalance);
+        let alertMessage = '';
+        if (isAmountGtAvailableBalance && !isAvailableBalanceEqualZero) {
+          alertMessage = i18n.warningMessage.insufficientBalanceMessageV2;
+        } else {
+          alertMessage = i18n.formatString(
+            i18n.warningMessage.insufficientBalanceMessage,
+            _data.availableBalance,
+            _data.symbol,
+            _data.existentialDeposit,
+            _data.maintainBalance || '0',
+          ) as string;
+        }
 
-        Alert.alert(
-          i18n.warningTitle.insufficientBalance,
-          new BigN(_data.availableBalance).isZero()
-            ? (i18n.formatString(
-                i18n.warningMessage.insufficientBalanceMessage,
-                _data.availableBalance,
-                _data.symbol,
-                _data.existentialDeposit,
-                _data.maintainBalance || '0',
-              ) as string)
-            : i18n.warningMessage.insufficientBalanceMessageV2,
-          [
-            {
-              text: 'I understand',
-            },
-          ],
-        );
+        Alert.alert(i18n.warningTitle.insufficientBalance, alertMessage, [
+          {
+            text: 'I understand',
+          },
+        ]);
         dispatchProcessState({
           type: EarningActionType.STEP_ERROR_ROLLBACK,
           payload: error,
@@ -376,7 +378,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         payload: error,
       });
     },
-    [handleDataForInsufficientAlert, hideAll, show],
+    [convertValue, handleDataForInsufficientAlert, hideAll, show],
   );
 
   const onSuccess = useCallback(
