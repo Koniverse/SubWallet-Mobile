@@ -11,7 +11,7 @@ import { RootNavigationProps } from 'routes/index';
 import BigN from 'bignumber.js';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import useChainAssets from 'hooks/chain/useChainAssets';
-import { _getMultiChainAsset, _isAssetFungibleToken } from '@subwallet/extension-base/services/chain-service/utils';
+import { _isAssetFungibleToken } from '@subwallet/extension-base/services/chain-service/utils';
 import { sortTokenByValue } from 'utils/sort/token';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -74,22 +74,7 @@ export const TokenSelector = ({
   const { chainStateMap } = useSelector((state: RootState) => state.chainStore);
   const assetRegistry = useChainAssets({}).chainAssetRegistry;
 
-  const tokenGroupMap = useMemo(() => {
-    return Object.values(assetRegistry).reduce((_tokenGroupMap: Record<string, string[]>, chainAsset) => {
-      const multiChainAsset = _getMultiChainAsset(chainAsset);
-      const tokenGroupKey = multiChainAsset || chainAsset.slug;
-
-      if (_tokenGroupMap[tokenGroupKey]) {
-        _tokenGroupMap[tokenGroupKey].push(chainAsset.slug);
-      } else {
-        _tokenGroupMap[tokenGroupKey] = [chainAsset.slug];
-      }
-
-      return _tokenGroupMap;
-    }, {});
-  }, [assetRegistry]);
-
-  const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, true, true, selectedAccount);
+  const { tokenBalanceMap } = useAccountBalance(true, true, selectedAccount);
 
   const filteredItems = useMemo((): TokenItemType[] => {
     const raw = items.filter(item => {
@@ -136,7 +121,7 @@ export const TokenSelector = ({
       defaultValue={defaultValue}
       acceptDefaultValue={acceptDefaultValue}
       isShowBalance={isShowBalance}
-      tokenBalanceMap={tokenBalanceMap}
+      selectedAccount={selectedAccount}
       renderListEmptyComponent={() => {
         return (
           <EmptyList

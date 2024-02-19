@@ -9,8 +9,10 @@ import {
   _getAssetPriceId,
   _getAssetSymbol,
   _getChainName,
+  _getMultiChainAsset,
   _getMultiChainAssetPriceId,
   _getMultiChainAssetSymbol,
+  _getOriginChainOfAsset,
   _isAssetValuable,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import BigN from 'bignumber.js';
@@ -59,6 +61,7 @@ function getDefaultBalanceItem(slug: string, symbol: string, logoKey: string): T
     logoKey,
     slug,
     symbol,
+    isChainEnabled: false,
   };
 }
 
@@ -95,6 +98,7 @@ function getAccountBalance(
   assetRegistryMap: AssetRegistryStore['assetRegistry'],
   multiChainAssetMap: AssetRegistryStore['multiChainAssetMap'],
   chainInfoMap: ChainStore['chainInfoMap'],
+  chainStateMap: ChainStore['chainStateMap'],
   isShowZeroBalance: boolean,
 ): AccountBalanceHookType {
   const totalBalanceInfo: AccountBalanceHookType['totalBalanceInfo'] = {
@@ -107,6 +111,17 @@ function getAccountBalance(
   };
   const tokenBalanceMap: Record<string, TokenBalanceItemType> = {};
   const tokenGroupBalanceMap: Record<string, TokenBalanceItemType> = {};
+
+  const checkChainConnected = (chain: string) => {
+    const chainState = chainStateMap[chain];
+
+    if (!chainState) {
+      // Couldn't get chain state
+      return false;
+    }
+
+    return chainState.active;
+  };
 
   Object.keys(tokenGroupMap).forEach(tokenGroupKey => {
     const tokenGroupBalanceReady: boolean[] = [];
@@ -124,18 +139,15 @@ function getAccountBalance(
         return;
       }
 
-      const balanceItem = balanceMap[address]?.[tokenSlug];
-
-      if (!balanceItem) {
-        return;
-      }
-
       const tokenBalance = getDefaultTokenBalance(tokenSlug, chainAsset);
       const originChain = _getAssetOriginChain(chainAsset);
+      const balanceItem = balanceMap[address]?.[tokenSlug];
       const decimals = _getAssetDecimals(chainAsset);
+      const chainSlug = _getOriginChainOfAsset(tokenSlug);
 
-      const isTokenBalanceReady = balanceItem.state !== APIItemState.PENDING;
-      const isTokenNotSupport = balanceItem.state === APIItemState.NOT_SUPPORT;
+      const isTokenBalanceReady = !!balanceItem && balanceItem.state !== APIItemState.PENDING;
+      const isTokenNotSupport = !!balanceItem && balanceItem.state === APIItemState.NOT_SUPPORT;
+      const isChainEnable = checkChainConnected(chainSlug);
 
       tokenGroupNotSupport.push(isTokenNotSupport);
       tokenGroupBalanceReady.push(isTokenBalanceReady);
@@ -146,6 +158,7 @@ function getAccountBalance(
 
       tokenBalance.isReady = isTokenBalanceReady;
       tokenBalance.isNotSupport = isTokenNotSupport;
+      tokenBalance.isChainEnabled = isChainEnable;
 
       tokenBalance.chain = originChain;
       tokenBalance.chainDisplayName = _getChainName(chainInfoMap[originChain]);
@@ -266,7 +279,9 @@ function getAccountBalance(
     // make sure priceId exists and token group has monetary value
     // todo: check if multiChainAsset has monetary value too (after Nampc updates the background)
     if (!tokenGroupPriceId || (assetRegistryMap[tokenGroupKey] && !_isAssetValuable(assetRegistryMap[tokenGroupKey]))) {
-      tokenGroupBalanceMap[tokenGroupKey] = tokenGroupBalance;
+      if (!tokenGroupBalance.isNotSupport) {
+        tokenGroupBalanceMap[tokenGroupKey] = tokenGroupBalance;
+      }
 
       return;
     }
@@ -283,11 +298,13 @@ function getAccountBalance(
       tokenGroupBalance.priceChangeStatus = 'decrease';
     }
 
-    tokenGroupBalanceMap[tokenGroupKey] = tokenGroupBalance;
-    totalBalanceInfo.convertedValue = totalBalanceInfo.convertedValue.plus(tokenGroupBalance.total.convertedValue);
-    totalBalanceInfo.converted24hValue = totalBalanceInfo.converted24hValue.plus(
-      tokenGroupBalance.total.pastConvertedValue,
-    );
+    if (!tokenGroupBalance.isNotSupport) {
+      tokenGroupBalanceMap[tokenGroupKey] = tokenGroupBalance;
+      totalBalanceInfo.convertedValue = totalBalanceInfo.convertedValue.plus(tokenGroupBalance.total.convertedValue);
+      totalBalanceInfo.converted24hValue = totalBalanceInfo.converted24hValue.plus(
+        tokenGroupBalance.total.pastConvertedValue,
+      );
+    }
   });
 
   // Compute total balance change
@@ -327,19 +344,33 @@ const DEFAULT_RESULT = {
 } as AccountBalanceHookType;
 
 export default function useAccountBalance(
-  tokenGroupMap: Record<string, string[]>,
   lazy?: boolean,
   showZero?: boolean,
   selectedAccount?: string,
 ): AccountBalanceHookType {
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const balanceMap = useSelector((state: RootState) => state.balance.balanceMap);
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const price24hMap = useSelector((state: RootState) => state.price.price24hMap);
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
   const isShowZeroBalanceSetting = useSelector((state: RootState) => state.settings.isShowZeroBalance);
+
+  const tokenGroupMap = useMemo(() => {
+    return Object.values(assetRegistryMap).reduce((_tokenGroupMap: Record<string, string[]>, chainAsset) => {
+      const multiChainAsset = _getMultiChainAsset(chainAsset);
+      const tokenGroupKey = multiChainAsset || chainAsset.slug;
+
+      if (_tokenGroupMap[tokenGroupKey]) {
+        _tokenGroupMap[tokenGroupKey].push(chainAsset.slug);
+      } else {
+        _tokenGroupMap[tokenGroupKey] = [chainAsset.slug];
+      }
+
+      return _tokenGroupMap;
+    }, {});
+  }, [assetRegistryMap]);
 
   const isShowZeroBalance = useMemo(() => {
     return showZero || isShowZeroBalanceSetting;
@@ -357,6 +388,7 @@ export default function useAccountBalance(
           assetRegistryMap,
           multiChainAssetMap,
           chainInfoMap,
+          chainStateMap,
           isShowZeroBalance,
         ),
   );
@@ -373,6 +405,7 @@ export default function useAccountBalance(
           assetRegistryMap,
           multiChainAssetMap,
           chainInfoMap,
+          chainStateMap,
           isShowZeroBalance,
         ),
       );
@@ -382,6 +415,7 @@ export default function useAccountBalance(
     assetRegistryMap,
     balanceMap,
     chainInfoMap,
+    chainStateMap,
     currentAccount,
     isShowZeroBalance,
     multiChainAssetMap,

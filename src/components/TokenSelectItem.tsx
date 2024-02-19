@@ -58,7 +58,7 @@ export const TokenSelectItem = ({
           </View>
         </View>
 
-        {!!isShowBalance && tokenBalance && tokenBalance.isReady && (
+        {!!isShowBalance && tokenBalance && tokenBalance.isChainEnabled && (
           <View style={{ alignItems: 'flex-end' }}>
             <Number size={16} value={tokenBalance.total.value || BN_ZERO} decimal={0} />
             <Number

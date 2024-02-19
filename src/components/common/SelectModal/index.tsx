@@ -18,7 +18,7 @@ import { RootState } from 'stores/index';
 import { ChainInfo } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { TokenBalanceItemType } from 'types/balance';
+import useAccountBalance from 'hooks/screen/useAccountBalance';
 
 interface Props<T> {
   items: T[];
@@ -59,7 +59,7 @@ interface Props<T> {
   rightIconOption?: RightIconOpt;
   isShowBalance?: boolean;
   level?: number;
-  tokenBalanceMap?: Record<string, TokenBalanceItemType>;
+  selectedAccount?: string;
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
@@ -98,7 +98,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     rightIconOption,
     isShowBalance,
     level,
-    tokenBalanceMap,
+    selectedAccount,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -110,7 +110,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     _onCloseModal && _onCloseModal();
   }, [_onCloseModal]);
   const defaultItem = items[0];
-
+  const { tokenBalanceMap } = useAccountBalance(true, true, selectedAccount);
   const theme = useSubWalletTheme().swThemes;
 
   useEffect(() => {
@@ -195,42 +195,45 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     }
   };
 
-  const renderItem = ({ item }: ListRenderItemInfo<T>) => {
-    if (selectModalItemType === 'account') {
-      return (
-        <>
-          <AccountSelectItem
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<T>) => {
+      if (selectModalItemType === 'account') {
+        return (
+          <>
+            <AccountSelectItem
+              item={item}
+              selectedValueMap={selectedValueMap}
+              onSelectItem={_onSelectItem}
+              onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
+            />
+          </>
+        );
+      } else if (selectModalItemType === 'token') {
+        return (
+          <_TokenSelectItem
+            item={item}
+            selectedValueMap={selectedValueMap}
+            onSelectItem={_onSelectItem}
+            onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
+            isShowBalance={isShowBalance}
+            tokenBalance={tokenBalanceMap ? tokenBalanceMap[(item as TokenItemType).slug] : undefined}
+          />
+        );
+      } else if (selectModalItemType === 'chain') {
+        return (
+          <ChainSelectItem
             item={item}
             selectedValueMap={selectedValueMap}
             onSelectItem={_onSelectItem}
             onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
           />
-        </>
-      );
-    } else if (selectModalItemType === 'token') {
-      return (
-        <_TokenSelectItem
-          item={item}
-          selectedValueMap={selectedValueMap}
-          onSelectItem={_onSelectItem}
-          onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
-          isShowBalance={isShowBalance}
-          tokenBalance={tokenBalanceMap ? tokenBalanceMap[(item as TokenItemType).slug] : undefined}
-        />
-      );
-    } else if (selectModalItemType === 'chain') {
-      return (
-        <ChainSelectItem
-          item={item}
-          selectedValueMap={selectedValueMap}
-          onSelectItem={_onSelectItem}
-          onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
-        />
-      );
-    } else {
-      return <></>;
-    }
-  };
+        );
+      } else {
+        return <></>;
+      }
+    },
+    [_onSelectItem, closeModalAfterSelect, isShowBalance, selectModalItemType, selectedValueMap, tokenBalanceMap],
+  );
 
   const _renderListEmptyComponent = () => {
     return (
