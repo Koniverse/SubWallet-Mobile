@@ -6,6 +6,7 @@ import { AssetSetting, ExtrinsicType } from '@subwallet/extension-base/backgroun
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import {
   _getAssetDecimals,
+  _getAssetPriceId,
   _getOriginChainOfAsset,
   _getTokenMinAmount,
   _isAssetFungibleToken,
@@ -24,14 +25,14 @@ import { SendFundProps } from 'routes/transaction/transactionAction';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getMaxTransfer, makeCrossChainTransfer, makeTransfer, saveRecentAccountId } from 'messaging/index';
-import { findAccountByAddress } from 'utils/account';
+import { findAccountByAddress, getAccountAddressType } from 'utils/account';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { balanceFormatter, formatBalance, formatNumber } from 'utils/number';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
 import useHandleSubmitTransaction, { insufficientMessages } from 'hooks/transaction/useHandleSubmitTransaction';
 import { isAccountAll } from 'utils/accountAll';
-import { ChainInfo, ChainItemType } from 'types/index';
+import { AccountAddressType, ChainInfo, ChainItemType } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
@@ -74,6 +75,7 @@ import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
+import { BalanceItem } from '@subwallet/extension-base/types';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -98,6 +100,8 @@ function getTokenItems(
   assetRegistry: Record<string, _ChainAsset>,
   assetSettingMap: Record<string, AssetSetting>,
   multiChainAssetMap: Record<string, _MultiChainAsset>,
+  balanceMap: Record<string, BalanceItem>,
+  priceMap: Record<string, number>,
   tokenGroupSlug?: string, // is ether a token slug or a multiChainAsset slug
 ): TokenItemType[] {
   const account = findAccountByAddress(accounts, address);
@@ -112,6 +116,7 @@ function getTokenItems(
   const isAccountEthereum = isEthereumAddress(address);
   const isSetTokenSlug = !!tokenGroupSlug && !!assetRegistry[tokenGroupSlug];
   const isSetMultiChainAssetSlug = !!tokenGroupSlug && !!multiChainAssetMap[tokenGroupSlug];
+  const accBalanceMap = balanceMap[address];
 
   if (tokenGroupSlug) {
     if (!(isSetTokenSlug || isSetMultiChainAssetSlug)) {
@@ -123,14 +128,19 @@ function getTokenItems(
 
     if (isSetTokenSlug) {
       if (isAssetTypeValid(chainAsset, chainInfoMap, isAccountEthereum) && isValidLedger) {
-        const { name, originChain, slug, symbol } = assetRegistry[tokenGroupSlug];
-
+        const { name, originChain, slug, symbol, decimals } = assetRegistry[tokenGroupSlug];
+        const priceId = _getAssetPriceId(assetRegistry[tokenGroupSlug]);
+        // @ts-ignore
+        const freeBalance = accBalanceMap[chainAsset.slug]?.free || BN_ZERO;
         return [
           {
             name,
             slug,
             symbol,
             originChain,
+            free: freeBalance,
+            price: priceMap[priceId] || 0,
+            decimals: decimals || undefined,
           },
         ];
       } else {
@@ -144,10 +154,12 @@ function getTokenItems(
   Object.values(assetRegistry).forEach(chainAsset => {
     const isValidLedger = isLedger ? isAccountEthereum || validLedgerNetwork.includes(chainAsset?.originChain) : true;
     const isTokenFungible = _isAssetFungibleToken(chainAsset);
-
+    // @ts-ignore
+    const freeBalance = accBalanceMap[chainAsset.slug]?.free || BN_ZERO;
     if (!(isTokenFungible && isAssetTypeValid(chainAsset, chainInfoMap, isAccountEthereum) && isValidLedger)) {
       return;
     }
+    const priceId = _getAssetPriceId(chainAsset);
 
     if (isSetMultiChainAssetSlug) {
       if (chainAsset.multiChainAsset === tokenGroupSlug) {
@@ -156,6 +168,9 @@ function getTokenItems(
           slug: chainAsset.slug,
           symbol: chainAsset.symbol,
           originChain: chainAsset.originChain,
+          free: freeBalance,
+          price: priceMap[priceId] || 0,
+          decimals: chainAsset.decimals || undefined,
         });
       }
     } else {
@@ -164,6 +179,9 @@ function getTokenItems(
         slug: chainAsset.slug,
         symbol: chainAsset.symbol,
         originChain: chainAsset.originChain,
+        free: freeBalance,
+        price: priceMap[priceId] || 0,
+        decimals: chainAsset.decimals || undefined,
       });
     }
   });
@@ -383,6 +401,8 @@ export const SendFund = ({
 
   const { chainInfoMap, chainStateMap } = useSelector((root: RootState) => root.chainStore);
   const { assetSettingMap, multiChainAssetMap, xcmRefMap } = useSelector((root: RootState) => root.assetRegistry);
+  const priceMap = useSelector((state: RootState) => state.price.priceMap);
+  const { balanceMap } = useSelector((root: RootState) => root.balance);
   const assetRegistry = useChainAssets().chainAssetRegistry;
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const [maxTransfer, setMaxTransfer] = useState<string>('0');
@@ -479,30 +499,19 @@ export const SendFund = ({
       assetRegistry,
       assetSettingMap,
       multiChainAssetMap,
+      balanceMap,
+      priceMap,
       tokenGroupSlug,
-    ).sort((a, b) => {
-      if (checkChainConnected(a.originChain)) {
-        if (checkChainConnected(b.originChain)) {
-          return 0;
-        } else {
-          return -1;
-        }
-      } else {
-        if (checkChainConnected(b.originChain)) {
-          return 1;
-        } else {
-          return 0;
-        }
-      }
-    });
+    );
   }, [
     accounts,
     assetRegistry,
     assetSettingMap,
+    balanceMap,
     chainInfoMap,
-    checkChainConnected,
     fromValue,
     multiChainAssetMap,
+    priceMap,
     tokenGroupSlug,
   ]);
 
@@ -976,10 +985,8 @@ export const SendFund = ({
 
     if (tokenItems.length) {
       let isApplyDefaultAsset = true;
-
+      const account = findAccountByAddress(accounts, from);
       if (!asset) {
-        const account = findAccountByAddress(accounts, from);
-
         if (account?.originGenesisHash) {
           const network = findNetworkJsonByGenesisHash(chainInfoMap, account.originGenesisHash);
 
@@ -998,7 +1005,14 @@ export const SendFund = ({
       }
 
       if (isApplyDefaultAsset) {
-        updateInfoWithTokenSlug(tokenItems[0].slug);
+        const a = getAccountAddressType(account?.address);
+        if (a === AccountAddressType.ETHEREUM) {
+          const _defaultItem = tokenItems.find(item => item.slug === 'ethereum-NATIVE-ETH');
+          updateInfoWithTokenSlug(_defaultItem?.slug || tokenItems[0].slug);
+        } else {
+          const _defaultItem = tokenItems.find(item => item.slug === 'polkadot-NATIVE-DOT');
+          updateInfoWithTokenSlug(_defaultItem?.slug || tokenItems[0].slug);
+        }
       }
     }
   }, [accounts, tokenItems, assetRegistry, setChain, chainInfoMap, getValues, setValue]);
@@ -1135,6 +1149,8 @@ export const SendFund = ({
                         onSelectItem={_onChangeAsset}
                         showAddBtn={false}
                         tokenSelectorRef={tokenSelectorRef}
+                        isShowBalance
+                        selectedAccount={fromValue}
                         renderSelected={() => (
                           <TokenSelectField
                             logoKey={currentChainAsset?.slug || ''}
