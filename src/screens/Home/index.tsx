@@ -36,7 +36,6 @@ import { mmkvStore } from 'utils/storage';
 import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import IntroducingModal from 'components/Modal/IntroducingModal';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
-import WarningModal from 'components/Modal/WarningModal';
 import { TermAndCondition } from 'constants/termAndCondition';
 
 interface tabbarIconColor {
@@ -196,7 +195,6 @@ export enum AppNavigatorDeepLinkStatus {
 }
 
 let isShowCampaignModal = false;
-let isShowDAppWarningModal = false;
 
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
@@ -208,10 +206,8 @@ export const Home = ({ navigation }: Props) => {
   const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
   const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
   const [introducingModalVisible, setIntroducingModalVisible] = useState<boolean>(false);
-  const [dAppStakingWarningModalVisible, setDAppStakingWarningModalVisible] = useState<boolean>(false);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
   const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
-  const isOpenDAppWarningFirstTime = mmkvStore.getBoolean('isOpenDAppWarningFirstTime');
   const language = useSelector((state: RootState) => state.settings.language);
   mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
   useEffect(() => {
@@ -235,9 +231,6 @@ export const Home = ({ navigation }: Props) => {
     if (!isOpenIntroductionFirstTime) {
       return;
     }
-    if (!isOpenDAppWarningFirstTime) {
-      return;
-    }
     if (firstBanner) {
       isShowCampaignModal = true;
       setCampaignModalVisible(true);
@@ -246,20 +239,8 @@ export const Home = ({ navigation }: Props) => {
   }, [firstBanner]);
 
   useEffect(() => {
-    if (isShowDAppWarningModal) {
-      return;
-    }
-    if (!isOpenDAppWarningFirstTime) {
-      isShowDAppWarningModal = true;
-      setDAppStakingWarningModalVisible(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     if (!isOpenGeneralTermFirstTime) {
       isShowCampaignModal = false;
-      isShowDAppWarningModal = false;
       setGeneralTermVisible(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -267,7 +248,6 @@ export const Home = ({ navigation }: Props) => {
 
   useEffect(() => {
     if (!isOpenIntroductionFirstTime) {
-      isShowDAppWarningModal = false;
       setIntroducingModalVisible(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -303,17 +283,6 @@ export const Home = ({ navigation }: Props) => {
           setVisible={setGeneralTermVisible}
           onPressAcceptBtn={onPressAcceptBtn}
           disabledOnPressBackDrop={true}
-        />
-      )}
-
-      {!isLocked && !isEmptyAccounts && isShowDAppWarningModal && !isOpenDAppWarningFirstTime && (
-        <WarningModal
-          visible={dAppStakingWarningModalVisible}
-          setVisible={setDAppStakingWarningModalVisible}
-          onPressBtn={() => {
-            mmkvStore.set('isOpenDAppWarningFirstTime', true);
-            setDAppStakingWarningModalVisible(false);
-          }}
         />
       )}
     </>
