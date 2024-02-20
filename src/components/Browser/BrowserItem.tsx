@@ -22,7 +22,7 @@ interface Props {
   isLoading?: boolean;
 }
 
-export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, isLoading }: Props) => {
+export const BrowserItem = ({ logo, title, url, style, onPress, tags, isLoading }: Props) => {
   const {
     browserDApps: { dAppCategories },
   } = useGetDAppList();
@@ -85,12 +85,12 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, 
             <Typography.Text ellipsis style={stylesheet.title}>
               {title}
             </Typography.Text>
-            {!!tags && !!tags.length && <View style={stylesheet.tagContainer}>{tags.map(renderTag)}</View>}
           </View>
-          <View>
-            <Typography.Text style={stylesheet.subtitle} ellipsis>
+          <View style={{ paddingTop: 7 }}>
+            {!!tags && !!tags.length && <View style={stylesheet.tagContainer}>{tags.map(renderTag)}</View>}
+            {/* <Typography.Text style={stylesheet.subtitle} ellipsis>
               {subtitle}
-            </Typography.Text>
+            </Typography.Text> */}
           </View>
         </View>
       </TouchableOpacity>
