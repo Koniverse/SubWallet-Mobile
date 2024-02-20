@@ -8,7 +8,7 @@ import { useGroupYieldPosition } from 'hooks/earning';
 import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
-import { Plus, Trophy } from 'phosphor-react-native';
+import { Plus, Vault } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Alert, Keyboard, Linking, ListRenderItemInfo, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -168,7 +168,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
     return (
       <EmptyList
         title={i18n.emptyScreen.positionEmptyTitle}
-        icon={Trophy}
+        icon={Vault}
         message={i18n.emptyScreen.positionEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}

@@ -188,7 +188,10 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
                   <Button
                     icon={<Icon phosphorIcon={ArrowCircleLeft} weight={'fill'} />}
                     size={'xs'}
-                    onPress={() => setVisible(false)}
+                    onPress={() => {
+                      setSelectedTab('tokenDetails');
+                      setVisible(false);
+                    }}
                     shape={'round'}>
                     {i18n.common.backToHome}
                   </Button>

@@ -2,7 +2,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import EarningGroupItem from 'components/Item/Earning/EarningGroupItem';
 import { useYieldGroupInfo } from 'hooks/earning';
-import { Trophy } from 'phosphor-react-native';
+import { Vault } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Alert, Keyboard, Linking, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { EarningScreenNavigationProps } from 'routes/earning';
@@ -173,7 +173,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
     return (
       <EmptyList
         title={i18n.emptyScreen.groupEmptyTitle}
-        icon={Trophy}
+        icon={Vault}
         message={i18n.emptyScreen.groupEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}

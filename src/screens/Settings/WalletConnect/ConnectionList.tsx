@@ -19,6 +19,7 @@ import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
+import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
 
 const searchFunc = (items: SessionTypes.Struct[], searchString: string) => {
   const searchTextLowerCase = searchString.toLowerCase();
@@ -50,6 +51,7 @@ export const ConnectionList = ({
   const navigation = useNavigation<RootNavigationProps>();
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const { numberOfConfirmations } = useConfirmationsInfo();
 
   useEffect(() => {
     itemsRef.current = items;
@@ -80,6 +82,12 @@ export const ConnectionList = ({
     return () => deleteWcEvent.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (numberOfConfirmations && !itemsRef.current?.length) {
+      navigation.goBack();
+    }
+  }, [navigation, numberOfConfirmations]);
 
   const renderEmptyList = () => {
     return (
