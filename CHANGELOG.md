@@ -1,3 +1,11 @@
+## 1.1.33 (318)
+- Update the Token details screen for mobile app (#1235)
+- Update tabbar's content (#1485)
+- Turn off popup Dapp staking (#1481)
+- Update web-runner v1.1.38 (#1479)
+- Flash screen when re-open Crowdloans tab (#1448)
+- Disable button Continue if do not load Available balance (#1225)
+
 ## 1.1.32 (317)
 - Update content for earning feature (#1463)
 
