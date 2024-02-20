@@ -4,7 +4,7 @@ import EarningScreen from 'screens/Home/Earning';
 
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Aperture, Database, Globe, Rocket, Wallet } from 'phosphor-react-native';
+import { Aperture, Globe, Rocket, Vault, Wallet } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -51,7 +51,7 @@ const crowdloanTabbarIcon = ({ color }: tabbarIconColor) => {
   return <Rocket size={24} color={color} weight={'fill'} />;
 };
 const stakingTabbarIcon = ({ color }: tabbarIconColor) => {
-  return <Database size={24} color={color} weight={'fill'} />;
+  return <Vault size={24} color={color} weight={'fill'} />;
 };
 const browserTabbarIcon = ({ color }: tabbarIconColor) => {
   return <Globe size={24} color={color} weight={'fill'} />;
@@ -130,15 +130,6 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
         }}
       />
       <Tab.Screen
-        name={'Crowdloans'}
-        component={withPageWrapper(CrowdloansScreen, ['crowdloan', 'price', 'chainStore', 'logoMaps'])}
-        options={{
-          tabBarLabel: i18n.tabName.crowdloans,
-          tabBarHideOnKeyboard: Platform.OS === 'android',
-          tabBarIcon: crowdloanTabbarIcon,
-        }}
-      />
-      <Tab.Screen
         name={'Earning'}
         component={EarningScreen}
         listeners={{
@@ -162,6 +153,15 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
           }}
         />
       )}
+      <Tab.Screen
+        name={'Crowdloans'}
+        component={withPageWrapper(CrowdloansScreen, ['crowdloan', 'price', 'chainStore', 'logoMaps'])}
+        options={{
+          tabBarLabel: i18n.tabName.crowdloans,
+          tabBarHideOnKeyboard: Platform.OS === 'android',
+          tabBarIcon: crowdloanTabbarIcon,
+        }}
+      />
     </Tab.Navigator>
   );
 };
