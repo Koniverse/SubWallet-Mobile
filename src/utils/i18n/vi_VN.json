@@ -627,7 +627,9 @@
     "walletConnectDetailEmptyTitle": "Không tìm thấy dApp",
     "walletConnectEmptyDetailMessage": "DApp của bạn sẽ hiển thị tại đây",
     "missionPoolsEmptyTitle": "No mission found",
-    "missionPoolsEmptyMessage": "Your missions will show up here"
+    "missionPoolsEmptyMessage": "Your missions will show up here",
+    "tokenDetailModalEmptyTitle": "Không tìm thấy tài khoản có số dư {0}",
+    "tokenDetailModalEmptyMessage": "Vui lòng chọn token khác để xem số dư tài khoản"
   },
   "warning": {
     "warningAccTitle": "Cảnh báo: Không bao giờ tiết lộ seed phrase này.",

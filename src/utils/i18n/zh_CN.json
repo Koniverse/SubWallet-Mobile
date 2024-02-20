@@ -627,7 +627,9 @@
     "walletConnectDetailEmptyTitle": "未找到dApp",
     "walletConnectEmptyDetailMessage": "您的dApp将在此处出现",
     "missionPoolsEmptyTitle": "No mission found",
-    "missionPoolsEmptyMessage": "Your missions will show up here"
+    "missionPoolsEmptyMessage": "Your missions will show up here",
+    "tokenDetailModalEmptyTitle": "未找到有{0}余额的账户",
+    "tokenDetailModalEmptyMessage": "请选择其他代币查看账户余额"
   },
   "warning": {
     "warningAccTitle": "警告：切勿泄露此私钥",

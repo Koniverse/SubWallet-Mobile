@@ -15,9 +15,19 @@ interface Props {
   onPressReload?: () => void;
   addBtnLabel?: string;
   onPressAddBtn?: () => void;
+  iconButton?: React.ElementType<IconProps>;
 }
 
-export const EmptyList = ({ icon, title, message, onPressReload, isRefresh, addBtnLabel, onPressAddBtn }: Props) => {
+export const EmptyList = ({
+  icon,
+  title,
+  message,
+  onPressReload,
+  isRefresh,
+  addBtnLabel,
+  onPressAddBtn,
+  iconButton = PlusCircle,
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   return (
@@ -64,7 +74,7 @@ export const EmptyList = ({ icon, title, message, onPressReload, isRefresh, addB
           <Button
             style={{ marginTop: theme.margin }}
             shape={'round'}
-            icon={<Icon phosphorIcon={PlusCircle} weight={'fill'} size={'sm'} />}
+            icon={<Icon phosphorIcon={iconButton} weight={'fill'} size={'sm'} />}
             size={'xs'}
             onPress={onPressAddBtn}>
             {addBtnLabel}

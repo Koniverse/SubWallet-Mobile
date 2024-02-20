@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Number, SwModal, Typography } from 'components/design-system-ui';
+import { Button, Icon, Number, SwModal, Typography } from 'components/design-system-ui';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
 import BigN from 'bignumber.js';
@@ -14,9 +14,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { APIItemState } from '@subwallet/extension-base/background/KoniTypes';
 import { isAccountAll } from 'utils/accountAll';
-import { isSameAddress } from '@subwallet/extension-base/utils';
+import { BN_ZERO, isSameAddress } from '@subwallet/extension-base/utils';
 import { BalanceItem } from '@subwallet/extension-base/types';
 import { deviceHeight } from 'constants/index';
+import { EmptyList } from 'components/EmptyList';
+import { ArrowCircleLeft, Coins } from 'phosphor-react-native';
 
 export type ItemType = {
   symbol: string;
@@ -94,16 +96,17 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
 
     const result: BalanceItem[] = [];
 
-    const filterAddress = (address: string) => {
+    const filterAddress = (address: string, free?: string) => {
       if (isAllAccount) {
-        return !isAccountAll(address);
+        const isZeroFreeBalance = new BigN(free || 0).eq(BN_ZERO);
+        return !isAccountAll(address) && !isZeroFreeBalance;
       } else {
         return isSameAddress(address, currentAccount?.address || '');
       }
     };
 
     for (const [address, info] of Object.entries(balanceMap)) {
-      if (filterAddress(address)) {
+      if (filterAddress(address, info[currentTokenInfo.slug]?.free || '0')) {
         const item = info[currentTokenInfo.slug];
 
         if (item && item.state === APIItemState.READY) {
@@ -166,9 +169,32 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
             showsVerticalScrollIndicator={false}
             style={{ maxHeight: deviceHeight * 0.6 }}
             contentContainerStyle={{ gap: theme.paddingSM }}>
-            {accountItems.map(item => (
-              <AccountTokenDetail key={item.address} item={item} />
-            ))}
+            {accountItems && accountItems.length ? (
+              accountItems.map(item => <AccountTokenDetail key={item.address} item={item} />)
+            ) : (
+              <View style={{ paddingTop: theme.padding }}>
+                <EmptyList
+                  icon={Coins}
+                  title={
+                    i18n.formatString(
+                      i18n.emptyScreen.tokenDetailModalEmptyTitle,
+                      currentTokenInfo?.symbol || '',
+                    ) as string
+                  }
+                  iconButton={ArrowCircleLeft}
+                  message={i18n.emptyScreen.tokenDetailModalEmptyMessage}
+                />
+                <View style={{ alignItems: 'center' }}>
+                  <Button
+                    icon={<Icon phosphorIcon={ArrowCircleLeft} weight={'fill'} />}
+                    size={'xs'}
+                    onPress={() => setVisible(false)}
+                    shape={'round'}>
+                    {i18n.common.backToHome}
+                  </Button>
+                </View>
+              </View>
+            )}
           </ScrollView>
         )}
       </>

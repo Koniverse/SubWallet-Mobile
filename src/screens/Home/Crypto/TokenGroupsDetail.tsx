@@ -285,6 +285,7 @@ export const TokenGroupsDetail = ({
           tokenBalanceMap={tokenBalanceMap}
           modalVisible={tokenDetailVisible}
           setVisible={setTokenDetailVisible}
+          onClickBack={onClickBack}
         />
 
         <SelectAccAndTokenModal

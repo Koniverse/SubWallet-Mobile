@@ -627,7 +627,9 @@
     "walletConnectDetailEmptyTitle": "DApp не найден",
     "walletConnectEmptyDetailMessage": "Ваши одобренные dApp будут отображаться здесь",
     "missionPoolsEmptyTitle": "No mission found",
-    "missionPoolsEmptyMessage": "Your missions will show up here"
+    "missionPoolsEmptyMessage": "Your missions will show up here",
+    "tokenDetailModalEmptyTitle": "No account with {0} balance found",
+    "tokenDetailModalEmptyMessage": "Switch to another token to see account balance"
   },
   "warning": {
     "warningAccTitle": "Предупреждение: никогда не разглашайте этот ключ",
