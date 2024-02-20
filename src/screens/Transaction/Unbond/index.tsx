@@ -117,6 +117,7 @@ export const Unbond = ({
   const { list: allPositions } = useYieldPositionDetail(slug);
   const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
   const accountInfo = useGetAccountByAddress(fromValue);
+  const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
 
   const bondedSlug = useMemo(() => {
     switch (poolInfo.type) {
@@ -276,8 +277,8 @@ export const Unbond = ({
   };
 
   const isDisableSubmitBtn = useMemo(
-    () => !!errors.value || !currentValue || !fromValue || loading,
-    [currentValue, errors.value, fromValue, loading],
+    () => !!errors.value || !currentValue || !fromValue || loading || !isBalanceReady,
+    [currentValue, errors.value, fromValue, isBalanceReady, loading],
   );
 
   const onChangeFastLeave = useCallback(
@@ -341,7 +342,7 @@ export const Unbond = ({
                 accountSelectorRef={accountSelectorRef}
               />
 
-              <GeneralFreeBalance address={fromValue} chain={chainValue} />
+              <GeneralFreeBalance address={fromValue} chain={chainValue} onBalanceReady={setIsBalanceReady} />
 
               {mustChooseValidator && (
                 <>

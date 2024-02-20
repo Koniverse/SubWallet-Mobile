@@ -76,6 +76,7 @@ export const Withdraw = ({
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [isTransactionDone, setTransactionDone] = useState(false);
+  const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
 
   const {
     title,
@@ -217,7 +218,7 @@ export const Withdraw = ({
                 disabled={loading || !isAllAccount}
               />
 
-              <GeneralFreeBalance address={fromValue} chain={chainValue} />
+              <GeneralFreeBalance address={fromValue} chain={chainValue} onBalanceReady={setIsBalanceReady} />
 
               <MetaInfo hasBackgroundWrapper>
                 <MetaInfo.Chain chain={chainValue} label={i18n.inputLabel.network} />
@@ -252,14 +253,16 @@ export const Withdraw = ({
               </Button>
               <Button
                 style={{ flex: 1, marginLeft: 4 }}
-                disabled={!fromValue || isDisabled || loading}
+                disabled={!fromValue || isDisabled || loading || !isBalanceReady}
                 loading={loading}
                 icon={
                   <Icon
                     phosphorIcon={ArrowCircleRight}
                     weight={'fill'}
                     size={'lg'}
-                    iconColor={!fromValue || isDisabled ? theme.colorTextLight5 : theme.colorWhite}
+                    iconColor={
+                      !fromValue || isDisabled || loading || !isBalanceReady ? theme.colorTextLight5 : theme.colorWhite
+                    }
                   />
                 }
                 onPress={onPreCheckReadOnly(onSubmit)}>
