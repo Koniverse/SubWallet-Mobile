@@ -373,7 +373,7 @@ export default function useAccountBalance(
   }, [assetRegistryMap]);
 
   const isShowZeroBalance = useMemo(() => {
-    return showZero || isShowZeroBalanceSetting;
+    return showZero ?? isShowZeroBalanceSetting;
   }, [isShowZeroBalanceSetting, showZero]);
 
   const [result, setResult] = useState<AccountBalanceHookType>(
