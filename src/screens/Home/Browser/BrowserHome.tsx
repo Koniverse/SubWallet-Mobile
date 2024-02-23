@@ -9,6 +9,7 @@ import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 import BookmarkSection from './Shared/BookmarkSection';
 import RecommendSection from './Shared/RecommendSection';
 import HistorySection from './Shared/HistorySection';
+import MissionPoolSection from './Shared/MissionPoolSection';
 
 const ItemSeparator = () => {
   const stylesheet = createStylesheet();
@@ -56,6 +57,7 @@ const BrowserHome = () => {
         <HistorySection dApps={dApps} renderItemSeparator={ItemSeparator} />
         <BookmarkSection dApps={dApps} renderItemSeparator={ItemSeparator} />
         <RecommendSection dApps={dApps} onPressSectionItem={onPressSectionItem} />
+        <MissionPoolSection />
       </ScrollView>
     </View>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, Platform, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, Platform, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Divider, Image, Typography } from 'components/design-system-ui';
 import { IconWeight } from 'phosphor-react-native';
 import { MissionInfo } from 'types/missionPool';
@@ -36,16 +36,17 @@ export type TagInfo = {
 interface Props {
   data: MissionInfo;
   onPressItem: () => void;
+  containerStyle?: ViewStyle;
+  isBasic?: boolean;
 }
-
 const isAndroid = Platform.OS === 'android';
-export const MissionPoolHorizontalItem = ({ data, onPressItem }: Props) => {
+export const MissionPoolHorizontalItem = ({ data, onPressItem, containerStyle, isBasic }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyles(theme);
   const { timeline } = useMissionPools(data);
 
   return (
-    <TouchableOpacity activeOpacity={1} onPress={onPressItem} style={styles.missionItemWrapper}>
+    <TouchableOpacity activeOpacity={1} onPress={onPressItem} style={[styles.missionItemWrapper, containerStyle]}>
       <ImageBackground style={styles.backdropImgBlurView} source={{ uri: data.backdrop_image }} blurRadius={30} />
       <LinearGradient
         angle={90}
@@ -56,23 +57,31 @@ export const MissionPoolHorizontalItem = ({ data, onPressItem }: Props) => {
       />
 
       <View style={styles.missionItemContent}>
-        <Image src={{ uri: data.logo }} style={{ width: 40, height: 40, marginTop: theme.paddingXS }} />
+        <Image src={{ uri: data.logo }} style={{ width: 40, height: 40, marginTop: isBasic ? 4 : theme.paddingXS }} />
         <View style={{ flex: 1, paddingLeft: theme.paddingSM }}>
           <Typography.Text size={'md'} ellipsis style={styles.missionItemName}>
             {data.name}
           </Typography.Text>
-          <Typography.Text size={'sm'} ellipsis style={styles.missionItemTimeline}>
-            {timeline}
-          </Typography.Text>
+          {!isBasic && (
+            <Typography.Text size={'sm'} ellipsis style={styles.missionItemTimeline}>
+              {timeline}
+            </Typography.Text>
+          )}
           <View style={styles.missionItemRow}>
             <Typography.Text size={'sm'} style={{ color: theme.colorTextTertiary, ...FontSemiBold }}>
               {'Rewards:'}
             </Typography.Text>
             <Typography.Text style={{ color: theme.colorSuccess, ...FontSemiBold }}>{data.reward}</Typography.Text>
           </View>
-          <Divider color={theme.colorBgDivider} style={{ marginVertical: theme.marginXS }} />
+          {!isBasic && <Divider color={theme.colorBgDivider} style={{ marginVertical: theme.marginXS }} />}
           <View
-            style={{ justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'row', gap: theme.paddingXXS }}>
+            style={{
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: theme.paddingXXS,
+              marginTop: isBasic ? 8 : 0,
+            }}>
             <MissionPoolTag data={data} />
             <MissionPoolStatusTag data={data} />
           </View>
