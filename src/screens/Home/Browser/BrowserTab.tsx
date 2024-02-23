@@ -546,7 +546,11 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
         onMessage={onWebviewMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onContentProcessDidTerminate={onOutOfMemmories}
-        userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+        userAgent={
+          desktopMode
+            ? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
+            : undefined
+        }
         allowFileAccess
         allowsInlineMediaPlayback
         allowUniversalAccessFromFileURLs
@@ -560,6 +564,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
       />
     );
   }, [
+    desktopMode,
     initWebViewSource,
     injectedScripts,
     isNetConnected,
