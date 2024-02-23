@@ -4,7 +4,7 @@ import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui'
 import { ShoppingCartSimple } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountSelector } from 'components/Modal/common/AccountSelectorNew';
-import { TokenSelector } from 'components/Modal/common/TokenSelectorNew';
+import { TokenSelector } from 'components/Modal/common/TokenSelector';
 import useBuyToken from 'hooks/screen/Home/Crypto/useBuyToken';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';

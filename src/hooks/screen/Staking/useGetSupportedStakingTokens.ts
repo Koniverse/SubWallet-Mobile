@@ -1,4 +1,4 @@
-import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
+import { _ChainInfo } from '@subwallet/chain-list/types';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
@@ -15,7 +15,8 @@ import { ALL_KEY } from 'constants/index';
 import { AccountAddressType } from 'types/index';
 import { findAccountByAddress, getAccountAddressType } from 'utils/account';
 import useChainAssets from 'hooks/chain/useChainAssets';
-import useChainChecker from 'hooks/chain/useChainChecker';
+import { BN_ZERO } from '@polkadot/util';
+import { TokenItemType } from 'components/Modal/common/TokenSelector';
 
 const isChainTypeValid = (chainInfo: _ChainInfo, accounts: AccountJson[], address?: string): boolean => {
   const addressType = getAccountAddressType(address);
@@ -43,13 +44,15 @@ export default function useGetSupportedStakingTokens(
   type: StakingType,
   address?: string,
   chain?: string,
-): _ChainAsset[] {
+): TokenItemType[] {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const assetRegistryMap = useChainAssets().chainAssetRegistry;
-  const accounts = useSelector((state: RootState) => state.accountState.accounts);
-  const { checkChainConnected } = useChainChecker();
+  const priceMap = useSelector((state: RootState) => state.price.priceMap);
+  const { balanceMap } = useSelector((root: RootState) => root.balance);
+  const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
   return useMemo(() => {
-    const result: _ChainAsset[] = [];
+    const result: TokenItemType[] = [];
+    const accBalanceMap = currentAccount ? balanceMap[currentAccount.address] : undefined;
 
     if (type === StakingType.NOMINATED) {
       Object.values(chainInfoMap).forEach(chainInfo => {
@@ -61,7 +64,14 @@ export default function useGetSupportedStakingTokens(
             isChainTypeValid(chainInfo, accounts, address) &&
             (!chain || chain === ALL_KEY || chain === chainInfo.slug)
           ) {
-            result.push(assetRegistryMap[nativeTokenSlug]);
+            const item = assetRegistryMap[nativeTokenSlug];
+            const freeBalance = accBalanceMap[item.slug]?.free || BN_ZERO;
+            result.push({
+              ...item,
+              price: item.priceId ? priceMap[item.priceId] : 0,
+              free: accBalanceMap ? freeBalance : BN_ZERO,
+              decimals: item.decimals || undefined,
+            });
           }
         }
       });
@@ -78,26 +88,19 @@ export default function useGetSupportedStakingTokens(
             isChainTypeValid(chainInfo, accounts, address) &&
             (!chain || chain === ALL_KEY || chain === chainInfo.slug)
           ) {
-            result.push(assetRegistryMap[nativeTokenSlug]);
+            const item = assetRegistryMap[nativeTokenSlug];
+            const freeBalance = accBalanceMap[item.slug]?.free || BN_ZERO;
+            result.push({
+              ...item,
+              price: item.priceId ? priceMap[item.priceId] : 0,
+              free: accBalanceMap ? freeBalance : BN_ZERO,
+              decimals: item.decimals || undefined,
+            });
           }
         }
       });
     }
 
-    return result.sort((a, b) => {
-      if (checkChainConnected(a.originChain)) {
-        if (checkChainConnected(b.originChain)) {
-          return 0;
-        } else {
-          return -1;
-        }
-      } else {
-        if (checkChainConnected(b.originChain)) {
-          return 1;
-        } else {
-          return 0;
-        }
-      }
-    });
-  }, [type, chainInfoMap, assetRegistryMap, accounts, address, chain, checkChainConnected]);
+    return result;
+  }, [currentAccount, balanceMap, type, chainInfoMap, assetRegistryMap, accounts, address, chain, priceMap]);
 }
