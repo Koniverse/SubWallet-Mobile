@@ -107,10 +107,10 @@ const Component = (
       return;
     }
     if (isOn) {
-      webviewRef.current?.injectJavaScript(
-        "const meta = document.createElement('meta'); meta.setAttribute('content', 'width=device-width, initial-scale=0.1, maximum-scale=10, user-scalable=1'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); ",
-      );
       addToDesktopMode();
+      setTimeout(() => {
+        webviewRef.current?.reload();
+      }, 100);
     } else {
       removeFromDesktopMode();
       webviewRef.current?.reload();
