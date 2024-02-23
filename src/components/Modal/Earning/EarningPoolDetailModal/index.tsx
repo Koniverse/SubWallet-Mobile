@@ -29,6 +29,7 @@ import { getTokenLogo } from 'utils/index';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { mmkvStore } from 'utils/storage';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { noop } from 'utils/function';
 import { EARNING_POOL_DETAIL_DATA } from 'constants/earning/EarningDataRaw';
 
 interface Props {
@@ -38,6 +39,10 @@ interface Props {
   onStakeMore?: (value: string) => void;
   isShowStakeMoreBtn?: boolean;
   onPressBack?: () => void;
+  onlinePoolInfoMap?: Record<string, YieldPoolInfo>;
+  externalBtnTitle?: string;
+  onPressExternalBtn?: () => void;
+  onPressExternalBack?: () => void;
 }
 export interface BoxProps {
   icon: string;
@@ -54,14 +59,25 @@ export interface StaticDataProps {
 }
 
 const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
-  const { slug, setVisible: _setVisible, modalVisible, onStakeMore, isShowStakeMoreBtn = true, onPressBack } = props;
+  const {
+    slug,
+    setVisible: _setVisible,
+    modalVisible,
+    onStakeMore,
+    isShowStakeMoreBtn = true,
+    onPressBack,
+    onlinePoolInfoMap,
+    externalBtnTitle,
+    onPressExternalBtn,
+    onPressExternalBack,
+  } = props;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
   const scrollRef = useRef<ScrollView>(null);
   const checkRef = useRef<number>(Date.now());
 
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { poolInfoMap } = useSelector((state: RootState) => state.earning);
+  const { poolInfoMap: _poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const [scrollHeight, setScrollHeight] = useState<number>(0);
@@ -81,7 +97,12 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     }
   }, []);
 
+  const poolInfoMap = useMemo(() => {
+    return onlinePoolInfoMap ? onlinePoolInfoMap : _poolInfoMap;
+  }, [_poolInfoMap, onlinePoolInfoMap]);
+
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
+
   const title = useMemo(() => {
     if (!poolInfo) {
       return '';
@@ -177,6 +198,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   }, [poolInfo]);
 
   const tags = useMemo(() => {
+    if (!poolInfo) {
+      return undefined;
+    }
+
     const asset = assetRegistry[poolInfo.metadata.inputAsset];
     const symbol = asset.symbol;
     if (poolInfo.statistic && 'assetEarning' in poolInfo.statistic && poolInfo.statistic?.assetEarning) {
@@ -196,12 +221,13 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
       return data.filter(item => item.apy);
     }
-  }, [assetRegistry, poolInfo.metadata.inputAsset, poolInfo.statistic]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assetRegistry, poolInfo?.metadata.inputAsset, poolInfo?.statistic]);
 
   const getAltChain = useCallback(
     (_poolInfo?: YieldPoolInfo) => {
       if (!!_poolInfo && (isLiquidPool(_poolInfo) || isLendingPool(_poolInfo))) {
-        const asset = assetRegistry[_poolInfo.metadata.altInputAssets || ''];
+        const asset = assetRegistry[_poolInfo?.metadata.altInputAssets || ''];
 
         return asset ? { chain: asset.originChain, name: asset.name } : { chain: '', name: '' };
       }
@@ -243,11 +269,17 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
   const unBondedTime = useMemo((): string => {
     let time: number | undefined;
+
+    if (!poolInfo) {
+      return '';
+    }
+
     if (poolInfo.statistic && 'unstakingPeriod' in poolInfo.statistic) {
       time = poolInfo.statistic.unstakingPeriod;
     }
     return convertTime(time);
-  }, [poolInfo.statistic, convertTime]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [poolInfo?.statistic, convertTime]);
 
   const data: BoxProps[] = useMemo(() => {
     if (!poolInfo) {
@@ -511,7 +543,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     setVisible(false);
     setIsScrollEnd(false);
     setShowScrollEnd(false);
-  }, [setVisible]);
+    !!onPressExternalBack && onPressExternalBack();
+  }, [onPressExternalBack, setVisible]);
 
   const goBack = useCallback(() => {
     setVisible(false);
@@ -541,7 +574,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       isUseModalV2
       modalVisible={modalVisible}
       setVisible={setVisible}
-      onChangeModalVisible={onGoBack}>
+      onChangeModalVisible={noop}>
       <SafeAreaView
         style={{
           flex: 1,
@@ -659,6 +692,23 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               loading={loading}
               disabled={!isScrollEnd && showScrollEnd}>
               {buttonTitle}
+            </Button>
+          )}
+
+          {onlinePoolInfoMap && (
+            <Button
+              icon={
+                <Icon
+                  phosphorIcon={PlusCircle}
+                  weight="fill"
+                  iconColor={isScrollEnd || !showScrollEnd ? theme.colorWhite : theme.colorTextLight5}
+                />
+              }
+              size="sm"
+              onPress={onPressExternalBtn}
+              loading={loading}
+              disabled={!isScrollEnd && showScrollEnd}>
+              {externalBtnTitle}
             </Button>
           )}
         </View>

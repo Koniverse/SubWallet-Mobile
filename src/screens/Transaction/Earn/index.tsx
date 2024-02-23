@@ -67,10 +67,7 @@ import { insufficientMessages } from 'hooks/transaction/useHandleSubmitTransacti
 import { useGetBalance } from 'hooks/balance';
 import reformatAddress from 'utils/index';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
-
-// interface _YieldAssetExpectedEarning extends YieldAssetExpectedEarning {
-//   symbol: string;
-// }
+import { getPoolSlug } from 'utils/earn';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -85,13 +82,26 @@ export const insufficientXCMMessages = ['You can only enter a maximum'];
 const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const {
     route: {
-      params: { slug },
+      params: { slug: _slug, chain: externalChain, type: externalType, isNoAccount, target },
     },
   } = props;
 
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { show, hideAll } = useToast();
+  const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
+  const { poolInfoMap, poolTargetsMap } = useSelector((state: RootState) => state.earning);
+  const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
+  const { priceMap } = useSelector((state: RootState) => state.price);
+
+  const slug = useMemo(() => {
+    if (!_slug && externalChain && externalType) {
+      return getPoolSlug(poolInfoMap, externalChain, externalType as YieldPoolType) || '';
+    } else {
+      return _slug;
+    }
+  }, [_slug, externalChain, externalType, poolInfoMap]);
 
   const {
     title,
@@ -100,6 +110,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       setValue,
       formState: { errors },
       getValues,
+      setFocus,
     },
     onChangeFromValue: setFrom,
     onChangeAssetValue: setAsset,
@@ -118,17 +129,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const currentAmount = useWatch<StakeFormValues>({ name: 'value', control });
   const chain = useWatch<StakeFormValues>({ name: 'chain', control });
   const poolTarget = useWatch<StakeFormValues>({ name: 'target', control });
-
   const accountSelectorRef = useRef<ModalRef>();
   const validatorSelectorRef = useRef<ValidatorSelectorRef>(null);
   const fromRef = useRef<string>(currentFrom);
   const isPressInfoBtnRef = useRef<boolean>(false);
-
-  const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
-  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const { poolInfoMap, poolTargetsMap } = useSelector((state: RootState) => state.earning);
-  const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
-  const { priceMap } = useSelector((state: RootState) => state.price);
   const nativeTokenSlug = useGetNativeTokenSlug(chain);
 
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
@@ -141,7 +145,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const preCheckAction = usePreCheckAction(currentFrom);
   const { compound } = useYieldPositionDetail(slug);
   const { nativeTokenBalance } = useGetBalance(chain, currentFrom);
-
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo?.type || '';
   const poolChain = poolInfo?.chain || '';
@@ -665,7 +668,14 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const onBack = useCallback(() => {
     if (firstStep) {
-      navigation.goBack();
+      if (!_slug && externalType && externalChain) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+        });
+      } else {
+        navigation.goBack();
+      }
     } else {
       Alert.alert(
         'Cancel earning process?',
@@ -683,7 +693,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         ],
       );
     }
-  }, [firstStep, navigation]);
+  }, [_slug, externalChain, externalType, firstStep, navigation]);
 
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 350);
@@ -808,11 +818,11 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [chain, chainState?.active, forceFetchValidator, currentFrom, slug]);
 
   useEffect(() => {
-    if (!compound) {
+    if (!compound || (!_slug && externalChain && externalType)) {
       isPressInfoBtnRef.current = false;
       setTimeout(() => setDetailModalVisible(true), 300);
     }
-  }, [compound]);
+  }, [_slug, compound, externalChain, externalType]);
 
   return (
     <>
@@ -921,6 +931,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                         targetPool={poolTarget}
                         disabled={submitLoading}
                         setForceFetchValidator={setForceFetchValidator}
+                        defaultValidatorAddress={target}
                       />
                     )}
 
@@ -935,6 +946,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                         onSelectItem={onChangeTarget}
                         disabled={submitLoading}
                         ref={validatorSelectorRef}
+                        defaultValidatorAddress={target}
                       />
                     )}
                   </View>
@@ -971,16 +983,28 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
               </View>
             )}
           </>
-          <EarningPoolDetailModal
-            modalVisible={detailModalVisible}
-            slug={slug}
-            setVisible={setDetailModalVisible}
-            onStakeMore={() => setDetailModalVisible(false)}
-            isShowStakeMoreBtn={!isPressInfoBtnRef.current}
-            onPressBack={() => {
-              navigation.goBack();
-            }}
-          />
+          {!isNoAccount && (
+            <EarningPoolDetailModal
+              modalVisible={detailModalVisible}
+              slug={slug}
+              setVisible={setDetailModalVisible}
+              onStakeMore={() => {
+                setDetailModalVisible(false);
+                setFocus('value');
+              }}
+              isShowStakeMoreBtn={!isPressInfoBtnRef.current}
+              onPressBack={() => {
+                if (!_slug && externalType && externalChain) {
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+                  });
+                } else {
+                  navigation.goBack();
+                }
+              }}
+            />
+          )}
         </TransactionLayout>
       ) : (
         <TransactionDone transactionDoneInfo={transactionDoneInfo} />

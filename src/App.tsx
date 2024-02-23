@@ -36,6 +36,7 @@ import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
 import { useGetEarningStaticData } from 'hooks/static-content/useGetEarningStaticData';
+import { useGetEarningPoolData } from 'hooks/static-content/useGetEarningPoolData';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -159,6 +160,7 @@ export const App = () => {
   const isI18nReady = useSetupI18n().isI18nReady;
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
+  const { getPoolInfoMap } = useGetEarningPoolData();
   const { getEarningStaticData } = useGetEarningStaticData(language);
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
 
@@ -198,6 +200,7 @@ export const App = () => {
     }, 100);
 
     checkIsShowBuyToken();
+    getPoolInfoMap();
     getDAppsData();
     getEarningStaticData();
 

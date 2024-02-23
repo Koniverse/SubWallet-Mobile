@@ -59,6 +59,7 @@ interface Props {
   selectedValidator?: string;
   disabled?: boolean;
   setForceFetchValidator: (val: boolean) => void;
+  defaultValidatorAddress?: string;
 }
 
 type IconSortAscendingType = (iconProps: IconProps) => JSX.Element;
@@ -92,6 +93,7 @@ export const EarningValidatorSelector = forwardRef(
       disabled,
       setForceFetchValidator,
       slug,
+      defaultValidatorAddress,
     }: Props,
     ref: React.Ref<ValidatorSelectorRef>,
   ) => {
@@ -254,15 +256,36 @@ export const EarningValidatorSelector = forwardRef(
       [resetValidatorSelector],
     );
 
+    const externalDefaultValue = useMemo(() => {
+      let defaultSelectedList: ValidatorDataType[] = [];
+      if (defaultValidatorAddress) {
+        const defaultValidator = resultList.find(item => item.address === defaultValidatorAddress);
+        if (defaultValidator) {
+          const listWithoutDefaultValidator = resultList.filter(item => item.address !== defaultValidatorAddress);
+
+          defaultSelectedList = listWithoutDefaultValidator.slice(0, maxCount - 1).concat(defaultValidator);
+        } else {
+          defaultSelectedList = resultList.slice(maxCount);
+        }
+      }
+
+      return defaultSelectedList;
+    }, [defaultValidatorAddress, maxCount, resultList]);
+
     useEffect(() => {
-      const defaultValue =
-        nominations?.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity)).join(',') || '';
+      let defaultValue = '';
+      if (externalDefaultValue && externalDefaultValue.length) {
+        defaultValue = externalDefaultValue.map(item => getValidatorKey(item.address, item.identity)).join(',');
+      } else {
+        defaultValue =
+          nominations?.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity)).join(',') || '';
+      }
+
       const selected = isSingleSelect ? '' : defaultValue;
       onInitValidators(defaultValue, selected);
       onSelectItem && onSelectItem(selected);
-
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isSingleSelect, from]);
+    }, [isSingleSelect, from, externalDefaultValue]);
 
     const applyBtn = useMemo(
       () => ({

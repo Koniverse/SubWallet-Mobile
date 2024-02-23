@@ -8,6 +8,7 @@ import { ToastType } from 'react-native-toast-notifications';
 import { MutableRefObject } from 'react';
 import { AppNavigatorDeepLinkStatus } from 'screens/Home';
 import { prevDeeplinkUrl, setPrevDeeplinkUrl } from '../../App';
+import { firstScreenDeepLink, setFirstScreenDeepLink } from 'screens/Home/FirstScreen';
 
 export function transformUniversalToNative(url: string) {
   return url.replace('https://mobile.subwallet.app/', 'subwallet://');
@@ -45,6 +46,11 @@ export function handleTriggerDeeplinkAfterLogin(
     Linking.canOpenURL(_url)
       .then(supported => {
         if (supported) {
+          if (firstScreenDeepLink.current) {
+            Linking.openURL(firstScreenDeepLink.current);
+            setFirstScreenDeepLink();
+            return;
+          }
           Linking.openURL(_url);
         }
       })

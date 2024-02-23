@@ -26,6 +26,7 @@ interface Props {
   targetPool: string;
   disabled?: boolean;
   setForceFetchValidator: (val: boolean) => void;
+  defaultValidatorAddress?: string;
 }
 
 interface FilterOption {
@@ -119,6 +120,7 @@ export const EarningPoolSelector = ({
   disabled,
   chain,
   setForceFetchValidator,
+  defaultValidatorAddress,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const items = useGetPoolTargetList(slug) as NominationPoolDataType[];
@@ -158,6 +160,12 @@ export const EarningPoolSelector = ({
     () => disabled || !!nominationPoolValueList.length || !items.length,
     [disabled, items.length, nominationPoolValueList.length],
   );
+
+  const externalDefaultValue = useMemo(() => {
+    if (defaultValidatorAddress) {
+      return resultList.find(item => item.address === defaultValidatorAddress);
+    }
+  }, [defaultValidatorAddress, resultList]);
 
   const renderListEmptyComponent = useCallback(() => {
     return (
@@ -230,9 +238,14 @@ export const EarningPoolSelector = ({
   }, [slug]);
 
   useEffect(() => {
-    const defaultSelectedPool = nominationPoolValueList[0] || String(defaultSelectPool || '');
+    let defaultValue = '';
+    if (externalDefaultValue) {
+      defaultValue = String(externalDefaultValue.id);
+    } else {
+      defaultValue = nominationPoolValueList[0] || String(defaultSelectPool || '');
+    }
 
-    onSelectItem && onSelectItem(defaultSelectedPool);
+    onSelectItem && onSelectItem(defaultValue);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nominationPoolValueList, items]);
 

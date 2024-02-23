@@ -70,7 +70,7 @@ import { AppModalContext } from 'providers/AppModalContext';
 import { PortalHost } from '@gorhom/portal';
 import { findAccountByAddress } from 'utils/index';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
-import { saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
+import { enableChain, saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
 import urlParse from 'url-parse';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { transformUniversalToNative } from 'utils/deeplink';
@@ -164,6 +164,25 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
             },
             Browser: {
               path: 'browser-home',
+            },
+          },
+        },
+      },
+    },
+    Drawer: {
+      path: 'drawer',
+      screens: {
+        TransactionAction: {
+          path: 'transaction-action',
+          screens: {
+            Earning: {
+              path: 'earning',
+              stringify: {
+                chain: (chain: string) => chain,
+                type: (type: string) => type,
+                isNoAccount: (isNoAccount: boolean) => isNoAccount,
+                target: (target: string) => target,
+              },
             },
           },
         },
@@ -379,10 +398,14 @@ const AppNavigator = ({ isAppReady }: Props) => {
         }
 
         //enable Network
-        const originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+        let originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+        if (urlQueryMap.chain) {
+          originChain = urlQueryMap.chain;
+        }
         const isChainConnected = checkChainConnected(originChain);
 
         if (!isChainConnected && originChain) {
+          enableChain(originChain);
           updateAssetSetting({
             tokenSlug: urlQueryMap.slug,
             assetSetting: {
