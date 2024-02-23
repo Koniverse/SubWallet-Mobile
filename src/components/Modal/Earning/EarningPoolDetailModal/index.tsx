@@ -499,12 +499,23 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     }
   }, [setVisible, poolInfo]);
 
+  const onGoBack = useCallback(() => {
+    if (modalVisible) {
+      !isShowStakeMoreBtn ? closeModal() : goBack();
+    }
+  }, [closeModal, modalVisible, goBack, isShowStakeMoreBtn]);
+
   if (!poolInfo) {
     return null;
   }
 
   return (
-    <SwFullSizeModal modalBaseV2Ref={modalBaseV2Ref} isUseModalV2 modalVisible={modalVisible} setVisible={setVisible}>
+    <SwFullSizeModal
+      modalBaseV2Ref={modalBaseV2Ref}
+      isUseModalV2
+      modalVisible={modalVisible}
+      setVisible={setVisible}
+      onChangeModalVisible={onGoBack}>
       <SafeAreaView
         style={{
           flex: 1,
@@ -518,7 +529,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
                 type={'ghost'}
                 size={'xs'}
                 icon={<Icon phosphorIcon={X} weight={'bold'} size={'md'} iconColor={theme.colorWhite} />}
-                onPress={!isShowStakeMoreBtn ? closeModal : goBack}
+                onPress={onGoBack}
               />
             </View>
             <Typography.Text style={styles.headerText}>{title}</Typography.Text>

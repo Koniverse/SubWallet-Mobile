@@ -106,6 +106,7 @@ export const WCAccountSelect = ({
           selectedValueMap={{}}
           isShowInput
           isUseForceHidden={false}
+          onBackButtonPress={() => modalRef?.current?.onCloseModal()}
           renderSelected={() => <WCAccountInput accounts={availableAccounts} selected={appliedAccounts} />}
           renderCustomItem={renderItem}>
           <Button

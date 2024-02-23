@@ -1,5 +1,5 @@
-import React from 'react';
-import { Platform, StyleProp, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { BackHandler, DeviceEventEmitter, Platform, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ModalProps } from 'react-native-modal/dist/modal';
 import ModalBase from 'components/design-system-ui/modal/ModalBase';
@@ -38,21 +38,36 @@ const SwFullSizeModal = ({
   backdropColor,
   isUseForceHidden,
   onBackButtonPress,
+  onChangeModalVisible,
   isUseModalV2,
   setVisible,
   modalBaseV2Ref,
   level,
 }: Props) => {
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (modalVisible) {
+        DeviceEventEmitter.emit('closeModal');
+        return true;
+      } else {
+        return false;
+      }
+    });
+    return () => backHandler.remove();
+  }, [modalVisible]);
+
   return (
     <>
       {isUseModalV2 ? (
         <Portal hostName="SimpleModalHost">
           <ModalBaseV2
+            onChangeModalVisible={onChangeModalVisible}
             level={level}
             ref={modalBaseV2Ref}
             isVisible={modalVisible}
             setVisible={setVisible}
             height={deviceHeight}
+            onBackButtonPress={onBackButtonPress}
             isUseForceHidden={Platform.OS === 'android'}
             isFullHeight>
             <View style={[subWalletModalContainer, modalStyle]}>{children}</View>

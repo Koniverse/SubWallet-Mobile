@@ -40,7 +40,6 @@ export const AccountSelector = ({
   return (
     <FullSizeSelectModal
       items={items}
-      onBackButtonPress={() => accountSelectorRef?.current?.onCloseModal()}
       selectedValueMap={selectedValueMap}
       onSelectItem={_onSelectItem}
       selectModalType={'single'}

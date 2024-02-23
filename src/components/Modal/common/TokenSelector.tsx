@@ -64,7 +64,6 @@ export const TokenSelector = ({
     <FullSizeSelectModal
       items={items}
       selectedValueMap={selectedValueMap}
-      onBackButtonPress={() => tokenSelectorRef?.current?.onCloseModal()}
       selectModalType={'single'}
       selectModalItemType={'token'}
       title={i18n.header.selectToken}

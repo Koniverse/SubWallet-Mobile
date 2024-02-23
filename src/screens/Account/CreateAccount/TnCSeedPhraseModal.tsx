@@ -13,6 +13,7 @@ interface TnCSeedPhraseModalProps {
   setVisible: (isVisible: boolean) => void;
   isVisible: boolean;
   onPressSubmit: (hideNextTime: boolean) => void;
+  onBackButtonPress: () => void;
 }
 
 interface InstructionInfo {
@@ -46,7 +47,12 @@ const instructionInfoList: InstructionInfo[] = [
   },
 ];
 
-export function TnCSeedPhraseModal({ setVisible, isVisible, onPressSubmit }: TnCSeedPhraseModalProps) {
+export function TnCSeedPhraseModal({
+  setVisible,
+  isVisible,
+  onPressSubmit,
+  onBackButtonPress,
+}: TnCSeedPhraseModalProps) {
   const theme = useSubWalletTheme().swThemes;
   const [hideNextTime, setHideNextTime] = useState<boolean>(false);
   const [agreementMap, setAgreementMap] = useState<Record<string, boolean>>({});
@@ -90,6 +96,7 @@ export function TnCSeedPhraseModal({ setVisible, isVisible, onPressSubmit }: TnC
       titleStyle={{ textAlign: 'center' }}
       isAllowSwipeDown={false}
       footer={footer()}
+      onChangeModalVisible={onBackButtonPress}
       modalStyle={{ maxHeight: '90%' }}>
       <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: '100%' }}>
         <View

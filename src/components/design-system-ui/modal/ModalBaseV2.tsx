@@ -21,6 +21,7 @@ export interface SWModalProps {
   onChangeModalVisible?: () => void;
   isUseForceHidden?: boolean;
   disabledOnPressBackDrop?: boolean;
+  onBackButtonPress?: () => void;
 }
 
 export type SWModalRefProps = {
@@ -45,6 +46,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       isUseForceHidden,
       isAllowSwipeDown = true,
       disabledOnPressBackDrop = false,
+      onBackButtonPress,
     },
     ref,
   ) => {
@@ -108,6 +110,14 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       setVisible(false);
       scrollTo(0);
     }, [onChangeModalVisible, scrollTo, setVisible]);
+
+    useEffect(() => {
+      const unsubscribe = DeviceEventEmitter.addListener('closeModal', () => {
+        onBackButtonPress ? onBackButtonPress() : onClose();
+      });
+
+      return () => unsubscribe.remove();
+    }, [onBackButtonPress, onClose]);
 
     useEffect(() => {
       const unsubscribe = Linking.addEventListener('url', () => onClose());

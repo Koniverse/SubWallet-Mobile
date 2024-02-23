@@ -36,10 +36,11 @@ export const WCNetworkSupported = ({ networks }: Props) => {
       selectedValueMap={supportedNetworksMap}
       isShowInput={true}
       disabled={!networkNumber}
+      onBackButtonPress={() => modalRef?.current?.onCloseModal()}
       renderSelected={() => (
         <WCNetworkInput
           networks={networks}
-          content={i18n.formatString(i18n.message.networkSupported, networkNumber)}
+          content={i18n.formatString(i18n.message.networkSupported, networkNumber) as string}
           onPress={() => {}}
         />
       )}
