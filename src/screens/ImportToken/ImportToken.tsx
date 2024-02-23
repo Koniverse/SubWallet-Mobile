@@ -39,12 +39,14 @@ import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { FormItem } from 'components/common/FormItem';
 import reformatAddress from 'utils/index';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
+import InputText from 'components/Input/InputText';
 
 interface ImportTokenFormValues extends TransactionFormValues {
   selectedTokenType: string;
   symbol: string;
   decimals: string;
   tokenName: string;
+  priceId: string;
   contractAddress: string;
 }
 
@@ -121,6 +123,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       decimals: tokenInfo ? String(tokenInfo?.decimals) : '',
       tokenName: tokenInfo ? String(tokenInfo?.name) : '',
       contractAddress: tokenInfo?.contractAddress || '',
+      priceId: '',
     },
   });
 
@@ -131,6 +134,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     symbol,
     decimals,
     tokenName,
+    priceId,
   } = {
     ...useWatch<ImportTokenFormValues>({ control }),
     ...getValues(),
@@ -161,7 +165,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       name: tokenName,
       symbol,
       decimals: parseInt(decimals),
-      priceId: null,
+      priceId: priceId,
       minAmount: null,
       assetType: selectedTokenTypeData as _AssetType,
       metadata: _parseMetadataForSmartContractAsset(contractAddress),
@@ -356,6 +360,24 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           </View>
 
           <TextField placeholder={'Token name'} disabled={true} text={tokenName} />
+
+          <FormItem
+            style={{ marginBottom: 8 }}
+            control={control}
+            render={({ field: { value, onChange, ref } }) => (
+              <InputText
+                isBusy={addTokenButtonDisabled}
+                containerStyle={{ flex: 1, marginRight: 6 }}
+                placeholder={i18n.placeholder.priceId}
+                ref={ref}
+                value={value}
+                onSubmitField={!addTokenButtonDisabled ? onSubmit : undefined}
+                onChangeText={onChange}
+                readonly
+              />
+            )}
+            name={'priceId'}
+          />
 
           {!isNetConnected && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />

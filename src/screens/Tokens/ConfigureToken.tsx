@@ -50,6 +50,10 @@ export const ConfigureToken = ({
       name: i18n.importToken.tokenName,
       value: tokenInfo?.symbol || '',
     },
+    priceId: {
+      name: i18n.importNetwork.priceId,
+      value: tokenInfo?.priceId || '',
+    },
   };
 
   const showToast = useCallback(
@@ -80,6 +84,7 @@ export const ConfigureToken = ({
       const newTokenInfo = {
         ...tokenInfo,
         name: formState.data.tokenName,
+        priceId: formState.data.priceId,
       };
       setBusy(true);
       if (!isNetConnected) {
@@ -212,9 +217,20 @@ export const ConfigureToken = ({
           </View>
 
           <View style={styles.row}>
-            {!!tokenInfo?.priceId && (
-              <TextField outerStyle={{ flex: 1, marginBottom: 0 }} disabled text={tokenInfo.priceId} />
-            )}
+            <View style={{ flex: 1, marginBottom: 0 }}>
+              {tokenInfo && (
+                <InputText
+                  ref={formState.refs.priceId}
+                  placeholder={i18n.placeholder.priceId}
+                  isBusy={!_isCustomAsset(tokenInfo.slug)}
+                  onChangeText={onChangeValue('priceId')}
+                  onSubmitField={onSubmitField('priceId')}
+                  value={formState.data.priceId}
+                  readonly={!_isCustomAsset(tokenInfo.slug)}
+                  containerStyle={{ marginBottom: 0 }}
+                />
+              )}
+            </View>
 
             {tokenInfo && tokenInfo.decimals && (
               <TextField disabled text={tokenInfo.decimals.toString()} outerStyle={{ flex: 1, marginBottom: 0 }} />
