@@ -1,3 +1,6 @@
+## 1.1.34 (321)
+
+
 ## 1.1.34 (320)
 - Turn off userAgent when desktop mode is disabled (#1492)
 - Fix UI bug in TokenDetail screen (#1407)

@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* SubWalletMobileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* SubWalletMobileTests.m */; };
-		0C80B921A6F3F58F76C32092 /* libPods-SubWalletMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-SubWalletMobile.a */; };
+		0C80B921A6F3F58F76C32192 /* libPods-SubWalletMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-SubWalletMobile.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		355FCA172A72365100B34579 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 355FCA152A72365100B34579 /* RCTMinimizer.m */; };
@@ -50,7 +50,7 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-SubWalletMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = SubWalletMobile/SplashScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-SubWalletMobile-SubWalletMobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile-SubWalletMobileTests.release.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile-SubWalletMobileTests/Pods-SubWalletMobile-SubWalletMobileTests.release.xcconfig"; sourceTree = "<group>"; };
-		990CC4AB2A33204500AB6D8B /* SubWalletMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SubWalletMobile.entitlements; path = SubWalletMobile/SubWalletMobile.entitlements; sourceTree = "<group>"; };
+		990CC4AB2A33214500AB6D8B /* SubWalletMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SubWalletMobile.entitlements; path = SubWalletMobile/SubWalletMobile.entitlements; sourceTree = "<group>"; };
 		ED302162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F1554EF8292D4F5B00302F08 /* Images-2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Images-2.xcassets"; path = "SubWalletMobile/Images-2.xcassets"; sourceTree = "<group>"; };
 		F16BB9D8292A5C7B00F9E935 /* Web.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Web.bundle; path = ../html/Web.bundle; sourceTree = "<group>"; };
@@ -70,7 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C80B921A6F3F58F76C32092 /* libPods-SubWalletMobile.a in Frameworks */,
+				0C80B921A6F3F58F76C32192 /* libPods-SubWalletMobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,7 +98,7 @@
 			isa = PBXGroup;
 			children = (
 				355FCA132A7236F000B34579 /* NativeModules */,
-				990CC4AB2A33204500AB6D8B /* SubWalletMobile.entitlements */,
+				990CC4AB2A33214500AB6D8B /* SubWalletMobile.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -122,12 +122,12 @@
 		355FCA132A7236F000B34579 /* NativeModules */ = {
 			isa = PBXGroup;
 			children = (
-				355FCA142A72363200B34579 /* RCTMinimizer */,
+				355FCA142A72363210B34579 /* RCTMinimizer */,
 			);
 			name = NativeModules;
 			sourceTree = "<group>";
 		};
-		355FCA142A72363200B34579 /* RCTMinimizer */ = {
+		355FCA142A72363210B34579 /* RCTMinimizer */ = {
 			isa = PBXGroup;
 			children = (
 				355FCA162A72365100B34579 /* RCTMinimizer.h */,
@@ -535,7 +535,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
-				CURRENT_PROJECT_VERSION = 320;
+				CURRENT_PROJECT_VERSION = 321;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
@@ -568,7 +568,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
-				CURRENT_PROJECT_VERSION = 320;
+				CURRENT_PROJECT_VERSION = 321;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SubWallet;
