@@ -50,6 +50,7 @@ const Styles = () => {
       gap: theme.paddingSM,
     },
     recommendListSeparator: {
+      paddingTop: theme.paddingXS,
       marginRight: theme.marginSM,
     },
   });

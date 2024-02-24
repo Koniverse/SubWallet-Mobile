@@ -65,9 +65,9 @@ const RecommendSection: React.FC<RecommendSectionProps> = ({ dApps, onPressSecti
       return [];
     }
     const sectionData = [];
-    for (let i = 0; i < 20; i += 5) {
+    for (let i = 0; i < 20; i += 4) {
       const section = {
-        data: dApps.slice(i, i + 5),
+        data: dApps.slice(i, i + 4),
       };
       sectionData.push(section);
     }
