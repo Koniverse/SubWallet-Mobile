@@ -1,3 +1,10 @@
+## 1.1.34 (320)
+- Turn off userAgent when desktop mode is disabled (#1492)
+- Fix UI bug in TokenDetail screen (#1407)
+- Improve StaticContent for Earning (#1365)
+- Move mission pool into dApp browser (#1488)
+- Add action close modal when click back virtual button (#1444)
+
 ## 1.1.34 (319)
 - Turn off userAgent when desktop mode is disabled (#1492)
 - Fix UI bug in TokenDetail screen (#1407)
