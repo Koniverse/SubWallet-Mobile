@@ -69,7 +69,13 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const earningStaticData = useMemo(() => {
     try {
-      return JSON.parse(mmkvStore.getString('earningStaticData') || '') as StaticDataProps[];
+      const storedData = JSON.parse(mmkvStore.getString('earningStaticData') || '[]') as StaticDataProps[];
+
+      if (storedData?.length) {
+        return storedData;
+      } else {
+        return EARNING_POOL_DETAIL_DATA;
+      }
     } catch (e) {
       return EARNING_POOL_DETAIL_DATA;
     }

@@ -116,7 +116,13 @@ export const Unbond = ({
 
   const unstakeDataRaw = useMemo(() => {
     try {
-      return JSON.parse(mmkvStore.getString('unstakeStaticData') || '')[0] as StaticDataProps;
+      const storedData = JSON.parse(mmkvStore.getString('unstakeStaticData') || '{}')[0] as StaticDataProps;
+
+      if (storedData?.id) {
+        return storedData;
+      } else {
+        return UNSTAKE_ALERT_DATA[0];
+      }
     } catch (e) {
       return UNSTAKE_ALERT_DATA[0];
     }
