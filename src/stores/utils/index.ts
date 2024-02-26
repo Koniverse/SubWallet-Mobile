@@ -31,7 +31,7 @@ import {
   MetadataRequest,
   SigningRequest,
 } from '@subwallet/extension-base/background/types';
-import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
+import { _ChainApiStatus, _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { addLazy, canDerive } from '@subwallet/extension-base/utils';
 import { lazySendMessage, lazySubscribeMessage } from 'messaging/index';
@@ -256,15 +256,8 @@ export const subscribeChainInfoMap = lazySubscribeMessage(
 );
 
 export const updateChainStateMap = (data: Record<string, _ChainState>) => {
-  // TODO useTokenGroup
   if (data && Object.keys(data).length > 0) {
-    addLazy(
-      'updateChainStateMap',
-      () => {
-        store.dispatch({ type: 'chainStore/updateChainStateMap', payload: data });
-      },
-      900,
-    );
+    store.dispatch({ type: 'chainStore/updateChainStateMap', payload: data });
   }
 };
 
@@ -273,6 +266,19 @@ export const subscribeChainStateMap = lazySubscribeMessage(
   null,
   updateChainStateMap,
   updateChainStateMap,
+);
+
+export const updateChainStatusMap = (data: Record<string, _ChainApiStatus>) => {
+  if (data && Object.keys(data).length > 0) {
+    store.dispatch({ type: 'chainStore/updateChainStatusMap', payload: data });
+  }
+};
+
+export const subscribeChainStatusMap = lazySubscribeMessage(
+  'pri(chainService.subscribeChainStatusMap)',
+  null,
+  updateChainStatusMap,
+  updateChainStatusMap,
 );
 
 export const updateAssetRegistry = (data: Record<string, _ChainAsset>) => {

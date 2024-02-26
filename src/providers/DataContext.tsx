@@ -41,6 +41,7 @@ import {
   subscribeYieldReward,
   subscribeYieldMinAmountPercent,
   subscribeRewardHistory,
+  subscribeChainStatusMap,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -226,6 +227,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
         _DataContext.addHandler({
           ...subscribeChainStateMap,
           name: 'subscribeChainStateMap',
+          relatedStores: ['chainStore'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeChainStatusMap,
+          name: 'subscribeChainStatusMap',
           relatedStores: ['chainStore'],
           isStartImmediately: true,
         });
