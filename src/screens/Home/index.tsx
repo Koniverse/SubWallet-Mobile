@@ -40,8 +40,6 @@ import { TermAndCondition } from 'constants/termAndCondition';
 import { RemindBackupModal } from 'components/Modal/RemindBackupModal';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { useIsFocused } from '@react-navigation/native';
-import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { useIsFocused } from '@react-navigation/native';
 
 interface tabbarIconColor {
   color: string;
@@ -221,7 +219,6 @@ export const Home = ({ navigation }: Props) => {
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
   const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
   const language = useSelector((state: RootState) => state.settings.language);
-  const isFocused = useIsFocused();
   mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
   const storedRemindBackupTimeout = mmkvStore.getNumber('storedRemindBackupTimeout');
   const lastTimeLogin = mmkvStore.getNumber('lastTimeLogin');
