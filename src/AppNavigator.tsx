@@ -83,6 +83,7 @@ import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview'
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { DeriveAccount } from 'screens/Account/DeriveAccount';
 import { useGroupYieldPosition } from 'hooks/earning';
+import { AboutSubWallet } from 'screens/Settings/AboutSubWallet';
 
 interface Props {
   isAppReady: boolean;
@@ -542,6 +543,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
                 <Stack.Screen name="Languages" component={Languages} />
                 <Stack.Screen name="Security" component={Security} />
+                <Stack.Screen name="AboutSubWallet" component={AboutSubWallet} />
                 <Stack.Screen
                   name="ChangePassword"
                   component={ChangeMasterPassword}

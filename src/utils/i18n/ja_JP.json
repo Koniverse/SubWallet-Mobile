@@ -1103,6 +1103,11 @@
   "settings": {
     "generalSettings": "一般設定",
     "securitySettings": "セキュリティ設定",
+    "aboutSubWallet": "About SubWallet",
+    "requestAFeature": "Request a feature",
+    "contactSupport": "Contact support",
+    "rateOurApp": "Rate our app",
+    "xTwitter": "X (Twitter)",
     "manageAddressBook": "アドレス帳を管理",
     "manageNetworks": "ネットワークを管理",
     "manageTokens": "トークンを管理",

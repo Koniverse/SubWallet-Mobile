@@ -49,6 +49,7 @@ export type RootStackParamList = {
   Drawer: NavigatorScreenParams<WrapperParamList>;
   Languages: undefined;
   Security: undefined;
+  AboutSubWallet: undefined;
   AccountExport: { address: string };
   ExportJson: { address: string };
   BrowserHome?: NavigatorScreenParams<undefined> | undefined;

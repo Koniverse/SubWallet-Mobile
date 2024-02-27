@@ -1103,6 +1103,11 @@
   "settings": {
     "generalSettings": "Cài đặt chung",
     "securitySettings": "Cài đặt bảo mật",
+    "aboutSubWallet": "About SubWallet",
+    "requestAFeature": "Request a feature",
+    "contactSupport": "Contact support",
+    "rateOurApp": "Rate our app",
+    "xTwitter": "X (Twitter)",
     "manageAddressBook": "Quản lý sổ địa chỉ",
     "manageNetworks": "Quản lý mạng",
     "manageTokens": "Quản lý token",

@@ -1103,6 +1103,11 @@
   "settings": {
     "generalSettings": "Общие настройки",
     "securitySettings": "Настройки безопасности",
+    "aboutSubWallet": "About SubWallet",
+    "requestAFeature": "Request a feature",
+    "contactSupport": "Contact support",
+    "rateOurApp": "Rate our app",
+    "xTwitter": "X (Twitter)",
     "manageAddressBook": "Управление адресной книгой",
     "manageNetworks": "Управление сетями",
     "manageTokens": "Управление токенами",

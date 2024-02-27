@@ -2,28 +2,26 @@ import React, { useRef, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { ToggleItem } from 'components/ToggleItem';
-import { View } from 'react-native';
+import { Linking, Platform, View } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
-import { CaretRight, Key, Scan, ShieldCheck } from 'phosphor-react-native';
+import { Globe, ArrowSquareOut, BookBookmark, Star } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { updateAutoLockTime, updateUseBiometric } from 'stores/MobileSettings';
+import { updateAutoLockTime } from 'stores/MobileSettings';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Icon, SelectItem, SwModal } from 'components/design-system-ui';
+import { BackgroundIcon, Icon, SelectItem, SwModal } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import useUnlockModal, { OnCompleteType } from 'hooks/modal/useUnlockModal';
-import { createKeychainPassword, getSupportedBiometryType, resetKeychainPassword } from 'utils/account';
-import { keyringLock, saveAutoLockTime } from 'messaging/index';
-import { requestFaceIDPermission } from 'utils/permission/biometric';
+import { saveAutoLockTime } from 'messaging/index';
 import { LockTimeout } from 'stores/types';
+import { TERMS_OF_USE_URL, TWITTER_URL, WEBSITE_URL } from 'constants/index';
+import { SVGImages } from 'assets/index';
 
-export const Security = () => {
+export const AboutSubWallet = () => {
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
-  const { timeAutoLock, isUseBiometric } = useSelector((state: RootState) => state.mobileSettings);
+  const { timeAutoLock } = useSelector((state: RootState) => state.mobileSettings);
   const [iShowAutoLockModal, setIsShowAutoLockModal] = useState<boolean>(false);
   const navigation = useNavigation<RootNavigationProps>();
   const dispatch = useDispatch();
@@ -64,43 +62,6 @@ export const Security = () => {
     },
   ];
 
-  const onPasswordComplete: OnCompleteType = (password?: string) => {
-    if (!password) {
-      return;
-    }
-    createKeychainPassword(password).then(res => {
-      if (res) {
-        dispatch(updateUseBiometric(true));
-      } else {
-        dispatch(updateUseBiometric(false));
-      }
-    });
-    if (timeAutoLock === LockTimeout.ALWAYS) {
-      keyringLock().catch((e: Error) => console.log(e));
-    }
-  };
-  const { onPress: onPressSubmit } = useUnlockModal(navigation, () => {}, true);
-
-  const onValueChangeFaceId = () => {
-    if (isUseBiometric) {
-      dispatch(updateUseBiometric(false));
-      resetKeychainPassword();
-    } else {
-      (async () => {
-        const isBiometricEnabled = await getSupportedBiometryType();
-        if (isBiometricEnabled) {
-          onPressSubmit(onPasswordComplete)();
-          return;
-        }
-        // if Face ID permission denied
-        const result = await requestFaceIDPermission();
-        if (result) {
-          onPressSubmit(onPasswordComplete)();
-        }
-      })();
-    }
-  };
-
   const onChangeAutoLockTime = (value: number) => {
     if (value === LockTimeout.NEVER) {
       toast.show(i18n.notificationMessage.warningNeverRequirePassword, { type: 'warning', duration: 3500 });
@@ -111,43 +72,53 @@ export const Security = () => {
 
   return (
     <SubScreenContainer
-      title={i18n.header.securitySettings}
+      title={'About SubWallet'}
       navigation={navigation}
       onPressLeftBtn={() => {
         navigation.goBack();
       }}>
       <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
-        <ToggleItem
-          backgroundIcon={Scan}
-          backgroundIconColor={theme['magenta-7']}
-          style={{ marginBottom: 16 }}
-          label={i18n.settings.faceId}
-          isEnabled={isUseBiometric}
-          onValueChange={onValueChangeFaceId}
-        />
-
         <View style={{ gap: theme.paddingXS }}>
           <SelectItem
-            icon={Key}
-            backgroundColor={theme['gold-6']}
-            label={i18n.settings.changePassword}
-            onPress={() => navigation.navigate('ChangePassword')}
-            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
+            icon={Globe}
+            backgroundColor={theme['purple-7']}
+            label={i18n.settings.website}
+            onPress={() => Linking.openURL(WEBSITE_URL)}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />}
           />
-
-          {/*<SelectItem*/}
-          {/*  icon={Globe}*/}
-          {/*  backgroundColor={theme['blue-6']}*/}
-          {/*  label={i18n.settings.manageWebsiteAccess}*/}
-          {/*  onPress={() => navigation.navigate('DAppAccess')}*/}
-          {/*  rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}*/}
-          {/*/>*/}
           <SelectItem
-            icon={ShieldCheck}
-            backgroundColor={theme['green-6']}
-            label={i18n.settings.appLock}
-            onPress={() => setIsShowAutoLockModal(true)}
-            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
+            icon={BookBookmark}
+            backgroundColor={theme['volcano-7']}
+            label={i18n.settings.termOfUse}
+            onPress={() => Linking.openURL(TERMS_OF_USE_URL)}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />}
+          />
+          <SelectItem
+            leftItemIcon={
+              <BackgroundIcon
+                shape={'circle'}
+                backgroundColor={theme.colorBgLayout}
+                customIcon={<SVGImages.TwitterLogo width={16} height={16} color={theme.colorWhite} />}
+              />
+            }
+            icon={BookBookmark}
+            backgroundColor={theme['volcano-7']}
+            label={i18n.settings.xTwitter}
+            onPress={() => Linking.openURL(TWITTER_URL)}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />}
+          />
+          <SelectItem
+            icon={Star}
+            backgroundColor={theme['lime-6']}
+            label={i18n.settings.rateOurApp}
+            onPress={() => {
+              Linking.openURL(
+                Platform.OS === 'ios'
+                  ? 'https://apps.apple.com/vn/app/subwallet-polkadot-wallet/id1633050285'
+                  : 'https://play.google.com/store/apps/details?id=app.subwallet.mobile',
+              );
+            }}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />}
           />
         </View>
 

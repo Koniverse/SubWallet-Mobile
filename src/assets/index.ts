@@ -12,6 +12,8 @@ const SubwalletStyled = React.lazy(() => import('./subwallet-styled.svg'));
 const MenuBarLogo = React.lazy(() => import('./menu-bar.svg'));
 const IcHalfSquare = React.lazy(() => import('./ic-half-square.svg'));
 const WalletConnect = React.lazy(() => import('./wallet-connect.svg'));
+const TwitterLogo = React.lazy(() => import('./twitter-logo.svg'));
+const SubWalletCircleLogo = React.lazy(() => import('./subwallet-circle.svg'));
 const Fingerprint = React.lazy(() => import('./fingerprint-simple.svg'));
 
 export const SVGImages = {
@@ -26,6 +28,8 @@ export const SVGImages = {
   MenuBarLogo,
   IcHalfSquare,
   WalletConnect,
+  TwitterLogo,
+  SubWalletCircleLogo,
   Fingerprint,
 };
 
