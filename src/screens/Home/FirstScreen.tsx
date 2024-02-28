@@ -1,6 +1,6 @@
 import { Images } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View, Linking } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
@@ -10,7 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AccountActionButton from 'components/common/Account/AccountActionButton';
 import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
 import { SelectedActionType } from 'stores/types';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -19,6 +19,11 @@ import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import { mmkvStore } from 'utils/storage';
 import { Image } from 'components/design-system-ui';
 import { SelectLanguageModal } from 'components/Modal/SelectLanguageModal';
+import urlParse from 'url-parse';
+import EarningPoolDetailModal from 'components/Modal/Earning/EarningPoolDetailModal';
+import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
+import { getPoolSlug } from 'utils/earn';
+import { isHandleDeeplinkPromise } from '../../App';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -63,9 +68,17 @@ const firstScreenNotificationStyle: StyleProp<any> = {
   ...FontMedium,
 };
 
+type EarningDataInfo = { chain: string; type: YieldPoolType; target: string; isNoAccount: boolean };
+
+export const firstScreenDeepLink: { current: string | undefined } = { current: undefined };
+
+export function setFirstScreenDeepLink(value?: string) {
+  firstScreenDeepLink.current = value;
+}
+
 export const FirstScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const hasMasterPassword = useSelector((state: RootState) => state.accountState.hasMasterPassword);
+  const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const createAccountRef = useRef<ModalRef>();
   const importAccountRef = useRef<ModalRef>();
   const attachAccountRef = useRef<ModalRef>();
@@ -74,6 +87,85 @@ export const FirstScreen = () => {
   const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false);
   const [selectedActionType, setSelectedActionType] = useState<SelectedActionType>('createAcc');
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
+  const [selectedSlug, setSelectedSlug] = useState<string | undefined>(undefined);
+  const [previewModalVisible, setPreviewModalVisible] = useState<boolean>(false);
+  const isFocused = useIsFocused();
+  const onlinePoolInfoMap = useMemo(() => {
+    try {
+      return JSON.parse(mmkvStore.getString('poolInfoMap') || '') as Record<string, YieldPoolInfo>;
+    } catch (e) {
+      return {};
+    }
+  }, []);
+  const previewModalVisibleRef = useRef<boolean>(previewModalVisible);
+  previewModalVisibleRef.current = previewModalVisible;
+
+  const getSelectedSlug = useCallback(
+    (data: string) => {
+      const dataMap: EarningDataInfo = data.split('&').reduce((obj, cur) => {
+        const splitCur = cur.split('=');
+        // @ts-ignore
+        obj[splitCur[0]] = splitCur[1];
+        return obj;
+      }, {} as EarningDataInfo);
+
+      return getPoolSlug(onlinePoolInfoMap, dataMap.chain, dataMap.type);
+    },
+    [onlinePoolInfoMap],
+  );
+
+  useEffect(() => {
+    const unsubscribe = Linking.addEventListener('url', ({ url }) => {
+      let _url = url;
+      if (_url.includes('/transaction-action/earning')) {
+        const urlParsed = new urlParse(url);
+        const data = urlParsed.query.substring(1);
+        const _selectedSlug = getSelectedSlug(data);
+        setSelectedSlug(_selectedSlug);
+        if (!_url.includes('isNoAccount=true')) {
+          _url = `${url}&isNoAccount=true`;
+          setFirstScreenDeepLink(_url);
+          Linking.openURL(_url);
+
+          return;
+        }
+        !previewModalVisibleRef.current && setPreviewModalVisible(true);
+      }
+    });
+
+    return () => unsubscribe.remove();
+  }, [getSelectedSlug]);
+
+  useEffect(() => {
+    Linking.getInitialURL().then(url => {
+      if (!url) {
+        return;
+      }
+
+      const urlParsed = new urlParse(url);
+      const data = urlParsed.query.substring(1);
+      const _selectedSlug = getSelectedSlug(data);
+      setSelectedSlug(_selectedSlug);
+    });
+  }, [getSelectedSlug, onlinePoolInfoMap]);
+
+  useEffect(() => {
+    if (isHandleDeeplinkPromise.current && isFocused) {
+      Linking.getInitialURL().then(url => {
+        url &&
+          Linking.canOpenURL(url)
+            .then(supported => {
+              if (supported) {
+                Linking.openURL(url);
+              }
+            })
+            .catch(e => {
+              console.warn(`Error opening URL: ${e}`);
+            });
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onPressActionButton = useCallback((action: SelectedActionType) => {
     return () => {
@@ -204,6 +296,25 @@ export const FirstScreen = () => {
           setVisible={setGeneralTermVisible}
           onPressAcceptBtn={onPressAcceptBtn}
         />
+
+        {!!selectedSlug && (
+          <EarningPoolDetailModal
+            modalVisible={previewModalVisible}
+            setVisible={setPreviewModalVisible}
+            slug={selectedSlug || ''}
+            onlinePoolInfoMap={onlinePoolInfoMap}
+            externalBtnTitle={'Stake more'}
+            isShowStakeMoreBtn={false}
+            redirectFromFirstScreen={true}
+            onPressExternalBtn={() => {
+              setPreviewModalVisible(false);
+            }}
+            onPressExternalBack={() => {
+              setFirstScreenDeepLink('subwallet://home/main/tokens');
+              Linking.openURL('subwallet://home/main/tokens');
+            }}
+          />
+        )}
         <SafeAreaView />
       </ImageBackground>
     </View>
