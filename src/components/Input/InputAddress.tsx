@@ -2,7 +2,7 @@ import Input, { InputProps } from 'components/design-system-ui/input';
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { isAddress } from '@polkadot/util-crypto';
+import { decodeAddress, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
 import reformatAddress, { toShort } from 'utils/index';
 import { Book, Scan } from 'phosphor-react-native';
@@ -35,7 +35,10 @@ interface Props extends InputProps {
     'onChangeAddress' | 'onPressCancel' | 'qrModalVisible' | 'setQrModalVisible'
   >;
   onSideEffectChange?: () => void; // callback for address book or scan QR
+  fitNetwork?: boolean;
 }
+
+const addressLength = 9;
 
 const Component = (
   {
@@ -50,6 +53,7 @@ const Component = (
     value = '',
     reValidate,
     onSideEffectChange,
+    fitNetwork,
     ...inputProps
   }: Props,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -87,11 +91,20 @@ const Component = (
         inputProps.onChangeText(text);
 
         if (saveAddress && isAddress(text)) {
-          saveRecentAccountId(text).catch(console.error);
+          if (isEthereumAddress(text)) {
+            saveRecentAccountId(text, chain).catch(console.error);
+          } else {
+            try {
+              if (decodeAddress(text, true, addressPrefix)) {
+                saveRecentAccountId(text, chain).catch(console.error);
+              }
+            } catch (e) {}
+          }
         }
       }
     },
-    [inputProps, saveAddress],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [addressPrefix, chain, saveAddress],
   );
 
   useEffect(() => {
@@ -164,9 +177,9 @@ const Component = (
           </View>
         )}
         <Typography.Text ellipsis style={stylesheet.addressText}>
-          {accountName || domainName || toShort(value, 9, 9)}
+          {accountName || domainName || toShort(value, addressLength, addressLength)}
         </Typography.Text>
-        {(accountName || domainName || addressPrefix !== undefined) && (
+        {(fitNetwork ? accountName || domainName : accountName || domainName || addressPrefix !== undefined) && (
           <Typography.Text style={stylesheet.addressAliasText}>({toShort(formattedAddress, 4, 4)})</Typography.Text>
         )}
       </>
@@ -175,6 +188,7 @@ const Component = (
     accountName,
     addressPrefix,
     domainName,
+    fitNetwork,
     formattedAddress,
     hasLabel,
     showAvatar,
@@ -192,6 +206,38 @@ const Component = (
       setTimeout(() => setIsShowQrModalVisible(true), 500);
     }
   }, []);
+
+  useEffect(() => {
+    if (value) {
+      const account = findContactByAddress(_contacts, value);
+
+      if (account) {
+        if (!isEthereumAddress(account.address) && !!account.isHardware) {
+          const availableGens: string[] = (account.availableGenesisHashes as string[]) || [];
+
+          if (!availableGens.includes(networkGenesisHash || '')) {
+            return;
+          }
+        }
+
+        const address = reformatAddress(account.address, addressPrefix);
+
+        onChangeInputText(address);
+        if (inputRef.current) {
+          if (!inputRef.current.isFocused() && reValidate) {
+            reValidate();
+          } else {
+            inputRef.current.blur();
+          }
+        }
+      } else {
+        if (isAddress(value)) {
+          onChangeInputText(value);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [_contacts, addressPrefix, networkGenesisHash, onChangeInputText, value]);
 
   const RightPart = useMemo(() => {
     return (

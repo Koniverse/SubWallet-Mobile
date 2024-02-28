@@ -1244,7 +1244,8 @@
     "invalidPassword": "Invalid password",
     "connectionAlreadyExist": "Connection already exists",
     "failToAddConnection": "Fail to add connection",
-    "unreadableQrCode": "Unreadable QR code. Please scan another one."
+    "unreadableQrCode": "Unreadable QR code. Please scan another one.",
+    "recipientAddressInvalid": "Recipient should be a valid {0} address"
   },
   "notificationMessage": {
     "watchOnlyNoti": "The account you are using is watch-only, you cannot send assets with it",

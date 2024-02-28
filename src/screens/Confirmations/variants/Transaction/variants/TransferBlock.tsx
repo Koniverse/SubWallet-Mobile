@@ -26,9 +26,18 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
 
   const chainInfo = useMemo(() => chainInfoMap[transaction.chain], [chainInfoMap, transaction.chain]);
 
+  const receiveChain = useMemo(() => {
+    if (xcmData) {
+      return xcmData.destinationNetworkKey || transaction.chain;
+    } else {
+      return transaction.chain;
+    }
+  }, [transaction.chain, xcmData]);
+
   const { decimals: chainDecimals, symbol: chainSymbol } = useGetNativeTokenBasicInfo(transaction.chain);
   const senderPrefix = useGetChainPrefixBySlug(transaction.chain);
   const network = useMemo(() => chainInfoMap[transaction.chain], [chainInfoMap, transaction.chain]);
+  const receiverPrefix = useGetChainPrefixBySlug(receiveChain);
 
   return (
     <ConfirmationContent isFullHeight>
@@ -39,7 +48,7 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
           <MetaInfo.Chain chain={chainInfo.slug} label={i18n.inputLabel.senderNetwork} />
         )}
 
-        <MetaInfo.Account address={data.to} label={i18n.inputLabel.sendTo} />
+        <MetaInfo.Account address={data.to} label={i18n.inputLabel.sendTo} networkPrefix={receiverPrefix} />
 
         {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && chainInfo && (
           <MetaInfo.Chain chain={xcmData.destinationNetworkKey} label={i18n.inputLabel.destinationNetwork} />

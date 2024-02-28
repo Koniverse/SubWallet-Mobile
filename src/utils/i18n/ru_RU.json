@@ -1244,7 +1244,8 @@
     "invalidPassword": "Неверный пароль",
     "connectionAlreadyExist": "Connection already exists",
     "failToAddConnection": "Fail to add connection",
-    "unreadableQrCode": "Неразборчивый QR-код. Пожалуйста, отсканируйте другой."
+    "unreadableQrCode": "Неразборчивый QR-код. Пожалуйста, отсканируйте другой.",
+    "recipientAddressInvalid": "Recipient should be a valid {0} address"
   },
   "notificationMessage": {
     "watchOnlyNoti": "Аккаунт, который вы используете, предназначен только для просмотра, вы не можете отправлять активы с ним.",

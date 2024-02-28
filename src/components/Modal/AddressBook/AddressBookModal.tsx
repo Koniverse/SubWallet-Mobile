@@ -10,17 +10,17 @@ import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { ListRenderItemInfo, View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
-import { isAddress } from '@polkadot/util-crypto';
-import reformatAddress, { toShort } from 'utils/index';
+import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import reformatAddress from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
 import useFormatAddress from 'hooks/account/useFormatAddress';
-import { isSameAddress } from '@subwallet/extension-base/utils';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import createStylesheet from './style/AddressBookModal';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
 
 interface Props {
   modalVisible: boolean;
@@ -123,6 +123,8 @@ export const AddressBookModal = ({
 }: Props) => {
   const { accounts, contacts, recent } = useSelector((state: RootState) => state.accountState);
   const formatAddress = useFormatAddress(addressPrefix);
+  const chainInfo = useGetChainInfoByGenesisHash(networkGenesisHash);
+  const chain = chainInfo?.slug || '';
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -162,9 +164,13 @@ export const AddressBookModal = ({
     const result: AccountItem[] = [];
 
     recent.forEach(acc => {
-      const address = isAddress(acc.address) ? reformatAddress(acc.address) : acc.address;
+      const chains = acc.recentChainSlugs || [];
 
-      result.push({ ...acc, address: address, group: AccountGroup.RECENT });
+      if (chains.includes(chain)) {
+        const address = isAddress(acc.address) ? reformatAddress(acc.address) : acc.address;
+
+        result.push({ ...acc, address: address, group: AccountGroup.RECENT });
+      }
     });
 
     contacts.forEach(acc => {
@@ -184,29 +190,40 @@ export const AddressBookModal = ({
       });
 
     return result;
-  }, [accounts, contacts, networkGenesisHash, recent]);
+  }, [accounts, chain, contacts, networkGenesisHash, recent]);
 
   const onSelectItem = useCallback(
     (item: AccountItem) => {
+      const address = reformatAddress(item.address, addressPrefix);
       return () => {
-        onSelect(item.address);
+        onSelect(address);
         onClose();
       };
     },
-    [onClose, onSelect],
+    [addressPrefix, onClose, onSelect],
   );
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<AccountItem>) => {
       const address = formatAddress(item);
-      const selected = value ? isSameAddress(address, value) : false;
+      const isRecent = item.group === AccountGroup.RECENT;
+      let selected: boolean;
+
+      if (isEthereumAddress(value)) {
+        selected = value.toLowerCase() === address.toLowerCase();
+      } else {
+        selected = value === address;
+      }
 
       return (
         <AccountItemWithName
           key={`${item.name}-${item.address}`}
-          accountName={item.name || toShort(item.address, 4, 4)}
+          accountName={item.name}
           address={address}
+          addressPreLength={isRecent ? 9 : 4}
+          addressSufLength={isRecent ? 9 : 4}
           avatarSize={theme.sizeLG}
+          fallbackName={false}
           onPress={onSelectItem(item)}
           isSelected={selected}
         />

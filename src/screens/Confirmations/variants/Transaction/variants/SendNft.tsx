@@ -20,7 +20,11 @@ const SendNftTransactionConfirmation = ({ transaction }: Props) => {
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Account address={data.senderAddress} label={i18n.inputLabel.sendFrom} networkPrefix={networkPrefix} />
 
-        <MetaInfo.Account address={data.recipientAddress} label={i18n.inputLabel.sendTo} />
+        <MetaInfo.Account
+          address={data.recipientAddress}
+          label={i18n.inputLabel.sendTo}
+          networkPrefix={networkPrefix}
+        />
 
         <MetaInfo.Chain chain={transaction.chain} label={i18n.inputLabel.network} />
       </MetaInfo>

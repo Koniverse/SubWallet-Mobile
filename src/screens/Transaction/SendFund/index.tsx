@@ -14,7 +14,7 @@ import {
   _isTokenTransferredByEvm,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
-import { addLazy, isSameAddress, removeLazy } from '@subwallet/extension-base/utils';
+import { addLazy, isSameAddress, reformatAddress, removeLazy } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -548,6 +548,16 @@ export const SendFund = ({
 
         const isOnChain = chain === destChain;
 
+        if (!isEthereumAddress(_recipientAddress)) {
+          const destChainInfo = chainInfoMap[destChain];
+          const addressPrefix = destChainInfo?.substrateInfo?.addressPrefix ?? 42;
+          const _addressOnChain = reformatAddress(_recipientAddress, addressPrefix);
+
+          if (_addressOnChain !== _recipientAddress) {
+            return Promise.resolve(i18n.formatString(i18n.errorMessage.recipientAddressInvalid, destChainInfo.name));
+          }
+        }
+
         const account = findAccountByAddress(accounts, _recipientAddress);
 
         if (isOnChain) {
@@ -769,11 +779,11 @@ export const SendFund = ({
   const doSubmit = useCallback(
     (values: TransferFormValues, maxValue: string, transferAll: boolean) => {
       return new Promise<SWTransactionResponse>((resolve, reject) => {
-        const { chain, destChain, to, value, from, asset } = values;
+        const { chain, destChain, to, value, from: _from, asset } = values;
 
         let sendPromise: Promise<SWTransactionResponse>;
 
-        const account = findAccountByAddress(accounts, from);
+        const account = findAccountByAddress(accounts, _from);
 
         if (!account) {
           setLoading(false);
@@ -786,6 +796,10 @@ export const SendFund = ({
           reject(new Error(eMessage));
           return;
         }
+
+        const _chainInfo = chainInfoMap[chain];
+        const addressPrefix = _chainInfo?.substrateInfo?.addressPrefix ?? 42;
+        const from = reformatAddress(_from, addressPrefix);
 
         const isLedger = !!account.isHardware;
         const isEthereum = isEthereumAddress(account.address);
@@ -848,7 +862,7 @@ export const SendFund = ({
         }, 300);
       });
     },
-    [accounts, assetRegistry, hideAll, show],
+    [accounts, assetRegistry, chainInfoMap, hideAll, show],
   );
 
   const onSubmit = useCallback(
@@ -1190,7 +1204,8 @@ export const SendFund = ({
                             disabled={loading}
                             addressPrefix={destChainNetworkPrefix}
                             networkGenesisHash={destChainGenesisHash}
-                            chain={chainValue}
+                            chain={destChainValue}
+                            fitNetwork
                             showAddressBook
                             saveAddress
                           />

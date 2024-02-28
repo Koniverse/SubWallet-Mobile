@@ -12,6 +12,7 @@ import AvatarGroup from 'components/common/AvatarGroup';
 interface Props extends AccountItemBaseProps {
   direction?: 'vertical' | 'horizontal';
   accounts?: AccountJson[];
+  fallbackName?: boolean;
 }
 
 const AccountItemWithName: React.FC<Props> = (props: Props) => {
@@ -22,11 +23,24 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
     addressPreLength = 4,
     addressSufLength = 4,
     direction = 'horizontal',
+    fallbackName = true,
   } = props;
   const isAll = isAccountAll(address);
 
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
+
+  const showFallback = useMemo(() => {
+    if (isAll) {
+      return false;
+    } else {
+      if (fallbackName) {
+        return true;
+      } else {
+        return !!accountName;
+      }
+    }
+  }, [accountName, fallbackName, isAll]);
 
   return (
     <AccountItemBase
@@ -39,7 +53,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
           <Text style={styles.accountName} numberOfLines={1}>
             {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
           </Text>
-          {!isAll && (
+          {showFallback && (
             <Text style={[styles.accountAddress, direction === 'horizontal' && styles.accountAddressHorizontal]}>
               {direction === 'horizontal' && '('}
               {toShort(address, addressPreLength, addressSufLength)}
