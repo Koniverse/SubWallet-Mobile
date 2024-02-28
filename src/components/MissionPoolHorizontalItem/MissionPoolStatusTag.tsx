@@ -1,6 +1,5 @@
 import React from 'react';
 import capitalize from '@subwallet/react-ui/es/_util/capitalize';
-import { MagicWand } from 'phosphor-react-native';
 import { Icon, Tag } from 'components/design-system-ui';
 import { MissionInfo } from 'types/missionPool';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -12,20 +11,23 @@ interface Props {
 
 export const MissionPoolStatusTag = ({ data }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { tagStatusMap } = useMissionPools(data);
+  const { getTagByTimeline } = useMissionPools();
+
   if (!data.tags || !data.tags.length) {
     return null;
   }
-  const tagSlug = data.status || '';
 
-  let textColor = tagStatusMap[tagSlug]?.theme || 'gray';
-  let _theme = tagStatusMap[tagSlug]?.theme || 'gray';
-  if (tagStatusMap[tagSlug]?.theme && ['success', 'warning', 'error'].includes(tagStatusMap[tagSlug]?.theme)) {
-    _theme = `color${capitalize(tagStatusMap[tagSlug]?.theme)}`;
+  const tagData = getTagByTimeline(data);
+  let textColor = tagData.theme;
+  let _theme = tagData.theme;
+
+  if (tagData.theme && ['success', 'warning', 'error'].includes(tagData.theme)) {
+    _theme = `color${capitalize(tagData.theme)}`;
   }
-  const name = tagStatusMap[tagSlug]?.name || capitalize(tagSlug.replace('_', ' '));
-  const iconWeight = tagStatusMap[tagSlug]?.iconWeight;
-  const icon = tagStatusMap[tagSlug]?.icon || MagicWand;
+
+  const name = tagData.name;
+  const iconWeight = tagData.iconWeight;
+  const icon = tagData.icon;
 
   return (
     <Tag

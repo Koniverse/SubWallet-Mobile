@@ -13,17 +13,23 @@ import {
 } from 'phosphor-react-native';
 import { TagInfo, TagStatusType, TagType } from 'components/MissionPoolHorizontalItem';
 
-export const useMissionPools = (data: MissionInfo) => {
-  const timeline = useMemo<string>(() => {
-    if (!data.start_time && !data.end_time) {
-      return 'TBD';
-    }
+export const useMissionPools = (data?: MissionInfo) => {
+  const timeline = useMemo<string>(
+    (_data?: MissionInfo) => {
+      const localData = _data || data;
+      if (!localData?.start_time && !localData?.end_time) {
+        return 'TBD';
+      }
 
-    const start = data.start_time ? customFormatDate(new Date(data.start_time), '#DD# #MMM# #YYYY#') : 'TBD';
-    const end = data.end_time ? customFormatDate(new Date(data.end_time), '#DD# #MMM# #YYYY#') : 'TBD';
+      const start = localData?.start_time
+        ? customFormatDate(new Date(localData?.start_time), '#DD# #MMM# #YYYY#')
+        : 'TBD';
+      const end = localData?.end_time ? customFormatDate(new Date(localData?.end_time), '#DD# #MMM# #YYYY#') : 'TBD';
 
-    return `${start} - ${end}`;
-  }, [data.end_time, data.start_time]);
+      return `${start} - ${end}`;
+    },
+    [data],
+  );
 
   const tagMap = useMemo<Record<string, TagInfo>>(() => {
     return {
@@ -87,5 +93,28 @@ export const useMissionPools = (data: MissionInfo) => {
     };
   }, []);
 
-  return { timeline, tagMap, tagStatusMap };
+  const getTagByTimeline = (_data: MissionInfo) => {
+    const localData = _data || data;
+    if (localData.start_time && localData.end_time) {
+      const now = new Date();
+      const start = new Date(localData.start_time);
+      const end = new Date(localData.end_time);
+
+      if (now < start) {
+        return tagStatusMap[TagStatusType.UPCOMING];
+      }
+
+      if (now > end) {
+        return tagStatusMap[TagStatusType.ARCHIVED];
+      }
+
+      if (now >= start && now <= end) {
+        return tagStatusMap[TagStatusType.LIVE];
+      }
+    }
+
+    return tagStatusMap[TagStatusType.UPCOMING];
+  };
+
+  return { timeline, tagMap, tagStatusMap, getTagByTimeline };
 };
