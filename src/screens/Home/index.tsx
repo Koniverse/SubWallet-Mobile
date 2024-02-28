@@ -28,7 +28,7 @@ import { Settings } from 'screens/Settings';
 import i18n from 'utils/i18n/i18n';
 import { RootStackParamList } from 'routes/index';
 import { handleTriggerDeeplinkAfterLogin } from 'utils/deeplink';
-import { isFirstOpen, setIsFirstOpen } from '../../App';
+import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
 import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
@@ -181,8 +181,11 @@ const Wrapper = () => {
         drawerType: 'front',
         swipeEnabled: false,
       }}>
-      {isEmptyAccounts && <Drawer.Screen name="FirstScreen" component={FirstScreen} options={{ headerShown: false }} />}
-      <Drawer.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
+      {isEmptyAccounts ? (
+        <Drawer.Screen name="FirstScreen" component={FirstScreen} options={{ headerShown: false }} />
+      ) : (
+        <Drawer.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
+      )}
     </Drawer.Navigator>
   );
 };
@@ -221,10 +224,12 @@ export const Home = ({ navigation }: Props) => {
   }, [isReady, isLoading]);
 
   useEffect(() => {
-    if (isReady && !isLoading && !isLocked && isFirstOpen.current && hasMasterPassword && !isEmptyAccounts) {
-      setIsFirstOpen(false);
+    const readyHandleDeeplink = isReady && !isLoading && !isLocked && hasMasterPassword && !isEmptyAccounts;
+    if (readyHandleDeeplink && isHandleDeeplinkPromise.current) {
       handleTriggerDeeplinkAfterLogin(appNavigatorDeepLinkStatus, navigation);
     }
+
+    setIsHandleDeeplinkPromise(!readyHandleDeeplink);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReady, isLoading, isLocked]);
 

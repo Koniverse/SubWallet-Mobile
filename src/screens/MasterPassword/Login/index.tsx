@@ -215,7 +215,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
       return () => {
         const _setLoading = resetAll ? setEraseAllLoading : setAccLoading;
         _setLoading(true);
-
         setTimeout(() => {
           _setLoading(false);
           resetWallet({

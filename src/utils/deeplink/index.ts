@@ -8,9 +8,28 @@ import { ToastType } from 'react-native-toast-notifications';
 import { MutableRefObject } from 'react';
 import { AppNavigatorDeepLinkStatus } from 'screens/Home';
 import { prevDeeplinkUrl, setPrevDeeplinkUrl } from '../../App';
+import { firstScreenDeepLink, setFirstScreenDeepLink } from 'screens/Home/FirstScreen';
 
 export function transformUniversalToNative(url: string) {
   return url.replace('https://mobile.subwallet.app/', 'subwallet://');
+}
+
+function openDeeplink(_url: string) {
+  Linking.canOpenURL(_url)
+    .then(supported => {
+      if (supported) {
+        console.log('firstScreenDeepLink.current', firstScreenDeepLink.current);
+        if (firstScreenDeepLink.current) {
+          Linking.openURL(firstScreenDeepLink.current);
+          setFirstScreenDeepLink();
+          return;
+        }
+        Linking.openURL(_url);
+      }
+    })
+    .catch(e => {
+      console.warn(`Error opening URL: ${e}`);
+    });
 }
 
 export function handleTriggerDeeplinkAfterLogin(
@@ -20,6 +39,11 @@ export function handleTriggerDeeplinkAfterLogin(
 ) {
   Linking.getInitialURL().then(url => {
     if (!url || prevDeeplinkUrl === url) {
+      if (firstScreenDeepLink.current) {
+        Linking.openURL(firstScreenDeepLink.current);
+        setFirstScreenDeepLink();
+      }
+
       return;
     }
 
@@ -41,15 +65,6 @@ export function handleTriggerDeeplinkAfterLogin(
       const finalWcUrl = Object.keys(decodedWcUrl)[0];
       connectWalletConnect(finalWcUrl, toast);
     }
-
-    Linking.canOpenURL(_url)
-      .then(supported => {
-        if (supported) {
-          Linking.openURL(_url);
-        }
-      })
-      .catch(e => {
-        console.warn(`Error opening URL: ${e}`);
-      });
+    openDeeplink(_url);
   });
 }
