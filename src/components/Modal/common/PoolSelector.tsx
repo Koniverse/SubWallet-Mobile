@@ -101,7 +101,7 @@ export const PoolSelector = ({
   }, [nominatorMetadata]);
   const poolSelectorRef = useRef<ModalRef>();
   const sortingModalRef = useRef<ModalRef>();
-  const defaultSelectPool = Object.assign({}, PREDEFINED_STAKING_POOL, { vara_network: 29 })[chain];
+  const defaultSelectPool = Object.assign({}, PREDEFINED_STAKING_POOL, { vara_network: 50 })[chain];
   const sortingOptions: SortOption[] = [
     {
       desc: false,
