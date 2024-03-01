@@ -15,11 +15,11 @@ export function getJoinYieldParams(
   const exchangeRate = poolInfo?.statistic?.assetEarning[0]?.exchangeRate || 0;
 
   return {
-    slug: poolInfo.slug,
+    slug: poolInfo?.slug,
     exchangeRate,
     address,
     amount,
-    inputTokenSlug: poolInfo.metadata.inputAsset,
+    inputTokenSlug: poolInfo?.metadata.inputAsset,
     derivativeTokenSlug: poolInfo?.metadata?.derivativeAssets?.[0], // TODO
     rewardTokenSlug: poolInfo?.metadata?.rewardAssets[0] || '',
     feeTokenSlug: feeStructure.slug,

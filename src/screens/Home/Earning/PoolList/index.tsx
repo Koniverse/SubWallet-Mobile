@@ -95,7 +95,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const getAltChain = useCallback(
     (poolInfo?: YieldPoolInfo) => {
       if (!!poolInfo && (isLiquidPool(poolInfo) || isLendingPool(poolInfo))) {
-        const asset = chainAsset[poolInfo.metadata.altInputAssets || ''];
+        const asset = chainAsset[poolInfo?.metadata.altInputAssets || ''];
 
         return asset ? { chain: asset.originChain, name: asset.name } : { chain: '', name: '' };
       }
@@ -171,7 +171,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         turnOnChain(altChain);
         setLoading(true);
       } else {
-        handleOnStakeMore(poolInfo.slug);
+        handleOnStakeMore(poolInfo?.slug);
       }
     },
     [checkChainConnected, getAltChain, handleOnStakeMore, onConnectChain, setLoading, turnOnChain],

@@ -62,8 +62,8 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
   const haveUnlocking = useMemo(() => unstakings.some(i => i.status === UnstakingStatus.UNLOCKING), [unstakings]);
 
   const canCancelWithdraw = useMemo(
-    () => haveUnlocking && poolInfo.metadata.availableMethod.cancelUnstake,
-    [haveUnlocking, poolInfo.metadata.availableMethod.cancelUnstake],
+    () => haveUnlocking && poolInfo?.metadata.availableMethod.cancelUnstake,
+    [haveUnlocking, poolInfo?.metadata.availableMethod.cancelUnstake],
   );
 
   const canWithdraw = useMemo(() => {

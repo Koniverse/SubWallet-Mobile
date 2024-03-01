@@ -27,7 +27,7 @@ const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const poolInfo = poolInfoMap[data.slug];
 
-  const { decimals, symbol } = useGetNativeTokenBasicInfo(poolInfo.chain);
+  const { decimals, symbol } = useGetNativeTokenBasicInfo(poolInfo?.chain);
 
   useEffect(() => {
     const isRewardLteFee = new BigN(data.unclaimedReward || 0).lte(transaction.estimateFee?.value || 0);

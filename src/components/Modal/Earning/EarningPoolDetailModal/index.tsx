@@ -91,9 +91,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       type,
       metadata: { inputAsset },
     } = poolInfo;
-    const totalApy = poolInfo.statistic?.totalApy;
-    const totalApr = poolInfo.statistic?.totalApr;
-    const minJoinPool = poolInfo.statistic?.earningThreshold.join || '0';
+    const totalApy = poolInfo?.statistic?.totalApy;
+    const totalApr = poolInfo?.statistic?.totalApr;
+    const minJoinPool = poolInfo?.statistic?.earningThreshold.join || '0';
 
     const getOrigin = () => {
       switch (type) {
@@ -123,7 +123,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     let result = getOrigin();
     const apy = getApy();
     const asset = assetRegistry[inputAsset];
-    const shortName = poolInfo.metadata.shortName;
+    const shortName = poolInfo?.metadata.shortName;
 
     if (asset) {
       if (Number(minJoinPool) === 0 && !apy) {
@@ -177,10 +177,10 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   }, [poolInfo]);
 
   const tags = useMemo(() => {
-    const asset = assetRegistry[poolInfo.metadata.inputAsset];
+    const asset = assetRegistry[poolInfo?.metadata.inputAsset];
     const symbol = asset.symbol;
-    if (poolInfo.statistic && 'assetEarning' in poolInfo.statistic && poolInfo.statistic?.assetEarning) {
-      const assetEarning = poolInfo.statistic?.assetEarning;
+    if (poolInfo?.statistic && 'assetEarning' in poolInfo?.statistic && poolInfo?.statistic?.assetEarning) {
+      const assetEarning = poolInfo?.statistic?.assetEarning;
       const data = assetEarning.map(item => {
         let result: { slug: string; apy: number; symbol: string } = { slug: item.slug, apy: 0, symbol: symbol };
         result.slug = item.slug;
@@ -196,12 +196,12 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
       return data.filter(item => item.apy);
     }
-  }, [assetRegistry, poolInfo.metadata.inputAsset, poolInfo.statistic]);
+  }, [assetRegistry, poolInfo?.metadata.inputAsset, poolInfo?.statistic]);
 
   const getAltChain = useCallback(
     (_poolInfo?: YieldPoolInfo) => {
       if (!!_poolInfo && (isLiquidPool(_poolInfo) || isLendingPool(_poolInfo))) {
-        const asset = assetRegistry[_poolInfo.metadata.altInputAssets || ''];
+        const asset = assetRegistry[_poolInfo?.metadata.altInputAssets || ''];
 
         return asset ? { chain: asset.originChain, name: asset.name } : { chain: '', name: '' };
       }
@@ -243,30 +243,30 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
   const unBondedTime = useMemo((): string => {
     let time: number | undefined;
-    if (poolInfo.statistic && 'unstakingPeriod' in poolInfo.statistic) {
-      time = poolInfo.statistic.unstakingPeriod;
+    if (poolInfo?.statistic && 'unstakingPeriod' in poolInfo?.statistic) {
+      time = poolInfo?.statistic.unstakingPeriod;
     }
     return convertTime(time);
-  }, [poolInfo.statistic, convertTime]);
+  }, [poolInfo?.statistic, convertTime]);
 
   const data: BoxProps[] = useMemo(() => {
     if (!poolInfo) {
       return [];
     }
 
-    switch (poolInfo.type) {
+    switch (poolInfo?.type) {
       case YieldPoolType.NOMINATION_POOL: {
-        const _label = getValidatorLabel(poolInfo.chain);
+        const _label = getValidatorLabel(poolInfo?.chain);
         const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
-        const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
-        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
-        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
-        const paidOut = poolInfo.statistic?.eraTime;
+        const maxCandidatePerFarmer = poolInfo?.statistic?.maxCandidatePerFarmer || 0;
+        const inputAsset = assetRegistry[poolInfo?.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo?.metadata.maintainAsset];
+        const paidOut = poolInfo?.statistic?.eraTime;
 
         if (inputAsset && maintainAsset) {
           const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
           const maintainBalance = getInputValuesFromString(
-            poolInfo.metadata.maintainBalance || '0',
+            poolInfo?.metadata.maintainBalance || '0',
             maintainDecimals || 0,
           );
           const earningData =
@@ -289,21 +289,21 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         }
       }
       case YieldPoolType.NATIVE_STAKING: {
-        const _label = getValidatorLabel(poolInfo.chain);
+        const _label = getValidatorLabel(poolInfo?.chain);
         const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
-        const maxCandidatePerFarmer = poolInfo.statistic?.maxCandidatePerFarmer || 0;
-        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
-        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
-        const paidOut = poolInfo.statistic?.eraTime;
+        const maxCandidatePerFarmer = poolInfo?.statistic?.maxCandidatePerFarmer || 0;
+        const inputAsset = assetRegistry[poolInfo?.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo?.metadata.maintainAsset];
+        const paidOut = poolInfo?.statistic?.eraTime;
 
         if (inputAsset && maintainAsset) {
           const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
           const maintainBalance = getInputValuesFromString(
-            poolInfo.metadata.maintainBalance || '0',
+            poolInfo?.metadata.maintainBalance || '0',
             maintainDecimals || 0,
           );
 
-          if (_STAKING_CHAIN_GROUP.astar.includes(poolInfo.chain)) {
+          if (_STAKING_CHAIN_GROUP.astar.includes(poolInfo?.chain)) {
             const earningData = earningStaticData.find(item => item.slug === 'DAPP_STAKING')?.instructions || [];
             return earningData.map(item => {
               const _item: BoxProps = { ...item, icon: item.icon };
@@ -339,15 +339,15 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         }
       }
       case YieldPoolType.LIQUID_STAKING: {
-        const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
+        const derivativeSlug = poolInfo?.metadata.derivativeAssets?.[0] || '';
         const derivative = assetRegistry[derivativeSlug];
-        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
-        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
+        const inputAsset = assetRegistry[poolInfo?.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo?.metadata.maintainAsset];
 
         if (derivative && inputAsset && maintainAsset) {
           const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
           const maintainBalance = getInputValuesFromString(
-            poolInfo.metadata.maintainBalance || '0',
+            poolInfo?.metadata.maintainBalance || '0',
             maintainDecimals || 0,
           );
           const earningData =
@@ -366,15 +366,15 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         }
       }
       case YieldPoolType.LENDING: {
-        const derivativeSlug = poolInfo.metadata.derivativeAssets?.[0] || '';
+        const derivativeSlug = poolInfo?.metadata.derivativeAssets?.[0] || '';
         const derivative = assetRegistry[derivativeSlug];
-        const inputAsset = assetRegistry[poolInfo.metadata.inputAsset];
-        const maintainAsset = assetRegistry[poolInfo.metadata.maintainAsset];
+        const inputAsset = assetRegistry[poolInfo?.metadata.inputAsset];
+        const maintainAsset = assetRegistry[poolInfo?.metadata.maintainAsset];
 
         if (derivative && inputAsset && maintainAsset) {
           const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
           const maintainBalance = getInputValuesFromString(
-            poolInfo.metadata.maintainBalance || '0',
+            poolInfo?.metadata.maintainBalance || '0',
             maintainDecimals || 0,
           );
           const earningData = earningStaticData.find(item => item.slug === YieldPoolType.LENDING)?.instructions || [];
@@ -418,7 +418,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
   const onPressFaq = useCallback(() => {
     let urlParam = '';
-    switch (poolInfo.metadata.shortName) {
+    switch (poolInfo?.metadata.shortName) {
       case 'Polkadot': {
         urlParam = '#polkadot-nomination-pool';
         break;
@@ -582,7 +582,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
                   ))}
                 </View>
               )}
-              {/*{poolInfo.slug === 'xcDOT___liquid_staking___stellaswap' && (*/}
+              {/*{poolInfo?.slug === 'xcDOT___liquid_staking___stellaswap' && (*/}
               {/*  <Tag*/}
               {/*    color={'lime'}*/}
               {/*    bgType={'gray'}*/}

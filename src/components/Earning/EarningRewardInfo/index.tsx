@@ -51,7 +51,7 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   }, []);
   // const [showDetail, setShowDetail] = useState(false);
 
-  const isDAppStaking = useMemo(() => _STAKING_CHAIN_GROUP.astar.includes(poolInfo.chain), [poolInfo.chain]);
+  const isDAppStaking = useMemo(() => _STAKING_CHAIN_GROUP.astar.includes(poolInfo?.chain), [poolInfo?.chain]);
 
   const canClaim = useMemo((): boolean => {
     switch (type) {
@@ -204,9 +204,9 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
             type={'ghost'}
             onPress={() => {
               currentAccount &&
-                chainInfoMap[poolInfo.chain].extraInfo &&
+                chainInfoMap[poolInfo?.chain].extraInfo &&
                 Linking.openURL(
-                  `https://${chainInfoMap[poolInfo.chain].extraInfo?.subscanSlug}.subscan.io/account/${
+                  `https://${chainInfoMap[poolInfo?.chain].extraInfo?.subscanSlug}.subscan.io/account/${
                     currentAccount.address
                   }?tab=reward`,
                 );

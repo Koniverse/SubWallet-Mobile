@@ -131,8 +131,8 @@ const ClaimReward = ({
   const bondReward = useWatch<ClaimRewardFormValues>({ name: 'bondReward', control });
 
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
-  const poolType = poolInfo.type;
-  const poolChain = poolInfo.chain;
+  const poolType = poolInfo?.type;
+  const poolChain = poolInfo?.chain;
 
   const reward = useMemo((): EarningRewardItem | undefined => {
     return earningRewards.find(item => item.slug === slug && item.address === fromValue);
@@ -156,11 +156,11 @@ const ClaimReward = ({
       return {
         existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
         availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
-        maintainBalance: getInputValuesFromString(poolInfo.metadata.maintainBalance || '0', estimateFee.decimals),
+        maintainBalance: getInputValuesFromString(poolInfo?.metadata.maintainBalance || '0', estimateFee.decimals),
         symbol: estimateFee.symbol,
       };
     },
-    [existentialDeposit, nativeTokenBalance.value, poolInfo.metadata.maintainBalance],
+    [existentialDeposit, nativeTokenBalance.value, poolInfo?.metadata.maintainBalance],
   );
 
   const { onError, onSuccess } = useHandleSubmitTransaction(
@@ -200,8 +200,8 @@ const ClaimReward = ({
   const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
 
   useEffect(() => {
-    setChain(poolInfo.chain);
-  }, [poolInfo.chain, setChain]);
+    setChain(poolInfo?.chain);
+  }, [poolInfo?.chain, setChain]);
 
   useEffect(() => {
     // Trick to trigger validate when case single account
