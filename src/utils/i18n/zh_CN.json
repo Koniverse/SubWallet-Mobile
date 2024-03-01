@@ -1244,7 +1244,8 @@
     "invalidPassword": "密码无效",
     "connectionAlreadyExist": "连接已存在",
     "failToAddConnection": "添加连接失败",
-    "unreadableQrCode": "Unreadable QR code. Please scan another one."
+    "unreadableQrCode": "Unreadable QR code. Please scan another one.",
+    "recipientAddressInvalid": "Recipient should be a valid {0} address"
   },
   "notificationMessage": {
     "watchOnlyNoti": "你正在使用仅可查看的账户，故无法发送资产",

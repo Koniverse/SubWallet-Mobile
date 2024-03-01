@@ -854,8 +854,8 @@ export async function subscribeAccountsInputAddress(cb: (data: OptionInputAddres
   return sendMessage('pri(accounts.subscribeAccountsInputAddress)', {}, cb);
 }
 
-export async function saveRecentAccountId(accountId: string): Promise<KeyringAddress> {
-  return sendMessage('pri(accounts.saveRecent)', { accountId });
+export async function saveRecentAccountId(accountId: string, chain?: string): Promise<KeyringAddress> {
+  return sendMessage('pri(accounts.saveRecent)', { accountId, chain });
 }
 
 export async function editContactAddress(address: string, name: string): Promise<boolean> {

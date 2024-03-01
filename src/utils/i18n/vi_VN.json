@@ -1244,7 +1244,8 @@
     "invalidPassword": "Mật khẩu không hợp lệ",
     "connectionAlreadyExist": "Kết nối đã tồn tại",
     "failToAddConnection": "Thêm kết nối thất bại",
-    "unreadableQrCode": "Unreadable QR code. Please scan another one."
+    "unreadableQrCode": "Unreadable QR code. Please scan another one.",
+    "recipientAddressInvalid": "Recipient should be a valid {0} address"
   },
   "notificationMessage": {
     "watchOnlyNoti": "Tài khoản bạn đang sử dụng là tài khoản chỉ xem, bạn không thể gửi tài sản trên tài khoản này.",

@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
-import { isSameAddress } from '@subwallet/extension-base/utils';
+import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import {
@@ -83,6 +83,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
+  const [recipientAddressInvalid, setRecipientAddressInvalid] = useState<boolean>(false);
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const addressPrefix = useGetChainPrefixBySlug(nftChain);
   const chainGenesisHash = chainInfoMap[nftChain]?.substrateInfo?.genesisHash || '';
@@ -96,6 +97,16 @@ const SendNFT: React.FC<SendNFTProps> = ({
 
         if (!_recipientAddress) {
           return Promise.resolve(undefined);
+        }
+
+        if (!isEthereumAddress(_recipientAddress)) {
+          const chainInfo = chainInfoMap[nftChain];
+          const _addressPrefix = chainInfo?.substrateInfo?.addressPrefix ?? 42;
+          const _addressOnChain = reformatAddress(_recipientAddress, _addressPrefix);
+
+          if (_addressOnChain !== _recipientAddress) {
+            return Promise.resolve(i18n.formatString(i18n.errorMessage.recipientAddressInvalid, chainInfo.name));
+          }
         }
 
         if (isSameAddress(_recipientAddress, owner)) {
@@ -114,7 +125,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
         return Promise.resolve(undefined);
       },
     }),
-    [owner],
+    [chainInfoMap, nftChain, owner],
   );
 
   const nftItem = useMemo(
@@ -162,23 +173,32 @@ const SendNFT: React.FC<SendNFTProps> = ({
     navigation.goBack();
   }, [navigation]);
 
+  useEffect(() => {
+    recipientAddressRules.validate(recipientAddressValue).then(result => {
+      console.log(result);
+      setRecipientAddressInvalid(!!result);
+    });
+  }, [recipientAddressRules, recipientAddressValue]);
+
   const disableSubmit = useMemo(
-    () => !owner || !isAddress(recipientAddressValue) || !isNetConnected || loading,
-    [isNetConnected, loading, owner, recipientAddressValue],
+    () => !owner || !isAddress(recipientAddressValue) || !isNetConnected || loading || recipientAddressInvalid,
+    [isNetConnected, loading, owner, recipientAddressInvalid, recipientAddressValue],
   );
 
   const onSubmitForm = useCallback(
     async (values: SendNftFormValues) => {
-      const isEthereumInterface = isEthereumAddress(owner);
-      const recipientAddress = values.recipientAddress;
-      const params = nftParamsHandler(nftItem, nftChain);
+      const { chain, from: _from, recipientAddress } = values;
+      const isEthereumInterface = isEthereumAddress(_from);
+
+      const from = reformatAddress(_from, addressPrefix);
+      const params = nftParamsHandler(nftItem, chain);
       let sendPromise: Promise<SWTransactionResponse>;
 
       if (isEthereumInterface) {
         // Send NFT with EVM interface
         sendPromise = evmNftSubmitTransaction({
-          senderAddress: owner,
-          networkKey: nftChain,
+          senderAddress: from,
+          networkKey: chain,
           recipientAddress,
           nftItemName: nftItem?.name,
           params,
@@ -187,9 +207,9 @@ const SendNFT: React.FC<SendNFTProps> = ({
       } else {
         // Send NFT with substrate interface
         sendPromise = substrateNftSubmitTransaction({
-          networkKey: nftChain,
+          networkKey: chain,
           recipientAddress,
-          senderAddress: owner,
+          senderAddress: from,
           nftItemName: nftItem?.name,
           params,
           nftItem,
@@ -208,7 +228,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
           });
       }, 300);
     },
-    [nftChain, nftItem, onError, onSuccess, owner],
+    [addressPrefix, nftItem, onError, onSuccess],
   );
 
   const handleSend = useCallback(() => handleSubmit(onSubmitForm)(), [handleSubmit, onSubmitForm]);
@@ -256,6 +276,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
                       onSubmitEditing={handleSend}
                       disabled={loading}
                       chain={nftChain}
+                      fitNetwork
                       onBlur={onBlur}
                     />
                   )}
