@@ -1,3 +1,8 @@
+## 1.1.36 (325)
+- Adjust showing/validating address on Send token, Send NFT (#1499)
+- Update Error screen, recommend upload crash log (#1500)
+- Update web-runner 1.1.39 (#1497)
+
 ## 1.1.35 (324)
 
 

@@ -9,7 +9,6 @@ import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Icon, SelectItem } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
-import { getDevMode } from 'utils/storage';
 
 const containerStyle = { ...sharedStyles.layoutContainer, paddingTop: 16, gap: 8 };
 export const GeneralSettings = () => {
@@ -30,12 +29,6 @@ export const GeneralSettings = () => {
     navigation.dispatch(DrawerActions.openDrawer());
     navigation.goBack();
   };
-
-  const isDevMode = getDevMode();
-  if (isDevMode) {
-    const errorTest = undefined;
-    errorTest.id();
-  }
 
   return (
     <SubScreenContainer navigation={navigation} title={i18n.header.generalSettings} onPressLeftBtn={onGoback}>
