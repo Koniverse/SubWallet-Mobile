@@ -11,6 +11,7 @@ export default (theme: ThemeTypes) =>
       overflow: 'hidden',
       flexDirection: 'row',
       flex: 1,
+      marginBottom: theme.padding,
     },
     backdropImgStyle: {
       position: 'absolute',

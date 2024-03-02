@@ -21,17 +21,7 @@ import useConfirmModal from 'hooks/modal/useConfirmModal';
 import { _isCustomAsset, _isSmartContractToken } from '@subwallet/extension-base/services/chain-service/utils';
 import { useToast } from 'react-native-toast-notifications';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
-import { SectionListData } from 'react-native';
 import { EmptyList } from 'components/EmptyList';
-
-type GetItemLayoutType =
-  | readonly _NftItem[]
-  | SectionListData<_NftItem, SectionListData<_NftItem>>[]
-  | null
-  | undefined;
-const ITEM_HEIGHT = 220;
-const ITEM_SEPARATOR = 16;
-const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 
 const NftItemListStyle: StyleProp<any> = {
   flex: 1,
@@ -139,11 +129,7 @@ const NftItemList = ({
         });
     }
   };
-  const getItemLayout = (data: GetItemLayoutType, index: number) => ({
-    index,
-    length: TOTAL_ITEM_HEIGHT,
-    offset: TOTAL_ITEM_HEIGHT * index,
-  });
+
   const headerContent = () => {
     return (
       <View style={headerContentWrapper}>
@@ -204,7 +190,7 @@ const NftItemList = ({
         items={_nftItems}
         numberColumns={2}
         searchMarginBottom={16}
-        getItemLayout={getItemLayout}
+        estimatedItemSize={220}
         refreshControl={
           <RefreshControl
             style={{ backgroundColor: ColorMap.dark1 }}

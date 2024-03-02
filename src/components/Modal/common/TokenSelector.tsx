@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
@@ -60,6 +60,26 @@ export const TokenSelector = ({
     onSelectItem && onSelectItem(item);
   };
 
+  const renderListEmptyComponent = useCallback(() => {
+    return (
+      <EmptyList
+        icon={MagnifyingGlass}
+        title={i18n.emptyScreen.selectorEmptyTitle}
+        message={i18n.emptyScreen.selectorEmptyMessage}
+        addBtnLabel={showAddBtn ? i18n.header.importToken : undefined}
+        onPressAddBtn={
+          showAddBtn
+            ? () => {
+                onCloseAccountSelector && onCloseAccountSelector();
+                tokenSelectorRef?.current?.onCloseModal();
+                navigation.navigate('ImportToken');
+              }
+            : undefined
+        }
+      />
+    );
+  }, [navigation, onCloseAccountSelector, showAddBtn, tokenSelectorRef]);
+
   return (
     <FullSizeSelectModal
       items={items}
@@ -77,25 +97,7 @@ export const TokenSelector = ({
       renderCustomItem={renderCustomItem}
       defaultValue={defaultValue}
       acceptDefaultValue={acceptDefaultValue}
-      renderListEmptyComponent={() => {
-        return (
-          <EmptyList
-            icon={MagnifyingGlass}
-            title={i18n.emptyScreen.selectorEmptyTitle}
-            message={i18n.emptyScreen.selectorEmptyMessage}
-            addBtnLabel={showAddBtn ? i18n.header.importToken : undefined}
-            onPressAddBtn={
-              showAddBtn
-                ? () => {
-                    onCloseAccountSelector && onCloseAccountSelector();
-                    tokenSelectorRef?.current?.onCloseModal();
-                    navigation.navigate('ImportToken');
-                  }
-                : undefined
-            }
-          />
-        );
-      }}
+      renderListEmptyComponent={renderListEmptyComponent}
       disabled={disabled}>
       {children}
     </FullSizeSelectModal>
