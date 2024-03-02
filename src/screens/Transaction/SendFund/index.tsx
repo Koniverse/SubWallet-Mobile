@@ -1158,7 +1158,7 @@ export const SendFund = ({
                             showIcon
                           />
                         )}
-                        disabled={!tokenItems.length || loading}
+                        disabled={!tokenItems.length || loading || viewStep === 2}
                       />
                     </View>
 
@@ -1181,7 +1181,7 @@ export const SendFund = ({
                             showIcon
                           />
                         )}
-                        disabled={!destChainItems.length || loading}
+                        disabled={!destChainItems.length || loading || viewStep === 2}
                       />
                     </View>
                   </View>
