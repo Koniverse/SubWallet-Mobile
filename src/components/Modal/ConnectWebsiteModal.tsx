@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { changeAuthorizationBlock, changeAuthorizationPerSite } from 'messaging/index';
@@ -47,6 +47,7 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const [loading, setLoading] = useState(false);
   const _isNotConnected = isNotConnected || !authInfo;
+  Keyboard.dismiss();
 
   const onChangeModalVisible = useCallback(() => modalBaseV2Ref?.current?.close(), []);
 
@@ -153,13 +154,13 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
           icon={ButtonIconMap.CheckCircle}
           style={{ flex: 1 }}
           loading={loading}
-          disabled={loading}
+          disabled={loading || Object.values(allowedMap).every(value => !value)}
           onPress={handlerSubmit}>
           {i18n.buttonTitles.confirm}
         </Button>
       </>
     );
-  }, [_isNotConnected, handlerSubmit, handlerUnblock, isBlocked, loading, onChangeModalVisible]);
+  }, [_isNotConnected, allowedMap, handlerSubmit, handlerUnblock, isBlocked, loading, onChangeModalVisible]);
 
   const connectIconProps = useMemo<ConnectIcon>(() => {
     if (_isNotConnected) {
@@ -249,11 +250,12 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
       modalTitle={i18n.header.connectWebsite}
       modalVisible={modalVisible}
       titleTextAlign="center"
+      isAllowSwipeDown={false}
       modalBaseV2Ref={modalBaseV2Ref}
       onBackButtonPress={onChangeModalVisible}
       contentContainerStyle={stylesheet.modalContentContainerStyle}
       footer={<View style={stylesheet.footer}>{actionButtons}</View>}>
-      <ScrollView style={stylesheet.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={stylesheet.scrollView} showsVerticalScrollIndicator={false} nestedScrollEnabled>
         <TouchableOpacity activeOpacity={1}>
           <ConfirmationGeneralInfo
             request={{

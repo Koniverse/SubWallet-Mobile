@@ -1,6 +1,5 @@
 import React, { forwardRef, useMemo } from 'react';
 import { Platform, StyleSheet, TextInput, View, ViewStyle } from 'react-native';
-import { ColorMap } from 'styles/color';
 import { DisabledStyle, FontMedium } from 'styles/sharedStyles';
 import { FieldBaseProps } from 'components/Field/Base';
 import { Warning } from 'components/Warning';
@@ -24,6 +23,7 @@ interface Props extends FieldBaseProps {
   rightIcon?: React.ReactNode;
   disabled?: boolean;
   containerStyle?: ViewStyle;
+  readonly?: boolean;
 }
 
 const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInput>) => {
@@ -44,11 +44,12 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
     rightIcon,
     disabled,
     containerStyle,
+    readonly,
   } = passwordFieldProps;
   const hasLabel = !!label;
   const styles = useMemo(
-    () => createStyle(theme, hasLabel, !(errorMessages && errorMessages.length), !!leftIcon),
-    [theme, hasLabel, errorMessages, leftIcon],
+    () => createStyle(theme, hasLabel, !(errorMessages && errorMessages.length), !!leftIcon, readonly),
+    [theme, hasLabel, errorMessages, leftIcon, readonly],
   );
 
   return (
@@ -74,8 +75,8 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
             placeholder={placeholder}
             autoFocus={autoFocus}
             style={styles.textInput}
-            placeholderTextColor={ColorMap.disabled}
-            selectionColor={ColorMap.disabled}
+            placeholderTextColor={theme.colorTextLight4}
+            selectionColor={theme.colorTextLight4}
             blurOnSubmit={false}
             onSubmitEditing={onSubmitField}
             onChangeText={onChangeText}
@@ -128,7 +129,7 @@ function createStyle(theme: ThemeTypes, hasLabel: boolean, isValid: boolean, lef
       paddingRight: 14,
       paddingTop: (hasLabel ? 26 : 0) + 14,
       paddingBottom: 13,
-      color: isValid ? (readonly ? theme.colorTextLight5 : theme.colorTextLight1) : theme.colorError,
+      color: isValid ? (readonly ? theme.colorTextLight4 : theme.colorTextLight1) : theme.colorError,
       lineHeight: Platform.OS === 'ios' ? 18 : theme.lineHeight * theme.fontSize,
       fontSize: theme.fontSize,
       zIndex: 1,

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleProp, Text, View, ViewStyle } from 'react-native';
 import { ActivityIndicator, Number, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   error: string | null;
@@ -12,8 +13,11 @@ interface Props {
   nativeTokenSlug?: string;
   nativeTokenBalance?: AmountData;
   tokenSlug?: string;
+  chainName?: string;
   tokenBalance?: AmountData;
   isLoading: boolean;
+  hidden?: boolean;
+  showNetwork?: boolean;
 }
 
 export const FreeBalanceDisplay = ({
@@ -25,14 +29,38 @@ export const FreeBalanceDisplay = ({
   tokenBalance,
   nativeTokenSlug,
   nativeTokenBalance,
+  hidden,
+  showNetwork,
+  chainName,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
+  const renderSuffix = useCallback(
+    (data: AmountData) => {
+      if (showNetwork) {
+        return `${data.symbol} (${chainName})`;
+      }
+
+      return data.symbol;
+    },
+    [chainName, showNetwork],
+  );
+
   return (
-    <View style={[{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }, style]}>
+    <View
+      style={[
+        {
+          flexDirection: 'row',
+          marginBottom: 12,
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          display: hidden ? 'none' : 'flex',
+        },
+        style,
+      ]}>
       {!error && (
         <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
-          {label || 'Sender available balance:'}
+          {label || `${i18n.sendToken.senderAvailableBalance}:`}
         </Text>
       )}
       {isLoading && <ActivityIndicator size={14} indicatorColor={theme.colorTextTertiary} />}
@@ -48,7 +76,7 @@ export const FreeBalanceDisplay = ({
           intColor={theme.colorTextTertiary}
           size={14}
           textStyle={{ ...FontMedium }}
-          suffix={nativeTokenBalance.symbol}
+          suffix={renderSuffix(nativeTokenBalance)}
           unitColor={theme.colorTextTertiary}
           value={nativeTokenBalance.value}
         />
@@ -62,7 +90,7 @@ export const FreeBalanceDisplay = ({
             intColor={theme.colorTextTertiary}
             size={14}
             textStyle={{ ...FontMedium }}
-            suffix={tokenBalance.symbol}
+            suffix={renderSuffix(tokenBalance)}
             unitColor={theme.colorTextTertiary}
             value={tokenBalance.value}
           />

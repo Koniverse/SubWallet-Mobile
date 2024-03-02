@@ -8,7 +8,6 @@ const Styles = () => {
 
   return StyleSheet.create({
     container: { flex: 1 },
-    banner: { height: 120, borderRadius: theme.borderRadiusLG, margin: theme.margin },
     sectionContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -46,7 +45,12 @@ const Styles = () => {
     recommendListContentContainer: {
       paddingHorizontal: theme.padding,
     },
+    missionPoolListContentContainer: {
+      paddingHorizontal: theme.padding,
+      gap: theme.paddingSM,
+    },
     recommendListSeparator: {
+      paddingTop: theme.paddingXS,
       marginRight: theme.marginSM,
     },
   });

@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import { predefinedDApps } from '../../../predefined/dAppSites';
-import { PredefinedDApps } from 'types/browser';
+import React, { useMemo, useState } from 'react';
 import BrowserListByCategory from './BrowserListByCategory';
 import { BrowserListByTabviewProps } from 'routes/index';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { MaterialTopTabNavigationOptions, createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FakeSearchInput } from 'screens/Home/Browser/Shared/FakeSearchInput';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -12,6 +10,8 @@ import { Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
+import { ParamListBase, RouteProp } from '@react-navigation/native';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 type RoutesType = {
   key: string;
@@ -22,7 +22,10 @@ type TabbarType = {
 };
 const Tab = createMaterialTopTabNavigator();
 const transparent = { backgroundColor: 'transparent' };
-const screenOptions = () => ({
+const screenOptions:
+  | MaterialTopTabNavigationOptions
+  | ((props: { route: RouteProp<ParamListBase, string>; navigation: any }) => MaterialTopTabNavigationOptions)
+  | undefined = () => ({
   tabBarStyle: { height: 28, ...transparent },
   tabBarItemStyle: {
     width: 'auto',
@@ -56,10 +59,16 @@ const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
 };
 export const BrowserListByTabview = ({ route, navigation }: BrowserListByTabviewProps) => {
   const theme = useSubWalletTheme().swThemes;
-  const [dApps] = useState<PredefinedDApps>(predefinedDApps);
   const [searchString] = useState<string>('');
-  const categoryTabRoutes = dApps.categories()?.map(item => ({ key: item.id, title: item.name }));
-  const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
+  const {
+    browserDApps: { dAppCategories },
+  } = useGetDAppList();
+
+  const allTabRoutes = useMemo(() => {
+    const categoryTabRoutes = dAppCategories ? dAppCategories?.map(item => ({ key: item.slug, title: item.name })) : [];
+    return [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
+  }, [dAppCategories]);
+
   const navigationType: Record<string, string> = {
     BOOKMARK: i18n.browser.favorite,
     RECOMMENDED: i18n.browser.recommended,

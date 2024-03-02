@@ -1,6 +1,6 @@
 import { TextStyle } from 'react-native';
 import React from 'react';
-import Typography from '../design-system-ui/typography';
+import Typography, { TextSizeProps } from '../design-system-ui/typography';
 import { SchemeColor } from 'components/MetaInfo/types';
 import { ThemeTypes } from 'styles/themes';
 
@@ -25,19 +25,24 @@ export function getSchemaColor(schema: SchemeColor, theme: ThemeTypes) {
     return theme.colorWarning;
   }
 
-  return theme.colorTextLight2;
+  return theme.colorTextLight1;
 }
 
 export function renderColContent(
   content: React.ReactNode | ((textStyle: TextStyle) => React.ReactNode) | undefined,
   textStyle: TextStyle,
+  size?: TextSizeProps,
 ) {
   if (!content) {
     return null;
   }
 
   if (typeof content === 'string') {
-    return <Typography.Text style={textStyle}>{content}</Typography.Text>;
+    return (
+      <Typography.Text size={size} style={textStyle}>
+        {content}
+      </Typography.Text>
+    );
   }
 
   if (typeof content === 'function') {

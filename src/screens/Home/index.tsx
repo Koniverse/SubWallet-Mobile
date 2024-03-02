@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import StakingScreen from './Staking/StakingScreen';
+import EarningScreen from 'screens/Home/Earning';
 
-import { Linking, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Aperture, Database, Globe, Rocket, Wallet } from 'phosphor-react-native';
+import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Aperture, Globe, Rocket, Vault, Wallet } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,23 +18,25 @@ import { HomeStackParamList } from 'routes/home';
 import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
 import withPageWrapper from 'components/pageWrapper';
 import RequestCreateMasterPasswordModal from 'screens/MasterPassword/RequestCreateMasterPasswordModal';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import useAppLock from 'hooks/useAppLock';
 import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { WrapperParamList } from 'routes/wrapper';
 import { Settings } from 'screens/Settings';
 import i18n from 'utils/i18n/i18n';
 import { RootStackParamList } from 'routes/index';
-import { handleDeeplinkOnFirstOpen } from 'utils/deeplink';
-import urlParse from 'url-parse';
-import { getProtocol } from 'utils/browser';
-import { updateIsDeepLinkConnect } from 'stores/base/Settings';
-import queryString from 'querystring';
-import { connectWalletConnect } from 'utils/walletConnect';
-import { useToast } from 'react-native-toast-notifications';
+import { handleTriggerDeeplinkAfterLogin } from 'utils/deeplink';
+import { isFirstOpen, setIsFirstOpen } from '../../App';
+import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
+import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
+import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
+import { mmkvStore } from 'utils/storage';
+import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
+import IntroducingModal from 'components/Modal/IntroducingModal';
+import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
+import { TermAndCondition } from 'constants/termAndCondition';
 
 interface tabbarIconColor {
   color: string;
@@ -49,7 +51,7 @@ const crowdloanTabbarIcon = ({ color }: tabbarIconColor) => {
   return <Rocket size={24} color={color} weight={'fill'} />;
 };
 const stakingTabbarIcon = ({ color }: tabbarIconColor) => {
-  return <Database size={24} color={color} weight={'fill'} />;
+  return <Vault size={24} color={color} weight={'fill'} />;
 };
 const browserTabbarIcon = ({ color }: tabbarIconColor) => {
   return <Globe size={24} color={color} weight={'fill'} />;
@@ -57,10 +59,11 @@ const browserTabbarIcon = ({ color }: tabbarIconColor) => {
 const getSettingsContent = (props: DrawerContentComponentProps) => {
   return <Settings {...props} />;
 };
-const MainScreen = () => {
+const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
   const theme = useSubWalletTheme().swThemes;
+  const { isShowBuyToken } = useShowBuyToken();
   const tabbarButtonStyle = (props: BottomTabBarButtonProps) => {
     let customStyle = {
       flexDirection: 'column',
@@ -127,29 +130,36 @@ const MainScreen = () => {
         }}
       />
       <Tab.Screen
+        name={'Earning'}
+        component={EarningScreen}
+        listeners={{
+          tabPress: () => {
+            navigation.popToTop();
+          },
+        }}
+        options={{
+          tabBarLabel: i18n.tabName.earning,
+          tabBarHideOnKeyboard: Platform.OS === 'android',
+          tabBarIcon: stakingTabbarIcon,
+        }}
+      />
+      {isShowBuyToken && (
+        <Tab.Screen
+          name={'Browser'}
+          component={BrowserScreen}
+          options={{
+            tabBarLabel: i18n.tabName.browser,
+            tabBarIcon: browserTabbarIcon,
+          }}
+        />
+      )}
+      <Tab.Screen
         name={'Crowdloans'}
         component={withPageWrapper(CrowdloansScreen, ['crowdloan', 'price', 'chainStore', 'logoMaps'])}
         options={{
           tabBarLabel: i18n.tabName.crowdloans,
           tabBarHideOnKeyboard: Platform.OS === 'android',
           tabBarIcon: crowdloanTabbarIcon,
-        }}
-      />
-      <Tab.Screen
-        name={'Staking'}
-        component={StakingScreen}
-        options={{
-          tabBarLabel: i18n.tabName.staking,
-          tabBarHideOnKeyboard: Platform.OS === 'android',
-          tabBarIcon: stakingTabbarIcon,
-        }}
-      />
-      <Tab.Screen
-        name={'Browser'}
-        component={BrowserScreen}
-        options={{
-          tabBarLabel: i18n.tabName.browser,
-          tabBarIcon: browserTabbarIcon,
         }}
       />
     </Tab.Navigator>
@@ -177,62 +187,76 @@ const Wrapper = () => {
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
 }
+
+export enum AppNavigatorDeepLinkStatus {
+  AVAILABLE = 'available',
+  BLOCK = 'block',
+  RESET = 'reset',
+}
+
+let isShowCampaignModal = false;
+
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
-  const { hasMasterPassword, isReady } = useSelector((state: RootState) => state.accountState);
-  const { isLocked } = useAppLock();
+  const { hasMasterPassword, isReady, isLocked } = useSelector((state: RootState) => state.accountState);
   const [isLoading, setLoading] = useState(true);
-  const isFirstOpen = useRef(true);
-  const toast = useToast();
-  const dispatch = useDispatch();
-
+  const [generalTermVisible, setGeneralTermVisible] = useState<boolean>(false);
+  const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
+  const banners = useGetBannerByScreen('home');
+  const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
+  const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
+  const [introducingModalVisible, setIntroducingModalVisible] = useState<boolean>(false);
+  const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
+  const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
+  const language = useSelector((state: RootState) => state.settings.language);
+  mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
   useEffect(() => {
     if (isReady && isLoading) {
-      setTimeout(() => setLoading(false), 500);
+      setTimeout(() => setLoading(false), 1500);
     }
   }, [isReady, isLoading]);
 
   useEffect(() => {
-    if (isReady && !isLoading) {
-      handleDeeplinkOnFirstOpen(navigation);
-      isFirstOpen.current = false;
+    if (isReady && !isLoading && !isLocked && isFirstOpen.current && hasMasterPassword && !isEmptyAccounts) {
+      setIsFirstOpen(false);
+      handleTriggerDeeplinkAfterLogin(appNavigatorDeepLinkStatus, navigation);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, isLoading]);
+  }, [isReady, isLoading, isLocked]);
 
   useEffect(() => {
-    if (isReady && !isLoading) {
-      if (isFirstOpen.current) {
-        return;
-      }
-      Linking.addEventListener('url', ({ url }) => {
-        const urlParsed = new urlParse(url);
-        if (getProtocol(url) === 'subwallet') {
-          if (urlParsed.hostname === 'wc') {
-            dispatch(updateIsDeepLinkConnect(true));
-            if (urlParsed.query.startsWith('?requestId')) {
-              return;
-            }
-            const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
-            const finalWcUrl = Object.keys(decodedWcUrl)[0];
-            connectWalletConnect(finalWcUrl, toast);
-          }
-        } else if (getProtocol(url) === 'https') {
-          if (urlParsed.pathname.split('/')[1] === 'wc') {
-            dispatch(updateIsDeepLinkConnect(true));
-            if (urlParsed.query.startsWith('?requestId')) {
-              return;
-            }
-            const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
-            const finalWcUrl = Object.keys(decodedWcUrl)[0];
-            connectWalletConnect(finalWcUrl, toast);
-          }
-        }
-      });
-      // return () => Linking.removeAllListeners('url');
+    if (isShowCampaignModal) {
+      return;
+    }
+    if (!isOpenIntroductionFirstTime) {
+      return;
+    }
+    if (firstBanner) {
+      isShowCampaignModal = true;
+      setCampaignModalVisible(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, isLoading]);
+  }, [firstBanner]);
+
+  useEffect(() => {
+    if (!isOpenGeneralTermFirstTime) {
+      isShowCampaignModal = false;
+      setGeneralTermVisible(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isOpenIntroductionFirstTime) {
+      setIntroducingModalVisible(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onPressAcceptBtn = () => {
+    mmkvStore.set('isOpenGeneralTermFirstTime', true);
+    setGeneralTermVisible(false);
+  };
 
   if (isLoading) {
     return (
@@ -245,11 +269,27 @@ export const Home = ({ navigation }: Props) => {
   return (
     <>
       <Wrapper />
+
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
+      {!isLocked && !isEmptyAccounts && !isOpenIntroductionFirstTime && (
+        <IntroducingModal visible={introducingModalVisible} setVisible={setIntroducingModalVisible} />
+      )}
+      {!isLocked && firstBanner && isShowCampaignModal && !isEmptyAccounts && isOpenIntroductionFirstTime && (
+        <CampaignBannerModal visible={campaignModalVisible} banner={firstBanner} setVisible={setCampaignModalVisible} />
+      )}
+      {!isLocked && !isOpenGeneralTermFirstTime && (
+        <GeneralTermModal
+          modalVisible={generalTermVisible}
+          setVisible={setGeneralTermVisible}
+          onPressAcceptBtn={onPressAcceptBtn}
+          disabledOnPressBackDrop={true}
+        />
+      )}
     </>
   );
 };
 
+// @ts-ignore
 const styles = StyleSheet.create({
   indicatorWrapper: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 });

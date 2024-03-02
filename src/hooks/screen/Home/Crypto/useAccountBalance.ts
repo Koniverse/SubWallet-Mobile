@@ -34,6 +34,7 @@ export function getConvertedBalanceValue(balance: BigN, price: number): BigN {
 
 function getDefaultBalanceItem(slug: string, symbol: string, logoKey: string): TokenBalanceItemType {
   return {
+    isNotSupport: false,
     free: {
       value: new BigN(0),
       convertedValue: new BigN(0),

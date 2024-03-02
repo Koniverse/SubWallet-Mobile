@@ -1,3 +1,4 @@
+import { UnstakingInfo, UnstakingStatus } from '@subwallet/extension-base/types';
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
@@ -5,7 +6,6 @@ import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { CaretDown, CheckCircle, Spinner } from 'phosphor-react-native';
 import { ActivityIndicator, Icon, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { UnstakingInfo, UnstakingStatus } from '@subwallet/extension-base/background/KoniTypes';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import i18n from 'utils/i18n/i18n';
 

@@ -3,18 +3,16 @@ import createStyle from './styles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
-// TODO: check lib
-// @ts-ignore
-import Avatar from 'react-native-boring-avatars';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
-
 import AccountItemBase, { AccountItemBaseProps } from '../AccountItemBase';
 import { AccountJson } from '@subwallet/extension-base/background/types';
+import AvatarGroup from 'components/common/AvatarGroup';
 
 interface Props extends AccountItemBaseProps {
   direction?: 'vertical' | 'horizontal';
   accounts?: AccountJson[];
+  fallbackName?: boolean;
 }
 
 const AccountItemWithName: React.FC<Props> = (props: Props) => {
@@ -25,35 +23,37 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
     addressPreLength = 4,
     addressSufLength = 4,
     direction = 'horizontal',
+    fallbackName = true,
   } = props;
   const isAll = isAccountAll(address);
 
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
 
+  const showFallback = useMemo(() => {
+    if (isAll) {
+      return false;
+    } else {
+      if (fallbackName) {
+        return true;
+      } else {
+        return !!accountName;
+      }
+    }
+  }, [accountName, fallbackName, isAll]);
+
   return (
     <AccountItemBase
       {...props}
       address={address}
-      leftItem={
-        isAll ? (
-          <Avatar
-            colors={['#5F545C', '#EB7072', '#F5BA90', '#F5E2B8', '#A2CAA5']}
-            name={address}
-            size={avatarSize}
-            variant={'beam'}
-          />
-        ) : (
-          props.leftItem
-        )
-      }
+      leftItem={isAll ? <AvatarGroup avatarSize={avatarSize} /> : props.leftItem}
       middleItem={
         <View
           style={[direction === 'horizontal' ? styles.contentDirectionHorizontal : styles.contentDirectionVertical]}>
           <Text style={styles.accountName} numberOfLines={1}>
             {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
           </Text>
-          {!isAll && (
+          {showFallback && (
             <Text style={[styles.accountAddress, direction === 'horizontal' && styles.accountAddressHorizontal]}>
               {direction === 'horizontal' && '('}
               {toShort(address, addressPreLength, addressSufLength)}

@@ -2,6 +2,7 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { Dimensions, Platform } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { getBrand } from 'react-native-device-info';
+import env from 'react-native-config';
 
 type DeviceInfo = {
   isIos: boolean;
@@ -13,10 +14,19 @@ type DeviceInfo = {
 export const WIKI_URL = 'https://docs.subwallet.app/';
 export const PRIVACY_AND_POLICY_URL = 'https://docs.subwallet.app/privacy-and-security/privacy-policy';
 export const TERMS_OF_SERVICE_URL = 'https://docs.subwallet.app/privacy-and-security/terms-of-service';
+export const TERMS_OF_USE_URL = 'https://docs.subwallet.app/main/privacy-and-security/terms-of-use';
+export const IMPORT_QR_CODE_URL =
+  'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/import-restore-an-account#import-by-qr-code';
+export const POLKADOT_VAULT_INSTRUCTION_URL =
+  'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/attach-a-polkadot-vault-previously-parity-signer-account';
+export const KEYSTONE_INSTRUCTION_URL =
+  'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/connect-keystone-device';
 export const WEBSITE_URL = 'https://subwallet.app/';
 export const TELEGRAM_URL = 'https://t.me/subwallet';
 export const TWITTER_URL = 'https://twitter.com/subwalletapp';
 export const DISCORD_URL = 'https://discord.com/invite/vPCN4vdB8v';
+export const STATIC_DATA_DOMAIN = 'https://static-data.subwallet.app';
+export const TOKEN_CONFIG_URL = `${STATIC_DATA_DOMAIN}/tokens/config.json`;
 export const BUTTON_ACTIVE_OPACITY = 0.5;
 export const ALLOW_FONT_SCALING = false;
 export const HIDE_MODAL_DURATION = 1000;
@@ -32,7 +42,7 @@ export enum BitLengthOption {
   CHAIN_SPEC = 128,
   NORMAL_NUMBERS = 32,
 }
-export const TOAST_DURATION = getBrand().toLowerCase() === 'xiaomi' ? 5000 : 1500;
+export const TOAST_DURATION = getBrand().toLowerCase() === 'xiaomi' ? 5000 : 4000;
 export const CELL_COUNT = 6;
 export const DEVICE: DeviceInfo = {
   isIos: Platform.OS === 'ios',
@@ -41,3 +51,4 @@ export const DEVICE: DeviceInfo = {
   height: deviceHeight,
 };
 export const ALL_KEY = 'all';
+export const isDevMode = !!env.DEBUG;

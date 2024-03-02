@@ -12,6 +12,7 @@ import { RootState } from 'stores/index';
 
 import { BaseTransactionConfirmationProps } from './Base';
 import i18n from 'utils/i18n/i18n';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -25,8 +26,18 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
 
   const chainInfo = useMemo(() => chainInfoMap[transaction.chain], [chainInfoMap, transaction.chain]);
 
+  const receiveChain = useMemo(() => {
+    if (xcmData) {
+      return xcmData.destinationNetworkKey || transaction.chain;
+    } else {
+      return transaction.chain;
+    }
+  }, [transaction.chain, xcmData]);
+
   const { decimals: chainDecimals, symbol: chainSymbol } = useGetNativeTokenBasicInfo(transaction.chain);
   const senderPrefix = useGetChainPrefixBySlug(transaction.chain);
+  const network = useMemo(() => chainInfoMap[transaction.chain], [chainInfoMap, transaction.chain]);
+  const receiverPrefix = useGetChainPrefixBySlug(receiveChain);
 
   return (
     <ConfirmationContent isFullHeight>
@@ -37,7 +48,7 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
           <MetaInfo.Chain chain={chainInfo.slug} label={i18n.inputLabel.senderNetwork} />
         )}
 
-        <MetaInfo.Account address={data.to} label={i18n.inputLabel.sendTo} />
+        <MetaInfo.Account address={data.to} label={i18n.inputLabel.sendTo} networkPrefix={receiverPrefix} />
 
         {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && chainInfo && (
           <MetaInfo.Chain chain={xcmData.destinationNetworkKey} label={i18n.inputLabel.destinationNetwork} />
@@ -63,6 +74,24 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
           value={transaction.estimateFee?.value || 0}
         />
       </MetaInfo>
+      {!!transaction.estimateFee?.tooHigh && (
+        <AlertBox
+          description={'Gas fees on {{networkName}} are high due to high demands, so gas estimates are less accurate.'.replace(
+            '{{networkName}}',
+            network.name,
+          )}
+          title={'Pay attention!'}
+          type="warning"
+        />
+      )}
+
+      {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && (
+        <AlertBox
+          type={'warning'}
+          title={i18n.message.xcmTransferWarningTitle}
+          description={i18n.message.xcmTransferWarningMessage}
+        />
+      )}
     </ConfirmationContent>
   );
 };

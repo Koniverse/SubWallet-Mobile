@@ -8,7 +8,7 @@ export const PredefinedLedgerNetwork: LedgerNetwork[] = [
   {
     accountName: 'Polkadot',
     appName: 'Polkadot',
-    networkName: 'Polkadot network',
+    groupSymbol: 'Polkadot network',
     genesisHash:
       ChainInfoMap.polkadot.substrateInfo?.genesisHash ||
       '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3',
@@ -21,7 +21,7 @@ export const PredefinedLedgerNetwork: LedgerNetwork[] = [
   {
     accountName: 'Kusama',
     appName: 'Kusama',
-    networkName: 'Kusama network',
+    groupSymbol: 'Kusama network',
     genesisHash:
       ChainInfoMap.kusama.substrateInfo?.genesisHash ||
       '0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe',
@@ -34,7 +34,7 @@ export const PredefinedLedgerNetwork: LedgerNetwork[] = [
   {
     accountName: 'Acala',
     appName: 'Acala',
-    networkName: 'Acala network',
+    groupSymbol: 'Acala network',
     genesisHash:
       ChainInfoMap.acala.substrateInfo?.genesisHash ||
       '0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c',
@@ -47,7 +47,7 @@ export const PredefinedLedgerNetwork: LedgerNetwork[] = [
   {
     accountName: 'Aleph Zero',
     appName: 'Aleph Zero',
-    networkName: 'Aleph Zero network',
+    groupSymbol: 'Aleph Zero network',
     genesisHash:
       ChainInfoMap.aleph.substrateInfo?.genesisHash ||
       '0x70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0344e',
@@ -60,7 +60,7 @@ export const PredefinedLedgerNetwork: LedgerNetwork[] = [
   {
     accountName: 'EVM',
     appName: 'Ethereum',
-    networkName: 'EVM networks',
+    groupSymbol: 'EVM networks',
     genesisHash: '',
     network: 'ethereum',
     icon: 'ethereum',

@@ -1,19 +1,26 @@
 import { TagPropsType } from 'components/design-system-ui/tag/PropsType';
 
 export type DAPPCategory = {
+  slug: string;
   name: string;
   id: string;
-  theme?: TagPropsType['color'];
+  color: TagPropsType['color'];
 };
 
 export type DAppInfo = {
-  name: string;
   id: string;
+  title: string;
+  subtitle: string;
   url: string;
-  icon: string;
+  description: string;
   categories: string[];
-  isSupportSubstrateAccount?: boolean;
-  isSupportEthereumAccount?: boolean;
+  chain: string[];
+  is_featured: boolean;
+  is_evm: boolean;
+  is_substrate: boolean;
+  icon: string;
+  preview_image: string;
+  desktop_mode: boolean | null;
 };
 
 export type PredefinedDApps = {

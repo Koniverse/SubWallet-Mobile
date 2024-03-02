@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { Linking, ScrollView, StyleProp, View } from 'react-native';
+import { DeviceEventEmitter, Linking, Platform, ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import {
   ArrowSquareOut,
   Book,
   BookBookmark,
-  BookOpen,
   CaretRight,
+  ChatCircleText,
   Clock,
   Coin,
   DiscordLogo,
@@ -18,31 +18,24 @@ import {
   Lock,
   ShareNetwork,
   ShieldCheck,
+  Star,
   TelegramLogo,
   TwitterLogo,
   X,
 } from 'phosphor-react-native';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import {
-  DISCORD_URL,
-  PRIVACY_AND_POLICY_URL,
-  TELEGRAM_URL,
-  TERMS_OF_SERVICE_URL,
-  TWITTER_URL,
-  WEBSITE_URL,
-  WIKI_URL,
-} from 'constants/index';
-import VersionNumber from 'react-native-version-number';
+import { DISCORD_URL, TELEGRAM_URL, TERMS_OF_USE_URL, TWITTER_URL, WEBSITE_URL, WIKI_URL } from 'constants/index';
+import { getVersion, getBuildNumber } from 'react-native-device-info';
 import useAppLock from 'hooks/useAppLock';
 import { BackgroundIcon, Button, Icon, SelectItem } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SVGImages } from 'assets/index';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
+import packageJSON from '../../../package.json';
+import env from 'react-native-config';
 
 const settingTitleStyle: StyleProp<any> = {
   fontSize: 12,
@@ -69,14 +62,16 @@ type settingItemType = {
   disabled?: boolean;
   backgroundColor: string;
 };
-
+const BUNDLE_ENV = env.BUNDLE_ENV;
+const bundleData =
+  BUNDLE_ENV === 'PRODUCTION' ? packageJSON.bundleVersion.split('-') : packageJSON.bundleVersionStaging.split('-');
+const bundleVersion =
+  Platform.OS === 'android' ? bundleData[0].split('(')[1].slice(0, -1) : bundleData[1].split('(')[1].slice(0, -1);
 export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponentProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
-  const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const { lock } = useAppLock();
   const [hiddenCount, setHiddenCount] = useState(0);
-
   const settingList: settingItemType[][] = useMemo(
     () => [
       [
@@ -112,7 +107,10 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           icon: Clock,
           title: i18n.header.walletConnect,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => navigation.navigate('ConnectList', { isDelete: false }),
+          onPress: () => {
+            DeviceEventEmitter.emit('isDeleteWc', false);
+            navigation.navigate('ConnectList', { isDelete: false });
+          },
           backgroundColor: '#004BFF',
         },
       ],
@@ -133,6 +131,26 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         },
       ],
       [
+        {
+          icon: Star,
+          title: 'Rate our app',
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          onPress: () => {
+            Linking.openURL(
+              Platform.OS === 'ios'
+                ? 'https://apps.apple.com/vn/app/subwallet-polkadot-wallet/id1633050285'
+                : 'https://play.google.com/store/apps/details?id=app.subwallet.mobile',
+            );
+          },
+          backgroundColor: '#86C338',
+        },
+        {
+          icon: ChatCircleText,
+          title: 'Request a feature',
+          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
+          onPress: () => Linking.openURL('mailto:agent@subwallet.app?subject=%5BSubWallet%20In-app%20Feedback%5D'),
+          backgroundColor: '#E6478E',
+        },
         {
           icon: TwitterLogo,
           title: i18n.settings.twitter,
@@ -171,29 +189,16 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           backgroundColor: '#2DA73F',
         },
         {
-          icon: BookOpen,
-          title: i18n.settings.termOfService,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL(TERMS_OF_SERVICE_URL),
-          backgroundColor: '#D96F00',
-        },
-        {
           icon: BookBookmark,
-          title: i18n.settings.privacyPolicy,
+          title: i18n.settings.termOfUse,
           rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL(PRIVACY_AND_POLICY_URL),
-          backgroundColor: '#004BFF',
+          onPress: () => Linking.openURL(TERMS_OF_USE_URL),
+          backgroundColor: '#D96F00',
         },
       ],
     ],
     [navigation, theme.colorTextLight3],
   );
-  //
-  // useEffect(() => {
-  //   if (isEmptyAccounts) {
-  //     drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack();
-  //   }
-  // }, [drawerNavigation, isEmptyAccounts, navigation]);
 
   const onPressVersionNumber = () => {
     if (hiddenCount > 9) {
@@ -212,6 +217,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
       onPressRightIcon={() => (drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack())}>
       <>
         <ScrollView
+          showsVerticalScrollIndicator={false}
           style={{ paddingHorizontal: 16, flex: 1, marginBottom: 16 }}
           contentContainerStyle={{ paddingTop: 16 }}>
           <View style={{ gap: theme.paddingXS }}>
@@ -220,6 +226,15 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
                 rightIcon={setting.rightIcon}
                 key={setting.title}
                 label={setting.title}
+                leftItemIcon={
+                  setting.title === i18n.header.walletConnect ? (
+                    <BackgroundIcon
+                      shape={'circle'}
+                      backgroundColor={setting.backgroundColor}
+                      customIcon={<SVGImages.WalletConnect width={16} height={16} color={theme.colorWhite} />}
+                    />
+                  ) : undefined
+                }
                 icon={setting.icon}
                 backgroundColor={setting.backgroundColor}
                 onPress={setting.onPress}
@@ -235,15 +250,6 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
                 rightIcon={setting.rightIcon}
                 key={setting.title}
                 label={setting.title}
-                leftItemIcon={
-                  setting.title === i18n.header.walletConnect ? (
-                    <BackgroundIcon
-                      shape={'circle'}
-                      backgroundColor={setting.backgroundColor}
-                      customIcon={<SVGImages.WalletConnect width={16} height={16} color={theme.colorWhite} />}
-                    />
-                  ) : undefined
-                }
                 icon={setting.icon}
                 backgroundColor={setting.backgroundColor}
                 onPress={setting.onPress}
@@ -284,23 +290,15 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           <Button
             style={{ marginTop: 16 }}
             onPress={lock}
-            disabled={!pinCodeEnabled}
             type={'secondary'}
             block
-            icon={
-              <Icon
-                phosphorIcon={Lock}
-                size={'lg'}
-                weight={'fill'}
-                iconColor={!pinCodeEnabled ? theme.colorTextLight5 : theme.colorWhite}
-              />
-            }>
+            icon={<Icon phosphorIcon={Lock} size={'lg'} weight={'fill'} iconColor={theme.colorWhite} />}>
             {i18n.settings.lock}
           </Button>
         </ScrollView>
         <Text
           onPress={onPressVersionNumber}
-          style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion} (${VersionNumber.buildVersion})`}</Text>
+          style={versionAppStyle}>{`SubWallet v${getVersion()} (${getBuildNumber()}) b-${bundleVersion}`}</Text>
       </>
     </SubScreenContainer>
   );

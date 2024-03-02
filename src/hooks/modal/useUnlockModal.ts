@@ -7,18 +7,20 @@ import { DeviceEventEmitter, Keyboard } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 
+export type OnCompleteType = (password?: string) => void;
 interface Result {
-  onPress: (onComplete: VoidFunction) => () => Promise<boolean> | undefined;
-  onPasswordComplete: VoidFunction;
-  onHideModal: VoidFunction;
+  onPress: (onComplete: OnCompleteType) => () => Promise<boolean> | undefined;
+  onHideModal: () => void;
 }
 
 const useUnlockModal = (
   navigation: NativeStackNavigationProp<RootStackParamList>,
   setLoading?: (arg: boolean) => void,
+  isUpdateBiometric?: boolean,
+  onCloseModal?: () => void,
 ): Result => {
   const { isLocked, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
-  const onCompleteRef = useRef<VoidFunction>(noop);
+  const onCompleteRef = useRef<OnCompleteType>(noop);
   const promiseRef = useRef<Promise<boolean> | undefined>();
   const resolveRef = useRef<(value: boolean | PromiseLike<boolean>) => void>();
   const rejectRef = useRef<(reason?: any) => void>();
@@ -26,8 +28,9 @@ const useUnlockModal = (
   useEffect(() => {
     DeviceEventEmitter.addListener('unlockModal', data => {
       if (data.type === 'onComplete') {
-        onPasswordComplete();
+        onPasswordComplete(data.password);
       } else {
+        !!onCloseModal && onCloseModal();
         onHideModal();
       }
     });
@@ -47,9 +50,8 @@ const useUnlockModal = (
         } else {
           setTimeout(() => {
             onCompleteRef.current = onComplete;
-
-            if (hasMasterPassword && isLocked) {
-              navigation.navigate('UnlockModal');
+            if ((hasMasterPassword && isLocked) || isUpdateBiometric) {
+              navigation.navigate('UnlockModal', { isUpdateBiometric });
               promiseRef.current = new Promise<boolean>((resolve, reject) => {
                 resolveRef.current = resolve;
                 rejectRef.current = reject;
@@ -64,14 +66,15 @@ const useUnlockModal = (
         }
       };
     },
-    [hasMasterPassword, isLocked, navigation],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isLocked],
   );
 
-  const onPasswordComplete = useCallback(() => {
+  const onPasswordComplete = useCallback((password: string) => {
     resolveRef.current?.(true);
     promiseRef.current = undefined;
     setTimeout(() => {
-      onCompleteRef.current();
+      onCompleteRef.current(password);
       onCompleteRef.current = noop;
     }, 300);
   }, []);
@@ -85,7 +88,6 @@ const useUnlockModal = (
 
   return {
     onPress,
-    onPasswordComplete,
     onHideModal,
   };
 };

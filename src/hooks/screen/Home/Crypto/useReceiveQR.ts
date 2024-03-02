@@ -19,6 +19,7 @@ import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { getAccountTypeByTokenGroup } from 'hooks/screen/Home/Crypto/utils';
 import { findAccountByAddress } from 'utils/account';
 import { ModalRef } from 'types/modalRef';
+import useChainAssets from 'hooks/chain/useChainAssets';
 
 type ReceiveSelectedResult = {
   selectedAccount?: string;
@@ -28,7 +29,7 @@ type ReceiveSelectedResult = {
 export default function useReceiveQR(tokenGroupSlug?: string) {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
-  const assetRegistryMap = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
+  const assetRegistryMap = useChainAssets().chainAssetRegistry;
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const isAllAccount = useSelector((state: RootState) => state.accountState.isAllAccount);
   const [tokenSelectorItems, setTokenSelectorItems] = useState<TokenItemType[]>([]);

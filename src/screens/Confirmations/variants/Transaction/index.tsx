@@ -1,25 +1,35 @@
 import React, { useCallback, useMemo } from 'react';
 import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { BaseTransactionConfirmation } from 'screens/Confirmations/variants/Transaction/variants/Base';
-import BondTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Bond';
-import CancelUnstakeTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/CancelUnstake';
-import ClaimRewardTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/ClaimReward';
-import TransferBlock from 'screens/Confirmations/variants/Transaction/variants/TransferBlock';
-import WithdrawTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Withdraw';
+
 import { ConfirmationQueueItem } from 'stores/base/RequestState';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SigningRequest } from '@subwallet/extension-base/background/types';
 import useParseSubstrateRequestPayload from 'hooks/transaction/confirmation/useParseSubstrateRequestPayload';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
-import { JoinPoolTransactionConfirmation, SendNftTransactionConfirmation } from './variants';
-import { SubstrateSignArea } from 'screens/Confirmations/parts/Sign/Substrate';
-import { EvmSignArea } from 'screens/Confirmations/parts/Sign/Evm';
-import LeavePoolTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/LeavePool';
-import UnbondTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Unbond';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from 'routes/index';
+import { EvmSignArea, SubstrateSignArea } from '../../parts';
+import {
+  JoinPoolTransactionConfirmation,
+  SendNftTransactionConfirmation,
+  FastWithdrawTransactionConfirmation,
+  DefaultWithdrawTransactionConfirmation,
+  BaseTransactionConfirmation,
+  BondTransactionConfirmation,
+  CancelUnstakeTransactionConfirmation,
+  ClaimRewardTransactionConfirmation,
+  JoinYieldPoolConfirmation,
+  LeavePoolTransactionConfirmation,
+  UnbondTransactionConfirmation,
+  TransferBlock,
+  WithdrawTransactionConfirmation,
+  TokenApproveConfirmation,
+} from './variants';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTransactionConfirmation => {
@@ -44,6 +54,29 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
       return ClaimRewardTransactionConfirmation;
     case ExtrinsicType.STAKING_CANCEL_UNSTAKE:
       return CancelUnstakeTransactionConfirmation;
+    case ExtrinsicType.MINT_QDOT:
+    case ExtrinsicType.MINT_VDOT:
+    case ExtrinsicType.MINT_LDOT:
+    case ExtrinsicType.MINT_SDOT:
+    case ExtrinsicType.MINT_STDOT:
+    case ExtrinsicType.MINT_VMANTA:
+      return JoinYieldPoolConfirmation;
+    case ExtrinsicType.REDEEM_QDOT:
+    case ExtrinsicType.REDEEM_VDOT:
+    case ExtrinsicType.REDEEM_LDOT:
+    case ExtrinsicType.REDEEM_SDOT:
+    case ExtrinsicType.REDEEM_STDOT:
+    case ExtrinsicType.REDEEM_VMANTA:
+      return FastWithdrawTransactionConfirmation;
+    case ExtrinsicType.UNSTAKE_QDOT:
+    case ExtrinsicType.UNSTAKE_VDOT:
+    case ExtrinsicType.UNSTAKE_LDOT:
+    case ExtrinsicType.UNSTAKE_SDOT:
+    case ExtrinsicType.UNSTAKE_STDOT:
+    case ExtrinsicType.UNSTAKE_VMANTA:
+      return DefaultWithdrawTransactionConfirmation;
+    case ExtrinsicType.TOKEN_APPROVE:
+      return TokenApproveConfirmation;
     default:
       return BaseTransactionConfirmation;
   }
@@ -52,6 +85,7 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
 export const TransactionConfirmation = (props: Props) => {
   const {
     confirmation: { item, type },
+    navigation,
   } = props;
   const { id } = item;
 
@@ -74,13 +108,19 @@ export const TransactionConfirmation = (props: Props) => {
     <>
       {renderContent(_transaction)}
       {type === 'signingRequest' && (
-        <SubstrateSignArea account={(item as SigningRequest).account} id={item.id} payload={substratePayload} />
+        <SubstrateSignArea
+          account={(item as SigningRequest).account}
+          id={item.id}
+          payload={substratePayload}
+          navigation={navigation}
+        />
       )}
       {type === 'evmSendTransactionRequest' && (
         <EvmSignArea
           id={item.id}
           payload={item as ConfirmationDefinitions['evmSendTransactionRequest'][0]}
           type="evmSendTransactionRequest"
+          navigation={navigation}
         />
       )}
     </>

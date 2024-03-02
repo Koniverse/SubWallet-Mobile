@@ -1,5 +1,5 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
-import { Alert, AppState, Linking, NativeSyntheticEvent, Platform, View } from 'react-native';
+import { AppState, DeviceEventEmitter, NativeSyntheticEvent, Platform, View } from 'react-native';
 import EventEmitter from 'eventemitter3';
 import React, { useReducer } from 'react';
 import WebView from 'react-native-webview';
@@ -9,16 +9,17 @@ import StaticServer from 'react-native-static-server';
 import { listenMessage, restartAllHandlers } from 'messaging/index';
 import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
-import i18n from 'utils/i18n/i18n';
-import VersionNumber from 'react-native-version-number';
+import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import { mmkvStore } from 'utils/storage';
+import { mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
+import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
 
 const WEB_SERVER_PORT = 9135;
-const LONG_TIMEOUT = 300000; //5*60*1000
+const LONG_TIMEOUT = 360000; //6*60*1000
 const ACCEPTABLE_RESPONSE_TIME = 30000;
+export const NEED_UPDATE_CHROME = 'need_update_chrome';
 
-const getJsInjectContent = (showLog?: boolean) => {
+const getJsInjectContent = () => {
   let injectedJS = `
   // Update config data
   setTimeout(() => {
@@ -31,18 +32,6 @@ const getJsInjectContent = (showLog?: boolean) => {
     window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': info }))
   }, 300);
 `;
-  // Show webview log in development environment
-  if (showLog) {
-    injectedJS += `
-  const consoleLog = (type, args) => window.ReactNativeWebView.postMessage(JSON.stringify({id: '-2', 'response': [type, ...args]}));
-  console = {
-      log: (...args) => consoleLog('log', [...args]),
-      debug: (...args) => consoleLog('debug', [...args]),
-      info: (...args) => consoleLog('info', [...args]),
-      warn: (...args) => consoleLog('warn', [...args]),
-      error: (...args) => consoleLog('error', [...args]),
-  };`;
-  }
 
   return injectedJS;
 };
@@ -71,10 +60,11 @@ class WebRunnerHandler {
   lastActiveTime?: number;
   pingTimeout?: NodeJS.Timeout;
   outOfResponseTimeTimeout?: NodeJS.Timeout;
-  pingInterval?: NodeJS.Timer;
+  pingInterval?: NodeJS.Timeout;
   status: 'inactive' | 'activating' | 'active' = 'inactive';
   dispatch?: React.Dispatch<WebRunnerControlAction>;
   shouldReloadHandler: boolean = false;
+  isBackupOnInit = false;
 
   update(globalState: WebRunnerGlobalState, dispatch: React.Dispatch<WebRunnerControlAction>) {
     this.state = globalState;
@@ -212,12 +202,21 @@ class WebRunnerHandler {
         this.eventEmitter?.emit('update-status', webViewStatus);
 
         console.debug(`### Web Runner Status: ${webViewStatus}`);
-        if (webViewStatus === 'crypto_ready') {
+
+        if (webViewStatus === 'require_restore') {
+          restoreStorageData();
+          notifyUnstable();
+        } else if (webViewStatus === 'crypto_ready') {
           if (this.shouldReloadHandler) {
             restartAllHandlers();
           }
           this.shouldReloadHandler = true;
           this.startPing();
+
+          if (!this.isBackupOnInit) {
+            triggerBackupOnInit();
+            this.isBackupOnInit = true;
+          }
         } else {
           this.stopPing();
         }
@@ -230,34 +229,9 @@ class WebRunnerHandler {
         this.runnerState.version = info.version;
         this.runnerState.userAgent = info.userAgent;
         if (Platform.OS === 'android') {
-          const renderWarningAlert = () => {
-            Alert.alert(i18n.warningTitle.warning, i18n.common.useDeviceHaveGooglePlayStore, [
-              {
-                text: i18n.common.ok,
-                onPress: renderWarningAlert,
-              },
-            ]);
-          };
-
-          const renderUpdateAndroidSystemWebView = () => {
-            Alert.alert(i18n.warningTitle.warning, i18n.common.pleaseUpdateAndroidSystemWebView, [
-              {
-                text: i18n.common.ok,
-                onPress: () => {
-                  renderUpdateAndroidSystemWebView();
-                  Linking.canOpenURL('market://details?id=com.google.android.webview')
-                    .then(() => Linking.openURL('market://details?id=com.google.android.webview'))
-                    .catch(() => renderWarningAlert());
-                },
-              },
-            ]);
-          };
-
-          const chromeVersionStr = info.userAgent.split(' ').find(item => item.startsWith('Chrome'));
-          const chromeVersion = chromeVersionStr?.split('/')[1].split('.')[0];
-          if (chromeVersion && Number(chromeVersion) < 74) {
-            renderUpdateAndroidSystemWebView();
-          }
+          const needUpdateChrome = parseInt(info.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)?.[2] || '0', 10);
+          console.log(needUpdateChrome);
+          setTimeout(() => DeviceEventEmitter.emit(NEED_UPDATE_CHROME, needUpdateChrome <= 90), 500);
         }
 
         return true;
@@ -318,8 +292,7 @@ interface WebRunnerControlAction {
 
 const now = new Date().getTime();
 
-const URI_PARAMS =
-  '?platform=' + Platform.OS + `&version=${VersionNumber.appVersion}&build=${VersionNumber.buildVersion}&time=${now}`;
+const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${now}`;
 
 const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
 const osWebRunnerURL =
@@ -360,6 +333,13 @@ interface Props {
   webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
 }
+const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
+if (oldLocalStorageBackUpData) {
+  // BACKUP-001: Migrate backed up local storage from 1.1.12 and remove old key
+  mmkvStore.set('backup-localstorage', oldLocalStorageBackUpData);
+  mmkvStore.set('webRunnerLastMigrationTime', new Date().toString());
+  mmkvStore.delete('backupStorage');
+}
 
 export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter }: Props) => {
   const [runnerGlobalState, dispatchRunnerGlobalState] = useReducer(webRunnerReducer, {
@@ -373,7 +353,38 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
   webRunnerHandler.active();
 
   const onMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
+    try {
+      // BACKUP-002: Check is account & keyring exist to back up
+      const webData = JSON.parse(eventData.nativeEvent.data);
+      if (webData?.backupStorage && Object.keys(webData?.backupStorage || {})?.length > 0) {
+        const isAccount = Object.keys(webData.backupStorage).find((item: string) => item.startsWith('account:'));
+        if (isAccount && webData.backupStorage['keyring:subwallet']) {
+          mmkvStore.set('backup-localstorage', JSON.stringify(webData.backupStorage));
+        }
+        return;
+      }
+    } catch (e) {
+      console.log('parse json failed', e);
+    }
     webRunnerHandler.onRunnerMessage(eventData);
+  };
+
+  const onLoadStart = () => {
+    // BACKUP-002: Back up local storage for first open app purpose
+    if (webRunnerRef.current) {
+      webRunnerRef.current.injectJavaScript(
+        'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
+      );
+    }
+  };
+
+  const onLoadProgress = () => {
+    // BACKUP-002: Back up local storage for first open app purpose
+    if (webRunnerRef.current) {
+      webRunnerRef.current.injectJavaScript(
+        'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
+      );
+    }
   };
 
   return (
@@ -385,6 +396,9 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
           onMessage={onMessage}
           originWhitelist={['*']}
           injectedJavaScript={runnerGlobalState.injectScript}
+          webviewDebuggingEnabled
+          onLoadStart={onLoadStart}
+          onLoadProgress={onLoadProgress}
           onError={e => console.debug('### WebRunner error', e)}
           onHttpError={e => console.debug('### WebRunner HttpError', e)}
           javaScriptEnabled={true}

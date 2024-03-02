@@ -6,9 +6,6 @@ import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State
 import { ThemeNames, UiSettings } from '@subwallet/extension-base/background/KoniTypes';
 import { AppSettings, ReduxStatus } from 'stores/types';
 
-// import settings from '@polkadot/ui-settings';
-// import { SettingsStruct } from '@polkadot/ui-settings/types';
-
 const initialState = {
   // UI settings
   isShowBalance: false,
@@ -18,15 +15,17 @@ const initialState = {
   language: 'en',
   browserConfirmationType: 'extension',
 
-  // Polkadot settings
-  // ...settings.get(),
-
   // AuthUrls
   authUrls: {},
 
   // Media settings
   mediaAllowed: false,
   isDeepLinkConnect: false,
+  isShowBuyToken: false,
+  browserDApps: {
+    dApps: undefined,
+    dAppCategories: undefined,
+  },
   reduxStatus: ReduxStatus.INIT,
 } as AppSettings;
 
@@ -39,7 +38,7 @@ const settingsSlice = createSlice({
 
       return {
         ...state,
-        // todo: will save language, theme, isShowZeroBalance in background
+        language: payload.language,
         browserConfirmationType: payload.browserConfirmationType,
         isShowBalance: payload.isShowBalance,
         accountAllLogo: payload.accountAllLogo,
@@ -113,9 +112,29 @@ const settingsSlice = createSlice({
         isDeepLinkConnect: action.payload,
       };
     },
+    updateIsShowByToken(state, action: PayloadAction<AppSettings['isShowBuyToken']>) {
+      return {
+        ...state,
+        isShowBuyToken: action.payload,
+      };
+    },
+    updateBrowserDApps(state, action: PayloadAction<AppSettings['browserDApps']>) {
+      return {
+        ...state,
+        browserDApps: { ...action.payload },
+      };
+    },
   },
 });
 
-export const { updateAppSettings, updateAuthUrls, updateUiSettings, updateToggleBalance, updateIsDeepLinkConnect } =
-  settingsSlice.actions;
+export const {
+  updateAppSettings,
+  updateAuthUrls,
+  updateUiSettings,
+  updateToggleBalance,
+  updateIsDeepLinkConnect,
+  updateIsShowByToken,
+  updateBrowserDApps,
+  updateLanguage,
+} = settingsSlice.actions;
 export default settingsSlice.reducer;

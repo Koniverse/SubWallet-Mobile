@@ -8,7 +8,7 @@ import {
   AddressBookInfo,
   AllLogoMap,
   AssetSetting,
-  BalanceJson,
+  CampaignBanner,
   ChainStakingMetadata,
   ConfirmationsQueue,
   CrowdloanJson,
@@ -40,6 +40,17 @@ import { store } from '..';
 import { buildHierarchy } from 'utils/buildHierarchy';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { SessionTypes } from '@walletconnect/types';
+import { MissionInfo } from 'types/missionPool';
+import { BuyServiceInfo, BuyTokenInfo } from 'types/buy';
+import {
+  BalanceJson,
+  EarningRewardHistoryItem,
+  EarningRewardJson,
+  YieldPoolInfo,
+  YieldPositionInfo,
+} from '@subwallet/extension-base/types';
+import { getStaticContentByDevMode } from 'utils/storage';
+import { STATIC_DATA_DOMAIN } from 'constants/index';
 // Setup redux stores
 
 function voidFn() {
@@ -367,6 +378,8 @@ export const updateStaking = (data: StakingJson) => {
   store.dispatch({ type: 'staking/updateStaking', payload: data.details });
 };
 
+/* Staking */
+
 export const subscribeStaking = lazySubscribeMessage(
   'pri(staking.getSubscription)',
   null,
@@ -407,6 +420,93 @@ export const subscribeStakingNominatorMetadata = lazySubscribeMessage(
   updateStakingNominatorMetadata,
 );
 
+/* Staking */
+
+/* Earning */
+
+export const updateYieldPoolInfo = (data: YieldPoolInfo[]) => {
+  addLazy(
+    'updateYieldPoolInfo',
+    () => {
+      store.dispatch({ type: 'earning/updateYieldPoolInfo', payload: data });
+    },
+    900,
+  );
+};
+
+export const subscribeYieldPoolInfo = lazySubscribeMessage(
+  'pri(yield.subscribePoolInfo)',
+  null,
+  updateYieldPoolInfo,
+  updateYieldPoolInfo,
+);
+
+export const updateYieldPositionInfo = (data: YieldPositionInfo[]) => {
+  addLazy(
+    'updateYieldPositionInfo',
+    () => {
+      store.dispatch({ type: 'earning/updateYieldPositionInfo', payload: data });
+    },
+    900,
+  );
+};
+
+export const subscribeYieldPositionInfo = lazySubscribeMessage(
+  'pri(yield.subscribeYieldPosition)',
+  null,
+  updateYieldPositionInfo,
+  updateYieldPositionInfo,
+);
+
+export const updateYieldReward = (data: EarningRewardJson) => {
+  addLazy(
+    'updateYieldReward',
+    () => {
+      store.dispatch({ type: 'earning/updateYieldReward', payload: Object.values(data.data) });
+    },
+    900,
+  );
+};
+
+export const subscribeYieldReward = lazySubscribeMessage(
+  'pri(yield.subscribeYieldReward)',
+  null,
+  updateYieldReward,
+  updateYieldReward,
+);
+
+export const updateRewardHistory = (data: Record<string, EarningRewardHistoryItem>) => {
+  if (Object.keys(data).length > 0) {
+    addLazy(
+      'updateRewardHistory',
+      () => {
+        store.dispatch({ type: 'earning/updateRewardHistory', payload: Object.values(data) });
+      },
+      900,
+    );
+  }
+};
+
+export const subscribeRewardHistory = lazySubscribeMessage(
+  'pri(yield.subscribeRewardHistory)',
+  null,
+  updateRewardHistory,
+  updateRewardHistory,
+);
+
+export const updateMinAmountPercent = (data: Record<string, number>) => {
+  store.dispatch({ type: 'earning/updateMinAmountPercent', payload: data });
+};
+
+export const subscribeYieldMinAmountPercent = lazySubscribeMessage(
+  'pri(yield.minAmountPercent)',
+  null,
+  updateMinAmountPercent,
+  updateMinAmountPercent,
+);
+
+/* Earning */
+
 export const updateTxHistory = (data: TransactionHistoryItem[]) => {
   store.dispatch({ type: 'transactionHistory/update', payload: data });
 };
@@ -418,7 +518,8 @@ export const subscribeTxHistory = lazySubscribeMessage(
   updateTxHistory,
 );
 
-// Wallet connect
+/* Wallet connect */
+
 export const updateConnectWCRequests = (data: WalletConnectSessionRequest[]) => {
   // Convert data to object with key as id
   const requests = convertConfirmationToMap(data);
@@ -448,6 +549,96 @@ export const subscribeWalletConnectSessions = lazySubscribeMessage(
   updateWalletConnectSessions,
   updateWalletConnectSessions,
 );
+
+/* Wallet connect */
+
+/* Campaign */
+
+export const updateBanner = (data: CampaignBanner[]) => {
+  const filtered = data.filter(item => !item.isDone);
+
+  store.dispatch({ type: 'campaign/updateBanner', payload: filtered });
+};
+
+export const subscribeProcessingCampaign = lazySubscribeMessage(
+  'pri(campaign.banner.subscribe)',
+  null,
+  updateBanner,
+  updateBanner,
+);
+
+/* Campaign */
+
+export const updateMissionPoolStore = (missions: MissionInfo[]) => {
+  store.dispatch({
+    type: 'missionPool/update',
+    payload: {
+      missions,
+    },
+  });
+};
+
+export const getMissionPoolData = (() => {
+  const dataByDevModeStatus = getStaticContentByDevMode();
+  const handler: {
+    resolve?: (value: unknown[]) => void;
+    reject?: (reason?: any) => void;
+  } = {};
+
+  const promise = new Promise<any[]>((resolve, reject) => {
+    handler.resolve = resolve;
+    handler.reject = reject;
+  });
+
+  const rs = {
+    promise,
+    start: () => {
+      (async () => {
+        const res = await fetch(`${STATIC_DATA_DOMAIN}/airdrop-campaigns/${dataByDevModeStatus}.json`);
+
+        return (await res.json()) as [];
+      })()
+        .then(data => {
+          handler.resolve?.(data);
+        })
+        .catch(handler.reject);
+    },
+  };
+
+  rs.promise
+    .then(data => {
+      updateMissionPoolStore(data as MissionInfo[]);
+    })
+    .catch(console.error);
+
+  return rs;
+})();
+
+/* Buy service */
+
+export const updateBuyTokens = (data: Record<string, BuyTokenInfo>) => {
+  store.dispatch({ type: 'buyService/updateBuyTokens', payload: data });
+};
+
+export const subscribeBuyTokens = lazySubscribeMessage(
+  'pri(buyService.tokens.subscribe)',
+  null,
+  updateBuyTokens,
+  updateBuyTokens,
+);
+
+export const updateBuyServices = (data: Record<string, BuyServiceInfo>) => {
+  store.dispatch({ type: 'buyService/updateBuyServices', payload: data });
+};
+
+export const subscribeBuyServices = lazySubscribeMessage(
+  'pri(buyService.services.subscribe)',
+  null,
+  updateBuyServices,
+  updateBuyServices,
+);
+
+/* Buy service */
 
 // export const updateChainValidators = (data: ChainValidatorParams) => {
 //   store.dispatch({ type: 'bonding/updateChainValidators', payload: data });

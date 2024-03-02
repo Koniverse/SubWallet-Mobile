@@ -25,7 +25,7 @@ export const TokenToggleItem = ({ item, onPress, isEnabled, onValueChange, isDis
       <View style={_style.container}>
         <View style={_style.leftContentWrapperStyle}>
           <SWLogo
-            token={item.symbol.toLowerCase()}
+            token={item.slug.toLowerCase()}
             subNetwork={item.originChain}
             defaultLogoKey={'default'}
             size={36}

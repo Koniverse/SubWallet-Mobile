@@ -1,6 +1,6 @@
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
-import { ArrowSquareUpRight, IconProps, Star, StarHalf } from 'phosphor-react-native';
+import { ArrowSquareUpRight, Desktop, IconProps, Star, StarHalf } from 'phosphor-react-native';
 import { SiteInfo } from 'stores/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -10,10 +10,17 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SelectItem, SwModal } from 'components/design-system-ui';
 import { searchDomain } from 'utils/browser';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import WebView from 'react-native-webview';
+import { ToggleItem } from 'components/ToggleItem';
 
 interface Props {
   visibleModal: boolean;
   setVisibleModal: (arg: boolean) => void;
+  webviewRef: React.RefObject<WebView<{}>>;
+  initWebViewSource: string | null;
+  desktopMode: boolean;
+  addToDesktopMode: () => void;
+  removeFromDesktopMode: () => void;
 }
 
 interface OptionType {
@@ -28,10 +35,22 @@ export interface BrowserOptionModalRef {
   onUpdateSiteInfo: (siteInfo: SiteInfo) => void;
 }
 
-const Component = ({ visibleModal, setVisibleModal }: Props, ref: ForwardedRef<BrowserOptionModalRef>) => {
+const Component = (
+  {
+    visibleModal,
+    setVisibleModal,
+    webviewRef,
+    initWebViewSource,
+    desktopMode,
+    addToDesktopMode,
+    removeFromDesktopMode,
+  }: Props,
+  ref: ForwardedRef<BrowserOptionModalRef>,
+) => {
   const theme = useSubWalletTheme().swThemes;
   const bookmarks = useSelector((state: RootState) => state.browser.bookmarks);
   const modalRef = useRef<SWModalRefProps>(null);
+  const [isDesktopModeOn, setIsDesktopModeOn] = useState(false);
 
   const onClose = () => modalRef?.current?.close();
 
@@ -46,6 +65,12 @@ const Component = ({ visibleModal, setVisibleModal }: Props, ref: ForwardedRef<B
       setSiteInfo(_siteInfo);
     },
   }));
+
+  useEffect(() => {
+    if (desktopMode) {
+      setIsDesktopModeOn(true);
+    }
+  }, [desktopMode]);
 
   const OPTIONS: OptionType[] = [
     {
@@ -77,6 +102,24 @@ const Component = ({ visibleModal, setVisibleModal }: Props, ref: ForwardedRef<B
     },
   ];
 
+  const onValueChange = (isOn: boolean) => {
+    if (!initWebViewSource) {
+      return;
+    }
+    if (isOn) {
+      addToDesktopMode();
+      setTimeout(() => {
+        webviewRef.current?.reload();
+      }, 100);
+    } else {
+      removeFromDesktopMode();
+      webviewRef.current?.reload();
+    }
+
+    onClose();
+    setIsDesktopModeOn(prevState => !prevState);
+  };
+
   return (
     <SwModal
       isUseModalV2={true}
@@ -97,6 +140,13 @@ const Component = ({ visibleModal, setVisibleModal }: Props, ref: ForwardedRef<B
             backgroundColor={opt.iconBackgroundColor}
           />
         ))}
+        <ToggleItem
+          isEnabled={isDesktopModeOn}
+          label={i18n.common.desktopMode}
+          onValueChange={onValueChange}
+          backgroundIcon={Desktop}
+          backgroundIconColor={theme['geekblue-7']}
+        />
       </View>
     </SwModal>
   );

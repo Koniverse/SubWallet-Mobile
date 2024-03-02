@@ -30,7 +30,7 @@ export const WCNetworkSelected = ({ networks }: Props) => {
           supported: false,
           chainInfo: {
             slug: '',
-            name: `${unSupportNetworks.length} unknown network`,
+            name: i18n.formatString(i18n.message.unknownNetworks, unSupportNetworks.length),
           },
           slug: '',
         }
@@ -54,10 +54,11 @@ export const WCNetworkSelected = ({ networks }: Props) => {
       selectedValueMap={connectedNetworksMap}
       isShowInput={true}
       isUseForceHidden={false}
+      onBackButtonPress={() => modalRef?.current?.onCloseModal()}
       renderSelected={() => (
         <WCNetworkInput
           networks={connectedNetworks}
-          content={i18n.message.connectedNetworkConnected(networkNumber)}
+          content={i18n.formatString(i18n.message.connectedNetworkConnected, networkNumber) as string}
           onPress={() => {}}
         />
       )}
@@ -69,7 +70,7 @@ export const WCNetworkSelected = ({ networks }: Props) => {
             color: theme.colorWhite,
             paddingBottom: theme.paddingXS,
           }}>
-          {i18n.message.connectedNetworkConnected(networkNumber)}
+          {i18n.formatString(i18n.message.connectedNetworkConnected, networkNumber)}
         </Typography.Text>
       }
       renderCustomItem={renderItem}

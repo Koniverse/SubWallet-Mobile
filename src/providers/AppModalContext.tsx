@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import ConfirmModal from 'components/common/Modal/ConfirmModal';
 
 interface AppModalContextProviderProps {
@@ -10,6 +10,7 @@ export type ConfirmModalInfo = {
   title?: string;
   message?: string;
   messageIcon?: string;
+  completeBtnTitle?: string;
   onCancelModal?: () => void | undefined;
   onCompleteModal?: () => void | undefined;
 };
@@ -24,7 +25,7 @@ export const AppModalContext = React.createContext({} as AppModal);
 export const AppModalContextProvider = ({ children }: AppModalContextProviderProps) => {
   const [confirmModal, setConfirmModal] = useState<ConfirmModalInfo>({});
 
-  function hideConfirmModal() {
+  const hideConfirmModal = useCallback(() => {
     setConfirmModal(prevState => ({ ...prevState, visible: false }));
     setTimeout(
       () =>
@@ -32,13 +33,14 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           ...prevState,
           title: '',
           message: '',
+          completeBtnTitle: '',
           messageIcon: undefined,
           onCancelModal: undefined,
           onCompleteModal: undefined,
         })),
       300,
     );
-  }
+  }, []);
 
   return (
     <AppModalContext.Provider value={{ setConfirmModal, hideConfirmModal }}>
@@ -50,6 +52,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         messageIcon={confirmModal.messageIcon}
         onCancelModal={confirmModal.onCancelModal}
         onCompleteModal={confirmModal.onCompleteModal}
+        completeBtnTitle={confirmModal.completeBtnTitle}
       />
     </AppModalContext.Provider>
   );

@@ -36,8 +36,13 @@ export const WCNetworkSupported = ({ networks }: Props) => {
       selectedValueMap={supportedNetworksMap}
       isShowInput={true}
       disabled={!networkNumber}
+      onBackButtonPress={() => modalRef?.current?.onCloseModal()}
       renderSelected={() => (
-        <WCNetworkInput networks={networks} content={i18n.message.networkSupported(networkNumber)} onPress={() => {}} />
+        <WCNetworkInput
+          networks={networks}
+          content={i18n.formatString(i18n.message.networkSupported, networkNumber) as string}
+          onPress={() => {}}
+        />
       )}
       beforeListItem={
         <Typography.Text
@@ -46,7 +51,7 @@ export const WCNetworkSupported = ({ networks }: Props) => {
             color: theme.colorWhite,
             paddingBottom: theme.paddingXS,
           }}>
-          {i18n.message.networkSupported(networkNumber)}
+          {i18n.formatString(i18n.message.networkSupported, networkNumber)}
         </Typography.Text>
       }
       renderCustomItem={renderItem}

@@ -10,6 +10,7 @@ import {
   StatusItem,
   TotalItem,
   TransferItem,
+  TextItem,
 } from './parts';
 import { InfoItemGeneralProps } from 'components/MetaInfo/types';
 import { StyleProp, View } from 'react-native';
@@ -18,13 +19,17 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import MetaInfoStyles from './style';
 import { ThemeTypes } from 'styles/themes';
 
-function getSpaceSize(size: 'xs' | 'sm' | 'ms', theme: ThemeTypes) {
+function getSpaceSize(size: 'xs' | 'sm' | 'ms' | 'none', theme: ThemeTypes) {
   if (size === 'xs') {
     return theme.sizeXS;
   }
 
   if (size === 'sm') {
     return theme.sizeSM;
+  }
+
+  if (size === 'none') {
+    return 0;
   }
 
   return theme.size;
@@ -34,7 +39,7 @@ interface Props extends InfoItemGeneralProps {
   children?: React.ReactNode;
   hasBackgroundWrapper?: boolean;
   style?: StyleProp<any>;
-  spaceSize?: 'xs' | 'sm' | 'ms';
+  spaceSize?: 'xs' | 'sm' | 'ms' | 'none';
 }
 
 const _MetaInfo: React.FC<Props> = ({
@@ -79,6 +84,7 @@ type CompoundedComponent = React.ForwardRefExoticComponent<Props> & {
   Chain: typeof ChainItem;
   DisplayType: typeof DisplayTypeItem;
   Number: typeof NumberItem;
+  Text: typeof TextItem;
   Total: typeof TotalItem;
   Default: typeof DefaultItem;
 };
@@ -93,6 +99,7 @@ MetaInfo.Transfer = TransferItem;
 MetaInfo.Chain = ChainItem;
 MetaInfo.DisplayType = DisplayTypeItem;
 MetaInfo.Number = NumberItem;
+MetaInfo.Text = TextItem;
 MetaInfo.Total = TotalItem;
 MetaInfo.Default = DefaultItem;
 

@@ -1,4 +1,3 @@
-import DeriveAccountModal from 'components/common/Modal/DeriveAccountModal';
 import React, { useCallback, useMemo, useRef } from 'react';
 import {
   DeviceTabletCamera,
@@ -23,7 +22,6 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { canDerive } from '@subwallet/extension-base/utils';
 import { AccountActionSelectModal, ActionItemType } from 'components/Modal/AccountActionSelectModal';
 import { ModalRef } from 'types/modalRef';
-import useGoHome from 'hooks/screen/useGoHome';
 
 interface Props {
   createAccountRef: React.MutableRefObject<ModalRef | undefined>;
@@ -41,8 +39,6 @@ export const AccountCreationArea = ({
   const navigation = useNavigation<RootNavigationProps>();
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const selectTypeRef = useRef<ModalRef>();
-  const deriveAccModalRef = useRef<ModalRef>();
-  const goHome = useGoHome();
   const importAccountActions = [
     {
       key: 'secretPhrase',
@@ -166,7 +162,8 @@ export const AccountCreationArea = ({
         }, 3000);
       }
     } else {
-      deriveAccModalRef && deriveAccModalRef.current?.onOpenModal();
+      createAccountRef?.current?.onCloseModal();
+      navigation.navigate('DeriveAccount');
     }
   };
 
@@ -226,9 +223,8 @@ export const AccountCreationArea = ({
         accActionRef={createAccountRef}
         modalTitle={i18n.header.createNewAcc}
         items={createAccountAction}
-        onSelectItem={createAccountFunc}>
-        <DeriveAccountModal deriveAccModalRef={deriveAccModalRef} goHome={goHome} navigation={navigation} />
-      </AccountActionSelectModal>
+        onSelectItem={createAccountFunc}
+      />
 
       <SelectAccountTypeModal selectTypeRef={selectTypeRef} onConfirm={onSelectAccountTypes} />
 

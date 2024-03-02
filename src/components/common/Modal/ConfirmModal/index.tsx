@@ -15,6 +15,7 @@ interface Props {
   visible: boolean;
   onCompleteModal?: VoidFunction;
   onCancelModal?: VoidFunction;
+  completeBtnTitle?: string;
 }
 
 const ConfirmModal: React.FC<Props> = ({
@@ -24,6 +25,7 @@ const ConfirmModal: React.FC<Props> = ({
   title,
   message,
   messageIcon,
+  completeBtnTitle,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -47,7 +49,7 @@ const ConfirmModal: React.FC<Props> = ({
               icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}
               type="primary"
               onPress={onCompleteModal}>
-              {i18n.common.connect}
+              {completeBtnTitle || i18n.common.connect}
             </Button>
           </View>
         </>

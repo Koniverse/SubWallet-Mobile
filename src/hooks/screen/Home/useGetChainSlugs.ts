@@ -59,10 +59,10 @@ export function useGetChainSlugs(address?: string): string[] {
       } else {
         _accountType = 'SUBSTRATE';
       }
-    } else {
-      if (currentAccount?.type === 'ethereum') {
+    } else if (currentAccount?.type) {
+      if (currentAccount.type === 'ethereum') {
         _accountType = 'ETHEREUM';
-      } else if (currentAccount?.type === 'sr25519') {
+      } else if (['ed25519', 'sr25519', 'ecdsa'].includes(currentAccount.type)) {
         _accountType = 'SUBSTRATE';
       }
     }

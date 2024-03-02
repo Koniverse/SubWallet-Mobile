@@ -8,6 +8,7 @@ interface ResultProps {
   onHideModal: () => void;
   onOpenModal: () => void;
   onScan: (result: QrAccount) => void;
+  setIsScanning: (value: boolean) => void;
 }
 
 const useModalScanner = (onSuccess: (result: QrAccount) => void): ResultProps => {
@@ -38,6 +39,7 @@ const useModalScanner = (onSuccess: (result: QrAccount) => void): ResultProps =>
     onHideModal: onHideModal,
     onOpenModal: onOpenModal,
     onScan: onScan,
+    setIsScanning: setIsScanning,
   };
 };
 

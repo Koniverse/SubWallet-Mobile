@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
 import { approveSignPasswordV2, approveSignSignature, cancelSignRequest } from 'messaging/index';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DisplayPayloadModal, SubstrateQr } from 'screens/Confirmations/parts/Qr/DisplayPayload';
 import { RootState } from 'stores/index';
 import { AccountSignMode } from 'types/signer';
@@ -16,13 +16,17 @@ import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-reac
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { RootStackParamList } from 'routes/index';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { DeviceEventEmitter, Platform } from 'react-native';
+import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
+import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 
 interface Props {
   account: AccountJson;
   id: string;
   payload: ExtrinsicPayload | string;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const handleConfirm = async (id: string) => await approveSignPasswordV2({ id });
@@ -34,8 +38,7 @@ const handleSignature = async (id: string, { signature }: SigData) => await appr
 const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMode.PASSWORD];
 
 export const SubstrateSignArea = (props: Props) => {
-  const { account, id, payload } = props;
-  const navigation = useNavigation<RootNavigationProps>();
+  const { account, id, payload, navigation } = props;
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
   const [loading, setLoading] = useState(false);
@@ -44,6 +47,7 @@ export const SubstrateSignArea = (props: Props) => {
 
   const signMode = useMemo(() => getSignMode(account), [account]);
   const isMessage = isSubstrateMessage(payload);
+  const dispatch = useDispatch();
 
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
@@ -68,8 +72,9 @@ export const SubstrateSignArea = (props: Props) => {
     setLoading(true);
     handleCancel(id).finally(() => {
       setLoading(false);
+      dispatch(updateIsDeepLinkConnect(false));
     });
-  }, [id]);
+  }, [dispatch, id]);
 
   const onApprovePassword = useCallback(() => {
     setTimeout(() => {
@@ -78,10 +83,11 @@ export const SubstrateSignArea = (props: Props) => {
           console.log(e);
         })
         .finally(() => {
+          dispatch(updateIsDeepLinkConnect(false));
           setLoading(false);
         });
     }, 1000);
-  }, [id]);
+  }, [dispatch, id]);
 
   const onApproveSignature = useCallback(
     (signature: SigData) => {
@@ -113,6 +119,7 @@ export const SubstrateSignArea = (props: Props) => {
         break;
       default:
         setLoading(true);
+        Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
         onConfirmPassword(onApprovePassword)()?.catch(() => {
           setLoading(false);
         });

@@ -52,6 +52,9 @@ export default function useFetchNftCollection(): NftCollectionType {
         continue;
       }
       const collection: NftCollection = { ...nftCollection };
+      if (!collection.image) {
+        collection.image = nftItems.find(item => item.collectionId === collection.collectionId)?.image;
+      }
       const key = `${collection.chain}-${collection.collectionId}`;
       if (countMap[key] && countMap[key] > 0) {
         collection.itemCount = countMap[key];

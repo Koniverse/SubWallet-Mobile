@@ -2,6 +2,7 @@ import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {
+  noPaddingHorizontal: ViewStyle;
   inputContainer: ViewStyle;
   addressContainer: ViewStyle;
   nameContainer: ViewStyle;
@@ -51,5 +52,6 @@ export default (theme: ThemeTypes) => {
       color: theme.colorLink,
       textDecorationLine: 'underline',
     },
+    noPaddingHorizontal: { paddingHorizontal: 0 },
   });
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
-import { Platform, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
+import { BackHandler, DeviceEventEmitter, Platform, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import Typography from '../typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -13,9 +13,11 @@ export interface SWModalProps {
   footer?: React.ReactNode;
   modalVisible: boolean;
   onChangeModalVisible?: () => void;
+  onBackdropPress?: () => void;
   modalStyle?: StyleProp<ViewStyle>;
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
+  isAllowSwipeDown?: boolean;
   modalTitle?: string;
   titleTextAlign?: 'left' | 'center';
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -27,6 +29,8 @@ export interface SWModalProps {
   modalBaseV2Ref?: React.RefObject<SWModalRefProps>;
   level?: number;
   isUseSafeAreaView?: boolean;
+  disabledOnPressBackDrop?: boolean;
+  renderHeader?: React.ReactNode;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -63,6 +67,8 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       footer,
       modalVisible,
       onChangeModalVisible,
+      onBackdropPress,
+      isAllowSwipeDown,
       modalStyle,
       modalTitle,
       onModalHide,
@@ -77,14 +83,33 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       modalBaseV2Ref,
       level,
       isUseSafeAreaView = true,
+      renderHeader,
+      disabledOnPressBackDrop,
     },
     ref,
   ) => {
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible();
     const theme = useSubWalletTheme().swThemes;
-    const [contentHeight, setContentHeight] = useState<number>(400);
+    const [contentHeight, setContentHeight] = useState<number>(0);
     const [childrenHeight, setChildrenHeight] = useState<number>(contentHeight);
     const insets = useSafeAreaInsets();
+
+    useEffect(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (modalVisible) {
+          if (onBackButtonPress) {
+            onBackButtonPress();
+          } else {
+            DeviceEventEmitter.emit('closeModal');
+          }
+
+          return true;
+        } else {
+          return false;
+        }
+      });
+      return () => backHandler.remove();
+    }, [modalVisible, onBackButtonPress]);
 
     useEffect(() => {
       if (isKeyboardVisible) {
@@ -124,14 +149,17 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
     return (
       <>
         {isUseModalV2 ? (
-          <Portal>
+          <Portal hostName="SimpleModalHost">
             <ModalBaseV2
               isVisible={modalVisible}
               setVisible={setVisible}
               height={childrenHeight}
               ref={modalBaseV2Ref}
+              disabledOnPressBackDrop={disabledOnPressBackDrop}
               isUseForceHidden={Platform.OS === 'android'}
               onChangeModalVisible={onChangeModalVisible}
+              isAllowSwipeDown={isAllowSwipeDown}
+              onBackButtonPress={onBackButtonPress}
               level={level}>
               <View
                 style={{ paddingHorizontal: 16, paddingTop: 22 }}
@@ -156,7 +184,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
             backdropColor={'#1A1A1A'}
             backdropOpacity={0.8}
             onSwipeComplete={onChangeModalVisible}
-            onBackdropPress={onChangeModalVisible}
+            onBackdropPress={onBackdropPress || onChangeModalVisible}
             animationIn={'slideInUp'}
             animationOut={'slideOutDown'}
             avoidKeyboard={true}
@@ -178,7 +206,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
                   contentContainerStyle,
                 ]}>
                 <View style={subWalletModalSeparator} />
-                {renderTitle()}
+                {renderHeader ? renderHeader : renderTitle()}
 
                 {children}
               </View>

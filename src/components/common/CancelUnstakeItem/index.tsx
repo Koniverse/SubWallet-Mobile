@@ -1,8 +1,8 @@
+import { UnstakingStatus } from '@subwallet/extension-base/types';
 import React from 'react';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TouchableOpacity, View } from 'react-native';
 import { Avatar, Icon, Typography, Number } from 'components/design-system-ui';
-import { UnstakingStatus } from '@subwallet/extension-base/background/KoniTypes';
 import { CheckCircle, Spinner } from 'phosphor-react-native';
 import { UnstakeItem } from 'components/Modal/common/CancelUnstakeSelector';
 import { toShort } from 'utils/index';

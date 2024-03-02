@@ -17,6 +17,7 @@ import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 import { Button, Icon, QRCode, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   modalVisible: boolean;
@@ -30,13 +31,14 @@ const receiveModalContentWrapper: StyleProp<any> = {
   width: '100%',
 };
 
-const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const toastRef = useRef<ToastContainer>(null);
   let svg: { toDataURL: (arg0: (data: any) => void) => void };
   const chainInfo = useFetchChainInfo(selectedNetwork || '');
   const modalRef = useRef<SWModalRefProps>(null);
+  const insets = useSafeAreaInsets();
+  const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - insets.bottom - insets.top - 50;
 
   const copyToClipboard = (text: string) => {
     return () => {

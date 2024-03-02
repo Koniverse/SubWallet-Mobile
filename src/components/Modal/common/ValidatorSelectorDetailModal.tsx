@@ -5,15 +5,23 @@ import MetaInfo from 'components/MetaInfo';
 import { ValidatorDataType } from 'hooks/screen/Staking/useGetValidatorList';
 import i18n from 'utils/i18n/i18n';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 
 interface Props {
   detailModalVisible: boolean;
   detailItem: ValidatorDataType;
   networkPrefix?: number;
   setVisible: (arg: boolean) => void;
+  chain: string;
 }
 
-export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, networkPrefix, setVisible }: Props) => {
+export const ValidatorSelectorDetailModal = ({
+  detailItem,
+  detailModalVisible,
+  networkPrefix,
+  setVisible,
+  chain,
+}: Props) => {
   const {
     address: validatorAddress,
     commission,
@@ -37,12 +45,12 @@ export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, n
       modalBaseV2Ref={modalBaseV2Ref}
       setVisible={setVisible}
       modalVisible={detailModalVisible}
-      modalTitle={i18n.header.validatorDetails}
+      modalTitle={i18n.formatString(i18n.common.stakingValidatorDetail, getValidatorLabel(chain)) as string}
       onBackButtonPress={onCancel}>
       <View style={{ width: '100%' }}>
         <MetaInfo hasBackgroundWrapper>
           <MetaInfo.Account
-            label={i18n.inputLabel.validator}
+            label={getValidatorLabel(chain)}
             address={validatorAddress}
             name={validatorName}
             networkPrefix={networkPrefix}

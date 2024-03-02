@@ -102,7 +102,10 @@ const SigningResult = () => {
 
   const goHome = useCallback(() => {
     cleanup();
-    navigation.replace('Home');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
   }, [cleanup, navigation]);
 
   return (

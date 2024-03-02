@@ -15,6 +15,8 @@ import { MagnifyingGlass, Wallet } from 'phosphor-react-native';
 import { ToggleItem } from 'components/ToggleItem';
 import { SwFullSizeModal, Typography } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 interface Props {
   modalVisible: boolean;
@@ -26,7 +28,9 @@ let chainKeys: Array<string> | undefined;
 let cachePendingChainMap: Record<string, boolean> = {};
 
 const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
-  return items.filter(network => network.name.toLowerCase().includes(searchString.toLowerCase()));
+  return items.filter(network =>
+    network && network.name ? network.name.toLowerCase().includes(searchString.toLowerCase()) : false,
+  );
 };
 
 const processChainMap = (
@@ -62,6 +66,7 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
   const [currentChainList, setCurrentChainList] = useState(processChainMap(chainInfoMap));
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+  const navigation = useNavigation<RootNavigationProps>();
 
   const onCancel = () => modalBaseV2Ref?.current?.close();
 
@@ -139,6 +144,11 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
         icon={MagnifyingGlass}
         title={i18n.emptyScreen.networkSettingsTitle}
         message={i18n.emptyScreen.networkSettingsMessage}
+        addBtnLabel={i18n.header.importNetwork}
+        onPressAddBtn={() => {
+          onCancel();
+          navigation.navigate('ImportNetwork');
+        }}
       />
     );
   };

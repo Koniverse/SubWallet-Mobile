@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { ConnectListProps, RootNavigationProps } from 'routes/index';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -13,7 +13,7 @@ import { Button } from 'components/design-system-ui';
 import { SVGImages } from 'assets/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ConnectionItem } from 'components/WalletConnect/ConnectionItem';
-import { ListRenderItemInfo } from 'react-native';
+import { DeviceEventEmitter, ListRenderItemInfo } from 'react-native';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
@@ -46,23 +46,40 @@ export const ConnectionList = ({
   const theme = useSubWalletTheme().swThemes;
   const { sessions } = useSelector((state: RootState) => state.walletConnect);
   const items = useMemo(() => Object.values(sessions), [sessions]);
+  const itemsRef = useRef<SessionTypes.Struct[]>(items);
   const navigation = useNavigation<RootNavigationProps>();
-  const [isScanning, setIsScanning] = useState<boolean>(!(items?.length || isDelete));
+  const [isScanning, setIsScanning] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (!items.length) {
-      async function checkPermission() {
-        const result = await requestCameraPermission(() => navigation.goBack());
+    itemsRef.current = items;
+  }, [items]);
 
-        if (result !== RESULTS.GRANTED) {
-          setIsScanning(false);
-        }
+  useEffect(() => {
+    function checkPermission() {
+      if (!itemsRef.current?.length) {
+        requestCameraPermission(() => navigation.goBack()).then(result => {
+          if (result === RESULTS.GRANTED) {
+            setIsScanning(true);
+          } else {
+            setIsScanning(false);
+          }
+        });
       }
-
-      checkPermission();
     }
-  }, [items.length, navigation]);
+
+    checkPermission();
+
+    const deleteWcCallback = (isDeleteWc: boolean) => {
+      if (!isDeleteWc) {
+        checkPermission();
+      }
+    };
+    const deleteWcEvent = DeviceEventEmitter.addListener('isDeleteWc', deleteWcCallback);
+
+    return () => deleteWcEvent.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const renderEmptyList = () => {
     return (
@@ -75,8 +92,8 @@ export const ConnectionList = ({
   };
 
   const onPressItem = useCallback(
-    (topic: string) => navigation.navigate('ConnectDetail', { topic: topic }),
-    [navigation],
+    (topic: string) => navigation.navigate('ConnectDetail', { topic: topic, isLastItem: items.length === 1 }),
+    [items.length, navigation],
   );
 
   const renderItem = ({ item }: ListRenderItemInfo<SessionTypes.Struct>) => (
@@ -135,6 +152,7 @@ export const ConnectionList = ({
 
       <AddressScanner
         qrModalVisible={isScanning}
+        setQrModalVisible={setIsScanning}
         onPressCancel={() => {
           setError(undefined);
           setIsScanning(false);

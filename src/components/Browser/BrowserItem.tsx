@@ -1,15 +1,15 @@
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
-import React, { useCallback, useState } from 'react';
-import { Button, Icon, Image, Tag, Typography } from 'components/design-system-ui';
-import { Star } from 'phosphor-react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Icon, Image, Tag, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { StoredSiteInfo } from 'stores/types';
-import { addBookmark, removeBookmark } from 'stores/updater';
 import createStylesheet from './styles/BrowserItem';
-import { predefinedDApps } from '../../predefined/dAppSites';
 import { getHostName, searchDomain } from 'utils/browser';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
+import { BookmarkItem } from './BookmarkItem';
+import { Desktop } from 'phosphor-react-native';
+import { useGetDesktopMode } from 'hooks/screen/Home/Browser/DesktopMode/useGetDesktopMode';
 
 interface Props {
   logo?: string;
@@ -19,44 +19,43 @@ interface Props {
   style?: StyleProp<ViewStyle>;
   subtitle?: string;
   onPress?: () => void;
+  isLoading?: boolean;
 }
 
-function isSiteBookmark(url: string, bookmarks: StoredSiteInfo[]) {
-  return bookmarks.some(i => i.url === url);
-}
-
-export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags }: Props) => {
-  const [image, setImage] = useState(logo || `https://${getHostName(url)}/favicon.ico`);
+export const BrowserItem = ({ logo, title, url, style, onPress, tags, isLoading }: Props) => {
+  const {
+    browserDApps: { dAppCategories },
+  } = useGetDAppList();
+  const assetLogoMap = useSelector((state: RootState) => state.logoMaps.assetLogoMap);
+  const [image, setImage] = useState<string | null>(null);
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
 
-  const assetLogoMap = useSelector((state: RootState) => state.logoMaps.assetLogoMap);
-  const bookmarks = useSelector((state: RootState) => state.browser.bookmarks);
-
-  const _isSiteBookmark = isSiteBookmark(url, bookmarks);
-
-  const onPressStar = () => {
-    if (_isSiteBookmark) {
-      removeBookmark({
-        name: title,
-        url,
-      });
-    } else {
-      addBookmark({ name: title, url });
+  useEffect(() => {
+    if (isLoading) {
+      return;
     }
-  };
+    if (logo) {
+      setImage(logo);
+    } else {
+      setImage(`https://${getHostName(url)}/favicon.ico`);
+    }
+  }, [logo, url, isLoading]);
 
   const renderTag = (tagId: string) => {
-    const tagInfo = predefinedDApps.categories().find(c => c.id === tagId);
+    const tagInfo = dAppCategories?.find(category => category.slug === tagId);
 
     return (
-      <Tag key={tagId} bgType={tagInfo ? 'default' : 'gray'} color={tagInfo?.theme || 'default'}>
+      <Tag key={tagId} bgType={tagInfo ? 'default' : 'gray'} color={tagInfo?.color || 'default'}>
         {tagInfo?.name || tagId}
       </Tag>
     );
   };
 
   const onLoadImageError = useCallback(() => {
+    if (!image) {
+      return;
+    }
     if (image.includes('avicon.ico')) {
       setImage(`https://${getHostName(url)}/favicon.png`);
       return;
@@ -68,38 +67,60 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags }
     <View style={[stylesheet.container, style]}>
       <TouchableOpacity onPress={onPress} style={stylesheet.contentWrapper}>
         <View style={stylesheet.logoWrapper}>
-          <Image src={image} onError={onLoadImageError} style={stylesheet.logo} shape={'squircle'} squircleSize={44} />
+          {image && (
+            <>
+              <Image
+                src={image}
+                onError={onLoadImageError}
+                style={stylesheet.logo}
+                shape={'squircle'}
+                squircleSize={44}
+              />
+              <DesktopMode url={url} />
+            </>
+          )}
         </View>
         <View style={stylesheet.textContentWrapper}>
           <View style={stylesheet.textContentLine1}>
             <Typography.Text ellipsis style={stylesheet.title}>
               {title}
             </Typography.Text>
-            {!!tags && !!tags.length && <View style={stylesheet.tagContainer}>{tags.map(renderTag)}</View>}
           </View>
-          <View>
-            <Typography.Text style={stylesheet.subtitle} ellipsis>
+          <View style={{ paddingTop: 7 }}>
+            {!!tags && !!tags.length && <View style={stylesheet.tagContainer}>{tags.map(renderTag)}</View>}
+            {/* <Typography.Text style={stylesheet.subtitle} ellipsis>
               {subtitle}
-            </Typography.Text>
+            </Typography.Text> */}
           </View>
         </View>
       </TouchableOpacity>
 
-      {!url.startsWith(`https://${searchDomain}`) && (
-        <Button
-          size={'xs'}
-          type={'ghost'}
-          icon={
-            <Icon
-              size={'sm'}
-              weight={_isSiteBookmark ? 'fill' : undefined}
-              iconColor={_isSiteBookmark ? theme.colorTextLight1 : theme.colorTextLight4}
-              phosphorIcon={Star}
-            />
-          }
-          onPress={onPressStar}
-        />
-      )}
+      {!url.startsWith(`https://${searchDomain}`) && <BookmarkItem url={url} title={title} />}
+    </View>
+  );
+};
+
+interface DesktopModeProps {
+  url: string;
+}
+const DesktopMode: React.FC<DesktopModeProps> = ({ url }) => {
+  const { desktopMode } = useGetDesktopMode(url);
+  const theme = useSubWalletTheme().swThemes;
+  if (!desktopMode) {
+    return null;
+  }
+
+  const subIconStyle: StyleProp<ViewStyle> = {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: theme.colorPrimary,
+    borderRadius: 10,
+    padding: 2,
+  };
+  return (
+    <View style={subIconStyle}>
+      <Icon phosphorIcon={Desktop} size="xxs" />
     </View>
   );
 };

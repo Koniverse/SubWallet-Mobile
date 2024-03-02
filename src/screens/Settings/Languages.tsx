@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { Suspense, useCallback, useState } from 'react';
 import { StyleProp, View } from 'react-native';
 import getLanguageOptions, { LanguageOption } from 'utils/getLanguageOptions';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateLanguage } from 'stores/MobileSettings';
+import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Button, SelectItem } from 'components/design-system-ui';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass } from 'phosphor-react-native';
+import { saveLanguage } from 'messaging/index';
+import { LanguageType } from '@subwallet/extension-base/background/KoniTypes';
+import { ImageLogosMap } from 'assets/logo';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -23,12 +25,11 @@ const searchFunc = (items: LanguageOption[], searchString: string) => {
 };
 
 export const Languages = () => {
-  const language = useSelector((state: RootState) => state.mobileSettings.language);
+  const language = useSelector((state: RootState) => state.settings.language);
   const navigation = useNavigation<RootNavigationProps>();
   const supportedLanguages = i18n.getAvailableLanguages();
   const languageOptions = getLanguageOptions().filter(lang => supportedLanguages.includes(lang.value));
-  const dispatch = useDispatch();
-  const [selectedLang, setSelectedLang] = useState<string>(language);
+  const [selectedLang, setSelectedLang] = useState<LanguageType>(language);
 
   const onPressDone = () => {
     if (language === selectedLang) {
@@ -39,15 +40,64 @@ export const Languages = () => {
         index: 1,
         routes: [{ name: 'Home' }, { name: 'GeneralSettings' }],
       });
-      dispatch(updateLanguage(selectedLang));
+      saveLanguage(selectedLang);
     }
   };
+
+  const getLanguageLogo = useCallback((val: string, size = 24) => {
+    if (val === 'en') {
+      return (
+        <Suspense>
+          <ImageLogosMap.en width={size} height={size} />
+        </Suspense>
+      );
+    }
+
+    if (val === 'vi') {
+      return (
+        <Suspense>
+          <ImageLogosMap.vi width={size} height={size} />
+        </Suspense>
+      );
+    }
+
+    if (val === 'zh') {
+      return (
+        <Suspense>
+          <ImageLogosMap.chi width={size} height={size} />
+        </Suspense>
+      );
+    }
+
+    if (val === 'ja') {
+      return (
+        <Suspense>
+          <ImageLogosMap.ja width={size} height={size} />
+        </Suspense>
+      );
+    }
+
+    if (val === 'ru') {
+      return (
+        <Suspense>
+          <ImageLogosMap.ru width={size} height={size} />
+        </Suspense>
+      );
+    }
+
+    return (
+      <Suspense>
+        <ImageLogosMap.en width={size} height={size} />
+      </Suspense>
+    );
+  }, []);
 
   // @ts-ignore
   const renderItem = ({ item }) => {
     return (
       <View style={{ paddingHorizontal: 16, marginBottom: 8 }}>
         <SelectItem
+          leftItemIcon={getLanguageLogo(item.value)}
           label={item.text}
           isSelected={item.value === selectedLang}
           onPress={() => setSelectedLang(item.value)}
@@ -56,7 +106,6 @@ export const Languages = () => {
     );
   };
 
-  // Todo: use FlatListScreen instead of SelectScreen
   return (
     <FlatListScreen
       title={i18n.header.language}

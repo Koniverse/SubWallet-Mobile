@@ -30,10 +30,15 @@ module.exports = {
         root: ['.'],
       },
     ],
-    'react-native-reanimated/plugin',
-    ['module:react-native-dotenv'],
+    ['@babel/plugin-transform-class-static-block'],
     ['@babel/plugin-transform-flow-strip-types'],
     ['@babel/plugin-transform-private-methods', { loose: true }],
+    'react-native-reanimated/plugin',
   ],
   presets: ['module:metro-react-native-babel-preset'],
+  env: {
+    production: {
+      plugins: ['transform-remove-console'],
+    },
+  },
 };

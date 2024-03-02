@@ -8,16 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* SubWalletMobileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* SubWalletMobileTests.m */; };
-		0C80B921A6F3F58F76C31292 /* libPods-SubWalletMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-SubWalletMobile.a */; };
+		0C80B921A6F3F58F76C32692 /* libPods-SubWalletMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC326A6C60F78 /* libPods-SubWalletMobile.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		355FCA172A72335100B34579 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 355FCA152A72335100B34579 /* RCTMinimizer.m */; };
+		355FCA172A72365100B34579 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 355FCA152A72365100B34579 /* RCTMinimizer.m */; };
 		3577831F29CEA0080036830D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 3577831E29CEA0080036830D /* fonts */; };
 		7699B88040F8A987B510C191 /* libPods-SubWalletMobile-SubWalletMobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */; };
 		81AB9BB82411601600AC10FF /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* SplashScreen.storyboard */; };
-		F1554EF9286D4F5B00301F08 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8286D4F5B00301F08 /* Images-2.xcassets */; };
-		F1554EFC286D590F00301F08 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8286D4F5B00301F08 /* Images-2.xcassets */; };
-		F16BB9D9288A5C7B00F9E935 /* Web.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F16BB9D8288A5C7B00F9E935 /* Web.bundle */; };
+		F1554EF9292D4F5B00302F08 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8292D4F5B00302F08 /* Images-2.xcassets */; };
+		F1554EFC292D590F00302F08 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8292D4F5B00302F08 /* Images-2.xcassets */; };
+		F16BB9D9292A5C7B00F9E935 /* Web.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F16BB9D8292A5C7B00F9E935 /* Web.bundle */; };
 		F1F1508728C6028D004B2C94 /* PageJs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F1F1508628C6028D004B2C94 /* PageJs.bundle */; };
 /* End PBXBuildFile section */
 
@@ -41,19 +41,19 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SubWalletMobile/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SubWalletMobile/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile-SubWalletMobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		355FCA152A72335100B34579 /* RCTMinimizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTMinimizer.m; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.m; sourceTree = "<group>"; };
-		355FCA162A72335100B34579 /* RCTMinimizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTMinimizer.h; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.h; sourceTree = "<group>"; };
+		355FCA152A72365100B34579 /* RCTMinimizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTMinimizer.m; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.m; sourceTree = "<group>"; };
+		355FCA162A72365100B34579 /* RCTMinimizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTMinimizer.h; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.h; sourceTree = "<group>"; };
 		3577831E29CEA0080036830D /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-SubWalletMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.debug.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-SubWalletMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.release.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-SubWalletMobile-SubWalletMobileTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile-SubWalletMobileTests.debug.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile-SubWalletMobileTests/Pods-SubWalletMobile-SubWalletMobileTests.debug.xcconfig"; sourceTree = "<group>"; };
-		5DCACB8F33CDC322A6C60F78 /* libPods-SubWalletMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5DCACB8F33CDC326A6C60F78 /* libPods-SubWalletMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = SubWalletMobile/SplashScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-SubWalletMobile-SubWalletMobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile-SubWalletMobileTests.release.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile-SubWalletMobileTests/Pods-SubWalletMobile-SubWalletMobileTests.release.xcconfig"; sourceTree = "<group>"; };
-		990CC4AB2A33104500AB6D8B /* SubWalletMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SubWalletMobile.entitlements; path = SubWalletMobile/SubWalletMobile.entitlements; sourceTree = "<group>"; };
-		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F1554EF8286D4F5B00301F08 /* Images-2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Images-2.xcassets"; path = "SubWalletMobile/Images-2.xcassets"; sourceTree = "<group>"; };
-		F16BB9D8288A5C7B00F9E935 /* Web.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Web.bundle; path = ../html/Web.bundle; sourceTree = "<group>"; };
+		990CC4AB2A33264500AB6D8B /* SubWalletMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SubWalletMobile.entitlements; path = SubWalletMobile/SubWalletMobile.entitlements; sourceTree = "<group>"; };
+		ED302162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F1554EF8292D4F5B00302F08 /* Images-2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Images-2.xcassets"; path = "SubWalletMobile/Images-2.xcassets"; sourceTree = "<group>"; };
+		F16BB9D8292A5C7B00F9E935 /* Web.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Web.bundle; path = ../html/Web.bundle; sourceTree = "<group>"; };
 		F1F1508628C6028D004B2C94 /* PageJs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = PageJs.bundle; path = ../html/PageJs.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -70,7 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C80B921A6F3F58F76C31292 /* libPods-SubWalletMobile.a in Frameworks */,
+				0C80B921A6F3F58F76C32692 /* libPods-SubWalletMobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,14 +97,14 @@
 		13B07FAE1A68108700A75B9A /* SubWalletMobile */ = {
 			isa = PBXGroup;
 			children = (
-				355FCA132A7232F000B34579 /* NativeModules */,
-				990CC4AB2A33104500AB6D8B /* SubWalletMobile.entitlements */,
+				355FCA132A7236F000B34579 /* NativeModules */,
+				990CC4AB2A33264500AB6D8B /* SubWalletMobile.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* SplashScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				F1554EF8286D4F5B00301F08 /* Images-2.xcassets */,
+				F1554EF8292D4F5B00302F08 /* Images-2.xcassets */,
 			);
 			name = SubWalletMobile;
 			sourceTree = "<group>";
@@ -112,31 +112,31 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				5DCACB8F33CDC322A6C60F78 /* libPods-SubWalletMobile.a */,
+				ED302162215061F000B7C4FE /* JavaScriptCore.framework */,
+				5DCACB8F33CDC326A6C60F78 /* libPods-SubWalletMobile.a */,
 				19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		355FCA132A7232F000B34579 /* NativeModules */ = {
+		355FCA132A7236F000B34579 /* NativeModules */ = {
 			isa = PBXGroup;
 			children = (
-				355FCA142A72333200B34579 /* RCTMinimizer */,
+				355FCA142A72363260B34579 /* RCTMinimizer */,
 			);
 			name = NativeModules;
 			sourceTree = "<group>";
 		};
-		355FCA142A72333200B34579 /* RCTMinimizer */ = {
+		355FCA142A72363260B34579 /* RCTMinimizer */ = {
 			isa = PBXGroup;
 			children = (
-				355FCA162A72335100B34579 /* RCTMinimizer.h */,
-				355FCA152A72335100B34579 /* RCTMinimizer.m */,
+				355FCA162A72365100B34579 /* RCTMinimizer.h */,
+				355FCA152A72365100B34579 /* RCTMinimizer.m */,
 			);
 			name = RCTMinimizer;
 			sourceTree = "<group>";
 		};
-		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
+		832661AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -148,9 +148,9 @@
 			children = (
 				3577831E29CEA0080036830D /* fonts */,
 				F1F1508628C6028D004B2C94 /* PageJs.bundle */,
-				F16BB9D8288A5C7B00F9E935 /* Web.bundle */,
+				F16BB9D8292A5C7B00F9E935 /* Web.bundle */,
 				13B07FAE1A68108700A75B9A /* SubWalletMobile */,
-				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				832661AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* SubWalletMobileTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -217,14 +217,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "SubWalletMobile" */;
 			buildPhases = (
-				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
+				C38B50BA6292516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
-				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				00EEFC60759A1932768276C0 /* [CP] Embed Pods Frameworks */,
+				E236C05ADACE081382539302 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -276,7 +276,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1554EFC286D590F00301F08 /* Images-2.xcassets in Resources */,
+				F1554EFC292D590F00302F08 /* Images-2.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,8 +287,8 @@
 				81AB9BB82411601600AC10FF /* SplashScreen.storyboard in Resources */,
 				3577831F29CEA0080036830D /* fonts in Resources */,
 				F1F1508728C6028D004B2C94 /* PageJs.bundle in Resources */,
-				F16BB9D9288A5C7B00F9E935 /* Web.bundle in Resources */,
-				F1554EF9286D4F5B00301F08 /* Images-2.xcassets in Resources */,
+				F16BB9D9292A5C7B00F9E935 /* Web.bundle in Resources */,
+				F1554EF9292D4F5B00302F08 /* Images-2.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,7 +311,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
+		00EEFC60759A1932768276C0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -350,7 +350,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
+		C38B50BA6292516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -389,7 +389,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SubWalletMobile-SubWalletMobileTests/Pods-SubWalletMobile-SubWalletMobileTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
+		E236C05ADACE081382539302 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -458,7 +458,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
-				355FCA172A72335100B34579 /* RCTMinimizer.m in Sources */,
+				355FCA172A72365100B34579 /* RCTMinimizer.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -535,7 +535,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
-				CURRENT_PROJECT_VERSION = 209;
+				CURRENT_PROJECT_VERSION = 326;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
@@ -546,7 +546,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.14;
+				MARKETING_VERSION = 1.1.36;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -568,7 +568,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
-				CURRENT_PROJECT_VERSION = 209;
+				CURRENT_PROJECT_VERSION = 326;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SubWallet;
@@ -578,7 +578,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.14;
+				MARKETING_VERSION = 1.1.36;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -633,6 +633,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -653,12 +654,14 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 			};
@@ -700,6 +703,10 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -717,12 +724,14 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

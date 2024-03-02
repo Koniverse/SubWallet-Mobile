@@ -25,8 +25,10 @@ ios/.xcode.env.local
 # Android/IntelliJ
 #
 build/
+dist/
 web-build/
 .idea
+.yarn
 .gradle
 local.properties
 *.iml
@@ -37,6 +39,7 @@ local.properties
 
 # node.js
 #
+.yarn/cache/
 node_modules/
 npm-debug.log
 yarn-error.log
@@ -62,4 +65,9 @@ yarn-error.log
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
+.env.development
+.env.production
 .env
+app-center-private.pem
+# testing
+/coverage

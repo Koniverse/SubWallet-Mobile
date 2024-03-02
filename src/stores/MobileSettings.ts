@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { MobileSettingsSlice } from 'stores/types';
+import { LockTimeout, MobileSettingsSlice } from 'stores/types';
 
 const MOBILE_SETTINGS_STORE_DEFAULT: MobileSettingsSlice = {
   language: 'en',
-  pinCode: '',
   pinCodeEnabled: false,
-  faceIdEnabled: false,
+  faceIdEnabled: false, // deprecated
+  isUseBiometric: false,
   isPreventLock: false,
-  autoLockTime: 15 * 1000,
+  timeAutoLock: LockTimeout._15MINUTE,
 };
 
 const mobileSettingsSlice = createSlice({
@@ -22,17 +22,14 @@ const mobileSettingsSlice = createSlice({
     updateLanguage(state, action: PayloadAction<string>) {
       state.language = action.payload;
     },
-    updatePinCode(state, action: PayloadAction<string>) {
-      state.pinCode = action.payload;
-    },
-    updatePinCodeEnable(state, action: PayloadAction<boolean>) {
-      state.pinCodeEnabled = action.payload;
-    },
     updateFaceIdEnable(state, action: PayloadAction<boolean>) {
       state.faceIdEnabled = action.payload;
     },
+    updateUseBiometric(state, action: PayloadAction<boolean>) {
+      state.isUseBiometric = action.payload;
+    },
     updateAutoLockTime(state, action: PayloadAction<number | undefined>) {
-      state.autoLockTime = action.payload;
+      state.timeAutoLock = action.payload;
     },
     updatePreventLock(state, action: PayloadAction<boolean>) {
       state.isPreventLock = action.payload;
@@ -40,12 +37,6 @@ const mobileSettingsSlice = createSlice({
   },
 });
 
-export const {
-  updateLanguage,
-  updatePinCode,
-  updatePinCodeEnable,
-  updateFaceIdEnable,
-  updateAutoLockTime,
-  updatePreventLock,
-} = mobileSettingsSlice.actions;
+export const { updateLanguage, updateFaceIdEnable, updateUseBiometric, updateAutoLockTime, updatePreventLock } =
+  mobileSettingsSlice.actions;
 export default mobileSettingsSlice.reducer;

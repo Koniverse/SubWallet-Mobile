@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   APIItemState,
   ChainStakingMetadata,
@@ -11,7 +11,12 @@ import {
   UnstakingInfo,
   UnstakingStatus,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { isShowNominationByValidator } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
+import {
+  getStakingAvailableActionsByNominator,
+  getValidatorLabel,
+  isShowNominationByValidator,
+  StakingAction,
+} from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSelector } from 'react-redux';
@@ -29,7 +34,7 @@ import { StakingStatusUi } from 'constants/stakingStatusUi';
 import MetaInfo from 'components/MetaInfo';
 import { toShort } from 'utils/index';
 import { getUnstakingPeriod, getWaitingTime } from 'screens/Transaction/helper/staking';
-import { ScrollView, TouchableHighlight, View } from 'react-native';
+import { Alert, ScrollView, TouchableHighlight, View } from 'react-native';
 import { Avatar, Button, Icon, Number, SwModal, Typography } from 'components/design-system-ui';
 import { ArrowCircleUpRight, DotsThree } from 'phosphor-react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
@@ -44,6 +49,9 @@ import i18n from 'utils/i18n/i18n';
 import { CustomToast } from 'components/design-system-ui/toast';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
+import useGetAccountsByStaking from 'hooks/screen/Staking/useGetAccountsByStaking';
+import { BN_ZERO } from 'utils/chainBalances';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   nominatorMetadata?: NominatorMetadata;
@@ -85,8 +93,6 @@ const renderAccountItemLabel = (theme: ThemeTypes, address: string, name?: strin
   );
 };
 
-const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 220;
-
 export const StakingDetailModal = ({
   modalVisible,
   chainStakingMetadata,
@@ -104,7 +110,7 @@ export const StakingDetailModal = ({
       : i18n.header.poolDetails;
   const theme = useSubWalletTheme().swThemes;
   const [seeMore, setSeeMore] = useState<boolean>(false);
-  const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const toastRef = useRef<ToastContainer>(null);
   const onClickFooterButton = usePreCheckReadOnly(toastRef, currentAccount?.address);
   const chainInfo = useFetchChainInfo(staking.chain);
@@ -112,13 +118,38 @@ export const StakingDetailModal = ({
   const networkPrefix = _getChainSubstrateAddressPrefix(chainInfo);
   const account = useGetAccountByAddress(staking.address);
   const navigation = useNavigation<RootNavigationProps>();
+  const scrollRef = useRef<ScrollView>(null);
   const stakingTypeNameMap: Record<string, string> = {
     nominated: i18n.filterOptions.nominated,
     pooled: i18n.filterOptions.pooled,
   };
   const modalRef = useRef<SWModalRefProps>(null);
+  const stakingAccounts = useGetAccountsByStaking(
+    nominatorMetadata?.chain || '',
+    nominatorMetadata?.type || StakingType.NOMINATED,
+  );
+  const insets = useSafeAreaInsets();
+
+  const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - insets.bottom - insets.top - 130;
 
   const onCloseDetailModal = useCallback(() => modalRef?.current?.close(), []);
+
+  const availableActions = useMemo(() => {
+    if (!nominatorMetadata) {
+      return [];
+    }
+
+    // @ts-ignore
+    return getStakingAvailableActionsByNominator(nominatorMetadata, rewardItem?.unclaimedReward);
+  }, [nominatorMetadata, rewardItem?.unclaimedReward]);
+
+  const isActionWithdrawAvailable = useMemo(() => {
+    return availableActions.includes(StakingAction.WITHDRAW);
+  }, [availableActions]);
+
+  const isActiveStakeZero = useMemo(() => {
+    return BN_ZERO.eq(nominatorMetadata?.activeStake || '0');
+  }, [nominatorMetadata?.activeStake]);
 
   const onClickStakeMoreBtn = useCallback(() => {
     onCloseDetailModal && onCloseDetailModal();
@@ -137,6 +168,28 @@ export const StakingDetailModal = ({
   }, [chainStakingMetadata?.type, navigation, nominatorMetadata?.chain, onCloseDetailModal]);
 
   const onClickUnstakeBtn = useCallback(() => {
+    if (isActiveStakeZero) {
+      // todo: i18n this
+      Alert.alert(
+        'Unstaking not available',
+        "You don't have any staked funds left to unstake. Check withdrawal status (how long left until the unstaking period ends) by scrolling down in the Details screen. Keep in mind that you need to withdraw manually.",
+        [
+          {
+            text: 'Check withdrawal status',
+            onPress: () => {
+              setSeeMore(true);
+
+              setTimeout(() => {
+                scrollRef.current?.scrollToEnd();
+              }, 300);
+            },
+          },
+        ],
+      );
+
+      return;
+    }
+
     onCloseDetailModal && onCloseDetailModal();
     setTimeout(
       () =>
@@ -152,7 +205,26 @@ export const StakingDetailModal = ({
         }),
       300,
     );
-  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, navigation, onCloseDetailModal]);
+  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, isActiveStakeZero, navigation, onCloseDetailModal]);
+
+  const onClickWithdrawaBtn = useCallback(() => {
+    onCloseDetailModal && onCloseDetailModal();
+
+    if (!nominatorMetadata) {
+      return;
+    }
+
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: {
+        screen: 'Withdraw',
+        params: {
+          type: chainStakingMetadata?.type || ALL_KEY,
+          chain: chainStakingMetadata?.chain || ALL_KEY,
+        },
+      },
+    });
+  }, [onCloseDetailModal, nominatorMetadata, navigation, chainStakingMetadata?.type, chainStakingMetadata?.chain]);
 
   const onClickMoreAction = useCallback(() => {
     setMoreActionModalVisible(true);
@@ -184,6 +256,13 @@ export const StakingDetailModal = ({
     onCloseDetailModal && onCloseDetailModal();
   }, [onCloseDetailModal]);
 
+  const onConfirmUnstakeWarning = useCallback(() => {
+    setSeeMore(true);
+    setTimeout(() => {
+      scrollRef.current?.scrollToEnd();
+    }, 300);
+  }, []);
+
   const renderUnstakingInfo = useCallback(
     (item: NominationInfo, index: number) => {
       const unstakingData = getUnstakingInfo(nominatorMetadata?.unstakings || [], item.validatorAddress);
@@ -192,7 +271,7 @@ export const StakingDetailModal = ({
         <MetaInfo style={{ marginTop: 8 }} hasBackgroundWrapper spaceSize={'sm'}>
           <MetaInfo.Account
             address={item.validatorAddress}
-            label={i18n.inputLabel.validator}
+            label={getValidatorLabel(item.chain)}
             name={item.validatorIdentity || toShort(item.validatorAddress)}
             networkPrefix={networkPrefix}
           />
@@ -279,16 +358,31 @@ export const StakingDetailModal = ({
         <Button
           style={{ marginRight: 6 }}
           type={'secondary'}
-          onPress={onClickMoreAction}
+          onPress={onClickFooterButton(onClickMoreAction)}
           icon={<Icon phosphorIcon={DotsThree} size={'lg'} iconColor={theme.colorWhite} />}
         />
+        {isActionWithdrawAvailable ? (
+          <Button
+            style={{ flex: 1, marginHorizontal: 6 }}
+            type={'secondary'}
+            onPress={onClickFooterButton(onClickWithdrawaBtn)}>
+            {/* todo: 118n this */}
+            Withdraw
+          </Button>
+        ) : (
+          <Button
+            style={{ flex: 1, marginHorizontal: 6 }}
+            type={'secondary'}
+            onPress={onClickFooterButton(onClickUnstakeBtn)}>
+            {i18n.buttonTitles.unstake}
+          </Button>
+        )}
+
         <Button
-          style={{ flex: 1, marginHorizontal: 6 }}
-          type={'secondary'}
-          onPress={onClickFooterButton(onClickUnstakeBtn)}>
-          {i18n.buttonTitles.unstake}
-        </Button>
-        <Button style={{ flex: 1, marginLeft: 6 }} type={'primary'} onPress={onClickFooterButton(onClickStakeMoreBtn)}>
+          disabled={!chainStakingMetadata}
+          style={{ flex: 1, marginLeft: 6 }}
+          type={'primary'}
+          onPress={onClickFooterButton(onClickStakeMoreBtn)}>
           {i18n.buttonTitles.stakeMore}
         </Button>
       </View>
@@ -303,12 +397,14 @@ export const StakingDetailModal = ({
         modalBaseV2Ref={modalRef}
         modalVisible={modalVisible}
         modalTitle={modalTitle}
+        isAllowSwipeDown={false}
         onChangeModalVisible={() => setSeeMore(false)}
         onBackButtonPress={_onCloseDetailModal}
         footer={footer()}
         modalStyle={{ maxHeight: '90%' }}>
         <View style={{ width: '100%' }}>
           <ScrollView
+            ref={scrollRef}
             style={{ maxHeight: deviceHeight * 0.6 }}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}>
@@ -319,7 +415,7 @@ export const StakingDetailModal = ({
                     <MetaInfo.AccountGroup
                       label={i18n.inputLabel.account}
                       content={nominatorMetadata?.address === 'ALL' ? i18n.common.allAccounts : ''}
-                      addresses={accounts.map(acc => acc.address)}
+                      addresses={stakingAccounts.map(acc => acc.address)}
                     />
                   ) : (
                     <MetaInfo.Account
@@ -557,16 +653,19 @@ export const StakingDetailModal = ({
         </View>
       </SwModal>
 
-      <StakingActionModal
-        stakingDetailModalRef={modalRef}
-        setModalVisible={setMoreActionModalVisible}
-        openModal={() => setMoreActionModalVisible(true)}
-        visible={moreActionModalVisible}
-        chainStakingMetadata={chainStakingMetadata}
-        nominatorMetadata={nominatorMetadata}
-        staking={staking}
-        reward={rewardItem}
-      />
+      {chainStakingMetadata && (
+        <StakingActionModal
+          stakingDetailModalRef={modalRef}
+          setModalVisible={setMoreActionModalVisible}
+          openModal={() => setMoreActionModalVisible(true)}
+          visible={moreActionModalVisible}
+          chainStakingMetadata={chainStakingMetadata}
+          nominatorMetadata={nominatorMetadata}
+          staking={staking}
+          reward={rewardItem}
+          onConfirmUnstakeWarning={onConfirmUnstakeWarning}
+        />
+      )}
     </>
   );
 };

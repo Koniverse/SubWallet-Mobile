@@ -4,7 +4,7 @@ import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem'
 import { FlatListScreen } from 'components/FlatListScreen';
 import { ListChecks, Plus } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { RootNavigationProps, NetworksSettingProps } from 'routes/index';
 import useChainInfoWithState, { ChainInfoWithState } from 'hooks/chain/useChainInfoWithState';
 import { updateChainActiveState } from 'messaging/index';
 import {
@@ -14,8 +14,6 @@ import {
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
-
-interface Props {}
 
 let chainKeys: Array<string> | undefined;
 
@@ -101,7 +99,8 @@ const processChainMap = (
   return chainKeys.map(key => chainInfoMap[key]);
 };
 
-export const NetworksSetting = ({}: Props) => {
+export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => {
+  const defaultSearchString = params?.chainName;
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useChainInfoWithState();
   const [isToggleItem, setToggleItem] = useState(false);
@@ -117,14 +116,15 @@ export const NetworksSetting = ({}: Props) => {
 
   useEffect(() => {
     setPendingChainMap(prevPendingChainMap => {
-      Object.entries(prevPendingChainMap).forEach(([key, val]) => {
+      const _prevPendingChainMap = { ...prevPendingChainMap };
+      Object.entries(_prevPendingChainMap).forEach(([key, val]) => {
         if (chainInfoMap[key].active === val) {
           // @ts-ignore
-          delete prevPendingChainMap[key];
+          delete _prevPendingChainMap[key];
         }
       });
 
-      return { ...prevPendingChainMap };
+      return _prevPendingChainMap;
     });
   }, [chainInfoMap]);
 
@@ -187,6 +187,10 @@ export const NetworksSetting = ({}: Props) => {
         icon={ListChecks}
         title={i18n.emptyScreen.networkSettingsTitle}
         message={i18n.emptyScreen.networkSettingsMessage}
+        addBtnLabel={i18n.header.importNetwork}
+        onPressAddBtn={() => {
+          navigation.navigate('ImportNetwork');
+        }}
       />
     );
   };
@@ -200,6 +204,7 @@ export const NetworksSetting = ({}: Props) => {
           setToggleItem(false);
         },
       }}
+      defaultSearchString={defaultSearchString}
       onPressBack={() => navigation.goBack()}
       items={currentChainList}
       title={i18n.header.manageNetworks}

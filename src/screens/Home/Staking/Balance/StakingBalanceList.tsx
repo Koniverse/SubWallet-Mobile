@@ -5,7 +5,6 @@ import { Plus, Trophy } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
-import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
 import { reloadCron } from 'messaging/index';
@@ -18,25 +17,16 @@ import { RootNavigationProps } from 'routes/index';
 import { EmptyList } from 'components/EmptyList';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import BigNumber from 'bignumber.js';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { StakingBalancesProps } from 'routes/staking/stakingScreen';
+import { InstructionModal } from '../InstructionModal';
+import { mmkvStore } from 'utils/storage';
 
 enum FilterValue {
   NOMINATED = 'nominated',
   POOLED = 'pooled',
 }
-
-const renderEmpty = (val?: string) => {
-  if (val) {
-    return (
-      <EmptyList
-        title={i18n.emptyScreen.stakingEmptyTitle}
-        icon={Trophy}
-        message={i18n.emptyScreen.stakingEmptyMessage}
-      />
-    );
-  } else {
-    return <EmptyStaking />;
-  }
-};
 
 const filterFunction = (items: StakingDataType[], filters: string[]) => {
   if (!filters.length) {
@@ -67,13 +57,23 @@ const searchFunction = (items: StakingDataType[], searchString: string) => {
   });
 };
 
-const StakingBalanceList = () => {
+export const StakingBalanceList = ({
+  route: {
+    params: { chain: _stakingChain, type: _stakingType },
+  },
+}: StakingBalancesProps) => {
+  const shownVaraInstruction = mmkvStore.getBoolean('shown-vara-instruction') ?? false;
   const theme = useSubWalletTheme().swThemes;
   const { data, priceMap } = useGetStakingList();
   const navigation = useNavigation<RootNavigationProps>();
+  const { isLocked } = useSelector((state: RootState) => state.accountState);
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const [isRefresh, refresh] = useRefresh();
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
+  const [instructionModalVisible, setInstructionModalVisible] = useState(!shownVaraInstruction);
+  const modalRef = React.useRef(null);
+
   const handleOnPress = useCallback((stakingData: StakingDataType): (() => void) => {
     return () => {
       Keyboard.dismiss();
@@ -85,8 +85,7 @@ const StakingBalanceList = () => {
     { label: i18n.filterOptions.nominated, value: FilterValue.NOMINATED },
     { label: i18n.filterOptions.pooled, value: FilterValue.POOLED },
   ];
-  const stakingList = useMemo(() => {
-    console.log(data);
+  const stakingList: StakingDataType[] = useMemo(() => {
     if (!data.length) {
       return [];
     }
@@ -100,11 +99,44 @@ const StakingBalanceList = () => {
       const secondValue =
         // @ts-ignore
         new BigNumber(secondItem.staking.balance).dividedBy(BN_TEN.pow(secondItem.decimals)).toFixed() * secondPrice;
-      console.log(firstValue, secondValue);
       return secondValue - firstValue;
     });
     return result;
   }, [data, priceMap]);
+  const varaStaked = useMemo(() => {
+    return stakingList.some(item => item.staking.chain === 'vara_network');
+  }, [stakingList]);
+
+  useEffect(() => {
+    if (detailModalVisible || isLocked) {
+      return;
+    }
+    if (_stakingChain && _stakingType) {
+      const selectedValue = stakingList.find(
+        item => item.chainStakingMetadata?.chain === _stakingChain && item.chainStakingMetadata?.type === _stakingType,
+      );
+
+      if (selectedValue) {
+        setSelectedItem(selectedValue);
+        setDetailModalVisible(true);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const renderEmpty = () => {
+    return (
+      <EmptyList
+        title={i18n.emptyScreen.stakingEmptyTitle}
+        icon={Trophy}
+        message={i18n.emptyScreen.stakingEmptyMessage}
+        onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
+        isRefresh={isRefresh}
+        addBtnLabel={i18n.buttonTitles.startStaking}
+        onPressAddBtn={handlePressStartStaking}
+      />
+    );
+  };
 
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -121,10 +153,11 @@ const StakingBalanceList = () => {
           stakingData={stakingData}
           priceMap={priceMap}
           onPress={handleOnPress}
+          isShowBalance={isShowBalance}
         />
       );
     },
-    [handleOnPress, priceMap],
+    [handleOnPress, isShowBalance, priceMap],
   );
 
   const handlePressStartStaking = useCallback(
@@ -185,6 +218,27 @@ const StakingBalanceList = () => {
           rewardItem={selectedItem.reward}
           staking={selectedItem.staking}
           setDetailModalVisible={setDetailModalVisible}
+        />
+      )}
+      {varaStaked && (
+        <InstructionModal
+          modalRef={modalRef}
+          setDetailModalVisible={() => {
+            setInstructionModalVisible(false);
+            mmkvStore.set('shown-vara-instruction', true);
+          }}
+          modalVisible={
+            instructionModalVisible &&
+            !!selectedItem &&
+            selectedItem.staking.chain === 'vara_network' &&
+            selectedItem.staking.type === 'pooled'
+          }
+          modalTitle="Stake in Vara nomination pools easily with SubWallet"
+          onPressStake={() => {
+            setInstructionModalVisible(false);
+            mmkvStore.set('shown-vara-instruction', true);
+            // handlePressStartStaking();
+          }}
         />
       )}
     </>

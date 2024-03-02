@@ -1,3 +1,4 @@
+import { TransactionError } from '@subwallet/extension-base/background/errors/TransactionError';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { metadataExpand } from '@subwallet/extension-chains';
 import { Chain } from '@subwallet/extension-chains/types';
@@ -9,7 +10,6 @@ import { WebviewError, WebviewNotReadyError, WebviewResponseError } from '../err
 import EventEmitter from 'eventemitter3';
 import type {
   AccountJson,
-  AllowedPath,
   AuthorizeRequest,
   MessageTypes,
   MessageTypesWithNoSubscriptions,
@@ -33,8 +33,8 @@ import {
   AccountsWithCurrentAddress,
   ActiveCronAndSubscriptionMap,
   AmountData,
+  AmountDataWithId,
   AssetSettingUpdateReq,
-  BalanceJson,
   BrowserConfirmationType,
   ChainStakingMetadata,
   ConfirmationDefinitions,
@@ -45,10 +45,11 @@ import {
   CrowdloanJson,
   CurrentAccountInfo,
   KeyringState,
+  LanguageType,
+  MobileData,
   NftCollection,
   NftJson,
   NftTransactionRequest,
-  NominationPoolInfo,
   NominatorMetadata,
   OptionInputAddress,
   PriceJson,
@@ -62,6 +63,7 @@ import {
   RequestAuthorizationBlock,
   RequestAuthorizationPerSite,
   RequestBondingSubmit,
+  RequestCampaignBannerComplete,
   RequestChangeMasterPassword,
   RequestConnectWalletConnect,
   RequestCronAndSubscriptionAction,
@@ -85,11 +87,8 @@ import {
   RequestResetWallet,
   RequestSettingsType,
   RequestSigningApprovePasswordV2,
-  RequestStakeCancelWithdrawal,
-  RequestStakeClaimReward,
   RequestStakePoolingBonding,
   RequestStakePoolingUnbonding,
-  RequestStakeWithdrawal,
   RequestSubscribeBalance,
   RequestSubscribeBalancesVisibility,
   RequestSubscribeCrowdloan,
@@ -105,6 +104,9 @@ import {
   RequestTuringStakeCompound,
   RequestUnbondingSubmit,
   RequestUnlockKeyring,
+  RequestYieldFastWithdrawal,
+  ResolveAddressToDomainRequest,
+  ResolveDomainRequest,
   ResponseAccountCreateSuriV2,
   ResponseAccountCreateWithSecretKey,
   ResponseAccountExportPrivateKey,
@@ -125,6 +127,7 @@ import {
   ResponseResetWallet,
   ResponseSeedCreateV2,
   ResponseSeedValidateV2,
+  ResponseSubscribeHistory,
   ResponseUnlockKeyring,
   StakingJson,
   StakingRewardJson,
@@ -137,7 +140,22 @@ import {
   ValidateNetworkResponse,
   ValidatorInfo,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { Message } from '@subwallet/extension-base/types';
+import {
+  BalanceJson,
+  Message,
+  NominationPoolInfo,
+  OptimalYieldPathParams,
+  RequestEarlyValidateYield,
+  RequestGetYieldPoolTargets,
+  RequestStakeCancelWithdrawal,
+  RequestStakeClaimReward,
+  RequestUnlockDotCheckCanMint,
+  RequestYieldLeave,
+  RequestYieldStepSubmit,
+  RequestYieldWithdrawal,
+  ValidateYieldProcessParams,
+  YieldPoolInfo,
+} from '@subwallet/extension-base/types';
 import type { KeyringPair$Json } from '@subwallet/keyring/types';
 import type { KeyringAddress, KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import type { HexString } from '@polkadot/util/types';
@@ -156,6 +174,8 @@ import {
 import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import { AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { _getKnownHashes } from 'utils/defaultChains';
+import { needBackup, triggerBackup } from 'utils/storage';
+import { WindowOpenParams } from '@subwallet/extension-base/background/types';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -303,13 +323,17 @@ export const postMessage = ({ id, message, request, origin }, supportRestart = f
   const _post = () => {
     const injection = 'window.postMessage(' + JSON.stringify({ id, message, request, origin }) + ')';
     webviewRef.current?.injectJavaScript(injection);
+
+    if (needBackup(message)) {
+      triggerBackup(`*** Backup storage after ${message}`);
+    }
   };
 
   if (!webviewRef || !webviewEvents) {
     throw new WebviewError('Webview is not init');
   }
 
-  if (status === 'crypto_ready') {
+  if (status === 'crypto_ready' || (message.startsWith('mobile') && status === 'require_restore')) {
     _post();
   } else {
     const eventHandle = (stt: string) => {
@@ -522,6 +546,12 @@ export async function stopSubscriptionServices(request: SubscriptionServiceType[
 export async function restartSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
   return sendMessage('mobile(subscription.restart)', request);
 }
+export async function mobileBackup(): Promise<MobileData> {
+  return sendMessage('mobile(storage.backup)');
+}
+export async function mobileRestore(request: Partial<MobileData>): Promise<null> {
+  return sendMessage('mobile(storage.restore)', request);
+}
 
 // Logic messages
 
@@ -548,15 +578,16 @@ export async function saveAccountAllLogo(
   return sendMessage('pri(settings.saveAccountAllLogo)', accountAllLogo, callback);
 }
 
-export async function saveBrowserConfirmationType(
-  type: BrowserConfirmationType,
-  callback: (data: RequestSettingsType) => void,
-): Promise<boolean> {
-  return sendMessage('pri(settings.saveBrowserConfirmationType)', type, callback);
+export async function saveBrowserConfirmationType(type: BrowserConfirmationType): Promise<boolean> {
+  return sendMessage('pri(settings.saveBrowserConfirmationType)', type);
 }
 
-export async function saveTheme(theme: ThemeNames, callback: (data: UiSettings) => void): Promise<boolean> {
-  return sendMessage('pri(settings.saveTheme)', theme, callback);
+export async function saveTheme(theme: ThemeNames): Promise<boolean> {
+  return sendMessage('pri(settings.saveTheme)', theme);
+}
+
+export async function saveLanguage(lang: LanguageType): Promise<boolean> {
+  return sendMessage('pri(settings.saveLanguage)', { language: lang });
 }
 
 export async function subscribeSettings(
@@ -599,8 +630,8 @@ export async function validateAccount(address: string, password: string): Promis
   return sendMessage('pri(accounts.validate)', { address, password });
 }
 
-export async function forgetAccount(address: string): Promise<boolean> {
-  return sendMessage('pri(accounts.forget)', { address });
+export async function forgetAccount(address: string, lockAfter = false): Promise<boolean> {
+  return sendMessage('pri(accounts.forget)', { address, lockAfter });
 }
 
 export async function approveAuthRequest(id: string): Promise<boolean> {
@@ -629,6 +660,10 @@ export async function approveSignPassword(id: string, savePass: boolean, passwor
 
 export async function approveSignPasswordV2(request: RequestSigningApprovePasswordV2): Promise<boolean> {
   return sendMessage('pri(signing.approve.passwordV2)', request);
+}
+
+export async function saveAutoLockTime(value: number): Promise<boolean> {
+  return sendMessage('pri(settings.saveAutoLockTime)', { autoLockTime: value });
 }
 
 export async function approveSignSignature(id: string, signature: HexString): Promise<boolean> {
@@ -819,8 +854,8 @@ export async function subscribeAccountsInputAddress(cb: (data: OptionInputAddres
   return sendMessage('pri(accounts.subscribeAccountsInputAddress)', {}, cb);
 }
 
-export async function saveRecentAccountId(accountId: string): Promise<KeyringAddress> {
-  return sendMessage('pri(accounts.saveRecent)', { accountId });
+export async function saveRecentAccountId(accountId: string, chain?: string): Promise<KeyringAddress> {
+  return sendMessage('pri(accounts.saveRecent)', { accountId, chain });
 }
 
 export async function editContactAddress(address: string, name: string): Promise<boolean> {
@@ -835,7 +870,9 @@ export async function subscribeAuthorizeRequests(cb: (accounts: AuthorizeRequest
   return sendMessage('pri(authorize.requests)', null, cb);
 }
 
-export async function subscribeAuthorizeRequestsV2(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
+export async function subscribeAuthorizeRequestsV2(
+  cb: (accounts: AuthorizeRequest[]) => void,
+): Promise<AuthorizeRequest[]> {
   return sendMessage('pri(authorize.requestsV2)', null, cb);
 }
 
@@ -891,11 +928,11 @@ export async function forgetAllSite(callback: (data: AuthUrls) => void): Promise
   return sendMessage('pri(authorize.forgetAllSite)', null, callback);
 }
 
-export async function subscribeMetadataRequests(cb: (accounts: MetadataRequest[]) => void): Promise<boolean> {
+export async function subscribeMetadataRequests(cb: (accounts: MetadataRequest[]) => void): Promise<MetadataRequest[]> {
   return sendMessage('pri(metadata.requests)', null, cb);
 }
 
-export async function subscribeSigningRequests(cb: (accounts: SigningRequest[]) => void): Promise<boolean> {
+export async function subscribeSigningRequests(cb: (accounts: SigningRequest[]) => void): Promise<SigningRequest[]> {
   return sendMessage('pri(signing.requests)', null, cb);
 }
 
@@ -945,8 +982,8 @@ export async function deriveAccountV2(
   return sendMessage('pri(derivation.createV2)', { genesisHash, name, parentAddress, suri, isAllowed });
 }
 
-export async function windowOpen(path: AllowedPath): Promise<boolean> {
-  return sendMessage('pri(window.open)', path);
+export async function windowOpen(params: WindowOpenParams): Promise<boolean> {
+  return sendMessage('pri(window.open)', params);
 }
 
 export async function jsonGetAccountInfo(json: KeyringPair$Json): Promise<ResponseJsonGetAccountInfo> {
@@ -1180,15 +1217,15 @@ export async function getFreeBalance(request: RequestFreeBalance): Promise<Amoun
   return sendMessage('pri(freeBalance.get)', request);
 }
 
-export async function getMaxTransfer(request: RequestMaxTransferable): Promise<AmountData> {
-  return sendMessage('pri(transfer.getMaxTransferable)', request);
-}
-
 export async function subscribeFreeBalance(
   request: RequestFreeBalance,
-  callback: (balance: AmountData) => void,
-): Promise<AmountData> {
+  callback: (balance: AmountDataWithId) => void,
+): Promise<AmountDataWithId> {
   return sendMessage('pri(freeBalance.subscribe)', request, callback);
+}
+
+export async function getMaxTransfer(request: RequestMaxTransferable): Promise<AmountData> {
+  return sendMessage('pri(transfer.getMaxTransferable)', request);
 }
 
 export async function substrateNftSubmitTransaction(request: NftTransactionRequest): Promise<SWTransactionResponse> {
@@ -1240,12 +1277,12 @@ export async function completeConfirmation<CT extends ConfirmationType>(
   return sendMessage('pri(confirmations.complete)', { [type]: payload });
 }
 
-export async function getBondingOptions(networkKey: string, type: StakingType): Promise<ValidatorInfo[]> {
-  return sendMessage('pri(bonding.getBondingOptions)', { chain: networkKey, type });
-}
-
 export async function getNominationPoolOptions(chain: string): Promise<NominationPoolInfo[]> {
   return sendMessage('pri(bonding.getNominationPoolOptions)', chain);
+}
+
+export async function getBondingOptions(networkKey: string, type: StakingType): Promise<ValidatorInfo[]> {
+  return sendMessage('pri(bonding.getBondingOptions)', { chain: networkKey, type });
 }
 
 export async function subscribeChainStakingMetadata(
@@ -1274,20 +1311,6 @@ export async function submitPoolBonding(request: RequestStakePoolingBonding): Pr
 
 export async function submitUnbonding(request: RequestUnbondingSubmit): Promise<SWTransactionResponse> {
   return sendMessage('pri(unbonding.submitTransaction)', request);
-}
-
-export async function submitStakeWithdrawal(params: RequestStakeWithdrawal): Promise<SWTransactionResponse> {
-  return sendMessage('pri(unbonding.submitWithdrawal)', params);
-}
-
-export async function submitStakeClaimReward(request: RequestStakeClaimReward): Promise<SWTransactionResponse> {
-  return sendMessage('pri(staking.submitClaimReward)', request);
-}
-
-export async function submitStakeCancelWithdrawal(
-  request: RequestStakeCancelWithdrawal,
-): Promise<SWTransactionResponse> {
-  return sendMessage('pri(staking.submitCancelWithdrawal)', request);
 }
 
 export async function parseEVMTransactionInput(
@@ -1384,6 +1407,14 @@ export async function disconnectWalletConnectConnection(topic: string): Promise<
   return sendMessage('pri(walletConnect.session.disconnect)', { topic });
 }
 
+export async function resolveDomainToAddress(request: ResolveDomainRequest) {
+  return sendMessage('pri(accounts.resolveDomainToAddress)', request);
+}
+
+export async function resolveAddressToDomain(request: ResolveAddressToDomainRequest) {
+  return sendMessage('pri(accounts.resolveAddressToDomain)', request);
+}
+
 export async function subscribeTransactions(
   callback: (rs: Record<string, SWTransactionResult>) => void,
 ): Promise<Record<string, SWTransactionResult>> {
@@ -1428,3 +1459,79 @@ export async function getMetadata(genesisHash?: string | null, isPartial = false
 
   return null;
 }
+
+export async function completeBannerCampaign(request: RequestCampaignBannerComplete): Promise<boolean> {
+  return sendMessage('pri(campaign.banner.complete)', request);
+}
+
+export async function subscribeTransactionHistory(
+  chain: string,
+  address: string,
+  callback: (items: TransactionHistoryItem[]) => void,
+): Promise<ResponseSubscribeHistory> {
+  return sendMessage('pri(transaction.history.subscribe)', { address, chain }, callback);
+}
+
+/* Earning */
+
+export async function fetchPoolTarget(request: RequestGetYieldPoolTargets) {
+  return sendMessage('pri(yield.getTargets)', request);
+}
+
+export async function earlyValidateJoin(request: RequestEarlyValidateYield) {
+  return sendMessage('pri(yield.join.earlyValidate)', request);
+}
+
+export async function getOptimalYieldPath(data: OptimalYieldPathParams) {
+  return sendMessage('pri(yield.join.getOptimalPath)', data);
+}
+
+export async function submitJoinYieldPool(data: RequestYieldStepSubmit): Promise<SWTransactionResponse> {
+  return sendMessage('pri(yield.join.handleStep)', data);
+}
+
+export async function getYieldNativeStakingValidators(poolInfo: YieldPoolInfo): Promise<ValidatorInfo[]> {
+  return sendMessage('pri(yield.getNativeStakingValidators)', poolInfo);
+}
+
+export async function getYieldNominationPools(poolInfo: YieldPoolInfo): Promise<NominationPoolInfo[]> {
+  return sendMessage('pri(yield.getStakingNominationPools)', poolInfo);
+}
+
+export async function validateYieldProcess(data: ValidateYieldProcessParams): Promise<TransactionError[]> {
+  return sendMessage('pri(yield.join.validateProcess)', data);
+}
+
+export async function yieldSubmitLeavePool(data: RequestYieldLeave) {
+  return sendMessage('pri(yield.leave.submit)', data);
+}
+
+export async function yieldSubmitStakingWithdrawal(data: RequestYieldWithdrawal) {
+  return sendMessage('pri(yield.withdraw.submit)', data);
+}
+
+export async function yieldSubmitStakingCancelWithdrawal(data: RequestStakeCancelWithdrawal) {
+  return sendMessage('pri(yield.cancelWithdrawal.submit)', data);
+}
+
+export async function yieldSubmitStakingClaimReward(data: RequestStakeClaimReward) {
+  return sendMessage('pri(yield.claimReward.submit)', data);
+}
+
+export async function yieldSubmitNominationPoolUnstaking(data: RequestStakePoolingUnbonding) {
+  return sendMessage('pri(yield.nominationPool.submitUnstaking)', data);
+}
+
+export async function yieldSubmitRedeem(data: RequestYieldFastWithdrawal) {
+  return sendMessage('pri(yield.submitRedeem)', data);
+}
+
+/* Earning */
+
+/* Mint campaign */
+
+export async function unlockDotCheckCanMint(request: RequestUnlockDotCheckCanMint): Promise<boolean> {
+  return sendMessage('pri(campaign.unlockDot.canMint)', request);
+}
+
+/* Mint campaign */

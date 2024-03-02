@@ -41,15 +41,11 @@ export default (theme: ThemeTypes) =>
     },
     label: {
       ...FontMedium,
-      fontSize: theme.fontSize,
-      lineHeight: theme.lineHeight * theme.fontSize,
       textAlign: 'left',
     },
     value: {
-      ...FontMedium,
       fontSize: theme.fontSize,
       lineHeight: theme.lineHeight * theme.fontSize,
-      fontWeight: theme.bodyFontWeight,
     },
     valueWrapper: {
       flexDirection: 'row',

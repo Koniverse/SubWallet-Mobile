@@ -1,11 +1,12 @@
 import React from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
-import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
+import { Icon, Logo, Number } from 'components/design-system-ui';
 import { CaretRight } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TokenGroupBalanceItemStyles from './style';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { HideBalanceItem } from 'components/HideBalanceItem';
 
 interface Props extends TokenBalanceItemType, TouchableOpacityProps {
   isShowBalance?: boolean;
@@ -18,6 +19,7 @@ export const TokenGroupBalanceItem = ({
   total,
   priceChangeStatus,
   isShowBalance,
+  slug,
   ...wrapperProps
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -28,7 +30,7 @@ export const TokenGroupBalanceItem = ({
     <TouchableOpacity style={{ width: '100%' }} {...wrapperProps}>
       <View style={_style.chainBalanceMainArea}>
         <View style={_style.chainBalancePart1}>
-          <Logo size={40} token={symbol.toLowerCase()} />
+          <Logo size={40} token={slug.toLowerCase()} />
         </View>
 
         <View style={_style.chainBalanceMetaWrapper}>
@@ -72,28 +74,7 @@ export const TokenGroupBalanceItem = ({
               </>
             )}
 
-            {!isShowBalance && (
-              <>
-                <Typography.Text
-                  style={{
-                    fontSize: theme.fontSizeLG,
-                    ...FontSemiBold,
-                    lineHeight: theme.lineHeightLG * theme.fontSizeLG,
-                    color: theme.colorTextLight1,
-                  }}>
-                  ******
-                </Typography.Text>
-                <Typography.Text
-                  style={{
-                    ...FontMedium,
-                    fontSize: theme.fontSizeSM,
-                    lineHeight: theme.lineHeightSM * theme.fontSizeSM,
-                    color: theme.colorTextLight4,
-                  }}>
-                  ******
-                </Typography.Text>
-              </>
-            )}
+            {!isShowBalance && <HideBalanceItem />}
           </View>
           <View style={_style.iconWrapper}>
             <Icon type="phosphor" phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />

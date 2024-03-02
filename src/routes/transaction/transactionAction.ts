@@ -9,10 +9,11 @@ export type TransactionActionStackParamList = {
     owner: string;
   };
   Stake: { chain?: string; type?: string };
-  Unbond: { chain?: string; type?: string };
-  Withdraw: { chain?: string; type?: string };
-  ClaimReward: { chain?: string; type?: string };
-  CancelUnstake: { chain?: string; type?: string };
+  Earning: { slug: string };
+  Unbond: { slug: string };
+  Withdraw: { slug: string };
+  ClaimReward: { slug: string };
+  CancelUnstake: { slug: string };
 };
 
 export type NavigationProps = NativeStackScreenProps<TransactionActionStackParamList>;
@@ -25,3 +26,4 @@ export type UnbondProps = NativeStackScreenProps<TransactionActionStackParamList
 export type ClaimRewardProps = NativeStackScreenProps<TransactionActionStackParamList, 'ClaimReward'>;
 export type WithdrawProps = NativeStackScreenProps<TransactionActionStackParamList, 'Withdraw'>;
 export type CancelUnstakeProps = NativeStackScreenProps<TransactionActionStackParamList, 'CancelUnstake'>;
+export type EarningProps = NativeStackScreenProps<TransactionActionStackParamList, 'Earning'>;

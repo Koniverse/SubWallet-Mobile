@@ -5,14 +5,11 @@ import {
   StakingItem,
   StakingRewardItem,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { ALL_KEY, deviceHeight, TOAST_DURATION } from 'constants/index';
+import { ALL_KEY } from 'constants/index';
 import { ArrowArcLeft, ArrowCircleDown, IconProps, MinusCircle, PlusCircle, Wallet } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
-import Toast from 'react-native-toast-notifications';
-import ToastContainer from 'react-native-toast-notifications';
-import { ColorMap } from 'styles/color';
-import { FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { Alert, TouchableOpacity } from 'react-native';
+import { FontSemiBold } from 'styles/sharedStyles';
 import {
   getStakingAvailableActionsByChain,
   getStakingAvailableActionsByNominator,
@@ -21,12 +18,9 @@ import {
 import { RootNavigationProps } from 'routes/index';
 import { ActivityIndicator, BackgroundIcon, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
-import { CustomToast } from 'components/design-system-ui/toast';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { BN_ZERO } from 'utils/chainBalances';
 
 interface Props {
   visible: boolean;
@@ -37,6 +31,7 @@ interface Props {
   nominatorMetadata?: NominatorMetadata;
   setModalVisible: (arg: boolean) => void;
   stakingDetailModalRef: React.RefObject<SWModalRefProps>;
+  onConfirmUnstakeWarning?: () => void;
 }
 
 type ActionListType = {
@@ -47,20 +42,46 @@ type ActionListType = {
   onPress: () => void;
 };
 
-const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
-
 const StakingActionModal = (props: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { chainStakingMetadata, nominatorMetadata, visible, reward, setModalVisible, stakingDetailModalRef } = props;
-  const toastRef = useRef<ToastContainer>(null);
+  const {
+    chainStakingMetadata,
+    nominatorMetadata,
+    visible,
+    onConfirmUnstakeWarning,
+    reward,
+    setModalVisible,
+    stakingDetailModalRef,
+  } = props;
   const navigation = useNavigation<RootNavigationProps>();
   const [selected, setSelected] = useState<StakingAction | undefined>();
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
-  const onClickButton = usePreCheckReadOnly(toastRef, currentAccount?.address);
   const modalRef = useRef<SWModalRefProps>(null);
-
   const closeModal = useCallback(() => modalRef?.current?.close(), []);
+
+  const isActiveStakeZero = useMemo(() => {
+    return BN_ZERO.eq(nominatorMetadata?.activeStake || '0');
+  }, [nominatorMetadata?.activeStake]);
+
   const unStakeAction = useCallback(() => {
+    if (isActiveStakeZero) {
+      // todo: i18n this
+      Alert.alert(
+        'Unstaking not available',
+        "You don't have any staked funds left to unstake. Check withdrawal status (how long left until the unstaking period ends) by scrolling down in the Details screen. Keep in mind that you need to withdraw manually.",
+        [
+          {
+            text: 'Check withdraw status',
+            onPress: () => {
+              closeModal();
+              onConfirmUnstakeWarning?.();
+            },
+          },
+        ],
+      );
+
+      return;
+    }
+
     stakingDetailModalRef?.current?.close();
     closeModal();
     navigation.navigate('Drawer', {
@@ -73,7 +94,15 @@ const StakingActionModal = (props: Props) => {
         },
       },
     });
-  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, navigation, stakingDetailModalRef]);
+  }, [
+    chainStakingMetadata?.chain,
+    chainStakingMetadata?.type,
+    closeModal,
+    isActiveStakeZero,
+    navigation,
+    onConfirmUnstakeWarning,
+    stakingDetailModalRef,
+  ]);
 
   const stakeAction = useCallback(() => {
     stakingDetailModalRef?.current?.close();
@@ -168,7 +197,17 @@ const StakingActionModal = (props: Props) => {
       return [];
     }
     // @ts-ignore
-    return getStakingAvailableActionsByNominator(nominatorMetadata, reward?.unclaimedReward);
+    const result = getStakingAvailableActionsByNominator(nominatorMetadata, reward?.unclaimedReward);
+
+    if (
+      BN_ZERO.eq(nominatorMetadata?.activeStake || '0') &&
+      !result.includes(StakingAction.WITHDRAW) &&
+      !result.includes(StakingAction.UNSTAKE)
+    ) {
+      result.push(StakingAction.UNSTAKE);
+    }
+
+    return result;
   }, [nominatorMetadata, reward?.unclaimedReward]);
 
   const actionList: ActionListType[] = useMemo(() => {
@@ -264,7 +303,7 @@ const StakingActionModal = (props: Props) => {
             ]}
             key={item.label}
             activeOpacity={0.5}
-            onPress={onClickButton(item.onPress)}
+            onPress={item.onPress}
             disabled={disabled}>
             <BackgroundIcon
               shape={'circle'}
@@ -287,15 +326,6 @@ const StakingActionModal = (props: Props) => {
           </TouchableOpacity>
         );
       })}
-      <Toast
-        textStyle={{ textAlign: 'center' }}
-        duration={TOAST_DURATION}
-        normalColor={ColorMap.notification}
-        ref={toastRef}
-        placement={'bottom'}
-        offsetBottom={OFFSET_BOTTOM}
-        renderToast={toast => <CustomToast toast={toast} />}
-      />
     </SwModal>
   );
 };

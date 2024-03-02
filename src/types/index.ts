@@ -1,5 +1,6 @@
 import BigN from 'bignumber.js';
 import { BalanceItem, CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
+import { _FundStatus } from '@subwallet/chain-list/types';
 
 export interface WebViewMessageBase<T> {
   id: string;
@@ -59,6 +60,21 @@ export type CrowdloanItemType = {
   symbol: string;
   paraState?: CrowdloanParaState;
   crowdloanUrl?: string | null;
+};
+
+export type _CrowdloanItemType = {
+  fundId: string;
+  chainSlug: string;
+  chainName: string;
+  relayChainSlug: string;
+  relayChainName: string;
+  contribution: {
+    symbol: string;
+    value: BigN;
+    convertedValue: BigN;
+  };
+  fundStatus: _FundStatus;
+  unlockTime: number;
 };
 
 export enum AccountAddressType {

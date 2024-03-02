@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ListRenderItem,
   ListRenderItemInfo,
@@ -12,7 +12,7 @@ import {
 import { ColorMap } from 'styles/color';
 import { Coins } from 'phosphor-react-native';
 import { EmptyList } from 'components/EmptyList';
-import { ActivityIndicator, AnimatedFlatlist } from 'components/design-system-ui';
+import { ActivityIndicator } from 'components/design-system-ui';
 import Animated, {
   Extrapolate,
   interpolate,
@@ -21,7 +21,7 @@ import Animated, {
   useSharedValue,
   withTiming,
   AnimatedStyleProp,
-  AnimateStyle,
+  AnimatedStyle,
 } from 'react-native-reanimated';
 import { TokenBalanceItemType } from 'types/balance';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -31,6 +31,7 @@ import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { tokenItem, tokenItemMarginBottom } from 'constants/itemHeight';
+import { reloadCron } from 'messaging/index';
 
 interface Props {
   layoutHeader: React.ReactElement;
@@ -40,7 +41,6 @@ interface Props {
   layoutFooter?: React.ReactElement;
   items: TokenBalanceItemType[];
   renderItem: ListRenderItem<TokenBalanceItemType>;
-  isRefreshing?: boolean;
   refresh?: () => void;
   loading?: boolean;
 }
@@ -68,11 +68,10 @@ export const TokensLayout = ({
   items: tokenBalanceItems,
   loading,
   renderItem,
-  isRefreshing,
-  refresh,
   style,
 }: Props) => {
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const theme = useSubWalletTheme().swThemes;
   const yOffset = useSharedValue(0);
   const isAnimating = useSharedValue(0);
@@ -131,13 +130,16 @@ export const TokensLayout = ({
     [],
   );
 
-  const refreshControlNode = useMemo(() => {
-    if (!refresh) {
-      return undefined;
+  const onRefreshTokenList = useCallback(() => {
+    if (!isRefreshing) {
+      setIsRefreshing(true);
+      reloadCron({ data: 'balance' }).finally(() => setIsRefreshing(false));
     }
+  }, [isRefreshing]);
 
-    return <RefreshControl tintColor={ColorMap.light} refreshing={!!isRefreshing} onRefresh={refresh} />;
-  }, [isRefreshing, refresh]);
+  const refreshControlNode = useMemo(() => {
+    return <RefreshControl tintColor={ColorMap.light} refreshing={isRefreshing} onRefresh={onRefreshTokenList} />;
+  }, [isRefreshing, onRefreshTokenList]);
 
   const renderHeaderComponent = () => {
     return (
@@ -158,11 +160,6 @@ export const TokensLayout = ({
   if (!tokenBalanceItems.length) {
     return (
       <View style={[style, { flex: 1, marginTop: 0 }]}>
-        <View style={{ paddingHorizontal: 16 }}>
-          {layoutHeader}
-          {listActions}
-        </View>
-
         {loading ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <ActivityIndicator size={40} indicatorColor={theme.colorWhite} />
@@ -173,10 +170,14 @@ export const TokensLayout = ({
             contentContainerStyle={flatListContentContainerStyle}
             refreshControl={refreshControlNode}>
             <>
+              <View style={{ paddingHorizontal: 16 }}>
+                {layoutHeader}
+                {listActions}
+              </View>
               <EmptyList
                 icon={Coins}
                 title={i18n.emptyScreen.tokenEmptyTitle}
-                message={i18n.emptyScreen.tokenEmptyMessage}
+                message={i18n.emptyScreen.tokenEmptyMessageV2}
               />
               {layoutFooter}
             </>
@@ -209,7 +210,7 @@ export const TokensLayout = ({
       overflow: 'hidden',
     },
     stickyHeaderInvisibleStyles,
-  ] as StyleProp<AnimateStyle<StyleProp<ViewStyle>>>;
+  ] as StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>;
   const stickyHeaderFakingGradientStyle = {
     flex: 1,
     marginTop: -(STATUS_BAR_HEIGHT * 2 + 40),
@@ -237,7 +238,7 @@ export const TokensLayout = ({
         </Animated.View>
       )}
 
-      <AnimatedFlatlist
+      <Animated.FlatList
         onScroll={onScrollHandler}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps={'handled'}
@@ -254,6 +255,7 @@ export const TokensLayout = ({
         onEndReached={onEndReached}
         onEndReachedThreshold={0.7}
         refreshControl={refreshControlNode}
+        refreshing
       />
     </View>
   );

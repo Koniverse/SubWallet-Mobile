@@ -106,7 +106,18 @@ const DEFAULT_LANGUAGE_TIME_DEFINE: Record<LanguageType, TimeDefine> = {
       suffix: '日',
     },
   }),
-  ja: mergeTimeDefine({}),
+  ja: mergeTimeDefine({
+    year: {
+      suffix: '年',
+    },
+    month: {
+      suffix: '月',
+    },
+    day: {
+      suffix: '日',
+    },
+  }),
+  ru: mergeTimeDefine({}),
   th: mergeTimeDefine({}),
   ur: mergeTimeDefine({}),
   tr: mergeTimeDefine({}),
@@ -236,11 +247,13 @@ export const formatHistoryDate = (
   if (type === 'list') {
     switch (language) {
       case 'vi':
+      case 'ru':
         return customFormatDate(dateMilli, '#DD#/#MM#/#YYYY#', 'vi');
       case 'zh':
+      case 'ja':
         return sameYear
-          ? customFormatDate(dateMilli, '#sMs# #sDs#', 'zh')
-          : customFormatDate(dateMilli, '#sYYYYs# #sMs# #sDs#', 'zh');
+          ? customFormatDate(dateMilli, '#sMs# #sDs#', language)
+          : customFormatDate(dateMilli, '#sYYYYs# #sMs# #sDs#', language);
       case 'en':
       default:
         return customFormatDate(dateMilli, '#MMM# #DD#, #YYYY#', 'en');
@@ -248,11 +261,13 @@ export const formatHistoryDate = (
   } else {
     switch (language) {
       case 'vi':
-        return customFormatDate(dateMilli, '#hhhh#:#mm# - #DD#/#MM#/#YYYY#', 'vi');
+      case 'ru':
+        return customFormatDate(dateMilli, '#hhhh#:#mm# - #DD#/#MM#/#YYYY#', language);
       case 'zh':
+      case 'ja':
         return sameYear
-          ? customFormatDate(dateMilli, '#hhhh#:#mm# - #sMs# #sDs#', 'zh')
-          : customFormatDate(dateMilli, '#hhhh#:#mm# - #sYYYYs# #sMs# #sDs#', 'zh');
+          ? customFormatDate(dateMilli, '#hhhh#:#mm# - #sMs# #sDs#', language)
+          : customFormatDate(dateMilli, '#hhhh#:#mm# - #sYYYYs# #sMs# #sDs#', language);
       case 'en':
       default:
         return customFormatDate(dateMilli, '#hhhh#:#mm# - #MMM# #DD#, #YYYY#', 'en');

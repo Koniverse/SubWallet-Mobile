@@ -1,12 +1,13 @@
+import { NominationPoolInfo } from '@subwallet/extension-base/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { StakingTab } from 'components/common/StakingTab';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
-import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import useGetSupportedStakingTokens from 'hooks/screen/Staking/useGetSupportedStakingTokens';
 import {
-  NominationPoolInfo,
+  AmountData,
   NominatorMetadata,
   StakingType,
   ValidatorInfo,
@@ -15,7 +16,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { InputAmount } from 'components/Input/InputAmount';
 import { useGetBalance } from 'hooks/balance';
 import BigN from 'bignumber.js';
@@ -27,7 +27,7 @@ import { PoolSelector } from 'components/Modal/common/PoolSelector';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { fetchChainValidators } from 'screens/Transaction/helper/staking';
 import { ALL_KEY } from 'constants/index';
-import { ValidatorSelector } from 'components/Modal/common/ValidatorSelector';
+import { ValidatorSelector, ValidatorSelectorRef } from 'components/Modal/common/ValidatorSelector';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { parseNominations } from 'utils/transaction/stake';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -37,7 +37,6 @@ import { PlusCircle } from 'phosphor-react-native';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { isAccountAll } from 'utils/accountAll';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { BN_TEN } from 'utils/number';
 import { NetworkDetailModal } from 'screens/Transaction/Stake/NetworkDetailModal';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
@@ -48,19 +47,40 @@ import useFetchChainState from 'hooks/screen/useFetchChainState';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { BN, BN_ZERO } from '@polkadot/util';
+import { isSameAddress } from '@subwallet/extension-base/utils';
+import { TransactionDone } from 'screens/Transaction/TransactionDone';
+import { useWatch } from 'react-hook-form';
+import { ValidateResult } from 'react-hook-form/dist/types/validator';
+import { FormItem } from 'components/common/FormItem';
+import { InstructionModal } from 'screens/Home/Staking/InstructionModal';
+import { mmkvStore } from 'utils/storage';
+import { getInputValuesFromString } from 'components/Input/InputAmount';
+import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
+import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 
+interface StakeFormValues extends TransactionFormValues {
+  stakingType: StakingType;
+  pool: string;
+  validator: string;
+}
+
+// mmkvStore.set('shown-vara-instruction', false)
 export const Stake = ({
   route: {
     params: { chain: stakingChain = ALL_KEY, type: _stakingType = ALL_KEY },
   },
 }: StakeProps) => {
+  const shownVaraInstruction = mmkvStore.getBoolean('shown-vara-instruction') ?? false;
   const theme = useSubWalletTheme().swThemes;
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
   const { nominationPoolInfoMap, validatorInfoMap } = useSelector((state: RootState) => state.bonding);
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
   const [loading, setLoading] = useState(false);
   const [poolLoading, setPoolLoading] = useState(false);
   const [detailNetworkModalVisible, setDetailNetworkModalVisible] = useState(false);
+  const [isTransactionDone, setTransactionDone] = useState(false);
   const [validatorLoading, setValidatorLoading] = useState(false);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const isEthAdr = isEthereumAddress(currentAccount?.address);
@@ -83,35 +103,27 @@ export const Stake = ({
     }
   }, [_stakingType, isEthAdr]);
 
-  const stakeFormConfig = useMemo(
-    () => ({
-      stakingType: {
-        name: 'Type',
-        value: defaultStakingType,
-      },
-      pool: {
-        name: 'Pool',
-        value: '',
-      },
-
-      validator: {
-        name: 'Validator',
-        value: '',
-      },
-    }),
-    [defaultStakingType],
-  );
-
   const {
     title,
-    formState,
-    onChangeValue,
-    onChangeFromValue,
-    onChangeAssetValue,
-    onChangeAmountValue,
-    onDone,
-    onUpdateErrors,
-  } = useTransaction('stake', stakeFormConfig, {});
+    form: {
+      control,
+      getValues,
+      setValue,
+      formState: { errors },
+    },
+    onChangeFromValue: setFrom,
+    onChangeAssetValue: setAsset,
+    onTransactionDone: onDone,
+    transactionDoneInfo,
+  } = useTransaction<StakeFormValues>('stake', {
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      stakingType: defaultStakingType,
+      pool: '',
+      validator: '',
+    },
+  });
 
   const {
     asset,
@@ -121,9 +133,11 @@ export const Stake = ({
     validator: currentValidator,
     stakingType: currentStakingType,
     value: currentValue,
-  } = formState.data;
+  } = {
+    ...useWatch<StakeFormValues>({ control }),
+    ...getValues(),
+  };
 
-  console.log('asset', asset);
   const chainState = useFetchChainState(chain);
   const chainStakingMetadata = useGetChainStakingMetadata(chain);
   const nominatorMetadataList = useGetNominatorInfo(chain, currentStakingType as StakingType, from);
@@ -138,28 +152,16 @@ export const Stake = ({
     [accounts, stakingChain, chainInfoMap, currentStakingType],
   );
 
-  useEffect(() => {
-    let unmount = false;
-
-    // fetch validators when change chain
-    // _stakingType is predefined form start
-    if (!!chain && !!from && chainState?.active) {
-      fetchChainValidators(chain, currentStakingType || ALL_KEY, unmount, setPoolLoading, setValidatorLoading);
-    }
-
-    return () => {
-      unmount = true;
-    };
-  }, [from, _stakingType, chain, chainState?.active, currentStakingType]);
+  const [instructionModalVisible, setInstructionModalVisible] = useState(!shownVaraInstruction);
   const fromRef = useRef<string>(from);
   const tokenRef = useRef<string>(asset);
-
+  const [forceFetchValidator, setForceFetchValidator] = useState(false);
   const tokenList = useGetSupportedStakingTokens(currentStakingType as StakingType, from, stakingChain);
   const accountInfo = useGetAccountByAddress(from);
   const { nativeTokenBalance } = useGetBalance(chain, from);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chain);
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
   const isAllAccount = isAccountAll(currentAccount?.address || '');
+  const validatorSelectorRef = useRef<ValidatorSelectorRef>(null);
   const existentialDeposit = useMemo(() => {
     const assetInfo = assetRegistry[asset];
 
@@ -169,6 +171,45 @@ export const Stake = ({
 
     return '0';
   }, [assetRegistry, asset]);
+  const handleDataForInsufficientAlert = useCallback(
+    (estimateFee: AmountData) => {
+      return {
+        existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
+        availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
+        symbol: estimateFee.symbol,
+      };
+    },
+    [existentialDeposit, nativeTokenBalance.value],
+  );
+
+  const { onError, onSuccess } = useHandleSubmitTransaction(
+    onDone,
+    setTransactionDone,
+    undefined,
+    undefined,
+    chain === 'vara_network' && currentStakingType === StakingType.POOLED ? handleDataForInsufficientAlert : undefined,
+  );
+  const getSelectedValidators = useCallback(
+    (nominations: string[]) => {
+      const validatorList = validatorInfoMap[chain];
+
+      if (!validatorList) {
+        return [];
+      }
+
+      const result: ValidatorInfo[] = [];
+
+      validatorList.forEach(validator => {
+        if (nominations.some(nomination => isSameAddress(nomination, validator.address))) {
+          // remember the format of the address
+          result.push(validator);
+        }
+      });
+
+      return result;
+    },
+    [chain, validatorInfoMap],
+  );
 
   const maxValue = useMemo(() => {
     const balance = new BigN(nativeTokenBalance.value);
@@ -181,52 +222,55 @@ export const Stake = ({
     }
   }, [existentialDeposit, nativeTokenBalance.value]);
 
-  const validateAmountInput = useCallback(
-    (value: string) => {
-      const val = new BigN(value);
-      if (currentStakingType === StakingType.POOLED) {
-        if (val.lte(0)) {
-          onUpdateErrors('value')(['Value must be greater than 0']);
-          return;
-        }
-      } else {
-        if (!nominatorMetadata?.isBondedBefore || !isRelayChain) {
+  const amountInputRules = useMemo(
+    () => ({
+      validate: (value: string): Promise<ValidateResult> => {
+        const val = new BigN(value);
+        if (currentStakingType === StakingType.POOLED) {
           if (val.lte(0)) {
-            onUpdateErrors('value')(['Value must be greater than 0']);
-            return;
+            return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeGreaterThanZero, 'Value') as string);
+          }
+        } else {
+          if (!nominatorMetadata?.isBondedBefore || !isRelayChain) {
+            if (val.lte(0)) {
+              return Promise.resolve(
+                i18n.formatString(i18n.errorMessage.unbondMustBeGreaterThanZero, 'Value') as string,
+              );
+            }
           }
         }
-      }
 
-      if (val.gt(nativeTokenBalance.value)) {
-        const maxString = new BigN(nativeTokenBalance.value).div(BN_TEN.pow(decimals)).toFixed(6);
-        onUpdateErrors('value')([`Value must be equal or less than ${maxString}`]);
-        return;
-      }
+        if (val.gt(nativeTokenBalance.value)) {
+          const maxString = new BigN(nativeTokenBalance.value).div(BN_TEN.pow(decimals)).toFixed(6);
+          return Promise.resolve(
+            i18n.formatString(i18n.errorMessage.unbondMustBeEqualOrLessThan, 'Value', maxString) as string,
+          );
+        }
 
-      onUpdateErrors('value')([]);
-    },
-    [
-      currentStakingType,
-      decimals,
-      isRelayChain,
-      nativeTokenBalance.value,
-      nominatorMetadata?.isBondedBefore,
-      onUpdateErrors,
-    ],
+        return Promise.resolve(undefined);
+      },
+    }),
+    [currentStakingType, decimals, isRelayChain, nativeTokenBalance.value, nominatorMetadata?.isBondedBefore],
   );
 
   useEffect(() => {
-    validateAmountInput(formState.data.value);
-  }, [formState.data.value, validateAmountInput]);
+    let unmount = false;
 
-  const _onChangeAmount = useCallback(
-    (text: string) => {
-      onChangeAmountValue(text);
-      validateAmountInput(text);
-    },
-    [onChangeAmountValue, validateAmountInput],
-  );
+    if ((!!chain && !!from && chainState?.active) || forceFetchValidator) {
+      fetchChainValidators(
+        chain,
+        currentStakingType || ALL_KEY,
+        unmount,
+        setPoolLoading,
+        setValidatorLoading,
+        setForceFetchValidator,
+      );
+    }
+
+    return () => {
+      unmount = true;
+    };
+  }, [from, _stakingType, chain, chainState?.active, currentStakingType, forceFetchValidator]);
 
   const selectedValidators = useMemo(() => {
     const validatorList = validatorInfoMap[chain];
@@ -263,13 +307,44 @@ export const Stake = ({
     return undefined;
   }, [nominationPoolInfoMap, chain, currentPool]);
 
-  const minStake = useMemo(
-    () =>
-      (currentStakingType === StakingType.POOLED
-        ? chainStakingMetadata?.minJoinNominationPool
-        : chainStakingMetadata?.minStake) || '0',
-    [chainStakingMetadata?.minJoinNominationPool, chainStakingMetadata?.minStake, currentStakingType],
-  );
+  const getValidatorMinStake = useCallback((validatorInfos: ValidatorInfo[]) => {
+    let minStake = BN_ZERO;
+
+    validatorInfos.forEach(validatorInfo => {
+      const bnMinBond = new BN(validatorInfo?.minBond);
+
+      if (bnMinBond.gt(minStake)) {
+        minStake = bnMinBond;
+      }
+    });
+
+    return minStake.toString();
+  }, []);
+
+  const chainMinStake = useMemo(() => {
+    return currentStakingType === StakingType.NOMINATED
+      ? chainStakingMetadata?.minStake || '0'
+      : chainStakingMetadata?.minJoinNominationPool || '0';
+  }, [chainStakingMetadata?.minJoinNominationPool, chainStakingMetadata?.minStake, currentStakingType]);
+
+  const minStake = useMemo(() => {
+    if (currentStakingType === StakingType.NOMINATED) {
+      const validatorInfos = getSelectedValidators(parseNominations(currentValidator));
+      const validatorMinStake = getValidatorMinStake(validatorInfos);
+
+      const nominatedMinStake = BN.max(new BN(validatorMinStake), new BN(chainStakingMetadata?.minStake || '0'));
+      return nominatedMinStake.toString();
+    }
+
+    return chainStakingMetadata?.minJoinNominationPool || '0';
+  }, [
+    chainStakingMetadata?.minJoinNominationPool,
+    chainStakingMetadata?.minStake,
+    currentStakingType,
+    currentValidator,
+    getSelectedValidators,
+    getValidatorMinStake,
+  ]);
 
   const getMetaInfo = useCallback(() => {
     if (chainStakingMetadata) {
@@ -334,28 +409,29 @@ export const Stake = ({
 
   const onSelectToken = useCallback(
     (item: TokenItemType) => {
-      onChangeAssetValue(item.slug);
+      setAsset(item.slug);
+      validatorSelectorRef?.current?.resetValue();
       tokenRef.current = item.slug;
-      tokenSelectorRef && tokenSelectorRef.current?.onCloseModal();
+      tokenSelectorRef.current?.onCloseModal();
     },
-    [onChangeAssetValue],
+    [setAsset],
   );
 
   const onPreCheckReadOnly = usePreCheckReadOnly(undefined, from);
 
   const isDisabledButton = useMemo(
     () =>
-      !formState.isValidated.value ||
-      !formState.data.value ||
+      !currentValue ||
       !isBalanceReady ||
+      !!errors.value ||
       loading ||
       (currentStakingType === StakingType.POOLED ? !currentPool || poolLoading : !currentValidator || validatorLoading),
     [
       currentPool,
       currentStakingType,
       currentValidator,
-      formState.data.value,
-      formState.isValidated.value,
+      currentValue,
+      errors.value,
       isBalanceReady,
       loading,
       poolLoading,
@@ -363,156 +439,194 @@ export const Stake = ({
     ],
   );
 
+  useEffect(() => {
+    const isTokenIncludeTokenList = !!tokenList.find(item => item.slug === asset);
+    if (tokenList && tokenList.length) {
+      if (!isTokenIncludeTokenList) {
+        setAsset(tokenList[0].slug);
+      }
+    } else {
+      setAsset('');
+    }
+  }, [asset, setAsset, tokenList]);
+
   const onChangeStakingType = useCallback(
     (type: StakingType) => {
-      onChangeValue('stakingType')(type);
+      setValue('stakingType', type);
 
       if (isAllAccount && isEthereumAddress(from) && currentStakingType === StakingType.NOMINATED) {
-        onChangeFromValue('');
-        onChangeAssetValue('');
+        setFrom('');
+        setAsset('');
       } else {
-        onChangeFromValue(fromRef.current);
-        onChangeAssetValue(tokenRef.current);
+        setFrom(fromRef.current);
+        setAsset(tokenRef.current);
       }
     },
-    [currentStakingType, from, isAllAccount, onChangeAssetValue, onChangeFromValue, onChangeValue],
+    [currentStakingType, from, isAllAccount, setAsset, setFrom, setValue],
   );
 
+  useEffect(() => {
+    if (!from && accountSelectorList.length === 1) {
+      setFrom(accountSelectorList[0].address);
+    }
+  }, [accountSelectorList, from, setFrom]);
+
   return (
-    <TransactionLayout
-      disableMainHeader={loading}
-      title={title}
-      showRightHeaderButton
-      disableLeftButton={loading}
-      disableRightButton={!chainStakingMetadata || loading}
-      onPressRightHeaderBtn={() => setDetailNetworkModalVisible(true)}>
-      <>
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 16 }} keyboardShouldPersistTaps={'handled'}>
-          {_stakingType === ALL_KEY && (
-            <StakingTab
-              from={from}
-              selectedType={currentStakingType as StakingType}
-              onSelectType={onChangeStakingType}
-            />
-          )}
+    <>
+      {!isTransactionDone ? (
+        <TransactionLayout
+          disableMainHeader={loading}
+          title={title}
+          showRightHeaderButton
+          disableLeftButton={loading}
+          disableRightButton={!chainStakingMetadata || loading}
+          onPressRightHeaderBtn={() => setDetailNetworkModalVisible(true)}>
+          <>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              style={{ flex: 1, paddingHorizontal: 16, marginTop: 16 }}
+              keyboardShouldPersistTaps={'handled'}>
+              {_stakingType === ALL_KEY && (
+                <StakingTab
+                  disabled={chainStateMap?.[chain]?.connectionStatus === _ChainConnectionStatus.CONNECTING}
+                  from={from}
+                  selectedType={currentStakingType as StakingType}
+                  onSelectType={onChangeStakingType}
+                />
+              )}
 
-          {isAllAccount && (
-            <AccountSelector
-              items={accountSelectorList}
-              selectedValueMap={{ [from]: true }}
-              accountSelectorRef={accountSelectorRef}
-              onSelectItem={item => {
-                onChangeFromValue(item.address);
-                fromRef.current = item.address;
-                accountSelectorRef && accountSelectorRef.current?.onCloseModal();
-              }}
-              renderSelected={() => <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />}
-            />
-          )}
+              {isAllAccount && (
+                <AccountSelector
+                  items={accountSelectorList}
+                  selectedValueMap={{ [from]: true }}
+                  accountSelectorRef={accountSelectorRef}
+                  onSelectItem={item => {
+                    setFrom(item.address);
+                    fromRef.current = item.address;
+                    accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                  }}
+                  renderSelected={() => (
+                    <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />
+                  )}
+                />
+              )}
 
-          {_stakingType === ALL_KEY && (
-            <FreeBalance
-              label={`${i18n.inputLabel.availableBalance}:`}
-              address={from}
-              chain={chain}
-              onBalanceReady={setIsBalanceReady}
-            />
-          )}
+              {_stakingType === ALL_KEY && (
+                <GeneralFreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
+              )}
 
-          <TokenSelector
-            items={tokenList}
-            selectedValueMap={{ [asset]: true }}
-            onSelectItem={onSelectToken}
-            disabled={stakingChain !== ALL_KEY || !from || loading}
-            defaultValue={asset}
-            acceptDefaultValue={true}
-            renderSelected={() => (
-              <TokenSelectField
-                logoKey={symbol.toLowerCase()}
-                subLogoKey={chain}
-                value={symbol}
-                showIcon
-                outerStyle={stakingChain !== ALL_KEY || !from || loading}
+              <TokenSelector
+                items={tokenList}
+                selectedValueMap={{ [asset]: true }}
+                onSelectItem={onSelectToken}
+                disabled={stakingChain !== ALL_KEY || !from || loading}
+                defaultValue={asset}
+                showAddBtn={false}
+                acceptDefaultValue={true}
+                tokenSelectorRef={tokenSelectorRef}
+                renderSelected={() => <TokenSelectField logoKey={asset} subLogoKey={chain} value={symbol} showIcon />}
+              />
+
+              {_stakingType !== ALL_KEY && (
+                <GeneralFreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
+              )}
+
+              <FormItem
+                style={{ marginBottom: theme.marginXS }}
+                control={control}
+                rules={amountInputRules}
+                render={({ field: { value, ref, onChange } }) => (
+                  <InputAmount
+                    ref={ref}
+                    value={value}
+                    maxValue={maxValue}
+                    onChangeValue={onChange}
+                    decimals={decimals}
+                    disable={loading}
+                    showMaxButton={false}
+                  />
+                )}
+                name={'value'}
+              />
+
+              {currentStakingType === StakingType.POOLED && (
+                <PoolSelector
+                  from={from}
+                  chain={chain}
+                  onSelectItem={(value: string) => setValue('pool', value)}
+                  poolLoading={poolLoading}
+                  selectedPool={selectedPool}
+                  disabled={loading}
+                  setForceFetchValidator={setForceFetchValidator}
+                />
+              )}
+
+              {currentStakingType === StakingType.NOMINATED && (
+                <ValidatorSelector
+                  from={from}
+                  chain={chain}
+                  setForceFetchValidator={setForceFetchValidator}
+                  validatorLoading={validatorLoading}
+                  selectedValidator={currentValidator}
+                  onSelectItem={(value: string) => setValue('validator', value)}
+                  disabled={loading}
+                  ref={validatorSelectorRef}
+                />
+              )}
+
+              {chainStakingMetadata && (
+                <>
+                  <Divider style={{ marginTop: 10, marginBottom: 16 }} color={theme.colorBgDivider} />
+                  {getMetaInfo()}
+                </>
+              )}
+            </ScrollView>
+
+            <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
+              <Button
+                disabled={isDisabledButton}
+                loading={loading}
+                icon={
+                  <Icon
+                    phosphorIcon={PlusCircle}
+                    weight={'fill'}
+                    size={'lg'}
+                    iconColor={isDisabledButton ? theme.colorTextLight5 : theme.colorWhite}
+                  />
+                }
+                onPress={onPreCheckReadOnly(onSubmit)}>
+                {i18n.buttonTitles.stake}
+              </Button>
+            </View>
+
+            {chainStakingMetadata && (
+              <NetworkDetailModal
+                modalVisible={detailNetworkModalVisible}
+                chainStakingMetadata={chainStakingMetadata}
+                stakingType={currentStakingType as StakingType}
+                minimumActive={{ decimals, value: chainMinStake, symbol }}
+                setVisible={setDetailNetworkModalVisible}
               />
             )}
-          />
-
-          {_stakingType !== ALL_KEY && (
-            <FreeBalance
-              label={`${i18n.inputLabel.availableBalance}:`}
-              address={from}
-              chain={chain}
-              onBalanceReady={setIsBalanceReady}
-            />
-          )}
-
-          <InputAmount
-            value={currentValue}
-            maxValue={maxValue}
-            onChangeValue={_onChangeAmount}
-            decimals={decimals}
-            errorMessages={formState.errors.value}
-            disable={loading}
-            showMaxButton={false}
-          />
-
-          {currentStakingType === StakingType.POOLED && (
-            <PoolSelector
-              from={from}
-              chain={chain}
-              onSelectItem={onChangeValue('pool')}
-              poolLoading={poolLoading}
-              selectedPool={selectedPool}
-              disabled={loading}
-            />
-          )}
-
-          {currentStakingType === StakingType.NOMINATED && (
-            <ValidatorSelector
-              from={from}
-              chain={chain}
-              validatorLoading={validatorLoading}
-              selectedValidator={currentValidator}
-              onSelectItem={onChangeValue('validator')}
-              disabled={loading}
-            />
-          )}
-
-          {chainStakingMetadata && (
-            <>
-              <Divider style={{ marginTop: 10, marginBottom: 16 }} color={theme.colorBgDivider} />
-              {getMetaInfo()}
-            </>
-          )}
-        </ScrollView>
-
-        <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
-          <Button
-            disabled={isDisabledButton}
-            loading={loading}
-            icon={
-              <Icon
-                phosphorIcon={PlusCircle}
-                weight={'fill'}
-                size={'lg'}
-                iconColor={isDisabledButton ? theme.colorTextLight5 : theme.colorWhite}
-              />
-            }
-            onPress={onPreCheckReadOnly(onSubmit)}>
-            {i18n.buttonTitles.stake}
-          </Button>
-        </View>
-
-        {chainStakingMetadata && (
-          <NetworkDetailModal
-            modalVisible={detailNetworkModalVisible}
-            chainStakingMetadata={chainStakingMetadata}
-            stakingType={currentStakingType as StakingType}
-            minimumActive={{ decimals, value: minStake, symbol }}
-            setVisible={setDetailNetworkModalVisible}
-          />
-        )}
-      </>
-    </TransactionLayout>
+          </>
+        </TransactionLayout>
+      ) : (
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+      )}
+      {chain === 'vara_network' && currentStakingType === StakingType.POOLED && (
+        <InstructionModal
+          setDetailModalVisible={() => {
+            setInstructionModalVisible(false);
+            mmkvStore.set('shown-vara-instruction', true);
+          }}
+          modalVisible={instructionModalVisible}
+          modalTitle="Stake in Vara nomination pools easily with SubWallet"
+          onPressStake={() => {
+            setInstructionModalVisible(false);
+            mmkvStore.set('shown-vara-instruction', true);
+          }}
+        />
+      )}
+    </>
   );
 };

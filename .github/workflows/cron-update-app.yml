@@ -1,0 +1,18 @@
+name: Check for New App Version
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install jq
+        run: sudo apt-get install jq -y
+      - name: Get latest app version from API
+        run: |
+          curl -s "https://itunes.apple.com/br/lookup?bundleId=app.subwallet.mobile" | jq -r '.results[0].version' > latest_version
+          latest_version=$(cat latest_version)
+          echo "Latest version: $latest_version"

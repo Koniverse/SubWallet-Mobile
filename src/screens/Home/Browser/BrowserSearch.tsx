@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SectionListRenderItemInfo, SectionList, View, Platform } from 'react-native';
-import { DAppTitleMap, predefinedDApps } from '../../../predefined/dAppSites';
+import { DAppTitleMap } from '../../../predefined/dAppSites';
 import { useNavigation } from '@react-navigation/native';
 import { BrowserSearchProps, RootNavigationProps } from 'routes/index';
 import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
@@ -22,6 +22,7 @@ import { BrowserSearchItem } from 'components/Browser/BrowserSearchItem';
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { browserListItemHeight, browserListSeparator } from 'constants/itemHeight';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 type SearchItemType = {
   logo?: string;
@@ -32,17 +33,8 @@ type SearchItemType = {
 
 type SectionItem = { title: string; data: SearchItemType[]; type: string };
 
-const recommendItems: SearchItemType[] = predefinedDApps.dapps.map(i => ({
-  id: i.id,
-  logo: i.icon,
-  tags: i.categories,
-  url: i.url,
-  name: i.name,
-  subtitle: getHostName(i.url),
-}));
-
 function getFirstSearchItem(searchString: string): SearchItemType {
-  const url = getValidURL(searchString);
+  const url = getValidURL(decodeURIComponent(searchString));
 
   if (url.startsWith(`https://${searchDomain}`)) {
     return {
@@ -68,13 +60,16 @@ const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 
 export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
+  const {
+    browserDApps: { dApps },
+  } = useGetDAppList();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
   const searchStringRef = useRef('');
   const [sectionItems, setSectionItems] = useState<SectionItem[]>([]);
-  const isOpenNewTab = params && params.isOpenNewTab;
+  const isOpenNewTab = params?.isOpenNewTab;
 
   const onPressItem = (item: SearchItemType) => {
     if (isOpenNewTab) {
@@ -83,7 +78,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
 
     navigateAndClearCurrentScreenHistory(navigation, 'BrowserSearch', 'BrowserTabsManager', {
       url: item.url,
-      name: item.name,
+      name: item?.name,
     });
   };
 
@@ -137,17 +132,17 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
       !searchStringRef.current
         ? historyItems
         : historyItems.filter(i => i.name.toLowerCase().includes(searchStringRef.current.toLowerCase()))
-    ).map(i => {
-      const dapp = predefinedDApps.dapps.find(a => i.url.includes(a.id));
+    ).map(history => {
+      const dapp = dApps?.find(app => history.url.includes(app.url));
 
-      const hostName = getHostName(i.url);
+      const hostName = getHostName(history.url);
 
       return {
-        id: i.id,
+        id: history.id,
         logo: dapp?.icon,
         tags: dapp?.categories,
-        url: i.url,
-        name: DAppTitleMap[hostName] || i.name,
+        url: history.url,
+        name: DAppTitleMap[hostName] || history.name,
         subtitle: hostName,
       };
     });
@@ -169,20 +164,29 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
       });
     }
 
-    const _recommendItems = !searchStringRef.current
-      ? recommendItems.slice(0, 20)
-      : recommendItems.filter(i => i.name.toLowerCase().includes(searchStringRef.current.toLowerCase())).slice(0, 10);
+    const _recommendItems = dApps
+      ? !searchStringRef.current
+        ? dApps.slice(0, 20)
+        : dApps.filter(dApp => dApp.title.toLowerCase().includes(searchStringRef.current.toLowerCase())).slice(0, 10)
+      : [];
 
     if (_recommendItems.length) {
       result.push({
         title: i18n.browser.recommended,
-        data: _recommendItems,
+        data: _recommendItems.map(item => ({
+          name: item.title,
+          url: item.url,
+          subtitle: item.subtitle,
+          id: item.id,
+          logo: item.icon,
+          tags: item.categories,
+        })),
         type: 'recommend',
       });
     }
 
     return result;
-  }, [historyItems]);
+  }, [dApps, historyItems]);
 
   useEffect(() => {
     const newItem = getSectionItems();

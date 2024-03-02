@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, View, TouchableOpacity, Platform } from 'react-native';
+import { StyleProp, View, TouchableOpacity } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { Eye, EyeSlash } from 'phosphor-react-native';
@@ -15,6 +15,7 @@ import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
 import { updateToggleBalance } from 'stores/base/Settings';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 
 interface Props {
   totalValue: SwNumberProps['value'];
@@ -54,6 +55,7 @@ export const TokenGroupsUpperBlock = ({
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const { isShowBuyToken } = useShowBuyToken();
   const _toggleBalances = () => {
     updateToggleBalance();
     toggleBalancesVisibility().catch(console.log);
@@ -134,7 +136,7 @@ export const TokenGroupsUpperBlock = ({
 
       <View style={[actionButtonWrapper]} pointerEvents="box-none">
         <ActionButton
-          label={i18n.cryptoScreen.receive}
+          label={i18n.cryptoScreen.address}
           icon={ButtonIcon.Receive}
           onPress={onOpenReceive}
           buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
@@ -145,7 +147,7 @@ export const TokenGroupsUpperBlock = ({
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
         />
-        {Platform.OS !== 'ios' && (
+        {isShowBuyToken && (
           <ActionButton
             label={i18n.cryptoScreen.buy}
             icon={ButtonIcon.Buy}

@@ -104,6 +104,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     setOpen(false);
     _onCloseModal && _onCloseModal();
   }, [_onCloseModal]);
+  const defaultItem = items[0];
 
   const theme = useSubWalletTheme().swThemes;
 
@@ -117,7 +118,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   useEffect(() => {
     if (acceptDefaultValue) {
       if (!defaultValue) {
-        items[0] && onSelectItem && onSelectItem(items[0]);
+        defaultItem && onSelectItem && onSelectItem(defaultItem);
       } else {
         let existed;
         if (selectModalItemType === 'token') {
@@ -132,14 +133,14 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
         }
 
         if (!existed) {
-          items[0] && onSelectItem && onSelectItem(items[0]);
+          defaultItem && onSelectItem && onSelectItem(defaultItem);
         } else {
           onSelectItem && onSelectItem(existed as T);
         }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, defaultValue]);
+  }, [defaultItem, defaultValue]);
 
   const _onSelectItem = useCallback(
     (_item: T) => {
@@ -158,6 +159,10 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
         !!onModalOpened && onModalOpened();
       },
       onCloseModal: onCloseModal,
+      closeModal: () => {
+        setTimeout(() => setLoadingData(true), LOADING_TIMEOUT);
+        setOpen(false);
+      },
       isModalOpen: isOpen,
     }),
     [isOpen, onCloseModal, onModalOpened],

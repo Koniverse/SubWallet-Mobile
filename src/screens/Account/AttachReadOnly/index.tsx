@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { InputAddress } from 'components/Input/InputAddressV2';
+import { InputAddress } from 'components/Input/InputAddress';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
@@ -12,7 +12,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Keyboard, ScrollView, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
-import { backToHome } from 'utils/navigation';
 import { readOnlyScan } from 'utils/scanner/attach';
 import { createAccountExternalV2 } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
@@ -67,8 +66,11 @@ const AttachReadOnly = () => {
   }, [navigation]);
 
   const onComplete = useCallback(() => {
-    backToHome(goHome);
-  }, [goHome]);
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
+  }, [navigation]);
 
   const onCloseScanner = useCallback(() => {
     setScanError(undefined);
@@ -183,6 +185,7 @@ const AttachReadOnly = () => {
             <PageIcon icon={Eye} color={theme.colorSuccess} />
           </View>
           <InputAddress
+            saveAddress={false}
             ref={formState.refs.address}
             containerStyle={{ marginBottom: theme.sizeSM }}
             label={formState.labels.address}
@@ -201,6 +204,7 @@ const AttachReadOnly = () => {
             onChangeAddress={onScan}
             isShowError
             error={scanError}
+            setQrModalVisible={setIsScanning}
           />
         </ScrollView>
         <View style={styles.footer}>

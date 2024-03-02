@@ -18,11 +18,13 @@ export default function useFreeBalance(
 
     if (address && networkKey) {
       (async () => {
-        id = await subscribeFreeBalance({ networkKey, address, token: token || undefined }, free => {
+        const resp = await subscribeFreeBalance({ networkKey, address, token: token || undefined }, free => {
           if (isSync) {
-            setBalance(free);
+            setBalance(free.value);
           }
         });
+
+        id = resp.id;
 
         if (!isSync) {
           cancelSubscription(id).catch(e => console.log('Error when cancel subscription', e));

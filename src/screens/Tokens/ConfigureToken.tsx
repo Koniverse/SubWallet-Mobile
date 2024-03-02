@@ -50,6 +50,10 @@ export const ConfigureToken = ({
       name: i18n.importToken.tokenName,
       value: tokenInfo?.symbol || '',
     },
+    priceId: {
+      name: i18n.importNetwork.priceId,
+      value: tokenInfo?.priceId || '',
+    },
   };
 
   const showToast = useCallback(
@@ -80,6 +84,7 @@ export const ConfigureToken = ({
       const newTokenInfo = {
         ...tokenInfo,
         name: formState.data.tokenName,
+        priceId: formState.data.priceId,
       };
       setBusy(true);
       if (!isNetConnected) {
@@ -165,7 +170,7 @@ export const ConfigureToken = ({
       disableRightButton={!tokenInfo || !(_isCustomAsset(tokenInfo?.slug || '') && _isSmartContractToken(tokenInfo))}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
-          <View style={styles.logoWrapper}>{getTokenLogo(tokenInfo?.symbol || '', undefined, 112)}</View>
+          <View style={styles.logoWrapper}>{getTokenLogo(tokenInfo?.slug || '', undefined, 112)}</View>
           {!!tokenInfo?.symbol && <Typography.Text style={styles.symbol}>{tokenInfo.symbol}</Typography.Text>}
           {tagNode}
           <View style={{ height: theme.sizeLG }} />
@@ -201,17 +206,36 @@ export const ConfigureToken = ({
               <TokenSelectField
                 disabled
                 value={tokenInfo.symbol}
-                logoKey={tokenInfo.symbol}
+                logoKey={tokenInfo.slug}
                 outerStyle={{ flex: 1, marginBottom: 0 }}
               />
             )}
+
+            {tokenInfo && tokenInfo.name && (
+              <TextField disabled text={tokenInfo.name.toString()} outerStyle={{ flex: 1, marginBottom: 0 }} />
+            )}
+          </View>
+
+          <View style={styles.row}>
+            <View style={{ flex: 1, marginBottom: 0 }}>
+              {tokenInfo && (
+                <InputText
+                  ref={formState.refs.priceId}
+                  placeholder={i18n.placeholder.priceId}
+                  isBusy={!_isCustomAsset(tokenInfo.slug)}
+                  onChangeText={onChangeValue('priceId')}
+                  onSubmitField={onSubmitField('priceId')}
+                  value={formState.data.priceId}
+                  readonly={!_isCustomAsset(tokenInfo.slug)}
+                  containerStyle={{ marginBottom: 0 }}
+                />
+              )}
+            </View>
 
             {tokenInfo && tokenInfo.decimals && (
               <TextField disabled text={tokenInfo.decimals.toString()} outerStyle={{ flex: 1, marginBottom: 0 }} />
             )}
           </View>
-
-          {!!tokenInfo?.priceId && <TextField disabled text={tokenInfo.priceId} />}
 
           {!isNetConnected && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />

@@ -23,12 +23,14 @@ export interface ButtonProps extends ButtonPropsType, TouchableHighlightProps {
   activeStyle?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
   externalTextStyle?: TextStyle;
+  showDisableStyle?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = props => {
   const {
     loading = false,
     disabled = false,
+    showDisableStyle,
     style,
     size = 'md',
     type = 'primary',
@@ -83,7 +85,7 @@ const Button: React.FC<ButtonProps> = props => {
     ..._style[`${type}RawText`],
     ...externalTextStyle,
     ...((loading || !!icon) && _style.buttonRawText),
-    ...(disabled && _style[`${type}DisabledRawText`]),
+    ...((disabled || showDisableStyle) && _style[`${type}DisabledRawText`]),
   };
 
   const wrapperStyle = [
@@ -93,7 +95,7 @@ const Button: React.FC<ButtonProps> = props => {
     _style[`${shape}ShapeRaw`],
     _style[`${contentAlign}ContentAlign`],
     isIconOnly && _style[`${size}IconOnly`],
-    disabled && _style[`${buttonType}DisabledRaw`],
+    (disabled || showDisableStyle) && _style[`${buttonType}DisabledRaw`],
     block && _style.blockButtonRaw,
     pressIn && activeStyle && _style[`${buttonType}Highlight`],
     activeStyle && touchIt && activeStyle,
@@ -128,7 +130,7 @@ const Button: React.FC<ButtonProps> = props => {
       onPressOut={_onPressOut}
       onShowUnderlay={_onShowUnderlay}
       onHideUnderlay={_onHideUnderlay}>
-      <View style={[_style.container, { maxWidth: '100%', paddingHorizontal: theme.padding - 4 }]}>
+      <View style={[_style.container, { maxWidth: '100%', paddingHorizontal: children ? theme.padding - 4 : 0 }]}>
         {iconNode}
         {typeof children === 'string' ? (
           <Text numberOfLines={1} style={[textStyle]}>
@@ -146,7 +148,7 @@ const Button: React.FC<ButtonProps> = props => {
       <Squircle
         size={size}
         backgroundColor={
-          disabled
+          disabled || showDisableStyle
             ? (_style[`${type}DisabledRaw`].backgroundColor as string) || '#fff'
             : (_style[`${type}Raw`].backgroundColor as string) || '#fff'
         }>

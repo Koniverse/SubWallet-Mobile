@@ -53,7 +53,7 @@ export function HistoryDetailModal({
     let originChainInfo = chainInfo;
 
     if (extrinsicType === ExtrinsicType.TRANSFER_XCM && data.additionalInfo) {
-      const additionalInfo = data.additionalInfo as TransactionAdditionalInfo<ExtrinsicType.TRANSFER_XCM>;
+      const additionalInfo = data.additionalInfo as TransactionAdditionalInfo[ExtrinsicType.TRANSFER_XCM];
 
       originChainInfo = chainInfoMap[additionalInfo.originalChain] || chainInfo;
     }
@@ -63,7 +63,7 @@ export function HistoryDetailModal({
 
     if (link) {
       return (
-        <View style={{ alignSelf: 'stretch', marginBottom: 16 }}>
+        <View style={{ alignSelf: 'stretch' }}>
           <Button icon={<Icon phosphorIcon={ArrowSquareUpRight} weight={'fill'} />} onPress={openBlockExplorer(link)}>
             {i18n.common.viewOnExplorer}
           </Button>

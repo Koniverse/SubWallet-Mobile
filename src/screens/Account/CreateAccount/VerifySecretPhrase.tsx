@@ -1,6 +1,6 @@
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useEffect, useState } from 'react';
-import { StyleProp, View } from 'react-native';
+import { ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { SeedWord } from 'components/SeedWord';
 import { ColorMap } from 'styles/color';
@@ -9,7 +9,7 @@ import { getWordKey, SeedPhraseArea, SelectedWordType } from 'components/SeedPhr
 import { shuffleArray } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon } from 'components/design-system-ui';
-import { ArrowCircleRight } from 'phosphor-react-native';
+import { CheckCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
@@ -27,6 +27,7 @@ const bodyAreaStyle: StyleProp<any> = {
 
 const footerAreaStyle: StyleProp<any> = {
   ...MarginBottomForSubmitButton,
+  paddingTop: 16,
 };
 
 const infoBlockStyle: StyleProp<any> = {
@@ -107,12 +108,12 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
   const { onPress: onSubmit } = useUnlockModal(navigation);
 
   const getCreateAccBtn = (color: string) => {
-    return <Icon phosphorIcon={ArrowCircleRight} size={'lg'} iconColor={color} />;
+    return <Icon phosphorIcon={CheckCircle} size={'lg'} iconColor={color} weight={'fill'} />;
   };
 
   return (
     <View style={sharedStyles.layoutContainer}>
-      <View style={bodyAreaStyle}>
+      <ScrollView contentContainerStyle={bodyAreaStyle}>
         <View style={infoBlockStyle}>
           <Text style={infoTextStyle}>{i18n.warningMessage.initSecretPhrase}</Text>
         </View>
@@ -123,7 +124,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
           style={phraseAreaStyle}
         />
         <View style={phraseBlockStyle}>{shuffleWords && shuffleWords.map(renderSeedWord)}</View>
-      </View>
+      </ScrollView>
       <View style={footerAreaStyle}>
         <Button
           icon={getCreateAccBtn(
@@ -132,7 +133,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
           disabled={!isCorrectWord(selectedWords, seed) || isBusy}
           onPress={onSubmit(onPressSubmit)}
           loading={isBusy}>
-          {i18n.common.continue}
+          {i18n.common.finish}
         </Button>
       </View>
     </View>

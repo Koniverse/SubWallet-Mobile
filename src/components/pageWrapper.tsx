@@ -10,7 +10,7 @@ const Loading = () => (
   </View>
 );
 
-const PageWrapper = (Component: ComponentType, stateNames: StoreName[]) => {
+const PageWrapper = (Component: ComponentType<any>, stateNames: StoreName[]) => {
   const [isLoading, setLoading] = useState(true);
   const dataContext = useContext(DataContext);
 

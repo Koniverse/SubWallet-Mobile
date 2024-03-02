@@ -25,7 +25,7 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { SelectedActionType } from 'stores/types';
 import { noop } from 'utils/function';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
@@ -62,14 +62,7 @@ const ApplyMasterPassword = () => {
       validateFunc: validatePassword,
     },
   };
-  const isFocused = useIsFocused();
-  const { onPress, onHideModal } = useUnlockModal(navigation);
-
-  useEffect(() => {
-    if (isFocused) {
-      onHideModal();
-    }
-  }, [isFocused, onHideModal]);
+  const { onPress } = useUnlockModal(navigation);
 
   const migratedRef = useRef<AccountJson[]>(
     accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword),
@@ -115,6 +108,7 @@ const ApplyMasterPassword = () => {
               } else {
                 setIsError(false);
                 onUpdateErrors('password')(undefined);
+                setTimeout(() => formState.refs.password.current?.focus(), 300);
               }
             })
             .catch((e: Error) => {
@@ -140,10 +134,10 @@ const ApplyMasterPassword = () => {
   }, [migrateAccount?.address]);
 
   useEffect(() => {
-    if (isLocked) {
+    if (isLocked && needMigrate.length) {
       setStep('Introduction');
     }
-  }, [isLocked]);
+  }, [isLocked, needMigrate.length]);
 
   useEffect(() => {
     onUpdateErrors('password')(undefined);
@@ -198,7 +192,7 @@ const ApplyMasterPassword = () => {
     if (migrateAccount?.address) {
       setDeleting(true);
       setTimeout(() => {
-        forgetAccount(migrateAccount.address)
+        forgetAccount(migrateAccount.address, true)
           .then(() => {
             setIsError(false);
           })
@@ -341,6 +335,7 @@ const ApplyMasterPassword = () => {
             <AddressField address={migrateAccount.address} label={i18n.inputLabel.accountAddress} />
 
             <PasswordField
+              autoFocus={true}
               ref={formState.refs.password}
               label={formState.labels.password}
               defaultValue={formState.data.password}

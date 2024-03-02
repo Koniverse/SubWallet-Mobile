@@ -52,7 +52,7 @@ export const StakingValidatorItem = ({
         </View>
 
         <View style={_style.contentWrapper}>
-          <Text style={_style.subTextStyle}>{i18n.message.commission(commission)}</Text>
+          <Text style={_style.subTextStyle}>{i18n.formatString(i18n.message.commission, commission)}</Text>
 
           {!!expectedReturnValue && expectedReturnValue !== '0' && (
             <>

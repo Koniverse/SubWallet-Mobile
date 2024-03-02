@@ -1,7 +1,8 @@
+import { NominationPoolInfo } from '@subwallet/extension-base/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
-import { NominationPoolInfo, StakingType } from '@subwallet/extension-base/background/KoniTypes';
+import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import useGetValidatorList, { NominationPoolDataType } from 'hooks/screen/Staking/useGetValidatorList';
 import { Keyboard, ListRenderItemInfo } from 'react-native';
 import { StakingPoolItem } from 'components/common/StakingPoolItem';
@@ -9,13 +10,14 @@ import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { PREDEFINED_STAKING_POOL } from '@subwallet/extension-base/constants';
 import { PoolSelectorField } from 'components/Field/PoolSelector';
 import { PoolSelectorDetailModal } from 'components/Modal/common/PoolSelectorDetailModal';
-import { ArrowCounterClockwise, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
+import { ArrowsClockwise, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import BigN from 'bignumber.js';
-import { EmptyList } from 'components/EmptyList';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { EmptyValidator } from 'components/EmptyValidator';
+import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 
 interface Props {
   onSelectItem?: (value: string) => void;
@@ -24,6 +26,7 @@ interface Props {
   poolLoading: boolean;
   selectedPool?: NominationPoolInfo;
   disabled?: boolean;
+  setForceFetchValidator: (val: boolean) => void;
 }
 
 interface FilterOption {
@@ -47,16 +50,6 @@ const searchFunction = (items: NominationPoolDataType[], searchString: string) =
   const lowerCaseSearchString = searchString.toLowerCase();
 
   return items.filter(({ name }) => name?.toLowerCase().includes(lowerCaseSearchString));
-};
-
-const renderListEmptyComponent = () => {
-  return (
-    <EmptyList
-      title={i18n.emptyScreen.selectorEmptyTitle}
-      message={i18n.emptyScreen.selectorEmptyMessage}
-      icon={MagnifyingGlass}
-    />
-  );
 };
 
 const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
@@ -88,7 +81,15 @@ const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
   });
 };
 
-export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedPool, disabled }: Props) => {
+export const PoolSelector = ({
+  chain,
+  onSelectItem,
+  from,
+  poolLoading,
+  selectedPool,
+  disabled,
+  setForceFetchValidator,
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const items = useGetValidatorList(chain, StakingType.POOLED) as NominationPoolDataType[];
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -100,6 +101,7 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
   }, [nominatorMetadata]);
   const poolSelectorRef = useRef<ModalRef>();
   const sortingModalRef = useRef<ModalRef>();
+  const defaultSelectPool = Object.assign({}, PREDEFINED_STAKING_POOL, { vara_network: 50 })[chain];
   const sortingOptions: SortOption[] = [
     {
       desc: false,
@@ -115,7 +117,7 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
 
   const FILTER_OPTIONS: FilterOption[] = [
     {
-      label: i18n.common.active,
+      label: i18n.common.open,
       value: 'Open',
     },
     {
@@ -142,8 +144,21 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
     });
   }, [items, sortSelection]);
 
+  const renderListEmptyComponent = useCallback(() => {
+    return (
+      <EmptyValidator
+        title={i18n.emptyScreen.selectorEmptyTitle}
+        message={i18n.emptyScreen.selectorEmptyMessage}
+        icon={MagnifyingGlass}
+        validatorTitle={getValidatorLabel(chain).toLowerCase()}
+        isDataEmpty={items.length === 0}
+        onClickReload={setForceFetchValidator}
+      />
+    );
+  }, [chain, items.length, setForceFetchValidator]);
+
   useEffect(() => {
-    const defaultSelectedPool = nominationPoolValueList[0] || String(PREDEFINED_STAKING_POOL[chain] || '');
+    const defaultSelectedPool = nominationPoolValueList[0] || String(defaultSelectPool || '');
 
     onSelectItem && onSelectItem(defaultSelectedPool);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -167,13 +182,14 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<NominationPoolDataType>) => {
-      const { address, name, id, bondedAmount, symbol, decimals } = item;
+      const { address, name, id, bondedAmount, symbol, decimals, isProfitable } = item;
 
       return (
         <StakingPoolItem
           address={address}
           decimals={decimals}
           id={id}
+          isProfitable={isProfitable}
           bondedAmount={bondedAmount}
           name={name}
           symbol={symbol}
@@ -200,6 +216,13 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
     [disabled, items.length, nominationPoolValueList.length],
   );
 
+  const onPressLightningBtn = useCallback(() => {
+    const poolId = defaultSelectPool;
+
+    poolId !== undefined && onSelectItem && onSelectItem(String(poolId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chain]);
+
   return (
     <>
       <FullSizeSelectModal
@@ -213,7 +236,6 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
         renderListEmptyComponent={renderListEmptyComponent}
         disabled={isDisabled}
         isShowFilterBtn={true}
-        onBackButtonPress={() => poolSelectorRef?.current?.onCloseModal()}
         filterOptions={FILTER_OPTIONS}
         filterFunction={filterFunction}
         onCloseModal={() => setSortSelection(SortKey.DEFAULT)}
@@ -225,7 +247,8 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
           <PoolSelectorField
             disabled={isDisabled}
             onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
-            onPressLightningBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
+            onPressLightningBtn={onPressLightningBtn}
+            showLightingBtn={!!defaultSelectPool}
             item={selectedPool}
             label={i18n.inputLabel.selectPool}
             loading={poolLoading}
@@ -249,7 +272,8 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
             renderCustomItem={renderSortingItem}>
             {
               <Button
-                icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
+                style={{ marginTop: 16 }}
+                icon={<Icon phosphorIcon={ArrowsClockwise} size={'md'} />}
                 onPress={() => {
                   setSortSelection(SortKey.DEFAULT);
                   sortingModalRef?.current?.onCloseModal();

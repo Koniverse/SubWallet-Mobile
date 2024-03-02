@@ -14,6 +14,7 @@ interface Props extends FieldBaseProps {
   value?: string;
   placeholder?: string;
   loading?: boolean;
+  showLightningBtn?: boolean;
   onPressBookBtn?: () => void;
   onPressLightningBtn?: () => void;
   disabled?: boolean;
@@ -44,6 +45,7 @@ export const ValidatorSelectorField = ({
   loading,
   onPressBookBtn,
   onPressLightningBtn,
+  showLightningBtn = false,
   disabled,
   ...fieldBase
 }: Props) => {
@@ -71,7 +73,7 @@ export const ValidatorSelectorField = ({
     const valueList = value.split(',');
 
     if (valueList.length > 1) {
-      return <Text style={textStyle}>{i18n.message.selectedXValidator(valueList.length)}</Text>;
+      return <Text style={textStyle}>{i18n.formatString(i18n.message.selectedXValidator, valueList.length)}</Text>;
     }
 
     return <Text style={textStyle}>{valueList[0].split('___')[1] || toShort(valueList[0].split('___')[0])}</Text>;
@@ -109,19 +111,21 @@ export const ValidatorSelectorField = ({
               }
               onPress={onPressBookBtn}
             />
-            <Button
-              size={'xs'}
-              type={'ghost'}
-              disabled={disabled}
-              icon={
-                <Icon
-                  phosphorIcon={Lightning}
-                  size={'sm'}
-                  iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
-                />
-              }
-              onPress={onPressLightningBtn}
-            />
+            {showLightningBtn && (
+              <Button
+                size={'xs'}
+                type={'ghost'}
+                disabled={disabled}
+                icon={
+                  <Icon
+                    phosphorIcon={Lightning}
+                    size={'sm'}
+                    iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
+                  />
+                }
+                onPress={onPressLightningBtn}
+              />
+            )}
           </View>
         )}
       </View>

@@ -14,7 +14,6 @@ export default (theme: ThemeTypes) =>
       flexDirection: 'row',
       alignItems: 'center',
       borderRadius: theme.borderRadiusLG,
-      marginBottom: theme.marginXS,
       height: 48,
     },
     inputTextStyle: {

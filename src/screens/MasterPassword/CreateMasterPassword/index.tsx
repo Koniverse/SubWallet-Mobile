@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { ScrollView, View } from 'react-native';
+import { Alert, Keyboard, Linking, ScrollView, Text, View } from 'react-native';
 import { CheckCircle, Info } from 'phosphor-react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -13,8 +13,11 @@ import { CreatePasswordProps, RootNavigationProps } from 'routes/index';
 import CreateMasterPasswordStyle from './style';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import AlertBox from 'components/design-system-ui/alert-box';
 import i18n from 'utils/i18n/i18n';
+import { RootState } from 'stores/index';
+import { useSelector } from 'react-redux';
+import { createKeychainPassword } from 'utils/account';
+import InputCheckBox from 'components/Input/InputCheckBox';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.password && isValidated.repeatPassword;
@@ -26,10 +29,12 @@ const CreateMasterPassword = ({
   },
 }: CreatePasswordProps) => {
   const navigation = useNavigation<RootNavigationProps>();
+  const { isUseBiometric } = useSelector(({ mobileSettings }: RootState) => mobileSettings);
   const theme = useSubWalletTheme().swThemes;
   const _style = CreateMasterPasswordStyle(theme);
   const [isBusy, setIsBusy] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [checked, setChecked] = useState<boolean>(false);
   useHandlerHardwareBackPress(true);
   const formConfig: FormControlConfig = {
     password: {
@@ -79,6 +84,9 @@ const CreateMasterPassword = ({
             } else {
               onComplete();
               // TODO: complete
+              if (isUseBiometric) {
+                createKeychainPassword(password);
+              }
             }
           })
           .catch(e => {
@@ -94,6 +102,12 @@ const CreateMasterPassword = ({
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
+
+  const showAlertWarning = () => {
+    Alert.alert(i18n.title.tickTheCheckbox, i18n.message.masterPasswordWarning, [
+      { text: i18n.buttonTitles.iUnderStand },
+    ]);
+  };
 
   const _onChangePasswordValue = (currentValue: string) => {
     if (formState.data.repeatPassword) {
@@ -139,30 +153,55 @@ const CreateMasterPassword = ({
           defaultValue={formState.data.repeatPassword}
           onChangeText={onChangeValue('repeatPassword')}
           errorMessages={formState.errors.repeatPassword}
-          onSubmitField={onSubmitField('repeatPassword')}
+          onSubmitField={checked ? onSubmitField('repeatPassword') : () => Keyboard.dismiss()}
           placeholder={i18n.placeholder.confirmPassword}
           isBusy={isBusy}
         />
 
-        <AlertBox
-          type={'warning'}
-          description={i18n.warning.warningPasswordMessage}
-          title={i18n.warning.warningPasswordTitle}
-        />
+        <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
+          {i18n.warning.warningPasswordMessage}
+        </Typography.Text>
       </ScrollView>
 
       <View style={_style.footerAreaStyle}>
+        <InputCheckBox
+          needFocusCheckBox
+          labelStyle={{ flex: 1 }}
+          checked={checked}
+          label={
+            <Typography.Text style={{ color: theme.colorWhite, marginLeft: theme.marginXS, flex: 1 }}>
+              {i18n.buttonTitles.masterPasswordCheckbox}
+              <Text
+                style={{
+                  textDecorationStyle: 'solid',
+                  textDecorationLine: 'underline',
+                  color: theme.colorPrimary,
+                  textDecorationColor: theme.colorPrimary,
+                }}
+                onPress={() =>
+                  Linking.openURL(
+                    'https://docs.subwallet.app/main/mobile-app-user-guide/getting-started/create-apply-change-and-what-to-do-when-forgot-password',
+                  )
+                }>
+                {i18n.buttonTitles.learnMore}
+              </Text>
+            </Typography.Text>
+          }
+          onPress={() => setChecked(!checked)}
+          checkBoxSize={20}
+        />
         <Button
           disabled={isDisabled}
+          showDisableStyle={!checked}
           icon={
             <Icon
               phosphorIcon={CheckCircle}
               size={'lg'}
               weight={'fill'}
-              iconColor={isDisabled ? theme.colorTextLight5 : theme.colorTextLight1}
+              iconColor={isDisabled || !checked ? theme.colorTextLight5 : theme.colorTextLight1}
             />
           }
-          onPress={onSubmit}>
+          onPress={checked ? onSubmit : showAlertWarning}>
           {i18n.buttonTitles.continue}
         </Button>
       </View>

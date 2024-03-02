@@ -2,9 +2,9 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
-import { isSameAddress } from '@subwallet/extension-base/utils';
+import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
-import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import {
   Keyboard,
   ScrollView,
@@ -24,17 +24,19 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { WebRunnerContext } from 'providers/contexts';
 import { Warning } from 'components/Warning';
 import { Button } from 'components/design-system-ui';
-import reformatAddress from 'utils/index';
-import { isEthereumAddress } from '@polkadot/util-crypto';
-import { FormState } from 'hooks/screen/useFormControl';
+import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { nftParamsHandler } from '../helper';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { evmNftSubmitTransaction, substrateNftSubmitTransaction } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { InputAddress } from 'components/Input/InputAddressV2';
+import { InputAddress } from 'components/Input/InputAddress';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { SendNFTProps } from 'routes/transaction/transactionAction';
+import { TransactionDone } from 'screens/Transaction/TransactionDone';
+import { useWatch } from 'react-hook-form';
+import { FormItem } from 'components/common/FormItem';
+import { ValidateResult } from 'react-hook-form/dist/types/validator';
 
 const DEFAULT_ITEM: NftItem = {
   collectionId: 'unknown',
@@ -68,9 +70,9 @@ const NftNameTextStyle: StyleProp<TextStyle> = {
   textAlign: 'center',
 };
 
-const InputStyle: StyleProp<any> = {
-  marginBottom: 8,
-};
+interface SendNftFormValues extends TransactionFormValues {
+  recipientAddress: string;
+}
 
 const SendNFT: React.FC<SendNFTProps> = ({
   route: {
@@ -81,42 +83,50 @@ const SendNFT: React.FC<SendNFTProps> = ({
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
+  const [recipientAddressInvalid, setRecipientAddressInvalid] = useState<boolean>(false);
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const addressPrefix = useGetChainPrefixBySlug(nftChain);
   const chainGenesisHash = chainInfoMap[nftChain]?.substrateInfo?.genesisHash || '';
+  const [isTransactionDone, setTransactionDone] = useState<boolean>(false);
+  const recipientAddressRules = useMemo(
+    () => ({
+      validate: (_recipientAddress: string): Promise<ValidateResult> => {
+        if (!isAddress(_recipientAddress)) {
+          return Promise.resolve(i18n.errorMessage.invalidRecipientAddress);
+        }
 
-  const validateRecipientAddress = (recipientAddress: string): string[] => {
-    if (!recipientAddress) {
-      return [];
-    }
+        if (!_recipientAddress) {
+          return Promise.resolve(undefined);
+        }
 
-    try {
-      reformatAddress(recipientAddress);
-    } catch (e) {
-      return [i18n.errorMessage.invalidRecipientAddress];
-    }
+        if (!isEthereumAddress(_recipientAddress)) {
+          const chainInfo = chainInfoMap[nftChain];
+          const _addressPrefix = chainInfo?.substrateInfo?.addressPrefix ?? 42;
+          const _addressOnChain = reformatAddress(_recipientAddress, _addressPrefix);
 
-    if (isSameAddress(recipientAddress, owner)) {
-      return [i18n.errorMessage.sameAddressError];
-    }
+          if (_addressOnChain !== _recipientAddress) {
+            return Promise.resolve(i18n.formatString(i18n.errorMessage.recipientAddressInvalid, chainInfo.name));
+          }
+        }
 
-    if (isEthereumAddress(recipientAddress) !== isEthereumAddress(owner)) {
-      const message = i18n.errorMessage.recipientAddressMustBeType(isEthereumAddress(owner) ? 'evm' : 'substrate');
+        if (isSameAddress(_recipientAddress, owner)) {
+          return Promise.resolve(i18n.errorMessage.sameAddressError);
+        }
 
-      return [message];
-    }
+        if (isEthereumAddress(_recipientAddress) !== isEthereumAddress(owner)) {
+          const message = i18n.formatString(
+            i18n.errorMessage.recipientAddressMustBeType,
+            isEthereumAddress(owner) ? 'evm' : 'substrate',
+          );
 
-    return [];
-  };
+          return Promise.resolve(message);
+        }
 
-  const NFTFormConfig = {
-    recipientAddress: {
-      require: true,
-      name: i18n.inputLabel.sendTo,
-      value: '',
-      validateFunc: validateRecipientAddress,
-    },
-  };
+        return Promise.resolve(undefined);
+      },
+    }),
+    [chainInfoMap, nftChain, owner],
+  );
 
   const nftItem = useMemo(
     (): NftItem =>
@@ -137,39 +147,58 @@ const SendNFT: React.FC<SendNFTProps> = ({
   );
 
   const [loading, setLoading] = useState(false);
-  const { title, formState, onChangeValue, onChangeChainValue, onDone } = useTransaction('send-nft', NFTFormConfig);
-  const isFormValid = Object.values(formState.isValidated).every(val => val);
-
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
-
-  const onChangeReceiverAddress = useCallback(
-    (currentTextValue: string) => {
-      onChangeValue('recipientAddress')(currentTextValue);
+  const {
+    title,
+    form: { getValues, control, handleSubmit },
+    onChangeChainValue,
+    onTransactionDone: onDone,
+    transactionDoneInfo,
+  } = useTransaction<SendNftFormValues>('send-nft', {
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      from: owner,
+      recipientAddress: '',
     },
-    [onChangeValue],
-  );
+  });
+
+  const { recipientAddress: recipientAddressValue } = {
+    ...useWatch<SendNftFormValues>({ control }),
+    ...getValues(),
+  };
+
+  const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
 
   const goBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
+  useEffect(() => {
+    recipientAddressRules.validate(recipientAddressValue).then(result => {
+      console.log(result);
+      setRecipientAddressInvalid(!!result);
+    });
+  }, [recipientAddressRules, recipientAddressValue]);
+
   const disableSubmit = useMemo(
-    () => !owner || !formState.isValidated.recipientAddress || !isFormValid || !isNetConnected || loading,
-    [formState.isValidated.recipientAddress, isFormValid, isNetConnected, loading, owner],
+    () => !owner || !isAddress(recipientAddressValue) || !isNetConnected || loading || recipientAddressInvalid,
+    [isNetConnected, loading, owner, recipientAddressInvalid, recipientAddressValue],
   );
 
   const onSubmitForm = useCallback(
-    async (_formState: FormState) => {
-      const isEthereumInterface = isEthereumAddress(owner);
-      const recipientAddress = _formState.data.recipientAddress;
-      const params = nftParamsHandler(nftItem, nftChain);
+    async (values: SendNftFormValues) => {
+      const { chain, from: _from, recipientAddress } = values;
+      const isEthereumInterface = isEthereumAddress(_from);
+
+      const from = reformatAddress(_from, addressPrefix);
+      const params = nftParamsHandler(nftItem, chain);
       let sendPromise: Promise<SWTransactionResponse>;
 
       if (isEthereumInterface) {
         // Send NFT with EVM interface
         sendPromise = evmNftSubmitTransaction({
-          senderAddress: owner,
-          networkKey: nftChain,
+          senderAddress: from,
+          networkKey: chain,
           recipientAddress,
           nftItemName: nftItem?.name,
           params,
@@ -178,9 +207,9 @@ const SendNFT: React.FC<SendNFTProps> = ({
       } else {
         // Send NFT with substrate interface
         sendPromise = substrateNftSubmitTransaction({
-          networkKey: nftChain,
+          networkKey: chain,
           recipientAddress,
-          senderAddress: owner,
+          senderAddress: from,
           nftItemName: nftItem?.name,
           params,
           nftItem,
@@ -199,66 +228,77 @@ const SendNFT: React.FC<SendNFTProps> = ({
           });
       }, 300);
     },
-    [nftChain, nftItem, onError, onSuccess, owner],
+    [addressPrefix, nftItem, onError, onSuccess],
   );
 
-  const handleSend = useCallback(() => {
-    if (isFormValid) {
-      onSubmitForm(formState).then();
-    }
-  }, [formState, isFormValid, onSubmitForm]);
+  const handleSend = useCallback(() => handleSubmit(onSubmitForm)(), [handleSubmit, onSubmitForm]);
 
   useEffect(() => {
     onChangeChainValue(nftItem.chain);
   }, [nftItem.chain, onChangeChainValue]);
 
   return (
-    <ContainerWithSubHeader
-      title={title}
-      isShowMainHeader={true}
-      disabledMainHeader={loading}
-      titleTextAlign={'left'}
-      onPressBack={goBack}
-      disabled={loading}
-      rightButtonTitle={i18n.transferNft.send}
-      disableRightButton={disableSubmit}
-      onPressRightIcon={handleSend}>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <>
-          <ScrollView style={{ ...ContainerHorizontalPadding, marginTop: 10 }} keyboardShouldPersistTaps={'handled'}>
-            <View style={ImageContainerStyle}>
-              <ImagePreview style={ImageStyle} mainUrl={nftItem.image} backupUrl={collectionInfo.image} />
-            </View>
-            <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
-            <InputAddress
-              ref={formState.refs.recipientAddress}
-              containerStyle={InputStyle}
-              showAddressBook
-              addressPrefix={addressPrefix}
-              networkGenesisHash={chainGenesisHash}
-              label={formState.labels.recipientAddress}
-              value={formState.data.recipientAddress}
-              onChangeText={onChangeReceiverAddress}
-              isValidValue={formState.isValidated.recipientAddress}
-              placeholder={i18n.placeholder.accountAddress}
-              onSubmitEditing={handleSend}
-              disabled={loading}
-            />
-            {!!formState.errors.recipientAddress.length && (
-              <Warning style={{ marginBottom: 8 }} message={formState.errors.recipientAddress[0]} isDanger />
-            )}
-            <NetworkField label={i18n.inputLabel.network} networkKey={nftItem.chain || ''} />
-            {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
-          </ScrollView>
+    <>
+      {!isTransactionDone ? (
+        <ContainerWithSubHeader
+          title={title}
+          isShowMainHeader={true}
+          disabledMainHeader={loading}
+          titleTextAlign={'left'}
+          onPressBack={goBack}
+          disabled={loading}
+          rightButtonTitle={i18n.transferNft.send}
+          disableRightButton={disableSubmit}
+          onPressRightIcon={handleSend}>
+          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <>
+              <ScrollView
+                style={{ ...ContainerHorizontalPadding, marginTop: 10 }}
+                keyboardShouldPersistTaps={'handled'}>
+                <View style={ImageContainerStyle}>
+                  <ImagePreview style={ImageStyle} mainUrl={nftItem.image} backupUrl={collectionInfo.image} />
+                </View>
+                <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
+                <FormItem
+                  style={{ marginBottom: 8 }}
+                  control={control}
+                  rules={recipientAddressRules}
+                  render={({ field: { value, ref, onChange, onBlur } }) => (
+                    <InputAddress
+                      ref={ref}
+                      showAddressBook
+                      addressPrefix={addressPrefix}
+                      networkGenesisHash={chainGenesisHash}
+                      label={i18n.inputLabel.sendTo}
+                      value={value}
+                      onChangeText={onChange}
+                      placeholder={i18n.placeholder.accountAddress}
+                      onSubmitEditing={handleSend}
+                      disabled={loading}
+                      chain={nftChain}
+                      fitNetwork
+                      onBlur={onBlur}
+                    />
+                  )}
+                  name={'recipientAddress'}
+                />
 
-          <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
-            <Button loading={loading} disabled={disableSubmit} onPress={handleSend}>
-              {i18n.transferNft.send}
-            </Button>
-          </View>
-        </>
-      </TouchableWithoutFeedback>
-    </ContainerWithSubHeader>
+                <NetworkField label={i18n.inputLabel.network} networkKey={nftItem.chain || ''} />
+                {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
+              </ScrollView>
+
+              <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
+                <Button loading={loading} disabled={disableSubmit} onPress={handleSend}>
+                  {i18n.transferNft.send}
+                </Button>
+              </View>
+            </>
+          </TouchableWithoutFeedback>
+        </ContainerWithSubHeader>
+      ) : (
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+      )}
+    </>
   );
 };
 

@@ -13,7 +13,6 @@ import { useFilterModal } from 'hooks/useFilterModal';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { LazySectionList, SectionItem } from 'components/LazySectionList';
 
-//TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
 export interface RightIconOpt {
   icon?: (iconProps: IconProps) => JSX.Element;
   title?: string;
@@ -59,6 +58,7 @@ interface Props<T> {
   };
   isShowMainHeader?: boolean;
   defaultSearchString?: string;
+  defaultSelectionMap?: Record<string, boolean>;
   androidKeyboardVerticalOffset?: number;
   titleTextAlign?: 'left' | 'center';
   getItemLayout?: (
@@ -100,6 +100,7 @@ export function FlatListScreen<T>({
   grouping,
   isShowMainHeader,
   defaultSearchString,
+  defaultSelectionMap,
   androidKeyboardVerticalOffset,
   titleTextAlign,
   getItemLayout,
@@ -107,7 +108,7 @@ export function FlatListScreen<T>({
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
   const searchRef = useRef<TextInput>(null);
   const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
-    useFilterModal();
+    useFilterModal(defaultSelectionMap);
 
   useEffect(() => {
     setTimeout(() => {

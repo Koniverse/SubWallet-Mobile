@@ -2,7 +2,7 @@ import useConfirmModal from 'hooks/modal/useConfirmModal';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { CaretDown, FloppyDiskBack, Plus, Trash } from 'phosphor-react-native';
-import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { DeviceEventEmitter, ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { RpcSelectField } from 'components/Field/RpcSelect';
 import { ProviderItemType, RpcSelectorModal } from 'components/common/RpcSelectorModal';
@@ -56,6 +56,8 @@ const validateBlockExplorer = (value: string): string[] => {
     return [];
   }
 };
+
+export const CHANGE_RPC_SELECTOR = 'CHANGE_RPC_SELECTOR';
 
 export const NetworkSettingDetail = ({
   route: {
@@ -273,6 +275,15 @@ export const NetworkSettingDetail = ({
       setChainInfo(_chainInfo);
     }
   }, [_chainInfo]);
+
+  useEffect(() => {
+    const unsubscribe = DeviceEventEmitter.addListener(CHANGE_RPC_SELECTOR, (data: string) => {
+      onChangeValue('currentProvider')(data);
+    });
+
+    return () => unsubscribe.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <ContainerWithSubHeader

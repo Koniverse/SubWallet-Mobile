@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';
-import { ArrowCounterClockwise, TrashSimple, WarningCircle } from 'phosphor-react-native';
+import { ArrowCounterClockwise, TrashSimple, WarningCircle, X } from 'phosphor-react-native';
 import { Button, Icon, PageIcon, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
 import { ThemeTypes } from 'styles/themes';
-import { noop } from 'utils/function';
+import ActionHeader from 'components/design-system-ui/modal/ActionHeader';
 
 interface Props {
   modalVisible: boolean;
@@ -33,12 +33,18 @@ export const ForgotPasswordModal = ({
   const styles = createStyle(theme);
   return (
     <SwModal
-      setVisible={noop}
+      setVisible={onReset}
       onChangeModalVisible={onCloseModalVisible}
       modalVisible={modalVisible}
-      modalTitle={i18n.common.forgotPassword}
       isUseForceHidden={false}
-      titleTextAlign={'center'}>
+      titleTextAlign={'center'}
+      renderHeader={
+        <ActionHeader
+          title={i18n.common.forgotPassword}
+          renderLeftAction={<Icon phosphorIcon={X} size="md" />}
+          onPressLeft={onCloseModalVisible}
+        />
+      }>
       <View style={styles.contentWrapper}>
         <PageIcon icon={WarningCircle} color={theme.colorError} />
         <Typography.Text style={styles.forgotMessage}>{i18n.message.forgotPasswordMessage}</Typography.Text>
@@ -49,6 +55,7 @@ export const ForgotPasswordModal = ({
             onPress={onReset(false)}
             loading={resetAccLoading}
             disabled={resetAccLoading || eraseAllLoading}
+            externalTextStyle={{ flex: 1 }}
             icon={renderLeftBtnIcon}>
             {i18n.common.resetAccount}
           </Button>

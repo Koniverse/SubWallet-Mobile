@@ -58,7 +58,7 @@ const Logo: React.FC<SWLogoProps> = ({
   return (
     <View>
       <Image
-        src={srcLogo ? { uri: srcLogo } : ImageLogosMap.default}
+        src={srcLogo ? (typeof srcLogo === 'string' ? { uri: srcLogo } : srcLogo) : ImageLogosMap.default}
         style={{ width: size, height: size, backgroundColor: 'transparent' }}
         squircleSize={size}
         shape={shape}
@@ -66,7 +66,7 @@ const Logo: React.FC<SWLogoProps> = ({
       {isShowSubIcon && !isShowSubLogo && <View style={_style.subLogoContainer}>{subIcon}</View>}
       {isShowSubLogo && (
         <Image
-          src={srcSubLogo ? { uri: srcSubLogo } : ImageLogosMap.default}
+          src={srcSubLogo ? (typeof srcSubLogo === 'string' ? { uri: srcSubLogo } : srcSubLogo) : ImageLogosMap.default}
           style={{ width: subLogoSize, height: subLogoSize }}
           squircleSize={subLogoSize}
           shape={subLogoShape}

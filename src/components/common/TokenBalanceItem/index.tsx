@@ -19,6 +19,7 @@ export const TokenBalanceItem = ({
   isReady,
   total,
   chain,
+  slug,
   isShowBalance,
   ...wrapperProps
 }: Props) => {
@@ -29,7 +30,7 @@ export const TokenBalanceItem = ({
     <TouchableOpacity style={{ width: '100%' }} {...wrapperProps}>
       <View style={_style.chainBalanceMainArea}>
         <View style={_style.chainBalancePart1}>
-          <Logo size={40} token={symbol.toLowerCase()} isShowSubLogo subNetwork={chain} />
+          <Logo size={40} token={slug.toLowerCase()} isShowSubLogo subNetwork={chain} />
         </View>
 
         <View style={_style.chainBalanceMetaWrapper}>

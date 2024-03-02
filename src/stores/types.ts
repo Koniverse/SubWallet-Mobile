@@ -2,17 +2,15 @@ import {
   ActiveCronAndSubscriptionMap,
   AddressBookState,
   AssetSetting,
-  BalanceItem,
+  CampaignBanner,
   ChainStakingMetadata,
   ConfirmationDefinitions,
   ConfirmationsQueue,
   ConfirmationType,
   CrowdloanItem,
   KeyringState,
-  LanguageType,
   NftCollection,
   NftItem,
-  NominationPoolInfo,
   NominatorMetadata,
   PriceJson,
   StakingItem,
@@ -33,8 +31,21 @@ import { SettingsStruct } from '@polkadot/ui-settings/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
+import {
+  BalanceMap,
+  BuyServiceInfo,
+  BuyTokenInfo,
+  EarningRewardHistoryItem,
+  EarningRewardItem,
+  NominationPoolInfo,
+  YieldPoolInfo,
+  YieldPoolTarget,
+  YieldPositionInfo,
+} from '@subwallet/extension-base/types';
 import { SessionTypes } from '@walletconnect/types';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
+import { MissionInfo } from 'types/missionPool';
+import { DAPPCategory, DAppInfo } from 'types/browser';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -81,12 +92,23 @@ export type ConfirmationSlice = {
 
 export type MobileSettingsSlice = {
   language: string;
-  pinCode: string;
   pinCodeEnabled: boolean;
-  faceIdEnabled: boolean;
-  autoLockTime: number | undefined;
+  faceIdEnabled: boolean; // deprecated
+  isUseBiometric: boolean;
+  timeAutoLock: LockTimeout;
   isPreventLock: boolean;
 };
+
+export enum LockTimeout {
+  NEVER = -1,
+  ALWAYS = 0,
+  _1MINUTE = 1,
+  _5MINUTE = 5,
+  _10MINUTE = 10,
+  _15MINUTE = 15,
+  _30MINUTE = 30,
+  _60MINUTE = 60,
+}
 
 export type SiteInfo = {
   name: string;
@@ -109,6 +131,8 @@ export type BrowserSlice = {
   whitelist: string[];
   history: StoredSiteInfo[];
   bookmarks: StoredSiteInfo[];
+  defaultDesktopMode: string[];
+  desktopMode: string[];
 };
 
 export type BackgroundServiceSlice = {
@@ -124,20 +148,15 @@ export interface BaseReduxStore {
   reduxStatus: ReduxStatus;
 }
 
-// todo: merge with UiSettings later
-export interface LocalUiSettings {
-  language: LanguageType;
-  isShowZeroBalance: boolean;
-}
-
-export interface AppSettings
-  extends LocalUiSettings,
-    UiSettings,
-    Omit<SettingsStruct, 'camera' | 'notification'>,
-    BaseReduxStore {
+export interface AppSettings extends UiSettings, Omit<SettingsStruct, 'camera' | 'notification'>, BaseReduxStore {
   authUrls: Record<string, AuthUrlInfo>;
   mediaAllowed: boolean;
   isDeepLinkConnect: boolean;
+  isShowBuyToken: boolean;
+  browserDApps: {
+    dApps: DAppInfo[] | undefined;
+    dAppCategories: DAPPCategory[] | undefined;
+  };
 }
 
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {
@@ -175,7 +194,11 @@ export interface ChainStore extends BaseReduxStore {
 }
 
 export interface BalanceStore extends BaseReduxStore {
-  balanceMap: Record<string, BalanceItem>;
+  balanceMap: BalanceMap;
+}
+
+export interface CampaignStore extends BaseReduxStore {
+  banners: CampaignBanner[];
 }
 
 export type PriceStore = PriceJson;
@@ -217,4 +240,22 @@ export type TransactionHistoryReducerType = {
 
 export interface WalletConnectStore extends BaseReduxStore {
   sessions: Record<string, SessionTypes.Struct>;
+}
+
+export interface MissionPoolStore extends BaseReduxStore {
+  missions: MissionInfo[];
+}
+
+export interface BuyServiceStore extends BaseReduxStore {
+  tokens: Record<string, BuyTokenInfo>;
+  services: Record<string, BuyServiceInfo>;
+}
+
+export interface EarningStore extends BaseReduxStore {
+  poolInfoMap: Record<string, YieldPoolInfo>;
+  yieldPositions: YieldPositionInfo[];
+  earningRewards: EarningRewardItem[];
+  rewardHistories: EarningRewardHistoryItem[];
+  minAmountPercentMap: Record<string, number>;
+  poolTargetsMap: Record<string, YieldPoolTarget[]>;
 }

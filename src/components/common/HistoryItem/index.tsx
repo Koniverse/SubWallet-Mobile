@@ -1,19 +1,25 @@
-import React from 'react';
-import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { TransactionHistoryDisplayItem } from 'types/history';
-import { CaretRight } from 'phosphor-react-native';
-import { Icon, Logo, Typography } from 'components/design-system-ui';
-import { Number } from 'components/design-system-ui';
-import { ExtrinsicStatus, TransactionDirection } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  ExtrinsicStatus,
+  ExtrinsicType,
+  TransactionDirection,
+  TransactionHistoryItem,
+} from '@subwallet/extension-base/background/KoniTypes';
+import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
+import { HideBalanceItem } from 'components/HideBalanceItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import HistoryItemStyles from './style';
-import { ThemeTypes } from 'styles/themes';
+import { CaretRight } from 'phosphor-react-native';
+import React, { useMemo } from 'react';
+import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { HistoryStatusMap } from 'screens/Home/History/shared';
+import { ThemeTypes } from 'styles/themes';
+import { TransactionHistoryDisplayItem } from 'types/history';
+import HistoryItemStyles from './style';
 
 interface Props {
   item: TransactionHistoryDisplayItem;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  isShowBalance?: boolean;
 }
 
 function getIconColor(status: ExtrinsicStatus, theme: ThemeTypes): string | undefined {
@@ -23,10 +29,16 @@ function getIconColor(status: ExtrinsicStatus, theme: ThemeTypes): string | unde
   return theme[color || ''];
 }
 
-export const HistoryItem = ({ item, onPress, style }: Props) => {
+export function isAbleToShowFee(item: TransactionHistoryItem): boolean {
+  return !!(item.fee && item.fee.value && item.fee.value !== '0');
+}
+
+export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const displayData = item.displayData;
   const _style = HistoryItemStyles(theme);
+
+  const showAmount = useMemo(() => item.type !== ExtrinsicType.TOKEN_APPROVE, [item.type]);
 
   return (
     <>
@@ -54,23 +66,34 @@ export const HistoryItem = ({ item, onPress, style }: Props) => {
 
         <View style={_style.rightPart}>
           <View style={{ alignItems: 'flex-end' }}>
-            <Number
-              decimal={item?.amount?.decimals || 0}
-              decimalOpacity={0.45}
-              suffix={item?.amount?.symbol}
-              value={item?.amount?.value || '0'}
-              textStyle={_style.upperText}
-            />
-            <Number
-              decimal={item?.fee?.decimals || 0}
-              decimalOpacity={1}
-              intOpacity={1}
-              suffix={item.fee?.symbol}
-              unitOpacity={1}
-              value={item.fee?.value || '0'}
-              size={theme.fontSizeSM}
-              textStyle={_style.lowerText}
-            />
+            {isShowBalance && (
+              <>
+                <Number
+                  decimal={item?.amount?.decimals || 0}
+                  intOpacity={showAmount ? 1 : 0}
+                  decimalOpacity={showAmount ? 0.45 : 0}
+                  suffix={item?.amount?.symbol}
+                  value={item?.amount?.value || '0'}
+                  textStyle={_style.upperText}
+                />
+                {isAbleToShowFee(item) ? (
+                  <Number
+                    decimal={item?.fee?.decimals || 0}
+                    decimalOpacity={1}
+                    intOpacity={1}
+                    suffix={item.fee?.symbol}
+                    unitOpacity={1}
+                    value={item.fee?.value || '0'}
+                    size={theme.fontSizeSM}
+                    textStyle={_style.lowerText}
+                  />
+                ) : (
+                  <View style={{ height: 20 }} />
+                )}
+              </>
+            )}
+
+            {!isShowBalance && <HideBalanceItem isShowConvertedBalance={isAbleToShowFee(item)} />}
           </View>
 
           <View style={_style.arrowWrapper}>

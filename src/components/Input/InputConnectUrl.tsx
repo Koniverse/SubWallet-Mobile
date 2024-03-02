@@ -20,7 +20,10 @@ import { RootNavigationProps } from 'routes/index';
 interface Props extends InputProps {
   isValidValue?: boolean;
   showAvatar?: boolean;
-  scannerProps?: Omit<AddressScannerProps, 'onChangeAddress' | 'onPressCancel' | 'qrModalVisible'>;
+  scannerProps?: Omit<
+    AddressScannerProps,
+    'onChangeAddress' | 'onPressCancel' | 'qrModalVisible' | 'setQrModalVisible'
+  >;
   isShowQrModalVisible: boolean;
   setQrModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -154,6 +157,7 @@ const Component = (
         onChangeAddress={onScanInputText}
         isShowError
         error={error}
+        setQrModalVisible={setQrModalVisible}
       />
     </>
   );

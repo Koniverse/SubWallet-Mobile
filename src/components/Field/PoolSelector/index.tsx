@@ -1,3 +1,4 @@
+import { NominationPoolInfo } from '@subwallet/extension-base/types';
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
@@ -5,7 +6,6 @@ import { FontSemiBold } from 'styles/sharedStyles';
 import { Book, Lightning } from 'phosphor-react-native';
 import { ActivityIndicator, Avatar, Button, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { NominationPoolInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { toShort } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
 
@@ -17,6 +17,7 @@ interface Props extends FieldBaseProps {
   disabled?: boolean;
   onPressBookBtn?: () => void;
   onPressLightningBtn?: () => void;
+  showLightingBtn?: boolean;
 }
 
 const accountNameTextStyle: StyleProp<any> = {
@@ -46,6 +47,7 @@ export const PoolSelectorField = ({
   disabled,
   onPressBookBtn,
   onPressLightningBtn,
+  showLightingBtn = true,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -83,19 +85,21 @@ export const PoolSelectorField = ({
               }
               onPress={onPressBookBtn}
             />
-            <Button
-              disabled={disabled}
-              size={'xs'}
-              type={'ghost'}
-              icon={
-                <Icon
-                  phosphorIcon={Lightning}
-                  size={'sm'}
-                  iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
-                />
-              }
-              onPress={onPressLightningBtn}
-            />
+            {showLightingBtn && (
+              <Button
+                disabled={disabled}
+                size={'xs'}
+                type={'ghost'}
+                icon={
+                  <Icon
+                    phosphorIcon={Lightning}
+                    size={'sm'}
+                    iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
+                  />
+                }
+                onPress={onPressLightningBtn}
+              />
+            )}
           </View>
         )}
       </View>

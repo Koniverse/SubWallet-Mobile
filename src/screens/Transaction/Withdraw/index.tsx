@@ -1,114 +1,158 @@
+import { getAstarWithdrawable } from '@subwallet/extension-base/services/earning-service/handlers/native-staking/astar';
+import {
+  RequestYieldWithdrawal,
+  UnstakingInfo,
+  UnstakingStatus,
+  YieldPoolType,
+  YieldPositionInfo,
+} from '@subwallet/extension-base/types';
+import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
-import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { ScrollView, View } from 'react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import { useSelector } from 'react-redux';
+import { accountFilterFunc } from 'screens/Transaction/helper/earning';
 import { RootState } from 'stores/index';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isSameAddress } from '@subwallet/extension-base/utils';
-import {
-  NominatorMetadata,
-  RequestStakeWithdrawal,
-  StakingType,
-  UnstakingInfo,
-  UnstakingStatus,
-} from '@subwallet/extension-base/background/KoniTypes';
-import { accountFilterFunc } from 'screens/Transaction/helper/staking';
+import { AmountData, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
-import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import MetaInfo from 'components/MetaInfo';
 import { isAccountAll } from 'utils/accountAll';
-import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
-import { isActionFromValidator } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
-import { submitStakeWithdrawal } from 'messaging/index';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { WithdrawProps } from 'routes/transaction/transactionAction';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
-import { getAstarWithdrawable } from '@subwallet/extension-base/koni/api/staking/bonding/astar';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { useWatch } from 'react-hook-form';
+import { TransactionDone } from 'screens/Transaction/TransactionDone';
+import { useGetBalance } from 'hooks/balance';
+import { getInputValuesFromString } from 'components/Input/InputAmount';
+import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
+import useYieldPositionDetail from '../../../hooks/earning/useYieldPositionDetail';
+import { yieldSubmitStakingWithdrawal } from 'messaging/index';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
-  allNominatorInfo: NominatorMetadata[],
-  stakingType: StakingType,
-  stakingChain?: string,
+  allPositionInfos: YieldPositionInfo[],
+  poolType: YieldPoolType,
+  poolChain?: string,
 ): ((account: AccountJson) => boolean) => {
   return (account: AccountJson): boolean => {
-    const nomination = allNominatorInfo.find(data => isSameAddress(data.address, account.address));
+    const nomination = allPositionInfos.find(data => isSameAddress(data.address, account.address));
 
     return (
       (nomination
         ? nomination.unstakings.filter(data => data.status === UnstakingStatus.CLAIMABLE).length > 0
-        : false) && accountFilterFunc(chainInfoMap, stakingType, stakingChain)(account)
+        : false) && accountFilterFunc(chainInfoMap, poolType, poolChain)(account)
     );
   };
 };
 
 export const Withdraw = ({
   route: {
-    params: { chain: stakingChain, type: _stakingType },
+    params: { slug },
   },
 }: WithdrawProps) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<StakingScreenNavigationProps>();
-  const stakingType = _stakingType as StakingType;
+
   const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+  const { poolInfoMap } = useSelector((state: RootState) => state.earning);
+
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
-  const withDrawFormConfig = {};
-  const { title, formState, onDone, onChangeFromValue, onChangeValue } = useTransaction('withdraw', withDrawFormConfig);
-  const { from, chain } = formState.data;
-  const allNominatorInfo = useGetNominatorInfo(stakingChain, stakingType);
-  const nominatorInfo = useGetNominatorInfo(stakingChain, stakingType, from);
-  const nominatorMetadata = nominatorInfo[0];
-  const accountInfo = useGetAccountByAddress(from);
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
+  const [isTransactionDone, setTransactionDone] = useState(false);
+  const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
+
+  const {
+    title,
+    onTransactionDone: onDone,
+    onChangeFromValue: setFrom,
+    onChangeChainValue: setChain,
+    form: {
+      control,
+      formState: { errors },
+    },
+    transactionDoneInfo,
+  } = useTransaction('withdraw', {
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
+  const chainValue = useWatch<TransactionFormValues>({ name: 'chain', control });
+  const fromValue = useWatch<TransactionFormValues>({ name: 'from', control });
+
+  const { list: allPositionInfos } = useYieldPositionDetail(slug);
+  const { list: yieldPositions } = useYieldPositionDetail(slug, fromValue);
+  const yieldPosition = yieldPositions[0];
+
+  const accountInfo = useGetAccountByAddress(fromValue);
+  const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
+  const stakingChain = useMemo(() => poolInfo?.chain || '', [poolInfo?.chain]);
+
+  const inputAsset = useGetChainAssetInfo(poolInfo.metadata.inputAsset);
+  const decimals = inputAsset?.decimals || 0;
+  const symbol = inputAsset?.symbol || '';
+
   const accountSelectorRef = useRef<ModalRef>();
+  const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
+  const existentialDeposit = useMemo(() => {
+    const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
+    if (assetInfo) {
+      return assetInfo.minAmount || '0';
+    }
 
-  useEffect(() => {
-    // Trick to trigger validate when case single account
-    setTimeout(() => {
-      if (from || !formState.errors.from) {
-        setIsDisabled(false);
-      }
-    }, 500);
-  }, [formState.errors.from, from]);
-
-  useEffect(() => {
-    onChangeValue('chain')(stakingChain || '');
-  }, [onChangeValue, stakingChain]);
+    return '0';
+  }, [assetRegistry, chainValue]);
+  const handleDataForInsufficientAlert = useCallback(
+    (estimateFee: AmountData) => {
+      return {
+        existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
+        availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
+        maintainBalance: getInputValuesFromString(poolInfo.metadata.maintainBalance || '0', estimateFee.decimals),
+        symbol: estimateFee.symbol,
+      };
+    },
+    [existentialDeposit, nativeTokenBalance.value, poolInfo.metadata.maintainBalance],
+  );
+  const { onError, onSuccess } = useHandleSubmitTransaction(
+    onDone,
+    setTransactionDone,
+    undefined,
+    undefined,
+    handleDataForInsufficientAlert,
+  );
 
   const accountList = useMemo(() => {
-    return accounts.filter(filterAccount(chainInfoMap, allNominatorInfo, stakingType));
-  }, [accounts, allNominatorInfo, chainInfoMap, stakingType]);
+    return accounts.filter(filterAccount(chainInfoMap, allPositionInfos, poolInfo.type));
+  }, [accounts, allPositionInfos, chainInfoMap, poolInfo.type]);
 
   const unstakingInfo = useMemo((): UnstakingInfo | undefined => {
-    if (from && !isAccountAll(from) && !!nominatorMetadata) {
-      if (_STAKING_CHAIN_GROUP.astar.includes(nominatorMetadata.chain)) {
-        return getAstarWithdrawable(nominatorMetadata);
+    if (fromValue && !isAccountAll(fromValue) && !!yieldPosition) {
+      if (_STAKING_CHAIN_GROUP.astar.includes(yieldPosition.chain)) {
+        return getAstarWithdrawable(yieldPosition);
       }
-      return nominatorMetadata.unstakings.filter(data => data.status === UnstakingStatus.CLAIMABLE)[0];
+      return yieldPosition.unstakings.filter(data => data.status === UnstakingStatus.CLAIMABLE)[0];
     }
 
     return undefined;
-  }, [from, nominatorMetadata]);
+  }, [fromValue, yieldPosition]);
 
-  const { decimals, symbol } = useGetNativeTokenBasicInfo(chain);
-
-  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, from);
+  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
 
   const onSubmit = useCallback(() => {
     setLoading(true);
@@ -119,93 +163,117 @@ export const Withdraw = ({
       return;
     }
 
-    const params: RequestStakeWithdrawal = {
+    const params: RequestYieldWithdrawal = {
+      address: fromValue,
+      slug: slug,
       unstakingInfo: unstakingInfo,
-      chain: nominatorMetadata.chain,
-      nominatorMetadata,
     };
 
-    if (isActionFromValidator(stakingType, chain)) {
-      params.validatorAddress = unstakingInfo.validatorAddress;
-    }
-
     setTimeout(() => {
-      submitStakeWithdrawal(params)
+      yieldSubmitStakingWithdrawal(params)
         .then(onSuccess)
         .catch(onError)
         .finally(() => {
           setLoading(false);
         });
     }, 300);
-  }, [chain, nominatorMetadata, onError, onSuccess, stakingType, unstakingInfo]);
+  }, [unstakingInfo, fromValue, slug, onSuccess, onError]);
+
+  useEffect(() => {
+    // Trick to trigger validate when case single account
+    setTimeout(() => {
+      if (fromValue || !errors.from) {
+        setIsDisabled(false);
+      }
+    }, 500);
+  }, [errors.from, fromValue]);
+
+  useEffect(() => {
+    setChain(stakingChain || '');
+  }, [setChain, stakingChain]);
+
+  useEffect(() => {
+    if (!fromValue && accountList.length === 1) {
+      setFrom(accountList[0].address);
+    }
+  }, [accountList, fromValue, setFrom]);
 
   return (
-    <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
-      <>
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
-          {isAllAccount && (
-            <AccountSelector
-              items={accountList}
-              selectedValueMap={{ [from]: true }}
-              renderSelected={() => <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />}
-              onSelectItem={item => {
-                onChangeFromValue(item.address);
-                accountSelectorRef && accountSelectorRef.current?.onCloseModal();
-              }}
-              accountSelectorRef={accountSelectorRef}
-              disabled={loading}
-            />
-          )}
-
-          <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={from} chain={chain} />
-
-          <MetaInfo hasBackgroundWrapper>
-            <MetaInfo.Chain chain={chain} label={i18n.inputLabel.network} />
-
-            {unstakingInfo && (
-              <MetaInfo.Number
-                decimals={decimals}
-                label={i18n.inputLabel.amount}
-                suffix={symbol}
-                value={unstakingInfo.claimable}
+    <>
+      {!isTransactionDone ? (
+        <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
+          <>
+            <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+              <AccountSelector
+                items={accountList}
+                selectedValueMap={{ [fromValue]: true }}
+                renderSelected={() => (
+                  <AccountSelectField accountName={accountInfo?.name || ''} value={fromValue} showIcon />
+                )}
+                onSelectItem={item => {
+                  setFrom(item.address);
+                  accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                }}
+                accountSelectorRef={accountSelectorRef}
+                disabled={loading || !isAllAccount}
               />
-            )}
-          </MetaInfo>
-        </ScrollView>
 
-        <View style={{ paddingHorizontal: 16, paddingTop: 16, flexDirection: 'row', ...MarginBottomForSubmitButton }}>
-          <Button
-            disabled={loading}
-            style={{ flex: 1, marginRight: 4 }}
-            type={'secondary'}
-            onPress={() => navigation.goBack()}
-            icon={
-              <Icon
-                phosphorIcon={XCircle}
-                weight={'fill'}
-                size={'lg'}
-                iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
-              />
-            }>
-            {i18n.buttonTitles.cancel}
-          </Button>
-          <Button
-            style={{ flex: 1, marginLeft: 4 }}
-            disabled={isDisabled || loading}
-            loading={loading}
-            icon={
-              <Icon
-                phosphorIcon={ArrowCircleRight}
-                weight={'fill'}
-                size={'lg'}
-                iconColor={isDisabled ? theme.colorTextLight5 : theme.colorWhite}
-              />
-            }
-            onPress={onPreCheckReadOnly(onSubmit)}>
-            {i18n.buttonTitles.continue}
-          </Button>
-        </View>
-      </>
-    </TransactionLayout>
+              <GeneralFreeBalance address={fromValue} chain={chainValue} onBalanceReady={setIsBalanceReady} />
+
+              <MetaInfo hasBackgroundWrapper>
+                <MetaInfo.Chain chain={chainValue} label={i18n.inputLabel.network} />
+
+                {unstakingInfo && (
+                  <MetaInfo.Number
+                    decimals={decimals}
+                    label={i18n.inputLabel.amount}
+                    suffix={symbol}
+                    value={unstakingInfo.claimable}
+                  />
+                )}
+              </MetaInfo>
+            </ScrollView>
+
+            <View
+              style={{ paddingHorizontal: 16, paddingTop: 16, flexDirection: 'row', ...MarginBottomForSubmitButton }}>
+              <Button
+                disabled={loading}
+                style={{ flex: 1, marginRight: 4 }}
+                type={'secondary'}
+                onPress={() => navigation.goBack()}
+                icon={
+                  <Icon
+                    phosphorIcon={XCircle}
+                    weight={'fill'}
+                    size={'lg'}
+                    iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
+                  />
+                }>
+                {i18n.buttonTitles.cancel}
+              </Button>
+              <Button
+                style={{ flex: 1, marginLeft: 4 }}
+                disabled={!fromValue || isDisabled || loading || !isBalanceReady}
+                loading={loading}
+                icon={
+                  <Icon
+                    phosphorIcon={ArrowCircleRight}
+                    weight={'fill'}
+                    size={'lg'}
+                    iconColor={
+                      !fromValue || isDisabled || loading || !isBalanceReady ? theme.colorTextLight5 : theme.colorWhite
+                    }
+                  />
+                }
+                onPress={onPreCheckReadOnly(onSubmit)}>
+                {i18n.buttonTitles.continue}
+              </Button>
+            </View>
+          </>
+        </TransactionLayout>
+      ) : (
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} extrinsicType={ExtrinsicType.STAKING_WITHDRAW} />
+      )}
+    </>
   );
 };
