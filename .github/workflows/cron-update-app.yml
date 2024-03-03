@@ -2,7 +2,7 @@ name: Check for New App Version
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '0 0 * * *'
 
 jobs:
   check-version:
