@@ -5,7 +5,6 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { ListChecks, Plus } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, NetworksSettingProps } from 'routes/index';
-import useChainInfoWithState, { ChainInfoWithState } from 'hooks/chain/useChainInfoWithState';
 import { updateChainActiveState } from 'messaging/index';
 import {
   _isChainEvmCompatible,
@@ -14,6 +13,9 @@ import {
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
+import useChainInfoWithStateAndStatus, {
+  ChainInfoWithStateAnhStatus,
+} from 'hooks/chain/useChainInfoWithStateAndStatus';
 
 let chainKeys: Array<string> | undefined;
 
@@ -27,7 +29,7 @@ enum FilterValue {
   EVM = 'evm',
 }
 
-const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
+const searchFunction = (items: ChainInfoWithStateAnhStatus[], searchString: string) => {
   if (!searchString) {
     return items;
   }
@@ -35,7 +37,7 @@ const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
   return items.filter(network => network && network.name.toLowerCase().includes(searchString.toLowerCase()));
 };
 
-const filterFunction = (items: ChainInfoWithState[], filters: string[]) => {
+const filterFunction = (items: ChainInfoWithStateAnhStatus[], filters: string[]) => {
   if (!filters.length) {
     return items;
   }
@@ -75,10 +77,10 @@ const filterFunction = (items: ChainInfoWithState[], filters: string[]) => {
 };
 
 const processChainMap = (
-  chainInfoMap: Record<string, ChainInfoWithState>,
+  chainInfoMap: Record<string, ChainInfoWithStateAnhStatus>,
   pendingKeys = Object.keys(cachePendingChainMap),
   updateKeys = false,
-): ChainInfoWithState[] => {
+): ChainInfoWithStateAnhStatus[] => {
   if (!chainKeys || updateKeys) {
     chainKeys = Object.keys(chainInfoMap)
       .filter(key => Object.keys(chainInfoMap[key].providers).length > 0)
@@ -102,7 +104,7 @@ const processChainMap = (
 export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => {
   const defaultSearchString = params?.chainName;
   const navigation = useNavigation<RootNavigationProps>();
-  const chainInfoMap = useChainInfoWithState();
+  const chainInfoMap = useChainInfoWithStateAndStatus();
   const [isToggleItem, setToggleItem] = useState(false);
   const [pendingChainMap, setPendingChainMap] = useState<Record<string, boolean>>(cachePendingChainMap);
   const [currentChainList, setCurrentChainList] = useState(processChainMap(chainInfoMap));
@@ -136,7 +138,7 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
     cachePendingChainMap = pendingChainMap;
   }, [pendingChainMap]);
 
-  const onToggleItem = (item: ChainInfoWithState) => {
+  const onToggleItem = (item: ChainInfoWithStateAnhStatus) => {
     setToggleItem(true);
     setPendingChainMap({ ...pendingChainMap, [item.slug]: !item.active });
     const reject = () => {
@@ -155,7 +157,7 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
       .catch(reject);
   };
 
-  const renderItem = ({ item }: ListRenderItemInfo<ChainInfoWithState>) => {
+  const renderItem = ({ item }: ListRenderItemInfo<ChainInfoWithStateAnhStatus>) => {
     return (
       <NetworkAndTokenToggleItem
         isDisableSwitching={

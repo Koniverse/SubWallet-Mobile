@@ -381,7 +381,7 @@ export const SendFund = ({
     chainInfo,
   } = useGetBalance(chainValue, fromValue, assetValue);
 
-  const { chainInfoMap, chainStateMap } = useSelector((root: RootState) => root.chainStore);
+  const { chainInfoMap, chainStatusMap } = useSelector((root: RootState) => root.chainStore);
   const { assetSettingMap, multiChainAssetMap, xcmRefMap } = useSelector((root: RootState) => root.assetRegistry);
   const assetRegistry = useChainAssets().chainAssetRegistry;
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
@@ -396,7 +396,7 @@ export const SendFund = ({
   const [, update] = useState({});
   const [isBalanceReady, setIsBalanceReady] = useState(true);
   const [forceUpdateValue, setForceUpdateValue] = useState<{ value: string | null } | undefined>(undefined);
-  const chainStatus = useMemo(() => chainStateMap[chainValue]?.connectionStatus, [chainValue, chainStateMap]);
+  const chainStatus = useMemo(() => chainStatusMap[chainValue]?.connectionStatus, [chainStatusMap, chainValue]);
 
   const senderAccountName = useMemo(() => {
     if (!fromValue) {

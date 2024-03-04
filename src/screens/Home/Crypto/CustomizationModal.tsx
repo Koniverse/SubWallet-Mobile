@@ -3,7 +3,6 @@ import { ListRenderItemInfo } from 'react-native';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
-import useChainInfoWithState, { ChainInfoWithState } from 'hooks/chain/useChainInfoWithState';
 import { updateChainActiveState } from 'messaging/index';
 import { FlatListScreenPaddingTop, FontSemiBold } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
@@ -17,6 +16,9 @@ import { SwFullSizeModal, Typography } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import useChainInfoWithStateAndStatus, {
+  ChainInfoWithStateAnhStatus,
+} from 'hooks/chain/useChainInfoWithStateAndStatus';
 
 interface Props {
   modalVisible: boolean;
@@ -27,17 +29,17 @@ let chainKeys: Array<string> | undefined;
 
 let cachePendingChainMap: Record<string, boolean> = {};
 
-const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
+const searchFunction = (items: ChainInfoWithStateAnhStatus[], searchString: string) => {
   return items.filter(network =>
     network && network.name ? network.name.toLowerCase().includes(searchString.toLowerCase()) : false,
   );
 };
 
 const processChainMap = (
-  chainInfoMap: Record<string, ChainInfoWithState>,
+  chainInfoMap: Record<string, ChainInfoWithStateAnhStatus>,
   pendingKeys = Object.keys(cachePendingChainMap),
   updateKeys = false,
-): ChainInfoWithState[] => {
+): ChainInfoWithStateAnhStatus[] => {
   if (!chainKeys || updateKeys) {
     chainKeys = Object.keys(chainInfoMap)
       .filter(key => Object.keys(chainInfoMap[key].providers).length > 0)
@@ -61,7 +63,7 @@ const processChainMap = (
 export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const isShowZeroBalance = useSelector((state: RootState) => state.settings.isShowZeroBalance);
-  const chainInfoMap = useChainInfoWithState();
+  const chainInfoMap = useChainInfoWithStateAndStatus();
   const [pendingChainMap, setPendingChainMap] = useState<Record<string, boolean>>(cachePendingChainMap);
   const [currentChainList, setCurrentChainList] = useState(processChainMap(chainInfoMap));
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
@@ -100,7 +102,7 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
     cachePendingChainMap = pendingChainMap;
   }, [pendingChainMap]);
 
-  const onToggleItem = (item: ChainInfoWithState) => {
+  const onToggleItem = (item: ChainInfoWithStateAnhStatus) => {
     setPendingChainMap({ ...pendingChainMap, [item.slug]: !item.active });
     const reject = () => {
       console.warn('Toggle network request failed!');
@@ -118,7 +120,7 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
       .catch(reject);
   };
 
-  const renderItem = ({ item }: ListRenderItemInfo<ChainInfoWithState>) => {
+  const renderItem = ({ item }: ListRenderItemInfo<ChainInfoWithStateAnhStatus>) => {
     return (
       <NetworkAndTokenToggleItem
         isDisableSwitching={
