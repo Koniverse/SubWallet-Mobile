@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
-import { FlatList, ListRenderItemInfo, RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
+import { ListRenderItemInfo, RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useLazyList } from 'hooks/common/useLazyList';
 import { defaultSortFunc } from 'utils/function';
 import { SortFunctionInterface } from 'types/ui-types';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { FlashList } from '@shopify/flash-list';
 
 interface Props<T> {
   items: T[];
@@ -26,6 +27,7 @@ interface Props<T> {
     data: readonly T[] | null | undefined,
     index: number,
   ) => { length: number; offset: number; index: number };
+  estimatedItemSize?: number;
 }
 
 const ItemSeparatorStyle: StyleProp<ViewStyle> = {
@@ -51,9 +53,10 @@ export function LazyFlatList<T>({
   sortFunction = defaultSortFunc,
   isShowListWrapper,
   getItemLayout,
+  estimatedItemSize,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
-  const flatListRef = useRef<FlatList>(null);
+  const flatListRef = useRef<FlashList<T>>(null);
   const filteredItems = useMemo(() => {
     let searchItem = searchFunction ? searchFunction(items, searchString) : items;
 
@@ -61,6 +64,21 @@ export function LazyFlatList<T>({
   }, [searchFunction, items, searchString, filterFunction, selectedFilters]);
   const sortedItems = useMemo(() => filteredItems.sort(sortFunction), [filteredItems, sortFunction]);
   const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(sortedItems);
+  const styleWrapper = [
+    isShowListWrapper
+      ? {
+          backgroundColor: '#1A1A1A',
+          marginHorizontal: 16,
+          borderRadius: 8,
+          // marginBottom: 94,
+          paddingVertical: 8,
+          flex: 1,
+        }
+      : {},
+    {
+      flex: 1,
+    },
+  ];
 
   useEffect(() => {
     let unmount = false;
@@ -99,27 +117,16 @@ export function LazyFlatList<T>({
   return (
     <>
       {lazyList.length ? (
-        <View
-          style={[
-            isShowListWrapper
-              ? {
-                  backgroundColor: '#1A1A1A',
-                  marginHorizontal: 16,
-                  borderRadius: 8,
-                  // marginBottom: 94,
-                  paddingVertical: 8,
-                  flex: 1,
-                }
-              : {},
-            {
-              flex: 1,
-            },
-          ]}>
-          <FlatList
+        <View style={styleWrapper}>
+          <FlashList
             ref={flatListRef}
             style={{ ...ScrollViewStyle }}
             keyboardShouldPersistTaps={'handled'}
             data={lazyList}
+            onBlankArea={() => {
+              return null;
+            }}
+            estimatedItemSize={estimatedItemSize}
             onEndReached={onLoadMore}
             renderItem={renderItem}
             numColumns={numberColumns}

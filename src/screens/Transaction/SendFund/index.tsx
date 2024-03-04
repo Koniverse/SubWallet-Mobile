@@ -1098,6 +1098,18 @@ export const SendFund = ({
     };
   }, [setFocus, viewStep]);
 
+  const renderSelectedToken = useCallback(
+    () => (
+      <TokenSelectField
+        logoKey={currentChainAsset?.slug || ''}
+        subLogoKey={currentChainAsset?.originChain || ''}
+        value={currentChainAsset?.symbol || ''}
+        outerStyle={{ marginBottom: 0 }}
+        showIcon
+      />
+    ),
+    [currentChainAsset?.originChain, currentChainAsset?.slug, currentChainAsset?.symbol],
+  );
   return (
     <>
       {!transactionDone ? (
@@ -1149,15 +1161,7 @@ export const SendFund = ({
                         onSelectItem={_onChangeAsset}
                         showAddBtn={false}
                         tokenSelectorRef={tokenSelectorRef}
-                        renderSelected={() => (
-                          <TokenSelectField
-                            logoKey={currentChainAsset?.slug || ''}
-                            subLogoKey={currentChainAsset?.originChain || ''}
-                            value={currentChainAsset?.symbol || ''}
-                            outerStyle={{ marginBottom: 0 }}
-                            showIcon
-                          />
-                        )}
+                        renderSelected={renderSelectedToken}
                         disabled={!tokenItems.length || loading || viewStep === 2}
                       />
                     </View>

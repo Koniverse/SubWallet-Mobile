@@ -251,6 +251,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onBack}
+        estimatedItemSize={113}
         // rightIconOption={rightIconOption}
         isShowFilterBtn
         isShowMainHeader

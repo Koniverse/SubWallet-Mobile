@@ -150,6 +150,7 @@ function createStyleSheet(theme: ThemeTypes) {
       paddingLeft: theme.paddingSM,
       paddingTop: theme.paddingSM - 1,
       paddingBottom: theme.paddingSM - 1,
+      marginBottom: theme.marginXS,
       backgroundColor: theme.colorBgSecondary,
       borderRadius: theme.borderRadiusLG,
       alignItems: 'center',

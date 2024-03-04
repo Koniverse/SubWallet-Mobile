@@ -245,6 +245,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
       flatListStyle={styles.container}
       renderItem={renderItem}
       rightIconOption={rightIconOption}
+      estimatedItemSize={76}
       isShowFilterBtn
       isShowMainHeader
       refreshControl={

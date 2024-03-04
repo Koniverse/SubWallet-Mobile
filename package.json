@@ -57,6 +57,7 @@
     "@react-navigation/native": "^6.1.2",
     "@react-navigation/native-stack": "^6.9.8",
     "@reduxjs/toolkit": "^1.9.2",
+    "@shopify/flash-list": "^1.6.3",
     "@subwallet/extension-chains": "1.1.33-0",
     "@subwallet/extension-dapp": "1.1.33-0",
     "@subwallet/keyring": "0.1.1",

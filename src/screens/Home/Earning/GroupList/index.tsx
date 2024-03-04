@@ -302,6 +302,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         flatListStyle={styles.container}
         renderItem={renderItem}
         onPressBack={onBack}
+        estimatedItemSize={74}
         isShowFilterBtn
         isShowMainHeader
         refreshControl={

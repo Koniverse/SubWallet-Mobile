@@ -111,6 +111,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
         },
         tabBarActiveTintColor: ColorMap.light,
         tabBarInactiveTintColor: '#777777',
+        freezeOnBlur: true,
       }}>
       <Tab.Screen
         name={'Tokens'}

@@ -217,6 +217,7 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
       isShowFilterBtn
       filterFunction={filterFunction}
       isShowListWrapper={true}
+      estimatedItemSize={61}
     />
   );
 };

@@ -88,6 +88,7 @@ const NftCollectionList = () => {
         items={nftCollections}
         placeholder={i18n.placeholder.searchCollectionName}
         flatListStyle={{ flex: 1 }}
+        estimatedItemSize={228.7}
         rightIconOption={{
           icon: Plus,
           onPress: () => {
