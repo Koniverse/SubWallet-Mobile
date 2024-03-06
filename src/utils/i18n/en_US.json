@@ -1103,6 +1103,11 @@
   "settings": {
     "generalSettings": "General settings",
     "securitySettings": "Security settings",
+    "aboutSubWallet": "About SubWallet",
+    "requestAFeature": "Request a feature",
+    "contactSupport": "Contact support",
+    "rateOurApp": "Rate our app",
+    "xTwitter": "X (Twitter)",
     "manageAddressBook": "Manage address book",
     "manageNetworks": "Manage networks",
     "manageTokens": "Manage tokens",
