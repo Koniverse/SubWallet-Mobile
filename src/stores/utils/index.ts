@@ -51,6 +51,7 @@ import {
 } from '@subwallet/extension-base/types';
 import { getStaticContentByDevMode } from 'utils/storage';
 import { STATIC_DATA_DOMAIN } from 'constants/index';
+import { RootRouteProps } from 'routes/index';
 // Setup redux stores
 
 function voidFn() {
@@ -234,6 +235,10 @@ export const getLogoMaps = lazySendMessage('pri(settings.getLogoMaps)', null, up
 //
 export const updateAuthUrls = (data: AuthUrls) => {
   store.dispatch({ type: 'settings/updateAuthUrls', payload: data });
+};
+
+export const updateCurrentRoute = (data: RootRouteProps | undefined) => {
+  store.dispatch({ type: 'settings/updateCurrentRoute', payload: data });
 };
 
 export const subscribeAuthUrls = lazySubscribeMessage('pri(authorize.subscribe)', null, updateAuthUrls, updateAuthUrls);
