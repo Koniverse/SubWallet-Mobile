@@ -32,7 +32,7 @@ const useYieldRewardTotal = (slug: string): string | undefined => {
     const poolInfo = poolInfoMap[slug];
 
     if (poolInfo) {
-      if (poolInfo.type !== YieldPoolType.NOMINATION_POOL) {
+      if (poolInfo?.type !== YieldPoolType.NOMINATION_POOL) {
         return '0';
       } else {
         if (earningRewards.length) {

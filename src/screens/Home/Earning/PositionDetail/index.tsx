@@ -60,7 +60,7 @@ const Component: React.FC<Props> = (props: Props) => {
 
   const getAltChain = useCallback(() => {
     if (isLiquidPool(poolInfo) || isLendingPool(poolInfo)) {
-      const asset = assetRegistry[poolInfo.metadata.altInputAssets || ''];
+      const asset = assetRegistry[poolInfo?.metadata.altInputAssets || ''];
 
       return asset ? asset.originChain : '';
     }
@@ -105,7 +105,7 @@ const Component: React.FC<Props> = (props: Props) => {
   }, [checkChainConnected, getAltChain, navigateToEarnScreen, state.num]);
 
   useEffect(() => {
-    if (!isOpenDAppWarningInPositionDetail && _STAKING_CHAIN_GROUP.astar.includes(poolInfo.chain)) {
+    if (!isOpenDAppWarningInPositionDetail && _STAKING_CHAIN_GROUP.astar.includes(poolInfo?.chain)) {
       setDAppStakingWarningModalVisible(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,9 +115,9 @@ const Component: React.FC<Props> = (props: Props) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const inputAsset = useMemo(() => {
-    const inputSlug = poolInfo.metadata.inputAsset;
+    const inputSlug = poolInfo?.metadata.inputAsset;
     return assetRegistry[inputSlug];
-  }, [assetRegistry, poolInfo.metadata.inputAsset]);
+  }, [assetRegistry, poolInfo?.metadata.inputAsset]);
 
   const price = useMemo(() => priceMap[inputAsset?.priceId || ''] || 0, [inputAsset?.priceId, priceMap]);
   const exchangeRate = useMemo(() => {
@@ -128,7 +128,7 @@ const Component: React.FC<Props> = (props: Props) => {
       const balanceToken = _item.balanceToken;
 
       if (_poolInfo) {
-        const asset = _poolInfo.statistic?.assetEarning.find(i => i.slug === balanceToken);
+        const asset = _poolInfo?.statistic?.assetEarning.find(i => i.slug === balanceToken);
         rate = asset?.exchangeRate || 1;
       }
     }
@@ -146,11 +146,11 @@ const Component: React.FC<Props> = (props: Props) => {
 
   const filteredRewardHistories = useMemo(() => {
     if (!isAllAccount && currentAccount) {
-      return rewardHistories.filter(item => item.slug === poolInfo.slug && item.address === currentAccount.address);
+      return rewardHistories.filter(item => item.slug === poolInfo?.slug && item.address === currentAccount.address);
     } else {
       return [];
     }
-  }, [currentAccount, isAllAccount, poolInfo.slug, rewardHistories]);
+  }, [currentAccount, isAllAccount, poolInfo?.slug, rewardHistories]);
 
   const _goBack = useCallback(() => {
     navigation.navigate('Home', {
@@ -181,9 +181,9 @@ const Component: React.FC<Props> = (props: Props) => {
 
     navigation.navigate('Drawer', {
       screen: 'TransactionAction',
-      params: { screen: 'Unbond', params: { slug: poolInfo.slug } },
+      params: { screen: 'Unbond', params: { slug: poolInfo?.slug } },
     });
-  }, [isActiveStakeZero, navigation, poolInfo.slug]);
+  }, [isActiveStakeZero, navigation, poolInfo?.slug]);
 
   const onEarnMore = useCallback(() => {
     const altChain = getAltChain();
@@ -238,14 +238,14 @@ const Component: React.FC<Props> = (props: Props) => {
               type="secondary"
               icon={<Icon phosphorIcon={MinusCircle} weight="fill" />}
               onPress={onLeavePool}>
-              {poolInfo.type === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
+              {poolInfo?.type === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
             </Button>
             <Button
               block={true}
               type="secondary"
               icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}
               onPress={onEarnMore}>
-              {poolInfo.type === YieldPoolType.LENDING ? 'Supply more' : i18n.buttonTitles.stakeMore}
+              {poolInfo?.type === YieldPoolType.LENDING ? 'Supply more' : i18n.buttonTitles.stakeMore}
             </Button>
           </View>
           <EarningWithdrawMeta inputAsset={inputAsset} unstakings={compound.unstakings} poolInfo={poolInfo} />

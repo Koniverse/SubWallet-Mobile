@@ -25,7 +25,7 @@ const WithdrawTransactionConfirmation: React.FC<Props> = (props: Props) => {
 
   const poolInfo = useMemo(() => poolInfoMap[data.slug], [poolInfoMap, data.slug]);
 
-  const inputAsset = useGetChainAssetInfo(poolInfo.metadata.inputAsset);
+  const inputAsset = useGetChainAssetInfo(poolInfo?.metadata.inputAsset);
 
   const { decimals, symbol } = useGetNativeTokenBasicInfo(data.unstakingInfo.chain);
 

@@ -28,10 +28,10 @@ const EarningNominationInfo: React.FC<Props> = (props: Props) => {
 
   const [showDetail, setShowDetail] = useState(false);
 
-  const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(poolInfo.chain), [poolInfo.chain]);
+  const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(poolInfo?.chain), [poolInfo?.chain]);
   const haveNomination = useMemo(() => {
-    return [YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo.type);
-  }, [poolInfo.type]);
+    return [YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo?.type);
+  }, [poolInfo?.type]);
   const noNomination = useMemo(
     () => !haveNomination || isAllAccount || !compound.nominations.length,
     [compound.nominations.length, haveNomination, isAllAccount],

@@ -104,7 +104,7 @@ export const Withdraw = ({
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
   const stakingChain = useMemo(() => poolInfo?.chain || '', [poolInfo?.chain]);
 
-  const inputAsset = useGetChainAssetInfo(poolInfo.metadata.inputAsset);
+  const inputAsset = useGetChainAssetInfo(poolInfo?.metadata.inputAsset);
   const decimals = inputAsset?.decimals || 0;
   const symbol = inputAsset?.symbol || '';
 
@@ -123,11 +123,11 @@ export const Withdraw = ({
       return {
         existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
         availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
-        maintainBalance: getInputValuesFromString(poolInfo.metadata.maintainBalance || '0', estimateFee.decimals),
+        maintainBalance: getInputValuesFromString(poolInfo?.metadata.maintainBalance || '0', estimateFee.decimals),
         symbol: estimateFee.symbol,
       };
     },
-    [existentialDeposit, nativeTokenBalance.value, poolInfo.metadata.maintainBalance],
+    [existentialDeposit, nativeTokenBalance.value, poolInfo?.metadata.maintainBalance],
   );
   const { onError, onSuccess } = useHandleSubmitTransaction(
     onDone,
@@ -138,8 +138,8 @@ export const Withdraw = ({
   );
 
   const accountList = useMemo(() => {
-    return accounts.filter(filterAccount(chainInfoMap, allPositionInfos, poolInfo.type));
-  }, [accounts, allPositionInfos, chainInfoMap, poolInfo.type]);
+    return accounts.filter(filterAccount(chainInfoMap, allPositionInfos, poolInfo?.type));
+  }, [accounts, allPositionInfos, chainInfoMap, poolInfo?.type]);
 
   const unstakingInfo = useMemo((): UnstakingInfo | undefined => {
     if (fromValue && !isAccountAll(fromValue) && !!yieldPosition) {

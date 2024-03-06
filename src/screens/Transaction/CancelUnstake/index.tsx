@@ -62,8 +62,8 @@ export const CancelUnstake = ({
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
 
   const poolInfo = poolInfoMap[slug];
-  const poolType = poolInfo.type;
-  const poolChain = poolInfo.chain;
+  const poolType = poolInfo?.type;
+  const poolChain = poolInfo?.chain;
 
   const [isTransactionDone, setTransactionDone] = useState(false);
 
