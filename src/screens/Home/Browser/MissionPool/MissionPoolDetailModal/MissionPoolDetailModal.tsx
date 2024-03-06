@@ -8,7 +8,7 @@ import createStyles from './style';
 import { ImageBackground, ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MetaInfo from 'components/MetaInfo';
-import { missionCategoryMap, MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
+import { MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useMissionPools } from 'hooks/useMissionPools';
 import { MissionPoolFooter } from 'components/MissionPoolHorizontalItem/MissionPoolFooter';
@@ -25,7 +25,8 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyles();
-  const { timeline } = useMissionPools(data);
+  const { timeline, getTagByTimeline } = useMissionPools(data);
+  const tagData = getTagByTimeline(data);
 
   return (
     <SwFullSizeModal isUseModalV2 modalVisible={modalVisible} setVisible={setVisible} modalBaseV2Ref={modalBaseV2Ref}>
@@ -53,12 +54,12 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
               {data.chains && data.chains.length === 1 && (
                 <MetaInfo.Chain label={i18n.inputLabel.network} chain={data.chains[0]} />
               )}
-              {data.status && (
+              {tagData && (
                 <MetaInfo.Text
                   label={i18n.inputLabel.status}
                   valueColorSchema={'success'}
                   valueFontWeight={'semibold'}
-                  value={missionCategoryMap[data.status].name}
+                  value={tagData.name}
                 />
               )}
               {data.description && (
@@ -104,7 +105,7 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
               style={{ flexDirection: 'row', paddingTop: theme.paddingLG, gap: theme.padding }}
               data={data}
               closeDetailModal={() => setVisible(false)}
-              disabledJoinNowBtn={data.status === MissionCategoryType.ARCHIVED}
+              disabledJoinNowBtn={tagData.slug === MissionCategoryType.ARCHIVED}
             />
           </View>
         </ScrollView>
