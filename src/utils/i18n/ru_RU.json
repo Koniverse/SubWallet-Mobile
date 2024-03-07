@@ -1043,6 +1043,14 @@
     "notEarning": "Not earning",
     "maximumSelectableValidators": "Вы можете выбрать только {0} валидаторов"
   },
+  "earningScreen": {
+    "withdrawInfo": {
+      "automaticWithdrawal": "Automatic withdrawal",
+      "waitingForWithdrawal": "Waiting for withdrawal",
+      "availableForWithdrawal": "Available for withdrawal",
+      "withdrawableIn": "Withdrawable in {{time}}"
+    }
+  },
   "addressBook": {
     "typeWallet": "Ваш кошелёк",
     "typeContact": "Сохраненные контакты",

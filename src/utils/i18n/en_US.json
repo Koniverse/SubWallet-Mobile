@@ -1043,6 +1043,14 @@
     "notEarning": "Not earning",
     "maximumSelectableValidators": "You can only choose {0} validators"
   },
+  "earningScreen": {
+    "withdrawInfo": {
+      "automaticWithdrawal": "Automatic withdrawal",
+      "waitingForWithdrawal": "Waiting for withdrawal",
+      "availableForWithdrawal": "Available for withdrawal",
+      "withdrawableIn": "Withdrawable in {{time}}"
+    }
+  },
   "addressBook": {
     "typeWallet": "Your Wallet",
     "typeContact": "Saved contacts",

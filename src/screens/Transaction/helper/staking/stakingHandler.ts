@@ -1,6 +1,5 @@
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
-import { UnstakingStatus } from '@subwallet/extension-base/types';
 import { getBondingOptions, getNominationPoolOptions } from 'messaging/index';
 import { store } from 'stores/index';
 import { ALL_KEY } from 'constants/index';
@@ -21,16 +20,32 @@ export function getUnstakingPeriod(unstakingPeriod?: number) {
   return '';
 }
 
-export function getWaitingTime(waitingTime: number, status: UnstakingStatus) {
-  if (status === UnstakingStatus.CLAIMABLE) {
-    return i18n.inputLabel.availableForWithdraw;
+export function getWaitingTime(currentTimestampMs: number, targetTimestampMs?: number, waitingTime?: number) {
+  let remainingTimestampMs: number;
+
+  if (targetTimestampMs !== undefined) {
+    remainingTimestampMs = targetTimestampMs - currentTimestampMs;
   } else {
-    const waitingTimeInMs = waitingTime * 60 * 60 * 1000;
-    const formattedWaitingTime = humanizeDuration(waitingTimeInMs, {
-      units: ['d', 'h'],
-      round: true,
+    if (waitingTime !== undefined) {
+      remainingTimestampMs = waitingTime * 60 * 60 * 1000;
+    } else {
+      return i18n.earningScreen.withdrawInfo.automaticWithdrawal;
+    }
+  }
+
+  if (remainingTimestampMs <= 0) {
+    return i18n.earningScreen.withdrawInfo.availableForWithdrawal;
+  } else {
+    const remainingTimeHr = remainingTimestampMs / 1000 / 60 / 60;
+
+    // Formatted waitting time without round up
+
+    const _formattedWaitingTime = humanizeDuration(remainingTimestampMs, {
+      units: remainingTimeHr >= 24 ? ['d', 'h'] : ['h', 'm'],
+      round: false,
       delimiter: ' ',
       language: 'shortEn',
+      // @ts-ignore
       languages: {
         shortEn: {
           y: () => 'y',
@@ -43,9 +58,21 @@ export function getWaitingTime(waitingTime: number, status: UnstakingStatus) {
           ms: () => 'ms',
         },
       }, // TODO: should not be shorten
-    });
+    }) as string;
 
-    return i18n.formatString(i18n.inputLabel.withdrawInXDays, formattedWaitingTime);
+    // Formatted waitting time with round up
+    const formattedWaitingTime = _formattedWaitingTime
+      .split(' ')
+      .map((segment, index) => {
+        if (index % 2 === 0) {
+          return Math.ceil(parseFloat(segment)).toString();
+        }
+
+        return segment;
+      })
+      .join(' ');
+
+    return i18n.earningScreen.withdrawInfo.withdrawableIn.replace('{{time}}', formattedWaitingTime);
   }
 }
 

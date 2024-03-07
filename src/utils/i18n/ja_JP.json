@@ -1043,6 +1043,14 @@
     "notEarning": "獲得なし",
     "maximumSelectableValidators": "選択できるバリデータは {0} だけです。"
   },
+  "earningScreen": {
+    "withdrawInfo": {
+      "automaticWithdrawal": "Automatic withdrawal",
+      "waitingForWithdrawal": "Waiting for withdrawal",
+      "availableForWithdrawal": "Available for withdrawal",
+      "withdrawableIn": "Withdrawable in {{time}}"
+    }
+  },
   "addressBook": {
     "typeWallet": "あなたのウォレット",
     "typeContact": "保存された連絡先",

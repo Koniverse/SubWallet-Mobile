@@ -1043,6 +1043,14 @@
     "notEarning": "没有赚取",
     "maximumSelectableValidators": "你仅能选择{0}位整理者"
   },
+  "earningScreen": {
+    "withdrawInfo": {
+      "automaticWithdrawal": "Automatic withdrawal",
+      "waitingForWithdrawal": "Waiting for withdrawal",
+      "availableForWithdrawal": "Available for withdrawal",
+      "withdrawableIn": "Withdrawable in {{time}}"
+    }
+  },
   "addressBook": {
     "typeWallet": "你的钱包",
     "typeContact": "已保存的联系人",
