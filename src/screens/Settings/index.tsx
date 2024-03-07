@@ -16,6 +16,7 @@ import {
   GlobeHemisphereWest,
   IconProps,
   Lock,
+  Parachute,
   ShareNetwork,
   ShieldCheck,
   X,
@@ -27,12 +28,15 @@ import i18n from 'utils/i18n/i18n';
 import { WIKI_URL } from 'constants/index';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 import useAppLock from 'hooks/useAppLock';
-import { BackgroundIcon, Button, Icon, SelectItem } from 'components/design-system-ui';
+import { BackgroundIcon, Badge, Button, Icon, SelectItem } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SVGImages } from 'assets/index';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import packageJSON from '../../../package.json';
 import env from 'react-native-config';
+import { RootState } from 'stores/index';
+import { useSelector } from 'react-redux';
+import { MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
 
 const settingTitleStyle: StyleProp<any> = {
   fontSize: 12,
@@ -68,6 +72,10 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { lock } = useAppLock();
+  const { missions } = useSelector((state: RootState) => state.missionPool);
+  const activeMissionPoolNumb = useMemo(() => {
+    return missions.filter(item => item.status === MissionCategoryType.LIVE).length;
+  }, [missions]);
   const [hiddenCount, setHiddenCount] = useState(0);
   const settingList: settingItemType[][] = useMemo(
     () => [
@@ -92,6 +100,18 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
           onPress: () => navigation.navigate('History', {}),
           backgroundColor: '#2595E6',
+        },
+        {
+          icon: Parachute,
+          title: i18n.header.missionPools,
+          rightIcon: (
+            <View style={{ flexDirection: 'row', gap: theme.paddingSM + 2, alignItems: 'center' }}>
+              {!!activeMissionPoolNumb && <Badge value={activeMissionPoolNumb} />}
+              <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />
+            </View>
+          ),
+          onPress: () => navigation.navigate('MissionPoolsByTabview', { type: 'all' }),
+          backgroundColor: '#108959',
         },
       ],
       [
@@ -169,7 +189,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         },
       ],
     ],
-    [navigation, theme.colorTextLight3],
+    [activeMissionPoolNumb, navigation, theme.colorTextLight3, theme.paddingSM],
   );
 
   const onPressVersionNumber = () => {
@@ -243,7 +263,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
             ))}
           </View>
 
-          <Text style={settingTitleStyle}>{i18n.settings.aboutSubwallet.toUpperCase()}</Text>
+          <Text style={settingTitleStyle}>{i18n.settings.communityAndSupport.toUpperCase()}</Text>
 
           <View style={{ gap: theme.paddingXS }}>
             {settingList[3].map(setting => (
