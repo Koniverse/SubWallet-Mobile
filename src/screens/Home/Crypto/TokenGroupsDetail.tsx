@@ -92,7 +92,7 @@ export const TokenGroupsDetail = ({
     tokenBalanceMap,
     tokenGroupBalanceMap,
     isComputing: isAccountBalanceComputing,
-  } = useAccountBalance(tokenGroupMap, true);
+  } = useAccountBalance(true, true);
   const tokenBalanceValue = useMemo<SwNumberProps['value']>(() => {
     if (tokenGroupSlug) {
       if (tokenGroupBalanceMap[tokenGroupSlug]) {
@@ -285,7 +285,6 @@ export const TokenGroupsDetail = ({
           tokenBalanceMap={tokenBalanceMap}
           modalVisible={tokenDetailVisible}
           setVisible={setTokenDetailVisible}
-          onClickBack={onClickBack}
         />
 
         <SelectAccAndTokenModal

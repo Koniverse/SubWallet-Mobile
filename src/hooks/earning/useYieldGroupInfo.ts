@@ -5,7 +5,6 @@ import { BN_ZERO } from '@polkadot/util';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
-import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -17,8 +16,7 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const chainsByAccountType = useGetChainSlugs();
-  const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
-  const { tokenGroupBalanceMap, tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
+  const { tokenGroupBalanceMap, tokenBalanceMap } = useAccountBalance(true, undefined);
 
   return useMemo(() => {
     const result: Record<string, YieldGroupInfo> = {};

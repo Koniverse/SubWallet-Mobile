@@ -520,9 +520,7 @@ export const Stake = ({
                 selectedValueMap={{ [asset]: true }}
                 onSelectItem={onSelectToken}
                 disabled={stakingChain !== ALL_KEY || !from || loading}
-                defaultValue={asset}
                 showAddBtn={false}
-                acceptDefaultValue={true}
                 tokenSelectorRef={tokenSelectorRef}
                 renderSelected={() => <TokenSelectField logoKey={asset} subLogoKey={chain} value={symbol} showIcon />}
               />

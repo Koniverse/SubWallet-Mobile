@@ -48,12 +48,12 @@ export const TokenGroups = () => {
   const navigation = useNavigation<CryptoNavigationProps>();
   const tokenSearchRef = useRef<TokenSearchRef>();
   const chainsByAccountType = useGetChainSlugs();
-  const { sortedTokenGroups, tokenGroupMap, sortedTokenSlugs } = useTokenGroup(chainsByAccountType);
-  const { tokenGroupBalanceMap, totalBalanceInfo, tokenBalanceMap } = useAccountBalance(tokenGroupMap);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const { sortedTokenGroups, sortedTokenSlugs } = useTokenGroup(chainsByAccountType);
+  const { tokenGroupBalanceMap, totalBalanceInfo, tokenBalanceMap } = useAccountBalance(true, undefined);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
   const [isCustomizationModalVisible, setCustomizationModalVisible] = useState<boolean>(false);
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const {
     accountSelectorItems,
     onOpenReceive,

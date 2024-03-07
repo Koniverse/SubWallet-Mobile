@@ -63,7 +63,11 @@ export const CancelUnstakeItem = ({ item, isSelected, onPress }: Props) => {
           size={theme.fontSize}
           textStyle={{ ...FontSemiBold }}
         />
-        {isSelected && <Icon phosphorIcon={CheckCircle} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />}
+        {isSelected ? (
+          <Icon phosphorIcon={CheckCircle} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />
+        ) : (
+          <View style={{ width: 20 }} />
+        )}
       </View>
     </TouchableOpacity>
   );
