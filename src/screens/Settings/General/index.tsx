@@ -38,7 +38,7 @@ export const GeneralSettings = () => {
           backgroundColor={theme['geekblue-6']}
           label={i18n.settings.walletTheme}
           onPress={showComingSoon}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
+          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
         />
 
         <SelectItem
@@ -46,7 +46,7 @@ export const GeneralSettings = () => {
           backgroundColor={theme['green-6']}
           label={i18n.settings.language}
           onPress={openLanguageModal}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
+          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
         />
 
         <SelectItem
@@ -54,7 +54,7 @@ export const GeneralSettings = () => {
           backgroundColor={theme['volcano-6']}
           label={i18n.settings.notifications}
           onPress={showComingSoon}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
+          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
         />
       </View>
     </SubScreenContainer>

@@ -59,8 +59,8 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
   const isAllAccount = useMemo(() => isAccountAll(compound.address), [compound.address]);
   const isSpecial = useMemo(() => [YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(type), [type]);
   const haveNomination = useMemo(() => {
-    return [YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo.type);
-  }, [poolInfo.type]);
+    return [YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo?.type);
+  }, [poolInfo?.type]);
   const noNomination = useMemo(
     () => !haveNomination || isAllAccount || !compound.nominations.length,
     [compound.nominations.length, haveNomination, isAllAccount],

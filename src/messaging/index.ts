@@ -166,6 +166,7 @@ import {
   SWTransactionResult,
 } from '@subwallet/extension-base/services/transaction-service/types';
 import {
+  _ChainApiStatus,
   _ChainState,
   _NetworkUpsertParams,
   _ValidateCustomAssetRequest,
@@ -1124,6 +1125,12 @@ export async function subscribeChainStateMap(
   callback: (data: Record<string, _ChainState>) => void,
 ): Promise<Record<string, _ChainState>> {
   return sendMessage('pri(chainService.subscribeChainStateMap)', null, callback);
+}
+
+export async function subscribeChainStatusMap(
+  callback: (data: Record<string, _ChainApiStatus>) => void,
+): Promise<Record<string, _ChainApiStatus>> {
+  return sendMessage('pri(chainService.subscribeChainStatusMap)', null, callback);
 }
 
 export async function removeChain(networkKey: string): Promise<boolean> {

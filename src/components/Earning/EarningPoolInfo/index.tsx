@@ -32,20 +32,20 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
 
   const totalApy = useMemo((): number | undefined => {
     return (
-      poolInfo.statistic?.totalApy ||
-      (poolInfo.statistic?.totalApr
-        ? calculateReward(poolInfo.statistic.totalApr, undefined, YieldCompoundingPeriod.YEARLY).apy
+      poolInfo?.statistic?.totalApy ||
+      (poolInfo?.statistic?.totalApr
+        ? calculateReward(poolInfo?.statistic.totalApr, undefined, YieldCompoundingPeriod.YEARLY).apy
         : undefined)
     );
-  }, [poolInfo.statistic?.totalApr, poolInfo.statistic?.totalApy]);
+  }, [poolInfo?.statistic?.totalApr, poolInfo?.statistic?.totalApy]);
 
   const unstakePeriod = useMemo((): number | undefined => {
-    if (poolInfo.statistic && 'unstakingPeriod' in poolInfo.statistic) {
-      return (poolInfo.statistic as NormalYieldPoolStatistic).unstakingPeriod;
+    if (poolInfo?.statistic && 'unstakingPeriod' in poolInfo?.statistic) {
+      return (poolInfo?.statistic as NormalYieldPoolStatistic).unstakingPeriod;
     } else {
       return undefined;
     }
-  }, [poolInfo.statistic]);
+  }, [poolInfo?.statistic]);
 
   const [showDetail, setShowDetail] = useState(false);
 
@@ -83,20 +83,20 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
               suffix={'% per year'}
             />
           )}
-          {/*{poolInfo.metadata.farmerCount !== undefined && (*/}
-          {/*  <MetaInfo.Number label="Active nominators" value={poolInfo.metadata.farmerCount} />*/}
+          {/*{poolInfo?.metadata.farmerCount !== undefined && (*/}
+          {/*  <MetaInfo.Number label="Active nominators" value={poolInfo?.metadata.farmerCount} />*/}
           {/*)}*/}
 
           <MetaInfo.Number
             label={i18n.inputLabel.minimumStaked}
-            value={poolInfo.statistic?.earningThreshold.join || '0'}
+            value={poolInfo?.statistic?.earningThreshold.join || '0'}
             decimals={inputAsset?.decimals || 0}
             valueColorSchema="even-odd"
             suffix={inputAsset?.symbol}
           />
           {unstakePeriod !== undefined && (
             <MetaInfo.Default label={i18n.inputLabel.unstakingPeriod}>
-              {`${poolInfo.type === YieldPoolType.LIQUID_STAKING ? 'Up to ' : ''}${getUnstakingPeriod(unstakePeriod)}`}
+              {`${poolInfo?.type === YieldPoolType.LIQUID_STAKING ? 'Up to ' : ''}${getUnstakingPeriod(unstakePeriod)}`}
             </MetaInfo.Default>
           )}
         </MetaInfo>

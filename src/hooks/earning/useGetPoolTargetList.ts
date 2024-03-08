@@ -15,7 +15,7 @@ const useGetPoolTargetList = (slug: string): PoolTargetData[] => {
       return [];
     }
 
-    const assetInfo = assetRegistry[poolInfo.metadata.inputAsset];
+    const assetInfo = assetRegistry[poolInfo?.metadata.inputAsset];
     const decimals = _getAssetDecimals(assetInfo);
     const symbol = _getAssetSymbol(assetInfo);
 

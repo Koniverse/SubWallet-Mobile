@@ -113,7 +113,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const getAltChain = useCallback(
     (poolInfo?: YieldPoolInfo) => {
       if (!!poolInfo && (isLiquidPool(poolInfo) || isLendingPool(poolInfo))) {
-        const asset = chainAsset[poolInfo.metadata.altInputAssets || ''];
+        const asset = chainAsset[poolInfo?.metadata.altInputAssets || ''];
 
         return asset ? { chain: asset.originChain, name: asset.name } : { chain: '', name: '' };
       }

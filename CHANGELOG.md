@@ -1,3 +1,21 @@
+## 1.1.37 (331)
+
+
+## 1.1.37 (330)
+
+
+## 1.1.37 (329)
+- Fix bug display MKT campaign on Apply master password screen (#1295)
+- Bug pool info is undefined (#1517)
+- Restructure Settings screen (#1498)
+- Auto detect mission pool status by timeline (#1511)
+
+## 1.1.37 (328)
+
+
+## 1.1.37 (327)
+
+
 ## 1.1.36 (326)
 
 

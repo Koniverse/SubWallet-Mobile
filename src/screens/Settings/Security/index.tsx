@@ -5,7 +5,7 @@ import { RootNavigationProps } from 'routes/index';
 import { ToggleItem } from 'components/ToggleItem';
 import { View } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
-import { CaretRight, Globe, Key, Scan, ShieldCheck } from 'phosphor-react-native';
+import { CaretRight, Key, Scan, ShieldCheck } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime, updateUseBiometric } from 'stores/MobileSettings';
@@ -132,22 +132,22 @@ export const Security = () => {
             backgroundColor={theme['gold-6']}
             label={i18n.settings.changePassword}
             onPress={() => navigation.navigate('ChangePassword')}
-            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
+            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
           />
 
-          <SelectItem
-            icon={Globe}
-            backgroundColor={theme['blue-6']}
-            label={i18n.settings.manageWebsiteAccess}
-            onPress={() => navigation.navigate('DAppAccess')}
-            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
-          />
+          {/*<SelectItem*/}
+          {/*  icon={Globe}*/}
+          {/*  backgroundColor={theme['blue-6']}*/}
+          {/*  label={i18n.settings.manageWebsiteAccess}*/}
+          {/*  onPress={() => navigation.navigate('DAppAccess')}*/}
+          {/*  rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}*/}
+          {/*/>*/}
           <SelectItem
             icon={ShieldCheck}
             backgroundColor={theme['green-6']}
             label={i18n.settings.appLock}
             onPress={() => setIsShowAutoLockModal(true)}
-            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorWhite} />}
+            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
           />
         </View>
 

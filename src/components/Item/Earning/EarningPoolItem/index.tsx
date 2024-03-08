@@ -25,9 +25,9 @@ const EarningPoolItem = (props: Props) => {
   const { poolInfo, onStakeMore } = props;
   const { metadata, chain, type, slug } = poolInfo;
   const { inputAsset, logo, shortName } = metadata;
-  const totalApy = poolInfo.statistic?.totalApy;
-  const totalApr = poolInfo.statistic?.totalApr;
-  const tvl = poolInfo.statistic?.tvl;
+  const totalApy = poolInfo?.statistic?.totalApy;
+  const totalApr = poolInfo?.statistic?.totalApr;
+  const tvl = poolInfo?.statistic?.tvl;
 
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);

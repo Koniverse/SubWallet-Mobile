@@ -1043,6 +1043,14 @@
     "notEarning": "Not earning",
     "maximumSelectableValidators": "Вы можете выбрать только {0} валидаторов"
   },
+  "earningScreen": {
+    "withdrawInfo": {
+      "automaticWithdrawal": "Automatic withdrawal",
+      "waitingForWithdrawal": "Waiting for withdrawal",
+      "availableForWithdrawal": "Available for withdrawal",
+      "withdrawableIn": "Withdrawable in {{time}}"
+    }
+  },
   "addressBook": {
     "typeWallet": "Ваш кошелёк",
     "typeContact": "Сохраненные контакты",
@@ -1103,6 +1111,11 @@
   "settings": {
     "generalSettings": "Общие настройки",
     "securitySettings": "Настройки безопасности",
+    "aboutSubWallet": "About SubWallet",
+    "requestAFeature": "Request a feature",
+    "contactSupport": "Contact support",
+    "rateOurApp": "Rate our app",
+    "xTwitter": "X (Twitter)",
     "manageAddressBook": "Управление адресной книгой",
     "manageNetworks": "Управление сетями",
     "manageTokens": "Управление токенами",

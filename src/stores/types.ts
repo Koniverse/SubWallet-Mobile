@@ -30,7 +30,7 @@ import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State
 import { SettingsStruct } from '@polkadot/ui-settings/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
-import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
+import { _ChainApiStatus, _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import {
   BalanceMap,
   BuyServiceInfo,
@@ -46,6 +46,7 @@ import { SessionTypes } from '@walletconnect/types';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { MissionInfo } from 'types/missionPool';
 import { DAPPCategory, DAppInfo } from 'types/browser';
+import { RootRouteProps } from 'routes/index';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -157,6 +158,7 @@ export interface AppSettings extends UiSettings, Omit<SettingsStruct, 'camera' |
     dApps: DAppInfo[] | undefined;
     dAppCategories: DAPPCategory[] | undefined;
   };
+  currentRoute: RootRouteProps | undefined;
 }
 
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {
@@ -191,6 +193,7 @@ export interface AssetRegistryStore extends BaseReduxStore {
 export interface ChainStore extends BaseReduxStore {
   chainInfoMap: Record<string, _ChainInfo>;
   chainStateMap: Record<string, _ChainState>;
+  chainStatusMap: Record<string, _ChainApiStatus>;
 }
 
 export interface BalanceStore extends BaseReduxStore {

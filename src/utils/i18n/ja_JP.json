@@ -1043,6 +1043,14 @@
     "notEarning": "獲得なし",
     "maximumSelectableValidators": "選択できるバリデータは {0} だけです。"
   },
+  "earningScreen": {
+    "withdrawInfo": {
+      "automaticWithdrawal": "Automatic withdrawal",
+      "waitingForWithdrawal": "Waiting for withdrawal",
+      "availableForWithdrawal": "Available for withdrawal",
+      "withdrawableIn": "Withdrawable in {{time}}"
+    }
+  },
   "addressBook": {
     "typeWallet": "あなたのウォレット",
     "typeContact": "保存された連絡先",
@@ -1103,6 +1111,11 @@
   "settings": {
     "generalSettings": "一般設定",
     "securitySettings": "セキュリティ設定",
+    "aboutSubWallet": "About SubWallet",
+    "requestAFeature": "Request a feature",
+    "contactSupport": "Contact support",
+    "rateOurApp": "Rate our app",
+    "xTwitter": "X (Twitter)",
     "manageAddressBook": "アドレス帳を管理",
     "manageNetworks": "ネットワークを管理",
     "manageTokens": "トークンを管理",

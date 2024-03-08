@@ -246,7 +246,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         if (fee.slug !== '') {
           const asset = chainAsset[fee.slug];
           const feeDecimals = _getAssetDecimals(asset);
-          const _priceValue = asset.priceId ? priceMap[asset.priceId] : 0;
+          const _priceValue = asset.priceId ? priceMap[asset.priceId] ?? 0 : 0;
           const feeNumb = _priceValue * (fee.amount ? parseFloat(fee.amount) / 10 ** feeDecimals : 0);
 
           _totalFee += feeNumb;

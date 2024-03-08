@@ -16,6 +16,7 @@ import { MissionPoolsContext } from 'screens/Home/Browser/MissionPool/context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import { MissionPoolDetailModal } from 'screens/Home/Browser/MissionPool/MissionPoolDetailModal/MissionPoolDetailModal';
+import { useMissionPools } from 'hooks/useMissionPools';
 
 const ITEM_HEIGHT = missionPoolItemHeight;
 const ITEM_SEPARATOR = missionPoolSeparator;
@@ -29,6 +30,7 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
   const styles = createStyle(theme);
   const { missions } = useSelector((state: RootState) => state.missionPool);
   const [isRefresh] = useRefresh();
+  const { getTagByTimeline } = useMissionPools();
   const listByCategory = useMemo(() => {
     if (!missions || !missions.length) {
       return [];
@@ -38,8 +40,14 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
       return missions;
     }
 
-    return missions.filter(item => item.status === route.name);
-  }, [missions, route.name]);
+    return missions.filter(item => {
+      const tag = getTagByTimeline(item);
+      if (tag.slug === route.name) {
+        return true;
+      }
+      return false;
+    });
+  }, [getTagByTimeline, missions, route.name]);
 
   const searchFunction = (items: MissionInfo[], _searchString: string) => {
     return items.filter(({ name }) => {

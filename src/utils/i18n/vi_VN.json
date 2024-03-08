@@ -1043,6 +1043,14 @@
     "notEarning": "Không có thưởng",
     "maximumSelectableValidators": "Bạn chỉ được chọn {0} validator"
   },
+  "earningScreen": {
+    "withdrawInfo": {
+      "automaticWithdrawal": "Automatic withdrawal",
+      "waitingForWithdrawal": "Waiting for withdrawal",
+      "availableForWithdrawal": "Available for withdrawal",
+      "withdrawableIn": "Withdrawable in {{time}}"
+    }
+  },
   "addressBook": {
     "typeWallet": "Ví của bạn",
     "typeContact": "Liên hệ đã lưu",
@@ -1103,6 +1111,11 @@
   "settings": {
     "generalSettings": "Cài đặt chung",
     "securitySettings": "Cài đặt bảo mật",
+    "aboutSubWallet": "About SubWallet",
+    "requestAFeature": "Request a feature",
+    "contactSupport": "Contact support",
+    "rateOurApp": "Rate our app",
+    "xTwitter": "X (Twitter)",
     "manageAddressBook": "Quản lý sổ địa chỉ",
     "manageNetworks": "Quản lý mạng",
     "manageTokens": "Quản lý token",

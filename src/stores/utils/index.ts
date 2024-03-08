@@ -31,7 +31,7 @@ import {
   MetadataRequest,
   SigningRequest,
 } from '@subwallet/extension-base/background/types';
-import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
+import { _ChainApiStatus, _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { addLazy, canDerive } from '@subwallet/extension-base/utils';
 import { lazySendMessage, lazySubscribeMessage } from 'messaging/index';
@@ -51,6 +51,7 @@ import {
 } from '@subwallet/extension-base/types';
 import { getStaticContentByDevMode } from 'utils/storage';
 import { STATIC_DATA_DOMAIN } from 'constants/index';
+import { RootRouteProps } from 'routes/index';
 // Setup redux stores
 
 function voidFn() {
@@ -236,6 +237,10 @@ export const updateAuthUrls = (data: AuthUrls) => {
   store.dispatch({ type: 'settings/updateAuthUrls', payload: data });
 };
 
+export const updateCurrentRoute = (data: RootRouteProps | undefined) => {
+  store.dispatch({ type: 'settings/updateCurrentRoute', payload: data });
+};
+
 export const subscribeAuthUrls = lazySubscribeMessage('pri(authorize.subscribe)', null, updateAuthUrls, updateAuthUrls);
 
 // export const updateMediaAllowance = (data: AccountJson) => {
@@ -256,15 +261,8 @@ export const subscribeChainInfoMap = lazySubscribeMessage(
 );
 
 export const updateChainStateMap = (data: Record<string, _ChainState>) => {
-  // TODO useTokenGroup
   if (data && Object.keys(data).length > 0) {
-    addLazy(
-      'updateChainStateMap',
-      () => {
-        store.dispatch({ type: 'chainStore/updateChainStateMap', payload: data });
-      },
-      900,
-    );
+    store.dispatch({ type: 'chainStore/updateChainStateMap', payload: data });
   }
 };
 
@@ -273,6 +271,19 @@ export const subscribeChainStateMap = lazySubscribeMessage(
   null,
   updateChainStateMap,
   updateChainStateMap,
+);
+
+export const updateChainStatusMap = (data: Record<string, _ChainApiStatus>) => {
+  if (data && Object.keys(data).length > 0) {
+    store.dispatch({ type: 'chainStore/updateChainStatusMap', payload: data });
+  }
+};
+
+export const subscribeChainStatusMap = lazySubscribeMessage(
+  'pri(chainService.subscribeChainStatusMap)',
+  null,
+  updateChainStatusMap,
+  updateChainStatusMap,
 );
 
 export const updateAssetRegistry = (data: Record<string, _ChainAsset>) => {

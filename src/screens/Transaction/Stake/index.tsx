@@ -74,7 +74,7 @@ export const Stake = ({
 }: StakeProps) => {
   const shownVaraInstruction = mmkvStore.getBoolean('shown-vara-instruction') ?? false;
   const theme = useSubWalletTheme().swThemes;
-  const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
+  const { chainInfoMap, chainStatusMap } = useSelector((state: RootState) => state.chainStore);
   const { nominationPoolInfoMap, validatorInfoMap } = useSelector((state: RootState) => state.bonding);
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
   const [loading, setLoading] = useState(false);
@@ -488,7 +488,7 @@ export const Stake = ({
               keyboardShouldPersistTaps={'handled'}>
               {_stakingType === ALL_KEY && (
                 <StakingTab
-                  disabled={chainStateMap?.[chain]?.connectionStatus === _ChainConnectionStatus.CONNECTING}
+                  disabled={chainStatusMap?.[chain]?.connectionStatus === _ChainConnectionStatus.CONNECTING}
                   from={from}
                   selectedType={currentStakingType as StakingType}
                   onSelectType={onChangeStakingType}

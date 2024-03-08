@@ -105,8 +105,8 @@ export const Unbond = ({
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const poolInfo = poolInfoMap[slug];
-  const poolType = poolInfo.type;
-  const poolChain = poolInfo.chain;
+  const poolType = poolInfo?.type;
+  const poolChain = poolInfo?.chain;
 
   const [isTransactionDone, setTransactionDone] = useState(false);
   const { list: allPositions } = useYieldPositionDetail(slug);
@@ -129,18 +129,18 @@ export const Unbond = ({
   }, []);
 
   const bondedSlug = useMemo(() => {
-    switch (poolInfo.type) {
+    switch (poolType) {
       case YieldPoolType.LIQUID_STAKING:
-        return poolInfo.metadata.derivativeAssets[0];
+        return poolInfo?.metadata?.derivativeAssets?.[0];
       case YieldPoolType.LENDING:
       case YieldPoolType.NATIVE_STAKING:
       case YieldPoolType.NOMINATION_POOL:
       default:
-        return poolInfo.metadata.inputAsset;
+        return poolInfo?.metadata.inputAsset;
     }
-  }, [poolInfo]);
+  }, [poolInfo, poolType]);
 
-  const bondedAsset = useGetChainAssetInfo(bondedSlug || poolInfo.metadata.inputAsset);
+  const bondedAsset = useGetChainAssetInfo(bondedSlug || poolInfo?.metadata.inputAsset);
   const decimals = bondedAsset?.decimals || 0;
   const symbol = bondedAsset?.symbol || '';
 
@@ -162,15 +162,15 @@ export const Unbond = ({
   }, [assetRegistry, chainValue]);
 
   const showFastLeave = useMemo(() => {
-    return poolInfo.metadata.availableMethod.defaultUnstake && poolInfo.metadata.availableMethod.fastUnstake;
-  }, [poolInfo.metadata]);
+    return poolInfo?.metadata.availableMethod.defaultUnstake && poolInfo?.metadata.availableMethod.fastUnstake;
+  }, [poolInfo?.metadata]);
 
   const mustChooseValidator = useMemo(() => {
     return isActionFromValidator(poolType, poolChain || '');
   }, [poolChain, poolType]);
 
   const bondedValue = useMemo((): string => {
-    switch (poolInfo.type) {
+    switch (poolType) {
       case YieldPoolType.NATIVE_STAKING:
         if (!mustChooseValidator) {
           return positionInfo?.activeStake || '0';
@@ -178,8 +178,8 @@ export const Unbond = ({
           return selectedValidator?.activeStake || '0';
         }
       case YieldPoolType.LENDING: {
-        const input = poolInfo.metadata.inputAsset;
-        const exchaneRate = poolInfo.statistic?.assetEarning.find(item => item.slug === input)?.exchangeRate || 1;
+        const input = poolInfo?.metadata.inputAsset;
+        const exchaneRate = poolInfo?.statistic?.assetEarning.find(item => item.slug === input)?.exchangeRate || 1;
 
         return new BigN(positionInfo?.activeStake || '0').multipliedBy(exchaneRate).toFixed(0);
       }
@@ -188,15 +188,22 @@ export const Unbond = ({
       default:
         return positionInfo?.activeStake || '0';
     }
-  }, [poolInfo, mustChooseValidator, positionInfo?.activeStake, selectedValidator?.activeStake]);
+  }, [
+    poolType,
+    mustChooseValidator,
+    positionInfo?.activeStake,
+    selectedValidator?.activeStake,
+    poolInfo?.metadata.inputAsset,
+    poolInfo?.statistic?.assetEarning,
+  ]);
 
   const unBondedTime = useMemo((): string => {
     if (
-      poolInfo.statistic &&
-      'unstakingPeriod' in poolInfo.statistic &&
-      poolInfo.statistic.unstakingPeriod !== undefined
+      poolInfo?.statistic &&
+      'unstakingPeriod' in poolInfo?.statistic &&
+      poolInfo?.statistic.unstakingPeriod !== undefined
     ) {
-      const time = poolInfo.statistic.unstakingPeriod;
+      const time = poolInfo?.statistic.unstakingPeriod;
 
       if (time >= 24) {
         const days = Math.floor(time / 24);
@@ -209,7 +216,7 @@ export const Unbond = ({
     } else {
       return 'unknown time';
     }
-  }, [poolInfo.statistic]);
+  }, [poolInfo?.statistic]);
 
   const [loading, setLoading] = useState(false);
   const accountList = useMemo(() => {
@@ -225,11 +232,11 @@ export const Unbond = ({
       return {
         existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
         availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
-        maintainBalance: getInputValuesFromString(poolInfo.metadata.maintainBalance || '0', estimateFee.decimals),
+        maintainBalance: getInputValuesFromString(poolInfo?.metadata.maintainBalance || '0', estimateFee.decimals),
         symbol: estimateFee.symbol,
       };
     },
-    [existentialDeposit, nativeTokenBalance.value, poolInfo.metadata.maintainBalance],
+    [existentialDeposit, nativeTokenBalance.value, poolInfo?.metadata.maintainBalance],
   );
   const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
   const { onError, onSuccess } = useHandleSubmitTransaction(
@@ -299,16 +306,16 @@ export const Unbond = ({
   );
 
   useEffect(() => {
-    if (poolInfo.metadata.availableMethod.defaultUnstake && poolInfo.metadata.availableMethod.fastUnstake) {
+    if (poolInfo?.metadata.availableMethod.defaultUnstake && poolInfo?.metadata.availableMethod.fastUnstake) {
       return;
     } else {
-      if (poolInfo.metadata.availableMethod.defaultUnstake) {
+      if (poolInfo?.metadata.availableMethod.defaultUnstake) {
         setValue('fastLeave', '');
       } else {
         setValue('fastLeave', '1');
       }
     }
-  }, [poolInfo.metadata, setValue]);
+  }, [poolInfo?.metadata, setValue]);
 
   useEffect(() => {
     setChain(poolChain || '');
@@ -324,7 +331,7 @@ export const Unbond = ({
     <>
       {!isTransactionDone ? (
         <TransactionLayout
-          title={poolInfo.type === YieldPoolType.LENDING ? i18n.header.withdraw : i18n.header.unstake}
+          title={poolType === YieldPoolType.LENDING ? i18n.header.withdraw : i18n.header.unstake}
           disableLeftButton={loading}
           disableMainHeader={loading}>
           <>
@@ -400,7 +407,7 @@ export const Unbond = ({
                 />
               )}
               {!fastLeave || !showFastLeave ? (
-                poolInfo.type !== YieldPoolType.LENDING ? (
+                poolType !== YieldPoolType.LENDING ? (
                   <>
                     {!!unstakeDataRaw.instructions.length && (
                       <View
@@ -452,7 +459,7 @@ export const Unbond = ({
                   />
                 }
                 onPress={onPreCheckReadOnly(onSubmit)}>
-                {poolInfo.type === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
+                {poolType === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
               </Button>
             </View>
           </>

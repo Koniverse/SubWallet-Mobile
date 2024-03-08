@@ -11,31 +11,32 @@ import {
   ChatCircleText,
   Clock,
   Coin,
-  DiscordLogo,
+  EnvelopeSimple,
   Globe,
   GlobeHemisphereWest,
   IconProps,
   Lock,
+  Parachute,
   ShareNetwork,
   ShieldCheck,
-  Star,
-  TelegramLogo,
-  TwitterLogo,
   X,
 } from 'phosphor-react-native';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { DISCORD_URL, TELEGRAM_URL, TERMS_OF_USE_URL, TWITTER_URL, WEBSITE_URL, WIKI_URL } from 'constants/index';
+import { WIKI_URL } from 'constants/index';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 import useAppLock from 'hooks/useAppLock';
-import { BackgroundIcon, Button, Icon, SelectItem } from 'components/design-system-ui';
+import { BackgroundIcon, Badge, Button, Icon, SelectItem } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SVGImages } from 'assets/index';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import packageJSON from '../../../package.json';
 import env from 'react-native-config';
+import { RootState } from 'stores/index';
+import { useSelector } from 'react-redux';
+import { MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
 
 const settingTitleStyle: StyleProp<any> = {
   fontSize: 12,
@@ -71,6 +72,10 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { lock } = useAppLock();
+  const { missions } = useSelector((state: RootState) => state.missionPool);
+  const activeMissionPoolNumb = useMemo(() => {
+    return missions.filter(item => item.status === MissionCategoryType.LIVE).length;
+  }, [missions]);
   const [hiddenCount, setHiddenCount] = useState(0);
   const settingList: settingItemType[][] = useMemo(
     () => [
@@ -90,18 +95,34 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           backgroundColor: '#2DA73F',
         },
         {
-          icon: BookBookmark,
-          title: i18n.settings.manageAddressBook,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => navigation.navigate('ManageAddressBook'),
-          backgroundColor: '#0078D9',
-        },
-        {
           icon: Clock,
           title: i18n.title.history,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
           onPress: () => navigation.navigate('History', {}),
           backgroundColor: '#2595E6',
+        },
+        {
+          icon: Parachute,
+          title: i18n.header.missionPools,
+          rightIcon: (
+            <View style={{ flexDirection: 'row', gap: theme.paddingSM + 2, alignItems: 'center' }}>
+              {!!activeMissionPoolNumb && <Badge value={activeMissionPoolNumb} />}
+              <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />
+            </View>
+          ),
+          onPress: () => navigation.navigate('MissionPoolsByTabview', { type: 'all' }),
+          backgroundColor: '#108959',
+        },
+      ],
+      [
+        {
+          icon: Globe,
+          title: i18n.settings.manageWebsiteAccess,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          onPress: () => {
+            navigation.navigate('DAppAccess');
+          },
+          backgroundColor: '#0078d9',
         },
         {
           icon: Clock,
@@ -119,7 +140,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           icon: ShareNetwork,
           title: i18n.settings.manageNetworks,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => navigation.navigate('NetworksSetting'),
+          onPress: () => navigation.navigate('NetworksSetting', {}),
           backgroundColor: '#9224E1',
         },
         {
@@ -129,57 +150,21 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           onPress: () => navigation.navigate('CustomTokenSetting'),
           backgroundColor: '#D9A33E',
         },
-      ],
-      [
         {
-          icon: Star,
-          title: 'Rate our app',
+          icon: BookBookmark,
+          title: i18n.settings.manageAddressBook,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => {
-            Linking.openURL(
-              Platform.OS === 'ios'
-                ? 'https://apps.apple.com/vn/app/subwallet-polkadot-wallet/id1633050285'
-                : 'https://play.google.com/store/apps/details?id=app.subwallet.mobile',
-            );
-          },
-          backgroundColor: '#86C338',
-        },
-        {
-          icon: ChatCircleText,
-          title: 'Request a feature',
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL('mailto:agent@subwallet.app?subject=%5BSubWallet%20In-app%20Feedback%5D'),
-          backgroundColor: '#E6478E',
-        },
-        {
-          icon: TwitterLogo,
-          title: i18n.settings.twitter,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL(TWITTER_URL),
-          backgroundColor: '#2595E6',
-        },
-        {
-          icon: DiscordLogo,
-          title: i18n.settings.discord,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL(DISCORD_URL),
-          backgroundColor: '#4E8AF2',
-        },
-        {
-          icon: TelegramLogo,
-          title: i18n.settings.telegram,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL(TELEGRAM_URL),
-          backgroundColor: '#005CA6',
+          onPress: () => navigation.navigate('ManageAddressBook'),
+          backgroundColor: '#0078D9',
         },
       ],
       [
         {
-          icon: Globe,
-          title: i18n.settings.website,
+          icon: EnvelopeSimple,
+          title: i18n.settings.contactSupport,
           rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL(WEBSITE_URL),
-          backgroundColor: '#2595E6',
+          onPress: () => Linking.openURL('mailto:agent@subwallet.app?subject=%5BIn-app%20Support%5D'),
+          backgroundColor: '#004BFF',
         },
         {
           icon: Book,
@@ -189,15 +174,22 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           backgroundColor: '#2DA73F',
         },
         {
-          icon: BookBookmark,
-          title: i18n.settings.termOfUse,
+          icon: ChatCircleText,
+          title: i18n.settings.requestAFeature,
           rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL(TERMS_OF_USE_URL),
-          backgroundColor: '#D96F00',
+          onPress: () => Linking.openURL('mailto:agent@subwallet.app?subject=%5BSubWallet%20In-app%20Feedback%5D'),
+          backgroundColor: '#E6478E',
+        },
+        {
+          icon: Clock,
+          title: i18n.settings.aboutSubwallet,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          onPress: () => navigation.navigate('AboutSubWallet'),
+          backgroundColor: '#E6478E',
         },
       ],
     ],
-    [navigation, theme.colorTextLight3],
+    [activeMissionPoolNumb, navigation, theme.colorTextLight3, theme.paddingSM],
   );
 
   const onPressVersionNumber = () => {
@@ -226,6 +218,20 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
                 rightIcon={setting.rightIcon}
                 key={setting.title}
                 label={setting.title}
+                icon={setting.icon}
+                backgroundColor={setting.backgroundColor}
+                onPress={setting.onPress}
+              />
+            ))}
+          </View>
+          <Text style={settingTitleStyle}>{'WEBSITE ACCESS'}</Text>
+
+          <View style={{ gap: theme.paddingXS }}>
+            {settingList[1].map(setting => (
+              <SelectItem
+                rightIcon={setting.rightIcon}
+                key={setting.title}
+                label={setting.title}
                 leftItemIcon={
                   setting.title === i18n.header.walletConnect ? (
                     <BackgroundIcon
@@ -242,22 +248,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
             ))}
           </View>
 
-          <Text style={settingTitleStyle}>{i18n.settings.networksAndTokens.toUpperCase()}</Text>
-
-          <View style={{ gap: theme.paddingXS }}>
-            {settingList[1].map(setting => (
-              <SelectItem
-                rightIcon={setting.rightIcon}
-                key={setting.title}
-                label={setting.title}
-                icon={setting.icon}
-                backgroundColor={setting.backgroundColor}
-                onPress={setting.onPress}
-              />
-            ))}
-          </View>
-
-          <Text style={settingTitleStyle}>{i18n.settings.communityAndSupport.toUpperCase()}</Text>
+          <Text style={settingTitleStyle}>{'ASSETS & ADDRESSES'}</Text>
 
           <View style={{ gap: theme.paddingXS }}>
             {settingList[2].map(setting => (
@@ -272,11 +263,16 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
             ))}
           </View>
 
-          <Text style={settingTitleStyle}>{i18n.settings.aboutSubwallet.toUpperCase()}</Text>
+          <Text style={settingTitleStyle}>{i18n.settings.communityAndSupport.toUpperCase()}</Text>
 
           <View style={{ gap: theme.paddingXS }}>
             {settingList[3].map(setting => (
               <SelectItem
+                leftItemIcon={
+                  setting.title === 'About SubWallet' ? (
+                    <SVGImages.SubWalletCircleLogo width={24} height={24} color={theme.colorWhite} />
+                  ) : undefined
+                }
                 rightIcon={setting.rightIcon}
                 key={setting.title}
                 label={setting.title}

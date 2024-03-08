@@ -5,7 +5,7 @@ import { Button, Icon, Number, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CaretDown, CaretUp, CheckCircle, ProhibitInset } from 'phosphor-react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { getWaitingTime } from 'screens/Transaction/helper/staking';
@@ -22,6 +22,7 @@ type Props = {
 const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
   const { unstakings, inputAsset, poolInfo } = props;
   const { slug } = poolInfo;
+  const [currentTimestampMs, setCurrentTimestampMs] = useState(Date.now());
 
   const navigation = useNavigation<RootNavigationProps>();
 
@@ -31,19 +32,31 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
 
   const items = useMemo(() => {
     return [...unstakings].sort((a, b) => {
-      if (a.waitingTime === undefined && b.waitingTime === undefined) {
-        return 0;
+      if (a.targetTimestampMs === undefined && b.targetTimestampMs === undefined) {
+        if (a.waitingTime === undefined && b.waitingTime === undefined) {
+          return 0;
+        }
+
+        if (a.waitingTime === undefined) {
+          return -1;
+        }
+
+        if (b.waitingTime === undefined) {
+          return 1;
+        }
+
+        return a.waitingTime - b.waitingTime;
       }
 
-      if (a.waitingTime === undefined) {
+      if (a.targetTimestampMs === undefined) {
         return -1;
       }
 
-      if (b.waitingTime === undefined) {
+      if (b.targetTimestampMs === undefined) {
         return 1;
       }
 
-      return a.waitingTime - b.waitingTime;
+      return a.targetTimestampMs - b.targetTimestampMs;
     });
   }, [unstakings]);
 
@@ -51,24 +64,28 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
     let result = BN_ZERO;
 
     unstakings.forEach(value => {
-      if (value.status === UnstakingStatus.CLAIMABLE) {
+      const canClaim = value.targetTimestampMs
+        ? value.targetTimestampMs <= currentTimestampMs
+        : value.status === UnstakingStatus.CLAIMABLE;
+
+      if (canClaim) {
         result = result.plus(value.claimable);
       }
     });
 
     return result;
-  }, [unstakings]);
+  }, [currentTimestampMs, unstakings]);
 
   const haveUnlocking = useMemo(() => unstakings.some(i => i.status === UnstakingStatus.UNLOCKING), [unstakings]);
 
   const canCancelWithdraw = useMemo(
-    () => haveUnlocking && poolInfo.metadata.availableMethod.cancelUnstake,
-    [haveUnlocking, poolInfo.metadata.availableMethod.cancelUnstake],
+    () => haveUnlocking && poolInfo?.metadata.availableMethod.cancelUnstake,
+    [haveUnlocking, poolInfo?.metadata.availableMethod.cancelUnstake],
   );
 
   const canWithdraw = useMemo(() => {
-    return totalWithdrawable.gt(BN_ZERO);
-  }, [totalWithdrawable]);
+    return poolInfo.metadata.availableMethod.withdraw && totalWithdrawable.gt(BN_ZERO);
+  }, [poolInfo.metadata.availableMethod.withdraw, totalWithdrawable]);
 
   const [showDetail, setShowDetail] = useState(false);
 
@@ -93,29 +110,59 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
   const renderWithdrawTime = useCallback(
     (item: UnstakingInfo) => {
       return () => {
-        if (item.waitingTime === undefined) {
+        if (!poolInfo.metadata.availableMethod.withdraw) {
           return (
             <View style={styles.timeRow}>
-              <Typography.Text style={styles.timeText}>Waiting for withdrawal</Typography.Text>
-              {item.status === UnstakingStatus.CLAIMABLE && (
-                <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />
-              )}
+              <Typography.Text style={styles.timeText}>
+                {i18n.earningScreen.withdrawInfo.automaticWithdrawal}
+              </Typography.Text>
             </View>
           );
         } else {
-          return (
-            <View style={styles.timeRow}>
-              <Typography.Text style={styles.timeText}>{getWaitingTime(item.waitingTime, item.status)}</Typography.Text>
-              {item.status === UnstakingStatus.CLAIMABLE && (
-                <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />
-              )}
-            </View>
-          );
+          if (item.targetTimestampMs === undefined && item.waitingTime === undefined) {
+            return (
+              <View style={styles.timeRow}>
+                <Typography.Text style={styles.timeText}>
+                  {i18n.earningScreen.withdrawInfo.waitingForWithdrawal}
+                </Typography.Text>
+                {item.status === UnstakingStatus.CLAIMABLE && (
+                  <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />
+                )}
+              </View>
+            );
+          } else {
+            return (
+              <View style={styles.timeRow}>
+                <Typography.Text style={styles.timeText}>
+                  {getWaitingTime(currentTimestampMs, item.targetTimestampMs, item.waitingTime)}
+                </Typography.Text>
+                {item.status === UnstakingStatus.CLAIMABLE && (
+                  <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />
+                )}
+              </View>
+            );
+          }
         }
       };
     },
-    [styles, theme],
+    [
+      currentTimestampMs,
+      poolInfo.metadata.availableMethod.withdraw,
+      styles.timeRow,
+      styles.timeText,
+      theme.colorSecondary,
+    ],
   );
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTimestampMs(Date.now());
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   if (!unstakings.length) {
     return null;
