@@ -1,3 +1,6 @@
+## 1.1.39 (333)
+- Update transaction result screen (#1506)
+
 ## 1.1.38 (332)
 
 
