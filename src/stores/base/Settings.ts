@@ -16,6 +16,7 @@ const initialState = {
   language: 'en',
   browserConfirmationType: 'extension',
   currentRoute: undefined,
+
   // AuthUrls
   authUrls: {},
 

@@ -36,6 +36,9 @@ import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
 import { useGetEarningStaticData } from 'hooks/static-content/useGetEarningStaticData';
+import { useGetConfig } from 'hooks/static-content/useGetConfig';
+import { mmkvStore } from 'utils/storage';
+import { setIsShowRemindBackupModal } from 'screens/Home';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -98,10 +101,9 @@ const imageBackgroundStyle: StyleProp<any> = {
   backgroundColor: 'black',
 };
 
-let lockWhenActive = false;
 AppState.addEventListener('change', (state: string) => {
-  const { isUseBiometric, timeAutoLock, lock, isMasterPasswordLocked } = autoLockParams;
-
+  const { timeAutoLock, lock, isMasterPasswordLocked } = autoLockParams;
+  const lastTimeLogin = mmkvStore.getNumber('lastTimeLogin') || 0;
   if (timeAutoLock === undefined) {
     return;
   }
@@ -110,24 +112,22 @@ AppState.addEventListener('change', (state: string) => {
   }
 
   if (state === 'background') {
+    mmkvStore.set('lastTimeLogin', Date.now());
     if (timeAutoLock === LockTimeout.ALWAYS) {
       // Lock master password incase always require
+      setIsShowRemindBackupModal(false);
       keyringLock().catch((e: Error) => console.log(e));
     }
-    if (isUseBiometric) {
-      lockWhenActive = true;
-    } else {
-      lockWhenActive = false;
-      if (isMasterPasswordLocked) {
-        lock();
-      }
+
+    if (isMasterPasswordLocked) {
+      setIsShowRemindBackupModal(false);
+      lock();
     }
   } else if (state === 'active') {
-    if (lockWhenActive) {
-      if (isMasterPasswordLocked) {
-        lock();
-      }
-      lockWhenActive = false;
+    const isLockApp = Date.now() - lastTimeLogin > timeAutoLock * 60000;
+    if (isLockApp) {
+      setIsShowRemindBackupModal(false);
+      lock();
     }
   }
 });
@@ -150,7 +150,7 @@ export const App = () => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
-  const { isUseBiometric, timeAutoLock, isPreventLock } = useSelector((state: RootState) => state.mobileSettings);
+  const { timeAutoLock, isPreventLock } = useSelector((state: RootState) => state.mobileSettings);
   const { hasMasterPassword, isLocked } = useSelector((state: RootState) => state.accountState);
   const language = useSelector((state: RootState) => state.settings.language);
   const { lock, unlockApp } = useAppLock();
@@ -159,8 +159,10 @@ export const App = () => {
   const isI18nReady = useSetupI18n().isI18nReady;
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
+  const { getConfig } = useGetConfig();
   const { getEarningStaticData } = useGetEarningStaticData(language);
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
+  autoLockParams.isMasterPasswordLocked = isLocked;
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -171,17 +173,14 @@ export const App = () => {
       unlockApp();
     }
     firstTimeCheckPincode = true;
-    autoLockParams.isMasterPasswordLocked = isLocked;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLocked]);
-
   useEffect(() => {
     autoLockParams.lock = lock;
     autoLockParams.timeAutoLock = timeAutoLock;
     autoLockParams.hasMasterPassword = hasMasterPassword;
-    autoLockParams.isUseBiometric = isUseBiometric;
     autoLockParams.isPreventLock = isPreventLock;
-  }, [timeAutoLock, isUseBiometric, isPreventLock, lock, hasMasterPassword]);
+  }, [timeAutoLock, isPreventLock, lock, hasMasterPassword, isLocked]);
 
   const isRequiredStoresReady = true;
 
@@ -196,9 +195,9 @@ export const App = () => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 100);
-
     checkIsShowBuyToken();
     getDAppsData();
+    getConfig();
     getEarningStaticData();
 
     DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {

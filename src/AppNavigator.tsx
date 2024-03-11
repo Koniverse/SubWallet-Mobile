@@ -62,7 +62,6 @@ import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { ConnectionList } from 'screens/Settings/WalletConnect/ConnectionList';
 import { ConnectWalletConnect } from 'screens/Settings/WalletConnect/ConnectWalletConnect';
 import { ConnectionDetail } from 'screens/Settings/WalletConnect/ConnectionDetail';
-import useAppLock from 'hooks/useAppLock';
 import LoginScreen from 'screens/MasterPassword/Login';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
@@ -84,7 +83,6 @@ import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { DeriveAccount } from 'screens/Account/DeriveAccount';
 import { useGroupYieldPosition } from 'hooks/earning';
 import { AboutSubWallet } from 'screens/Settings/AboutSubWallet';
-import { updateCurrentRoute } from 'stores/utils';
 
 interface Props {
   isAppReady: boolean;
@@ -223,7 +221,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount } = useSelector(
     (state: RootState) => state.accountState,
   );
-  const { isLocked: isLogin } = useAppLock();
+  const isLogin = useSelector((state: RootState) => state.appState.isLocked);
   const [isNavigationReady, setNavigationReady] = useState<boolean>(false);
   const appModalContext = useContext(AppModalContext);
   const isLockedRef = useRef(isLogin);
@@ -409,7 +407,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
   };
 
   const onUpdateRoute = useCallback((state: NavigationState | undefined) => {
-    updateCurrentRoute(state?.routes[state?.index]);
     setCurrentRoute(state?.routes[state?.index]);
   }, []);
 
