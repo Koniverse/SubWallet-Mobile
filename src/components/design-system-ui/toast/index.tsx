@@ -67,6 +67,7 @@ function createStyle(theme: ThemeTypes) {
       paddingVertical: theme.paddingContentVerticalSM,
       alignItems: 'center',
       marginHorizontal: 24,
+      marginTop: theme.marginXS,
     },
     touchable: {
       alignItems: 'center',

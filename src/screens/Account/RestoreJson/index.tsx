@@ -323,7 +323,12 @@ export const RestoreJson = () => {
         modalVisible={visible}
         modalTitle={i18n.header.accounts}
         onBackButtonPress={hideModal}>
-        <FlatList data={accountsInfo} renderItem={renderAccount} style={styles.accountList} />
+        <FlatList
+          contentContainerStyle={{ gap: theme.marginXS }}
+          data={accountsInfo}
+          renderItem={renderAccount}
+          style={styles.accountList}
+        />
       </SwModal>
     </ContainerWithSubHeader>
   );

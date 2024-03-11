@@ -26,7 +26,7 @@ const createStyles = (theme: ThemeTypes) => {
       gap: theme.sizeXS,
     },
     seedWord: {
-      // margin: theme.marginXS,
+      flex: 1,
     },
     copyWrapper: {
       alignItems: 'center',

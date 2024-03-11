@@ -339,7 +339,7 @@ const NftDetail = ({
                 (data?.properties ? Object.keys(data?.properties).length : 0) + 2,
               )}
               {!!data.properties && (
-                <View>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                   {Object.keys(data?.properties).map((key, index) => {
                     // @ts-ignore
                     return propDetail(key, data?.properties[key], index);
@@ -350,10 +350,12 @@ const NftDetail = ({
           </View>
         </ScrollView>
 
-        {canSend && (
+        {canSend ? (
           <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
             <Button onPress={handleClickTransfer}>{i18n.buttonTitles.send}</Button>
           </View>
+        ) : (
+          <View style={{ marginBottom: theme.margin }} />
         )}
       </>
     </ContainerWithSubHeader>

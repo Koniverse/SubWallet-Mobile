@@ -80,7 +80,7 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
             title={i18n.warningTitle.whatIfLoseRecoveryPhrase}
             description={
               <>
-                There is no way to get back your recovery phrase if you lose it. Make sure you store them at someplace
+                There is no way to get back your seed phrase if you lose it. Make sure you store them at someplace safe
                 safe which is accessible only to you.{' '}
                 <Typography.Text style={{ textDecorationLine: 'underline' }} onPress={onPressDownloadText}>
                   Download seed phrase
