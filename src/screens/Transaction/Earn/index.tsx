@@ -212,7 +212,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [checkMintLoading, setCheckMintLoading] = useState(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isShowAlert, setIsShowAlert] = useState<boolean>(false);
+  const [isShowAlert, setIsShowAlert] = useState<boolean>(!!isNoAccount);
   const [useParamValidator, setUseParamValidator] = useState<boolean>(redirectFromPreviewRef.current);
 
   const isDisabledButton = useMemo(
@@ -1178,8 +1178,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
               slug={slug}
               setVisible={setDetailModalVisible}
               onStakeMore={() => {
-                setIsShowAlert(true);
                 setDetailModalVisible(false);
+                setIsShowAlert(true);
                 setFocus('value');
               }}
               isShowStakeMoreBtn={!isPressInfoBtnRef.current}
