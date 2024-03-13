@@ -23,7 +23,7 @@ import urlParse from 'url-parse';
 import EarningPoolDetailModal from 'components/Modal/Earning/EarningPoolDetailModal';
 import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import { getPoolSlug } from 'utils/earn';
-import { isHandleDeeplinkPromise } from '../../App';
+import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -113,6 +113,12 @@ export const FirstScreen = () => {
     },
     [onlinePoolInfoMap],
   );
+
+  useEffect(() => {
+    if (isFocused) {
+      setIsHandleDeeplinkPromise(true);
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     const unsubscribe = Linking.addEventListener('url', ({ url }) => {

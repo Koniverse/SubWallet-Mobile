@@ -367,12 +367,12 @@ const AppNavigator = ({ isAppReady }: Props) => {
       let accountList: AccountJson[] = [];
 
       if (!chainInfo) {
-        return false;
+        return [];
       }
 
       accountList = _accounts.filter(getFilteredAccount(chainInfo));
 
-      return !!accountList.length;
+      return accountList;
     },
     [chainInfoMap],
   );
@@ -443,10 +443,14 @@ const AppNavigator = ({ isAppReady }: Props) => {
         }
 
         if (parseUrl.pathname.startsWith('/transaction-action/earning')) {
-          const isValidAccount = checkIsAnyAccountValid(accounts, urlQueryMap.chain);
-          if (!isValidAccount) {
+          const validAccount = checkIsAnyAccountValid(accounts, urlQueryMap.chain);
+          if (!validAccount.length) {
             listener(`subwallet://home/main/earning/earning-list?chain=${urlQueryMap.chain}&noAccountValid=true`);
             return;
+          } else {
+            if (validAccount.length === 1) {
+              saveCurrentAccountAddress(validAccount[0]);
+            }
           }
         }
 
