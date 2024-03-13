@@ -60,7 +60,7 @@ import { getValidatorKey, parseNominations } from 'utils/transaction/stake';
 import { accountFilterFunc, getJoinYieldParams } from '../helper/earning';
 import createStyle from './style';
 import { useYieldPositionDetail } from 'hooks/earning';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { STAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
@@ -90,6 +90,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   } = props;
 
   const navigation = useNavigation<RootNavigationProps>();
+  const isFocused = useIsFocused();
   const theme = useSubWalletTheme().swThemes;
   const { show, hideAll } = useToast();
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
@@ -142,6 +143,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const accountSelectorRef = useRef<ModalRef>();
   const validatorSelectorRef = useRef<ValidatorSelectorRef>(null);
   const poolSelectorRef = useRef<PoolSelectorRef>(null);
+  const isReadyToShowAlertRef = useRef<boolean>(true);
   const fromRef = useRef<string>(currentFrom);
   const isPressInfoBtnRef = useRef<boolean>(false);
   const nativeTokenSlug = useGetNativeTokenSlug(chain);
@@ -726,7 +728,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       timeout = setTimeout(() => {
         clearInterval(timer);
         setIsLoading(false);
-      }, 4000);
+      }, 5000);
     } else {
       setTimeout(() => setIsLoading(false), 350);
     }
@@ -880,29 +882,35 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           if (defaultTarget.current) {
             if (!supportedValidator) {
               defaultTarget.current = '';
-              Alert.alert(
-                'Unrecommended validator',
-                'Your chosen validator is not recommended by SubWallet as staking with this validator won’t accrue any rewards. Select another validator and try again.',
-                [
-                  {
-                    text: 'Dismiss',
-                  },
-                  {
-                    text: 'Select validators',
-                    onPress: () => {
-                      if (poolType === YieldPoolType.NATIVE_STAKING) {
-                        validatorSelectorRef?.current?.onOpenModal();
-                      }
-
-                      if (poolType === YieldPoolType.NOMINATION_POOL) {
-                        poolSelectorRef?.current?.onOpenModal();
-                      }
-
-                      setIsShowAlert(false);
+              isReadyToShowAlertRef.current &&
+                Alert.alert(
+                  'Unrecommended validator',
+                  'Your chosen validator is not recommended by SubWallet as staking with this validator won’t accrue any rewards. Select another validator and try again.',
+                  [
+                    {
+                      text: 'Dismiss',
+                      onPress: () => {
+                        isReadyToShowAlertRef.current = true;
+                      },
                     },
-                  },
-                ],
-              );
+                    {
+                      text: 'Select validators',
+                      onPress: () => {
+                        isReadyToShowAlertRef.current = true;
+                        if (poolType === YieldPoolType.NATIVE_STAKING) {
+                          validatorSelectorRef?.current?.onOpenModal();
+                        }
+
+                        if (poolType === YieldPoolType.NOMINATION_POOL) {
+                          poolSelectorRef?.current?.onOpenModal();
+                        }
+
+                        setIsShowAlert(false);
+                      },
+                    },
+                  ],
+                );
+              isReadyToShowAlertRef.current = false;
             } else {
               defaultTarget.current = getValidatorKey(
                 supportedValidator.address,
@@ -930,63 +938,79 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [compound]);
 
   useEffect(() => {
-    if (redirectFromPreviewRef.current && !targetLoading && isShowAlert && !isLoading) {
-      if (!isAllAccount && compound) {
-        if (autoCheckCompoundRef.current) {
-          autoCheckCompoundRef.current = false;
+    if (redirectFromPreviewRef.current && !targetLoading && isShowAlert && !isLoading && isFocused) {
+      if (!isAllAccount && !!compound && autoCheckCompoundRef.current) {
+        autoCheckCompoundRef.current = false;
 
-          if (isUnstakeAll) {
-            if (poolType === YieldPoolType.NOMINATION_POOL) {
+        if (isUnstakeAll) {
+          if (poolType === YieldPoolType.NOMINATION_POOL) {
+            isReadyToShowAlertRef.current &&
               Alert.alert(
                 'Pay attention',
                 "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
                 [
                   {
                     text: 'I understand',
+                    onPress: () => {
+                      isReadyToShowAlertRef.current = true;
+                    },
                   },
                 ],
               );
 
-              return;
-            } else if (poolType === YieldPoolType.NATIVE_STAKING) {
-              if (_STAKING_CHAIN_GROUP.para.includes(chain)) {
+            isReadyToShowAlertRef.current = false;
+
+            return;
+          } else if (poolType === YieldPoolType.NATIVE_STAKING) {
+            if (_STAKING_CHAIN_GROUP.para.includes(chain)) {
+              isReadyToShowAlertRef.current &&
                 Alert.alert(
                   'Pay attention',
                   "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
-                  [{ text: 'I understand' }],
+                  [
+                    {
+                      text: 'I understand',
+                      onPress: () => {
+                        isReadyToShowAlertRef.current = true;
+                      },
+                    },
+                  ],
                 );
+              isReadyToShowAlertRef.current = false;
 
-                return;
-              } else {
-                return;
-              }
+              return;
+            } else {
+              return;
             }
           }
+        }
 
-          const content =
-            poolType === YieldPoolType.NATIVE_STAKING
-              ? `This account is currently nominating ${compound.nominations.length} validators. You can change validators or change your account on the Account tab`
-              : poolType === YieldPoolType.NOMINATION_POOL
-              ? 'This account is currently a member of a nomination pool. You can continue using nomination pool, explore other Earning options or change your account on the Account tab'
-              : '';
+        const content =
+          poolType === YieldPoolType.NATIVE_STAKING
+            ? `This account is currently nominating ${compound.nominations.length} validators. You can change validators or change your account on the Account tab`
+            : poolType === YieldPoolType.NOMINATION_POOL
+            ? 'This account is currently a member of a nomination pool. You can continue using nomination pool, explore other Earning options or change your account on the Account tab'
+            : '';
 
-          const onPressCancel = () => {
-            if (poolType === YieldPoolType.NOMINATION_POOL) {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
-              });
-            }
+        const onPressCancel = () => {
+          if (poolType === YieldPoolType.NOMINATION_POOL) {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+            });
+          }
 
-            setUseParamValidator(false);
-          };
+          setUseParamValidator(false);
+        };
 
-          const onPressContinue = () => {
-            if (poolType === YieldPoolType.NATIVE_STAKING) {
-              checkUnrecommendedValidator(() => onChangeTarget(defaultTarget.current || ''));
-            }
-          };
+        const onPressContinue = () => {
+          isReadyToShowAlertRef.current = true;
+          if (poolType === YieldPoolType.NATIVE_STAKING) {
+            checkUnrecommendedValidator(() => onChangeTarget(defaultTarget.current || ''));
+          }
+        };
 
+        isReadyToShowAlertRef.current &&
           Alert.alert('Pay attention', content, [
             {
               text:
@@ -1007,7 +1031,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
               onPress: onPressContinue,
             },
           ]);
-        }
+        isReadyToShowAlertRef.current = false;
       } else {
         if (autoCheckValidatorGetFromPreview.current) {
           autoCheckValidatorGetFromPreview.current = false;
@@ -1027,6 +1051,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     onChangeTarget,
     isShowAlert,
     isAllAccount,
+    isFocused,
   ]);
 
   const validatorDefaultValue = (() => {

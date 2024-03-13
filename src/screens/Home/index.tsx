@@ -217,6 +217,14 @@ export const Home = ({ navigation }: Props) => {
   const language = useSelector((state: RootState) => state.settings.language);
   const isFocused = useIsFocused();
   mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
+
+  const needMigrate = useMemo(
+    () =>
+      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
+        .length || currentRoute?.name === 'MigratePassword',
+    [accounts, currentRoute?.name],
+  );
+
   useEffect(() => {
     if (isReady && isLoading) {
       setTimeout(() => setLoading(false), 1500);
@@ -224,14 +232,15 @@ export const Home = ({ navigation }: Props) => {
   }, [isReady, isLoading]);
 
   useEffect(() => {
-    const readyHandleDeeplink = isReady && !isLoading && !isLocked && hasMasterPassword && !isEmptyAccounts;
+    const readyHandleDeeplink =
+      isReady && !isLoading && !isLocked && hasMasterPassword && !isEmptyAccounts && !needMigrate;
     if (readyHandleDeeplink && isHandleDeeplinkPromise.current) {
-      setIsHandleDeeplinkPromise(false);
       handleTriggerDeeplinkAfterLogin(appNavigatorDeepLinkStatus, navigation);
+      setIsHandleDeeplinkPromise(false);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, isLoading, isLocked]);
+  }, [isReady, isLoading, isLocked, needMigrate]);
 
   useEffect(() => {
     if (isShowCampaignModal) {
@@ -266,13 +275,6 @@ export const Home = ({ navigation }: Props) => {
     mmkvStore.set('isOpenGeneralTermFirstTime', true);
     setGeneralTermVisible(false);
   };
-
-  const needMigrate = useMemo(
-    () =>
-      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
-        .length || currentRoute?.name === 'MigratePassword',
-    [accounts, currentRoute?.name],
-  );
 
   if (isLoading) {
     return (

@@ -4,6 +4,8 @@ import { Database, HandsClapping, Leaf, User, Users } from 'phosphor-react-nativ
 import { ThemeTypes } from 'styles/themes';
 import { EarningTagType } from 'types/earning';
 import { convertHexColorToRGBA } from 'utils/color';
+import { ValidatorInfo } from '@subwallet/extension-base/types/yield/info/chain/target';
+import { shuffle } from 'utils/common';
 
 export const createEarningTypeTags = (theme: ThemeTypes, chain: string): Record<YieldPoolType, EarningTagType> => {
   return {
@@ -61,4 +63,40 @@ export function isRelatedToAstar(slug: string) {
     'ASTR-Astar',
     'shibuya-NATIVE-SBY',
   ].includes(slug);
+}
+
+export function autoSelectValidatorOptimally(
+  validators: ValidatorInfo[],
+  maxCount = 1,
+  preSelectValidators?: string,
+): ValidatorInfo[] {
+  if (!validators.length) {
+    return [];
+  }
+
+  const preSelectValidatorAddresses = preSelectValidators ? preSelectValidators.split(',') : [];
+
+  const shuffleValidators = [...validators];
+
+  shuffle<ValidatorInfo>(shuffleValidators);
+
+  const result: ValidatorInfo[] = [];
+
+  for (const v of shuffleValidators) {
+    if (result.length === maxCount) {
+      break;
+    }
+
+    if (preSelectValidatorAddresses.includes(v.address)) {
+      result.push(v);
+
+      continue;
+    }
+
+    if (v.commission !== 100 && !v.blocked && v.identity && v.topQuartile) {
+      result.push(v);
+    }
+  }
+
+  return result;
 }
