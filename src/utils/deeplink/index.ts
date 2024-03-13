@@ -14,17 +14,23 @@ export function transformUniversalToNative(url: string) {
   return url.replace('https://mobile.subwallet.app/', 'subwallet://');
 }
 
+const openLinking = (_url: string) => {
+  Linking.openURL(_url)
+    .then(() => setPrevDeeplinkUrl(_url))
+    .catch(console.error);
+};
+
 function openDeeplink(_url: string) {
   Linking.canOpenURL(_url)
     .then(supported => {
       if (supported) {
         console.log('firstScreenDeepLink.current', firstScreenDeepLink.current);
         if (firstScreenDeepLink.current) {
-          Linking.openURL(firstScreenDeepLink.current);
+          openLinking(firstScreenDeepLink.current);
           setFirstScreenDeepLink();
           return;
         }
-        Linking.openURL(_url);
+        openLinking(_url);
       }
     })
     .catch(e => {
@@ -40,7 +46,7 @@ export function handleTriggerDeeplinkAfterLogin(
   Linking.getInitialURL().then(url => {
     if (!url || prevDeeplinkUrl === url) {
       if (firstScreenDeepLink.current) {
-        Linking.openURL(firstScreenDeepLink.current);
+        openLinking(firstScreenDeepLink.current);
         setFirstScreenDeepLink();
       }
 
@@ -48,12 +54,11 @@ export function handleTriggerDeeplinkAfterLogin(
     }
 
     appNavigatorDeepLinkStatus.current = AppNavigatorDeepLinkStatus.BLOCK;
-    setPrevDeeplinkUrl(url);
     const _url = transformUniversalToNative(url);
     const urlParsed = new urlParse(_url);
 
     if (urlParsed.hostname === 'browser') {
-      Linking.openURL(_url);
+      openLinking(_url);
       return;
     }
 

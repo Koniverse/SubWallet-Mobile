@@ -12,6 +12,7 @@ import {
   ArrowsClockwise,
   CheckCircle,
   IconProps,
+  Lightning,
   MagnifyingGlass,
   SortAscending,
   SortDescending,
@@ -163,7 +164,8 @@ export const EarningValidatorSelector = forwardRef(
       onCancelSelectValidator,
       onChangeSelectedValidator,
       onInitValidators,
-    } = useSelectValidators(maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
+      onAutoSelectValidator,
+    } = useSelectValidators(items, maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
     const defaultValueRef = useRef({ _default: '_', selected: '_' });
     const [detailItem, setDetailItem] = useState<ValidatorDataType | undefined>(undefined);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -306,6 +308,18 @@ export const EarningValidatorSelector = forwardRef(
       [applyLabel, changeValidators.length, onApplyChangeValidators],
     );
 
+    const customBtn = useMemo(
+      () => ({
+        icon: Lightning,
+        onPressCustomBtn: () => {
+          validatorSelectModalRef?.current?.closeModal?.();
+          onAutoSelectValidator();
+        },
+        customBtnDisabled: !items.length,
+      }),
+      [items.length, onAutoSelectValidator],
+    );
+
     const renderSortingItem = (item: SortOption) => {
       return (
         <SelectItem
@@ -350,7 +364,8 @@ export const EarningValidatorSelector = forwardRef(
     const renderSelected = useCallback(
       () => (
         <ValidatorSelectorField
-          onPressLightningBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
+          showLightningBtn
+          onPressLightningBtn={() => onAutoSelectValidator()}
           onPressBookBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
           value={selectedValidator}
           label={
@@ -368,7 +383,7 @@ export const EarningValidatorSelector = forwardRef(
           }
         />
       ),
-      [chain, selectedValidator, validatorLoading],
+      [chain, onAutoSelectValidator, selectedValidator, validatorLoading],
     );
 
     return (
@@ -378,6 +393,7 @@ export const EarningValidatorSelector = forwardRef(
         selectModalType={'multi'}
         ref={validatorSelectModalRef}
         disabled={!chain || !from || disabled}
+        customBtn={customBtn}
         applyBtn={applyBtn}
         onCloseModal={() => {
           setSortSelection(SortKey.DEFAULT);
