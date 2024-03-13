@@ -226,10 +226,10 @@ export const Home = ({ navigation }: Props) => {
   useEffect(() => {
     const readyHandleDeeplink = isReady && !isLoading && !isLocked && hasMasterPassword && !isEmptyAccounts;
     if (readyHandleDeeplink && isHandleDeeplinkPromise.current) {
+      setIsHandleDeeplinkPromise(false);
       handleTriggerDeeplinkAfterLogin(appNavigatorDeepLinkStatus, navigation);
     }
 
-    setIsHandleDeeplinkPromise(!readyHandleDeeplink);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReady, isLoading, isLocked]);
 

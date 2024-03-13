@@ -70,6 +70,7 @@ import reformatAddress from 'utils/index';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { getPoolSlug } from 'utils/earn';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { useGetEarningPoolData } from 'hooks/static-content/useGetEarningPoolData';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -103,6 +104,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const redirectFromPreviewRef = useRef(!_slug && !!externalChain && !!externalType);
   const autoCheckCompoundRef = useRef<boolean>(true);
   const autoCheckValidatorGetFromPreview = useRef<boolean>(true);
+  const { getPoolTargets } = useGetEarningPoolData();
   const slug = useMemo(() => {
     if (!_slug && externalChain && externalType) {
       return getPoolSlug(poolInfoMap, externalChain, externalType as YieldPoolType) || '';
@@ -707,8 +709,33 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [_slug, externalChain, externalType, firstStep, navigation]);
 
   useEffect(() => {
-    setTimeout(() => setIsLoading(false), 350);
-  }, []);
+    let timer: NodeJS.Timer;
+    let timeout: NodeJS.Timeout;
+
+    if (isLoading && redirectFromPreviewRef.current) {
+      const checkCompoundReady = () => {
+        if (compound) {
+          clearInterval(timer);
+          clearTimeout(timeout);
+          setIsLoading(false);
+        }
+      };
+
+      timer = setInterval(checkCompoundReady, 500);
+
+      timeout = setTimeout(() => {
+        clearInterval(timer);
+        setIsLoading(false);
+      }, 4000);
+    } else {
+      setTimeout(() => setIsLoading(false), 350);
+    }
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(timeout);
+    };
+  }, [compound, isLoading]);
 
   useEffect(() => {
     setAsset(inputAsset.slug || '');
@@ -838,13 +865,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const checkUnrecommendedValidator = useCallback(
     (onValid?: () => void) => {
-      fetchPoolTarget({ slug })
+      getPoolTargets(slug)
         .then(rs => {
-          const supportedValidator = rs.targets.find(item => {
+          const supportedValidator = rs.find(item => {
             if (poolType === YieldPoolType.NOMINATION_POOL) {
-              return (item as NominationPoolInfo).id.toString() === defaultTarget.current;
+              return (item as NominationPoolInfo).id.toString() === target;
             } else if (poolType === YieldPoolType.NATIVE_STAKING) {
-              return item.address === defaultTarget.current;
+              return item.address === target;
             } else {
               return false;
             }
@@ -852,6 +879,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
           if (defaultTarget.current) {
             if (!supportedValidator) {
+              defaultTarget.current = '';
               Alert.alert(
                 'Unrecommended validator',
                 'Your chosen validator is not recommended by SubWallet as staking with this validator won’t accrue any rewards. Select another validator and try again.',
@@ -886,7 +914,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         })
         .catch(e => console.error(e));
     },
-    [poolType, slug],
+    [getPoolTargets, poolType, slug, target],
   );
 
   const isUnstakeAll = useMemo(() => {
@@ -902,7 +930,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [compound]);
 
   useEffect(() => {
-    if (redirectFromPreviewRef.current && !targetLoading && isShowAlert) {
+    if (redirectFromPreviewRef.current && !targetLoading && isShowAlert && !isLoading) {
       if (!isAllAccount && compound) {
         if (autoCheckCompoundRef.current) {
           autoCheckCompoundRef.current = false;
@@ -988,6 +1016,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       }
     }
   }, [
+    isLoading,
     targetLoading,
     compound,
     isUnstakeAll,
@@ -1120,7 +1149,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                         targetPool={poolTarget}
                         disabled={submitLoading}
                         setForceFetchValidator={setForceFetchValidator}
-                        defaultValidatorAddress={target}
+                        defaultValidatorAddress={compound ? '' : defaultTarget.current}
                       />
                     )}
 
