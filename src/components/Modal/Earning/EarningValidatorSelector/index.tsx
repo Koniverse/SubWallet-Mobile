@@ -12,7 +12,6 @@ import {
   ArrowsClockwise,
   CheckCircle,
   IconProps,
-  Lightning,
   MagnifyingGlass,
   SortAscending,
   SortDescending,
@@ -308,17 +307,17 @@ export const EarningValidatorSelector = forwardRef(
       [applyLabel, changeValidators.length, onApplyChangeValidators],
     );
 
-    const customBtn = useMemo(
-      () => ({
-        icon: Lightning,
-        onPressCustomBtn: () => {
-          validatorSelectModalRef?.current?.closeModal?.();
-          onAutoSelectValidator();
-        },
-        customBtnDisabled: !items.length,
-      }),
-      [items.length, onAutoSelectValidator],
-    );
+    // const customBtn = useMemo(
+    //   () => ({
+    //     icon: Lightning,
+    //     onPressCustomBtn: () => {
+    //       validatorSelectModalRef?.current?.closeModal?.();
+    //       onAutoSelectValidator();
+    //     },
+    //     customBtnDisabled: !items.length,
+    //   }),
+    //   [items.length, onAutoSelectValidator],
+    // );
 
     const renderSortingItem = (item: SortOption) => {
       return (
@@ -364,7 +363,7 @@ export const EarningValidatorSelector = forwardRef(
     const renderSelected = useCallback(
       () => (
         <ValidatorSelectorField
-          showLightningBtn
+          showLightningBtn={false}
           onPressLightningBtn={() => onAutoSelectValidator()}
           onPressBookBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
           value={selectedValidator}
@@ -393,7 +392,7 @@ export const EarningValidatorSelector = forwardRef(
         selectModalType={'multi'}
         ref={validatorSelectModalRef}
         disabled={!chain || !from || disabled}
-        customBtn={customBtn}
+        // customBtn={customBtn}
         applyBtn={applyBtn}
         onCloseModal={() => {
           setSortSelection(SortKey.DEFAULT);
