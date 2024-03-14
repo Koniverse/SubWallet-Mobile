@@ -93,6 +93,7 @@ import {
   _getSubstrateGenesisHash,
   _isChainEvmCompatible,
 } from '@subwallet/extension-base/services/chain-service/utils';
+import { mmkvStore } from 'utils/storage';
 
 interface Props {
   isAppReady: boolean;
@@ -264,7 +265,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const data = useGroupYieldPosition();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
-  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount } = useSelector(
+  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount, currentAccount } = useSelector(
     (state: RootState) => state.accountState,
   );
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
@@ -445,11 +446,16 @@ const AppNavigator = ({ isAppReady }: Props) => {
         if (parseUrl.pathname.startsWith('/transaction-action/earning')) {
           const validAccount = checkIsAnyAccountValid(accounts, urlQueryMap.chain);
           if (!validAccount.length) {
+            mmkvStore.set('storedDeeplink', url);
             listener(`subwallet://home/main/earning/earning-list?chain=${urlQueryMap.chain}&noAccountValid=true`);
             return;
           } else {
             if (validAccount.length === 1) {
               saveCurrentAccountAddress(validAccount[0]);
+            } else {
+              if (!validAccount.some(acc => acc.address === currentAccount?.address)) {
+                saveCurrentAccountAddress({ address: 'ALL' });
+              }
             }
           }
         }

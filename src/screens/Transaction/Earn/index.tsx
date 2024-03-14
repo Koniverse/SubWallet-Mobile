@@ -996,7 +996,15 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           if (poolType === YieldPoolType.NOMINATION_POOL) {
             navigation.reset({
               index: 0,
-              routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+              routes: [
+                {
+                  name: 'Home',
+                  params: {
+                    screen: 'Main',
+                    params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 2 } } },
+                  },
+                },
+              ],
             });
           }
 
