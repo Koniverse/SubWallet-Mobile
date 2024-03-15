@@ -77,6 +77,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
             });
           } else {
             if (storedDeeplink) {
+              navigation.goBack();
               Linking.openURL(storedDeeplink).then(() => mmkvStore.set('storedDeeplink', ''));
               return;
             }

@@ -56,17 +56,17 @@ export const EarningList = ({
         `You don’t have any account to stake on ${chainName} network yet. Create a new account and try again.`,
         [
           {
-            text: 'Create new',
-            onPress: () => {
-              isShowAlert = false;
-              rootNavigation.navigate('CreateAccount', { keyTypes: [accountType], isBack: true });
-            },
-          },
-          {
             text: 'Dismiss',
             style: 'destructive',
             onPress: () => {
               isShowAlert = false;
+            },
+          },
+          {
+            text: 'Create new',
+            onPress: () => {
+              isShowAlert = false;
+              rootNavigation.navigate('CreateAccount', { keyTypes: [accountType], isBack: true });
             },
           },
         ],

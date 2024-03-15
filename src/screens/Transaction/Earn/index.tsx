@@ -744,10 +744,12 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [inputAsset.slug, setAsset]);
 
   useEffect(() => {
-    if (!currentFrom && accountSelectorList.length === 1) {
-      setFrom(accountSelectorList[0].address);
+    if (!currentFrom && (isAllAccount || accountSelectorList.length === 1)) {
+      if ((redirectFromPreviewRef.current && accountSelectorList.length >= 1) || accountSelectorList.length === 1) {
+        setFrom(accountSelectorList[0].address);
+      }
     }
-  }, [accountSelectorList, currentFrom, setFrom]);
+  }, [accountSelectorList, currentFrom, isAllAccount, setFrom]);
 
   useEffect(() => {
     if (currentStep === 0) {

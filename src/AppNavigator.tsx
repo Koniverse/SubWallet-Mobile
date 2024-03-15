@@ -387,7 +387,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       return null;
     },
     subscribe: listener => {
-      const onReceiveURL = ({ url }: DeepLinkSubscriptionType) => {
+      const onReceiveURL = async ({ url }: DeepLinkSubscriptionType) => {
         const parseUrl = new urlParse(url);
         const urlQuery = parseUrl.query.substring(1);
         const urlQueryMap: Record<string, string> = {};
@@ -451,10 +451,10 @@ const AppNavigator = ({ isAppReady }: Props) => {
             return;
           } else {
             if (validAccount.length === 1) {
-              saveCurrentAccountAddress(validAccount[0]);
+              await saveCurrentAccountAddress(validAccount[0]);
             } else {
               if (!validAccount.some(acc => acc.address === currentAccount?.address)) {
-                saveCurrentAccountAddress({ address: 'ALL' });
+                await saveCurrentAccountAddress({ address: 'ALL' });
               }
             }
           }
@@ -468,8 +468,8 @@ const AppNavigator = ({ isAppReady }: Props) => {
         const isChainConnected = checkChainConnected(originChain);
 
         if (!isChainConnected && originChain) {
-          enableChain(originChain);
-          updateAssetSetting({
+          await enableChain(originChain);
+          await updateAssetSetting({
             tokenSlug: urlQueryMap.slug,
             assetSetting: {
               visible: true,
