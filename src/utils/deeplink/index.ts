@@ -9,6 +9,7 @@ import { MutableRefObject } from 'react';
 import { AppNavigatorDeepLinkStatus } from 'screens/Home';
 import { prevDeeplinkUrl, setPrevDeeplinkUrl } from '../../App';
 import { firstScreenDeepLink, setFirstScreenDeepLink } from 'screens/Home/FirstScreen';
+import { mmkvStore } from 'utils/storage';
 
 export function transformUniversalToNative(url: string) {
   return url.replace('https://mobile.subwallet.app/', 'subwallet://');
@@ -24,7 +25,6 @@ function openDeeplink(_url: string) {
   Linking.canOpenURL(_url)
     .then(supported => {
       if (supported) {
-        console.log('firstScreenDeepLink.current', firstScreenDeepLink.current);
         if (firstScreenDeepLink.current) {
           openLinking(firstScreenDeepLink.current);
           setFirstScreenDeepLink();
@@ -70,6 +70,11 @@ export function handleTriggerDeeplinkAfterLogin(
       const finalWcUrl = Object.keys(decodedWcUrl)[0];
       connectWalletConnect(finalWcUrl, toast);
     }
+
+    if (urlParsed.pathname.startsWith('/transaction-action/earning')) {
+      mmkvStore.set('storedDeeplink', url);
+    }
+
     openDeeplink(_url);
   });
 }
