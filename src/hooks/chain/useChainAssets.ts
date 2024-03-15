@@ -103,5 +103,5 @@ export default function useChainAssets({
     return Object.fromEntries(chainAssets.map(asset => [asset.slug, asset]));
   }, [chainAssets]);
 
-  return { chainAssets, chainAssetRegistry, availableChains };
+  return { chainAssets, chainAssetRegistry, availableChains, evmChains };
 }

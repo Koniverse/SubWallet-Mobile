@@ -15,7 +15,6 @@ export function useGetTermAndCondition() {
     axios
       .get(`${STATIC_DATA_DOMAIN}/markdown-contents/term_and_condition/${dataByDevModeStatus}-${language}.json`)
       .then(res => {
-        console.log('123123123123');
         mmkvStore.set('generalTermContent', res.data.content);
       })
       .catch(() => {

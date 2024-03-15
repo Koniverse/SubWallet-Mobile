@@ -11,6 +11,7 @@ import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { mmkvStore } from 'utils/storage';
 import { TnCSeedPhraseModal } from 'screens/Account/CreateAccount/TnCSeedPhraseModal';
+import { Linking } from 'react-native';
 
 const ViewStep = {
   INIT_SP: 1,
@@ -35,6 +36,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   const [isBusy, setIsBusy] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
   const accountName = useGetDefaultAccountName();
+  const storedDeeplink = mmkvStore.getString('storedDeeplink');
 
   useHandlerHardwareBackPress(isBusy);
   useEffect((): void => {
@@ -74,6 +76,11 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
               routes: [{ name: 'Home' }],
             });
           } else {
+            if (storedDeeplink) {
+              navigation.goBack();
+              Linking.openURL(storedDeeplink).then(() => mmkvStore.set('storedDeeplink', ''));
+              return;
+            }
             navigation.goBack();
           }
         })

@@ -1,7 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type EarningScreenStackParamList = {
-  EarningList: { step: number };
+  EarningList: { step: number; noAccountValid?: boolean; chain?: string };
   EarningPoolList: {
     group: string;
     symbol: string;

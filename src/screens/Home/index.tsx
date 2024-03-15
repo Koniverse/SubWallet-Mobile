@@ -28,7 +28,7 @@ import { Settings } from 'screens/Settings';
 import i18n from 'utils/i18n/i18n';
 import { RootStackParamList } from 'routes/index';
 import { handleTriggerDeeplinkAfterLogin } from 'utils/deeplink';
-import { isFirstOpen, setIsFirstOpen } from '../../App';
+import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
 import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
@@ -181,8 +181,11 @@ const Wrapper = () => {
         drawerType: 'front',
         swipeEnabled: false,
       }}>
-      {isEmptyAccounts && <Drawer.Screen name="FirstScreen" component={FirstScreen} options={{ headerShown: false }} />}
-      <Drawer.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
+      {isEmptyAccounts ? (
+        <Drawer.Screen name="FirstScreen" component={FirstScreen} options={{ headerShown: false }} />
+      ) : (
+        <Drawer.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
+      )}
     </Drawer.Navigator>
   );
 };
@@ -214,6 +217,14 @@ export const Home = ({ navigation }: Props) => {
   const language = useSelector((state: RootState) => state.settings.language);
   const isFocused = useIsFocused();
   mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
+
+  const needMigrate = useMemo(
+    () =>
+      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
+        .length || currentRoute?.name === 'MigratePassword',
+    [accounts, currentRoute?.name],
+  );
+
   useEffect(() => {
     if (isReady && isLoading) {
       setTimeout(() => setLoading(false), 1500);
@@ -221,12 +232,15 @@ export const Home = ({ navigation }: Props) => {
   }, [isReady, isLoading]);
 
   useEffect(() => {
-    if (isReady && !isLoading && !isLocked && isFirstOpen.current && hasMasterPassword && !isEmptyAccounts) {
-      setIsFirstOpen(false);
+    const readyHandleDeeplink =
+      isReady && !isLoading && !isLocked && hasMasterPassword && !isEmptyAccounts && !needMigrate;
+    if (readyHandleDeeplink && isHandleDeeplinkPromise.current) {
       handleTriggerDeeplinkAfterLogin(appNavigatorDeepLinkStatus, navigation);
+      setIsHandleDeeplinkPromise(false);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, isLoading, isLocked]);
+  }, [isReady, isLoading, isLocked, needMigrate]);
 
   useEffect(() => {
     if (isShowCampaignModal) {
@@ -261,13 +275,6 @@ export const Home = ({ navigation }: Props) => {
     mmkvStore.set('isOpenGeneralTermFirstTime', true);
     setGeneralTermVisible(false);
   };
-
-  const needMigrate = useMemo(
-    () =>
-      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
-        .length || currentRoute?.name === 'MigratePassword',
-    [accounts, currentRoute?.name],
-  );
 
   if (isLoading) {
     return (

@@ -70,7 +70,7 @@ import { AppModalContext } from 'providers/AppModalContext';
 import { PortalHost } from '@gorhom/portal';
 import { findAccountByAddress } from 'utils/index';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
-import { saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
+import { enableChain, saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
 import urlParse from 'url-parse';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { transformUniversalToNative } from 'utils/deeplink';
@@ -83,8 +83,17 @@ import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview'
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { DeriveAccount } from 'screens/Account/DeriveAccount';
 import { useGroupYieldPosition } from 'hooks/earning';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AboutSubWallet } from 'screens/Settings/AboutSubWallet';
 import { updateCurrentRoute } from 'stores/utils';
+import { _ChainInfo } from '@subwallet/chain-list/types';
+import { AccountJson } from '@subwallet/extension-base/background/types';
+import { isAccountAll } from '@subwallet/extension-base/utils';
+import {
+  _getSubstrateGenesisHash,
+  _isChainEvmCompatible,
+} from '@subwallet/extension-base/services/chain-service/utils';
+import { mmkvStore } from 'utils/storage';
 
 interface Props {
   isAppReady: boolean;
@@ -155,6 +164,10 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
               screens: {
                 EarningList: {
                   path: 'earning-list',
+                  stringify: {
+                    chain: (chain: string) => chain,
+                    noAccountValid: (noAccountValid: boolean) => noAccountValid,
+                  },
                 },
                 EarningPositionDetail: {
                   path: 'earning-position-detail',
@@ -166,6 +179,26 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
             },
             Browser: {
               path: 'browser-home',
+            },
+          },
+        },
+      },
+    },
+    Drawer: {
+      path: 'drawer',
+      screens: {
+        TransactionAction: {
+          path: 'transaction-action',
+          screens: {
+            Earning: {
+              path: 'earning',
+              stringify: {
+                chain: (chain: string) => chain,
+                type: (type: string) => type,
+                isNoAccount: (isNoAccount: boolean) => isNoAccount,
+                target: (target: string) => target,
+                redirectFromPreview: (redirectFromPreview: boolean) => redirectFromPreview,
+              },
             },
           },
         },
@@ -210,6 +243,18 @@ type DeepLinkSubscriptionType = {
   url: string;
 };
 
+export const getFilteredAccount = (chainInfo: _ChainInfo) => (account: AccountJson) => {
+  if (isAccountAll(account.address)) {
+    return false;
+  }
+
+  if (account.originGenesisHash && _getSubstrateGenesisHash(chainInfo) !== account.originGenesisHash) {
+    return false;
+  }
+
+  return _isChainEvmCompatible(chainInfo) === isEthereumAddress(account.address);
+};
+
 const AppNavigator = ({ isAppReady }: Props) => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
@@ -220,9 +265,10 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const data = useGroupYieldPosition();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
-  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount } = useSelector(
+  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount, currentAccount } = useSelector(
     (state: RootState) => state.accountState,
   );
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { isLocked: isLogin } = useAppLock();
   const [isNavigationReady, setNavigationReady] = useState<boolean>(false);
   const appModalContext = useContext(AppModalContext);
@@ -315,6 +361,23 @@ const AppNavigator = ({ isAppReady }: Props) => {
         .length,
     [accounts],
   );
+
+  const checkIsAnyAccountValid = useCallback(
+    (_accounts: AccountJson[], selectedChain: string) => {
+      const chainInfo = chainInfoMap[selectedChain];
+      let accountList: AccountJson[] = [];
+
+      if (!chainInfo) {
+        return [];
+      }
+
+      accountList = _accounts.filter(getFilteredAccount(chainInfo));
+
+      return accountList;
+    },
+    [chainInfoMap],
+  );
+
   const needMigrateMasterPassword = needMigrate && hasMasterPassword && currentRoute;
 
   const linking: LinkingOptions<RootStackParamList> = {
@@ -324,7 +387,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       return null;
     },
     subscribe: listener => {
-      const onReceiveURL = ({ url }: DeepLinkSubscriptionType) => {
+      const onReceiveURL = async ({ url }: DeepLinkSubscriptionType) => {
         const parseUrl = new urlParse(url);
         const urlQuery = parseUrl.query.substring(1);
         const urlQueryMap: Record<string, string> = {};
@@ -380,12 +443,33 @@ const AppNavigator = ({ isAppReady }: Props) => {
           }
         }
 
+        if (parseUrl.pathname.startsWith('/transaction-action/earning')) {
+          const validAccount = checkIsAnyAccountValid(accounts, urlQueryMap.chain);
+          if (!validAccount.length) {
+            mmkvStore.set('storedDeeplink', url);
+            listener(`subwallet://home/main/earning/earning-list?chain=${urlQueryMap.chain}&noAccountValid=true`);
+            return;
+          } else {
+            if (validAccount.length === 1) {
+              await saveCurrentAccountAddress(validAccount[0]);
+            } else {
+              if (!validAccount.some(acc => acc.address === currentAccount?.address)) {
+                await saveCurrentAccountAddress({ address: 'ALL' });
+              }
+            }
+          }
+        }
+
         //enable Network
-        const originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+        let originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+        if (urlQueryMap.chain) {
+          originChain = urlQueryMap.chain;
+        }
         const isChainConnected = checkChainConnected(originChain);
 
         if (!isChainConnected && originChain) {
-          updateAssetSetting({
+          await enableChain(originChain);
+          await updateAssetSetting({
             tokenSlug: urlQueryMap.slug,
             assetSetting: {
               visible: true,
