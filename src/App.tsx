@@ -36,6 +36,8 @@ import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
 import { useGetEarningStaticData } from 'hooks/static-content/useGetEarningStaticData';
+import { AppOnlineContentContextProvider } from 'providers/AppOnlineContentProvider';
+import { GlobalModalContextProvider } from 'providers/GlobalModalContext';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -220,6 +222,8 @@ export const App = () => {
     );
   };
 
+  // TODO: merge GlobalModalContextProvider and AppModalContextProvider
+
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
       <>
@@ -239,13 +243,17 @@ export const App = () => {
                 <ExternalRequestContextProvider>
                   <QrSignerContextProvider>
                     <ScannerContextProvider>
-                      <GestureHandlerRootView style={gestureRootStyle}>
-                        <PortalProvider>
-                          <AppModalContextProvider>
-                            {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
-                          </AppModalContextProvider>
-                        </PortalProvider>
-                      </GestureHandlerRootView>
+                      <AppOnlineContentContextProvider>
+                        <GestureHandlerRootView style={gestureRootStyle}>
+                          <PortalProvider>
+                            <GlobalModalContextProvider>
+                              <AppModalContextProvider>
+                                {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
+                              </AppModalContextProvider>
+                            </GlobalModalContextProvider>
+                          </PortalProvider>
+                        </GestureHandlerRootView>
+                      </AppOnlineContentContextProvider>
                     </ScannerContextProvider>
                   </QrSignerContextProvider>
                 </ExternalRequestContextProvider>

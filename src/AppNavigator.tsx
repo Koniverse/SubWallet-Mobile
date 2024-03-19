@@ -85,6 +85,8 @@ import { DeriveAccount } from 'screens/Account/DeriveAccount';
 import { useGroupYieldPosition } from 'hooks/earning';
 import { AboutSubWallet } from 'screens/Settings/AboutSubWallet';
 import { updateCurrentRoute } from 'stores/utils';
+import { AppOnlineContentContext } from 'providers/AppOnlineContentProvider';
+import { GlobalModalContext } from 'providers/GlobalModalContext';
 
 interface Props {
   isAppReady: boolean;
@@ -234,6 +236,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const finishLoginProgressRef = useRef<Function | null>(null);
   const waitForLoginProcessRef = useRef<Promise<boolean> | null>(null);
   const isPreventDeepLinkRef = useRef(isEmptyAccounts || !hasMasterPassword || hasConfirmations);
+  const { appPopupMap, popupHistoryMap, checkPopupVisibleByFrequency, handleButtonPress } =
+    useContext(AppOnlineContentContext);
+  const globalAppModalContext = useContext(GlobalModalContext);
 
   useEffect(() => {
     if (!isLocked && finishLoginProgressRef.current) {
@@ -408,10 +413,55 @@ const AppNavigator = ({ isAppReady }: Props) => {
     console.warn('AppNavigator.tsx / Error boundary: ', error, stackTrace);
   };
 
-  const onUpdateRoute = useCallback((state: NavigationState | undefined) => {
-    updateCurrentRoute(state?.routes[state?.index]);
-    setCurrentRoute(state?.routes[state?.index]);
-  }, []);
+  const getDetailCurrentRoute = (state: NavigationState | undefined) => {
+    const _currentRoute = state?.routes[state?.index];
+    if (_currentRoute) {
+      switch (_currentRoute.name) {
+        case 'Home':
+        case 'Drawer':
+          const currentHomeState = _currentRoute.state;
+          // @ts-ignore
+          const currentHomeRouteMap = currentHomeState?.routes[currentHomeState?.index];
+          const currentHomeTabState = currentHomeRouteMap?.state;
+          return currentHomeTabState?.routes[currentHomeTabState?.index];
+        default:
+          return _currentRoute;
+      }
+    }
+  };
+
+  const onUpdateRoute = useCallback(
+    (state: NavigationState | undefined) => {
+      const _currentRoute = state?.routes[state?.index];
+      const currentDetailRoute = getDetailCurrentRoute(state);
+      const currentPopupList = appPopupMap[currentDetailRoute?.name.toLowerCase()];
+      if (currentPopupList && currentPopupList.length) {
+        const filteredPopupList = currentPopupList.filter(item => {
+          const popupHistory = popupHistoryMap[`${item.position}-${item.id}`];
+          if (popupHistory) {
+            return checkPopupVisibleByFrequency(item.repeat, popupHistory.lastShowTime, popupHistory.showTimes);
+          } else {
+            return true;
+          }
+        });
+        filteredPopupList &&
+          filteredPopupList.length &&
+          globalAppModalContext.setGlobalModal({
+            type: 'popup',
+            visible: true,
+            title: filteredPopupList[0].info.name,
+            message: filteredPopupList[0].content || '',
+            buttons: filteredPopupList[0].buttons,
+            onPressBtn: url => {
+              handleButtonPress(`${filteredPopupList[0].position}-${filteredPopupList[0].id}`)(url);
+            },
+          });
+      }
+      updateCurrentRoute(_currentRoute);
+      setCurrentRoute(_currentRoute);
+    },
+    [appPopupMap, globalAppModalContext, popupHistoryMap, checkPopupVisibleByFrequency, handleButtonPress],
+  );
 
   useEffect(() => {
     let amount = true;
