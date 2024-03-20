@@ -38,6 +38,7 @@ import i18n from 'utils/i18n/i18n';
 import { useGetEarningStaticData } from 'hooks/static-content/useGetEarningStaticData';
 import { AppOnlineContentContextProvider } from 'providers/AppOnlineContentProvider';
 import { GlobalModalContextProvider } from 'providers/GlobalModalContext';
+import { useGetAppInstructionData } from 'hooks/static-content/useGetAppInstructionData';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -162,6 +163,7 @@ export const App = () => {
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
   const { getEarningStaticData } = useGetEarningStaticData(language);
+  const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
 
   // Enable lock screen on the start app
@@ -202,6 +204,7 @@ export const App = () => {
     checkIsShowBuyToken();
     getDAppsData();
     getEarningStaticData();
+    getAppInstructionData();
 
     DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {
       setNeedUpdateChrome(data);

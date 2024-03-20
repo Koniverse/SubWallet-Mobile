@@ -212,6 +212,23 @@ type DeepLinkSubscriptionType = {
   url: string;
 };
 
+const getAppTransformRouteName = (currentRoute?: string) => {
+  if (!currentRoute) {
+    return '';
+  }
+
+  switch (currentRoute) {
+    case 'Tokens':
+      return 'token';
+    case 'NFTs':
+      return 'nft';
+    case 'Earning':
+      return 'earning';
+    case 'Crowdloans':
+      return 'crowdloan';
+  }
+};
+
 const AppNavigator = ({ isAppReady }: Props) => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
@@ -434,7 +451,8 @@ const AppNavigator = ({ isAppReady }: Props) => {
     (state: NavigationState | undefined) => {
       const _currentRoute = state?.routes[state?.index];
       const currentDetailRoute = getDetailCurrentRoute(state);
-      const currentPopupList = appPopupMap[currentDetailRoute?.name.toLowerCase()];
+      const currentTransformRoute = getAppTransformRouteName(currentDetailRoute?.name) || '';
+      const currentPopupList = appPopupMap[currentTransformRoute];
       if (currentPopupList && currentPopupList.length) {
         const filteredPopupList = currentPopupList.filter(item => {
           const popupHistory = popupHistoryMap[`${item.position}-${item.id}`];
