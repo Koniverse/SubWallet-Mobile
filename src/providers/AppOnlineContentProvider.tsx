@@ -25,12 +25,15 @@ interface AppOnlineContentContextProviderProps {
 
 interface AppOnlineContentContextType {
   appPopupMap: Record<string, AppPopupData[]>;
+  appBannerMap: Record<string, AppBannerData[]>;
   popupHistoryMap: Record<string, PopupHistoryData>;
-  appBannerMap: Record<string, AppBannerData>;
+  bannerHistoryMap: Record<string, PopupHistoryData>;
   updatePopupHistoryMap: (id: string) => void;
-  checkPopupCondition: (conditions: AppPopupCondition) => boolean;
+  updateBannerHistoryMap: (id: string) => void;
   checkPopupVisibleByFrequency: (repeat: PopupFrequency, lastShowTime: number, showTimes: number) => boolean;
-  handleButtonPress: (id: string) => (url?: string) => void;
+  handleButtonPress: (id: string) => (type: OnlineContentDataType, url?: string) => void;
+  checkBannerVisible: (showTimes: number) => boolean;
+  checkPositionParam: (screen: string, positionParams: { property: string; value: string }[], value: string) => boolean;
 }
 
 const TIME_MILLI = {
@@ -54,9 +57,18 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
       return {};
     }
   }, []);
+  const storedBannerHistoryMap: Record<string, PopupHistoryData> = useMemo(() => {
+    try {
+      return JSON.parse(mmkvStore.getString('banner-history-map') || '{}');
+    } catch (e) {
+      return {};
+    }
+  }, []);
 
   const [popupContents, setPopupContents] = useState<AppPopupData[] | undefined>(undefined);
+  const [bannerContents, setBannerContents] = useState<AppBannerData[] | undefined>(undefined);
   const [popupHistoryMap, setPopupHistoryMap] = useState<Record<string, PopupHistoryData>>(storedPopupHistoryMap);
+  const [bannerHistoryMap, setBannerHistoryMap] = useState<Record<string, PopupHistoryData>>(storedBannerHistoryMap);
   const getAppContentData = useCallback(async (dataType: OnlineContentDataType) => {
     return await axios.get(`https://content.subwallet.app/api/list/app-${dataType}?preview=true`);
   }, []);
@@ -107,6 +119,26 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
           return Date.now() - lastShowTime > TIME_MILLI.MONTH;
         case 'every_time':
           return true;
+      }
+    },
+    [],
+  );
+
+  //check banner hidden
+  const checkBannerVisible = useCallback((showTimes: number) => {
+    return showTimes === 0;
+  }, []);
+
+  const checkPositionParam = useCallback(
+    (screen: string, positionParams: { property: string; value: string }[], value: string) => {
+      if (screen === 'token_detail') {
+        const allowTokenSlugs = positionParams.filter(item => item.property === 'tokenSlug').map(param => param.value);
+        return allowTokenSlugs.some(slug => value.toLowerCase().includes(slug.toLowerCase()));
+      } else if (screen === 'earning') {
+        const allowPoolSlugs = positionParams.filter(item => item.property === 'poolSlug').map(param => param.value);
+        return allowPoolSlugs.some(slug => value.toLowerCase().includes(slug.toLowerCase()));
+      } else {
+        return true;
       }
     },
     [],
@@ -174,16 +206,23 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
 
   // filter with platform and start_time, stop_time
   const getFilteredDataList = useCallback(
-    (data: AppPopupData[]) => {
-      const filteredData = data
-        .filter(({ info, conditions }) => {
-          const result =
-            info.platforms.includes('mobile') && checkPopupExistTime(info) && checkPopupCondition(conditions);
-          return result;
-        })
-        .sort((a, b) => a.priority - b.priority);
+    (data: AppPopupData[] | AppBannerData[], type: OnlineContentDataType) => {
+      if (type === 'popup') {
+        const filteredData = (data as AppPopupData[])
+          .filter(({ info, conditions }) => {
+            return info.platforms.includes('mobile') && checkPopupExistTime(info) && checkPopupCondition(conditions);
+          })
+          .sort((a, b) => a.priority - b.priority);
 
-      setPopupContents(filteredData);
+        setPopupContents(filteredData);
+      } else if (type === 'banner') {
+        const filteredData = (data as AppBannerData[])
+          .filter(({ info, conditions }) => {
+            return info.platforms.includes('mobile') && checkPopupExistTime(info) && checkPopupCondition(conditions);
+          })
+          .sort((a, b) => a.priority - b.priority);
+        setBannerContents(filteredData);
+      }
     },
     [checkPopupCondition, checkPopupExistTime],
   );
@@ -209,8 +248,39 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const initBannerHistoryMap = useCallback((data: AppBannerData[]) => {
+    const newData: Record<string, PopupHistoryData> = data.reduce(
+      (o, key) =>
+        Object.assign(o, {
+          [`${key.position}-${key.id}`]: {
+            lastShowTime: 0,
+            showTimes: 0,
+          },
+        }),
+      {},
+    );
+    const result = { ...newData, ...storedBannerHistoryMap };
+    setBannerHistoryMap(result);
+    try {
+      mmkvStore.set('banner-history-map', JSON.stringify(result));
+    } catch (e) {
+      console.log(e);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const updatePopupHistoryMap = useCallback((id: string) => {
     setPopupHistoryMap(prevState => {
+      const a = {
+        ...prevState,
+        [id]: { lastShowTime: Date.now(), showTimes: prevState[id].showTimes + 1 },
+      };
+      return a;
+    });
+  }, []);
+
+  const updateBannerHistoryMap = useCallback((id: string) => {
+    setBannerHistoryMap(prevState => {
       const a = {
         ...prevState,
         [id]: { lastShowTime: Date.now(), showTimes: prevState[id].showTimes + 1 },
@@ -228,13 +298,30 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
   }, [popupHistoryMap]);
 
   useEffect(() => {
+    try {
+      mmkvStore.set('banner-history-map', JSON.stringify(bannerHistoryMap));
+    } catch (e) {
+      console.log(e);
+    }
+  }, [bannerHistoryMap]);
+
+  useEffect(() => {
     getAppContentData('popup') // change later
       .then(res => {
-        getFilteredDataList(res.data);
+        getFilteredDataList(res.data, 'popup');
         initPopupHistoryMap(res.data);
       })
       .catch(e => console.error(e));
   }, [getAppContentData, getFilteredDataList, initPopupHistoryMap]);
+
+  useEffect(() => {
+    getAppContentData('banner') // change later
+      .then(res => {
+        getFilteredDataList(res.data, 'banner');
+        initBannerHistoryMap(res.data);
+      })
+      .catch(e => console.error(e));
+  }, [getAppContentData, getFilteredDataList, initBannerHistoryMap]);
 
   const appPopupMap = useMemo(() => {
     if (popupContents) {
@@ -250,10 +337,27 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     }
   }, [popupContents]);
 
+  const appBannerMap = useMemo(() => {
+    if (bannerContents) {
+      const result: Record<string, AppBannerData[]> = bannerContents.reduce((r, a) => {
+        r[a.position] = r[a.position] || [];
+        r[a.position].push(a);
+        return r;
+      }, Object.create(null));
+
+      return result;
+    } else {
+      return {};
+    }
+  }, [bannerContents]);
+
   const handleButtonPress = useCallback(
     (id: string) => {
-      return (url?: string) => {
-        updatePopupHistoryMap(id);
+      return (type: OnlineContentDataType, url?: string) => {
+        if (type === 'popup') {
+          updatePopupHistoryMap(id);
+        }
+
         if (url) {
           const isDeeplink = deeplinks.some(deeplink => url.startsWith(deeplink));
           if (isDeeplink) {
@@ -275,11 +379,14 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
       value={{
         appPopupMap,
         popupHistoryMap,
-        appBannerMap: {},
+        bannerHistoryMap,
+        appBannerMap,
         updatePopupHistoryMap,
-        checkPopupCondition,
+        updateBannerHistoryMap,
         checkPopupVisibleByFrequency,
         handleButtonPress,
+        checkBannerVisible,
+        checkPositionParam,
       }}>
       {children}
     </AppOnlineContentContext.Provider>

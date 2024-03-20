@@ -1,27 +1,51 @@
-import { useMemo } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
+import { AppOnlineContentContext } from 'providers/AppOnlineContentProvider';
 
-import { RootState } from 'stores/index';
-import { useSelector } from 'react-redux';
-import { getBannerSlugs } from 'utils/storage';
+const useGetBannerByScreen = (screen: string, compareValue?: string) => {
+  const {
+    appBannerMap,
+    checkPositionParam,
+    checkBannerVisible,
+    bannerHistoryMap,
+    updateBannerHistoryMap,
+    handleButtonPress,
+  } = useContext(AppOnlineContentContext);
 
-const useGetBannerByScreen = (screen: string) => {
-  const bannerSlugs = getBannerSlugs();
-  const { banners } = useSelector((state: RootState) => state.campaign);
+  const dismissBanner = useCallback(
+    (id: string) => {
+      updateBannerHistoryMap(id);
+    },
+    [updateBannerHistoryMap],
+  );
 
-  return useMemo(() => {
-    const displayedBanner = banners.filter(
-      item => item.data.position.includes(screen) && !bannerSlugs?.includes(item.slug),
-    );
-    if (!displayedBanner) {
+  const onPressBanner = useCallback(
+    (id: string) => {
+      return (url?: string) => {
+        handleButtonPress(id)('banner', url);
+      };
+    },
+    [handleButtonPress],
+  );
+
+  const banners = useMemo(() => {
+    const displayedBanner = appBannerMap[screen];
+
+    if (displayedBanner && displayedBanner.length) {
+      return displayedBanner.filter(banner => {
+        const bannerHistory = bannerHistoryMap[`${banner.position}-${banner.id}`];
+        const isBannerVisible = checkBannerVisible(bannerHistory.showTimes);
+        if (compareValue) {
+          return checkPositionParam(screen, banner.position_params, compareValue) && isBannerVisible;
+        } else {
+          return isBannerVisible;
+        }
+      });
+    } else {
       return [];
     }
+  }, [appBannerMap, bannerHistoryMap, checkBannerVisible, checkPositionParam, screen, compareValue]);
 
-    if (screen === 'home') {
-      return [displayedBanner[0]];
-    } else {
-      return displayedBanner;
-    }
-  }, [bannerSlugs, banners, screen]);
+  return { banners, dismissBanner, onPressBanner };
 };
 
 export default useGetBannerByScreen;

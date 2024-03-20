@@ -10,7 +10,6 @@ export type GlobalModalInfo = {
   visible?: boolean;
   title?: string;
   message?: string;
-  messageIcon?: string;
   buttons?: AppContentButton[];
   type?: 'popup' | 'banner';
   onPressBtn?: (url?: string) => void;
@@ -37,7 +36,6 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
           ...prevState,
           title: '',
           message: '',
-          messageIcon: undefined,
           buttons: [],
         })),
       300,
@@ -59,7 +57,6 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
         visible={modalVisible}
         title={globalModal.title || ''}
         message={globalModal.message || ''}
-        messageIcon={globalModal.messageIcon}
         onCloseModal={hideGlobalModal}
         buttons={globalModal.buttons || []}
         onPressButton={globalModal.onPressBtn}

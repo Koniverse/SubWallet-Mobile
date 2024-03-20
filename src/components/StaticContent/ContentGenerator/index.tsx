@@ -4,7 +4,7 @@ import { StyleProp } from 'react-native';
 
 interface Props {
   content: string;
-  markdownStyle: StyleProp<any>;
+  markdownStyle?: StyleProp<any>;
 }
 
 export const ContentGenerator = ({ content, markdownStyle }: Props) => {

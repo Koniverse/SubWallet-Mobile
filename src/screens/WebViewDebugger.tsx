@@ -125,6 +125,15 @@ export const WebViewDebugger = () => {
             onValueChange={onValueChange}
             backgroundIcon={Bug}
           />
+          <Button
+            style={{ marginBottom: 5 }}
+            onPress={() => {
+              mmkvStore.set('popup-history-map', '{}');
+              mmkvStore.set('banner-history-map', '{}');
+              setNotification("OK, Let's restart app!");
+            }}>
+            Reset static content
+          </Button>
           <Text style={textStyle}>{notification}</Text>
         </View>
       </ScrollView>

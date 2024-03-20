@@ -13,7 +13,6 @@ export const OnlineButtonGroups = ({ buttons, onPressButton }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const renderItem = useCallback(
     (button: AppContentButton) => {
-      console.log('button', button);
       return (
         <Button
           key={button.id}

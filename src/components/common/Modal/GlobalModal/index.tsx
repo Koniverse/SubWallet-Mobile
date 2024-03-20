@@ -1,6 +1,5 @@
-import { Logo, PageIcon, SwModal } from 'components/design-system-ui';
+import { SwModal } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { PlugsConnected } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import createStyle from './styles';
@@ -10,7 +9,6 @@ import { AppContentButton } from 'types/staticContent';
 
 interface Props {
   message: string;
-  messageIcon?: string;
   title: string;
   visible: boolean;
   buttons: AppContentButton[];
@@ -18,15 +16,7 @@ interface Props {
   onCloseModal?: () => void;
 }
 
-const GlobalModal: React.FC<Props> = ({
-  visible,
-  title,
-  message,
-  messageIcon,
-  buttons,
-  onCloseModal,
-  onPressButton,
-}: Props) => {
+const GlobalModal: React.FC<Props> = ({ visible, title, message, buttons, onCloseModal, onPressButton }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
 
@@ -50,13 +40,6 @@ const GlobalModal: React.FC<Props> = ({
       onBackButtonPress={onCloseModal}
       onChangeModalVisible={onCloseModal}>
       <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
-        <View style={{ paddingBottom: 20 }}>
-          {messageIcon ? (
-            <Logo network={messageIcon} size={100} />
-          ) : (
-            <PageIcon icon={PlugsConnected} color={theme.colorWarning} />
-          )}
-        </View>
         <Text style={styles.confirmModalMessageTextStyle}>{message}</Text>
       </View>
     </SwModal>

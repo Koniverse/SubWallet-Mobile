@@ -46,6 +46,11 @@ export interface AppPopupCondition {
   condition_earning: { comparison: string; value: number; pool_slug: string }[];
 }
 
+export interface PositionParam {
+  property: string;
+  value: string;
+}
+
 export interface AppPopupData {
   id: number;
   priority: number;
@@ -53,7 +58,7 @@ export interface AppPopupData {
   repeat: PopupFrequency;
   content: string;
   media: string;
-  position_params: string[];
+  position_params: PositionParam[];
   info: AppBasicInfoData;
   buttons: AppContentButton[];
   conditions: AppPopupCondition;
@@ -64,22 +69,8 @@ export interface AppBannerData {
   position: string;
   priority: number;
   media: string;
+  position_params: PositionParam[];
   info: AppBasicInfoData;
-  action: {
-    id: string;
-    url: string;
-    screen: string;
-    params: string;
-    is_cancel: boolean;
-  };
-  position_params: [];
-  condition: Record<string, string>;
-  instruction: {
-    id: number;
-    confirm_label: string;
-    cancel_label: string;
-    instruction_id: number;
-    group: string;
-    slug: string;
-  };
+  action: AppContentButtonAction;
+  conditions: AppPopupCondition;
 }

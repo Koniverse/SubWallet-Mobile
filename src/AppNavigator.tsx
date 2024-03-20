@@ -453,7 +453,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
             message: filteredPopupList[0].content || '',
             buttons: filteredPopupList[0].buttons,
             onPressBtn: url => {
-              handleButtonPress(`${filteredPopupList[0].position}-${filteredPopupList[0].id}`)(url);
+              handleButtonPress(`${filteredPopupList[0].position}-${filteredPopupList[0].id}`)('popup', url);
             },
           });
       }
