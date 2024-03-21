@@ -18,7 +18,7 @@ const useGetConfirmationByScreen = (screen: string, compareValue?: string) => {
     if (displayedConfirmation && displayedConfirmation.length) {
       return displayedConfirmation.filter(confirmation => {
         const confirmationHistory = confirmationHistoryMap[`${confirmation.position}-${confirmation.id}`];
-        const isConfirmationVisible = checkBannerVisible(confirmationHistory.showTimes);
+        const isConfirmationVisible = confirmationHistory && checkBannerVisible(confirmationHistory.showTimes);
         if (compareValue) {
           return checkPositionParam(screen, confirmation.position_params, compareValue) && isConfirmationVisible;
         } else {

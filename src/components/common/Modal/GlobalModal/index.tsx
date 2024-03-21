@@ -150,6 +150,7 @@ const GlobalModal: React.FC<Props> = ({
 
   const onAccept = useCallback(
     (url?: string) => {
+      setInstructionModalVisible(false);
       onPressButton && onPressButton(url);
       onCloseModal && onCloseModal();
     },
@@ -158,13 +159,13 @@ const GlobalModal: React.FC<Props> = ({
 
   const _onPressButton = useCallback(
     (url?: string) => {
-      if (instructionButton && instructionButton.instruction) {
+      if (instructionButton && instructionButton.instruction && currentInstructionData) {
         setInstructionModalVisible(true);
       } else {
         onAccept(url);
       }
     },
-    [instructionButton, onAccept],
+    [currentInstructionData, instructionButton, onAccept],
   );
 
   return (
