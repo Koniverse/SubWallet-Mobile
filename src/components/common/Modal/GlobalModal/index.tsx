@@ -28,6 +28,7 @@ interface Props {
   title: string;
   visible: boolean;
   buttons: AppContentButton[];
+  externalButtons?: React.ReactNode;
   onPressButton?: (url?: string) => void;
   onCloseModal?: () => void;
 }
@@ -109,7 +110,15 @@ const GlobalInstructionModal = ({
   );
 };
 
-const GlobalModal: React.FC<Props> = ({ visible, title, message, buttons, onCloseModal, onPressButton }: Props) => {
+const GlobalModal: React.FC<Props> = ({
+  visible,
+  title,
+  message,
+  buttons,
+  onCloseModal,
+  onPressButton,
+  externalButtons,
+}: Props) => {
   const [instructionModalVisible, setInstructionModalVisible] = useState(false);
   const instructionDataList: StaticDataProps[] = useMemo(() => {
     try {
@@ -131,7 +140,8 @@ const GlobalModal: React.FC<Props> = ({ visible, title, message, buttons, onClos
   const currentInstructionData = useMemo(() => {
     if (instructionButton && instructionButton.instruction) {
       return instructionDataList.find(
-        item => item.group === instructionButton.instruction.group && item.slug === instructionButton.instruction.slug,
+        item =>
+          item.group === instructionButton.instruction?.group && item.slug === instructionButton.instruction?.slug,
       )?.instructions;
     } else {
       return undefined;
@@ -166,7 +176,9 @@ const GlobalModal: React.FC<Props> = ({ visible, title, message, buttons, onClos
         modalTitle={title}
         titleTextAlign="center"
         isUseModalV2
-        footer={<OnlineButtonGroups buttons={buttons} onPressButton={_onPressButton} />}
+        footer={
+          externalButtons ? externalButtons : <OnlineButtonGroups buttons={buttons} onPressButton={_onPressButton} />
+        }
         onBackButtonPress={onCloseModal}
         onChangeModalVisible={onCloseModal}>
         <View style={{ width: '100%', paddingTop: 10 }}>
@@ -180,7 +192,7 @@ const GlobalModal: React.FC<Props> = ({ visible, title, message, buttons, onClos
           instruction={instructionButton.instruction}
           data={currentInstructionData}
           onPressCancelBtn={() => setInstructionModalVisible(false)}
-          onPressConfirmBtn={() => onAccept(instructionButton.action.url)}
+          onPressConfirmBtn={() => onAccept(instructionButton.action?.url)}
         />
       )}
     </>

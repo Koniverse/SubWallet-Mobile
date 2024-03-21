@@ -1,6 +1,6 @@
 export type PopupFrequency = 'once' | 'daily' | 'weekly' | 'monthly' | 'every_time'; //TODO: update later
 
-export type OnlineContentDataType = 'popup' | 'banner'; //TODO: update later
+export type OnlineContentDataType = 'popup' | 'banner' | 'confirmation'; //TODO: update later
 
 export interface PopupHistoryData {
   lastShowTime: number;
@@ -37,8 +37,8 @@ export interface AppContentButton {
   id: number;
   label: string;
   color: 'primary' | 'secondary' | 'warning' | 'danger' | 'ghost';
-  instruction: AppContentButtonInstruction;
-  action: AppContentButtonAction;
+  instruction: AppContentButtonInstruction | null;
+  action: AppContentButtonAction | null;
 }
 
 export interface AppPopupCondition {
@@ -72,5 +72,17 @@ export interface AppBannerData {
   position_params: PositionParam[];
   info: AppBasicInfoData;
   action: AppContentButtonAction;
+  conditions: AppPopupCondition;
+}
+
+export interface AppConfirmationData {
+  id: number;
+  name: string;
+  position: string;
+  repeat: PopupFrequency;
+  confirm_label: string;
+  cancel_label: string;
+  content: string;
+  position_params: PositionParam[];
   conditions: AppPopupCondition;
 }

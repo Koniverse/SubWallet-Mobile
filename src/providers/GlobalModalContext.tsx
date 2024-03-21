@@ -11,7 +11,8 @@ export type GlobalModalInfo = {
   title?: string;
   message?: string;
   buttons?: AppContentButton[];
-  type?: 'popup' | 'banner';
+  externalButtons?: React.ReactNode;
+  type?: 'popup' | 'banner' | 'confirmation';
   onPressBtn?: (url?: string) => void;
 };
 
@@ -37,6 +38,7 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
           title: '',
           message: '',
           buttons: [],
+          externalButtons: <></>,
         })),
       300,
     );
@@ -46,7 +48,7 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
     if (globalModal?.type === 'popup') {
       return isShowedPopupModal && !!globalModal.visible;
     } else {
-      return false;
+      return !!globalModal.visible;
     }
   }, [globalModal?.type, globalModal.visible]);
 
@@ -60,6 +62,7 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
         onCloseModal={hideGlobalModal}
         buttons={globalModal.buttons || []}
         onPressButton={globalModal.onPressBtn}
+        externalButtons={globalModal.externalButtons}
       />
     </GlobalModalContext.Provider>
   );
