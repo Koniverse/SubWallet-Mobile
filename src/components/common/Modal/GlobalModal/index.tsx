@@ -1,8 +1,7 @@
 import { Button, SwFullSizeModal, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import createStyle from './styles';
+import { ScrollView, View } from 'react-native';
 import { noop } from 'utils/function';
 import { OnlineButtonGroups } from 'components/StaticContent/OnlineButtonGroups';
 import { AppContentButton, AppContentButtonInstruction } from 'types/staticContent';
@@ -13,6 +12,7 @@ import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { ContentGenerator } from 'components/StaticContent/ContentGenerator';
 
 interface GlobalInstructionModalProps {
   visible: boolean;
@@ -110,8 +110,6 @@ const GlobalInstructionModal = ({
 };
 
 const GlobalModal: React.FC<Props> = ({ visible, title, message, buttons, onCloseModal, onPressButton }: Props) => {
-  const theme = useSubWalletTheme().swThemes;
-  const styles = useMemo(() => createStyle(theme), [theme]);
   const [instructionModalVisible, setInstructionModalVisible] = useState(false);
   const instructionDataList: StaticDataProps[] = useMemo(() => {
     try {
@@ -171,8 +169,8 @@ const GlobalModal: React.FC<Props> = ({ visible, title, message, buttons, onClos
         footer={<OnlineButtonGroups buttons={buttons} onPressButton={_onPressButton} />}
         onBackButtonPress={onCloseModal}
         onChangeModalVisible={onCloseModal}>
-        <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
-          <Text style={styles.confirmModalMessageTextStyle}>{message}</Text>
+        <View style={{ width: '100%', paddingTop: 10 }}>
+          <ContentGenerator content={message} />
         </View>
       </SwModal>
       {!!instructionButton && instructionButton.instruction && currentInstructionData && (
