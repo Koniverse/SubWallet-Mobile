@@ -177,11 +177,11 @@ const GlobalModal: React.FC<Props> = ({
         modalTitle={title}
         titleTextAlign="center"
         isUseModalV2
+        isAllowSwipeDown={false}
+        disabledOnPressBackDrop={true}
         footer={
           externalButtons ? externalButtons : <OnlineButtonGroups buttons={buttons} onPressButton={_onPressButton} />
-        }
-        onBackButtonPress={onCloseModal}
-        onChangeModalVisible={onCloseModal}>
+        }>
         <View style={{ width: '100%', paddingTop: 10 }}>
           <ContentGenerator content={message} />
         </View>
