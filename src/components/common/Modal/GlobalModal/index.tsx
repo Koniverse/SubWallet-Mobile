@@ -122,7 +122,8 @@ const GlobalModal: React.FC<Props> = ({
   const [instructionModalVisible, setInstructionModalVisible] = useState(false);
   const instructionDataList: StaticDataProps[] = useMemo(() => {
     try {
-      return JSON.parse(mmkvStore.getString('app-instruction-data') || '');
+      const result = JSON.parse(mmkvStore.getString('app-instruction-data') || '[]');
+      return result;
     } catch (e) {
       console.error(e);
     }
@@ -179,6 +180,7 @@ const GlobalModal: React.FC<Props> = ({
         isUseModalV2
         isAllowSwipeDown={false}
         disabledOnPressBackDrop={true}
+        onBackButtonPress={noop}
         footer={
           externalButtons ? externalButtons : <OnlineButtonGroups buttons={buttons} onPressButton={_onPressButton} />
         }>

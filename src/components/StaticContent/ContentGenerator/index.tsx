@@ -10,8 +10,14 @@ interface Props {
 
 export const ContentGenerator = ({ content, markdownStyle }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+
+  const onLinkPress = (url: string) => {
+    return !!url;
+  };
+
   return (
     <Markdown
+      onLinkPress={onLinkPress}
       style={{
         body: { color: theme.colorWhite, fontSize: theme.fontSizeSM },
         link: { color: theme.colorPrimary },

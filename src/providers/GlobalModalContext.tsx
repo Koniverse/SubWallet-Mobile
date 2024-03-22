@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import GlobalModal from 'components/common/Modal/GlobalModal';
 import { AppContentButton } from 'types/staticContent';
+import { mmkvStore } from 'utils/storage';
 
 interface GlobalModalContextProviderProps {
   children?: React.ReactElement;
@@ -27,7 +28,7 @@ export const GlobalModalContext = React.createContext({} as GlobalModalType);
 
 export const GlobalModalContextProvider = ({ children }: GlobalModalContextProviderProps) => {
   const [globalModal, setGlobalModal] = useState<GlobalModalInfo>({});
-
+  const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
   const hideGlobalModal = useCallback(() => {
     isShowedPopupModal = false;
     setGlobalModal(prevState => ({ ...prevState, visible: false }));
@@ -46,11 +47,11 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
 
   const modalVisible = useMemo(() => {
     if (globalModal?.type === 'popup') {
-      return isShowedPopupModal && !!globalModal.visible;
+      return isShowedPopupModal && !!globalModal.visible && !!isOpenIntroductionFirstTime;
     } else {
       return !!globalModal.visible;
     }
-  }, [globalModal?.type, globalModal.visible]);
+  }, [globalModal?.type, globalModal.visible, isOpenIntroductionFirstTime]);
 
   return (
     <GlobalModalContext.Provider value={{ setGlobalModal, hideGlobalModal }}>
