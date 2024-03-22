@@ -318,6 +318,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         ...prevState,
         [id]: { lastShowTime: Date.now(), showTimes: prevState[id].showTimes + 1 },
       };
+      mmkvStore.set('popup-history-map', JSON.stringify(a));
       return a;
     });
   }, []);
@@ -328,6 +329,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         ...prevState,
         [id]: { lastShowTime: Date.now(), showTimes: prevState[id].showTimes + 1 },
       };
+      mmkvStore.set('banner-history-map', JSON.stringify(a));
       return a;
     });
   }, []);
@@ -338,33 +340,10 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         ...prevState,
         [id]: { lastShowTime: Date.now(), showTimes: prevState[id].showTimes + 1 },
       };
+      mmkvStore.set('confirmation-history-map', JSON.stringify(a));
       return a;
     });
   }, []);
-
-  useEffect(() => {
-    try {
-      mmkvStore.set('popup-history-map', JSON.stringify(popupHistoryMap));
-    } catch (e) {
-      console.log(e);
-    }
-  }, [popupHistoryMap]);
-
-  useEffect(() => {
-    try {
-      mmkvStore.set('banner-history-map', JSON.stringify(bannerHistoryMap));
-    } catch (e) {
-      console.log(e);
-    }
-  }, [bannerHistoryMap]);
-
-  useEffect(() => {
-    try {
-      mmkvStore.set('confirmation-history-map', JSON.stringify(confirmationHistoryMap));
-    } catch (e) {
-      console.log(e);
-    }
-  }, [confirmationHistoryMap]);
 
   useEffect(() => {
     getAppContentData('popup') // change later
@@ -373,7 +352,8 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         initPopupHistoryMap(res.data);
       })
       .catch(e => console.error(e));
-  }, [getAppContentData, getFilteredDataList, initPopupHistoryMap]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getAppContentData, initPopupHistoryMap]);
 
   useEffect(() => {
     getAppContentData('banner') // change later
@@ -382,7 +362,8 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         initBannerHistoryMap(res.data);
       })
       .catch(e => console.error(e));
-  }, [getAppContentData, getFilteredDataList, initBannerHistoryMap]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getAppContentData, initBannerHistoryMap]);
 
   useEffect(() => {
     getAppContentData('confirmation') // change later
@@ -391,7 +372,8 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         initConfirmationHistoryMap(res.data);
       })
       .catch(e => console.error(e));
-  }, [getAppContentData, getFilteredDataList, initConfirmationHistoryMap]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getAppContentData, initConfirmationHistoryMap]);
 
   const appPopupMap = useMemo(() => {
     if (popupContents) {
