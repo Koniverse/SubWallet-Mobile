@@ -253,7 +253,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const finishLoginProgressRef = useRef<Function | null>(null);
   const waitForLoginProcessRef = useRef<Promise<boolean> | null>(null);
   const isPreventDeepLinkRef = useRef(isEmptyAccounts || !hasMasterPassword || hasConfirmations);
-  const { appPopupMap, popupHistoryMap, checkPopupVisibleByFrequency, handleButtonPress } =
+  const { appPopupMap, popupHistoryMap, checkPopupVisibleByFrequency, handleButtonPress, checkPopupExistTime } =
     useContext(AppOnlineContentContext);
   const globalAppModalContext = useContext(GlobalModalContext);
 
@@ -457,9 +457,12 @@ const AppNavigator = ({ isAppReady }: Props) => {
         const filteredPopupList = currentPopupList.filter(item => {
           const popupHistory = popupHistoryMap[`${item.position}-${item.id}`];
           if (popupHistory) {
-            return checkPopupVisibleByFrequency(item.repeat, popupHistory.lastShowTime, popupHistory.showTimes);
+            return (
+              checkPopupVisibleByFrequency(item.repeat, popupHistory.lastShowTime, popupHistory.showTimes) &&
+              checkPopupExistTime(item.info)
+            );
           } else {
-            return true;
+            return checkPopupExistTime(item.info);
           }
         });
         filteredPopupList &&
@@ -478,7 +481,14 @@ const AppNavigator = ({ isAppReady }: Props) => {
       updateCurrentRoute(_currentRoute);
       setCurrentRoute(_currentRoute);
     },
-    [appPopupMap, globalAppModalContext, popupHistoryMap, checkPopupVisibleByFrequency, handleButtonPress],
+    [
+      appPopupMap,
+      globalAppModalContext,
+      popupHistoryMap,
+      checkPopupVisibleByFrequency,
+      checkPopupExistTime,
+      handleButtonPress,
+    ],
   );
 
   useEffect(() => {

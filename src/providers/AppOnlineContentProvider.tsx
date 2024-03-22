@@ -34,6 +34,7 @@ interface AppOnlineContentContextType {
   updatePopupHistoryMap: (id: string) => void;
   updateBannerHistoryMap: (id: string) => void;
   updateConfirmationHistoryMap: (id: string) => void;
+  checkPopupExistTime: (info: AppBasicInfoData) => boolean;
   checkPopupVisibleByFrequency: (repeat: PopupFrequency, lastShowTime: number, showTimes: number) => boolean;
   handleButtonPress: (id: string) => (type: OnlineContentDataType, url?: string) => void;
   checkBannerVisible: (showTimes: number) => boolean;
@@ -227,7 +228,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
       if (type === 'popup') {
         const filteredData = (data as AppPopupData[])
           .filter(({ info, conditions }) => {
-            return info.platforms.includes('mobile') && checkPopupExistTime(info) && checkPopupCondition(conditions);
+            return info.platforms.includes('mobile') && checkPopupCondition(conditions);
           })
           .sort((a, b) => a.priority - b.priority);
 
@@ -235,7 +236,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
       } else if (type === 'banner') {
         const filteredData = (data as AppBannerData[])
           .filter(({ info, conditions }) => {
-            return info.platforms.includes('mobile') && checkPopupExistTime(info) && checkPopupCondition(conditions);
+            return info.platforms.includes('mobile') && checkPopupCondition(conditions);
           })
           .sort((a, b) => a.priority - b.priority);
         setBannerContents(filteredData);
@@ -246,7 +247,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         setConfirmationContents(filteredData);
       }
     },
-    [checkPopupCondition, checkPopupExistTime],
+    [checkPopupCondition],
   );
 
   const initPopupHistoryMap = useCallback((data: AppPopupData[]) => {
@@ -454,6 +455,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         updatePopupHistoryMap,
         updateBannerHistoryMap,
         updateConfirmationHistoryMap,
+        checkPopupExistTime,
         checkPopupVisibleByFrequency,
         handleButtonPress,
         checkBannerVisible,

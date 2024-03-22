@@ -9,6 +9,7 @@ const useGetBannerByScreen = (screen: string, compareValue?: string) => {
     bannerHistoryMap,
     updateBannerHistoryMap,
     handleButtonPress,
+    checkPopupExistTime,
   } = useContext(AppOnlineContentContext);
 
   const dismissBanner = useCallback(
@@ -33,7 +34,7 @@ const useGetBannerByScreen = (screen: string, compareValue?: string) => {
     if (displayedBanner && displayedBanner.length) {
       return displayedBanner.filter(banner => {
         const bannerHistory = bannerHistoryMap[`${banner.position}-${banner.id}`];
-        const isBannerVisible = checkBannerVisible(bannerHistory.showTimes);
+        const isBannerVisible = checkBannerVisible(bannerHistory.showTimes) && checkPopupExistTime(banner.info);
         if (compareValue) {
           return checkPositionParam(screen, banner.position_params, compareValue) && isBannerVisible;
         } else {
@@ -43,7 +44,15 @@ const useGetBannerByScreen = (screen: string, compareValue?: string) => {
     } else {
       return [];
     }
-  }, [appBannerMap, bannerHistoryMap, checkBannerVisible, checkPositionParam, screen, compareValue]);
+  }, [
+    appBannerMap,
+    screen,
+    bannerHistoryMap,
+    checkBannerVisible,
+    checkPopupExistTime,
+    compareValue,
+    checkPositionParam,
+  ]);
 
   return { banners, dismissBanner, onPressBanner };
 };
