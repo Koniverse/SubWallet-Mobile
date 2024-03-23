@@ -1,7 +1,7 @@
 {
   "name": "SubWalletMobile",
   "version": "1.1.41",
-  "build": "336",
+  "build": "337",
   "bundleVersion": "a(v11)-i(v7)",
   "bundleVersionStaging": "a(v11)-i(v16)",
   "private": true,
