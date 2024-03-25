@@ -47,6 +47,7 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { MissionInfo } from 'types/missionPool';
 import { DAPPCategory, DAppInfo } from 'types/browser';
 import { RootRouteProps } from 'routes/index';
+import { AppBannerData, AppConfirmationData, AppPopupData, PopupHistoryData } from 'types/staticContent';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -159,6 +160,15 @@ export interface AppSettings extends UiSettings, Omit<SettingsStruct, 'camera' |
     dAppCategories: DAPPCategory[] | undefined;
   };
   currentRoute: RootRouteProps | undefined;
+}
+
+export interface AppOnlineContent {
+  appPopupData: AppPopupData[];
+  appBannerData: AppBannerData[];
+  appConfirmationData: AppConfirmationData[];
+  popupHistoryMap: Record<string, PopupHistoryData>;
+  bannerHistoryMap: Record<string, PopupHistoryData>;
+  confirmationHistoryMap: Record<string, PopupHistoryData>;
 }
 
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {

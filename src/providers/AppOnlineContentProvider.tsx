@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { mmkvStore } from 'utils/storage';
 import { deeplinks } from 'utils/browser';
@@ -21,6 +21,14 @@ import {
 } from 'types/staticContent';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
 import { RootRouteProps } from 'routes/index';
+import {
+  updateAppBannerData,
+  updateAppConfirmationData,
+  updateAppPopupData,
+  updateBannerHistoryData,
+  updateConfirmationHistoryData,
+  updatePopupHistoryData,
+} from 'stores/utils';
 
 interface AppOnlineContentContextProviderProps {
   children?: React.ReactElement;
@@ -93,37 +101,18 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const yieldPositionList = useGroupYieldPosition();
-  const storedPopupHistoryMap: Record<string, PopupHistoryData> = useMemo(() => {
-    try {
-      return JSON.parse(mmkvStore.getString('popup-history-map') || '{}');
-    } catch (e) {
-      return {};
-    }
-  }, []);
-  const storedBannerHistoryMap: Record<string, PopupHistoryData> = useMemo(() => {
-    try {
-      return JSON.parse(mmkvStore.getString('banner-history-map') || '{}');
-    } catch (e) {
-      return {};
-    }
-  }, []);
-  const storedConfirmationHistoryMap: Record<string, PopupHistoryData> = useMemo(() => {
-    try {
-      return JSON.parse(mmkvStore.getString('confirmation-history-map') || '{}');
-    } catch (e) {
-      return {};
-    }
-  }, []);
-  //popup
-  const [popupContents, setPopupContents] = useState<AppPopupData[] | undefined>(undefined);
-  const [popupHistoryMap, setPopupHistoryMap] = useState<Record<string, PopupHistoryData>>(storedPopupHistoryMap);
-  //banner
-  const [bannerContents, setBannerContents] = useState<AppBannerData[] | undefined>(undefined);
-  const [bannerHistoryMap, setBannerHistoryMap] = useState<Record<string, PopupHistoryData>>(storedBannerHistoryMap);
-  //confirmation
-  const [confirmationContents, setConfirmationContents] = useState<AppConfirmationData[] | undefined>(undefined);
-  const [confirmationHistoryMap, setConfirmationHistoryMap] =
-    useState<Record<string, PopupHistoryData>>(storedConfirmationHistoryMap);
+
+  const {
+    appPopupData,
+    appBannerData,
+    appConfirmationData,
+    popupHistoryMap,
+    bannerHistoryMap,
+    confirmationHistoryMap,
+  } = useSelector((state: RootState) => state.staticContent);
+
+  console.log('appPopupData', appPopupData);
+  console.log('popupHistoryMap', popupHistoryMap);
 
   const getAppContentData = useCallback(async (dataType: OnlineContentDataType) => {
     return await axios.get(`https://content.subwallet.app/api/list/app-${dataType}?preview=true`);
@@ -272,7 +261,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
           })
           .sort((a, b) => a.priority - b.priority);
 
-        setPopupContents(filteredData);
+        updateAppPopupData(filteredData);
       } else if (type === 'banner') {
         // get available banner list
         const activeList = (data as AppBannerData[]).filter(({ info }) => checkPopupExistTime(info));
@@ -281,12 +270,12 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
             return info.platforms.includes('mobile') && checkPopupCondition(conditions);
           })
           .sort((a, b) => a.priority - b.priority);
-        setBannerContents(filteredData);
+        updateAppBannerData(filteredData);
       } else if (type === 'confirmation') {
         const filteredData = (data as AppConfirmationData[]).filter(({ conditions }) => {
           return checkPopupCondition(conditions);
         });
-        setConfirmationContents(filteredData);
+        updateAppConfirmationData(filteredData);
       }
     },
     [checkPopupCondition, checkPopupExistTime],
@@ -303,13 +292,8 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         }),
       {},
     );
-    const result = { ...newData, ...storedPopupHistoryMap };
-    setPopupHistoryMap(result);
-    try {
-      mmkvStore.set('popup-history-map', JSON.stringify(result));
-    } catch (e) {
-      console.log(e);
-    }
+    const result = { ...newData, ...popupHistoryMap };
+    updatePopupHistoryData(result);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -324,8 +308,8 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         }),
       {},
     );
-    const result = { ...newData, ...storedBannerHistoryMap };
-    setBannerHistoryMap(result);
+    const result = { ...newData, ...bannerHistoryMap };
+    updateBannerHistoryData(result);
     try {
       mmkvStore.set('banner-history-map', JSON.stringify(result));
     } catch (e) {
@@ -345,8 +329,8 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         }),
       {},
     );
-    const result = { ...newData, ...storedConfirmationHistoryMap };
-    setConfirmationHistoryMap(result);
+    const result = { ...newData, ...confirmationHistoryMap };
+    updateConfirmationHistoryData(result);
     try {
       mmkvStore.set('confirmation-history-map', JSON.stringify(result));
     } catch (e) {
@@ -355,72 +339,59 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updatePopupHistoryMap = useCallback((id: string) => {
-    setPopupHistoryMap(prevState => {
-      const a = {
-        ...prevState,
-        [id]: { lastShowTime: Date.now(), showTimes: prevState[id].showTimes + 1 },
-      };
-      mmkvStore.set('popup-history-map', JSON.stringify(a));
-      return a;
-    });
-  }, []);
+  const updatePopupHistoryMap = useCallback(
+    (id: string) => {
+      updatePopupHistoryData({
+        ...popupHistoryMap,
+        [id]: { lastShowTime: Date.now(), showTimes: popupHistoryMap[id].showTimes + 1 },
+      });
+    },
+    [popupHistoryMap],
+  );
 
-  const updateBannerHistoryMap = useCallback((id: string) => {
-    setBannerHistoryMap(prevState => {
-      const a = {
-        ...prevState,
-        [id]: { lastShowTime: Date.now(), showTimes: prevState[id].showTimes + 1 },
-      };
-      mmkvStore.set('banner-history-map', JSON.stringify(a));
-      return a;
-    });
-  }, []);
+  const updateBannerHistoryMap = useCallback(
+    (id: string) => {
+      updateBannerHistoryData({
+        ...bannerHistoryMap,
+        [id]: { lastShowTime: Date.now(), showTimes: bannerHistoryMap[id].showTimes + 1 },
+      });
+    },
+    [bannerHistoryMap],
+  );
 
-  const updateConfirmationHistoryMap = useCallback((id: string) => {
-    setConfirmationHistoryMap(prevState => {
-      const a = {
-        ...prevState,
-        [id]: { lastShowTime: Date.now(), showTimes: prevState[id].showTimes + 1 },
-      };
-      mmkvStore.set('confirmation-history-map', JSON.stringify(a));
-      return a;
-    });
-  }, []);
+  const updateConfirmationHistoryMap = useCallback(
+    (id: string) => {
+      updateConfirmationHistoryData({
+        ...confirmationHistoryMap,
+        [id]: { lastShowTime: Date.now(), showTimes: confirmationHistoryMap[id].showTimes + 1 },
+      });
+    },
+    [confirmationHistoryMap],
+  );
 
   useEffect(() => {
-    getAppContentData('popup') // change later
-      .then(res => {
-        getFilteredDataList(res.data, 'popup');
-        initPopupHistoryMap(res.data);
-      })
-      .catch(e => console.error(e));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getAppContentData, initPopupHistoryMap]);
+    const popupPromise = getAppContentData('popup');
+    const bannerPromise = getAppContentData('banner');
+    const confirmationPromise = getAppContentData('confirmation');
 
-  useEffect(() => {
-    getAppContentData('banner') // change later
-      .then(res => {
-        getFilteredDataList(res.data, 'banner');
-        initBannerHistoryMap(res.data);
+    Promise.all([popupPromise, bannerPromise, confirmationPromise])
+      .then(values => {
+        getFilteredDataList(values[0].data, 'popup');
+        initPopupHistoryMap(values[0].data);
+        getFilteredDataList(values[1].data, 'banner');
+        initBannerHistoryMap(values[1].data);
+        getFilteredDataList(values[2].data, 'confirmation');
+        initConfirmationHistoryMap(values[2].data);
       })
-      .catch(e => console.error(e));
+      .catch(e => {
+        console.error(e);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getAppContentData, initBannerHistoryMap]);
-
-  useEffect(() => {
-    getAppContentData('confirmation') // change later
-      .then(res => {
-        getFilteredDataList(res.data, 'confirmation');
-        initConfirmationHistoryMap(res.data);
-      })
-      .catch(e => console.error(e));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getAppContentData, initConfirmationHistoryMap]);
+  }, []);
 
   const appPopupMap = useMemo(() => {
-    if (popupContents) {
-      const result: Record<string, AppPopupData[]> = popupContents.reduce((r, a) => {
+    if (appPopupData) {
+      const result: Record<string, AppPopupData[]> = appPopupData.reduce((r, a) => {
         r[a.position] = r[a.position] || [];
         r[a.position].push(a);
         return r;
@@ -430,11 +401,11 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     } else {
       return {};
     }
-  }, [popupContents]);
+  }, [appPopupData]);
 
   const appBannerMap = useMemo(() => {
-    if (bannerContents) {
-      const result: Record<string, AppBannerData[]> = bannerContents.reduce((r, a) => {
+    if (appBannerData) {
+      const result: Record<string, AppBannerData[]> = appBannerData.reduce((r, a) => {
         r[a.position] = r[a.position] || [];
         r[a.position].push(a);
         return r;
@@ -444,11 +415,11 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     } else {
       return {};
     }
-  }, [bannerContents]);
+  }, [appBannerData]);
 
   const appConfirmationMap = useMemo(() => {
-    if (confirmationContents) {
-      const result: Record<string, AppConfirmationData[]> = confirmationContents.reduce((r, a) => {
+    if (appConfirmationData) {
+      const result: Record<string, AppConfirmationData[]> = appConfirmationData.reduce((r, a) => {
         r[a.position] = r[a.position] || [];
         r[a.position].push(a);
         return r;
@@ -458,7 +429,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     } else {
       return {};
     }
-  }, [confirmationContents]);
+  }, [appConfirmationData]);
 
   const handleButtonPress = useCallback(
     (id: string) => {
