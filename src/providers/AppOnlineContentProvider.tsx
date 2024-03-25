@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { mmkvStore } from 'utils/storage';
 import { deeplinks } from 'utils/browser';
@@ -19,6 +19,8 @@ import {
   PopupFrequency,
   PopupHistoryData,
 } from 'types/staticContent';
+import { GlobalModalContext } from 'providers/GlobalModalContext';
+import { RootRouteProps } from 'routes/index';
 
 interface AppOnlineContentContextProviderProps {
   children?: React.ReactElement;
@@ -39,6 +41,7 @@ interface AppOnlineContentContextType {
   handleButtonPress: (id: string) => (type: OnlineContentDataType, url?: string) => void;
   checkBannerVisible: (showTimes: number) => boolean;
   checkPositionParam: (screen: string, positionParams: { property: string; value: string }[], value: string) => boolean;
+  showAppPopup: (currentRoute: RootRouteProps | undefined) => void;
 }
 
 const TIME_MILLI = {
@@ -49,7 +52,42 @@ const TIME_MILLI = {
 
 export const AppOnlineContentContext = React.createContext({} as AppOnlineContentContextType);
 
+const getDetailCurrentRoute = (_currentRoute: RootRouteProps | undefined) => {
+  if (_currentRoute) {
+    switch (_currentRoute.name) {
+      case 'Home':
+      case 'Drawer':
+        // @ts-ignore
+        const currentHomeState = _currentRoute.state;
+        // @ts-ignore
+        const currentHomeRouteMap = currentHomeState?.routes[currentHomeState?.index];
+        const currentHomeTabState = currentHomeRouteMap?.state;
+        return currentHomeTabState?.routes[currentHomeTabState?.index];
+      default:
+        return _currentRoute;
+    }
+  }
+};
+
+const getAppTransformRouteName = (currentRoute?: string) => {
+  if (!currentRoute) {
+    return '';
+  }
+
+  switch (currentRoute) {
+    case 'Tokens':
+      return 'token';
+    case 'NFTs':
+      return 'nft';
+    case 'Earning':
+      return 'earning';
+    case 'Crowdloans':
+      return 'crowdloan';
+  }
+};
+
 export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentContextProviderProps) => {
+  const globalAppModalContext = useContext(GlobalModalContext);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { balanceMap } = useSelector((state: RootState) => state.balance);
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
@@ -226,7 +264,9 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
   const getFilteredDataList = useCallback(
     (data: AppPopupData[] | AppBannerData[] | AppConfirmationData[], type: OnlineContentDataType) => {
       if (type === 'popup') {
-        const filteredData = (data as AppPopupData[])
+        // get available popup list
+        const activeList = (data as AppPopupData[]).filter(({ info }) => checkPopupExistTime(info));
+        const filteredData = activeList
           .filter(({ info, conditions }) => {
             return info.platforms.includes('mobile') && checkPopupCondition(conditions);
           })
@@ -234,7 +274,9 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
 
         setPopupContents(filteredData);
       } else if (type === 'banner') {
-        const filteredData = (data as AppBannerData[])
+        // get available banner list
+        const activeList = (data as AppBannerData[]).filter(({ info }) => checkPopupExistTime(info));
+        const filteredData = activeList
           .filter(({ info, conditions }) => {
             return info.platforms.includes('mobile') && checkPopupCondition(conditions);
           })
@@ -247,7 +289,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         setConfirmationContents(filteredData);
       }
     },
-    [checkPopupCondition],
+    [checkPopupCondition, checkPopupExistTime],
   );
 
   const initPopupHistoryMap = useCallback((data: AppPopupData[]) => {
@@ -443,6 +485,38 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     [updateConfirmationHistoryMap, updatePopupHistoryMap],
   );
 
+  const showAppPopup = useCallback(
+    (currentRoute: RootRouteProps | undefined) => {
+      const currentDetailRoute = getDetailCurrentRoute(currentRoute);
+      const currentTransformRoute = getAppTransformRouteName(currentDetailRoute?.name) || '';
+      const currentPopupList = appPopupMap[currentTransformRoute];
+      if (currentPopupList && currentPopupList.length) {
+        const filteredPopupList = currentPopupList.filter(item => {
+          const popupHistory = popupHistoryMap[`${item.position}-${item.id}`];
+          if (popupHistory) {
+            return checkPopupVisibleByFrequency(item.repeat, popupHistory.lastShowTime, popupHistory.showTimes);
+          } else {
+            return false;
+          }
+        });
+
+        filteredPopupList &&
+          filteredPopupList.length &&
+          globalAppModalContext.setGlobalModal({
+            type: 'popup',
+            visible: true,
+            title: filteredPopupList[0].info.name,
+            message: filteredPopupList[0].content || '',
+            buttons: filteredPopupList[0].buttons,
+            onPressBtn: url => {
+              handleButtonPress(`${filteredPopupList[0].position}-${filteredPopupList[0].id}`)('popup', url);
+            },
+          });
+      }
+    },
+    [appPopupMap, checkPopupVisibleByFrequency, globalAppModalContext, handleButtonPress, popupHistoryMap],
+  );
+
   return (
     <AppOnlineContentContext.Provider
       value={{
@@ -460,6 +534,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         handleButtonPress,
         checkBannerVisible,
         checkPositionParam,
+        showAppPopup,
       }}>
       {children}
     </AppOnlineContentContext.Provider>

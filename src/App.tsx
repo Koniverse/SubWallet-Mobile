@@ -246,17 +246,17 @@ export const App = () => {
                 <ExternalRequestContextProvider>
                   <QrSignerContextProvider>
                     <ScannerContextProvider>
-                      <AppOnlineContentContextProvider>
-                        <GestureHandlerRootView style={gestureRootStyle}>
-                          <PortalProvider>
-                            <GlobalModalContextProvider>
+                      <GestureHandlerRootView style={gestureRootStyle}>
+                        <PortalProvider>
+                          <GlobalModalContextProvider>
+                            <AppOnlineContentContextProvider>
                               <AppModalContextProvider>
                                 {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
                               </AppModalContextProvider>
-                            </GlobalModalContextProvider>
-                          </PortalProvider>
-                        </GestureHandlerRootView>
-                      </AppOnlineContentContextProvider>
+                            </AppOnlineContentContextProvider>
+                          </GlobalModalContextProvider>
+                        </PortalProvider>
+                      </GestureHandlerRootView>
                     </ScannerContextProvider>
                   </QrSignerContextProvider>
                 </ExternalRequestContextProvider>
