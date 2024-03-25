@@ -13,6 +13,7 @@ import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ContentGenerator } from 'components/StaticContent/ContentGenerator';
+import { deviceHeight } from 'constants/index';
 
 interface GlobalInstructionModalProps {
   visible: boolean;
@@ -184,9 +185,11 @@ const GlobalModal: React.FC<Props> = ({
         footer={
           externalButtons ? externalButtons : <OnlineButtonGroups buttons={buttons} onPressButton={_onPressButton} />
         }>
-        <View style={{ width: '100%', paddingTop: 10 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{ width: '100%', paddingTop: 10, maxHeight: deviceHeight * 0.6 }}>
           <ContentGenerator content={message} />
-        </View>
+        </ScrollView>
       </SwModal>
       {!!instructionButton && instructionButton.instruction && currentInstructionData && (
         <GlobalInstructionModal
@@ -194,7 +197,7 @@ const GlobalModal: React.FC<Props> = ({
           visible={instructionModalVisible}
           instruction={instructionButton.instruction}
           data={currentInstructionData}
-          onPressCancelBtn={() => setInstructionModalVisible(false)}
+          onPressCancelBtn={() => onAccept()}
           onPressConfirmBtn={() => onAccept(instructionButton.action?.url)}
         />
       )}
