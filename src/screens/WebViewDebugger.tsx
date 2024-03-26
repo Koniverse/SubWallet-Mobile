@@ -14,6 +14,7 @@ import { Button } from 'components/design-system-ui';
 import env from 'react-native-config';
 import { ToggleItem } from 'components/ToggleItem';
 import { Bug } from 'phosphor-react-native';
+import { updateBannerHistoryData, updateConfirmationHistoryData, updatePopupHistoryData } from 'stores/utils';
 
 const BUNDLE_ENV = env.BUNDLE_ENV;
 export const WebViewDebugger = () => {
@@ -128,9 +129,11 @@ export const WebViewDebugger = () => {
           <Button
             style={{ marginBottom: 5 }}
             onPress={() => {
-              mmkvStore.set('popup-history-map', '{}');
-              mmkvStore.set('banner-history-map', '{}');
+              updatePopupHistoryData({});
+              updateBannerHistoryData({});
+              updateConfirmationHistoryData({});
               setNotification("OK, Let's restart app!");
+              mmkvStore.set('isOpenIntroductionFirstTime', false);
             }}>
             Reset static content
           </Button>

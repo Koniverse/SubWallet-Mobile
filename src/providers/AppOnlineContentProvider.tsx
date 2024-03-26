@@ -111,9 +111,6 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     confirmationHistoryMap,
   } = useSelector((state: RootState) => state.staticContent);
 
-  console.log('appPopupData', appPopupData);
-  console.log('popupHistoryMap', popupHistoryMap);
-
   const getAppContentData = useCallback(async (dataType: OnlineContentDataType) => {
     return await axios.get(`https://content.subwallet.app/api/list/app-${dataType}?preview=true`);
   }, []);
