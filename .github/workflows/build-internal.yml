@@ -8,7 +8,7 @@ jobs:
   # iOS build workflow -------------------------------------------------
   build-ios:
     name: iOS builds
-    runs-on: mac-worker
+    runs-on: macos-13
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
       GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
@@ -73,12 +73,6 @@ jobs:
         workspace-path: ios/SubWalletMobile.xcworkspace
         scheme: SubWalletMobile-Production
 
-    - name: Upload iOS to Next cloud
-      id: upload-ios
-      run: |
-        FILE_URL=$(node ./scripts/upload-ios.mjs)
-        echo "::set-output name=fileUrl::${FILE_URL}"
-
     - name: Upload iOS to Diawi
       id: upload-diawi-ios
       uses: rnkdsh/action-upload-diawi@v1.5.4
@@ -104,7 +98,7 @@ jobs:
   # Android build workflow -------------------------------------------------
   build-android:
     name: Android builds
-    runs-on: android-worker
+    runs-on: ubuntu-22.04
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
       GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
@@ -146,6 +140,24 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '11'
+
+    - name: Cache Gradle Wrapper
+      uses: actions/cache@v2
+      with:
+        path: ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+    - name: Cache Gradle Dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-caches-
+
     - name: Install dependencies
       run: yarn install --immutable | grep -v 'YN0013'
 
@@ -157,12 +169,6 @@ jobs:
     - name: Generate App APK
       run: |
         cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
-
-    - name: Upload APK to Next cloud
-      id: upload-android
-      run: |
-        FILE_URL=$(node ./scripts/upload-android.mjs)
-        echo "::set-output name=fileUrl::${FILE_URL}"
 
     - name: Upload Android to Diawi
       id: upload-diawi-android
@@ -182,6 +188,5 @@ jobs:
         title: ${{ github.workflow }}
         description: |
           Android: The Deployment has been completed.
-          URL: ${{ steps.upload-android.outputs.fileUrl }}
           Diawi: ${{ steps.upload-diawi-android.outputs.url }}
           Diawi QR: ${{ steps.upload-diawi-android.outputs.qrcode }}
