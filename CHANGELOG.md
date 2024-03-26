@@ -1,3 +1,6 @@
+## 1.1.43 (340)
+
+
 ## 1.1.42 (339)
 - Navigation support users by platform (#1542)
 
