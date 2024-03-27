@@ -52,6 +52,7 @@ import {
 import { getStaticContentByDevMode } from 'utils/storage';
 import { STATIC_DATA_DOMAIN } from 'constants/index';
 import { RootRouteProps } from 'routes/index';
+import { AppBannerData, AppConfirmationData, AppPopupData, PopupHistoryData } from 'types/staticContent';
 // Setup redux stores
 
 function voidFn() {
@@ -233,6 +234,31 @@ export const getLogoMaps = lazySendMessage('pri(settings.getLogoMaps)', null, up
 //
 // export const subscribeAppSettings = lazySubscribeMessage('pri(accounts.subscribeWithCurrentAddress)', {}, updateCurrentAccountState, updateCurrentAccountState);
 //
+
+export const updateAppPopupData = (data: AppPopupData[]) => {
+  store.dispatch({ type: 'staticContent/updateAppPopupData', payload: data });
+};
+
+export const updateAppBannerData = (data: AppBannerData[] | undefined) => {
+  store.dispatch({ type: 'staticContent/updateAppBannerData', payload: data });
+};
+
+export const updateAppConfirmationData = (data: AppConfirmationData[] | undefined) => {
+  store.dispatch({ type: 'staticContent/updateAppConfirmationData', payload: data });
+};
+
+export const updatePopupHistoryData = (data: Record<string, PopupHistoryData>) => {
+  store.dispatch({ type: 'staticContent/updatePopupHistoryData', payload: data });
+};
+
+export const updateBannerHistoryData = (data: Record<string, PopupHistoryData>) => {
+  store.dispatch({ type: 'staticContent/updateBannerHistoryData', payload: data });
+};
+
+export const updateConfirmationHistoryData = (data: Record<string, PopupHistoryData>) => {
+  store.dispatch({ type: 'staticContent/updateConfirmationHistoryData', payload: data });
+};
+
 export const updateAuthUrls = (data: AuthUrls) => {
   store.dispatch({ type: 'settings/updateAuthUrls', payload: data });
 };

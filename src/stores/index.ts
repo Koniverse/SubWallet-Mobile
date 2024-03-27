@@ -21,6 +21,7 @@ import {
 import AccountStateReducer from './base/AccountState';
 import RequestStateReducer from './base/RequestState';
 import SettingsReducer from './base/Settings';
+import StaticContentReducer from './base/StaticContent';
 import BalanceReducer from './feature/Balance';
 import BondingReducer from './feature/Bonding';
 import CampaignReducer from './feature/Campaign';
@@ -40,7 +41,7 @@ import PasswordModalReducer from 'stores/PasswordModalState';
 import LogoMap from 'stores/base/LogoMap';
 import { mmkvReduxStore } from 'utils/storage';
 import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
-import { AssetRegistryStore, BalanceStore, BrowserSlice, ChainStore } from './types';
+import { AppOnlineContent, AssetRegistryStore, BalanceStore, BrowserSlice, ChainStore } from './types';
 import { browserDAPPs, tokenConfig } from './API';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
@@ -99,6 +100,10 @@ const rootReducer = combineReducers({
   // Base
   requestState: RequestStateReducer,
   settings: SettingsReducer,
+  staticContent: persistReducer(
+    { key: 'staticContent', storage: mmkvReduxStore } as PersistConfig<AppOnlineContent>,
+    StaticContentReducer,
+  ),
   accountState: AccountStateReducer,
   logoMaps: LogoMap,
   earning: EarningReducer,

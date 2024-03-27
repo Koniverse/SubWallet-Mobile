@@ -21,6 +21,8 @@ import i18n from 'utils/i18n/i18n';
 import createStyles from './style';
 import { LeftIconButton } from 'components/LeftIconButton';
 import { isRelatedToAstar } from 'utils/earning';
+import { BannerGenerator } from 'components/common/BannerGenerator';
+import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 
 let cacheData: Record<string, boolean> = {};
 
@@ -90,6 +92,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
   const isFocused = useIsFocused();
   const [isRefresh, refresh] = useRefresh();
   const data = useGroupYieldPosition();
+  const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('earning');
 
   const { isShowBalance } = useSelector((state: RootState) => state.settings);
   const { priceMap } = useSelector((state: RootState) => state.price);
@@ -256,6 +259,11 @@ export const PositionList = ({ setStep, loading }: Props) => {
             refresh(reloadCron({ data: 'staking' }));
           }}
         />
+      }
+      beforeListItem={
+        <View style={{ paddingHorizontal: theme.padding }}>
+          <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
+        </View>
       }
     />
   );

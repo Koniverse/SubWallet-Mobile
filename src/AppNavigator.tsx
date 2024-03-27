@@ -85,6 +85,7 @@ import { DeriveAccount } from 'screens/Account/DeriveAccount';
 import { useGroupYieldPosition } from 'hooks/earning';
 import { AboutSubWallet } from 'screens/Settings/AboutSubWallet';
 import { updateCurrentRoute } from 'stores/utils';
+import { AppOnlineContentContext } from 'providers/AppOnlineContentProvider';
 
 interface Props {
   isAppReady: boolean;
@@ -234,6 +235,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const finishLoginProgressRef = useRef<Function | null>(null);
   const waitForLoginProcessRef = useRef<Promise<boolean> | null>(null);
   const isPreventDeepLinkRef = useRef(isEmptyAccounts || !hasMasterPassword || hasConfirmations);
+  const { showAppPopup } = useContext(AppOnlineContentContext);
 
   useEffect(() => {
     if (!isLocked && finishLoginProgressRef.current) {
@@ -408,10 +410,15 @@ const AppNavigator = ({ isAppReady }: Props) => {
     console.warn('AppNavigator.tsx / Error boundary: ', error, stackTrace);
   };
 
-  const onUpdateRoute = useCallback((state: NavigationState | undefined) => {
-    updateCurrentRoute(state?.routes[state?.index]);
-    setCurrentRoute(state?.routes[state?.index]);
-  }, []);
+  const onUpdateRoute = useCallback(
+    (state: NavigationState | undefined) => {
+      const _currentRoute = state?.routes[state?.index];
+      showAppPopup(_currentRoute);
+      updateCurrentRoute(_currentRoute);
+      setCurrentRoute(_currentRoute);
+    },
+    [showAppPopup],
+  );
 
   useEffect(() => {
     let amount = true;
