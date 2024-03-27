@@ -1,3 +1,6 @@
+## 1.1.43 (341)
+- Fix bug do not show account on the Accounts token details screen in case all balance is locked (#1529)
+
 ## 1.1.43 (340)
 
 
