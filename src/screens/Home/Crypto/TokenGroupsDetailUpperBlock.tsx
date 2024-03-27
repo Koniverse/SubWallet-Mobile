@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { CaretLeft } from 'phosphor-react-native';
@@ -45,6 +45,9 @@ export const TokenGroupsDetailUpperBlock = ({
   const { isShowBuyToken } = useShowBuyToken();
   const { tokens } = useSelector((state: RootState) => state.buyService);
   const _style = createStyleSheet(theme);
+  const swapUrl = `subwallet://browser?url=${encodeURIComponent(
+    'https://webapp-dev.subwallet-webapp.pages.dev/redirect-handler/swap',
+  )}`;
 
   const buyInfos = useMemo(() => {
     const groupSlug = tokenGroupSlug || '';
@@ -117,6 +120,12 @@ export const TokenGroupsDetailUpperBlock = ({
           icon={ButtonIcon.SendFund}
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+        />
+        <ActionButton
+          label={i18n.cryptoScreen.swap}
+          icon={ButtonIcon.Swap}
+          onPress={() => Linking.openURL(swapUrl)}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
         />
         {isShowBuyToken && (
           <ActionButton
