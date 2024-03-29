@@ -60,9 +60,7 @@ export const TokenGroupsUpperBlock = ({
     updateToggleBalance();
     toggleBalancesVisibility().catch(console.log);
   };
-  const swapUrl = `subwallet://browser?url=${encodeURIComponent(
-    'https://webapp-dev.subwallet-webapp.pages.dev/redirect-handler/swap',
-  )}`;
+  const swapUrl = `subwallet://browser?url=${encodeURIComponent('https://web.subwallet.app/redirect-handler/swap')}`;
 
   return (
     <View style={containerStyle} pointerEvents="box-none">
