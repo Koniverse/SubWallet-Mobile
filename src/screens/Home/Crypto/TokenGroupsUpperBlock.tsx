@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, View, TouchableOpacity } from 'react-native';
+import { StyleProp, View, TouchableOpacity, Linking } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { Eye, EyeSlash } from 'phosphor-react-native';
@@ -60,6 +60,9 @@ export const TokenGroupsUpperBlock = ({
     updateToggleBalance();
     toggleBalancesVisibility().catch(console.log);
   };
+  const swapUrl = `subwallet://browser?url=${encodeURIComponent(
+    'https://webapp-dev.subwallet-webapp.pages.dev/redirect-handler/swap',
+  )}`;
 
   return (
     <View style={containerStyle} pointerEvents="box-none">
@@ -139,20 +142,26 @@ export const TokenGroupsUpperBlock = ({
           label={i18n.cryptoScreen.address}
           icon={ButtonIcon.Receive}
           onPress={onOpenReceive}
-          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
         />
         <ActionButton
           label={i18n.cryptoScreen.send}
           icon={ButtonIcon.SendFund}
           onPress={onOpenSendFund}
-          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
+        />
+        <ActionButton
+          label={i18n.cryptoScreen.swap}
+          icon={ButtonIcon.Swap}
+          onPress={() => Linking.openURL(swapUrl)}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
         />
         {isShowBuyToken && (
           <ActionButton
             label={i18n.cryptoScreen.buy}
             icon={ButtonIcon.Buy}
             onPress={() => navigation.navigate('Drawer', { screen: 'BuyToken', params: {} })}
-            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
           />
         )}
       </View>
