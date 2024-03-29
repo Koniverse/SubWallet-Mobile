@@ -85,6 +85,7 @@ import { DeriveAccount } from 'screens/Account/DeriveAccount';
 import { useGroupYieldPosition } from 'hooks/earning';
 import { AboutSubWallet } from 'screens/Settings/AboutSubWallet';
 import { updateCurrentRoute } from 'stores/utils';
+import { ConnectLedgerDevice } from 'screens/Account/ConnectLedgerDevice';
 
 interface Props {
   isAppReady: boolean;
@@ -559,6 +560,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                 <Stack.Screen name="SigningAction" component={SigningScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ConnectParitySigner" component={ConnectParitySigner} />
+                <Stack.Screen name="ConnectLedgerDevice" component={ConnectLedgerDevice} />
                 <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
                 <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ImportQrCode" component={ImportQrCode} />

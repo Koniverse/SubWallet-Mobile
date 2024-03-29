@@ -74,6 +74,7 @@ export type RootStackParamList = {
   History: { address?: string; chain?: string; extrinsicHash?: string; transactionId?: string };
   Login: undefined;
   AddProvider: { slug: string };
+  ConnectLedgerDevice: undefined;
   ConnectParitySigner: undefined;
   ConnectKeystone: undefined;
   AttachReadOnly: undefined;

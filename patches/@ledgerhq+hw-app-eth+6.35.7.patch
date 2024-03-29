@@ -1,0 +1,52 @@
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib/modules/EIP712/index.js b/node_modules/@ledgerhq/hw-app-eth/lib/modules/EIP712/index.js
+index 3021e44..2a32893 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib/modules/EIP712/index.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib/modules/EIP712/index.js
+@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.signEIP712HashedMessage = exports.signEIP712Message = void 0;
+-const index_1 = require("@ledgerhq/evm-tools/message/EIP712/index");
++const index_1 = require("@ledgerhq/evm-tools/lib/message/EIP712/index");
+ const utils_1 = require("../../utils");
+ const loadConfig_1 = require("../../services/ledger/loadConfig");
+ const utils_2 = require("./utils");
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib/services/ledger/erc20.js b/node_modules/@ledgerhq/hw-app-eth/lib/services/ledger/erc20.js
+index e471506..67a8bcd 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib/services/ledger/erc20.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib/services/ledger/erc20.js
+@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.byContractAddressAndChainId = exports.findERC20SignaturesInfo = void 0;
+ const axios_1 = __importDefault(require("axios"));
+ const logs_1 = require("@ledgerhq/logs");
+-const index_1 = require("@ledgerhq/cryptoassets/data/evm/index");
++const index_1 = require("@ledgerhq/cryptoassets/lib/data/evm/index");
+ const loadConfig_1 = require("./loadConfig");
+ const asContractAddress = (addr) => {
+     const a = addr.toLowerCase();
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib/services/ledger/index.js b/node_modules/@ledgerhq/hw-app-eth/lib/services/ledger/index.js
+index 8385537..6641b95 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib/services/ledger/index.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib/services/ledger/index.js
+@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ // This implements the resolution of a Transaction using Ledger's own API
+ const logs_1 = require("@ledgerhq/logs");
+ const abi_1 = require("@ethersproject/abi");
+-const index_1 = require("@ledgerhq/domain-service/signers/index");
++const index_1 = require("@ledgerhq/domain-service/lib/signers/index");
+ const erc20_1 = require("./erc20");
+ const contracts_1 = require("./contracts");
+ const nfts_1 = require("./nfts");
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib/utils.js b/node_modules/@ledgerhq/hw-app-eth/lib/utils.js
+index 027089b..1c5da62 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib/utils.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib/utils.js
+@@ -2,7 +2,7 @@
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.mergeResolutions = exports.nftSelectors = exports.tokenSelectors = exports.intAsHexBytes = exports.decodeTxInfo = exports.maybeHexBuffer = exports.hexBuffer = exports.splitPath = exports.padHexString = exports.ERC1155_CLEAR_SIGNED_SELECTORS = exports.ERC721_CLEAR_SIGNED_SELECTORS = exports.ERC20_CLEAR_SIGNED_SELECTORS = void 0;
+ const bignumber_js_1 = require("bignumber.js");
+-const index_1 = require("@ledgerhq/evm-tools/selectors/index");
++const index_1 = require("@ledgerhq/evm-tools/lib/selectors/index");
+ Object.defineProperty(exports, "ERC20_CLEAR_SIGNED_SELECTORS", { enumerable: true, get: function () { return index_1.ERC20_CLEAR_SIGNED_SELECTORS; } });
+ Object.defineProperty(exports, "ERC721_CLEAR_SIGNED_SELECTORS", { enumerable: true, get: function () { return index_1.ERC721_CLEAR_SIGNED_SELECTORS; } });
+ Object.defineProperty(exports, "ERC1155_CLEAR_SIGNED_SELECTORS", { enumerable: true, get: function () { return index_1.ERC1155_CLEAR_SIGNED_SELECTORS; } });

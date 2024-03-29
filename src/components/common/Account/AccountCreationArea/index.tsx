@@ -16,7 +16,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
-import ToastContainer from 'react-native-toast-notifications';
 import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { canDerive } from '@subwallet/extension-base/utils';
@@ -104,16 +103,6 @@ export const AccountCreationArea = ({
     [accounts],
   );
 
-  const toastRef = useRef<ToastContainer>(null);
-  const show = useCallback((text: string) => {
-    if (toastRef.current) {
-      // @ts-ignore
-      toastRef.current.hideAll();
-      // @ts-ignore
-      toastRef.current.show(text);
-    }
-  }, []);
-
   const onSelectAccountTypes = useCallback(
     (keyTypes: KeypairType[]) => {
       createAccountRef && createAccountRef.current?.onCloseModal();
@@ -195,8 +184,7 @@ export const AccountCreationArea = ({
     let pathName: keyof RootStackParamList;
 
     if (item.key === 'ledger') {
-      show(i18n.notificationMessage.comingSoon);
-      return;
+      pathName = 'ConnectLedgerDevice';
     } else if (item.key === 'polkadotVault') {
       pathName = 'ConnectParitySigner';
     } else if (item.key === 'keystone') {
@@ -240,7 +228,6 @@ export const AccountCreationArea = ({
         modalTitle={i18n.header.attachAnAcc}
         items={attachAccountActions}
         onSelectItem={attachAccountFunc}
-        toastRef={toastRef}
       />
     </>
   );

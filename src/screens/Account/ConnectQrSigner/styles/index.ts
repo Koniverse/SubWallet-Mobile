@@ -13,7 +13,7 @@ export interface ComponentStyle {
 export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
     footer: {
-      marginBottom: theme.marginXL,
+      marginVertical: theme.margin,
       paddingHorizontal: theme.padding,
     },
     body: {
@@ -22,7 +22,7 @@ export default (theme: ThemeTypes) => {
       gap: 56,
       alignItems: 'center',
       flex: 1,
-      paddingHorizontal: theme.paddingXL,
+      paddingHorizontal: theme.padding,
     },
     subTitle: {
       paddingVertical: theme.padding,

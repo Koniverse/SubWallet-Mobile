@@ -27,4 +27,5 @@ export const ImageLogosMap = {
   fr: FranchiseLogo,
   ja: JapaneseLogo,
   ru: RussianLogo,
+  ledger: require('./ledger.png'),
 };
