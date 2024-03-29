@@ -3,7 +3,6 @@
 
 import { persistor, store, StoreName } from '../stores';
 import {
-  getLogoMaps,
   subscribeAccountsData,
   subscribeAddressBook,
   subscribeAssetRegistry,
@@ -42,6 +41,8 @@ import {
   subscribeYieldMinAmountPercent,
   subscribeRewardHistory,
   subscribeChainStatusMap,
+  getChainLogoMaps,
+  getAssetsLogoMaps,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -294,8 +295,15 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
         /* Logo */
 
         _DataContext.addHandler({
-          ...getLogoMaps,
-          name: 'getLogoMaps',
+          ...getChainLogoMaps,
+          name: 'getChainLogoMaps',
+          relatedStores: ['logoMaps'],
+          isStartImmediately: true,
+        });
+
+        _DataContext.addHandler({
+          ...getAssetsLogoMaps,
+          name: 'getAssetsLogoMaps',
           relatedStores: ['logoMaps'],
           isStartImmediately: true,
         });

@@ -6,7 +6,6 @@ import { AuthUrls } from '@subwallet/extension-base/background/handlers/State';
 import {
   AccountsWithCurrentAddress,
   AddressBookInfo,
-  AllLogoMap,
   AssetSetting,
   CampaignBanner,
   ChainStakingMetadata,
@@ -34,7 +33,7 @@ import {
 import { _ChainApiStatus, _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { addLazy, canDerive } from '@subwallet/extension-base/utils';
-import { lazySendMessage, lazySubscribeMessage } from 'messaging/index';
+import { lazySubscribeMessage } from 'messaging/index';
 import { AppSettings } from 'stores/types';
 import { store } from '..';
 import { buildHierarchy } from 'utils/buildHierarchy';
@@ -220,11 +219,42 @@ export const subscribeUiSettings = lazySubscribeMessage(
   updateUiSettings,
 );
 
-export const updateLogoMaps = (data: AllLogoMap) => {
-  store.dispatch({ type: 'logoMaps/updateLogoMaps', payload: data });
+export const updateChainLogoMaps = (data: Record<string, string>) => {
+  addLazy(
+    'updateChainLogoMaps',
+    () => {
+      store.dispatch({ type: 'logoMaps/updateChainLogoMaps', payload: data });
+    },
+    100,
+    300,
+    false,
+  );
 };
 
-export const getLogoMaps = lazySendMessage('pri(settings.getLogoMaps)', null, updateLogoMaps);
+export const updateAssetLogoMaps = (data: Record<string, string>) => {
+  addLazy(
+    'updateAssetLogoMaps',
+    () => {
+      store.dispatch({ type: 'logoMaps/updateAssetLogoMaps', payload: data });
+    },
+    100,
+    300,
+    false,
+  );
+};
+
+export const getChainLogoMaps = lazySubscribeMessage(
+  'pri(settings.logo.chains.subscribe)',
+  null,
+  updateChainLogoMaps,
+  updateChainLogoMaps,
+);
+export const getAssetsLogoMaps = lazySubscribeMessage(
+  'pri(settings.logo.assets.subscribe)',
+  null,
+  updateAssetLogoMaps,
+  updateAssetLogoMaps,
+);
 
 //
 // export const updateAppSettings = (data: AccountJson) => {
