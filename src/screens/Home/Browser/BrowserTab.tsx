@@ -139,6 +139,17 @@ const getJsInjectContent = (showLog?: boolean) => {
   return injectedJS;
 };
 
+const injectScriptHandler: { script: string | null; promise: Promise<void> } = {
+  script: null,
+  promise: new Promise<void>(() => {}),
+};
+
+injectScriptHandler.promise = (async () => {
+  const injectPageJsContent = await InjectPageJsScript.get();
+  injectScriptHandler.script =
+    getJsInjectContent() + BridgeScript + injectPageJsContent + ConnectToNovaScript + DAppScript;
+})();
+
 //todo: Update better style
 const PhishingBlockerLayer = () => {
   const theme = useSubWalletTheme().swThemes;
@@ -163,7 +174,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     canGoBack: false,
     canGoForward: false,
   });
-  const [injectedScripts, setInjectedScripts] = useState<string | null>(null);
+  const [injectedScripts, setInjectedScripts] = useState<string | null>(injectScriptHandler.script);
   const [isShowPhishingWarning, setIsShowPhishingWarning] = useState<boolean>(false);
   const webviewRef = useRef<WebView>(null);
   const browserSv = useRef<BrowserService | null>(null);
@@ -386,25 +397,12 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   ];
 
   useEffect(() => {
-    let isSync = true;
-
-    (async () => {
-      const injectPageJsContent = await InjectPageJsScript.get();
-
-      if (isSync) {
-        const injectScripts =
-          getJsInjectContent() + BridgeScript + injectPageJsContent + ConnectToNovaScript + DAppScript;
-
-        setInjectedScripts(injectScripts);
-      }
-    })();
-
-    return () => {
-      isSync = false;
-
-      clearCurrentBrowserSv();
-    };
-  }, [tabId]);
+    if (!injectScriptHandler.script) {
+      injectScriptHandler.promise.then(() => {
+        setInjectedScripts(injectScriptHandler.script);
+      });
+    }
+  }, []);
 
   const onLoadProgress = useCallback(
     ({ nativeEvent: { progress } }: WebViewProgressEvent) => {
