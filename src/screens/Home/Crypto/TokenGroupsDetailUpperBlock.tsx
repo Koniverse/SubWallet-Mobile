@@ -119,11 +119,13 @@ export const TokenGroupsDetailUpperBlock = ({
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
         />
-        <ActionButton
-          icon={ButtonIcon.Swap}
-          onPress={() => Linking.openURL(swapUrl)}
-          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
-        />
+        {isShowBuyToken && (
+          <ActionButton
+            icon={ButtonIcon.Swap}
+            onPress={() => Linking.openURL(swapUrl)}
+            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
+          />
+        )}
         {isShowBuyToken && (
           <ActionButton
             icon={ButtonIcon.Buy}

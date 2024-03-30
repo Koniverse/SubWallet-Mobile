@@ -148,12 +148,14 @@ export const TokenGroupsUpperBlock = ({
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
         />
-        <ActionButton
-          label={i18n.cryptoScreen.swap}
-          icon={ButtonIcon.Swap}
-          onPress={() => Linking.openURL(swapUrl)}
-          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
-        />
+        {isShowBuyToken && (
+          <ActionButton
+            label={i18n.cryptoScreen.swap}
+            icon={ButtonIcon.Swap}
+            onPress={() => Linking.openURL(swapUrl)}
+            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
+          />
+        )}
         {isShowBuyToken && (
           <ActionButton
             label={i18n.cryptoScreen.buy}
