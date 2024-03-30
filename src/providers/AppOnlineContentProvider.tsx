@@ -101,8 +101,6 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const yieldPositionList = useGroupYieldPosition();
 
-  console.log('balanceMap', balanceMap);
-
   const {
     appPopupData,
     appBannerData,

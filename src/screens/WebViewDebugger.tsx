@@ -14,7 +14,11 @@ import { Button } from 'components/design-system-ui';
 import env from 'react-native-config';
 import { ToggleItem } from 'components/ToggleItem';
 import { Bug } from 'phosphor-react-native';
-import { updateBannerHistoryData, updateConfirmationHistoryData, updatePopupHistoryData } from 'stores/utils';
+import {
+  updateBannerHistoryData,
+  updateConfirmationHistoryData,
+  updatePopupHistoryData,
+} from 'stores/base/StaticContent';
 
 const BUNDLE_ENV = env.BUNDLE_ENV;
 export const WebViewDebugger = () => {
