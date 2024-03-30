@@ -1,7 +1,7 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback, useEffect } from 'react';
-import { ListRenderItemInfo, RefreshControl, SectionListData } from 'react-native';
+import { ListRenderItemInfo, RefreshControl, SectionListData, View } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import i18n from 'utils/i18n/i18n';
 import { Image, Plus } from 'phosphor-react-native';
@@ -14,6 +14,8 @@ import { useRefresh } from 'hooks/useRefresh';
 import { reloadCron } from 'messaging/index';
 import { EmptyList } from 'components/EmptyList';
 import { deviceWidth } from 'constants/index';
+import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
+import { BannerGenerator } from 'components/common/BannerGenerator';
 
 type GetItemLayoutType =
   | readonly NftCollection[]
@@ -34,7 +36,7 @@ const NftCollectionList = () => {
   const { nftCollections } = useFetchNftCollection();
   const navigation = useNavigation<NFTNavigationProps>();
   const [isRefresh, refresh] = useRefresh();
-
+  const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('nft');
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -107,6 +109,11 @@ const NftCollectionList = () => {
         searchMarginBottom={16}
         isShowMainHeader
         getItemLayout={getItemLayout}
+        beforeListItem={
+          <View style={{ paddingHorizontal: theme.padding }}>
+            <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
+          </View>
+        }
       />
     </>
   );

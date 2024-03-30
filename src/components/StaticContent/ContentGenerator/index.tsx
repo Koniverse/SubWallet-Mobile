@@ -19,7 +19,7 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
     <Markdown
       onLinkPress={onLinkPress}
       style={{
-        body: { color: theme.colorWhite, fontSize: theme.fontSizeSM },
+        body: { color: theme.colorWhite, fontSize: theme.fontSizeSM, fontFamily: 'PlusJakartaSans-Medium' },
         link: { color: theme.colorPrimary },
         heading4: { color: theme.colorWhite },
         heading5: { color: theme.colorWhite },

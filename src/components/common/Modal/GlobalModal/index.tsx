@@ -1,28 +1,14 @@
-import { Button, SwFullSizeModal, SwModal, Typography } from 'components/design-system-ui';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { SwModal } from 'components/design-system-ui';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ScrollView } from 'react-native';
 import { noop } from 'utils/function';
 import { OnlineButtonGroups } from 'components/StaticContent/OnlineButtonGroups';
-import { AppContentButton, AppContentButtonInstruction } from 'types/staticContent';
+import { AppContentButton } from 'types/staticContent';
 import { mmkvStore } from 'utils/storage';
-import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { BoxProps, StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
-import AlertBoxBase from 'components/design-system-ui/alert-box/base';
-import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { FontSemiBold } from 'styles/sharedStyles';
+import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { ContentGenerator } from 'components/StaticContent/ContentGenerator';
 import { deviceHeight } from 'constants/index';
-
-interface GlobalInstructionModalProps {
-  visible: boolean;
-  title: string;
-  data: BoxProps[];
-  instruction: AppContentButtonInstruction;
-  onPressCancelBtn: () => void;
-  onPressConfirmBtn: () => void;
-}
+import { GlobalInstructionModal } from 'components/common/Modal/GlobalModal/GlobalInstructionModal';
 
 interface Props {
   message: string;
@@ -33,83 +19,6 @@ interface Props {
   onPressButton?: (url?: string) => void;
   onCloseModal?: () => void;
 }
-
-const GlobalInstructionModal = ({
-  visible,
-  instruction,
-  title,
-  data,
-  onPressCancelBtn,
-  onPressConfirmBtn,
-}: GlobalInstructionModalProps) => {
-  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
-  const theme = useSubWalletTheme().swThemes;
-
-  const footer = useMemo(
-    () => (
-      <View style={{ flexDirection: 'row', gap: theme.sizeSM }}>
-        <Button block type={'secondary'} onPress={onPressCancelBtn}>
-          {instruction.cancel_label}
-        </Button>
-        <Button block type={'primary'} onPress={onPressConfirmBtn}>
-          {instruction.confirm_label}
-        </Button>
-      </View>
-    ),
-    [instruction.cancel_label, instruction.confirm_label, onPressCancelBtn, onPressConfirmBtn, theme.sizeSM],
-  );
-
-  return (
-    <SwFullSizeModal
-      setVisible={noop}
-      isUseForceHidden={false}
-      modalVisible={visible}
-      isUseModalV2
-      modalBaseV2Ref={modalBaseV2Ref}>
-      <SafeAreaView
-        style={{
-          flex: 1,
-          width: '100%',
-          marginBottom: theme.padding,
-        }}>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: theme.size,
-            paddingHorizontal: theme.padding,
-            flex: 1,
-          }}>
-          <Typography.Text
-            style={{
-              ...FontSemiBold,
-              textAlign: 'center',
-              marginHorizontal: theme.paddingLG + theme.paddingXXS,
-              color: theme.colorTextBase,
-              fontSize: theme.fontSizeHeading4,
-              lineHeight: theme.fontSizeHeading4 * theme.lineHeightHeading4,
-            }}>
-            {title}
-          </Typography.Text>
-          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: theme.sizeSM }}>
-            {data.map((_props, index) => {
-              return (
-                <AlertBoxBase
-                  key={index}
-                  title={_props.title}
-                  description={_props.description}
-                  iconColor={_props.icon_color}
-                  icon={getBannerButtonIcon(_props.icon) as PhosphorIcon}
-                />
-              );
-            })}
-          </ScrollView>
-          {footer}
-        </View>
-      </SafeAreaView>
-    </SwFullSizeModal>
-  );
-};
 
 const GlobalModal: React.FC<Props> = ({
   visible,
@@ -160,8 +69,8 @@ const GlobalModal: React.FC<Props> = ({
   );
 
   const _onPressButton = useCallback(
-    (url?: string) => {
-      if (instructionButton && instructionButton.instruction && currentInstructionData) {
+    (url?: string, hasInstruction?: boolean) => {
+      if (instructionButton && instructionButton.instruction && currentInstructionData && hasInstruction) {
         setInstructionModalVisible(true);
       } else {
         onAccept(url);

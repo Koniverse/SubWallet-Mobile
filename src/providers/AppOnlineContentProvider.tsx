@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { mmkvStore } from 'utils/storage';
 import { deeplinks } from 'utils/browser';
 import { Linking } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -28,7 +27,7 @@ import {
   updateBannerHistoryData,
   updateConfirmationHistoryData,
   updatePopupHistoryData,
-} from 'stores/utils';
+} from 'stores/base/StaticContent';
 
 interface AppOnlineContentContextProviderProps {
   children?: React.ReactElement;
@@ -101,6 +100,8 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const yieldPositionList = useGroupYieldPosition();
+
+  console.log('balanceMap', balanceMap);
 
   const {
     appPopupData,
@@ -194,8 +195,10 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
           const balanceData = balanceCurrentAccMap[item.chain_asset];
           const decimals = _getAssetDecimals(assetRegistry[item.chain_asset]);
           const freeBalance = balanceData?.free;
+          const lockedBalance = balanceData?.locked;
+          const value = new BigN(freeBalance).plus(lockedBalance).toString();
           const comparisonValue = getOutputValuesFromString(item.value.toString(), decimals);
-          checkComparison(item.comparison, freeBalance, comparisonValue);
+          return checkComparison(item.comparison, value, comparisonValue);
         });
 
         return conditionBalanceList.some(item => item);
@@ -213,7 +216,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         if (yieldPosition) {
           const chainInfo = chainInfoMap[yieldPosition.chain];
           const decimals = chainInfo?.substrateInfo?.decimals || chainInfo?.evmInfo?.decimals;
-          const activeStake = yieldPosition.activeStake;
+          const activeStake = yieldPosition.totalStake;
           const comparisonValue = getOutputValuesFromString(condition.value.toString(), decimals || 0);
           checkComparison(condition.comparison, activeStake, comparisonValue);
         } else {
@@ -231,10 +234,12 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
       if (Object.keys(conditions) && Object.keys(conditions).length) {
         Object.keys(conditions).forEach(key => {
           switch (key) {
-            case 'condition_balance':
-              result.push(checkBalanceCondition(conditions.condition_balance));
-            case 'condition_earning':
-              result.push(checkEarningCondition(conditions.condition_earning));
+            case 'condition-balance':
+              result.push(checkBalanceCondition(conditions['condition-balance']));
+              break;
+            case 'condition-earning':
+              result.push(checkEarningCondition(conditions['condition-earning']));
+              break;
           }
         });
 
@@ -307,11 +312,6 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     );
     const result = { ...newData, ...bannerHistoryMap };
     updateBannerHistoryData(result);
-    try {
-      mmkvStore.set('banner-history-map', JSON.stringify(result));
-    } catch (e) {
-      console.log(e);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -328,11 +328,6 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     );
     const result = { ...newData, ...confirmationHistoryMap };
     updateConfirmationHistoryData(result);
-    try {
-      mmkvStore.set('confirmation-history-map', JSON.stringify(result));
-    } catch (e) {
-      console.log(e);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

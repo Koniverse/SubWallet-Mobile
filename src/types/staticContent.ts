@@ -42,8 +42,8 @@ export interface AppContentButton {
 }
 
 export interface AppPopupCondition {
-  condition_balance: { comparison: string; value: number; chain_asset: string }[];
-  condition_earning: { comparison: string; value: number; pool_slug: string }[];
+  'condition-balance': { comparison: string; value: number; chain_asset: string }[];
+  'condition-earning': { comparison: string; value: number; pool_slug: string }[];
 }
 
 export interface PositionParam {
@@ -73,6 +73,7 @@ export interface AppBannerData {
   info: AppBasicInfoData;
   action: AppContentButtonAction;
   conditions: AppPopupCondition;
+  instruction: AppContentButtonInstruction | null;
 }
 
 export interface AppConfirmationData {

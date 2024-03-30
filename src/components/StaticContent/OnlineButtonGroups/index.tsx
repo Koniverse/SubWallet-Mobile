@@ -6,7 +6,7 @@ import { AppContentButton } from 'types/staticContent';
 
 interface Props {
   buttons: AppContentButton[];
-  onPressButton?: (url?: string) => void;
+  onPressButton?: (url?: string, hasInstruction?: boolean) => void;
 }
 
 export const OnlineButtonGroups = ({ buttons, onPressButton }: Props) => {
@@ -18,7 +18,7 @@ export const OnlineButtonGroups = ({ buttons, onPressButton }: Props) => {
           key={button.id}
           block
           type={button.color}
-          onPress={() => onPressButton && onPressButton(button.action?.url)}>
+          onPress={() => onPressButton && onPressButton(button.action?.url, !!button.instruction)}>
           {button.label}
         </Button>
       );
