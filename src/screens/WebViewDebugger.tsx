@@ -19,12 +19,14 @@ import {
   updateConfirmationHistoryData,
   updatePopupHistoryData,
 } from 'stores/base/StaticContent';
+import { useDispatch } from 'react-redux';
 
 const BUNDLE_ENV = env.BUNDLE_ENV;
 export const WebViewDebugger = () => {
   const isDevMode = getDevMode();
   const navigation = useNavigation<RootNavigationProps>();
   const { webState, reload } = useContext(WebRunnerContext);
+  const dispatch = useDispatch();
   const [input, setInput] = useState('');
   const [notification, setNotification] = useState('');
   const themeColors = useSubWalletTheme().colors;
@@ -133,9 +135,9 @@ export const WebViewDebugger = () => {
           <Button
             style={{ marginBottom: 5 }}
             onPress={() => {
-              updatePopupHistoryData({});
-              updateBannerHistoryData({});
-              updateConfirmationHistoryData({});
+              dispatch(updatePopupHistoryData({}));
+              dispatch(updateBannerHistoryData({}));
+              dispatch(updateConfirmationHistoryData({}));
               setNotification("OK, Let's restart app!");
               mmkvStore.set('isOpenIntroductionFirstTime', false);
             }}>

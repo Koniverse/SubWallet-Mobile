@@ -1,4 +1,4 @@
-export type PopupFrequency = 'once' | 'daily' | 'weekly' | 'monthly' | 'every_time'; //TODO: update later
+export type PopupFrequency = 'once' | 'daily' | 'weekly' | 'monthly' | 'every_time' | null; //TODO: update later
 
 export type OnlineContentDataType = 'popup' | 'banner' | 'confirmation'; //TODO: update later
 
@@ -51,39 +51,36 @@ export interface PositionParam {
   value: string;
 }
 
-export interface AppPopupData {
+export interface AppCommonData {
   id: number;
-  priority: number;
   position: string;
+  position_params: PositionParam[];
+  conditions: AppPopupCondition;
+}
+
+export interface AppPopupData extends AppCommonData {
+  priority: number;
   repeat: PopupFrequency;
   content: string;
   media: string;
-  position_params: PositionParam[];
   info: AppBasicInfoData;
   buttons: AppContentButton[];
-  conditions: AppPopupCondition;
+  repeat_every_x_days: number | null;
 }
 
-export interface AppBannerData {
-  id: number;
-  position: string;
+export interface AppBannerData extends AppCommonData {
   priority: number;
   media: string;
-  position_params: PositionParam[];
   info: AppBasicInfoData;
   action: AppContentButtonAction;
-  conditions: AppPopupCondition;
   instruction: AppContentButtonInstruction | null;
 }
 
-export interface AppConfirmationData {
-  id: number;
+export interface AppConfirmationData extends AppCommonData {
   name: string;
-  position: string;
   repeat: PopupFrequency;
   confirm_label: string;
   cancel_label: string;
   content: string;
-  position_params: PositionParam[];
-  conditions: AppPopupCondition;
+  repeat_every_x_days: number | null;
 }

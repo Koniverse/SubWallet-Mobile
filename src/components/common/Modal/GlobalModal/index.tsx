@@ -53,7 +53,7 @@ const GlobalModal: React.FC<Props> = ({
       return instructionDataList.find(
         item =>
           item.group === instructionButton.instruction?.group && item.slug === instructionButton.instruction?.slug,
-      )?.instructions;
+      );
     } else {
       return undefined;
     }
@@ -102,10 +102,10 @@ const GlobalModal: React.FC<Props> = ({
       </SwModal>
       {!!instructionButton && instructionButton.instruction && currentInstructionData && (
         <GlobalInstructionModal
-          title={'Instruction'}
+          title={currentInstructionData.title || 'Instruction'}
           visible={instructionModalVisible}
           instruction={instructionButton.instruction}
-          data={currentInstructionData}
+          data={currentInstructionData.instructions}
           onPressCancelBtn={() => onAccept()}
           onPressConfirmBtn={() => onAccept(instructionButton.action?.url)}
         />

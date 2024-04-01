@@ -23,6 +23,17 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
         link: { color: theme.colorPrimary },
         heading4: { color: theme.colorWhite },
         heading5: { color: theme.colorWhite },
+        hr: {
+          backgroundColor: '#FFF',
+          height: 1,
+        },
+        fence: {
+          borderColor: theme.colorBgSecondary,
+          backgroundColor: theme.colorBgSecondary,
+          padding: 12,
+          borderRadius: 8,
+          fontFamily: 'PlusJakartaSans-Medium',
+        },
         ...markdownStyle,
       }}>
       {content}

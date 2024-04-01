@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { deeplinks } from 'utils/browser';
 import { Linking } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getOutputValuesFromString } from 'screens/Transaction/SendFund/Amount';
 import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
@@ -44,7 +44,12 @@ interface AppOnlineContentContextType {
   updateBannerHistoryMap: (id: string) => void;
   updateConfirmationHistoryMap: (id: string) => void;
   checkPopupExistTime: (info: AppBasicInfoData) => boolean;
-  checkPopupVisibleByFrequency: (repeat: PopupFrequency, lastShowTime: number, showTimes: number) => boolean;
+  checkPopupVisibleByFrequency: (
+    repeat: PopupFrequency,
+    lastShowTime: number,
+    showTimes: number,
+    customizeRepeatTime: number | null,
+  ) => boolean;
   handleButtonPress: (id: string) => (type: OnlineContentDataType, url?: string) => void;
   checkBannerVisible: (showTimes: number) => boolean;
   checkPositionParam: (screen: string, positionParams: { property: string; value: string }[], value: string) => boolean;
@@ -97,9 +102,9 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
   const globalAppModalContext = useContext(GlobalModalContext);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { balanceMap } = useSelector((state: RootState) => state.balance);
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const yieldPositionList = useGroupYieldPosition();
+  const dispatch = useDispatch();
 
   const {
     appPopupData,
@@ -148,18 +153,27 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
 
   //check popup frequency
   const checkPopupVisibleByFrequency = useCallback(
-    (repeat: PopupFrequency, lastShowTime: number, showTimes: number) => {
-      switch (repeat) {
-        case 'once':
-          return showTimes < 1;
-        case 'daily':
+    (repeat: PopupFrequency, lastShowTime: number, showTimes: number, customizeRepeatTime: number | null) => {
+      if (customizeRepeatTime) {
+        return Date.now() - lastShowTime > customizeRepeatTime * 86400000;
+        // return Date.now() - lastShowTime > customizeRepeatTime * 60000; // for testing
+      } else {
+        if (repeat) {
+          switch (repeat) {
+            case 'once':
+              return showTimes < 1;
+            case 'daily':
+              return Date.now() - lastShowTime > TIME_MILLI.DAY;
+            case 'weekly':
+              return Date.now() - lastShowTime > TIME_MILLI.WEEK;
+            case 'monthly':
+              return Date.now() - lastShowTime > TIME_MILLI.MONTH;
+            case 'every_time':
+              return true;
+          }
+        } else {
           return Date.now() - lastShowTime > TIME_MILLI.DAY;
-        case 'weekly':
-          return Date.now() - lastShowTime > TIME_MILLI.WEEK;
-        case 'monthly':
-          return Date.now() - lastShowTime > TIME_MILLI.MONTH;
-        case 'every_time':
-          return true;
+        }
       }
     },
     [],
@@ -172,12 +186,18 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
 
   const checkPositionParam = useCallback(
     (screen: string, positionParams: { property: string; value: string }[], value: string) => {
-      if (screen === 'token_detail') {
-        const allowTokenSlugs = positionParams.filter(item => item.property === 'tokenSlug').map(param => param.value);
-        return allowTokenSlugs.some(slug => value.toLowerCase().includes(slug.toLowerCase()));
-      } else if (screen === 'earning') {
-        const allowPoolSlugs = positionParams.filter(item => item.property === 'poolSlug').map(param => param.value);
-        return allowPoolSlugs.some(slug => value.toLowerCase().includes(slug.toLowerCase()));
+      if (positionParams && positionParams.length) {
+        if (screen === 'token_detail') {
+          const allowTokenSlugs = positionParams
+            .filter(item => item.property === 'tokenSlug')
+            .map(param => param.value);
+          return allowTokenSlugs.some(slug => value.toLowerCase().includes(slug.toLowerCase()));
+        } else if (screen === 'earning') {
+          const allowPoolSlugs = positionParams.filter(item => item.property === 'poolSlug').map(param => param.value);
+          return allowPoolSlugs.some(slug => value.toLowerCase().includes(slug.toLowerCase()));
+        } else {
+          return true;
+        }
       } else {
         return true;
       }
@@ -187,10 +207,9 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
 
   const checkBalanceCondition = useCallback(
     (conditionBalance: { comparison: string; value: number; chain_asset: string }[]) => {
-      if (currentAccount) {
-        const conditionBalanceList = conditionBalance.map(item => {
-          const balanceCurrentAccMap = balanceMap[currentAccount.address];
-          const balanceData = balanceCurrentAccMap[item.chain_asset];
+      const conditionBalanceList = conditionBalance.map(item => {
+        return Object.values(balanceMap).some(info => {
+          const balanceData = info[item.chain_asset];
           const decimals = _getAssetDecimals(assetRegistry[item.chain_asset]);
           const freeBalance = balanceData?.free;
           const lockedBalance = balanceData?.locked;
@@ -198,13 +217,11 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
           const comparisonValue = getOutputValuesFromString(item.value.toString(), decimals);
           return checkComparison(item.comparison, value, comparisonValue);
         });
+      });
 
-        return conditionBalanceList.some(item => item);
-      } else {
-        return false;
-      }
+      return conditionBalanceList.some(item => item);
     },
-    [assetRegistry, balanceMap, checkComparison, currentAccount],
+    [assetRegistry, balanceMap, checkComparison],
   );
 
   const checkEarningCondition = useCallback(
@@ -261,7 +278,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
           })
           .sort((a, b) => a.priority - b.priority);
 
-        updateAppPopupData(filteredData);
+        dispatch(updateAppPopupData(filteredData));
       } else if (type === 'banner') {
         // get available banner list
         const activeList = (data as AppBannerData[]).filter(({ info }) => checkPopupExistTime(info));
@@ -270,15 +287,15 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
             return info.platforms.includes('mobile') && checkPopupCondition(conditions);
           })
           .sort((a, b) => a.priority - b.priority);
-        updateAppBannerData(filteredData);
+        dispatch(updateAppBannerData(filteredData));
       } else if (type === 'confirmation') {
         const filteredData = (data as AppConfirmationData[]).filter(({ conditions }) => {
           return checkPopupCondition(conditions);
         });
-        updateAppConfirmationData(filteredData);
+        dispatch(updateAppConfirmationData(filteredData));
       }
     },
-    [checkPopupCondition, checkPopupExistTime],
+    [checkPopupCondition, checkPopupExistTime, dispatch],
   );
 
   const initPopupHistoryMap = useCallback((data: AppPopupData[]) => {
@@ -293,7 +310,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
       {},
     );
     const result = { ...newData, ...popupHistoryMap };
-    updatePopupHistoryData(result);
+    dispatch(updatePopupHistoryData(result));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -309,7 +326,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
       {},
     );
     const result = { ...newData, ...bannerHistoryMap };
-    updateBannerHistoryData(result);
+    dispatch(updateBannerHistoryData(result));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -325,38 +342,44 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
       {},
     );
     const result = { ...newData, ...confirmationHistoryMap };
-    updateConfirmationHistoryData(result);
+    dispatch(updateConfirmationHistoryData(result));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updatePopupHistoryMap = useCallback(
     (id: string) => {
-      updatePopupHistoryData({
-        ...popupHistoryMap,
-        [id]: { lastShowTime: Date.now(), showTimes: popupHistoryMap[id].showTimes + 1 },
-      });
+      dispatch(
+        updatePopupHistoryData({
+          ...popupHistoryMap,
+          [id]: { lastShowTime: Date.now(), showTimes: popupHistoryMap[id].showTimes + 1 },
+        }),
+      );
     },
-    [popupHistoryMap],
+    [dispatch, popupHistoryMap],
   );
 
   const updateBannerHistoryMap = useCallback(
     (id: string) => {
-      updateBannerHistoryData({
-        ...bannerHistoryMap,
-        [id]: { lastShowTime: Date.now(), showTimes: bannerHistoryMap[id].showTimes + 1 },
-      });
+      dispatch(
+        updateBannerHistoryData({
+          ...bannerHistoryMap,
+          [id]: { lastShowTime: Date.now(), showTimes: bannerHistoryMap[id].showTimes + 1 },
+        }),
+      );
     },
-    [bannerHistoryMap],
+    [bannerHistoryMap, dispatch],
   );
 
   const updateConfirmationHistoryMap = useCallback(
     (id: string) => {
-      updateConfirmationHistoryData({
-        ...confirmationHistoryMap,
-        [id]: { lastShowTime: Date.now(), showTimes: confirmationHistoryMap[id].showTimes + 1 },
-      });
+      dispatch(
+        updateConfirmationHistoryData({
+          ...confirmationHistoryMap,
+          [id]: { lastShowTime: Date.now(), showTimes: confirmationHistoryMap[id].showTimes + 1 },
+        }),
+      );
     },
-    [confirmationHistoryMap],
+    [confirmationHistoryMap, dispatch],
   );
 
   useEffect(() => {
@@ -455,7 +478,12 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         const filteredPopupList = currentPopupList.filter(item => {
           const popupHistory = popupHistoryMap[`${item.position}-${item.id}`];
           if (popupHistory) {
-            return checkPopupVisibleByFrequency(item.repeat, popupHistory.lastShowTime, popupHistory.showTimes);
+            return checkPopupVisibleByFrequency(
+              item.repeat,
+              popupHistory.lastShowTime,
+              popupHistory.showTimes,
+              item.repeat_every_x_days,
+            );
           } else {
             return false;
           }
