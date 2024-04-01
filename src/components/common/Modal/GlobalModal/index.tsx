@@ -103,6 +103,7 @@ const GlobalModal: React.FC<Props> = ({
       {!!instructionButton && instructionButton.instruction && currentInstructionData && (
         <GlobalInstructionModal
           title={currentInstructionData.title || 'Instruction'}
+          media={currentInstructionData.media || ''}
           visible={instructionModalVisible}
           instruction={instructionButton.instruction}
           data={currentInstructionData.instructions}

@@ -51,7 +51,7 @@ const BannerSlider: React.FC<BannerSliderProps> = ({ data, renderItem, onCloseBa
         autoPlayInterval={3000}
         renderItem={renderItem}
       />
-      <View style={stylesheet.indicator}>
+      <View style={[stylesheet.indicator, { width: 10 * data.length }]}>
         {data.map((item, index) => (
           <PaginationItem animValue={progressValue} index={index} key={index} />
         ))}

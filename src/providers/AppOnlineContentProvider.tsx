@@ -156,7 +156,6 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     (repeat: PopupFrequency, lastShowTime: number, showTimes: number, customizeRepeatTime: number | null) => {
       if (customizeRepeatTime) {
         return Date.now() - lastShowTime > customizeRepeatTime * 86400000;
-        // return Date.now() - lastShowTime > customizeRepeatTime * 60000; // for testing
       } else {
         if (repeat) {
           switch (repeat) {

@@ -10,10 +10,12 @@ import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { BoxProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { AppContentButtonInstruction } from 'types/staticContent';
+import FastImage from 'react-native-fast-image';
 
 interface Props {
   visible: boolean;
   title: string;
+  media?: string;
   data: BoxProps[];
   instruction: AppContentButtonInstruction;
   onPressCancelBtn: () => void;
@@ -25,6 +27,7 @@ export const GlobalInstructionModal = ({
   instruction,
   title,
   data,
+  media,
   onPressCancelBtn,
   onPressConfirmBtn,
 }: Props) => {
@@ -77,6 +80,13 @@ export const GlobalInstructionModal = ({
             }}>
             {title}
           </Typography.Text>
+          {media && (
+            <FastImage
+              style={{ height: 120, borderRadius: theme.borderRadiusLG }}
+              resizeMode="cover"
+              source={{ uri: media }}
+            />
+          )}
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: theme.sizeSM }}>
             {data.map((_props, index) => {
               return (

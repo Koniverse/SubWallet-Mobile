@@ -50,6 +50,7 @@ export interface StaticDataProps {
   locale?: string;
   slug: YieldPoolType | 'DAPP_STAKING' | 'UNSTAKE_INFO';
   title: string | null;
+  media: string | null;
 }
 
 const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {

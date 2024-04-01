@@ -76,6 +76,7 @@ const Banner = ({ data, dismissBanner, onPressBanner, instructionDataList, extra
       {data.instruction && currentInstructionData && (
         <GlobalInstructionModal
           title={currentInstructionData.title || 'Instruction'}
+          media={currentInstructionData.media || ''}
           visible={instructionModalVisible}
           instruction={data.instruction}
           data={currentInstructionData.instructions}

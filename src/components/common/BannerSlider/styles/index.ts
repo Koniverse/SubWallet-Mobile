@@ -12,7 +12,6 @@ const Styles = () => {
     indicator: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      width: '30%',
       alignSelf: 'flex-end',
       position: 'absolute',
       bottom: 0,
