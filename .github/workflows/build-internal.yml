@@ -8,7 +8,7 @@ jobs:
   # iOS build workflow -------------------------------------------------
   build-ios:
     name: iOS builds
-    runs-on: mac-worker
+    runs-on: macos-13
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
       GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
@@ -45,16 +45,36 @@ jobs:
             echo "BUNDLE_ENV=STAGING" >> .env.production
           fi
 
-    - name: Cache Dependencies
-      uses: actions/cache@v2
+    - name: Use Node.js 18
+      uses: actions/setup-node@v4
       with:
-        path: ~/.cache/yarn
+        node-version: 18
+        cache: 'yarn'
+
+    - name: Cache Yarn dependencies
+      uses: actions/cache@v3
+      id: yarn-cache # optional, but allows referencing the step
+      with:
+        path: |
+          .yarn/cache
+          **/node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
 
     - name: Install dependencies
       run: yarn install --immutable | grep -v 'YN0013'
+
+    - name: Restore Pods Cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ios/Pods
+          ~/Library/Caches/CocoaPods
+          ~/.cocoapods
+        key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
 
     - name: Install Pods
       run: cd ios && pod update hermes-engine --no-repo-update && cd ..
@@ -72,12 +92,6 @@ jobs:
         team-id: ${{ secrets.APPLE_TEAM_ID }}
         workspace-path: ios/SubWalletMobile.xcworkspace
         scheme: SubWalletMobile-Production
-
-    - name: Upload iOS to Next cloud
-      id: upload-ios
-      run: |
-        FILE_URL=$(node ./scripts/upload-ios.mjs)
-        echo "::set-output name=fileUrl::${FILE_URL}"
 
     - name: Upload iOS to Diawi
       id: upload-diawi-ios
@@ -104,7 +118,7 @@ jobs:
   # Android build workflow -------------------------------------------------
   build-android:
     name: Android builds
-    runs-on: android-worker
+    runs-on: macos-13
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
       GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
@@ -138,13 +152,40 @@ jobs:
             echo "BUNDLE_ENV=STAGING" >> .env.production
           fi
 
-    - name: Cache Dependencies
-      uses: actions/cache@v2
+    - name: Use Node.js 18
+      uses: actions/setup-node@v4
       with:
-        path: ~/.cache/yarn
+        node-version: 18
+        cache: 'yarn'
+
+    - name: Cache Yarn dependencies
+      uses: actions/cache@v3
+      id: yarn-cache # optional, but allows referencing the step
+      with:
+        path: |
+          .yarn/cache
+          **/node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
+
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '11'
+
+    - name: Cache Gradle Wrapper
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+    - name: Cache Gradle Dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-caches-
 
     - name: Install dependencies
       run: yarn install --immutable | grep -v 'YN0013'
@@ -157,12 +198,6 @@ jobs:
     - name: Generate App APK
       run: |
         cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
-
-    - name: Upload APK to Next cloud
-      id: upload-android
-      run: |
-        FILE_URL=$(node ./scripts/upload-android.mjs)
-        echo "::set-output name=fileUrl::${FILE_URL}"
 
     - name: Upload Android to Diawi
       id: upload-diawi-android
@@ -182,6 +217,5 @@ jobs:
         title: ${{ github.workflow }}
         description: |
           Android: The Deployment has been completed.
-          URL: ${{ steps.upload-android.outputs.fileUrl }}
           Diawi: ${{ steps.upload-diawi-android.outputs.url }}
           Diawi QR: ${{ steps.upload-diawi-android.outputs.qrcode }}
