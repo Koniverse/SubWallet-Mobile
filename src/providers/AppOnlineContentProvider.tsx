@@ -41,7 +41,7 @@ interface AppOnlineContentContextType {
   bannerHistoryMap: Record<string, PopupHistoryData>;
   confirmationHistoryMap: Record<string, PopupHistoryData>;
   updatePopupHistoryMap: (id: string) => void;
-  updateBannerHistoryMap: (id: string) => void;
+  updateBannerHistoryMap: (ids: string[]) => void;
   updateConfirmationHistoryMap: (id: string) => void;
   checkPopupExistTime: (info: AppBasicInfoData) => boolean;
   checkPopupVisibleByFrequency: (
@@ -233,7 +233,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
           const decimals = chainInfo?.substrateInfo?.decimals || chainInfo?.evmInfo?.decimals;
           const activeStake = yieldPosition.totalStake;
           const comparisonValue = getOutputValuesFromString(condition.value.toString(), decimals || 0);
-          checkComparison(condition.comparison, activeStake, comparisonValue);
+          return checkComparison(condition.comparison, activeStake, comparisonValue);
         } else {
           return false;
         }
@@ -273,8 +273,8 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         // get available popup list
         const activeList = (data as AppPopupData[]).filter(({ info }) => checkPopupExistTime(info));
         const filteredData = activeList
-          .filter(({ info, conditions }) => {
-            return info.platforms.includes('mobile') && checkPopupCondition(conditions);
+          .filter(({ info }) => {
+            return info.platforms.includes('mobile');
           })
           .sort((a, b) => a.priority - b.priority);
 
@@ -283,19 +283,17 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
         // get available banner list
         const activeList = (data as AppBannerData[]).filter(({ info }) => checkPopupExistTime(info));
         const filteredData = activeList
-          .filter(({ info, conditions }) => {
-            return info.platforms.includes('mobile') && checkPopupCondition(conditions);
+          .filter(({ info }) => {
+            return info.platforms.includes('mobile');
           })
           .sort((a, b) => a.priority - b.priority);
         dispatch(updateAppBannerData(filteredData));
       } else if (type === 'confirmation') {
-        const filteredData = (data as AppConfirmationData[]).filter(({ conditions }) => {
-          return checkPopupCondition(conditions);
-        });
+        const filteredData = data as AppConfirmationData[];
         dispatch(updateAppConfirmationData(filteredData));
       }
     },
-    [checkPopupCondition, checkPopupExistTime, dispatch],
+    [checkPopupExistTime, dispatch],
   );
 
   const initPopupHistoryMap = useCallback((data: AppPopupData[]) => {
@@ -359,11 +357,16 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
   );
 
   const updateBannerHistoryMap = useCallback(
-    (id: string) => {
+    (ids: string[]) => {
+      const result: Record<string, PopupHistoryData> = {};
+      for (const key of ids) {
+        result[key] = { lastShowTime: Date.now(), showTimes: bannerHistoryMap[key].showTimes + 1 };
+      }
+
       dispatch(
         updateBannerHistoryData({
           ...bannerHistoryMap,
-          [id]: { lastShowTime: Date.now(), showTimes: bannerHistoryMap[id].showTimes + 1 },
+          ...result,
         }),
       );
     },
@@ -404,45 +407,51 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
 
   const appPopupMap = useMemo(() => {
     if (appPopupData) {
-      const result: Record<string, AppPopupData[]> = appPopupData.reduce((r, a) => {
-        r[a.position] = r[a.position] || [];
-        r[a.position].push(a);
-        return r;
-      }, Object.create(null));
+      const result: Record<string, AppPopupData[]> = appPopupData
+        .filter(item => checkPopupCondition(item.conditions))
+        .reduce((r, a) => {
+          r[a.position] = r[a.position] || [];
+          r[a.position].push(a);
+          return r;
+        }, Object.create(null));
 
       return result;
     } else {
       return {};
     }
-  }, [appPopupData]);
+  }, [appPopupData, checkPopupCondition]);
 
   const appBannerMap = useMemo(() => {
     if (appBannerData) {
-      const result: Record<string, AppBannerData[]> = appBannerData.reduce((r, a) => {
-        r[a.position] = r[a.position] || [];
-        r[a.position].push(a);
-        return r;
-      }, Object.create(null));
+      const result: Record<string, AppBannerData[]> = appBannerData
+        .filter(item => checkPopupCondition(item.conditions))
+        .reduce((r, a) => {
+          r[a.position] = r[a.position] || [];
+          r[a.position].push(a);
+          return r;
+        }, Object.create(null));
 
       return result;
     } else {
       return {};
     }
-  }, [appBannerData]);
+  }, [appBannerData, checkPopupCondition]);
 
   const appConfirmationMap = useMemo(() => {
     if (appConfirmationData) {
-      const result: Record<string, AppConfirmationData[]> = appConfirmationData.reduce((r, a) => {
-        r[a.position] = r[a.position] || [];
-        r[a.position].push(a);
-        return r;
-      }, Object.create(null));
+      const result: Record<string, AppConfirmationData[]> = appConfirmationData
+        .filter(item => checkPopupCondition(item.conditions))
+        .reduce((r, a) => {
+          r[a.position] = r[a.position] || [];
+          r[a.position].push(a);
+          return r;
+        }, Object.create(null));
 
       return result;
     } else {
       return {};
     }
-  }, [appConfirmationData]);
+  }, [appConfirmationData, checkPopupCondition]);
 
   const handleButtonPress = useCallback(
     (id: string) => {
