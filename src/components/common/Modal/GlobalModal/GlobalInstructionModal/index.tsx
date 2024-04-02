@@ -87,7 +87,10 @@ export const GlobalInstructionModal = ({
               source={{ uri: media }}
             />
           )}
-          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: theme.sizeSM }}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ gap: theme.sizeSM }}
+            showsVerticalScrollIndicator={false}>
             {data.map((_props, index) => {
               return (
                 <AlertBoxBase
