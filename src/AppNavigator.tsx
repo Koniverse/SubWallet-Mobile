@@ -177,6 +177,13 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
                     symbol: (symbol: string) => symbol,
                   },
                 },
+                EarningPreviewPools: {
+                  path: 'earning-preview-pools',
+                  stringify: {
+                    group: (group: string) => group,
+                    symbol: (symbol: string) => symbol,
+                  },
+                },
                 EarningPositionDetail: {
                   path: 'earning-position-detail',
                   stringify: {

@@ -27,6 +27,7 @@ import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/
 import { GettingDataModal } from 'components/Modal/GettingDataModal';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { mmkvStore } from 'utils/storage';
+import { _ChainInfo } from '@subwallet/chain-list/types';
 
 interface EarningPreviewScreen {
   poolInfoMap: Record<string, YieldPoolInfo>;
@@ -65,8 +66,12 @@ const getPoolInfoByChainAndType = (
   return Object.values(poolInfoMap).find(item => item.chain === chain && item.type === type);
 };
 
-const getStartEarningUrl = (slug: string, target: string) => {
-  return `subwallet://drawer/transaction-action/earning?slug=${slug}&target=${target}&redirectFromPreview=true`;
+export const getStartEarningUrl = (slug: string, target?: string) => {
+  if (target) {
+    return `subwallet://drawer/transaction-action/earning?slug=${slug}&target=${target}&redirectFromPreview=true`;
+  } else {
+    return `subwallet://drawer/transaction-action/earning?slug=${slug}&redirectFromPreview=true`;
+  }
 };
 
 function searchFunction(items: YieldGroupInfo[], searchText: string) {
@@ -133,21 +138,17 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
     return currentAccount?.address ? (isAccountAll(currentAccount.address) ? '' : currentAccount.address) : '';
   }, [currentAccount?.address, isNoAccount]);
 
-  const checkIsAnyAccountValid = useCallback(
-    (_accounts: AccountJson[]) => {
-      const chainInfo = chainInfoMap[selectedChain];
-      let accountList: AccountJson[] = [];
+  const checkIsAnyAccountValid = useCallback((_accounts: AccountJson[], chainInfo: _ChainInfo) => {
+    let accountList: AccountJson[] = [];
 
-      if (!chainInfo) {
-        return false;
-      }
+    if (!chainInfo) {
+      return false;
+    }
 
-      accountList = _accounts.filter(getFilteredAccount(chainInfo));
+    accountList = _accounts.filter(getFilteredAccount(chainInfo));
 
-      return !!accountList.length;
-    },
-    [chainInfoMap, selectedChain],
-  );
+    return !!accountList.length;
+  }, []);
 
   const onCloseModal = useCallback(() => {
     setDefaultTarget('');
@@ -159,8 +160,8 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
         mmkvStore.set('storedDeeplink', getStartEarningUrl(slug || defaultSlug, defaultTarget));
         Linking.openURL(getStartEarningUrl(slug || defaultSlug, defaultTarget));
       } else {
-        const chainInfo = chainInfoMap[selectedChain];
-        const isAnyAccountValid = checkIsAnyAccountValid(accounts);
+        const chainInfo = chainInfoMap[chain];
+        const isAnyAccountValid = checkIsAnyAccountValid(accounts, chainInfo);
 
         if (!isAnyAccountValid) {
           const accountType = isContainOnlySubstrate ? EVM_ACCOUNT_TYPE : SUBSTRATE_ACCOUNT_TYPE;
@@ -203,7 +204,6 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
       isContainOnlySubstrate,
       isNoAccount,
       navigation,
-      selectedChain,
     ],
   );
 
@@ -244,7 +244,9 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
         }
 
         if (item.poolListLength > 1) {
-          Linking.openURL(`subwallet://home/main/earning/earning-pool-list?group=${item.group}&symbol=${item.symbol}`);
+          Linking.openURL(
+            `subwallet://home/main/earning/earning-preview-pools?group=${item.group}&symbol=${item.symbol}`,
+          );
         } else if (item.poolListLength === 1) {
           const poolInfo = poolInfoMap[item.poolSlugs[0]];
 
