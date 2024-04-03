@@ -69,6 +69,21 @@ const getStartEarningUrl = (slug: string, target: string) => {
   return `subwallet://drawer/transaction-action/earning?slug=${slug}&target=${target}&redirectFromPreview=true`;
 };
 
+function searchFunction(items: YieldGroupInfo[], searchText: string) {
+  if (!searchText) {
+    return items;
+  }
+
+  const searchTextLowerCase = searchText.toLowerCase();
+
+  return items.filter(item => {
+    return (
+      item.name?.toLowerCase().includes(searchTextLowerCase) ||
+      (item.symbol ? item.symbol.toLowerCase().includes(searchTextLowerCase) : false)
+    );
+  });
+}
+
 const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam }: EarningPreviewScreen) => {
   const theme = useSubWalletTheme().swThemes;
   const data = usePreviewYieldGroupInfo(poolInfoMap);
@@ -141,6 +156,7 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
   const navigateToEarnTransaction = useCallback(
     (slug: string, chain: string) => {
       if (isNoAccount) {
+        mmkvStore.set('storedDeeplink', getStartEarningUrl(slug || defaultSlug, defaultTarget));
         Linking.openURL(getStartEarningUrl(slug || defaultSlug, defaultTarget));
       } else {
         const chainInfo = chainInfoMap[selectedChain];
@@ -358,6 +374,8 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
             onPressBack={() => navigation.navigate('Home')}
             style={{ flex: 1, paddingBottom: theme.padding }}
             items={items}
+            autoFocus={false}
+            searchFunction={searchFunction}
             renderListEmptyComponent={() => <></>}
             title={'Earning preview'}
             renderItem={renderItem}
@@ -397,7 +415,7 @@ export const EarningPreview = (props: EarningPreviewProps) => {
 
   const dataContext = useContext(DataContext);
   const [poolInfoMap, setPoolInfoMap] = useState<Record<string, YieldPoolInfo>>({});
-  const { isLocked } = useSelector((state: RootState) => state.accountState);
+  const { isLocked, isNoAccount } = useSelector((state: RootState) => state.accountState);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -437,7 +455,15 @@ export const EarningPreview = (props: EarningPreviewProps) => {
     };
   }, [dataContext, isReady, poolInfoMap]);
 
-  if (!isReady || isLocked) {
+  const isLoading = useMemo(() => {
+    if (isNoAccount) {
+      return !isReady;
+    } else {
+      return !isReady || isLocked;
+    }
+  }, [isLocked, isNoAccount, isReady]);
+
+  if (isLoading) {
     return <LoadingScreen />;
   }
 

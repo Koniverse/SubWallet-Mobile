@@ -957,20 +957,20 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             {
               text:
                 poolType === YieldPoolType.NATIVE_STAKING
-                  ? 'Keep current validators'
-                  : poolType === YieldPoolType.NOMINATION_POOL
-                  ? 'Explore Earning options'
-                  : '',
-              onPress: onPressCancel,
-            },
-            {
-              text:
-                poolType === YieldPoolType.NATIVE_STAKING
                   ? 'Change validators'
                   : poolType === YieldPoolType.NOMINATION_POOL
                   ? 'Use nomination pool'
                   : '',
               onPress: onPressContinue,
+            },
+            {
+              text:
+                poolType === YieldPoolType.NATIVE_STAKING
+                  ? 'Keep current validators'
+                  : poolType === YieldPoolType.NOMINATION_POOL
+                  ? 'Explore Earning options'
+                  : '',
+              onPress: onPressCancel,
             },
           ]);
         isReadyToShowAlertRef.current = false;
@@ -1045,6 +1045,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                     accountSelectorRef={accountSelectorRef}
                     disabled={submitLoading || !isAllAccount}
                     onSelectItem={item => {
+                      setUseParamValidator(false);
                       setFrom(item.address);
                       fromRef.current = item.address;
                       accountSelectorRef && accountSelectorRef.current?.onCloseModal();
