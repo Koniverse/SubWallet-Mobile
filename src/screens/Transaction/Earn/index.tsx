@@ -1,5 +1,9 @@
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { _getAssetDecimals, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
+import {
+  _getAssetDecimals,
+  _getAssetSymbol,
+  _isChainEvmCompatible,
+} from '@subwallet/extension-base/services/chain-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import {
   EarningStatus,
@@ -69,6 +73,7 @@ import { useGetBalance } from 'hooks/balance';
 import reformatAddress from 'utils/index';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -204,6 +209,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isShowAlert, setIsShowAlert] = useState<boolean>(false);
   const [useParamValidator, setUseParamValidator] = useState<boolean>(redirectFromPreviewRef.current);
+  const [checkValidAccountLoading, setCheckValidAccountLoading] = useState<boolean>(redirectFromPreviewRef.current);
 
   const isDisabledButton = useMemo(
     () =>
@@ -854,6 +860,23 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [chain, chainState?.active, forceFetchValidator, currentFrom, slug]);
 
   useEffect(() => {
+    if (redirectFromPreviewRef.current && !accountSelectorList.length && checkValidAccountLoading) {
+      const isChainEvm = chainInfoMap[poolChain] && _isChainEvmCompatible(chainInfoMap[poolChain]);
+      const accountType = isChainEvm ? EVM_ACCOUNT_TYPE : SUBSTRATE_ACCOUNT_TYPE;
+      const chainName = chainInfoMap[poolChain]?.name;
+      navigation.navigate('Home', {
+        screen: 'Main',
+        params: {
+          screen: 'Earning',
+          params: { screen: 'EarningList', params: { step: 1, noAccountValid: true, accountType, chain: chainName } },
+        },
+      });
+    } else {
+      setCheckValidAccountLoading(false);
+    }
+  }, [accountSelectorList.length, chainInfoMap, checkValidAccountLoading, navigation, poolChain]);
+
+  useEffect(() => {
     if (!compound || redirectFromPreviewRef.current) {
       isPressInfoBtnRef.current = false;
       setTimeout(() => setDetailModalVisible(true), 300);
@@ -1014,7 +1037,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           onPressBack={onBack}
           onPressRightHeaderBtn={handleOpenDetailModal}>
           <>
-            {!isLoading ? (
+            {(isLoading || checkValidAccountLoading) && (
+              <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                <ActivityIndicator size={32} />
+              </View>
+            )}
+
+            {!isLoading && !checkValidAccountLoading && (
               <>
                 <ScrollView
                   showsVerticalScrollIndicator={false}
@@ -1156,35 +1185,31 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                     {i18n.buttonTitles.stake}
                   </Button>
                 </View>
+
+                <EarningPoolDetailModal
+                  modalVisible={detailModalVisible}
+                  slug={slug}
+                  setVisible={setDetailModalVisible}
+                  onStakeMore={() => {
+                    setDetailModalVisible(false);
+                    setIsShowAlert(true);
+                    setFocus('value');
+                  }}
+                  isShowStakeMoreBtn={!isPressInfoBtnRef.current}
+                  onPressBack={() => {
+                    if (!slug || redirectFromPreviewRef.current) {
+                      navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+                      });
+                    } else {
+                      navigation.goBack();
+                    }
+                  }}
+                />
               </>
-            ) : (
-              <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-                <ActivityIndicator size={32} />
-              </View>
             )}
           </>
-
-          <EarningPoolDetailModal
-            modalVisible={detailModalVisible}
-            slug={slug}
-            setVisible={setDetailModalVisible}
-            onStakeMore={() => {
-              setDetailModalVisible(false);
-              setIsShowAlert(true);
-              setFocus('value');
-            }}
-            isShowStakeMoreBtn={!isPressInfoBtnRef.current}
-            onPressBack={() => {
-              if (!slug || redirectFromPreviewRef.current) {
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
-                });
-              } else {
-                navigation.goBack();
-              }
-            }}
-          />
         </TransactionLayout>
       ) : (
         <TransactionDone transactionDoneInfo={transactionDoneInfo} />
