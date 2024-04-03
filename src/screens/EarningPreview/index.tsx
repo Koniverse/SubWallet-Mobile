@@ -25,8 +25,8 @@ import { useHandleChainConnection } from 'hooks/earning/useHandleChainConnection
 import { isRelatedToAstar } from 'utils/earning';
 import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
 import { GettingDataModal } from 'components/Modal/GettingDataModal';
-import { KeypairType } from '@polkadot/util-crypto/types';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { mmkvStore } from 'utils/storage';
 
 interface EarningPreviewScreen {
   poolInfoMap: Record<string, YieldPoolInfo>;
@@ -69,10 +69,6 @@ const getStartEarningUrl = (slug: string, target: string) => {
   return `subwallet://drawer/transaction-action/earning?slug=${slug}&target=${target}&redirectFromPreview=true`;
 };
 
-const getEarningListUrl = (chain: string, accountType: KeypairType) => {
-  return `subwallet://home/main/earning/earning-list?chain=${chain}&noAccountValid=true&accountType=${accountType}`;
-};
-
 const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam }: EarningPreviewScreen) => {
   const theme = useSubWalletTheme().swThemes;
   const data = usePreviewYieldGroupInfo(poolInfoMap);
@@ -89,7 +85,7 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
   const [defaultTarget, setDefaultTarget] = useState(targetParam);
   const [defaultSlug, setDefaultSlug] = useState('');
   const navigation = useNavigation<RootNavigationProps>();
-
+  const isFocused = useIsFocused();
   const getAltChain = useCallback(
     (poolInfo: YieldPoolInfo) => {
       if (isLiquidPool(poolInfo) || isLendingPool(poolInfo)) {
@@ -152,7 +148,14 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
 
         if (!isAnyAccountValid) {
           const accountType = isContainOnlySubstrate ? EVM_ACCOUNT_TYPE : SUBSTRATE_ACCOUNT_TYPE;
-          Linking.openURL(getEarningListUrl(chain, accountType));
+          mmkvStore.set('storedDeeplink', getStartEarningUrl(slug || defaultSlug, defaultTarget));
+          navigation.navigate('Home', {
+            screen: 'Main',
+            params: {
+              screen: 'Earning',
+              params: { screen: 'EarningList', params: { step: 1, noAccountValid: true, accountType, chain } },
+            },
+          });
         } else {
           const accountList = accounts.filter(getFilteredAccount(chainInfo));
 
@@ -183,6 +186,7 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
       defaultTarget,
       isContainOnlySubstrate,
       isNoAccount,
+      navigation,
       selectedChain,
     ],
   );
@@ -254,7 +258,7 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
   useEffect(() => {
     let isSync = true;
 
-    if (chainParam && typeParam) {
+    if (chainParam && typeParam && isFocused) {
       const poolInfo = getPoolInfoByChainAndType(poolInfoMap, chainParam, typeParam);
 
       if (poolInfo) {
@@ -318,7 +322,7 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
     return () => {
       isSync = false;
     };
-  }, [chainParam, poolInfoMap, targetParam, transactionFromValue, typeParam]);
+  }, [chainParam, isFocused, poolInfoMap, targetParam, transactionFromValue, typeParam]);
 
   useEffect(() => {
     if (isAlertWarningValidator) {
@@ -393,6 +397,7 @@ export const EarningPreview = (props: EarningPreviewProps) => {
 
   const dataContext = useContext(DataContext);
   const [poolInfoMap, setPoolInfoMap] = useState<Record<string, YieldPoolInfo>>({});
+  const { isLocked } = useSelector((state: RootState) => state.accountState);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -432,7 +437,7 @@ export const EarningPreview = (props: EarningPreviewProps) => {
     };
   }, [dataContext, isReady, poolInfoMap]);
 
-  if (!isReady) {
+  if (!isReady || isLocked) {
     return <LoadingScreen />;
   }
 

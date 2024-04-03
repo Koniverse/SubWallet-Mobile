@@ -279,7 +279,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const data = useGroupYieldPosition();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
-  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount } = useSelector(
+  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount, isNoAccount } = useSelector(
     (state: RootState) => state.accountState,
   );
   const { isLocked: isLogin } = useAppLock();
@@ -474,8 +474,15 @@ const AppNavigator = ({ isAppReady }: Props) => {
         }
 
         if (parseUrl.hostname === 'earning-preview') {
-          listener(url);
+          if (isNoAccount) {
+            listener(url);
+          } else {
+            if (isLockedRef.current || isPreventDeepLinkRef.current) {
+              return;
+            }
 
+            listener(url);
+          }
           return;
         }
 

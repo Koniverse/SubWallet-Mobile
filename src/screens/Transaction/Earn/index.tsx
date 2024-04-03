@@ -96,7 +96,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const { poolInfoMap, poolTargetsMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const { priceMap } = useSelector((state: RootState) => state.price);
-  const slugRef = useRef<string>(slug);
   const defaultTarget = useRef<string | undefined>(target);
   const redirectFromPreviewRef = useRef(!!redirectFromPreview);
   const autoCheckCompoundRef = useRef<boolean>(true);
@@ -855,7 +854,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [chain, chainState?.active, forceFetchValidator, currentFrom, slug]);
 
   useEffect(() => {
-    if (!compound || !slugRef.current) {
+    if (!compound || redirectFromPreviewRef.current) {
       isPressInfoBtnRef.current = false;
       setTimeout(() => setDetailModalVisible(true), 300);
     }
@@ -1175,7 +1174,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             }}
             isShowStakeMoreBtn={!isPressInfoBtnRef.current}
             onPressBack={() => {
-              if (!slug) {
+              if (!slug || redirectFromPreviewRef.current) {
                 navigation.reset({
                   index: 0,
                   routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
