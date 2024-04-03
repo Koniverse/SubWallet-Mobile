@@ -17,6 +17,7 @@ export interface NumberInfoItem extends Omit<InfoItemBase, 'valueColorSchema'> {
   decimals?: number;
   valueColorSchema?: SchemeColor | 'even-odd';
   size?: TextSizeProps;
+  spaceBetween?: boolean;
 }
 
 const NumberItem: React.FC<NumberInfoItem> = ({
@@ -28,6 +29,7 @@ const NumberItem: React.FC<NumberInfoItem> = ({
   valueColorSchema,
   loading,
   size,
+  spaceBetween = true,
 }: NumberInfoItem) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = MetaInfoStyles(theme);
@@ -58,13 +60,17 @@ const NumberItem: React.FC<NumberInfoItem> = ({
       return 20;
     }
 
+    if (size === 'xl') {
+      return 24;
+    }
+
     return 14;
   }, [size]);
 
   return (
     <View style={_style.row}>
       <View style={[_style.col]}>{renderColContent(label, { ..._style.label, ...labelGeneralStyle }, size)}</View>
-      <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
+      <View style={[_style.col, spaceBetween && _style['col.grow'], _style['col.to-right']]}>
         {loading ? (
           <ActivityIndicator size={20} />
         ) : (

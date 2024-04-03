@@ -163,7 +163,7 @@ export interface AppSettings extends UiSettings, Omit<SettingsStruct, 'camera' |
 
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {
   currentAccount: AccountJson | null;
-
+  isNoAccount: boolean;
   isAllAccount: boolean;
 }
 

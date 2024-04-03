@@ -93,7 +93,7 @@ import {
   _getSubstrateGenesisHash,
   _isChainEvmCompatible,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { mmkvStore } from 'utils/storage';
+import { EarningPreview } from 'screens/EarningPreview';
 
 interface Props {
   isAppReady: boolean;
@@ -169,6 +169,13 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
                     noAccountValid: (noAccountValid: boolean) => noAccountValid,
                   },
                 },
+                EarningPoolList: {
+                  path: 'earning-pool-list',
+                  stringify: {
+                    group: (group: string) => group,
+                    symbol: (symbol: string) => symbol,
+                  },
+                },
                 EarningPositionDetail: {
                   path: 'earning-position-detail',
                   stringify: {
@@ -193,15 +200,21 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
             Earning: {
               path: 'earning',
               stringify: {
-                chain: (chain: string) => chain,
-                type: (type: string) => type,
-                isNoAccount: (isNoAccount: boolean) => isNoAccount,
+                slug: (slug: string) => slug,
                 target: (target: string) => target,
                 redirectFromPreview: (redirectFromPreview: boolean) => redirectFromPreview,
               },
             },
           },
         },
+      },
+    },
+    EarningPreview: {
+      path: 'earning-preview',
+      stringify: {
+        chain: (chain: string) => chain,
+        type: (type: string) => type,
+        target: (target: string) => target,
       },
     },
   },
@@ -265,10 +278,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const data = useGroupYieldPosition();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
-  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount, currentAccount } = useSelector(
+  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount } = useSelector(
     (state: RootState) => state.accountState,
   );
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { isLocked: isLogin } = useAppLock();
   const [isNavigationReady, setNavigationReady] = useState<boolean>(false);
   const appModalContext = useContext(AppModalContext);
@@ -362,22 +374,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
     [accounts],
   );
 
-  const checkIsAnyAccountValid = useCallback(
-    (_accounts: AccountJson[], selectedChain: string) => {
-      const chainInfo = chainInfoMap[selectedChain];
-      let accountList: AccountJson[] = [];
-
-      if (!chainInfo) {
-        return [];
-      }
-
-      accountList = _accounts.filter(getFilteredAccount(chainInfo));
-
-      return accountList;
-    },
-    [chainInfoMap],
-  );
-
   const needMigrateMasterPassword = needMigrate && hasMasterPassword && currentRoute;
 
   const linking: LinkingOptions<RootStackParamList> = {
@@ -444,20 +440,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
         }
 
         if (parseUrl.pathname.startsWith('/transaction-action/earning')) {
-          const validAccount = checkIsAnyAccountValid(accounts, urlQueryMap.chain);
-          if (!validAccount.length) {
-            mmkvStore.set('storedDeeplink', url);
-            listener(`subwallet://home/main/earning/earning-list?chain=${urlQueryMap.chain}&noAccountValid=true`);
+          if (isLockedRef.current || isPreventDeepLinkRef.current) {
             return;
-          } else {
-            if (validAccount.length === 1) {
-              await saveCurrentAccountAddress(validAccount[0]);
-            } else {
-              if (!validAccount.some(acc => acc.address === currentAccount?.address)) {
-                await saveCurrentAccountAddress({ address: 'ALL' });
-              }
-            }
           }
+
+          listener(url);
         }
 
         //enable Network
@@ -589,6 +576,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
+                <Stack.Screen name="EarningPreview" component={EarningPreview} options={{ gestureEnabled: false }} />
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
                 <Stack.Screen name="GeneralSettings" component={GeneralSettings} />

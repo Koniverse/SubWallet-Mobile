@@ -20,7 +20,6 @@ import { mmkvStore } from 'utils/storage';
 import { Image } from 'components/design-system-ui';
 import { SelectLanguageModal } from 'components/Modal/SelectLanguageModal';
 import urlParse from 'url-parse';
-import EarningPoolDetailModal from 'components/Modal/Earning/EarningPoolDetailModal';
 import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import { getPoolSlug } from 'utils/earn';
 import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
@@ -87,7 +86,7 @@ export const FirstScreen = () => {
   const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false);
   const [selectedActionType, setSelectedActionType] = useState<SelectedActionType>('createAcc');
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
-  const [selectedSlug, setSelectedSlug] = useState<string | undefined>(undefined);
+  const [, setSelectedSlug] = useState<string | undefined>(undefined); //TODO: remove if noneed
   const [previewModalVisible, setPreviewModalVisible] = useState<boolean>(false);
   const isFocused = useIsFocused();
   const onlinePoolInfoMap = useMemo(() => {
@@ -302,25 +301,6 @@ export const FirstScreen = () => {
           setVisible={setGeneralTermVisible}
           onPressAcceptBtn={onPressAcceptBtn}
         />
-
-        {!!selectedSlug && (
-          <EarningPoolDetailModal
-            modalVisible={previewModalVisible}
-            setVisible={setPreviewModalVisible}
-            slug={selectedSlug || ''}
-            onlinePoolInfoMap={onlinePoolInfoMap}
-            externalBtnTitle={'Stake more'}
-            isShowStakeMoreBtn={false}
-            redirectFromFirstScreen={true}
-            onPressExternalBtn={() => {
-              setPreviewModalVisible(false);
-            }}
-            onPressExternalBack={() => {
-              setFirstScreenDeepLink('subwallet://home/main/tokens');
-              Linking.openURL('subwallet://home/main/tokens');
-            }}
-          />
-        )}
         <SafeAreaView />
       </ImageBackground>
     </View>

@@ -56,7 +56,7 @@ import { RootState, store } from 'stores/index';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ModalRef } from 'types/modalRef';
 import i18n from 'utils/i18n/i18n';
-import { getValidatorKey, parseNominations } from 'utils/transaction/stake';
+import { parseNominations } from 'utils/transaction/stake';
 import { accountFilterFunc, getJoinYieldParams } from '../helper/earning';
 import createStyle from './style';
 import { useYieldPositionDetail } from 'hooks/earning';
@@ -68,9 +68,7 @@ import { insufficientMessages } from 'hooks/transaction/useHandleSubmitTransacti
 import { useGetBalance } from 'hooks/balance';
 import reformatAddress from 'utils/index';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
-import { getPoolSlug } from 'utils/earn';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
-import { useGetEarningPoolData } from 'hooks/static-content/useGetEarningPoolData';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -85,7 +83,7 @@ export const insufficientXCMMessages = ['You can only enter a maximum'];
 const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const {
     route: {
-      params: { slug: _slug, chain: externalChain, type: externalType, isNoAccount, target },
+      params: { slug, target, redirectFromPreview },
     },
   } = props;
 
@@ -98,21 +96,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const { poolInfoMap, poolTargetsMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const { priceMap } = useSelector((state: RootState) => state.price);
-  const slugRef = useRef<string>(_slug);
-  const externalChainRef = useRef<string>(externalChain || '');
-  const externalTypeRef = useRef<string>(externalType || '');
+  const slugRef = useRef<string>(slug);
   const defaultTarget = useRef<string | undefined>(target);
-  const redirectFromPreviewRef = useRef(!_slug && !!externalChain && !!externalType);
+  const redirectFromPreviewRef = useRef(!!redirectFromPreview);
   const autoCheckCompoundRef = useRef<boolean>(true);
-  const autoCheckValidatorGetFromPreview = useRef<boolean>(true);
-  const { getPoolTargets } = useGetEarningPoolData();
-  const slug = useMemo(() => {
-    if (!_slug && externalChain && externalType) {
-      return getPoolSlug(poolInfoMap, externalChain, externalType as YieldPoolType) || '';
-    } else {
-      return _slug;
-    }
-  }, [_slug, externalChain, externalType, poolInfoMap]);
 
   const {
     title,
@@ -127,7 +114,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     onChangeAssetValue: setAsset,
     onTransactionDone: onDone,
     transactionDoneInfo,
-  } = useTransaction<StakeFormValues>('stake', {
+  } = useTransaction<StakeFormValues>('earn', {
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -216,7 +203,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [checkMintLoading, setCheckMintLoading] = useState(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isShowAlert, setIsShowAlert] = useState<boolean>(!!isNoAccount);
+  const [isShowAlert, setIsShowAlert] = useState<boolean>(false);
   const [useParamValidator, setUseParamValidator] = useState<boolean>(redirectFromPreviewRef.current);
 
   const isDisabledButton = useMemo(
@@ -683,7 +670,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const onBack = useCallback(() => {
     if (firstStep) {
-      if (!_slug && externalType && externalChain) {
+      if (!slug || redirectFromPreviewRef.current) {
         navigation.reset({
           index: 0,
           routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
@@ -699,6 +686,14 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           {
             text: 'Cancel earning',
             onPress: () => {
+              if (redirectFromPreviewRef.current) {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+                });
+                return;
+              }
+
               navigation.goBack();
             },
           },
@@ -708,7 +703,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         ],
       );
     }
-  }, [_slug, externalChain, externalType, firstStep, navigation]);
+  }, [slug, firstStep, navigation]);
 
   useEffect(() => {
     let timer: NodeJS.Timer;
@@ -860,72 +855,12 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [chain, chainState?.active, forceFetchValidator, currentFrom, slug]);
 
   useEffect(() => {
-    if (!compound || (!slugRef.current && externalChainRef.current && externalTypeRef.current)) {
+    if (!compound || !slugRef.current) {
       isPressInfoBtnRef.current = false;
       setTimeout(() => setDetailModalVisible(true), 300);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!compound]);
-
-  const checkUnrecommendedValidator = useCallback(
-    (onValid?: () => void) => {
-      getPoolTargets(slug)
-        .then(rs => {
-          const supportedValidator = rs.find(item => {
-            if (poolType === YieldPoolType.NOMINATION_POOL) {
-              return (item as NominationPoolInfo).id.toString() === target;
-            } else if (poolType === YieldPoolType.NATIVE_STAKING) {
-              return item.address === target;
-            } else {
-              return false;
-            }
-          });
-
-          if (defaultTarget.current) {
-            if (!supportedValidator) {
-              defaultTarget.current = '';
-              isReadyToShowAlertRef.current &&
-                Alert.alert(
-                  'Unrecommended validator',
-                  'Your chosen validator is not recommended by SubWallet as staking with this validator won’t accrue any rewards. Select another validator and try again.',
-                  [
-                    {
-                      text: 'Dismiss',
-                      onPress: () => {
-                        isReadyToShowAlertRef.current = true;
-                      },
-                    },
-                    {
-                      text: 'Select validators',
-                      onPress: () => {
-                        isReadyToShowAlertRef.current = true;
-                        if (poolType === YieldPoolType.NATIVE_STAKING) {
-                          validatorSelectorRef?.current?.onOpenModal();
-                        }
-
-                        if (poolType === YieldPoolType.NOMINATION_POOL) {
-                          poolSelectorRef?.current?.onOpenModal();
-                        }
-
-                        setIsShowAlert(false);
-                      },
-                    },
-                  ],
-                );
-              isReadyToShowAlertRef.current = false;
-            } else {
-              defaultTarget.current = getValidatorKey(
-                supportedValidator.address,
-                (supportedValidator as ValidatorInfo).identity,
-              );
-              onValid && onValid();
-            }
-          }
-        })
-        .catch(e => console.error(e));
-    },
-    [getPoolTargets, poolType, slug, target],
-  );
 
   const isUnstakeAll = useMemo(() => {
     if (compound) {
@@ -979,11 +914,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                   ],
                 );
               isReadyToShowAlertRef.current = false;
-
-              return;
-            } else {
-              return;
             }
+
+            return;
           }
         }
 
@@ -1016,7 +949,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         const onPressContinue = () => {
           isReadyToShowAlertRef.current = true;
           if (poolType === YieldPoolType.NATIVE_STAKING) {
-            checkUnrecommendedValidator(() => onChangeTarget(defaultTarget.current || ''));
+            onChangeTarget(defaultTarget.current || '');
           }
         };
 
@@ -1042,11 +975,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             },
           ]);
         isReadyToShowAlertRef.current = false;
-      } else {
-        if (autoCheckValidatorGetFromPreview.current) {
-          autoCheckValidatorGetFromPreview.current = false;
-          checkUnrecommendedValidator();
-        }
       }
     }
   }, [
@@ -1057,7 +985,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     poolType,
     chain,
     navigation,
-    checkUnrecommendedValidator,
     onChangeTarget,
     isShowAlert,
     isAllAccount,
@@ -1236,29 +1163,28 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
               </View>
             )}
           </>
-          {!isNoAccount && (
-            <EarningPoolDetailModal
-              modalVisible={detailModalVisible}
-              slug={slug}
-              setVisible={setDetailModalVisible}
-              onStakeMore={() => {
-                setDetailModalVisible(false);
-                setIsShowAlert(true);
-                setFocus('value');
-              }}
-              isShowStakeMoreBtn={!isPressInfoBtnRef.current}
-              onPressBack={() => {
-                if (!_slug && externalType && externalChain) {
-                  navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
-                  });
-                } else {
-                  navigation.goBack();
-                }
-              }}
-            />
-          )}
+
+          <EarningPoolDetailModal
+            modalVisible={detailModalVisible}
+            slug={slug}
+            setVisible={setDetailModalVisible}
+            onStakeMore={() => {
+              setDetailModalVisible(false);
+              setIsShowAlert(true);
+              setFocus('value');
+            }}
+            isShowStakeMoreBtn={!isPressInfoBtnRef.current}
+            onPressBack={() => {
+              if (!slug) {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+                });
+              } else {
+                navigation.goBack();
+              }
+            }}
+          />
         </TransactionLayout>
       ) : (
         <TransactionDone transactionDoneInfo={transactionDoneInfo} />

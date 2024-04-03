@@ -1,7 +1,8 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { KeypairType } from '@polkadot/util-crypto/types';
 
 export type EarningScreenStackParamList = {
-  EarningList: { step: number; noAccountValid?: boolean; chain?: string };
+  EarningList: { step: number; noAccountValid?: boolean; chain?: string; accountType?: KeypairType };
   EarningPoolList: {
     group: string;
     symbol: string;

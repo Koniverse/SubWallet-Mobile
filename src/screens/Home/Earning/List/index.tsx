@@ -4,10 +4,8 @@ import PositionList from 'screens/Home/Earning/PositionList';
 import GroupList from 'screens/Home/Earning/GroupList';
 import { EarningListProps } from 'routes/earning';
 import { Alert } from 'react-native';
-import { analysisAccounts } from 'hooks/screen/Home/Crypto/useGetChainSlugsByAccountType';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 
@@ -15,18 +13,17 @@ let isShowAlert = false;
 export const EarningList = ({
   navigation,
   route: {
-    params: { step, noAccountValid, chain },
+    params: { step, noAccountValid, chain, accountType },
   },
 }: EarningListProps) => {
   const data = useGroupYieldPosition();
   const hasData = !!data?.length;
   const hasDataFlag = useRef(hasData);
-  const { accounts, isLocked } = useSelector((state: RootState) => state.accountState);
+  const { isLocked } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const [currentStep, setCurrentStep] = useState(step || 1);
   const [firstLoading, setFirstLoading] = useState(true);
   const [positionLoading, setPositionLoading] = useState(false);
-  const [isContainOnlySubstrate] = analysisAccounts(accounts);
   const rootNavigation = useNavigation<RootNavigationProps>();
 
   const chainName = useMemo(() => {
@@ -49,8 +46,7 @@ export const EarningList = ({
   }, [currentStep, navigation]);
 
   useEffect(() => {
-    if (noAccountValid && !isLocked && !isShowAlert) {
-      const accountType = isContainOnlySubstrate ? EVM_ACCOUNT_TYPE : SUBSTRATE_ACCOUNT_TYPE;
+    if (noAccountValid && !isLocked && !isShowAlert && accountType) {
       Alert.alert(
         'Invalid account type',
         `You don’t have any account to stake on ${chainName} network yet. Create a new account and try again.`,
