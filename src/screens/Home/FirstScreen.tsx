@@ -19,7 +19,6 @@ import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import { mmkvStore } from 'utils/storage';
 import { Image } from 'components/design-system-ui';
 import { SelectLanguageModal } from 'components/Modal/SelectLanguageModal';
-import urlParse from 'url-parse';
 import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import { getPoolSlug } from 'utils/earn';
 import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
@@ -86,7 +85,6 @@ export const FirstScreen = () => {
   const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false);
   const [selectedActionType, setSelectedActionType] = useState<SelectedActionType>('createAcc');
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
-  const [, setSelectedSlug] = useState<string | undefined>(undefined); //TODO: remove if noneed
   const [previewModalVisible, setPreviewModalVisible] = useState<boolean>(false);
   const isFocused = useIsFocused();
   const onlinePoolInfoMap = useMemo(() => {
@@ -123,10 +121,6 @@ export const FirstScreen = () => {
     const unsubscribe = Linking.addEventListener('url', ({ url }) => {
       let _url = url;
       if (_url.includes('/transaction-action/earning')) {
-        const urlParsed = new urlParse(url);
-        const data = urlParsed.query.substring(1);
-        const _selectedSlug = getSelectedSlug(data);
-        setSelectedSlug(_selectedSlug);
         if (!_url.includes('isNoAccount=true')) {
           _url = `${url}&isNoAccount=true`;
           setFirstScreenDeepLink(_url);
@@ -140,19 +134,6 @@ export const FirstScreen = () => {
 
     return () => unsubscribe.remove();
   }, [getSelectedSlug]);
-
-  useEffect(() => {
-    Linking.getInitialURL().then(url => {
-      if (!url) {
-        return;
-      }
-
-      const urlParsed = new urlParse(url);
-      const data = urlParsed.query.substring(1);
-      const _selectedSlug = getSelectedSlug(data);
-      setSelectedSlug(_selectedSlug);
-    });
-  }, [getSelectedSlug, onlinePoolInfoMap]);
 
   useEffect(() => {
     if (isHandleDeeplinkPromise.current && isFocused) {

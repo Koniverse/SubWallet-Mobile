@@ -93,6 +93,7 @@ import {
   _getSubstrateGenesisHash,
   _isChainEvmCompatible,
 } from '@subwallet/extension-base/services/chain-service/utils';
+import { mmkvStore } from 'utils/storage';
 import { EarningPreview } from 'screens/EarningPreview';
 
 interface Props {
@@ -440,11 +441,18 @@ const AppNavigator = ({ isAppReady }: Props) => {
         }
 
         if (parseUrl.pathname.startsWith('/transaction-action/earning')) {
-          if (isLockedRef.current || isPreventDeepLinkRef.current) {
-            return;
+          if (isEmptyAccounts) {
+            navigationRef.current?.navigate('Home');
+          } else {
+            if (isLockedRef.current || isPreventDeepLinkRef.current) {
+              return;
+            }
+
+            mmkvStore.set('storedDeeplink', url);
+            listener(url);
           }
 
-          listener(url);
+          return;
         }
 
         //enable Network
@@ -464,6 +472,13 @@ const AppNavigator = ({ isAppReady }: Props) => {
             autoEnableNativeToken: true,
           });
         }
+
+        if (parseUrl.hostname === 'earning-preview') {
+          listener(url);
+
+          return;
+        }
+
         if (isLockedRef.current || isPreventDeepLinkRef.current) {
           return;
         }
