@@ -70,7 +70,7 @@ import { AppModalContext } from 'providers/AppModalContext';
 import { PortalHost } from '@gorhom/portal';
 import { findAccountByAddress } from 'utils/index';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
-import { saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
+import { enableChain, saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
 import urlParse from 'url-parse';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { transformUniversalToNative } from 'utils/deeplink';
@@ -83,8 +83,19 @@ import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview'
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { DeriveAccount } from 'screens/Account/DeriveAccount';
 import { useGroupYieldPosition } from 'hooks/earning';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AboutSubWallet } from 'screens/Settings/AboutSubWallet';
 import { updateCurrentRoute } from 'stores/utils';
+import { _ChainInfo } from '@subwallet/chain-list/types';
+import { AccountJson } from '@subwallet/extension-base/background/types';
+import { isAccountAll } from '@subwallet/extension-base/utils';
+import {
+  _getSubstrateGenesisHash,
+  _isChainEvmCompatible,
+} from '@subwallet/extension-base/services/chain-service/utils';
+import { mmkvStore } from 'utils/storage';
+import { EarningPreview } from 'screens/EarningPreview';
+import { EarningPreviewPools } from 'screens/EarningPreview/EarningPreviewPools';
 
 interface Props {
   isAppReady: boolean;
@@ -155,6 +166,17 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
               screens: {
                 EarningList: {
                   path: 'earning-list',
+                  stringify: {
+                    chain: (chain: string) => chain,
+                    noAccountValid: (noAccountValid: boolean) => noAccountValid,
+                  },
+                },
+                EarningPoolList: {
+                  path: 'earning-pool-list',
+                  stringify: {
+                    group: (group: string) => group,
+                    symbol: (symbol: string) => symbol,
+                  },
                 },
                 EarningPositionDetail: {
                   path: 'earning-position-detail',
@@ -169,6 +191,39 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
             },
           },
         },
+      },
+    },
+    Drawer: {
+      path: 'drawer',
+      screens: {
+        TransactionAction: {
+          path: 'transaction-action',
+          screens: {
+            Earning: {
+              path: 'earning',
+              stringify: {
+                slug: (slug: string) => slug,
+                target: (target: string) => target,
+                redirectFromPreview: (redirectFromPreview: boolean) => redirectFromPreview,
+              },
+            },
+          },
+        },
+      },
+    },
+    EarningPreview: {
+      path: 'earning-preview',
+      stringify: {
+        chain: (chain: string) => chain,
+        type: (type: string) => type,
+        target: (target: string) => target,
+      },
+    },
+    EarningPreviewPools: {
+      path: 'earning-preview-pools',
+      stringify: {
+        group: (group: string) => group,
+        symbol: (symbol: string) => symbol,
       },
     },
   },
@@ -210,6 +265,18 @@ type DeepLinkSubscriptionType = {
   url: string;
 };
 
+export const getFilteredAccount = (chainInfo: _ChainInfo) => (account: AccountJson) => {
+  if (isAccountAll(account.address)) {
+    return false;
+  }
+
+  if (account.originGenesisHash && _getSubstrateGenesisHash(chainInfo) !== account.originGenesisHash) {
+    return false;
+  }
+
+  return _isChainEvmCompatible(chainInfo) === isEthereumAddress(account.address);
+};
+
 const AppNavigator = ({ isAppReady }: Props) => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
@@ -220,7 +287,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const data = useGroupYieldPosition();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
-  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount } = useSelector(
+  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount, isNoAccount } = useSelector(
     (state: RootState) => state.accountState,
   );
   const { isLocked: isLogin } = useAppLock();
@@ -315,6 +382,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
         .length,
     [accounts],
   );
+
   const needMigrateMasterPassword = needMigrate && hasMasterPassword && currentRoute;
 
   const linking: LinkingOptions<RootStackParamList> = {
@@ -324,7 +392,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       return null;
     },
     subscribe: listener => {
-      const onReceiveURL = ({ url }: DeepLinkSubscriptionType) => {
+      const onReceiveURL = async ({ url }: DeepLinkSubscriptionType) => {
         const parseUrl = new urlParse(url);
         const urlQuery = parseUrl.query.substring(1);
         const urlQueryMap: Record<string, string> = {};
@@ -380,12 +448,36 @@ const AppNavigator = ({ isAppReady }: Props) => {
           }
         }
 
+        if (parseUrl.hostname === 'earning-preview-pools') {
+          listener(url);
+          return;
+        }
+
+        if (parseUrl.pathname.startsWith('/transaction-action/earning')) {
+          if (isEmptyAccounts) {
+            navigationRef.current?.navigate('Home');
+          } else {
+            if (isLockedRef.current || isPreventDeepLinkRef.current) {
+              return;
+            }
+
+            mmkvStore.set('storedDeeplink', url);
+            listener(url);
+          }
+
+          return;
+        }
+
         //enable Network
-        const originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+        let originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+        if (urlQueryMap.chain) {
+          originChain = urlQueryMap.chain;
+        }
         const isChainConnected = checkChainConnected(originChain);
 
         if (!isChainConnected && originChain) {
-          updateAssetSetting({
+          await enableChain(originChain);
+          await updateAssetSetting({
             tokenSlug: urlQueryMap.slug,
             assetSetting: {
               visible: true,
@@ -393,6 +485,20 @@ const AppNavigator = ({ isAppReady }: Props) => {
             autoEnableNativeToken: true,
           });
         }
+
+        if (parseUrl.hostname === 'earning-preview') {
+          if (isNoAccount) {
+            listener(url);
+          } else {
+            if (isLockedRef.current || isPreventDeepLinkRef.current) {
+              return;
+            }
+
+            listener(url);
+          }
+          return;
+        }
+
         if (isLockedRef.current || isPreventDeepLinkRef.current) {
           return;
         }
@@ -505,6 +611,12 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
+                <Stack.Screen name="EarningPreview" component={EarningPreview} options={{ gestureEnabled: false }} />
+                <Stack.Screen
+                  name="EarningPreviewPools"
+                  component={EarningPreviewPools}
+                  options={{ gestureEnabled: false }}
+                />
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
                 <Stack.Screen name="GeneralSettings" component={GeneralSettings} />

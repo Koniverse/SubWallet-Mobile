@@ -39,6 +39,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
   const { hideConfirmModal, setConfirmModal } = useContext(AppModalContext);
   const transactionType = useMemo((): ExtrinsicTypeMobile => {
     switch (action) {
+      case 'earn':
+        return ExtrinsicType.JOIN_YIELD_POOL;
       case 'stake':
         return ExtrinsicType.STAKING_JOIN_POOL;
       case 'unstake':

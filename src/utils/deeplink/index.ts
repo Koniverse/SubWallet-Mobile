@@ -8,9 +8,34 @@ import { ToastType } from 'react-native-toast-notifications';
 import { MutableRefObject } from 'react';
 import { AppNavigatorDeepLinkStatus } from 'screens/Home';
 import { prevDeeplinkUrl, setPrevDeeplinkUrl } from '../../App';
+import { firstScreenDeepLink, setFirstScreenDeepLink } from 'screens/Home/FirstScreen';
+import { mmkvStore } from 'utils/storage';
 
 export function transformUniversalToNative(url: string) {
   return url.replace('https://mobile.subwallet.app/', 'subwallet://');
+}
+
+const openLinking = (_url: string) => {
+  Linking.openURL(_url)
+    .then(() => setPrevDeeplinkUrl(_url))
+    .catch(console.error);
+};
+
+function openDeeplink(_url: string) {
+  Linking.canOpenURL(_url)
+    .then(supported => {
+      if (supported) {
+        if (firstScreenDeepLink.current) {
+          openLinking(firstScreenDeepLink.current);
+          setFirstScreenDeepLink();
+          return;
+        }
+        openLinking(_url);
+      }
+    })
+    .catch(e => {
+      console.warn(`Error opening URL: ${e}`);
+    });
 }
 
 export function handleTriggerDeeplinkAfterLogin(
@@ -20,16 +45,20 @@ export function handleTriggerDeeplinkAfterLogin(
 ) {
   Linking.getInitialURL().then(url => {
     if (!url || prevDeeplinkUrl === url) {
+      if (firstScreenDeepLink.current) {
+        openLinking(firstScreenDeepLink.current);
+        setFirstScreenDeepLink();
+      }
+
       return;
     }
 
     appNavigatorDeepLinkStatus.current = AppNavigatorDeepLinkStatus.BLOCK;
-    setPrevDeeplinkUrl(url);
     const _url = transformUniversalToNative(url);
     const urlParsed = new urlParse(_url);
 
     if (urlParsed.hostname === 'browser') {
-      Linking.openURL(_url);
+      openLinking(_url);
       return;
     }
 
@@ -42,14 +71,10 @@ export function handleTriggerDeeplinkAfterLogin(
       connectWalletConnect(finalWcUrl, toast);
     }
 
-    Linking.canOpenURL(_url)
-      .then(supported => {
-        if (supported) {
-          Linking.openURL(_url);
-        }
-      })
-      .catch(e => {
-        console.warn(`Error opening URL: ${e}`);
-      });
+    if (urlParsed.pathname.startsWith('/transaction-action/earning')) {
+      mmkvStore.set('storedDeeplink', url);
+    }
+
+    openDeeplink(_url);
   });
 }

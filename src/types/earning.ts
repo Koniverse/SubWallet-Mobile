@@ -4,6 +4,7 @@ import { NominationPoolInfo, ValidatorInfo } from '@subwallet/extension-base/typ
 import { SWIconProps } from 'components/design-system-ui/icon';
 import { BalanceValueInfo } from 'types/balance';
 import { PhosphorIcon } from 'utils/campaign';
+import BigN from 'bignumber.js';
 
 export interface ExtraYieldPositionInfo extends AbstractYieldPositionInfo {
   asset: _ChainAsset;
@@ -22,6 +23,11 @@ export interface YieldGroupInfo {
   name?: string;
   chain: string;
   poolListLength: number;
+  poolSlugs: string[];
+  description: string;
+  totalValueStaked: BigN;
+  minJoin?: string;
+  isRelatedToRelayChain: boolean;
 }
 
 export interface EarningTagType {

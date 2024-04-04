@@ -8,6 +8,30 @@ import { AccountType } from 'types/ui-types';
 import { RootState } from 'stores/index';
 import { findAccountByAddress } from 'utils/account';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
+import { isAccountAll } from 'utils/accountAll';
+
+export function analysisAccounts(accounts: AccountJson[]): [boolean, boolean] {
+  let substrateCounter = 0;
+  let ethereumCounter = 0;
+
+  if (!accounts.length) {
+    return [false, false];
+  }
+
+  accounts.forEach(a => {
+    if (isAccountAll(a.address)) {
+      return;
+    }
+
+    if (isEthereumAddress(a.address)) {
+      ethereumCounter++;
+    } else {
+      substrateCounter++;
+    }
+  });
+
+  return [ethereumCounter === 0 && substrateCounter > 0, ethereumCounter > 0 && substrateCounter === 0];
+}
 
 function getChainsAccountType(
   accountType: AccountType,

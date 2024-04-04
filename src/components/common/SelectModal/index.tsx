@@ -45,6 +45,12 @@ interface Props<T> {
     onPressApplyBtn: () => void;
     applyBtnDisabled?: boolean;
   };
+  customBtn?: {
+    label?: string;
+    icon: React.ElementType<IconProps>;
+    onPressCustomBtn: () => void;
+    customBtnDisabled?: boolean;
+  };
   closeModalAfterSelect?: boolean;
   children?: React.ReactNode;
   isShowContent?: boolean;
@@ -82,6 +88,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     onSelectItem,
     disabled,
     applyBtn,
+    customBtn,
     closeModalAfterSelect = true,
     children,
     isShowContent = true,
@@ -244,8 +251,25 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
             paddingHorizontal: theme.padding,
             ...MarginBottomForSubmitButton,
             paddingTop: theme.padding,
+            flexDirection: 'row',
+            gap: theme.sizeSM,
           }}>
+          {customBtn && (
+            <Button
+              disabled={customBtn?.customBtnDisabled}
+              type={'secondary'}
+              icon={
+                <Icon
+                  phosphorIcon={customBtn?.icon}
+                  size={'lg'}
+                  iconColor={customBtn?.customBtnDisabled ? theme.colorTextLight5 : theme.colorWhite}
+                />
+              }
+              onPress={customBtn?.onPressCustomBtn}
+            />
+          )}
           <Button
+            block
             disabled={applyBtn?.applyBtnDisabled}
             icon={
               <Icon
