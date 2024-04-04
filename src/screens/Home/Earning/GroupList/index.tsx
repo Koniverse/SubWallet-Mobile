@@ -19,10 +19,14 @@ import { RootState } from 'stores/index';
 import createStyles from './style';
 import { RootNavigationProps } from 'routes/index';
 import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
-import { YieldPoolInfo } from '@subwallet/extension-base/types';
+import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import { GettingDataModal } from 'components/Modal/GettingDataModal';
 import { useHandleChainConnection } from 'hooks/earning/useHandleChainConnection';
 import { isRelatedToAstar } from 'utils/earning';
+import useAccountBalance, { getBalanceValue } from 'hooks/screen/useAccountBalance';
+import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
+import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
+import useTokenGroup from 'hooks/screen/useTokenGroup';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -89,8 +93,6 @@ const filterFunction = (items: YieldGroupInfo[], filters: string[]) => {
   });
 };
 
-const defaultSelectionMap = { [FilterOptionType.MAIN_NETWORK]: true };
-
 interface Props {
   isHasAnyPosition: boolean;
   setStep: (value: number) => void;
@@ -106,6 +108,9 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const data = useYieldGroupInfo();
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const chainsByAccountType = useGetChainSlugs();
+  const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
+  const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [selectedPoolGroup, setSelectedPoolGroup] = React.useState<YieldGroupInfo | undefined>(undefined);
@@ -185,13 +190,8 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const onPressItem = useCallback(
     (chainSlug: string, poolGroup: YieldGroupInfo) => {
       setSelectedPoolGroup(poolGroup);
-      if (poolGroup.poolListLength > 1) {
-        navigation.navigate('EarningPoolList', { group: poolGroup.group, symbol: poolGroup.symbol });
-      } else if (poolGroup.poolListLength === 1) {
-        const poolInfo = Object.values(poolInfoMap).find(
-          i => i.group === poolGroup.group && i.chain === poolGroup.chain,
-        );
 
+      const processPoolOptions = (poolInfo: YieldPoolInfo) => {
         if (!poolInfo) {
           // will not happen
 
@@ -208,9 +208,59 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         } else {
           navigateToEarnScreen(poolGroup);
         }
+      };
+
+      if (poolGroup.poolListLength > 1) {
+        let isHiddenPool = false;
+
+        if (poolGroup.poolListLength === 2) {
+          poolGroup.poolSlugs.forEach(poolSlug => {
+            const poolInfo = poolInfoMap[poolSlug];
+
+            if (poolInfo.type === YieldPoolType.NATIVE_STAKING) {
+              let minJoinPool: string;
+
+              if (poolInfo.statistic) {
+                minJoinPool = poolInfo.statistic.earningThreshold.join;
+              } else {
+                minJoinPool = '0';
+              }
+
+              const originChainAsset = poolInfo.metadata.inputAsset;
+
+              const availableBalance =
+                originChainAsset && tokenBalanceMap[originChainAsset] && tokenBalanceMap[originChainAsset].free.value;
+              const assetInfo = chainAsset[originChainAsset];
+              const minJoinPoolBalanceValue = getBalanceValue(minJoinPool, _getAssetDecimals(assetInfo));
+
+              if (!availableBalance) {
+                isHiddenPool = true;
+              } else if (minJoinPoolBalanceValue.isGreaterThan(availableBalance)) {
+                isHiddenPool = true;
+              }
+            }
+          });
+        }
+
+        if (isHiddenPool && poolGroup.poolListLength === 2) {
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          const index = poolGroup.poolSlugs.findIndex(poolGroup =>
+            poolGroup.includes(YieldPoolType.NOMINATION_POOL.toLowerCase()),
+          );
+
+          const poolInfo = poolInfoMap[poolGroup.poolSlugs[index]];
+
+          processPoolOptions(poolInfo);
+        } else {
+          navigation.navigate('EarningPoolList', { group: poolGroup.group, symbol: poolGroup.symbol });
+        }
+      } else if (poolGroup.poolListLength === 1) {
+        const poolInfo = poolInfoMap[poolGroup.poolSlugs[0]];
+        processPoolOptions(poolInfo);
       }
     },
     [
+      chainAsset,
       checkChainConnected,
       getAltChain,
       navigateToEarnScreen,
@@ -218,6 +268,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
       onConnectChain,
       poolInfoMap,
       setLoading,
+      tokenBalanceMap,
       turnOnChain,
     ],
   );
@@ -297,7 +348,6 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
         filterOptions={FILTER_OPTIONS}
-        defaultSelectionMap={defaultSelectionMap}
         filterFunction={filterFunction}
         flatListStyle={styles.container}
         renderItem={renderItem}
