@@ -48,6 +48,10 @@ export type RootStackParamList = {
   SendFund: { slug?: string; recipient?: string };
   Drawer: NavigatorScreenParams<WrapperParamList>;
   EarningPreview: { chain?: string; type?: string; target?: string };
+  EarningPreviewPools: {
+    group: string;
+    symbol: string;
+  };
   Languages: undefined;
   Security: undefined;
   AboutSubWallet: undefined;
@@ -96,6 +100,7 @@ export type RootRouteProps = NavigationProps['route'];
 export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'CreateAccount'>;
 export type CreatePasswordProps = NativeStackScreenProps<RootStackParamList, 'CreatePassword'>;
 export type EarningPreviewProps = NativeStackScreenProps<RootStackParamList, 'EarningPreview'>;
+export type EarningPreviewPoolsProps = NativeStackScreenProps<RootStackParamList, 'EarningPreviewPools'>;
 export type ImportSecretPhraseProps = NativeStackScreenProps<RootStackParamList, 'ImportSecretPhrase'>;
 export type AccountsScreenProps = NativeStackScreenProps<RootStackParamList, 'AccountsScreen'>;
 export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund'>;

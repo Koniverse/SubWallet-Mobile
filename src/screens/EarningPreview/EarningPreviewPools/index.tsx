@@ -12,8 +12,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { Keyboard, Linking, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
-import { EarningPreviewPoolsProps } from 'routes/earning';
-import { RootNavigationProps } from 'routes/index';
+import { EarningPreviewPoolsProps, RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
@@ -276,10 +275,7 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
   );
 
   const onBack = useCallback(() => {
-    navigation.navigate('Home', {
-      screen: 'Main',
-      params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 2 } } },
-    });
+    navigation.navigate('EarningPreview', { chain: '', type: '', target: '' });
   }, [navigation]);
 
   useEffect(() => {
@@ -293,7 +289,6 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
       <FlatListScreen
         style={styles.wrapper}
         title={i18n.header.poolList.replace('{{symbol}}', symbol)}
-        titleTextAlign={'left'}
         items={items}
         showLeftBtn={true}
         placeholder={i18n.placeholder.searchToken}
@@ -307,7 +302,6 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
         onPressBack={onBack}
         // rightIconOption={rightIconOption}
         isShowFilterBtn
-        isShowMainHeader
         refreshControl={
           <RefreshControl
             style={styles.refreshIndicator}

@@ -28,6 +28,7 @@ import { GettingDataModal } from 'components/Modal/GettingDataModal';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { mmkvStore } from 'utils/storage';
 import { _ChainInfo } from '@subwallet/chain-list/types';
+import i18n from 'utils/i18n/i18n';
 
 interface EarningPreviewScreen {
   poolInfoMap: Record<string, YieldPoolInfo>;
@@ -244,9 +245,7 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
         }
 
         if (item.poolListLength > 1) {
-          Linking.openURL(
-            `subwallet://home/main/earning/earning-preview-pools?group=${item.group}&symbol=${item.symbol}`,
-          );
+          Linking.openURL(`subwallet://earning-preview-pools?group=${item.group}&symbol=${item.symbol}`);
         } else if (item.poolListLength === 1) {
           const poolInfo = poolInfoMap[item.poolSlugs[0]];
 
@@ -379,7 +378,7 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
             autoFocus={false}
             searchFunction={searchFunction}
             renderListEmptyComponent={() => <></>}
-            title={'Earning preview'}
+            title={i18n.header.groupList}
             renderItem={renderItem}
             flatListStyle={{
               paddingHorizontal: theme.padding,

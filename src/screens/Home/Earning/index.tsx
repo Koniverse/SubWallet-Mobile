@@ -5,7 +5,6 @@ import { EarningScreenStackParamList } from 'routes/earning';
 import PositionDetail from 'screens/Home/Earning/PositionDetail';
 import PoolList from './PoolList';
 import { EarningList } from 'screens/Home/Earning/List';
-import { EarningPreviewPools } from 'screens/EarningPreview/EarningPreviewPools';
 
 const EarningScreen = () => {
   const StakingScreenStack = createNativeStackNavigator<EarningScreenStackParamList>();
@@ -20,10 +19,6 @@ const EarningScreen = () => {
         component={withPageWrapper(EarningList, ['earning', 'price', 'balance'])}
       />
       <StakingScreenStack.Screen name="EarningPoolList" component={withPageWrapper(PoolList, ['earning', 'price'])} />
-      <StakingScreenStack.Screen
-        name="EarningPreviewPools"
-        component={withPageWrapper(EarningPreviewPools, ['earning', 'price'])}
-      />
       <StakingScreenStack.Screen
         name="EarningPositionDetail"
         component={withPageWrapper(PositionDetail, ['earning', 'price', 'balance'])}

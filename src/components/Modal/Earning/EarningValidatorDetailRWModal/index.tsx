@@ -239,6 +239,7 @@ export const EarningValidatorDetailRWModal = ({
       modalTitle={title}>
       <MetaInfo
         hasBackgroundWrapper
+        valueColorScheme={'light'}
         style={{
           width: '100%',
           alignItems: 'center',

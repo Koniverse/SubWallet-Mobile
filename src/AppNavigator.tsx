@@ -95,6 +95,7 @@ import {
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { mmkvStore } from 'utils/storage';
 import { EarningPreview } from 'screens/EarningPreview';
+import { EarningPreviewPools } from 'screens/EarningPreview/EarningPreviewPools';
 
 interface Props {
   isAppReady: boolean;
@@ -177,13 +178,6 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
                     symbol: (symbol: string) => symbol,
                   },
                 },
-                EarningPreviewPools: {
-                  path: 'earning-preview-pools',
-                  stringify: {
-                    group: (group: string) => group,
-                    symbol: (symbol: string) => symbol,
-                  },
-                },
                 EarningPositionDetail: {
                   path: 'earning-position-detail',
                   stringify: {
@@ -223,6 +217,13 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
         chain: (chain: string) => chain,
         type: (type: string) => type,
         target: (target: string) => target,
+      },
+    },
+    EarningPreviewPools: {
+      path: 'earning-preview-pools',
+      stringify: {
+        group: (group: string) => group,
+        symbol: (symbol: string) => symbol,
       },
     },
   },
@@ -447,6 +448,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
           }
         }
 
+        if (parseUrl.hostname === 'earning-preview-pools') {
+          listener(url);
+          return;
+        }
+
         if (parseUrl.pathname.startsWith('/transaction-action/earning')) {
           if (isEmptyAccounts) {
             navigationRef.current?.navigate('Home');
@@ -606,6 +612,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="EarningPreview" component={EarningPreview} options={{ gestureEnabled: false }} />
+                <Stack.Screen
+                  name="EarningPreviewPools"
+                  component={EarningPreviewPools}
+                  options={{ gestureEnabled: false }}
+                />
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
                 <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
