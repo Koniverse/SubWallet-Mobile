@@ -37,6 +37,11 @@ interface EarningPreviewScreen {
   typeParam: YieldPoolType | undefined;
 }
 
+enum FilterOptionType {
+  MAIN_NETWORK = 'MAIN_NETWORK',
+  TEST_NETWORK = 'TEST_NETWORK',
+}
+
 const groupOrdinal = (group: YieldGroupInfo): number => {
   if (group.group === 'DOT-Polkadot') {
     return 2;
@@ -57,6 +62,36 @@ const balanceOrdinal = (group: YieldGroupInfo): number => {
 
 const apyOrdinal = (group: YieldGroupInfo): number => {
   return !group.maxApy ? -1 : group.maxApy;
+};
+
+const FILTER_OPTIONS = [
+  { label: i18n.filterOptions.mainnet, value: FilterOptionType.MAIN_NETWORK },
+  { label: i18n.filterOptions.testnet, value: FilterOptionType.TEST_NETWORK },
+];
+
+const filterFunction = (items: YieldGroupInfo[], filters: string[]) => {
+  if (!filters.length) {
+    return items;
+  }
+
+  return items.filter(item => {
+    if (!filters.length || filters.length === FILTER_OPTIONS.length) {
+      return true;
+    }
+
+    for (const filter of filters) {
+      if (filter === '') {
+        return true;
+      }
+      if (filter === FilterOptionType.MAIN_NETWORK) {
+        return !item.isTestnet;
+      } else if (filter === FilterOptionType.TEST_NETWORK) {
+        return item.isTestnet;
+      }
+    }
+
+    return false;
+  });
 };
 
 const getPoolInfoByChainAndType = (
@@ -385,6 +420,9 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
               gap: theme.sizeXS,
               paddingBottom: theme.paddingXS,
             }}
+            filterFunction={filterFunction}
+            filterOptions={FILTER_OPTIONS}
+            isShowFilterBtn
           />
 
           {selectedPoolInfoSlug && validator && (
