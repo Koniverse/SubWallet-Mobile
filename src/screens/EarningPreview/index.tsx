@@ -29,6 +29,8 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { mmkvStore } from 'utils/storage';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import i18n from 'utils/i18n/i18n';
+import { EmptyList } from 'components/EmptyList';
+import { Trophy } from 'phosphor-react-native';
 
 interface EarningPreviewScreen {
   poolInfoMap: Record<string, YieldPoolInfo>;
@@ -400,6 +402,17 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
     [onPressItem],
   );
 
+  const renderEmpty = useCallback(() => {
+    return (
+      <EmptyList
+        title={i18n.emptyScreen.groupEmptyTitle}
+        icon={Trophy}
+        message={i18n.emptyScreen.groupEmptyMessage}
+        addBtnLabel={i18n.buttonTitles.startStaking}
+      />
+    );
+  }, []);
+
   return (
     <>
       {initLoading ? (
@@ -412,7 +425,7 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
             items={items}
             autoFocus={false}
             searchFunction={searchFunction}
-            renderListEmptyComponent={() => <></>}
+            renderListEmptyComponent={renderEmpty}
             title={i18n.header.groupList}
             renderItem={renderItem}
             flatListStyle={{

@@ -56,6 +56,10 @@ export const EarningList = ({
             style: 'destructive',
             onPress: () => {
               isShowAlert = false;
+              rootNavigation.navigate('Home', {
+                screen: 'Main',
+                params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: currentStep } } },
+              });
             },
           },
           {
