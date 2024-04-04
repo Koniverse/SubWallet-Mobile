@@ -57,7 +57,7 @@ const Banner = ({ data, dismissBanner, onPressBanner, instructionDataList, extra
     <>
       <TouchableOpacity onPress={_onPressBanner} activeOpacity={BUTTON_ACTIVE_OPACITY}>
         <FastImage
-          style={[{ height: 120, borderRadius: theme.borderRadiusLG, marginVertical: theme.marginXS }, extraStyle]}
+          style={[{ height: 88, borderRadius: theme.borderRadiusLG, marginVertical: theme.marginXS }, extraStyle]}
           resizeMode="cover"
           source={{ uri: data.media }}
         />
