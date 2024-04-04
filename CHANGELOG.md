@@ -1,3 +1,20 @@
+## 1.1.46 (350)
+- Fix bug in EarningPreview screen (#1484)
+- Update filter for EarningPreviewOptions (#1484)
+- Fix bug in EarningPreview screen (#1484)
+- Fix bug in EarningPreview screen (#1484)
+- Fix bug StakingReward feature (#1484)
+- Fix bug StakingReward feature (#1484)
+- Fix bug StakingReward feature (#1484)
+- Fix bug access deeplink when no account (#1484)
+- Update logic for StakingReward features (#1484)
+- Fix some UI bug in StartEarning screen (#1484)
+- Fix some navigation bug in StartEarning screen (#1484)
+- Fix UI bug in StartEarning screen (#1484)
+- Fix bug in StartEarning screen (#1484)
+- Fix bug do not show Alert when app do not have any account (#1484)
+- Update App for Staking Reward (#1484)
+
 ## 1.1.45 (349)
 
 
