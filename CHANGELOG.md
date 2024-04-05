@@ -1,3 +1,6 @@
+## 1.1.47 (353)
+- Add only Testnet tag in PositionList and GroupList (#1560)
+
 ## 1.1.47 (352)
 - Improve UX UI for earning feature (#1560)
 - Improve UX UI for earning feature (#1560)
