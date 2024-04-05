@@ -1,3 +1,7 @@
+## 1.1.47 (352)
+- Improve UX UI for earning feature (#1560)
+- Improve UX UI for earning feature (#1560)
+
 ## 1.1.46 (351)
 
 
