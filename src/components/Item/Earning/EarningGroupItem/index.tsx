@@ -57,7 +57,7 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
                 )}
               </View>
 
-              {getTagItem(poolGroup.isTestnet)}
+              {poolGroup.isTestnet && getTagItem(poolGroup.isTestnet)}
             </View>
           </View>
           {!isTempEarningCondition && maxApy && (

@@ -109,7 +109,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
         <View style={styleSheet.balanceInfoRow}>
           <View style={{ flexDirection: 'row', gap: theme.paddingXXS, flex: 1 }}>
             <EarningTypeTag type={type} chain={chain} />
-            {getTagItem(chainInfo.isTestnet)}
+            {chainInfo.isTestnet && getTagItem(chainInfo.isTestnet)}
           </View>
 
           {!isTempEarningCondition &&
