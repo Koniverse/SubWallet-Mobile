@@ -11,10 +11,11 @@ type Props = {
   type?: YieldPoolType;
   comingSoon?: boolean;
   chain: string;
+  textMaxWidth?: number;
 };
 
 const EarningTypeTag: React.FC<Props> = (props: Props) => {
-  const { type, comingSoon, chain } = props;
+  const { type, comingSoon, chain, textMaxWidth } = props;
 
   const theme = useSubWalletTheme().swThemes;
 
@@ -54,12 +55,14 @@ const EarningTypeTag: React.FC<Props> = (props: Props) => {
       }
       bgColor={earningTag.bgColor}>
       <Typography.Text
+        ellipsis
         style={{
           fontSize: theme.fontSizeXS,
           textAlign: 'center',
           lineHeight: theme.fontSizeXS * theme.lineHeightXS,
           paddingLeft: 4,
           color: earningTag.color,
+          maxWidth: textMaxWidth || 'auto',
           ...FontBold,
         }}>
         {earningTag.label}

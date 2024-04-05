@@ -31,7 +31,6 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
     return (
       <Tag
         icon={<Icon phosphorIcon={TagIcon} size={'xxs'} iconColor={tagIconColor} />}
-        shape={'round'}
         color={tagColor}
         bgType={'default'}
         bgColor={tagBgc}>

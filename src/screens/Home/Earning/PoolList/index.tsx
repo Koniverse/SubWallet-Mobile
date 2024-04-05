@@ -26,6 +26,7 @@ import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-serv
 import useAccountBalance, { getBalanceValue } from 'hooks/screen/useAccountBalance';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
+import { useGroupYieldPosition } from 'hooks/earning';
 
 const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
   if (!filters.length) {
@@ -98,6 +99,11 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const chainsByAccountType = useGetChainSlugs();
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
+  const yieldPositions = useGroupYieldPosition();
+
+  const positionSlugs = useMemo(() => {
+    return yieldPositions.map(p => p.slug);
+  }, [yieldPositions]);
 
   const getAltChain = useCallback(
     (poolInfo?: YieldPoolInfo) => {
@@ -151,7 +157,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
       if (poolInfo.type === YieldPoolType.NATIVE_STAKING) {
         let minJoinPool: string;
 
-        if (poolInfo.statistic) {
+        if (poolInfo.statistic && !positionSlugs.includes(poolInfo.slug)) {
           minJoinPool = poolInfo.statistic.earningThreshold.join;
         } else {
           minJoinPool = '0';
@@ -188,7 +194,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     });
 
     return result;
-  }, [chainAsset, pools, tokenBalanceMap]);
+  }, [chainAsset, pools, positionSlugs, tokenBalanceMap]);
 
   const onPressItem = useCallback(
     (chainSlug: string, poolInfo: YieldPoolInfo) => {

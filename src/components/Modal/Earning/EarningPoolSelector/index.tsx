@@ -160,19 +160,19 @@ export const EarningPoolSelector = forwardRef(
       return items.find(item => item.idStr === targetPool);
     }, [items, targetPool]);
 
-  const resultList = useMemo(() => {
-    return [...items].sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
-      switch (sortSelection) {
-        case SortKey.MEMBER:
-          return a.memberCounter - b.memberCounter;
-        case SortKey.TOTAL_POOLED:
-          return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
-        case SortKey.DEFAULT:
-        default:
-          return a.id === defaultSelectPool ? -1 : b.id === defaultSelectPool ? 1 : 0; // put recommend item to top
-      }
-    });
-  }, [defaultSelectPool, items, sortSelection]);
+    const resultList = useMemo(() => {
+      return [...items].sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
+        switch (sortSelection) {
+          case SortKey.MEMBER:
+            return a.memberCounter - b.memberCounter;
+          case SortKey.TOTAL_POOLED:
+            return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
+          case SortKey.DEFAULT:
+          default:
+            return a.id === defaultSelectPool ? -1 : b.id === defaultSelectPool ? 1 : 0; // put recommend item to top
+        }
+      });
+    }, [defaultSelectPool, items, sortSelection]);
 
     const isDisabled = useMemo(
       () => disabled || !!nominationPoolValueList.length || !items.length,
@@ -254,46 +254,46 @@ export const EarningPoolSelector = forwardRef(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nominationPoolValueList, items]);
 
-  return (
-    <>
-      <FullSizeSelectModal
-        selectedValueMap={{}}
-        selectModalType={'single'}
-        items={resultList}
-        renderCustomItem={renderItem}
-        searchFunc={searchFunction}
-        title={i18n.header.selectPool}
-        ref={poolSelectorRef}
-        renderListEmptyComponent={renderListEmptyComponent}
-        disabled={isDisabled}
-        isShowFilterBtn={true}
-        filterOptions={FILTER_OPTIONS}
-        filterFunction={filterFunction}
-        onCloseModal={() => setSortSelection(SortKey.DEFAULT)}
-        rightIconOption={{
-          icon: ({ color }) => <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />,
-          onPress: () => sortingModalRef?.current?.onOpenModal(),
-        }}
-        renderSelected={() => (
-          <PoolSelectorField
-            disabled={isDisabled}
-            onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
-            // onPressLightningBtn={onPressLightningBtn}
-            showLightingBtn={false}
-            item={selectedPool}
-            label={i18n.inputLabel.pool}
-            loading={poolLoading}
-            recommendId={defaultSelectPool}
-          />
-        )}>
-        <>
-          {!!selectedItem && (
-            <PoolSelectorDetailModal
-              detailItem={selectedItem}
-              detailModalVisible={detailModalVisible}
-              setVisible={setDetailModalVisible}
+    return (
+      <>
+        <FullSizeSelectModal
+          selectedValueMap={{}}
+          selectModalType={'single'}
+          items={resultList}
+          renderCustomItem={renderItem}
+          searchFunc={searchFunction}
+          title={i18n.header.selectPool}
+          ref={poolSelectorRef}
+          renderListEmptyComponent={renderListEmptyComponent}
+          disabled={isDisabled}
+          isShowFilterBtn={true}
+          filterOptions={FILTER_OPTIONS}
+          filterFunction={filterFunction}
+          onCloseModal={() => setSortSelection(SortKey.DEFAULT)}
+          rightIconOption={{
+            icon: ({ color }) => <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />,
+            onPress: () => sortingModalRef?.current?.onOpenModal(),
+          }}
+          renderSelected={() => (
+            <PoolSelectorField
+              disabled={isDisabled}
+              onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
+              // onPressLightningBtn={onPressLightningBtn}
+              showLightingBtn={false}
+              item={selectedPool}
+              label={i18n.inputLabel.pool}
+              loading={poolLoading}
+              recommendId={defaultSelectPool}
             />
-          )}
+          )}>
+          <>
+            {!!selectedItem && (
+              <PoolSelectorDetailModal
+                detailItem={selectedItem}
+                detailModalVisible={detailModalVisible}
+                setVisible={setDetailModalVisible}
+              />
+            )}
 
             <BasicSelectModal
               level={2}

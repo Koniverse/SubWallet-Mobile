@@ -1,7 +1,7 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import EarningGroupItem from 'components/Item/Earning/EarningGroupItem';
-import { useYieldGroupInfo } from 'hooks/earning';
+import { useGroupYieldPosition, useYieldGroupInfo } from 'hooks/earning';
 import { Trophy } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Alert, Keyboard, Linking, ListRenderItemInfo, RefreshControl } from 'react-native';
@@ -111,9 +111,13 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const chainsByAccountType = useGetChainSlugs();
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
-
+  const yieldPositions = useGroupYieldPosition();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [selectedPoolGroup, setSelectedPoolGroup] = React.useState<YieldGroupInfo | undefined>(undefined);
+
+  const positionSlugs = useMemo(() => {
+    return yieldPositions.map(p => p.slug);
+  }, [yieldPositions]);
 
   const getAltChain = useCallback(
     (poolInfo?: YieldPoolInfo) => {
@@ -137,27 +141,27 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   }, [getAltChain, poolInfoMap, selectedPoolGroup]);
 
   const navigateToEarnScreen = useCallback(
-    (poolGroup: YieldGroupInfo) => {
-      const standAloneTokenSlug = Object.values(poolInfoMap).find(
-        i => i.group === poolGroup.group && i.chain === poolGroup.chain,
-      )?.slug;
-
+    (slug: string) => {
       rootNavigation.navigate('Drawer', {
         screen: 'TransactionAction',
         params: {
           screen: 'Earning',
-          params: { slug: standAloneTokenSlug || '' },
+          params: { slug: slug || '' },
         },
       });
     },
-    [poolInfoMap, rootNavigation],
+    [rootNavigation],
   );
 
   const { checkChainConnected, onConnectChain, isLoading, turnOnChain, setLoading } = useHandleChainConnection(
     selectedPoolGroup?.chain,
     selectedPoolGroup?.name,
     () => {
-      setTimeout(() => selectedPoolGroup && navigateToEarnScreen(selectedPoolGroup), 100);
+      setTimeout(() => {
+        if (selectedPoolGroup && selectedPoolGroup.poolSlugs[0]) {
+          navigateToEarnScreen(selectedPoolGroup.poolSlugs[0]);
+        }
+      }, 100);
     },
     altChainData,
   );
@@ -206,7 +210,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
           turnOnChain(currentAltChainData.chain);
           setLoading(true);
         } else {
-          navigateToEarnScreen(poolGroup);
+          navigateToEarnScreen(poolInfo.slug);
         }
       };
 
@@ -220,7 +224,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
             if (poolInfo.type === YieldPoolType.NATIVE_STAKING) {
               let minJoinPool: string;
 
-              if (poolInfo.statistic) {
+              if (poolInfo.statistic && !positionSlugs.includes(poolSlug)) {
                 minJoinPool = poolInfo.statistic.earningThreshold.join;
               } else {
                 minJoinPool = '0';
@@ -247,6 +251,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
           const index = poolGroup.poolSlugs.findIndex(poolGroup =>
             poolGroup.includes(YieldPoolType.NOMINATION_POOL.toLowerCase()),
           );
+          console.log('poolGroup.poolSlugs[index]', poolGroup.poolSlugs[index]);
 
           const poolInfo = poolInfoMap[poolGroup.poolSlugs[index]];
 
@@ -267,6 +272,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
       navigation,
       onConnectChain,
       poolInfoMap,
+      positionSlugs,
       setLoading,
       tokenBalanceMap,
       turnOnChain,

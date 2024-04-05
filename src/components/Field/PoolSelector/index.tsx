@@ -69,7 +69,7 @@ export const PoolSelectorField = ({
             </Text>
             {item && recommendId && recommendId === item?.id && (
               <Typography.Text numberOfLines={1} size={'sm'} style={{ color: theme.colorTextLight4 }}>
-                {'  (Recommend)'}
+                {'  (Recommended)'}
               </Typography.Text>
             )}
           </View>
