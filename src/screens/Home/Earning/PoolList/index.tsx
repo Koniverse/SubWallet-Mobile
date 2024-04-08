@@ -85,7 +85,7 @@ const FILTER_OPTIONS = [
 
 export const PoolList: React.FC<EarningPoolListProps> = ({
   route: {
-    params: { group: poolGroup, symbol },
+    params: { group: poolGroup, symbol, isRelatedToRelayChain },
   },
 }: EarningPoolListProps) => {
   const theme = useSubWalletTheme().swThemes;
@@ -154,7 +154,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     const result: YieldPoolInfo[] = [];
 
     pools.forEach(poolInfo => {
-      if (poolInfo.type === YieldPoolType.NATIVE_STAKING) {
+      if (poolInfo.type === YieldPoolType.NATIVE_STAKING && isRelatedToRelayChain) {
         let minJoinPool: string;
 
         if (poolInfo.statistic && !positionSlugs.includes(poolInfo.slug)) {
@@ -194,7 +194,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     });
 
     return result;
-  }, [chainAsset, pools, positionSlugs, tokenBalanceMap]);
+  }, [chainAsset, isRelatedToRelayChain, pools, positionSlugs, tokenBalanceMap]);
 
   const onPressItem = useCallback(
     (chainSlug: string, poolInfo: YieldPoolInfo) => {

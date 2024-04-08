@@ -217,7 +217,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
       if (poolGroup.poolListLength > 1) {
         let isHiddenPool = false;
 
-        if (poolGroup.poolListLength === 2) {
+        if (poolGroup.poolListLength === 2 && poolGroup.isRelatedToRelayChain) {
           poolGroup.poolSlugs.forEach(poolSlug => {
             const poolInfo = poolInfoMap[poolSlug];
 
@@ -251,13 +251,16 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
           const index = poolGroup.poolSlugs.findIndex(poolGroup =>
             poolGroup.includes(YieldPoolType.NOMINATION_POOL.toLowerCase()),
           );
-          console.log('poolGroup.poolSlugs[index]', poolGroup.poolSlugs[index]);
 
           const poolInfo = poolInfoMap[poolGroup.poolSlugs[index]];
 
           processPoolOptions(poolInfo);
         } else {
-          navigation.navigate('EarningPoolList', { group: poolGroup.group, symbol: poolGroup.symbol });
+          navigation.navigate('EarningPoolList', {
+            group: poolGroup.group,
+            symbol: poolGroup.symbol,
+            isRelatedToRelayChain: poolGroup.isRelatedToRelayChain,
+          });
         }
       } else if (poolGroup.poolListLength === 1) {
         const poolInfo = poolInfoMap[poolGroup.poolSlugs[0]];
