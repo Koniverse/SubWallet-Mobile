@@ -43,7 +43,7 @@ import {
   WebViewProgressEvent,
 } from 'react-native-webview/lib/WebViewTypes';
 import * as RNFS from 'react-native-fs';
-import { DEVICE } from 'constants/index';
+import { DEVICE, regex } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
 import { addToHistory, updateLatestItemInHistory, updateTab, updateTabScreenshot } from 'stores/updater';
@@ -512,6 +512,10 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
 
       if (urlParsed.href.startsWith('itms-appss://')) {
         return false;
+      }
+
+      if (urlParsed.protocol === 'http:') {
+        Linking.openURL(url.replace(regex.httpProtocol, 'https://'));
       }
 
       return true;
