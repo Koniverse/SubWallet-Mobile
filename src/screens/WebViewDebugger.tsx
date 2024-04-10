@@ -14,12 +14,19 @@ import { Button } from 'components/design-system-ui';
 import env from 'react-native-config';
 import { ToggleItem } from 'components/ToggleItem';
 import { Bug } from 'phosphor-react-native';
+import {
+  updateBannerHistoryData,
+  updateConfirmationHistoryData,
+  updatePopupHistoryData,
+} from 'stores/base/StaticContent';
+import { useDispatch } from 'react-redux';
 
 const BUNDLE_ENV = env.BUNDLE_ENV;
 export const WebViewDebugger = () => {
   const isDevMode = getDevMode();
   const navigation = useNavigation<RootNavigationProps>();
   const { webState, reload } = useContext(WebRunnerContext);
+  const dispatch = useDispatch();
   const [input, setInput] = useState('');
   const [notification, setNotification] = useState('');
   const themeColors = useSubWalletTheme().colors;
@@ -125,6 +132,17 @@ export const WebViewDebugger = () => {
             onValueChange={onValueChange}
             backgroundIcon={Bug}
           />
+          <Button
+            style={{ marginBottom: 5 }}
+            onPress={() => {
+              dispatch(updatePopupHistoryData({}));
+              dispatch(updateBannerHistoryData({}));
+              dispatch(updateConfirmationHistoryData({}));
+              setNotification("OK, Let's restart app!");
+              mmkvStore.set('isOpenIntroductionFirstTime', false);
+            }}>
+            Reset static content
+          </Button>
           <Text style={textStyle}>{notification}</Text>
         </View>
       </ScrollView>

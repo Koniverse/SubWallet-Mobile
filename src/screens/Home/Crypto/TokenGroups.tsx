@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { TokenBalanceItemType } from 'types/balance';
 import { CryptoNavigationProps } from 'routes/home';
@@ -27,6 +27,8 @@ import { useToast } from 'react-native-toast-notifications';
 import { TokenSearchModal } from 'screens/Home/Crypto/TokenSearchModal';
 import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
 import { tokenItem } from 'constants/itemHeight';
+import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
+import { GlobalModalContext } from 'providers/GlobalModalContext';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -68,6 +70,8 @@ export const TokenGroups = () => {
     tokenRef,
     selectedAccountMap,
   } = useReceiveQR();
+  const globalAppModalContext = useContext(GlobalModalContext);
+  const { confirmations, renderConfirmationButtons } = useGetConfirmationByScreen('send-fund');
 
   const toast = useToast();
 
@@ -170,14 +174,31 @@ export const TokenGroups = () => {
       return;
     }
 
-    navigation.navigate('Drawer', {
-      screen: 'TransactionAction',
-      params: {
-        screen: 'SendFund',
-        params: {},
-      },
-    });
-  }, [currentAccount, navigation, showNoti]);
+    const onSuccess = () => {
+      navigation.navigate('Drawer', {
+        screen: 'TransactionAction',
+        params: {
+          screen: 'SendFund',
+          params: {},
+        },
+      });
+    };
+
+    if (confirmations && confirmations.length) {
+      globalAppModalContext.setGlobalModal({
+        visible: true,
+        title: 'Confirmation',
+        message: confirmations[0].content,
+        type: 'confirmation',
+        externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
+          globalAppModalContext.hideGlobalModal();
+          onSuccess();
+        }),
+      });
+    } else {
+      onSuccess();
+    }
+  }, [confirmations, currentAccount, globalAppModalContext, navigation, renderConfirmationButtons, showNoti]);
 
   const tokenSearchItems = useMemo<TokenBalanceItemType[]>(() => {
     const items: TokenBalanceItemType[] = [];

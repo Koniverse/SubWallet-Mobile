@@ -440,12 +440,14 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeYieldPoolInfo,
           name: 'subscribeYieldPoolInfo',
           relatedStores: ['earning'],
+          isStartImmediately: true,
         });
 
         _DataContext.addHandler({
           ...subscribeYieldPositionInfo,
           name: 'subscribeYieldPositionInfo',
           relatedStores: ['earning'],
+          isStartImmediately: true,
         });
 
         _DataContext.addHandler({

@@ -29,16 +29,12 @@ import i18n from 'utils/i18n/i18n';
 import { RootStackParamList } from 'routes/index';
 import { handleTriggerDeeplinkAfterLogin } from 'utils/deeplink';
 import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
-import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
-import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { mmkvStore } from 'utils/storage';
 import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import IntroducingModal from 'components/Modal/IntroducingModal';
-import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 import { TermAndCondition } from 'constants/termAndCondition';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { useIsFocused } from '@react-navigation/native';
 
 interface tabbarIconColor {
   color: string;
@@ -208,14 +204,14 @@ export const Home = ({ navigation }: Props) => {
   const [isLoading, setLoading] = useState(true);
   const [generalTermVisible, setGeneralTermVisible] = useState<boolean>(false);
   const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
-  const banners = useGetBannerByScreen('home');
-  const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
-  const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
+  // const banners = useGetBannerByScreen('home');
+  // const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
+  // const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
   const [introducingModalVisible, setIntroducingModalVisible] = useState<boolean>(false);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
   const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
   const language = useSelector((state: RootState) => state.settings.language);
-  const isFocused = useIsFocused();
+  // const isFocused = useIsFocused();
   mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
 
   const needMigrate = useMemo(
@@ -249,12 +245,12 @@ export const Home = ({ navigation }: Props) => {
     if (!isOpenIntroductionFirstTime) {
       return;
     }
-    if (firstBanner) {
-      isShowCampaignModal = true;
-      setCampaignModalVisible(true);
-    }
+    // if (firstBanner) {
+    //   isShowCampaignModal = true;
+    //   setCampaignModalVisible(true);
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [firstBanner]);
+  }, []);
 
   useEffect(() => {
     if (!isOpenGeneralTermFirstTime) {
@@ -292,19 +288,19 @@ export const Home = ({ navigation }: Props) => {
       {!isLocked && !isEmptyAccounts && !isOpenIntroductionFirstTime && !needMigrate && (
         <IntroducingModal visible={introducingModalVisible} setVisible={setIntroducingModalVisible} />
       )}
-      {!isLocked &&
-        firstBanner &&
-        isShowCampaignModal &&
-        !isEmptyAccounts &&
-        isOpenIntroductionFirstTime &&
-        !needMigrate &&
-        isFocused && (
-          <CampaignBannerModal
-            visible={campaignModalVisible}
-            banner={firstBanner}
-            setVisible={setCampaignModalVisible}
-          />
-        )}
+      {/*{!isLocked &&*/}
+      {/*  firstBanner &&*/}
+      {/*  isShowCampaignModal &&*/}
+      {/*  !isEmptyAccounts &&*/}
+      {/*  isOpenIntroductionFirstTime &&*/}
+      {/*  !needMigrate &&*/}
+      {/*  isFocused && (*/}
+      {/*    <CampaignBannerModal*/}
+      {/*      visible={campaignModalVisible}*/}
+      {/*      banner={firstBanner}*/}
+      {/*      setVisible={setCampaignModalVisible}*/}
+      {/*    />*/}
+      {/*  )}*/}
       {!isLocked && !isOpenGeneralTermFirstTime && !needMigrate && (
         <GeneralTermModal
           modalVisible={generalTermVisible}

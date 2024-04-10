@@ -4,7 +4,7 @@ import EarningGroupItem from 'components/Item/Earning/EarningGroupItem';
 import { useGroupYieldPosition, useYieldGroupInfo } from 'hooks/earning';
 import { Trophy } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Alert, Keyboard, Linking, ListRenderItemInfo, RefreshControl } from 'react-native';
+import { Alert, Keyboard, Linking, ListRenderItemInfo, RefreshControl, View } from 'react-native';
 import { EarningScreenNavigationProps } from 'routes/earning';
 import { YieldGroupInfo } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
@@ -27,6 +27,8 @@ import useAccountBalance, { getBalanceValue } from 'hooks/screen/useAccountBalan
 import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
+import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
+import { BannerGenerator } from 'components/common/BannerGenerator';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -112,6 +114,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
   const yieldPositions = useGroupYieldPosition();
+  const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('earning');
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [selectedPoolGroup, setSelectedPoolGroup] = React.useState<YieldGroupInfo | undefined>(undefined);
 
@@ -372,6 +375,11 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
               refresh(reloadCron({ data: 'staking' }));
             }}
           />
+        }
+        beforeListItem={
+          <View style={{ paddingHorizontal: theme.padding }}>
+            <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
+          </View>
         }
       />
 
