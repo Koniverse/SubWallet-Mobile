@@ -1,3 +1,6 @@
+## 1.1.48 (356)
+
+
 ## 1.1.48 (355)
 - Adjust banner height (#1538)
 - Hide scroll in InstructionModal (#1538)
