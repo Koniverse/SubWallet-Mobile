@@ -206,7 +206,7 @@ export const Confirmations = () => {
       }
     }
 
-    if (confirmation.item.isInternal) {
+    if (confirmation.item.isInternal && confirmation.type !== 'connectWCRequest') {
       return <TransactionConfirmation confirmation={confirmation} navigation={navigation} />;
     }
 
