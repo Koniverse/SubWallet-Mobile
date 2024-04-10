@@ -28,6 +28,8 @@ import {
   updateConfirmationHistoryData,
   updatePopupHistoryData,
 } from 'stores/base/StaticContent';
+import { STATIC_DATA_DOMAIN } from 'constants/index';
+import { getStaticContentByDevMode } from 'utils/storage';
 
 interface AppOnlineContentContextProviderProps {
   children?: React.ReactElement;
@@ -98,6 +100,8 @@ const getAppTransformRouteName = (currentRoute?: string) => {
   }
 };
 
+const dataByDevModeStatus = getStaticContentByDevMode();
+
 export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentContextProviderProps) => {
   const globalAppModalContext = useContext(GlobalModalContext);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
@@ -116,7 +120,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
   } = useSelector((state: RootState) => state.staticContent);
 
   const getAppContentData = useCallback(async (dataType: OnlineContentDataType) => {
-    return await axios.get(`https://content.subwallet.app/api/list/app-${dataType}`);
+    return await axios.get(`${STATIC_DATA_DOMAIN}/app-${dataType}s/${dataByDevModeStatus}.json`);
   }, []);
 
   const checkComparison = useCallback((comparison: string, value: string, comparisonValue: string) => {
