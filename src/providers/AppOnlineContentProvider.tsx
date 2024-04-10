@@ -116,7 +116,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
   } = useSelector((state: RootState) => state.staticContent);
 
   const getAppContentData = useCallback(async (dataType: OnlineContentDataType) => {
-    return await axios.get(`https://content.subwallet.app/api/list/app-${dataType}?preview=true`);
+    return await axios.get(`https://content.subwallet.app/api/list/app-${dataType}`);
   }, []);
 
   const checkComparison = useCallback((comparison: string, value: string, comparisonValue: string) => {
