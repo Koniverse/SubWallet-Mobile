@@ -13,7 +13,7 @@ interface InputAmountProps {
   placeholder?: string;
   decimals: number;
   value: string;
-  onChangeValue: (value: string, isInValid: boolean) => void;
+  onChangeValue: (value: string, isInValid?: boolean) => void;
   maxValue: string;
   disable?: boolean;
   errorMessages?: string[];
@@ -151,6 +151,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
           maxLength={getMaxLengthText(inputValue)}
           placeholderTextColor={theme.colorTextLight4}
           editable={!disable}
+          textAlign={'right'}
         />
         {showMaxButton && (
           <Button

@@ -1,0 +1,193 @@
+import { Button, Icon, SwFullSizeModal, Typography } from 'components/design-system-ui';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { View } from 'react-native';
+import { CheckCircle, XCircle } from 'phosphor-react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import MetaInfo from 'components/MetaInfo';
+import { useForm } from 'react-hook-form';
+import InputText from 'components/Input/InputText';
+import { FormItem } from 'components/common/FormItem';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
+import BigN from 'bignumber.js';
+import { SlippageType } from '@subwallet/extension-base/types/swap';
+
+interface Props {
+  modalVisible: boolean;
+  setModalVisible: (value: boolean) => void;
+  slippageValue: SlippageType;
+  onApplySlippage?: (slippage: SlippageType) => void;
+}
+
+const SLIPPAGE_TOLERANCE: Record<string, number> = {
+  option_1: 0.001,
+  option_2: 0.005,
+  option_3: 0.01,
+  option_4: 0.03,
+};
+
+interface FormValues {
+  slippage: string;
+}
+
+export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, onApplySlippage }: Props) => {
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+  const theme = useSubWalletTheme().swThemes;
+  const [selectedSlippage, setSelectedSlippage] = useState<string | undefined>(undefined);
+  const firstRenderRef = useRef(false);
+
+  const { control, handleSubmit, setValue } = useForm<FormValues>({
+    mode: 'onChange',
+    defaultValues: {
+      slippage: '0',
+    },
+  });
+
+  const onCancel = () => {
+    setModalVisible(false);
+  };
+
+  const handleSelectSlippage = (item: string) => setSelectedSlippage(item);
+
+  const handleApplySlippage = useCallback(
+    (values: FormValues) => {
+      const { slippage: slippageValueForm } = values;
+      console.log('selectedSlippage', selectedSlippage);
+      if (selectedSlippage) {
+        const slippageObject = {
+          slippage: new BigN(SLIPPAGE_TOLERANCE[selectedSlippage]),
+          isCustomType: true,
+        };
+
+        onApplySlippage?.(slippageObject);
+      } else if (slippageValueForm) {
+        const slippageObject = {
+          slippage: new BigN(slippageValueForm).div(100),
+          isCustomType: false,
+        };
+
+        onApplySlippage?.(slippageObject);
+      }
+      setModalVisible(false);
+    },
+    [onApplySlippage, selectedSlippage, setModalVisible],
+  );
+
+  useEffect(() => {
+    if (selectedSlippage) {
+      setValue('slippage', '');
+    }
+  }, [selectedSlippage, setValue]);
+
+  useEffect(() => {
+    if (!firstRenderRef.current) {
+      if (slippageValue.isCustomType) {
+        for (const [key, val] of Object.entries(SLIPPAGE_TOLERANCE)) {
+          if (slippageValue.slippage.isEqualTo(val)) {
+            setSelectedSlippage(key);
+            firstRenderRef.current = true;
+            break;
+          }
+        }
+
+        !firstRenderRef.current && setSelectedSlippage(undefined);
+        setValue('slippage', '');
+      } else {
+        setValue('slippage', '');
+      }
+    }
+  }, [setValue, slippageValue.isCustomType, slippageValue.slippage, modalVisible]);
+
+  useEffect(() => {
+    if (!modalVisible) {
+      firstRenderRef.current = false;
+    }
+  }, [modalVisible]);
+
+  return (
+    <SwFullSizeModal
+      isUseModalV2
+      modalVisible={modalVisible}
+      setVisible={setModalVisible}
+      modalBaseV2Ref={modalBaseV2Ref}>
+      <ContainerWithSubHeader
+        showLeftBtn
+        title={'Slippage setting'}
+        style={{ paddingHorizontal: theme.padding }}
+        onPressBack={() => setModalVisible(false)}>
+        <View style={{ gap: theme.sizeSM, flex: 1, paddingTop: theme.padding }}>
+          <MetaInfo hasBackgroundWrapper>
+            <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
+              {'Select slippage tolerance'}
+            </Typography.Text>
+            <View style={{ flexDirection: 'row', gap: theme.paddingXS, flexWrap: 'wrap' }}>
+              {Object.entries(SLIPPAGE_TOLERANCE).map(([key, value]) => (
+                <Button
+                  key={key}
+                  onPress={() => {
+                    handleSelectSlippage(key);
+                  }}
+                  size={'xs'}
+                  style={{
+                    backgroundColor: key === selectedSlippage ? theme.colorPrimary : theme.colorBgInput,
+                  }}>{`${value * 100}%`}</Button>
+              ))}
+            </View>
+            <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
+              {'Or custom slippage'}
+            </Typography.Text>
+            <FormItem
+              control={control}
+              render={({ field: { value, ref, onChange, onBlur } }) => (
+                <InputText
+                  ref={ref}
+                  containerStyle={{ backgroundColor: theme.colorBgInput }}
+                  extraTextInputStyle={{ paddingRight: 34 }}
+                  style={{ marginRight: 16 }}
+                  onChangeText={text => {
+                    setSelectedSlippage(undefined);
+                    onChange(text);
+                  }}
+                  value={value}
+                  onBlur={onBlur}
+                  placeholder={'0.1 - 2'}
+                  rightIcon={
+                    <Typography.Text
+                      style={{
+                        position: 'absolute',
+                        top: 12,
+                        right: 12,
+                        color: theme.colorWhite,
+                      }}>
+                      {'%'}
+                    </Typography.Text>
+                  }
+                />
+              )}
+              name="slippage"
+            />
+          </MetaInfo>
+          <AlertBox
+            type={'warning'}
+            title={'Pay attention!'}
+            description={
+              'Setting a high slippage tolerance can help transactions succeed, but you may not get such a good price. Use with caution.'
+            }
+          />
+        </View>
+        <View style={{ flexDirection: 'row', gap: theme.sizeSM, marginBottom: theme.margin }}>
+          <Button block onPress={onCancel} icon={<Icon phosphorIcon={XCircle} weight={'fill'} />} type={'secondary'}>
+            Cancel
+          </Button>
+          <Button
+            block
+            onPress={handleSubmit(handleApplySlippage)}
+            icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}>
+            Apply
+          </Button>
+        </View>
+      </ContainerWithSubHeader>
+    </SwFullSizeModal>
+  );
+};

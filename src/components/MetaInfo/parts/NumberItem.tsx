@@ -18,6 +18,7 @@ export interface NumberInfoItem extends Omit<InfoItemBase, 'valueColorSchema'> {
   valueColorSchema?: SchemeColor | 'even-odd';
   size?: TextSizeProps;
   spaceBetween?: boolean;
+  suffixNode?: React.ReactNode;
 }
 
 const NumberItem: React.FC<NumberInfoItem> = ({
@@ -25,6 +26,7 @@ const NumberItem: React.FC<NumberInfoItem> = ({
   label,
   prefix,
   suffix,
+  suffixNode,
   value,
   valueColorSchema,
   loading,
@@ -74,17 +76,20 @@ const NumberItem: React.FC<NumberInfoItem> = ({
         {loading ? (
           <ActivityIndicator size={20} />
         ) : (
-          <Number
-            value={value}
-            decimal={decimals}
-            suffix={suffix}
-            prefix={prefix}
-            intColor={valueColorSchema === 'even-odd' ? theme.colorTextLight2 : undefined}
-            decimalColor={valueColorSchema === 'even-odd' ? theme.colorTextLight4 : undefined}
-            unitColor={valueColorSchema === 'even-odd' ? theme.colorTextLight2 : undefined}
-            textStyle={valueStyle}
-            size={valueSize}
-          />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Number
+              value={value}
+              decimal={decimals}
+              suffix={suffix}
+              prefix={prefix}
+              intColor={valueColorSchema === 'even-odd' ? theme.colorTextLight2 : undefined}
+              decimalColor={valueColorSchema === 'even-odd' ? theme.colorTextLight4 : undefined}
+              unitColor={valueColorSchema === 'even-odd' ? theme.colorTextLight2 : undefined}
+              textStyle={valueStyle}
+              size={valueSize}
+            />
+            {suffixNode}
+          </View>
         )}
       </View>
     </View>

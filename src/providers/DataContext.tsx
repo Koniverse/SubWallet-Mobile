@@ -43,6 +43,7 @@ import {
   subscribeChainStatusMap,
   getChainLogoMaps,
   getAssetsLogoMaps,
+  subscribeSwapPairs,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -469,6 +470,9 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
         });
 
         /* Earning */
+
+        // Swap
+        _DataContext.addHandler({ ...subscribeSwapPairs, name: 'subscribeSwapPairs', relatedStores: ['swap'] });
 
         readyFlag.current.isStart = false;
       }

@@ -13,3 +13,4 @@ export { default as TokenApproveConfirmation } from './TokenApprove';
 export { default as TransferBlock } from './TransferBlock';
 export { default as UnbondTransactionConfirmation } from './Unbond';
 export { default as WithdrawTransactionConfirmation } from './Withdraw';
+export { default as SwapTransactionConfirmation } from './Swap';

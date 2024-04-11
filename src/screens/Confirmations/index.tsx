@@ -159,6 +159,8 @@ export const Confirmations = () => {
           return i18n.header.unstakeQDOTTransaction;
         case ExtrinsicType.TOKEN_APPROVE:
           return i18n.header.tokenApproveTransaction;
+        case ExtrinsicType.SWAP:
+          return 'Swap confirmation';
         default:
           return i18n.header.transactionConfirmation;
       }

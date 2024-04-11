@@ -48,6 +48,7 @@ import { MissionInfo } from 'types/missionPool';
 import { DAPPCategory, DAppInfo } from 'types/browser';
 import { RootRouteProps } from 'routes/index';
 import { AppBannerData, AppConfirmationData, AppPopupData, PopupHistoryData } from 'types/staticContent';
+import { SwapPair } from '@subwallet/extension-base/types/swap';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -271,4 +272,8 @@ export interface EarningStore extends BaseReduxStore {
   rewardHistories: EarningRewardHistoryItem[];
   minAmountPercentMap: Record<string, number>;
   poolTargetsMap: Record<string, YieldPoolTarget[]>;
+}
+
+export interface SwapStore extends BaseReduxStore {
+  swapPairs: SwapPair[];
 }

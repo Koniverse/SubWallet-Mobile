@@ -23,6 +23,7 @@ interface Props extends FieldBaseProps {
   rightIcon?: React.ReactNode;
   disabled?: boolean;
   containerStyle?: ViewStyle;
+  extraTextInputStyle?: ViewStyle;
   readonly?: boolean;
 }
 
@@ -44,6 +45,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
     rightIcon,
     disabled,
     containerStyle,
+    extraTextInputStyle,
     readonly,
   } = passwordFieldProps;
   const hasLabel = !!label;
@@ -54,13 +56,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
 
   return (
     <>
-      <View
-        style={[
-          styles.inputContainer,
-          containerStyle,
-          { backgroundColor: theme.colorBgSecondary },
-          disabled && DisabledStyle,
-        ]}>
+      <View style={[styles.inputContainer, containerStyle, disabled && DisabledStyle]}>
         {hasLabel && <Typography.Text style={styles.inputLabel}>{label}</Typography.Text>}
         <>
           {leftIcon && (
@@ -74,7 +70,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
             autoCapitalize={'none'}
             placeholder={placeholder}
             autoFocus={autoFocus}
-            style={styles.textInput}
+            style={[styles.textInput, extraTextInputStyle]}
             placeholderTextColor={theme.colorTextLight4}
             selectionColor={theme.colorTextLight4}
             blurOnSubmit={false}
@@ -84,6 +80,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
             defaultValue={defaultValue || ''}
             onBlur={onBlur}
             editable={!isBusy}
+            keyboardType={'numeric'}
             selectTextOnFocus={!isBusy}
             value={value}
           />

@@ -10,6 +10,7 @@ export type TransactionActionStackParamList = {
   };
   Stake: { chain?: string; type?: string };
   Earning: { slug: string; target?: string; redirectFromPreview?: boolean };
+  Swap: undefined;
   Unbond: { slug: string };
   Withdraw: { slug: string };
   ClaimReward: { slug: string };
@@ -27,3 +28,4 @@ export type ClaimRewardProps = NativeStackScreenProps<TransactionActionStackPara
 export type WithdrawProps = NativeStackScreenProps<TransactionActionStackParamList, 'Withdraw'>;
 export type CancelUnstakeProps = NativeStackScreenProps<TransactionActionStackParamList, 'CancelUnstake'>;
 export type EarningProps = NativeStackScreenProps<TransactionActionStackParamList, 'Earning'>;
+export type SwapProps = NativeStackScreenProps<TransactionActionStackParamList, 'Swap'>;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, View, TouchableOpacity, Linking } from 'react-native';
+import { StyleProp, View, TouchableOpacity } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { Eye, EyeSlash } from 'phosphor-react-native';
@@ -60,7 +60,6 @@ export const TokenGroupsUpperBlock = ({
     updateToggleBalance();
     toggleBalancesVisibility().catch(console.log);
   };
-  const swapUrl = `subwallet://browser?url=${encodeURIComponent('https://web.subwallet.app/redirect-handler/swap')}`;
 
   return (
     <View style={containerStyle} pointerEvents="box-none">
@@ -152,7 +151,14 @@ export const TokenGroupsUpperBlock = ({
           <ActionButton
             label={i18n.cryptoScreen.swap}
             icon={ButtonIcon.Swap}
-            onPress={() => Linking.openURL(swapUrl)}
+            onPress={() =>
+              navigation.navigate('Drawer', {
+                screen: 'TransactionAction',
+                params: {
+                  screen: 'Swap',
+                },
+              })
+            }
             buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
           />
         )}

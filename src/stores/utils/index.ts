@@ -51,6 +51,7 @@ import {
 import { getStaticContentByDevMode } from 'utils/storage';
 import { STATIC_DATA_DOMAIN } from 'constants/index';
 import { RootRouteProps } from 'routes/index';
+import { SwapPair } from '@subwallet/extension-base/types/swap';
 // Setup redux stores
 
 function voidFn() {
@@ -679,6 +680,19 @@ export const subscribeBuyServices = lazySubscribeMessage(
   updateBuyServices,
   updateBuyServices,
 );
+
+/* Swap */
+export const updateSwapPairs = (data: SwapPair[]) => {
+  store.dispatch({ type: 'swap/updateSwapPairs', payload: data });
+};
+
+export const subscribeSwapPairs = lazySubscribeMessage(
+  'pri(swapService.subscribePairs)',
+  null,
+  updateSwapPairs,
+  updateSwapPairs,
+);
+/* Swap */
 
 /* Buy service */
 

@@ -59,6 +59,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
         return ExtraExtrinsicType.IMPORT_TOKEN;
       case 'send-nft':
         return ExtrinsicType.SEND_NFT;
+      case 'swap':
+        return ExtrinsicType.SWAP;
       case 'send-fund':
       default:
         return ExtrinsicType.TRANSFER_BALANCE;
@@ -85,16 +87,21 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     return TRANSACTION_TITLE_MAP()[transactionType];
   }, [transactionType]);
 
-  const form = useForm<T, TContext>({
-    mode: 'onChange',
-    ...formOptions,
-    defaultValues: {
+  const defaultValues = useMemo(
+    () => ({
       from: (!isAccountAll(currentAccount?.address as string) && currentAccount?.address) || '',
       chain: '',
       asset: '',
       value: '',
       ...formOptions.defaultValues,
-    } as UseFormProps<T, TContext>['defaultValues'],
+    }),
+    [currentAccount?.address, formOptions.defaultValues],
+  );
+
+  const form = useForm<T, TContext>({
+    mode: 'onChange',
+    ...formOptions,
+    defaultValues: defaultValues as UseFormProps<T, TContext>['defaultValues'],
   });
   const [transactionDoneInfo, setTransactionDoneInfo] = useState<TransactionDoneInfo>({
     id: '',
@@ -181,6 +188,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     title,
     transactionType,
     form,
+    defaultValues,
     onChangeFromValue,
     onChangeAssetValue,
     onChangeChainValue,

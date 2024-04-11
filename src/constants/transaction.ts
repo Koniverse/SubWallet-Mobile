@@ -61,6 +61,7 @@ export const TRANSACTION_TITLE_MAP = (): Record<ExtrinsicTypeMobile, string> => 
   [ExtrinsicType.STAKING_CANCEL_COMPOUNDING]: 'Cancel Compound',
   [ExtrinsicType.EVM_EXECUTE]: 'Execute',
   [ExtrinsicType.UNKNOWN]: 'Unknown',
+  [ExtrinsicType.SWAP]: 'Swap',
 });
 
 export const ALL_STAKING_ACTIONS: ExtrinsicType[] = [

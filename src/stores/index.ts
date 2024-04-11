@@ -38,6 +38,7 @@ import StakingReducer from './feature/Staking';
 import WalletConnectReducer from './feature/WalletConnect';
 import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
+import SwapReducer from './feature/Swap';
 import LogoMap from 'stores/base/LogoMap';
 import { mmkvReduxStore } from 'utils/storage';
 import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
@@ -80,6 +81,7 @@ const rootReducer = combineReducers({
   walletConnect: WalletConnectReducer,
   campaign: CampaignReducer,
   buyService: BuyServiceReducer,
+  swap: SwapReducer,
   // mission pool
   missionPool: MissionPoolReducer,
 
