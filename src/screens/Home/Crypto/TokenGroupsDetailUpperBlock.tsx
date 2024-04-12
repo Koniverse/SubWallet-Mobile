@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { CaretLeft } from 'phosphor-react-native';
@@ -27,11 +27,13 @@ interface Props {
   onClickBack: () => void;
   onOpenSendFund?: () => void;
   onOpenReceive?: () => void;
+  onOpenSwap?: () => void;
 }
 
 export const TokenGroupsDetailUpperBlock = ({
   onOpenReceive,
   onOpenSendFund,
+  onOpenSwap,
   onClickBack,
   balanceValue,
   groupSymbol,
@@ -45,7 +47,6 @@ export const TokenGroupsDetailUpperBlock = ({
   const { isShowBuyToken } = useShowBuyToken();
   const { tokens } = useSelector((state: RootState) => state.buyService);
   const _style = createStyleSheet(theme);
-  const swapUrl = `subwallet://browser?url=${encodeURIComponent('https://web.subwallet.app/redirect-handler/swap')}`;
 
   const buyInfos = useMemo(() => {
     const groupSlug = tokenGroupSlug || '';
@@ -122,7 +123,7 @@ export const TokenGroupsDetailUpperBlock = ({
         {isShowBuyToken && (
           <ActionButton
             icon={ButtonIcon.Swap}
-            onPress={() => Linking.openURL(swapUrl)}
+            onPress={onOpenSwap}
             buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
           />
         )}

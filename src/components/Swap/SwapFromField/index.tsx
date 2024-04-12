@@ -96,6 +96,8 @@ export const SwapFromField = ({
             decimals={decimals}
             showMaxButton={false}
             placeholder={'Amount'}
+            textAlign={'right'}
+            externalStyle={{ color: theme.colorWhite }}
           />
 
           {/*<Number value={getConvertedInputValue} decimal={0} />*/}

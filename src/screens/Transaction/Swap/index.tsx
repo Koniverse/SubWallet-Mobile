@@ -17,7 +17,7 @@ import {
   _isChainEvmCompatible,
   _parseAssetRefKey,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Alert, Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { SwapToField } from 'components/Swap/SwapToField';
 import BigN from 'bignumber.js';
@@ -28,7 +28,7 @@ import { isAccountAll } from 'utils/accountAll';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { InputAddress } from 'components/Input/InputAddress';
 import i18n from 'utils/i18n/i18n';
-import { Icon, Typography, Number, ActivityIndicator, Button } from 'components/design-system-ui';
+import { Icon, Typography, Number, ActivityIndicator, Button, Divider } from 'components/design-system-ui';
 import { ArrowsDownUp, CaretRight, Info, PencilSimpleLine } from 'phosphor-react-native';
 import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
 import MetaInfo from 'components/MetaInfo';
@@ -47,7 +47,7 @@ import {
   SwapRequest,
   SwapStepType,
 } from '@subwallet/extension-base/types/swap';
-import { formatNumberString } from '@subwallet/extension-base/utils';
+import { formatNumberString, reformatAddress, swapCustomFormatter } from '@subwallet/extension-base/utils';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { findAccountByAddress } from 'utils/account';
@@ -64,6 +64,9 @@ import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { QuoteResetTime } from 'components/Swap/QuoteResetTime';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
+import UserInactivity from 'react-native-user-inactivity';
+import { SwapIdleWarningModal } from 'components/Modal/Swap/SwapIdleWarningModal';
+import { SendFundProps } from 'routes/transaction/transactionAction';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -99,12 +102,19 @@ export interface FeeItem {
   suffix?: string;
 }
 
-export const Swap = () => {
+const numberMetadata = { maxNumberFormat: 8 };
+
+export const Swap = ({
+  route: {
+    params: { slug: tokenGroupSlug },
+  },
+}: SendFundProps) => {
   const { show, hideAll } = useToast();
   const theme = useSubWalletTheme().swThemes;
   const { assetRegistry: assetRegistryMap, multiChainAssetMap } = useSelector(
     (state: RootState) => state.assetRegistry,
   );
+  console.log('tokenGroupSlug', tokenGroupSlug); // TODO: remove
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { accounts, currentAccount, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const hasInternalConfirmations = useSelector((state: RootState) => state.requestState.hasInternalConfirmations);
@@ -151,6 +161,8 @@ export const Swap = () => {
   const [slippageModalVisible, setSlippageModalVisible] = useState<boolean>(false);
   const [swapQuoteModalVisible, setSwapQuoteModalVisible] = useState<boolean>(false);
   const [chooseFeeModalVisible, setChooseFeeModalVisible] = useState<boolean>(false);
+  const [warningIdleModalVisible, setWarningIdleModalVisible] = useState<boolean>(false);
+  const [isUserActive, setIsUserActive] = useState(true);
   const [swapQuoteSelectorModalVisible, setSwapQuoteSelectorModalVisible] = useState<boolean>(false);
   const [currentSlippage, setCurrentSlippage] = useState<any>({
     slippage: new BigN(0.01),
@@ -161,7 +173,7 @@ export const Swap = () => {
   const [feeOptions, setFeeOptions] = useState<string[] | undefined>([]);
   const [currentFeeOption, setCurrentFeeOption] = useState<string | undefined>(undefined);
   const optimalQuoteRef = useRef<SwapQuote | undefined>(undefined);
-  const [requestUserInteractToContinue] = useState<boolean>(false);
+  const [requestUserInteractToContinue, setRequestUserInteractToContinue] = useState<boolean>(false);
   const continueRefreshQuoteRef = useRef<boolean>(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const accountSelectorList = useMemo(() => {
@@ -203,12 +215,6 @@ export const Swap = () => {
     return getTokenSelectorItem(fromAndToTokenMap[fromTokenSlugValue] || [], assetRegistryMap);
   }, [assetRegistryMap, fromAndToTokenMap, fromTokenSlugValue]);
 
-  useEffect(() => {
-    if (!confirmTerm) {
-      setTermModalVisible(true);
-    }
-  }, [confirmTerm]);
-
   const fromAssetInfo = useMemo(() => {
     return assetRegistryMap[fromTokenSlugValue] || undefined;
   }, [assetRegistryMap, fromTokenSlugValue]);
@@ -248,6 +254,16 @@ export const Swap = () => {
           return Promise.resolve(i18n.errorMessage.invalidRecipientAddress);
         }
 
+        if (!isEthereumAddress(_recipientAddress)) {
+          const destChainInfo = chainInfoMap[toAssetInfo.originChain];
+          const addressPrefix = destChainInfo?.substrateInfo?.addressPrefix ?? 42;
+          const _addressOnChain = reformatAddress(_recipientAddress, addressPrefix);
+
+          if (_addressOnChain !== _recipientAddress) {
+            return Promise.resolve(i18n.formatString(i18n.errorMessage.recipientAddressInvalid, destChainInfo.name));
+          }
+        }
+
         if (toAssetInfo && toAssetInfo?.originChain && chainInfoMap[toAssetInfo?.originChain]) {
           const isAddressEvm = isEthereumAddress(_recipientAddress);
           const isEvmCompatible = _isChainEvmCompatible(chainInfoMap[toAssetInfo?.originChain]);
@@ -281,29 +297,20 @@ export const Swap = () => {
     [accounts, chainInfoMap, toAssetInfo],
   );
 
-  const showRecipientField = useMemo(() => {
-    if (fromValue && toAssetInfo?.originChain && chainInfoMap[toAssetInfo?.originChain]) {
-      const isAddressEvm = isEthereumAddress(fromValue);
-      const isEvmCompatibleTo = _isChainEvmCompatible(chainInfoMap[toAssetInfo?.originChain]);
+  const getConvertedBalance = useCallback(
+    (feeItem: SwapFeeComponent) => {
+      const asset = assetRegistryMap[feeItem.tokenSlug];
 
-      return isAddressEvm !== isEvmCompatibleTo;
-    }
+      if (asset) {
+        const { decimals, priceId } = asset;
+        const price = priceMap[priceId || ''] || 0;
 
-    return false; // Add a default return value in case none of the conditions are met
-  }, [chainInfoMap, fromValue, toAssetInfo?.originChain]);
+        return new BigN(feeItem.amount).div(BN_TEN.pow(decimals || 0)).multipliedBy(price);
+      }
 
-  const onSelectFromToken = useCallback(
-    (tokenSlug: string) => {
-      setValue('fromTokenSlug', tokenSlug);
+      return BN_ZERO;
     },
-    [setValue],
-  );
-
-  const onSelectToToken = useCallback(
-    (tokenSlug: string) => {
-      setValue('toTokenSlug', tokenSlug);
-    },
-    [setValue],
+    [assetRegistryMap, priceMap],
   );
 
   const supportSlippageSelection = useMemo(() => {
@@ -358,6 +365,148 @@ export const Swap = () => {
     return calcMinimumReceived(destinationSwapValue);
   }, [supportSlippageSelection, destinationSwapValue, currentSlippage.slippage]);
 
+  const showRecipientField = useMemo(() => {
+    if (fromValue && toAssetInfo?.originChain && chainInfoMap[toAssetInfo?.originChain]) {
+      const isAddressEvm = isEthereumAddress(fromValue);
+      const isEvmCompatibleTo = _isChainEvmCompatible(chainInfoMap[toAssetInfo?.originChain]);
+
+      return isAddressEvm !== isEvmCompatibleTo;
+    }
+
+    return false; // Add a default return value in case none of the conditions are met
+  }, [chainInfoMap, fromValue, toAssetInfo?.originChain]);
+
+  const feeItems = useMemo(() => {
+    const result: FeeItem[] = [];
+    const feeTypeMap: Record<SwapFeeType, FeeItem> = {
+      NETWORK_FEE: { label: 'Network fee', value: new BigN(0), prefix: '$', type: SwapFeeType.NETWORK_FEE },
+      PLATFORM_FEE: { label: 'Protocol fee', value: new BigN(0), prefix: '$', type: SwapFeeType.PLATFORM_FEE },
+      WALLET_FEE: { label: 'Wallet commission', value: new BigN(0), suffix: '%', type: SwapFeeType.WALLET_FEE },
+    };
+
+    currentQuote?.feeInfo.feeComponent.forEach(feeItem => {
+      const { feeType } = feeItem;
+
+      feeTypeMap[feeType].value = feeTypeMap[feeType].value.plus(getConvertedBalance(feeItem));
+    });
+
+    result.push(feeTypeMap.NETWORK_FEE, feeTypeMap.PLATFORM_FEE);
+
+    return result;
+  }, [currentQuote?.feeInfo.feeComponent, getConvertedBalance]);
+
+  const canShowAvailableBalance = useMemo(() => {
+    if (fromValue && chainValue && chainInfoMap[chainValue]) {
+      return isEthereumAddress(fromValue) === _isChainEvmCompatible(chainInfoMap[chainValue]);
+    }
+
+    return false;
+  }, [fromValue, chainValue, chainInfoMap]);
+
+  const isSwapXCM = useMemo(() => {
+    return processState.steps.some(item => item.type === SwapStepType.XCM);
+  }, [processState.steps]);
+
+  const currentPair = useMemo(() => {
+    if (fromTokenSlugValue && toTokenSlugValue) {
+      const pairSlug = _parseAssetRefKey(fromTokenSlugValue, toTokenSlugValue);
+
+      return swapPairs.find(item => item.slug === pairSlug);
+    }
+
+    return undefined;
+  }, [fromTokenSlugValue, swapPairs, toTokenSlugValue]);
+
+  const xcmBalanceTokens = useMemo(() => {
+    if (!isSwapXCM || !fromAssetInfo || !currentPair) {
+      return [];
+    }
+
+    const result: {
+      token: string;
+      chain: string;
+    }[] = [
+      {
+        token: fromAssetInfo.slug,
+        chain: fromAssetInfo.originChain,
+      },
+    ];
+
+    const chainInfo = chainInfoMap[fromAssetInfo.originChain];
+
+    if (chainInfo) {
+      const _nativeSlug = _getChainNativeTokenSlug(chainInfo);
+
+      if (_nativeSlug !== fromAssetInfo.slug) {
+        result.push({
+          token: _getChainNativeTokenSlug(chainInfo),
+          chain: fromAssetInfo.originChain,
+        });
+      }
+    }
+
+    const alternativeAssetSlug = getSwapAlternativeAsset(currentPair);
+
+    if (alternativeAssetSlug) {
+      result.push({
+        token: alternativeAssetSlug,
+        chain: _getOriginChainOfAsset(alternativeAssetSlug),
+      });
+    }
+
+    return result;
+  }, [chainInfoMap, currentPair, fromAssetInfo, isSwapXCM]);
+
+  const altChain = useMemo(() => {
+    if (currentPair) {
+      const alternativeAssetSlug = getSwapAlternativeAsset(currentPair);
+
+      if (alternativeAssetSlug) {
+        return _getOriginChainOfAsset(alternativeAssetSlug);
+      }
+    }
+
+    return undefined;
+  }, [currentPair]);
+
+  const isNotConnectedAltChain = useMemo(() => {
+    if (altChain && !checkChainConnected(altChain)) {
+      return true;
+    }
+
+    return false;
+  }, [altChain, checkChainConnected]);
+
+  const defaultFromValue = useMemo(() => {
+    return currentAccount?.address ? (isAccountAll(currentAccount.address) ? '' : currentAccount.address) : '';
+  }, [currentAccount?.address]);
+
+  const onSelectFromToken = useCallback(
+    (tokenSlug: string) => {
+      setValue('fromTokenSlug', tokenSlug);
+    },
+    [setValue],
+  );
+
+  const onIdle = useCallback(() => {
+    !hasInternalConfirmations && !!confirmTerm && showQuoteArea && setRequestUserInteractToContinue(true);
+  }, [confirmTerm, hasInternalConfirmations, showQuoteArea]);
+
+  const onSelectToToken = useCallback(
+    (tokenSlug: string) => {
+      setValue('toTokenSlug', tokenSlug);
+    },
+    [setValue],
+  );
+
+  const onConfirmStillThere = useCallback(() => {
+    setRequestUserInteractToContinue(false);
+    setWarningIdleModalVisible(false);
+    setHandleRequestLoading(true);
+    setIsUserActive(true);
+    continueRefreshQuoteRef.current = true;
+  }, []);
+
   const onSelectSlippage = useCallback((slippage: SlippageType) => {
     setCurrentSlippage(slippage);
   }, []);
@@ -380,6 +529,7 @@ export const Swap = () => {
 
   const onChangeAmount = useCallback(
     (value: string) => {
+      setIsUserActive(true);
       setValue('fromAmount', value);
     },
     [setValue],
@@ -417,136 +567,6 @@ export const Swap = () => {
     }
   }, [fromTokenSlugValue, reValidateField, setValue, toTokenSlugValue]);
 
-  useEffect(() => {
-    const chain = _getAssetOriginChain(fromAssetInfo);
-    setValue('chain', chain);
-  }, [fromAssetInfo, setValue]);
-
-  useEffect(() => {
-    let sync = true;
-    let timeout: NodeJS.Timeout;
-
-    if (fromValue && fromTokenSlugValue && toTokenSlugValue && fromAmountValue) {
-      timeout = setTimeout(() => {
-        const fromFieldPromise = reValidateField('from');
-        const recipientFieldPromise = reValidateField('recipient');
-        Promise.all([recipientFieldPromise, fromFieldPromise])
-          .then(res => {
-            console.log('res', res);
-            if (!res.some(r => !r)) {
-              if (!sync) {
-                return;
-              }
-
-              setHandleRequestLoading(true);
-              setCurrentQuoteRequest(undefined);
-              setQuoteAliveUntil(undefined);
-              setCurrentQuote(undefined);
-              setSwapError(undefined);
-              setIsFormInvalid(false);
-              setShowQuoteArea(true);
-
-              const currentRequest: SwapRequest = {
-                address: fromValue,
-                pair: {
-                  slug: _parseAssetRefKey(fromTokenSlugValue, toTokenSlugValue),
-                  from: fromTokenSlugValue,
-                  to: toTokenSlugValue,
-                },
-                fromAmount: fromAmountValue,
-                slippage: currentSlippage.slippage.toNumber(),
-                recipient: recipientValue || undefined,
-              };
-
-              handleSwapRequest(currentRequest)
-                .then(result => {
-                  if (sync) {
-                    setCurrentQuoteRequest(currentRequest);
-                    setOptimalSwapPath(result.process);
-
-                    dispatchProcessState({
-                      payload: {
-                        steps: result.process.steps,
-                        feeStructure: result.process.totalFee,
-                      },
-                      type: SwapActionType.STEP_CREATE,
-                    });
-
-                    setQuoteOptions(result.quote.quotes);
-                    setCurrentQuote(result.quote.optimalQuote);
-                    setQuoteAliveUntil(result.quote.aliveUntil);
-                    setFeeOptions(result.quote.optimalQuote?.feeInfo?.feeOptions || []);
-                    setCurrentFeeOption(result.quote.optimalQuote?.feeInfo?.feeOptions?.[0]);
-                    setSwapError(result.quote.error);
-                    optimalQuoteRef.current = result.quote.optimalQuote;
-                    setHandleRequestLoading(false);
-                  }
-                })
-                .catch(e => {
-                  console.log('handleSwapRequest error', e);
-
-                  if (sync) {
-                    setHandleRequestLoading(false);
-                  }
-                });
-            } else {
-              if (sync) {
-                setIsFormInvalid(true);
-              }
-            }
-          })
-          .catch(() => {
-            if (sync) {
-              setIsFormInvalid(true);
-            }
-          });
-      }, 300);
-    }
-
-    return () => {
-      sync = false;
-      clearTimeout(timeout);
-    };
-  }, [
-    currentSlippage.slippage,
-    fromAmountValue,
-    fromTokenSlugValue,
-    fromValue,
-    reValidateField,
-    recipientValue,
-    toTokenSlugValue,
-  ]);
-
-  useEffect(() => {
-    if (fromTokenItems.length) {
-      if (!fromTokenSlugValue) {
-        setValue('fromTokenSlug', fromTokenItems[0].slug);
-      } else {
-        if (!fromTokenItems.some(item => item.slug === fromTokenSlugValue)) {
-          setValue('fromTokenSlug', fromTokenItems[0].slug);
-        }
-      }
-    }
-  }, [fromTokenItems, fromTokenSlugValue, setValue]);
-
-  useEffect(() => {
-    if (toTokenItems.length) {
-      if (!toTokenSlugValue || !toTokenItems.some(t => t.slug === toTokenSlugValue)) {
-        setValue('toTokenSlug', toTokenItems[0].slug);
-      }
-    }
-  }, [setValue, toTokenItems, toTokenSlugValue]);
-
-  const defaultFromValue = useMemo(() => {
-    return currentAccount?.address ? (isAccountAll(currentAccount.address) ? '' : currentAccount.address) : '';
-  }, [currentAccount?.address]);
-
-  useEffect(() => {
-    if (defaultValues.from !== defaultFromValue && !isAllAccount) {
-      setValue('from', defaultFromValue);
-    }
-  }, [defaultFromValue, defaultValues.from, isAllAccount, setValue]);
-
   const renderSlippage = useCallback(() => {
     return (
       <TouchableOpacity
@@ -557,7 +577,6 @@ export const Swap = () => {
           alignItems: 'center',
           justifyContent: 'flex-end',
           gap: theme.sizeXXS,
-          marginTop: theme.sizeXXS,
         }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
           <Typography.Text style={{ color: theme.colorSuccess }}>{'Slippage'}</Typography.Text>
@@ -569,7 +588,7 @@ export const Swap = () => {
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
           <Number
             size={14}
-            value={currentSlippage.slippage.multipliedBy(100).toString()}
+            value={supportSlippageSelection ? 0 : currentSlippage.slippage.multipliedBy(100).toString()}
             decimal={0}
             suffix={'%'}
             intColor={theme.colorSuccess}
@@ -584,49 +603,6 @@ export const Swap = () => {
     );
   }, [currentSlippage.slippage, onOpenSlippageModal, supportSlippageSelection, theme.colorSuccess, theme.sizeXXS]);
 
-  const getConvertedBalance = useCallback(
-    (feeItem: SwapFeeComponent) => {
-      const asset = assetRegistryMap[feeItem.tokenSlug];
-
-      if (asset) {
-        const { decimals, priceId } = asset;
-        const price = priceMap[priceId || ''] || 0;
-
-        return new BigN(feeItem.amount).div(BN_TEN.pow(decimals || 0)).multipliedBy(price);
-      }
-
-      return BN_ZERO;
-    },
-    [assetRegistryMap, priceMap],
-  );
-
-  const feeItems = useMemo(() => {
-    const result: FeeItem[] = [];
-    const feeTypeMap: Record<SwapFeeType, FeeItem> = {
-      NETWORK_FEE: { label: 'Network fee', value: new BigN(0), prefix: '$', type: SwapFeeType.NETWORK_FEE },
-      PLATFORM_FEE: { label: 'Protocol fee', value: new BigN(0), prefix: '$', type: SwapFeeType.PLATFORM_FEE },
-      WALLET_FEE: { label: 'Wallet commission', value: new BigN(0), suffix: '%', type: SwapFeeType.WALLET_FEE },
-    };
-
-    currentQuote?.feeInfo.feeComponent.forEach(feeItem => {
-      const { feeType } = feeItem;
-
-      feeTypeMap[feeType].value = feeTypeMap[feeType].value.plus(getConvertedBalance(feeItem));
-    });
-
-    result.push(feeTypeMap.NETWORK_FEE, feeTypeMap.PLATFORM_FEE);
-
-    return result;
-  }, [currentQuote?.feeInfo.feeComponent, getConvertedBalance]);
-
-  const canShowAvailableBalance = useMemo(() => {
-    if (fromValue && chainValue && chainInfoMap[chainValue]) {
-      return isEthereumAddress(fromValue) === _isChainEvmCompatible(chainInfoMap[chainValue]);
-    }
-
-    return false;
-  }, [fromValue, chainValue, chainInfoMap]);
-
   const renderRateInfo = useCallback(() => {
     if (!currentQuote) {
       return null;
@@ -634,12 +610,27 @@ export const Swap = () => {
 
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-        <Number decimal={0} suffix={_getAssetSymbol(fromAssetInfo)} value={1} />
+        <Number
+          size={theme.fontSize}
+          unitColor={theme.colorTextLight4}
+          decimal={0}
+          suffix={_getAssetSymbol(fromAssetInfo)}
+          value={1}
+        />
         <Typography.Text style={{ color: theme.colorWhite }}>~</Typography.Text>
-        <Number decimal={0} suffix={_getAssetSymbol(toAssetInfo)} value={currentQuote.rate} />
+        <Number
+          customFormatter={swapCustomFormatter}
+          formatType={'custom'}
+          metadata={numberMetadata}
+          size={theme.fontSize}
+          decimal={0}
+          suffix={_getAssetSymbol(toAssetInfo)}
+          value={currentQuote.rate}
+          unitColor={theme.colorTextLight4}
+        />
       </View>
     );
-  }, [currentQuote, fromAssetInfo, theme.colorWhite, toAssetInfo]);
+  }, [currentQuote, fromAssetInfo, theme.colorTextLight4, theme.colorWhite, theme.fontSize, toAssetInfo]);
 
   const onError = useCallback(
     (error: Error) => {
@@ -871,6 +862,137 @@ export const Swap = () => {
   );
 
   useEffect(() => {
+    if (!confirmTerm) {
+      setTermModalVisible(true);
+    }
+  }, [confirmTerm]);
+
+  useEffect(() => {
+    const chain = _getAssetOriginChain(fromAssetInfo);
+    setValue('chain', chain);
+  }, [fromAssetInfo, setValue]);
+
+  useEffect(() => {
+    let sync = true;
+    let timeout: NodeJS.Timeout;
+
+    if (fromValue && fromTokenSlugValue && toTokenSlugValue && fromAmountValue) {
+      timeout = setTimeout(() => {
+        const fromFieldPromise = reValidateField('from');
+        const recipientFieldPromise = reValidateField('recipient');
+        Promise.all([recipientFieldPromise, fromFieldPromise])
+          .then(res => {
+            if (!res.some(r => !r)) {
+              if (!sync) {
+                return;
+              }
+
+              setHandleRequestLoading(true);
+              setCurrentQuoteRequest(undefined);
+              setQuoteAliveUntil(undefined);
+              setCurrentQuote(undefined);
+              setSwapError(undefined);
+              setIsFormInvalid(false);
+              setShowQuoteArea(true);
+
+              const currentRequest: SwapRequest = {
+                address: fromValue,
+                pair: {
+                  slug: _parseAssetRefKey(fromTokenSlugValue, toTokenSlugValue),
+                  from: fromTokenSlugValue,
+                  to: toTokenSlugValue,
+                },
+                fromAmount: fromAmountValue,
+                slippage: currentSlippage.slippage.toNumber(),
+                recipient: recipientValue || undefined,
+              };
+
+              handleSwapRequest(currentRequest)
+                .then(result => {
+                  if (sync) {
+                    setCurrentQuoteRequest(currentRequest);
+                    setOptimalSwapPath(result.process);
+
+                    dispatchProcessState({
+                      payload: {
+                        steps: result.process.steps,
+                        feeStructure: result.process.totalFee,
+                      },
+                      type: SwapActionType.STEP_CREATE,
+                    });
+
+                    setQuoteOptions(result.quote.quotes);
+                    setCurrentQuote(result.quote.optimalQuote);
+                    setQuoteAliveUntil(result.quote.aliveUntil);
+                    setFeeOptions(result.quote.optimalQuote?.feeInfo?.feeOptions || []);
+                    setCurrentFeeOption(result.quote.optimalQuote?.feeInfo?.feeOptions?.[0]);
+                    setSwapError(result.quote.error);
+                    optimalQuoteRef.current = result.quote.optimalQuote;
+                    setHandleRequestLoading(false);
+                  }
+                })
+                .catch(e => {
+                  console.log('handleSwapRequest error', e);
+
+                  if (sync) {
+                    setHandleRequestLoading(false);
+                  }
+                });
+            } else {
+              if (sync) {
+                setIsFormInvalid(true);
+              }
+            }
+          })
+          .catch(() => {
+            if (sync) {
+              setIsFormInvalid(true);
+            }
+          });
+      }, 300);
+    }
+
+    return () => {
+      sync = false;
+      clearTimeout(timeout);
+    };
+  }, [
+    currentSlippage.slippage,
+    fromAmountValue,
+    fromTokenSlugValue,
+    fromValue,
+    reValidateField,
+    recipientValue,
+    toTokenSlugValue,
+  ]);
+
+  useEffect(() => {
+    if (fromTokenItems.length) {
+      if (!fromTokenSlugValue) {
+        setValue('fromTokenSlug', fromTokenItems[0].slug);
+      } else {
+        if (!fromTokenItems.some(item => item.slug === fromTokenSlugValue)) {
+          setValue('fromTokenSlug', fromTokenItems[0].slug);
+        }
+      }
+    }
+  }, [fromTokenItems, fromTokenSlugValue, setValue]);
+
+  useEffect(() => {
+    if (toTokenItems.length) {
+      if (!toTokenSlugValue || !toTokenItems.some(t => t.slug === toTokenSlugValue)) {
+        setValue('toTokenSlug', toTokenItems[0].slug);
+      }
+    }
+  }, [setValue, toTokenItems, toTokenSlugValue]);
+
+  useEffect(() => {
+    if (defaultValues.from !== defaultFromValue && !isAllAccount) {
+      setValue('from', defaultFromValue);
+    }
+  }, [defaultFromValue, defaultValues.from, isAllAccount, setValue]);
+
+  useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
     let sync = true;
 
@@ -935,9 +1057,27 @@ export const Swap = () => {
     };
   }, [currentQuoteRequest, hasInternalConfirmations, quoteAliveUntil, requestUserInteractToContinue]);
 
-  const isSwapXCM = useMemo(() => {
-    return processState.steps.some(item => item.type === SwapStepType.XCM);
-  }, [processState.steps]);
+  useEffect(() => {
+    if (requestUserInteractToContinue) {
+      setSwapQuoteModalVisible(false);
+      setChooseFeeModalVisible(false);
+      setSwapQuoteSelectorModalVisible(false);
+      setSlippageModalVisible(false);
+      setWarningIdleModalVisible(true);
+    }
+  }, [requestUserInteractToContinue]);
+
+  useEffect(() => {
+    if (altChain && !checkChainConnected(altChain)) {
+      turnOnChain(altChain);
+    }
+  }, [checkChainConnected, altChain, turnOnChain]);
+
+  useEffect(() => {
+    if (!showRecipientField) {
+      setValue('recipient', '');
+    }
+  }, [setValue, showRecipientField]);
 
   const renderAlertBox = () => {
     const multichainAsset = fromAssetInfo?.multiChainAsset;
@@ -957,293 +1097,253 @@ export const Swap = () => {
     );
   };
 
-  const currentPair = useMemo(() => {
-    if (fromTokenSlugValue && toTokenSlugValue) {
-      const pairSlug = _parseAssetRefKey(fromTokenSlugValue, toTokenSlugValue);
-
-      return swapPairs.find(item => item.slug === pairSlug);
-    }
-
-    return undefined;
-  }, [fromTokenSlugValue, swapPairs, toTokenSlugValue]);
-
-  const xcmBalanceTokens = useMemo(() => {
-    if (!isSwapXCM || !fromAssetInfo || !currentPair) {
-      return [];
-    }
-
-    const result: {
-      token: string;
-      chain: string;
-    }[] = [
-      {
-        token: fromAssetInfo.slug,
-        chain: fromAssetInfo.originChain,
-      },
-    ];
-
-    const chainInfo = chainInfoMap[fromAssetInfo.originChain];
-
-    if (chainInfo) {
-      const _nativeSlug = _getChainNativeTokenSlug(chainInfo);
-
-      if (_nativeSlug !== fromAssetInfo.slug) {
-        result.push({
-          token: _getChainNativeTokenSlug(chainInfo),
-          chain: fromAssetInfo.originChain,
-        });
-      }
-    }
-
-    const alternativeAssetSlug = getSwapAlternativeAsset(currentPair);
-
-    if (alternativeAssetSlug) {
-      result.push({
-        token: alternativeAssetSlug,
-        chain: _getOriginChainOfAsset(alternativeAssetSlug),
-      });
-    }
-
-    return result;
-  }, [chainInfoMap, currentPair, fromAssetInfo, isSwapXCM]);
-
-  const altChain = useMemo(() => {
-    if (currentPair) {
-      const alternativeAssetSlug = getSwapAlternativeAsset(currentPair);
-
-      if (alternativeAssetSlug) {
-        return _getOriginChainOfAsset(alternativeAssetSlug);
-      }
-    }
-
-    return undefined;
-  }, [currentPair]);
-
-  useEffect(() => {
-    if (altChain && !checkChainConnected(altChain)) {
-      turnOnChain(altChain);
-    }
-  }, [checkChainConnected, altChain, turnOnChain]);
-
-  const isNotConnectedAltChain = useMemo(() => {
-    if (altChain && !checkChainConnected(altChain)) {
-      return true;
-    }
-
-    return false;
-  }, [altChain, checkChainConnected]);
-
   return (
     <>
       {!isTransactionDone ? (
-        <TransactionLayout title={title}>
-          <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 16 }}>
-            <AccountSelector
-              items={accountSelectorList}
-              selectedValueMap={{ [fromValue]: true }}
-              accountSelectorRef={accountSelectorRef}
-              disabled={false}
-              onSelectItem={item => {
-                setFrom(item.address);
-                accountSelectorRef && accountSelectorRef.current?.onCloseModal();
-              }}
-              renderSelected={() => (
-                <AccountSelectField accountName={accountInfo?.name || ''} value={fromValue} showIcon />
+        <UserInactivity
+          isActive={isUserActive}
+          skipKeyboard={false}
+          timeForInactivity={3000000}
+          onAction={active => {
+            setIsUserActive(active);
+            if (!active) {
+              Keyboard.dismiss();
+              showQuoteArea && onIdle();
+            }
+          }}>
+          <TransactionLayout title={title} disableLeftButton={submitLoading}>
+            <ScrollView
+              style={{ flex: 1, paddingHorizontal: 16, marginTop: theme.paddingXS }}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps={'handled'}>
+              {isAllAccount && (
+                <AccountSelector
+                  items={accountSelectorList}
+                  selectedValueMap={{ [fromValue]: true }}
+                  accountSelectorRef={accountSelectorRef}
+                  disabled={false}
+                  onSelectItem={item => {
+                    setFrom(item.address);
+                    accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                  }}
+                  renderSelected={() => (
+                    <AccountSelectField
+                      label={'Swap from account'}
+                      accountName={accountInfo?.name || ''}
+                      value={fromValue}
+                      showIcon
+                    />
+                  )}
+                />
               )}
-            />
 
-            <FreeBalanceToYield
-              address={fromValue}
-              label={`${i18n.inputLabel.availableBalance}:`}
-              tokens={xcmBalanceTokens}
-              hidden={!canShowAvailableBalance || !isSwapXCM}
-            />
-
-            <FreeBalance
-              address={fromValue}
-              chain={chainValue}
-              hidden={!canShowAvailableBalance || isSwapXCM}
-              isSubscribe={true}
-              label={`${i18n.inputLabel.availableBalance}:`}
-              tokenSlug={fromTokenSlugValue}
-              showNetwork
-            />
-
-            <SwapFromField
-              fromAsset={fromAssetInfo}
-              onChangeInput={onChangeAmount}
-              assetValue={fromTokenSlugValue}
-              chainValue={chainValue}
-              tokenSelectorItems={fromTokenItems}
-              amountValue={fromAmountValue}
-              chainInfo={chainInfoMap[chainValue]}
-              onSelectToken={onSelectFromToken}
-            />
-
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: theme.sizeXS,
-                position: 'relative',
-                zIndex: 10000,
-              }}>
-              <Button
-                disabled={!isSwitchable}
-                onPress={onSwitchSide}
-                activeStyle={{ backgroundColor: theme['gray-2'] }}
-                style={{ position: 'absolute', backgroundColor: theme['gray-2'] }}
-                size={'xs'}
-                icon={<Icon phosphorIcon={ArrowsDownUp} size={'sm'} iconColor={theme.colorTextLight3} />}
-                shape={'circle'}
+              <SwapFromField
+                fromAsset={fromAssetInfo}
+                onChangeInput={onChangeAmount}
+                assetValue={fromTokenSlugValue}
+                chainValue={chainValue}
+                tokenSelectorItems={fromTokenItems}
+                amountValue={fromAmountValue}
+                chainInfo={chainInfoMap[chainValue]}
+                onSelectToken={onSelectFromToken}
               />
+
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: theme.sizeXS,
+                  position: 'relative',
+                  zIndex: 10000,
+                }}>
+                <Button
+                  disabled={!isSwitchable}
+                  onPress={onSwitchSide}
+                  activeStyle={{ backgroundColor: theme['gray-2'] }}
+                  style={{ position: 'absolute', backgroundColor: theme['gray-2'] }}
+                  size={'xs'}
+                  icon={<Icon phosphorIcon={ArrowsDownUp} size={'sm'} iconColor={theme.colorTextLight3} />}
+                  shape={'circle'}
+                />
+              </View>
+
+              <SwapToField
+                toAsset={toAssetInfo}
+                assetValue={toTokenSlugValue}
+                chainValue={toChainValue}
+                tokenSelectorItems={toTokenItems}
+                swapValue={destinationSwapValue}
+                chainInfo={chainInfoMap[toChainValue]}
+                onSelectToken={onSelectToToken}
+              />
+
+              {showRecipientField && (
+                <FormItem
+                  name={'recipient'}
+                  control={control}
+                  rules={recipientAddressRules}
+                  render={({ field: { value, ref, onChange } }) => (
+                    <InputAddress
+                      containerStyle={{ marginTop: theme.marginXS }}
+                      ref={ref}
+                      label={i18n.inputLabel.sendTo}
+                      value={value}
+                      onChangeText={onChange}
+                      // reValidate={reValidate}
+                      placeholder={i18n.placeholder.accountAddress}
+                      addressPrefix={destChainNetworkPrefix}
+                      networkGenesisHash={destChainGenesisHash}
+                      chain={destChainValue}
+                      showAddressBook
+                      fitNetwork
+                      saveAddress
+                    />
+                  )}
+                />
+              )}
+
+              <View style={{ marginTop: theme.marginXS }}>
+                <FreeBalanceToYield
+                  address={fromValue}
+                  label={`${i18n.inputLabel.availableBalance}:`}
+                  tokens={xcmBalanceTokens}
+                  hidden={!canShowAvailableBalance || !isSwapXCM}
+                />
+
+                <FreeBalance
+                  address={fromValue}
+                  chain={chainValue}
+                  hidden={!canShowAvailableBalance || isSwapXCM}
+                  isSubscribe={true}
+                  label={`${i18n.inputLabel.availableBalance}:`}
+                  tokenSlug={fromTokenSlugValue}
+                  showNetwork
+                />
+              </View>
+
+              {showQuoteArea && (
+                <>
+                  {!currentQuote && handleRequestLoading && (
+                    <ActivityIndicator size={20} indicatorColor={theme.colorTextLight4} />
+                  )}
+
+                  {!!currentQuote && !isFormInvalid && (
+                    <>
+                      <Divider type={'horizontal'} />
+
+                      <View style={{ marginTop: theme.sizeXS }}>
+                        <MetaInfo labelColorScheme={'gray'} spaceSize={'sm'} valueColorScheme={'light'}>
+                          <MetaInfo.Default label={'Quote rate'} valueColorSchema={'gray'}>
+                            {handleRequestLoading ? <ActivityIndicator size={20} /> : renderRateInfo()}
+                          </MetaInfo.Default>
+                          <MetaInfo.Default label={'Estimated fee'}>
+                            {handleRequestLoading ? (
+                              <ActivityIndicator size={20} />
+                            ) : (
+                              <Number size={theme.fontSize} decimal={0} prefix={'$'} value={estimatedFeeValue} />
+                            )}
+                          </MetaInfo.Default>
+                        </MetaInfo>
+
+                        {!isFormInvalid && (
+                          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <QuoteResetTime quoteAliveUntilValue={quoteAliveUntil} />
+
+                            <TouchableOpacity
+                              style={{ height: 40, justifyContent: 'center' }}
+                              onPress={() => setSwapQuoteModalVisible(true)}>
+                              <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
+                                <Typography.Text style={{ color: theme.colorTextLight4 }}>
+                                  {'View swap quote'}
+                                </Typography.Text>
+                                <View style={{ paddingTop: 2 }}>
+                                  <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight4} />
+                                </View>
+                              </View>
+                            </TouchableOpacity>
+                          </View>
+                        )}
+                      </View>
+                    </>
+                  )}
+
+                  <View style={{ marginTop: theme.marginXS }}>
+                    {swapError && <Warning isDanger message={swapError.message} />}
+                  </View>
+                </>
+              )}
+
+              {renderAlertBox()}
+            </ScrollView>
+            <View style={{ margin: theme.margin }}>
+              <Button
+                onPress={handleSubmit(onSubmit)}
+                disabled={submitLoading || handleRequestLoading || isNotConnectedAltChain}
+                loading={submitLoading}>
+                {'Swap'}
+              </Button>
             </View>
 
-            <SwapToField
-              toAsset={toAssetInfo}
-              assetValue={toTokenSlugValue}
-              chainValue={toChainValue}
-              tokenSelectorItems={toTokenItems}
-              swapValue={destinationSwapValue}
-              chainInfo={chainInfoMap[toChainValue]}
-              onSelectToken={onSelectToToken}
+            <SwapTermOfServiceModal
+              modalVisible={termModalVisible}
+              setModalVisible={setTermModalVisible}
+              onPressAcceptBtn={() => {
+                mmkvStore.set('confirm-swap-term', true);
+                setTermModalVisible(false);
+              }}
             />
 
-            {showRecipientField && (
-              <FormItem
-                name={'recipient'}
-                control={control}
-                rules={recipientAddressRules}
-                render={({ field: { value, ref, onChange, onBlur } }) => (
-                  <InputAddress
-                    containerStyle={{ marginTop: theme.marginXS }}
-                    ref={ref}
-                    label={i18n.inputLabel.sendTo}
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    // reValidate={reValidate}
-                    placeholder={i18n.placeholder.accountAddress}
-                    addressPrefix={destChainNetworkPrefix}
-                    networkGenesisHash={destChainGenesisHash}
-                    chain={destChainValue}
-                    showAddressBook
-                    fitNetwork
-                    saveAddress
-                  />
-                )}
+            <SlippageModal
+              modalVisible={slippageModalVisible}
+              setModalVisible={setSlippageModalVisible}
+              slippageValue={currentSlippage}
+              onApplySlippage={onSelectSlippage}
+            />
+
+            {!isFormInvalid && (
+              <SwapQuoteDetailModal
+                modalVisible={swapQuoteModalVisible}
+                setModalVisible={setSwapQuoteModalVisible}
+                minimumReceived={minimumReceived}
+                symbol={_getAssetSymbol(toAssetInfo)}
+                currentQuote={currentQuote}
+                renderRateInfo={renderRateInfo}
+                quoteAliveUntil={quoteAliveUntil}
+                value={estimatedFeeValue}
+                feeItems={feeItems}
+                openChooseFeeToken={openChooseFeeToken}
+                openSwapSelectorModal={openSwapSelectorModal}
+                feeAssetInfo={feeAssetInfo}
+                renderSlippage={renderSlippage}
+                handleRequestLoading={handleRequestLoading}
               />
             )}
 
-            {renderAlertBox()}
-
-            {!showQuoteArea && renderSlippage()}
-
-            {showQuoteArea && (
-              <>
-                {!!currentQuote && !isFormInvalid && (
-                  <>
-                    <View style={{ marginTop: theme.sizeXS }}>
-                      <MetaInfo labelColorScheme={'gray'} spaceSize={'sm'} valueColorScheme={'light'}>
-                        <MetaInfo.Default label={'Quote rate'} valueColorSchema={'gray'}>
-                          {handleRequestLoading ? <ActivityIndicator size={20} /> : renderRateInfo()}
-                        </MetaInfo.Default>
-                        <MetaInfo.Default label={'Estimated fee'}>
-                          {handleRequestLoading ? (
-                            <ActivityIndicator size={20} />
-                          ) : (
-                            <Number decimal={0} prefix={'$'} value={estimatedFeeValue} />
-                          )}
-                        </MetaInfo.Default>
-                      </MetaInfo>
-
-                      {!isFormInvalid && (
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <QuoteResetTime quoteAliveUntilValue={quoteAliveUntil} />
-
-                          <TouchableOpacity
-                            style={{ height: 40, justifyContent: 'center' }}
-                            onPress={() => setSwapQuoteModalVisible(true)}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
-                              <Typography.Text style={{ color: theme.colorTextLight4 }}>
-                                {'View swap quote'}
-                              </Typography.Text>
-                              <View style={{ paddingTop: 2 }}>
-                                <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight4} />
-                              </View>
-                            </View>
-                          </TouchableOpacity>
-                        </View>
-                      )}
-                    </View>
-                  </>
-                )}
-
-                <View style={{ marginTop: theme.marginXS }}>
-                  {swapError && <Warning isDanger message={swapError.message} />}
-                </View>
-              </>
-            )}
-          </ScrollView>
-          <View style={{ margin: theme.margin }}>
-            <Button
-              onPress={handleSubmit(onSubmit)}
-              disabled={submitLoading || handleRequestLoading || isNotConnectedAltChain}
-              loading={submitLoading}>
-              {'Swap'}
-            </Button>
-          </View>
-
-          <SwapTermOfServiceModal
-            modalVisible={termModalVisible}
-            setModalVisible={setTermModalVisible}
-            onPressAcceptBtn={() => {
-              setTermModalVisible(false);
-            }}
-          />
-
-          <SlippageModal
-            modalVisible={slippageModalVisible}
-            setModalVisible={setSlippageModalVisible}
-            slippageValue={currentSlippage}
-            onApplySlippage={onSelectSlippage}
-          />
-
-          {!!currentQuote && !handleRequestLoading && !isFormInvalid && (
-            <SwapQuoteDetailModal
-              modalVisible={swapQuoteModalVisible}
-              setModalVisible={setSwapQuoteModalVisible}
-              minimumReceived={minimumReceived}
-              symbol={_getAssetSymbol(toAssetInfo)}
-              currentQuote={currentQuote}
-              renderRateInfo={renderRateInfo}
-              quoteAliveUntil={quoteAliveUntil}
-              value={estimatedFeeValue}
-              feeItems={feeItems}
-              openChooseFeeToken={openChooseFeeToken}
-              openSwapSelectorModal={openSwapSelectorModal}
-              feeAssetInfo={feeAssetInfo}
+            <SwapQuotesSelectorModal
+              modalVisible={swapQuoteSelectorModalVisible}
+              setModalVisible={setSwapQuoteSelectorModalVisible}
+              items={quoteOptions}
+              onSelectItem={onSelectQuote}
+              selectedItem={currentQuote}
+              optimalQuoteItem={optimalQuoteRef.current}
             />
-          )}
 
-          <SwapQuotesSelectorModal
-            modalVisible={swapQuoteSelectorModalVisible}
-            setModalVisible={setSwapQuoteSelectorModalVisible}
-            items={quoteOptions}
-            onSelectItem={onSelectQuote}
-            selectedItem={currentQuote}
-            optimalQuoteItem={optimalQuoteRef.current}
-          />
+            <ChooseFeeTokenModal
+              modalVisible={chooseFeeModalVisible}
+              setModalVisible={setChooseFeeModalVisible}
+              items={feeOptions}
+              estimatedFee={estimatedFeeValue}
+              selectedItem={currentFeeOption}
+              onSelectItem={onSelectFeeOption}
+            />
 
-          <ChooseFeeTokenModal
-            modalVisible={chooseFeeModalVisible}
-            setModalVisible={setChooseFeeModalVisible}
-            items={feeOptions}
-            estimatedFee={estimatedFeeValue}
-            selectedItem={currentFeeOption}
-            onSelectItem={onSelectFeeOption}
-          />
-        </TransactionLayout>
+            <SwapIdleWarningModal
+              modalVisible={warningIdleModalVisible}
+              setModalVisible={setWarningIdleModalVisible}
+              onPressOk={onConfirmStillThere}
+            />
+          </TransactionLayout>
+        </UserInactivity>
       ) : (
         <TransactionDone transactionDoneInfo={transactionDoneInfo} />
       )}

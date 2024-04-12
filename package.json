@@ -121,6 +121,7 @@
     "react-native-tab-view": "^3.5.2",
     "react-native-toast-notifications": "^3.3.1",
     "react-native-url-polyfill": "^2.0.0",
+    "react-native-user-inactivity": "^1.2.0",
     "react-native-vector-icons": "^10.0.0",
     "react-native-video": "^5.2.1",
     "react-native-view-shot": "^3.5.0",
@@ -144,7 +145,7 @@
     "@polkadot/types": "^9.9.4",
     "@react-native/eslint-config": "^0.72.2",
     "@react-native/metro-config": "^0.72.11",
-    "@subwallet/chain-list": "0.2.55-beta.4",
+    "@subwallet/chain-list": "0.2.55",
     "@subwallet/extension-base": "1.1.53-beta.0",
     "@tsconfig/react-native": "^3.0.0",
     "@types/humanize-duration": "^3.27.3",
@@ -196,7 +197,7 @@
     "@polkadot/api": "^10.11.2",
     "@polkadot/util-crypto": "^12.6.2",
     "@subwallet/extension-base": "1.1.53-beta.0",
-    "@subwallet/chain-list": "0.2.55-beta.4",
+    "@subwallet/chain-list": "0.2.55",
     "react-native-svg": "^13.6.0"
   },
   "engines": {

@@ -12,8 +12,9 @@ import { formatHistoryDate } from 'utils/customFormatDate';
 import { IconProps } from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { LanguageType } from '@subwallet/extension-base/background/KoniTypes';
+import { ExtrinsicType, LanguageType } from '@subwallet/extension-base/background/KoniTypes';
 import { isAbleToShowFee } from 'components/common/HistoryItem';
+import { SwapLayout } from 'screens/Home/History/parts/SwapLayout';
 
 interface Props {
   data: TransactionHistoryDisplayItem;
@@ -24,6 +25,10 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
   const txtTypeNameMap = TxTypeNameMap();
   const historyStatusMap = HistoryStatusMap();
   const language = useSelector((state: RootState) => state.settings.language) as LanguageType;
+
+  if (data.type === ExtrinsicType.SWAP) {
+    return <SwapLayout data={data} />;
+  }
 
   return (
     <MetaInfo>

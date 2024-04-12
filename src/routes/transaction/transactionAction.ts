@@ -10,7 +10,7 @@ export type TransactionActionStackParamList = {
   };
   Stake: { chain?: string; type?: string };
   Earning: { slug: string; target?: string; redirectFromPreview?: boolean };
-  Swap: undefined;
+  Swap: { slug?: string };
   Unbond: { slug: string };
   Withdraw: { slug: string };
   ClaimReward: { slug: string };

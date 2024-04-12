@@ -16,6 +16,7 @@ import { Number, Typography } from 'components/design-system-ui';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapTransactionBlock } from 'components/Swap/SwapTransactionBlock';
+import { SwapRoute } from 'components/Swap/SwapRoute';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -109,6 +110,7 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
           value={estimatedFeeValue}
         />
         <MetaInfo.Default label={'Swap route'} />
+        <SwapRoute swapRoute={data.quote.route} />
         {!showQuoteExpired && getWaitingTime > 0 && (
           <AlertBox
             type={'warning'}

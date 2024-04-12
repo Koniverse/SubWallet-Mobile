@@ -156,6 +156,7 @@ export const TokenGroupsUpperBlock = ({
                 screen: 'TransactionAction',
                 params: {
                   screen: 'Swap',
+                  params: {},
                 },
               })
             }

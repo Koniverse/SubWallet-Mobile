@@ -25,6 +25,7 @@ interface Props extends FieldBaseProps {
   containerStyle?: ViewStyle;
   extraTextInputStyle?: ViewStyle;
   readonly?: boolean;
+  maxLength?: number;
 }
 
 const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInput>) => {
@@ -47,6 +48,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
     containerStyle,
     extraTextInputStyle,
     readonly,
+    maxLength,
   } = passwordFieldProps;
   const hasLabel = !!label;
   const styles = useMemo(
@@ -82,6 +84,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
             editable={!isBusy}
             keyboardType={'numeric'}
             selectTextOnFocus={!isBusy}
+            maxLength={maxLength}
             value={value}
           />
           {rightIcon}

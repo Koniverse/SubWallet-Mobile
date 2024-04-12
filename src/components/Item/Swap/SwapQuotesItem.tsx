@@ -38,7 +38,7 @@ export const SwapQuotesItem = ({ isRecommend, quote, selected, onSelect, decimal
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
           <Typography.Text style={{ color: theme.colorTextLight4 }}>{'Est.receive'}</Typography.Text>
-          <Number value={destinationSwapValue} decimal={0} suffix={symbol} />
+          <Number size={theme.fontSize} value={destinationSwapValue} decimal={0} suffix={symbol} />
         </View>
       </View>
     );
@@ -49,6 +49,7 @@ export const SwapQuotesItem = ({ isRecommend, quote, selected, onSelect, decimal
     symbol,
     theme.colorPrimary,
     theme.colorTextLight4,
+    theme.fontSize,
     theme.sizeXXS,
   ]);
 

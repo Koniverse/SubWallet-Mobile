@@ -42,7 +42,7 @@ const tagStyles: StyleProp<any> = {
 };
 
 const AlertBoxBase: React.FC<Props> = (props: Props) => {
-  const { description, title, iconColor, icon } = props;
+  const { description, title, iconColor, icon, titleColor } = props;
 
   const theme = useSubWalletTheme().swThemes;
 
@@ -66,7 +66,7 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
           systemFonts={['PlusJakartaSans-Medium']}
           classesStyles={classesStyles}
           tagsStyles={tagStyles}
-          source={{ html: `<span class="title">${title}</span>` }}
+          source={{ html: `<span style="color: ${titleColor}" class="title">${title}</span>` }}
           defaultTextProps={{ allowFontScaling: false }}
         />
         {typeof description === 'string' ? (

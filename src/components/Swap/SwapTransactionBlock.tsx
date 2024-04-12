@@ -82,7 +82,7 @@ export const SwapTransactionBlock = ({ data }: Props) => {
             customFormatter={swapCustomFormatter}
           />
 
-          <Typography.Text style={{ color: theme.colorTextLight4 }}>{_getAssetSymbol(fromAssetInfo)}</Typography.Text>
+          <Typography.Text style={{ color: theme.colorTextLight4 }}>{_getAssetSymbol(toAssetInfo)}</Typography.Text>
         </View>
       </View>
     </MetaInfo>

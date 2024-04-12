@@ -159,11 +159,24 @@ export const TokenGroupsDetail = ({
     });
   }, [currentAccount, navigation, showNoti, tokenGroupSlug]);
 
+  const _onOpenSwap = useCallback(() => {
+    if (currentAccount && currentAccount.isReadOnly) {
+      showNoti(i18n.notificationMessage.watchOnlyNoti);
+      return;
+    }
+
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: { screen: 'Swap', params: { slug: tokenGroupSlug } },
+    });
+  }, [currentAccount, navigation, showNoti, tokenGroupSlug]);
+
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsDetailUpperBlock
         onOpenReceive={onOpenReceive}
         onOpenSendFund={_onOpenSendFund}
+        onOpenSwap={_onOpenSwap}
         balanceValue={tokenBalanceValue}
         onClickBack={onClickBack}
         groupSymbol={groupSymbol}
@@ -171,7 +184,16 @@ export const TokenGroupsDetail = ({
         tokenGroupMap={tokenGroupMap}
       />
     );
-  }, [onOpenReceive, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol, tokenGroupSlug, tokenGroupMap]);
+  }, [
+    onOpenReceive,
+    _onOpenSendFund,
+    _onOpenSwap,
+    tokenBalanceValue,
+    onClickBack,
+    groupSymbol,
+    tokenGroupSlug,
+    tokenGroupMap,
+  ]);
 
   const listFooter = useMemo(() => {
     return <BannerGenerator banners={banners} dismissBanner={dismissBanner} onPressBanner={onPressBanner} />;

@@ -1,7 +1,7 @@
 import { Typography } from 'components/design-system-ui';
 import React, { useEffect, useState } from 'react';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { TextStyle } from 'react-native';
+import { TextStyle, View } from 'react-native';
 
 interface Props {
   quoteAliveUntilValue?: number;
@@ -40,7 +40,13 @@ export const QuoteResetTime = ({ quoteAliveUntilValue, style }: Props) => {
   }, [quoteAliveUntilValue, setQuoteCountdownTime]);
 
   return (
-    <Typography.Text
-      style={[{ color: theme.colorWarning }, style]}>{`Quote reset in: ${quoteCountdownTime}s`}</Typography.Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Typography.Text style={[{ color: theme.colorWarning }, style]}>{'Quote reset in: '}</Typography.Text>
+      <Typography.Text
+        style={[
+          { color: quoteCountdownTime > 10 ? theme.colorWarning : theme.colorError },
+          style,
+        ]}>{`${quoteCountdownTime}s`}</Typography.Text>
+    </View>
   );
 };

@@ -1,14 +1,14 @@
 import React, { useCallback, useRef } from 'react';
-import { SwFullSizeModal } from 'components/design-system-ui';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { SwModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { SwapQuotesItem } from 'components/Item/Swap/SwapQuotesItem';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { _getAssetDecimals, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
-import { View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapQuote } from '@subwallet/extension-base/types/swap';
+import { deviceHeight } from 'constants/index';
 
 interface Props {
   modalVisible: boolean;
@@ -67,17 +67,16 @@ export const SwapQuotesSelectorModal = ({
   );
 
   return (
-    <SwFullSizeModal
+    <SwModal
       isUseModalV2
       level={2}
       modalVisible={modalVisible}
       setVisible={setModalVisible}
+      modalTitle={'Swap quote selector'}
       modalBaseV2Ref={modalBaseV2Ref}>
-      <ContainerWithSubHeader title={'Swap quote selector'} onPressBack={() => setModalVisible(false)}>
-        <View style={{ paddingHorizontal: theme.padding, paddingTop: theme.padding }}>
-          {!!items && !!items.length && renderItems(items)}
-        </View>
-      </ContainerWithSubHeader>
-    </SwFullSizeModal>
+      <ScrollView style={{ maxHeight: deviceHeight * 0.6 }} contentContainerStyle={{ gap: theme.sizeXS }}>
+        {!!items && !!items.length && renderItems(items)}
+      </ScrollView>
+    </SwModal>
   );
 };

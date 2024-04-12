@@ -1,10 +1,9 @@
-import { Button, Icon, SwFullSizeModal, Typography } from 'components/design-system-ui';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { CheckCircle, XCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import MetaInfo from 'components/MetaInfo';
 import { useForm } from 'react-hook-form';
 import InputText from 'components/Input/InputText';
@@ -12,6 +11,7 @@ import { FormItem } from 'components/common/FormItem';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import BigN from 'bignumber.js';
 import { SlippageType } from '@subwallet/extension-base/types/swap';
+import { deviceHeight } from 'constants/index';
 
 interface Props {
   modalVisible: boolean;
@@ -44,16 +44,15 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
     },
   });
 
-  const onCancel = () => {
+  const onCancel = useCallback(() => {
     setModalVisible(false);
-  };
+  }, [setModalVisible]);
 
   const handleSelectSlippage = (item: string) => setSelectedSlippage(item);
 
   const handleApplySlippage = useCallback(
     (values: FormValues) => {
       const { slippage: slippageValueForm } = values;
-      console.log('selectedSlippage', selectedSlippage);
       if (selectedSlippage) {
         const slippageObject = {
           slippage: new BigN(SLIPPAGE_TOLERANCE[selectedSlippage]),
@@ -94,7 +93,7 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
         !firstRenderRef.current && setSelectedSlippage(undefined);
         setValue('slippage', '');
       } else {
-        setValue('slippage', '');
+        setValue('slippage', slippageValue.slippage.multipliedBy(100).toString());
       }
     }
   }, [setValue, slippageValue.isCustomType, slippageValue.slippage, modalVisible]);
@@ -105,18 +104,34 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
     }
   }, [modalVisible]);
 
+  const footerNode = useMemo(
+    () => (
+      <View style={{ flexDirection: 'row', gap: theme.sizeSM, paddingTop: theme.padding }}>
+        <Button block onPress={onCancel} icon={<Icon phosphorIcon={XCircle} weight={'fill'} />} type={'secondary'}>
+          Cancel
+        </Button>
+        <Button
+          block
+          onPress={handleSubmit(handleApplySlippage)}
+          icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}>
+          Apply
+        </Button>
+      </View>
+    ),
+    [handleApplySlippage, handleSubmit, onCancel, theme.padding, theme.sizeSM],
+  );
+
   return (
-    <SwFullSizeModal
+    <SwModal
       isUseModalV2
+      level={2}
       modalVisible={modalVisible}
       setVisible={setModalVisible}
+      modalTitle={'Slippage setting'}
+      footer={footerNode}
       modalBaseV2Ref={modalBaseV2Ref}>
-      <ContainerWithSubHeader
-        showLeftBtn
-        title={'Slippage setting'}
-        style={{ paddingHorizontal: theme.padding }}
-        onPressBack={() => setModalVisible(false)}>
-        <View style={{ gap: theme.sizeSM, flex: 1, paddingTop: theme.padding }}>
+      <ScrollView style={{ maxHeight: deviceHeight * 0.4 }}>
+        <View style={{ gap: theme.sizeSM, paddingTop: theme.padding }}>
           <MetaInfo hasBackgroundWrapper>
             <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
               {'Select slippage tolerance'}
@@ -145,6 +160,7 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
                   containerStyle={{ backgroundColor: theme.colorBgInput }}
                   extraTextInputStyle={{ paddingRight: 34 }}
                   style={{ marginRight: 16 }}
+                  maxLength={2}
                   onChangeText={text => {
                     setSelectedSlippage(undefined);
                     onChange(text);
@@ -176,18 +192,7 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
             }
           />
         </View>
-        <View style={{ flexDirection: 'row', gap: theme.sizeSM, marginBottom: theme.margin }}>
-          <Button block onPress={onCancel} icon={<Icon phosphorIcon={XCircle} weight={'fill'} />} type={'secondary'}>
-            Cancel
-          </Button>
-          <Button
-            block
-            onPress={handleSubmit(handleApplySlippage)}
-            icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}>
-            Apply
-          </Button>
-        </View>
-      </ContainerWithSubHeader>
-    </SwFullSizeModal>
+      </ScrollView>
+    </SwModal>
   );
 };
