@@ -6,7 +6,7 @@ import { SwapFromField } from 'components/Swap/SwapFromField';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
-import { _ChainAsset } from '@subwallet/chain-list/types';
+import { _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import {
   _getAssetDecimals,
@@ -47,7 +47,13 @@ import {
   SwapRequest,
   SwapStepType,
 } from '@subwallet/extension-base/types/swap';
-import { formatNumberString, reformatAddress, swapCustomFormatter } from '@subwallet/extension-base/utils';
+import {
+  addLazy,
+  formatNumberString,
+  reformatAddress,
+  removeLazy,
+  swapCustomFormatter,
+} from '@subwallet/extension-base/utils';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { findAccountByAddress } from 'utils/account';
@@ -67,12 +73,22 @@ import AlertBox from 'components/design-system-ui/alert-box/simple';
 import UserInactivity from 'react-native-user-inactivity';
 import { SwapIdleWarningModal } from 'components/Modal/Swap/SwapIdleWarningModal';
 import { SendFundProps } from 'routes/transaction/transactionAction';
+import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
   fromTokenSlug: string;
   toTokenSlug: string;
   recipient?: string;
+  destChain: string;
+}
+
+function isAssetTypeValid(
+  chainAsset: _ChainAsset,
+  chainInfoMap: Record<string, _ChainInfo>,
+  isAccountEthereum: boolean,
+) {
+  return _isChainEvmCompatible(chainInfoMap[chainAsset.originChain]) === isAccountEthereum;
 }
 
 function getTokenSelectorItem(tokenSlugs: string[], assetRegistryMap: Record<string, _ChainAsset>): TokenItemType[] {
@@ -88,6 +104,72 @@ function getTokenSelectorItem(tokenSlugs: string[], assetRegistryMap: Record<str
         symbol: asset.symbol,
         name: asset.name,
       });
+    }
+  });
+
+  return result;
+}
+
+function getFromTokenSelectorItem(
+  tokenSlugs: string[],
+  assetRegistryMap: Record<string, _ChainAsset>,
+  address: string,
+  chainInfoMap: Record<string, _ChainInfo>,
+  multiChainAssetMap: Record<string, _MultiChainAsset>,
+  tokenGroupSlug?: string,
+): TokenItemType[] {
+  const isSetTokenSlug = !!tokenGroupSlug && !!assetRegistryMap[tokenGroupSlug];
+  const isSetMultiChainAssetSlug = !!tokenGroupSlug && !!multiChainAssetMap[tokenGroupSlug];
+  const isAccountEthereum = isEthereumAddress(address);
+
+  if (tokenGroupSlug) {
+    if (!(isSetTokenSlug || isSetMultiChainAssetSlug)) {
+      return [];
+    }
+
+    const chainAsset = assetRegistryMap[tokenGroupSlug];
+
+    if (isSetTokenSlug) {
+      if (isAssetTypeValid(chainAsset, chainInfoMap, isAccountEthereum)) {
+        const { name, originChain, slug, symbol } = assetRegistryMap[tokenGroupSlug];
+
+        return [
+          {
+            name,
+            slug,
+            symbol,
+            originChain,
+          },
+        ];
+      } else {
+        return [];
+      }
+    }
+  }
+
+  const result: TokenItemType[] = [];
+
+  tokenSlugs.forEach(slug => {
+    const asset = assetRegistryMap[slug];
+
+    if (asset) {
+      if (isSetMultiChainAssetSlug) {
+        if (asset.multiChainAsset === tokenGroupSlug) {
+          result.push({
+            originChain: asset.originChain,
+            slug,
+            symbol: asset.symbol,
+            name: asset.name,
+          });
+        }
+      } else {
+        result.push({
+          originChain: asset.originChain,
+          slug,
+          symbol: asset.symbol,
+          name: asset.name,
+        });
+      }
     }
   });
 
@@ -114,7 +196,6 @@ export const Swap = ({
   const { assetRegistry: assetRegistryMap, multiChainAssetMap } = useSelector(
     (state: RootState) => state.assetRegistry,
   );
-  console.log('tokenGroupSlug', tokenGroupSlug); // TODO: remove
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { accounts, currentAccount, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const hasInternalConfirmations = useSelector((state: RootState) => state.requestState.hasInternalConfirmations);
@@ -126,7 +207,13 @@ export const Swap = ({
 
   const {
     title,
-    form: { control, setValue, trigger, handleSubmit },
+    form: {
+      control,
+      setValue,
+      trigger,
+      handleSubmit,
+      formState: { dirtyFields },
+    },
     defaultValues,
     onChangeFromValue: setFrom,
     onTransactionDone: onDone,
@@ -134,7 +221,9 @@ export const Swap = ({
   } = useTransaction<SwapFormValues>('swap', {
     mode: 'onChange',
     reValidateMode: 'onChange',
-    defaultValues: {},
+    defaultValues: {
+      destChain: '',
+    },
   });
 
   const fromValue = useWatch<SwapFormValues>({ name: 'from', control });
@@ -143,13 +232,13 @@ export const Swap = ({
   const toTokenSlugValue = useWatch<SwapFormValues>({ name: 'toTokenSlug', control });
   const chainValue = useWatch<SwapFormValues>({ name: 'chain', control });
   const recipientValue = useWatch<SwapFormValues>({ name: 'recipient', control });
+  const destChainValue = useWatch<SwapFormValues>({ name: 'destChain', control });
   const { checkChainConnected, turnOnChain } = useChainChecker();
   const accountInfo = useGetAccountByAddress(fromValue);
   const [processState, dispatchProcessState] = useReducer(swapReducer, DEFAULT_SWAP_PROCESS);
 
-  const destChainValue = '';
-  const destChainNetworkPrefix = 42;
-  const destChainGenesisHash = '';
+  const destChainNetworkPrefix = useGetChainPrefixBySlug(destChainValue);
+  const destChainGenesisHash = chainInfoMap[destChainValue]?.substrateInfo?.genesisHash || '';
   const accountSelectorRef = useRef<ModalRef>();
   const [showQuoteArea, setShowQuoteArea] = useState<boolean>(false);
   const [quoteOptions, setQuoteOptions] = useState<SwapQuote[]>([]);
@@ -195,8 +284,15 @@ export const Swap = ({
   }, [swapPairs]);
 
   const rawFromTokenItems = useMemo<TokenItemType[]>(() => {
-    return getTokenSelectorItem(Object.keys(fromAndToTokenMap), assetRegistryMap);
-  }, [assetRegistryMap, fromAndToTokenMap]);
+    return getFromTokenSelectorItem(
+      Object.keys(fromAndToTokenMap),
+      assetRegistryMap,
+      fromValue,
+      chainInfoMap,
+      multiChainAssetMap,
+      tokenGroupSlug,
+    );
+  }, [assetRegistryMap, chainInfoMap, fromAndToTokenMap, fromValue, multiChainAssetMap, tokenGroupSlug]);
 
   const fromTokenItems = useMemo<TokenItemType[]>(() => {
     if (!fromValue) {
@@ -831,12 +927,12 @@ export const Swap = ({
           'Low liquidity. Swap is available but not recommended as swap rate is unfavorable',
           [
             {
-              text: 'Continue',
-              onPress: transactionBlockProcess,
-            },
-            {
               text: 'Cancel',
               style: 'destructive',
+            },
+            {
+              text: 'Continue',
+              onPress: transactionBlockProcess,
             },
           ],
         );
@@ -871,6 +967,11 @@ export const Swap = ({
     const chain = _getAssetOriginChain(fromAssetInfo);
     setValue('chain', chain);
   }, [fromAssetInfo, setValue]);
+
+  useEffect(() => {
+    const destChain = _getAssetOriginChain(toAssetInfo);
+    setValue('destChain', destChain);
+  }, [toAssetInfo, setValue]);
 
   useEffect(() => {
     let sync = true;
@@ -1079,6 +1180,22 @@ export const Swap = ({
     }
   }, [setValue, showRecipientField]);
 
+  useEffect(() => {
+    if (fromValue && chainValue && destChainValue && dirtyFields.to) {
+      addLazy(
+        'trigger-validate-swap-to',
+        () => {
+          trigger('recipient');
+        },
+        100,
+      );
+    }
+
+    return () => {
+      removeLazy('trigger-validate-swap-to');
+    };
+  }, [chainValue, destChainValue, dirtyFields.to, fromValue, trigger]);
+
   const renderAlertBox = () => {
     const multichainAsset = fromAssetInfo?.multiChainAsset;
     const fromAssetName = multichainAsset && multiChainAssetMap[multichainAsset]?.name;
@@ -1182,15 +1299,17 @@ export const Swap = ({
                   name={'recipient'}
                   control={control}
                   rules={recipientAddressRules}
-                  render={({ field: { value, ref, onChange } }) => (
+                  render={({ field: { value, ref, onChange, onBlur } }) => (
                     <InputAddress
                       containerStyle={{ marginTop: theme.marginXS }}
                       ref={ref}
-                      label={i18n.inputLabel.sendTo}
+                      label={'Recipient account'}
                       value={value}
                       onChangeText={onChange}
-                      // reValidate={reValidate}
-                      placeholder={i18n.placeholder.accountAddress}
+                      onSideEffectChange={onBlur}
+                      onBlur={onBlur}
+                      reValidate={() => reValidateField('recipient')}
+                      placeholder={'Input your recipient account'}
                       addressPrefix={destChainNetworkPrefix}
                       networkGenesisHash={destChainGenesisHash}
                       chain={destChainValue}
@@ -1251,7 +1370,10 @@ export const Swap = ({
 
                             <TouchableOpacity
                               style={{ height: 40, justifyContent: 'center' }}
-                              onPress={() => setSwapQuoteModalVisible(true)}>
+                              onPress={() => {
+                                Keyboard.dismiss();
+                                setTimeout(() => setSwapQuoteModalVisible(true), 100);
+                              }}>
                               <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
                                 <Typography.Text style={{ color: theme.colorTextLight4 }}>
                                   {'View swap quote'}

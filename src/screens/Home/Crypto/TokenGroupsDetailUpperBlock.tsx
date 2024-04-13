@@ -18,6 +18,8 @@ import { RootNavigationProps } from 'routes/index';
 import { isAccountAll } from 'utils/accountAll';
 import { BuyTokenInfo } from 'types/buy';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import { _isChainEvmCompatible } from '@subwallet/extension-base/services/chain-service/utils';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
@@ -43,10 +45,45 @@ export const TokenGroupsDetailUpperBlock = ({
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const { currentAccount, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const { assetRegistry: assetRegistryMap } = useSelector((state: RootState) => state.assetRegistry);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const swapPairs = useSelector((state: RootState) => state.swap.swapPairs);
   const { isShowBuyToken } = useShowBuyToken();
   const { tokens } = useSelector((state: RootState) => state.buyService);
   const _style = createStyleSheet(theme);
+  const swapTokenMap = useMemo<Record<string, string[]>>(() => {
+    const result: Record<string, string[]> = {};
+
+    swapPairs.forEach(pair => {
+      if (!result[pair.from]) {
+        result[pair.from] = [pair.to];
+      } else {
+        result[pair.from].push(pair.to);
+      }
+    });
+
+    return result;
+  }, [swapPairs]);
+
+  const swapInfos = useMemo(() => {
+    return Object.keys(swapTokenMap)
+      .map(tokenSlug => assetRegistryMap[tokenSlug])
+      .filter(item => {
+        const chainInfo = chainInfoMap[item.originChain];
+        if (isAllAccount) {
+          return item.slug === tokenGroupSlug || item.multiChainAsset === tokenGroupSlug;
+        } else {
+          return (
+            currentAccount &&
+            isEthereumAddress(currentAccount.address) === _isChainEvmCompatible(chainInfo) &&
+            (item.slug === tokenGroupSlug || item.multiChainAsset === tokenGroupSlug)
+          );
+        }
+      });
+  }, [assetRegistryMap, chainInfoMap, currentAccount, isAllAccount, swapTokenMap, tokenGroupSlug]);
+
+  console.log('swapInfos', swapInfos);
 
   const buyInfos = useMemo(() => {
     const groupSlug = tokenGroupSlug || '';
@@ -125,6 +162,7 @@ export const TokenGroupsDetailUpperBlock = ({
             icon={ButtonIcon.Swap}
             onPress={onOpenSwap}
             buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
+            disabled={!swapInfos.length}
           />
         )}
         {isShowBuyToken && (

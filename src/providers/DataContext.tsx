@@ -472,7 +472,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
         /* Earning */
 
         // Swap
-        _DataContext.addHandler({ ...subscribeSwapPairs, name: 'subscribeSwapPairs', relatedStores: ['swap'] });
+        _DataContext.addHandler({
+          ...subscribeSwapPairs,
+          name: 'subscribeSwapPairs',
+          relatedStores: ['swap'],
+          isStartImmediately: true,
+        });
 
         readyFlag.current.isStart = false;
       }

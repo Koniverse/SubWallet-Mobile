@@ -72,7 +72,7 @@ export const SwapQuotesSelectorModal = ({
       level={2}
       modalVisible={modalVisible}
       setVisible={setModalVisible}
-      modalTitle={'Swap quote selector'}
+      modalTitle={'Swap quote'}
       modalBaseV2Ref={modalBaseV2Ref}>
       <ScrollView style={{ maxHeight: deviceHeight * 0.6 }} contentContainerStyle={{ gap: theme.sizeXS }}>
         {!!items && !!items.length && renderItems(items)}

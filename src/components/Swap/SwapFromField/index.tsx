@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import { TokenSelector, TokenItemType } from 'components/Modal/common/TokenSelector';
 import { ModalRef } from 'types/modalRef';
 import { InputAmount } from 'components/Input/InputAmount';
@@ -54,11 +54,11 @@ export const SwapFromField = ({
         <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
           {'From'}
         </Typography.Text>
-        <TouchableOpacity>
-          <Typography.Text size={'sm'} style={{ color: theme.colorSuccess }}>
-            {'Max'}
-          </Typography.Text>
-        </TouchableOpacity>
+        {/*<TouchableOpacity>*/}
+        {/*  <Typography.Text size={'sm'} style={{ color: theme.colorSuccess }}>*/}
+        {/*    {'Max'}*/}
+        {/*  </Typography.Text>*/}
+        {/*</TouchableOpacity>*/}
       </View>
 
       <View

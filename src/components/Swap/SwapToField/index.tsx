@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import { TokenSelector, TokenItemType } from 'components/Modal/common/TokenSelector';
 import { ModalRef } from 'types/modalRef';
@@ -8,6 +8,7 @@ import BigN from 'bignumber.js';
 import { Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapTokenSelectField } from 'components/Field/SwapTokenSelect';
+import { formatNumberString, swapCustomFormatter } from '@subwallet/extension-base/utils';
 
 interface Props {
   tokenSelectorItems: TokenItemType[];
@@ -44,6 +45,14 @@ export const SwapToField = ({
   //
   //   return BN_ZERO;
   // }, [decimals, priceId, priceMap, swapValue]);
+
+  const convertedDestinationSwapValue = useMemo(() => {
+    if (swapValue.toString().includes('e')) {
+      return formatNumberString(swapValue.toString());
+    } else {
+      return swapValue.toString();
+    }
+  }, [swapValue]);
 
   return (
     <View
@@ -97,7 +106,9 @@ export const SwapToField = ({
         </View>
 
         <View style={{ flex: 2, alignItems: 'flex-end', paddingRight: theme.padding }}>
-          <Typography.Text style={{ color: theme.colorTextLight4 }}>{swapValue.toString()}</Typography.Text>
+          <Typography.Text ellipsis numberOfLines={1} style={{ color: theme.colorTextLight4 }}>
+            {swapCustomFormatter(convertedDestinationSwapValue)}
+          </Typography.Text>
 
           {/*<Number value={getConvertedInputValue} decimal={0} />*/}
         </View>
