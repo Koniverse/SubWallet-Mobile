@@ -66,7 +66,7 @@ export const SwapFromField = ({
           flexDirection: 'row',
           flex: 1,
         }}>
-        <View>
+        <View style={{ minWidth: 160 }}>
           <TokenSelector
             items={tokenSelectorItems}
             selectedValueMap={{ [assetValue]: true }}

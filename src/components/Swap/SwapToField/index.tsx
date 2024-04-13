@@ -5,7 +5,7 @@ import { ModalRef } from 'types/modalRef';
 import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import { _getChainName } from '@subwallet/extension-base/services/chain-service/utils';
 import BigN from 'bignumber.js';
-import { Typography } from 'components/design-system-ui';
+import { ActivityIndicator, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapTokenSelectField } from 'components/Field/SwapTokenSelect';
 import { formatNumberString, swapCustomFormatter } from '@subwallet/extension-base/utils';
@@ -18,6 +18,7 @@ interface Props {
   swapValue: BigN;
   onSelectToken?: (item: string) => void;
   toAsset?: _ChainAsset;
+  loading?: boolean;
 }
 
 export const SwapToField = ({
@@ -28,6 +29,7 @@ export const SwapToField = ({
   onSelectToken,
   swapValue,
   toAsset,
+  loading,
 }: Props) => {
   const tokenSelectorRef = useRef<ModalRef>();
   // const decimals = _getAssetDecimals(toAsset);
@@ -83,7 +85,7 @@ export const SwapToField = ({
           alignItems: 'center',
           flex: 1,
         }}>
-        <View>
+        <View style={{ minWidth: 160 }}>
           <TokenSelector
             items={tokenSelectorItems}
             selectedValueMap={{ [assetValue]: true }}
@@ -106,10 +108,13 @@ export const SwapToField = ({
         </View>
 
         <View style={{ flex: 2, alignItems: 'flex-end', paddingRight: theme.padding }}>
-          <Typography.Text ellipsis numberOfLines={1} style={{ color: theme.colorTextLight4 }}>
-            {swapCustomFormatter(convertedDestinationSwapValue)}
-          </Typography.Text>
-
+          {loading ? (
+            <ActivityIndicator size={20} indicatorColor={theme.colorTextLight4} />
+          ) : (
+            <Typography.Text ellipsis numberOfLines={1} style={{ color: theme.colorTextLight4 }}>
+              {swapCustomFormatter(convertedDestinationSwapValue)}
+            </Typography.Text>
+          )}
           {/*<Number value={getConvertedInputValue} decimal={0} />*/}
         </View>
       </View>

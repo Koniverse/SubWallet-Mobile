@@ -1,7 +1,7 @@
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { CheckCircle, XCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import MetaInfo from 'components/MetaInfo';
@@ -138,15 +138,22 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
             </Typography.Text>
             <View style={{ flexDirection: 'row', gap: theme.paddingXS, flexWrap: 'wrap' }}>
               {Object.entries(SLIPPAGE_TOLERANCE).map(([key, value]) => (
-                <Button
+                <TouchableOpacity
                   key={key}
                   onPress={() => {
                     handleSelectSlippage(key);
                   }}
-                  size={'xs'}
                   style={{
+                    flex: 1,
+                    height: 40,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: theme.borderRadiusLG,
                     backgroundColor: key === selectedSlippage ? theme.colorPrimary : theme.colorBgInput,
-                  }}>{`${value * 100}%`}</Button>
+                    paddingHorizontal: theme.paddingSM,
+                  }}>
+                  <Typography.Text size={'md'} style={{ color: theme.colorWhite }}>{`${value * 100}%`}</Typography.Text>
+                </TouchableOpacity>
               ))}
             </View>
             <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
@@ -160,8 +167,10 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
                   containerStyle={{ backgroundColor: theme.colorBgInput }}
                   extraTextInputStyle={{ paddingRight: 34 }}
                   style={{ marginRight: 16 }}
-                  maxLength={2}
                   onChangeText={text => {
+                    if (Number(text) > 100) {
+                      return;
+                    }
                     setSelectedSlippage(undefined);
                     onChange(text);
                   }}

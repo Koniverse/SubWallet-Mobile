@@ -72,7 +72,11 @@ export const TokenGroupsDetailUpperBlock = ({
       .filter(item => {
         const chainInfo = chainInfoMap[item.originChain];
         if (isAllAccount) {
-          return item.slug === tokenGroupSlug || item.multiChainAsset === tokenGroupSlug;
+          const isAnyValidAccount = accounts.filter(
+            _item =>
+              !isAccountAll(_item.address) && isEthereumAddress(_item.address) === _isChainEvmCompatible(chainInfo),
+          );
+          return isAnyValidAccount.length && (item.slug === tokenGroupSlug || item.multiChainAsset === tokenGroupSlug);
         } else {
           return (
             currentAccount &&
@@ -81,9 +85,7 @@ export const TokenGroupsDetailUpperBlock = ({
           );
         }
       });
-  }, [assetRegistryMap, chainInfoMap, currentAccount, isAllAccount, swapTokenMap, tokenGroupSlug]);
-
-  console.log('swapInfos', swapInfos);
+  }, [accounts, assetRegistryMap, chainInfoMap, currentAccount, isAllAccount, swapTokenMap, tokenGroupSlug]);
 
   const buyInfos = useMemo(() => {
     const groupSlug = tokenGroupSlug || '';

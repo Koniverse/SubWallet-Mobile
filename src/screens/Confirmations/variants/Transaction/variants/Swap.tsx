@@ -26,8 +26,8 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const data = transaction.data as SwapTxData;
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
-  const account = useGetAccountByAddress(data.address);
-  const networkPrefix = useGetChainPrefixBySlug(transaction.chain);
+  const recipientAddress = data.recipient || data.address;
+  const account = useGetAccountByAddress(recipientAddress);
   const theme = useSubWalletTheme().swThemes;
 
   const toAssetInfo = useMemo(() => {
@@ -36,6 +36,8 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const fromAssetInfo = useMemo(() => {
     return assetRegistryMap[data.quote.pair.from] || undefined;
   }, [assetRegistryMap, data.quote.pair.from]);
+
+  const networkPrefix = useGetChainPrefixBySlug(toAssetInfo.originChain);
 
   const estimatedFeeValue = useMemo(() => {
     let totalBalance = BN_ZERO;
@@ -94,7 +96,7 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
       <SwapTransactionBlock data={data} />
       <MetaInfo>
         <MetaInfo.Account
-          address={data.recipient || ''}
+          address={recipientAddress}
           label={'Recipient'}
           networkPrefix={networkPrefix}
           name={account?.name}

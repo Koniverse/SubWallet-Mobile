@@ -74,6 +74,7 @@ import UserInactivity from 'react-native-user-inactivity';
 import { SwapIdleWarningModal } from 'components/Modal/Swap/SwapIdleWarningModal';
 import { SendFundProps } from 'routes/transaction/transactionAction';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
+import { analysisAccounts } from 'hooks/screen/Home/Crypto/useGetChainSlugsByAccountType';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -212,7 +213,7 @@ export const Swap = ({
       setValue,
       trigger,
       handleSubmit,
-      formState: { dirtyFields },
+      formState: { dirtyFields, errors },
     },
     defaultValues,
     onChangeFromValue: setFrom,
@@ -233,7 +234,7 @@ export const Swap = ({
   const chainValue = useWatch<SwapFormValues>({ name: 'chain', control });
   const recipientValue = useWatch<SwapFormValues>({ name: 'recipient', control });
   const destChainValue = useWatch<SwapFormValues>({ name: 'destChain', control });
-  const { checkChainConnected, turnOnChain } = useChainChecker();
+  const { checkChainConnected, turnOnChain } = useChainChecker(false);
   const accountInfo = useGetAccountByAddress(fromValue);
   const [processState, dispatchProcessState] = useReducer(swapReducer, DEFAULT_SWAP_PROCESS);
 
@@ -268,7 +269,7 @@ export const Swap = ({
   const accountSelectorList = useMemo(() => {
     return accounts.filter(({ address }) => !isAccountAll(address));
   }, [accounts]);
-
+  const [isContainOnlySubstrate] = analysisAccounts(accounts);
   const fromAndToTokenMap = useMemo<Record<string, string[]>>(() => {
     const result: Record<string, string[]> = {};
 
@@ -1076,6 +1077,11 @@ export const Swap = ({
           setValue('fromTokenSlug', fromTokenItems[0].slug);
         }
       }
+    } else {
+      if (fromTokenSlugValue) {
+        setValue('fromTokenSlug', '');
+        setValue('toTokenSlug', '');
+      }
     }
   }, [fromTokenItems, fromTokenSlugValue, setValue]);
 
@@ -1181,7 +1187,7 @@ export const Swap = ({
   }, [setValue, showRecipientField]);
 
   useEffect(() => {
-    if (fromValue && chainValue && destChainValue && dirtyFields.to) {
+    if (fromValue && chainValue && destChainValue && dirtyFields.recipient) {
       addLazy(
         'trigger-validate-swap-to',
         () => {
@@ -1194,7 +1200,7 @@ export const Swap = ({
     return () => {
       removeLazy('trigger-validate-swap-to');
     };
-  }, [chainValue, destChainValue, dirtyFields.to, fromValue, trigger]);
+  }, [chainValue, destChainValue, dirtyFields.recipient, fromValue, trigger]);
 
   const renderAlertBox = () => {
     const multichainAsset = fromAssetInfo?.multiChainAsset;
@@ -1292,6 +1298,7 @@ export const Swap = ({
                 swapValue={destinationSwapValue}
                 chainInfo={chainInfoMap[toChainValue]}
                 onSelectToken={onSelectToToken}
+                loading={handleRequestLoading && showQuoteArea}
               />
 
               {showRecipientField && (
@@ -1342,10 +1349,6 @@ export const Swap = ({
 
               {showQuoteArea && (
                 <>
-                  {!currentQuote && handleRequestLoading && (
-                    <ActivityIndicator size={20} indicatorColor={theme.colorTextLight4} />
-                  )}
-
                   {!!currentQuote && !isFormInvalid && (
                     <>
                       <Divider type={'horizontal'} />
@@ -1364,7 +1367,7 @@ export const Swap = ({
                           </MetaInfo.Default>
                         </MetaInfo>
 
-                        {!isFormInvalid && (
+                        {!isFormInvalid && !handleRequestLoading && (
                           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <QuoteResetTime quoteAliveUntilValue={quoteAliveUntil} />
 
@@ -1390,12 +1393,21 @@ export const Swap = ({
                   )}
 
                   <View style={{ marginTop: theme.marginXS }}>
-                    {swapError && <Warning isDanger message={swapError.message} />}
+                    {swapError && !errors.recipient && <Warning isDanger message={swapError.message} />}
                   </View>
                 </>
               )}
 
               {renderAlertBox()}
+              {!fromTokenItems.length && (
+                <AlertBox
+                  type={'warning'}
+                  title={'Pay attention!'}
+                  description={`No swap pair for this token found. Switch to ${
+                    isContainOnlySubstrate ? 'Ethereum' : 'Polkadot'
+                  } account to see available swap pairs `}
+                />
+              )}
             </ScrollView>
             <View style={{ margin: theme.margin }}>
               <Button

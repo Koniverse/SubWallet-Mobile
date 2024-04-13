@@ -109,6 +109,7 @@ export const SwapQuoteDetailModal = ({
                   height: 40,
                   marginBottom: theme.marginXXS,
                 }}
+                disabled={!currentQuote}
                 onPress={openSwapSelectorModal}>
                 <View style={{ flexDirection: 'row', gap: theme.sizeXXS, alignItems: 'center' }}>
                   <BackgroundIcon
