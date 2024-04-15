@@ -54,7 +54,10 @@ export const SwapLayout = ({ data }: Props) => {
     <MetaInfo>
       <SwapTransactionBlock data={swapInfo} />
       {_getAssetOriginChain(assetFrom) === _getAssetOriginChain(assetTo) ? (
-        <MetaInfo.Chain chain={_getAssetOriginChain(assetFrom)} label={'Network'} />
+        <>
+          <MetaInfo.Account address={data.from} label={'Sender'} name={data.fromName} />
+          <MetaInfo.Chain chain={_getAssetOriginChain(assetFrom)} label={'Network'} />
+        </>
       ) : (
         <MetaInfo.Transfer
           destinationChain={{

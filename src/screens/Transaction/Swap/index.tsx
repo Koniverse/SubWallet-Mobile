@@ -1226,7 +1226,7 @@ export const Swap = ({
         <UserInactivity
           isActive={isUserActive}
           skipKeyboard={false}
-          timeForInactivity={3000000}
+          timeForInactivity={300000}
           onAction={active => {
             setIsUserActive(active);
             if (!active) {
@@ -1392,13 +1392,15 @@ export const Swap = ({
                     </>
                   )}
 
-                  <View style={{ marginTop: theme.marginXS }}>
-                    {swapError && !errors.recipient && <Warning isDanger message={swapError.message} />}
-                  </View>
+                  {!!fromTokenItems.length && (
+                    <View style={{ marginTop: theme.marginXS }}>
+                      {swapError && !errors.recipient && <Warning isDanger message={swapError.message} />}
+                    </View>
+                  )}
                 </>
               )}
 
-              {renderAlertBox()}
+              {!!fromTokenItems.length && renderAlertBox()}
               {!fromTokenItems.length && (
                 <AlertBox
                   type={'warning'}
@@ -1412,7 +1414,7 @@ export const Swap = ({
             <View style={{ margin: theme.margin }}>
               <Button
                 onPress={handleSubmit(onSubmit)}
-                disabled={submitLoading || handleRequestLoading || isNotConnectedAltChain}
+                disabled={submitLoading || handleRequestLoading || isNotConnectedAltChain || !fromTokenItems.length}
                 loading={submitLoading}>
                 {'Swap'}
               </Button>

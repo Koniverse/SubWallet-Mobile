@@ -169,7 +169,7 @@ export const SwapQuoteDetailModal = ({
                     {renderSlippage()}
                   </View>
 
-                  <MetaInfo hasBackgroundWrapper labelColorScheme={'gray'} valueColorScheme={'light'}>
+                  <MetaInfo hasBackgroundWrapper labelColorScheme={'gray'} valueColorScheme={'light'} spaceSize={'xs'}>
                     <TouchableOpacity activeOpacity={1} onPress={onToggleFeeDetails}>
                       <MetaInfo.Number
                         valueColorSchema={'light'}
@@ -188,7 +188,7 @@ export const SwapQuoteDetailModal = ({
                     </TouchableOpacity>
 
                     {isViewFeeDetails && (
-                      <View style={{ paddingLeft: theme.padding }}>
+                      <View style={{ paddingLeft: theme.padding, gap: theme.sizeXS, paddingBottom: theme.sizeXXS }}>
                         {feeItems.map(item => (
                           <MetaInfo.Number
                             decimals={0}

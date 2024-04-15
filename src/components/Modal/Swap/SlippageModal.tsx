@@ -1,7 +1,7 @@
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, TouchableOpacity, View } from 'react-native';
 import { CheckCircle, XCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import MetaInfo from 'components/MetaInfo';
@@ -129,9 +129,10 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
       setVisible={setModalVisible}
       modalTitle={'Slippage setting'}
       footer={footerNode}
+      isAllowSwipeDown={Platform.OS === 'ios'}
       modalBaseV2Ref={modalBaseV2Ref}>
-      <ScrollView style={{ maxHeight: deviceHeight * 0.4 }}>
-        <View style={{ gap: theme.sizeSM, paddingTop: theme.padding }}>
+      <ScrollView style={{ maxHeight: deviceHeight * 0.4 }} showsVerticalScrollIndicator={false}>
+        <View style={{ gap: theme.sizeSM }}>
           <MetaInfo hasBackgroundWrapper>
             <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
               {'Select slippage tolerance'}
@@ -168,12 +169,14 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
                   extraTextInputStyle={{ paddingRight: 34 }}
                   style={{ marginRight: 16 }}
                   onChangeText={text => {
-                    if (Number(text) > 100) {
+                    const _text = text.replace(/,/g, '.');
+                    if (Number(_text) > 100) {
                       return;
                     }
                     setSelectedSlippage(undefined);
-                    onChange(text);
+                    onChange(_text);
                   }}
+                  onSubmitField={handleSubmit(handleApplySlippage)}
                   value={value}
                   onBlur={onBlur}
                   placeholder={'0.1 - 2'}

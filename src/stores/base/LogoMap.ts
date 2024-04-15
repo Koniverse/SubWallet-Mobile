@@ -18,6 +18,10 @@ const settingsSlice = createSlice({
     updateChainLogoMaps(state, action: PayloadAction<Record<string, string>>) {
       const payload = action.payload;
       payload.stellaswap = ImageLogosMap.stellaswap;
+      payload.chain_flip_mainnet = ImageLogosMap.chain_flip_mainnet;
+      payload.chain_flip_testnet = ImageLogosMap.chain_flip_testnet;
+      payload.hydradx_mainnet = ImageLogosMap.hydradx_mainnet;
+      payload.hydradx_testnet = ImageLogosMap.hydradx_testnet;
 
       return {
         ...state,
