@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import BigN from 'bignumber.js';
 import { CheckCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { swapCustomFormatter } from '@subwallet/extension-base/utils';
 
 interface Props {
   value?: string | number | BigN;
@@ -13,6 +14,8 @@ interface Props {
   selected?: boolean;
   onSelect?: (slug: string) => void;
 }
+
+const numberMetadata = { maxNumberFormat: 8 };
 
 export const ChooseFeeItem = ({ tokenSlug, value, symbol, selected, onSelect }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -27,7 +30,15 @@ export const ChooseFeeItem = ({ tokenSlug, value, symbol, selected, onSelect }: 
     () => (
       <View>
         {value ? (
-          <Number style={{ paddingBottom: 4 }} value={value} decimal={0} suffix={symbol} />
+          <Number
+            customFormatter={swapCustomFormatter}
+            style={{ paddingBottom: 4 }}
+            value={value}
+            decimal={0}
+            suffix={symbol}
+            formatType={'custom'}
+            metadata={numberMetadata}
+          />
         ) : (
           <Typography.Text>{symbol}</Typography.Text>
         )}

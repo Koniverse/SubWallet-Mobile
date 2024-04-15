@@ -6,6 +6,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import BigN from 'bignumber.js';
 import { BN_TEN } from 'utils/chainBalances';
 import { SwapQuote } from '@subwallet/extension-base/types/swap';
+import { swapCustomFormatter } from '@subwallet/extension-base/utils';
 
 interface Props {
   isRecommend?: boolean;
@@ -15,6 +16,8 @@ interface Props {
   decimals: number;
   symbol: string;
 }
+
+const numberMetadata = { maxNumberFormat: 8 };
 
 export const SwapQuotesItem = ({ isRecommend, quote, selected, onSelect, decimals, symbol }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -38,7 +41,15 @@ export const SwapQuotesItem = ({ isRecommend, quote, selected, onSelect, decimal
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
           <Typography.Text style={{ color: theme.colorTextLight4 }}>{'Est.receive'}</Typography.Text>
-          <Number size={theme.fontSize} value={destinationSwapValue} decimal={0} suffix={symbol} />
+          <Number
+            customFormatter={swapCustomFormatter}
+            size={theme.fontSize}
+            value={destinationSwapValue}
+            decimal={0}
+            suffix={symbol}
+            formatType={'custom'}
+            metadata={numberMetadata}
+          />
         </View>
       </View>
     );

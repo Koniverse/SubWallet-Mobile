@@ -6,7 +6,7 @@ import { SwapFromField } from 'components/Swap/SwapFromField';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
-import { _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
+import { _ChainAsset } from '@subwallet/chain-list/types';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import {
   _getAssetDecimals,
@@ -74,7 +74,7 @@ import UserInactivity from 'react-native-user-inactivity';
 import { SwapIdleWarningModal } from 'components/Modal/Swap/SwapIdleWarningModal';
 import { SendFundProps } from 'routes/transaction/transactionAction';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
-import { analysisAccounts } from 'hooks/screen/Home/Crypto/useGetChainSlugsByAccountType';
+import { SwapError } from '@subwallet/extension-base/background/errors/SwapError';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -82,14 +82,6 @@ interface SwapFormValues extends TransactionFormValues {
   toTokenSlug: string;
   recipient?: string;
   destChain: string;
-}
-
-function isAssetTypeValid(
-  chainAsset: _ChainAsset,
-  chainInfoMap: Record<string, _ChainInfo>,
-  isAccountEthereum: boolean,
-) {
-  return _isChainEvmCompatible(chainInfoMap[chainAsset.originChain]) === isAccountEthereum;
 }
 
 function getTokenSelectorItem(tokenSlugs: string[], assetRegistryMap: Record<string, _ChainAsset>): TokenItemType[] {
@@ -105,72 +97,6 @@ function getTokenSelectorItem(tokenSlugs: string[], assetRegistryMap: Record<str
         symbol: asset.symbol,
         name: asset.name,
       });
-    }
-  });
-
-  return result;
-}
-
-function getFromTokenSelectorItem(
-  tokenSlugs: string[],
-  assetRegistryMap: Record<string, _ChainAsset>,
-  address: string,
-  chainInfoMap: Record<string, _ChainInfo>,
-  multiChainAssetMap: Record<string, _MultiChainAsset>,
-  tokenGroupSlug?: string,
-): TokenItemType[] {
-  const isSetTokenSlug = !!tokenGroupSlug && !!assetRegistryMap[tokenGroupSlug];
-  const isSetMultiChainAssetSlug = !!tokenGroupSlug && !!multiChainAssetMap[tokenGroupSlug];
-  const isAccountEthereum = isEthereumAddress(address);
-
-  if (tokenGroupSlug) {
-    if (!(isSetTokenSlug || isSetMultiChainAssetSlug)) {
-      return [];
-    }
-
-    const chainAsset = assetRegistryMap[tokenGroupSlug];
-
-    if (isSetTokenSlug) {
-      if (isAssetTypeValid(chainAsset, chainInfoMap, isAccountEthereum)) {
-        const { name, originChain, slug, symbol } = assetRegistryMap[tokenGroupSlug];
-
-        return [
-          {
-            name,
-            slug,
-            symbol,
-            originChain,
-          },
-        ];
-      } else {
-        return [];
-      }
-    }
-  }
-
-  const result: TokenItemType[] = [];
-
-  tokenSlugs.forEach(slug => {
-    const asset = assetRegistryMap[slug];
-
-    if (asset) {
-      if (isSetMultiChainAssetSlug) {
-        if (asset.multiChainAsset === tokenGroupSlug) {
-          result.push({
-            originChain: asset.originChain,
-            slug,
-            symbol: asset.symbol,
-            name: asset.name,
-          });
-        }
-      } else {
-        result.push({
-          originChain: asset.originChain,
-          slug,
-          symbol: asset.symbol,
-          name: asset.name,
-        });
-      }
     }
   });
 
@@ -259,7 +185,7 @@ export const Swap = ({
     isCustomType: true,
   });
   const [handleRequestLoading, setHandleRequestLoading] = useState(true);
-  const [swapError, setSwapError] = useState<any | undefined>(undefined);
+  const [swapError, setSwapError] = useState<SwapError | undefined>(undefined);
   const [feeOptions, setFeeOptions] = useState<string[] | undefined>([]);
   const [currentFeeOption, setCurrentFeeOption] = useState<string | undefined>(undefined);
   const optimalQuoteRef = useRef<SwapQuote | undefined>(undefined);
@@ -269,7 +195,6 @@ export const Swap = ({
   const accountSelectorList = useMemo(() => {
     return accounts.filter(({ address }) => !isAccountAll(address));
   }, [accounts]);
-  const [isContainOnlySubstrate] = analysisAccounts(accounts);
   const fromAndToTokenMap = useMemo<Record<string, string[]>>(() => {
     const result: Record<string, string[]> = {};
 
@@ -285,15 +210,8 @@ export const Swap = ({
   }, [swapPairs]);
 
   const rawFromTokenItems = useMemo<TokenItemType[]>(() => {
-    return getFromTokenSelectorItem(
-      Object.keys(fromAndToTokenMap),
-      assetRegistryMap,
-      fromValue,
-      chainInfoMap,
-      multiChainAssetMap,
-      tokenGroupSlug,
-    );
-  }, [assetRegistryMap, chainInfoMap, fromAndToTokenMap, fromValue, multiChainAssetMap, tokenGroupSlug]);
+    return getTokenSelectorItem(Object.keys(fromAndToTokenMap), assetRegistryMap);
+  }, [assetRegistryMap, fromAndToTokenMap]);
 
   const fromTokenItems = useMemo<TokenItemType[]>(() => {
     if (!fromValue) {
@@ -307,6 +225,22 @@ export const Swap = ({
       );
     });
   }, [chainInfoMap, fromValue, rawFromTokenItems]);
+
+  const filterFromAssetInfo = useMemo(() => {
+    if (!fromTokenItems || !assetRegistryMap) {
+      return [];
+    }
+
+    const filteredAssets = fromTokenItems
+      .map(item => assetRegistryMap[item.slug])
+      .filter(chainAsset => chainAsset.slug === tokenGroupSlug || chainAsset.multiChainAsset === tokenGroupSlug);
+
+    return filteredAssets;
+  }, [assetRegistryMap, fromTokenItems, tokenGroupSlug]);
+
+  const fromTokenLists = useMemo(() => {
+    return tokenGroupSlug ? filterFromAssetInfo : fromTokenItems;
+  }, [tokenGroupSlug, filterFromAssetInfo, fromTokenItems]);
 
   const toTokenItems = useMemo<TokenItemType[]>(() => {
     return getTokenSelectorItem(fromAndToTokenMap[fromTokenSlugValue] || [], assetRegistryMap);
@@ -1069,12 +1003,12 @@ export const Swap = ({
   ]);
 
   useEffect(() => {
-    if (fromTokenItems.length) {
+    if (fromTokenLists.length) {
       if (!fromTokenSlugValue) {
-        setValue('fromTokenSlug', fromTokenItems[0].slug);
+        setValue('fromTokenSlug', fromTokenLists[0].slug);
       } else {
-        if (!fromTokenItems.some(item => item.slug === fromTokenSlugValue)) {
-          setValue('fromTokenSlug', fromTokenItems[0].slug);
+        if (!fromTokenLists.some(item => item.slug === fromTokenSlugValue)) {
+          setValue('fromTokenSlug', fromTokenLists[0].slug);
         }
       }
     } else {
@@ -1083,7 +1017,7 @@ export const Swap = ({
         setValue('toTokenSlug', '');
       }
     }
-  }, [fromTokenItems, fromTokenSlugValue, setValue]);
+  }, [fromTokenLists, fromTokenSlugValue, setValue]);
 
   useEffect(() => {
     if (toTokenItems.length) {
@@ -1265,7 +1199,7 @@ export const Swap = ({
                 onChangeInput={onChangeAmount}
                 assetValue={fromTokenSlugValue}
                 chainValue={chainValue}
-                tokenSelectorItems={fromTokenItems}
+                tokenSelectorItems={fromTokenLists}
                 amountValue={fromAmountValue}
                 chainInfo={chainInfoMap[chainValue]}
                 onSelectToken={onSelectFromToken}
@@ -1392,7 +1326,7 @@ export const Swap = ({
                     </>
                   )}
 
-                  {!!fromTokenItems.length && (
+                  {!!fromTokenLists.length && (
                     <View style={{ marginTop: theme.marginXS }}>
                       {swapError && !errors.recipient && <Warning isDanger message={swapError.message} />}
                     </View>
@@ -1400,13 +1334,13 @@ export const Swap = ({
                 </>
               )}
 
-              {!!fromTokenItems.length && renderAlertBox()}
-              {!fromTokenItems.length && (
+              {!!fromTokenLists.length && renderAlertBox()}
+              {tokenGroupSlug && !fromAssetInfo && (
                 <AlertBox
                   type={'warning'}
                   title={'Pay attention!'}
                   description={`No swap pair for this token found. Switch to ${
-                    isContainOnlySubstrate ? 'Ethereum' : 'Polkadot'
+                    isEthereumAddress(fromValue) ? 'Polkadot' : 'Ethereum'
                   } account to see available swap pairs `}
                 />
               )}
@@ -1414,7 +1348,14 @@ export const Swap = ({
             <View style={{ margin: theme.margin }}>
               <Button
                 onPress={handleSubmit(onSubmit)}
-                disabled={submitLoading || handleRequestLoading || isNotConnectedAltChain || !fromTokenItems.length}
+                disabled={
+                  submitLoading ||
+                  handleRequestLoading ||
+                  isNotConnectedAltChain ||
+                  !fromTokenLists.length ||
+                  !!swapError ||
+                  !!errors.recipient
+                }
                 loading={submitLoading}>
                 {'Swap'}
               </Button>
