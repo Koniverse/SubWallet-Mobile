@@ -1015,9 +1015,11 @@ export const Swap = ({
       if (fromTokenSlugValue) {
         setValue('fromTokenSlug', '');
         setValue('toTokenSlug', '');
+        onChangeAmount('');
+        setCurrentQuote(undefined);
       }
     }
-  }, [fromTokenLists, fromTokenSlugValue, setValue]);
+  }, [fromTokenLists, fromTokenSlugValue, onChangeAmount, setValue]);
 
   useEffect(() => {
     if (toTokenItems.length) {
@@ -1281,7 +1283,7 @@ export const Swap = ({
                 />
               </View>
 
-              {showQuoteArea && (
+              {showQuoteArea && !!fromTokenLists.length && (
                 <>
                   {!!currentQuote && !isFormInvalid && (
                     <>
@@ -1326,15 +1328,13 @@ export const Swap = ({
                     </>
                   )}
 
-                  {!!fromTokenLists.length && (
-                    <View style={{ marginTop: theme.marginXS }}>
-                      {swapError && !errors.recipient && <Warning isDanger message={swapError.message} />}
-                    </View>
-                  )}
+                  <View style={{ marginTop: theme.marginXS }}>
+                    {swapError && !errors.recipient && <Warning isDanger message={swapError.message} />}
+                  </View>
                 </>
               )}
 
-              {!!fromTokenLists.length && renderAlertBox()}
+              {!!fromTokenLists.length && !errors.recipient && renderAlertBox()}
               {tokenGroupSlug && !fromAssetInfo && (
                 <AlertBox
                   type={'warning'}
