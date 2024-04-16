@@ -1168,7 +1168,8 @@
     "updateNetwork": "Обновить сеть",
     "expiredConnectionTitle": "Connection expired",
     "unsupportedNetworkTitle": "Unsupported network",
-    "insufficientBalance": "Insufficient balance"
+    "insufficientBalance": "Insufficient balance",
+    "payAttention": "Pay attention!"
   },
   "warningMessage": {
     "passwordTooShort": "Пароль слишком короткий",
@@ -1201,7 +1202,8 @@
     "expiredConnectionMessage": "Connection expired. Please create a new connection from dApp",
     "unsupportedNetworkMessage": "There is at least 1 chosen network unavailable",
     "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed.",
-    "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance"
+    "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance",
+    "crossChainTransferWarningMessage": "Cross-chain transfer to an exchange (CEX) will result in loss of funds. Make sure the receiving address is not an exchange address."
   },
   "errorMessage": {
     "invalidPinCode": "Неверный PIN-код",

@@ -1168,7 +1168,8 @@
     "updateNetwork": "Cập nhật mạng",
     "expiredConnectionTitle": "Kết nối đã quá hạn.",
     "unsupportedNetworkTitle": "Mạng không được hỗ trợ",
-    "insufficientBalance": "Insufficient balance"
+    "insufficientBalance": "Insufficient balance",
+    "payAttention": "Chú ý!"
   },
   "warningMessage": {
     "passwordTooShort": "Mật khẩu quá ngắn",
@@ -1201,7 +1202,8 @@
     "expiredConnectionMessage": "Kết nối đã quá hạn. Vui lòng kết nối lại với dApp",
     "unsupportedNetworkMessage": "Có ít nhất 1 mạng đã chọn không khả dụng",
     "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed.",
-    "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance"
+    "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance",
+    "crossChainTransferWarningMessage": "Vui lòng KHÔNG chuyển tài sản xuyên chuỗi (cross-chain) đến địa chỉ trên sàn giao dịch CEX để tránh gây mất tài sản."
   },
   "errorMessage": {
     "invalidPinCode": "Mã PIN không hợp lệ",

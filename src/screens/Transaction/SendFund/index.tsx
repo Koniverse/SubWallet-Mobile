@@ -74,6 +74,7 @@ import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -1230,6 +1231,14 @@ export const SendFund = ({
                           style={stylesheet.balance}
                           error={isGetBalanceError}
                           isLoading={isGetBalanceLoading}
+                        />
+                      )}
+
+                      {chainValue !== destChainValue && (
+                        <AlertBox
+                          title={i18n.warningTitle.payAttention}
+                          description={i18n.warningMessage.crossChainTransferWarningMessage}
+                          type={'warning'}
                         />
                       )}
                     </View>

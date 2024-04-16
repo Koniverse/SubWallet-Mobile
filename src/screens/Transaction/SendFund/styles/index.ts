@@ -56,7 +56,7 @@ export default (theme: ThemeTypes) =>
       marginBottom: 0,
     },
     balanceWrapper: {
-      flexDirection: 'row',
+      gap: theme.size,
     },
     balance: {
       paddingTop: theme.padding,
