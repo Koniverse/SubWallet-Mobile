@@ -17,7 +17,7 @@ import {
   _isChainEvmCompatible,
   _parseAssetRefKey,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { Alert, Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Alert, AppState, Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { SwapToField } from 'components/Swap/SwapToField';
 import BigN from 'bignumber.js';
@@ -131,6 +131,7 @@ export const Swap = ({
   const confirmTerm = mmkvStore.getBoolean('confirm-swap-term');
   const [termModalVisible, setTermModalVisible] = useState<boolean>(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
+  const [appState, setAppState] = useState(AppState.currentState);
 
   const {
     title,
@@ -909,10 +910,20 @@ export const Swap = ({
   }, [toAssetInfo, setValue]);
 
   useEffect(() => {
+    const unsubscribe = AppState.addEventListener('change', state => {
+      setAppState(state);
+    });
+
+    return () => {
+      unsubscribe.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     let sync = true;
     let timeout: NodeJS.Timeout;
 
-    if (fromValue && fromTokenSlugValue && toTokenSlugValue && fromAmountValue) {
+    if (fromValue && fromTokenSlugValue && toTokenSlugValue && fromAmountValue && appState === 'active') {
       timeout = setTimeout(() => {
         const fromFieldPromise = reValidateField('from');
         const recipientFieldPromise = reValidateField('recipient');
@@ -986,6 +997,13 @@ export const Swap = ({
             }
           });
       }, 300);
+    } else {
+      setHandleRequestLoading(false);
+      setCurrentQuoteRequest(undefined);
+      setQuoteAliveUntil(undefined);
+      setCurrentQuote(undefined);
+      setSwapError(undefined);
+      setIsFormInvalid(false);
     }
 
     return () => {
@@ -993,6 +1011,7 @@ export const Swap = ({
       clearTimeout(timeout);
     };
   }, [
+    appState,
     currentSlippage.slippage,
     fromAmountValue,
     fromTokenSlugValue,
@@ -1048,6 +1067,9 @@ export const Swap = ({
         getLatestSwapQuote(currentQuoteRequest)
           .then(rs => {
             if (sync) {
+              if (rs.optimalQuote) {
+                setSwapError(undefined);
+              }
               setQuoteOptions(rs.quotes);
               setCurrentQuote(rs.optimalQuote);
               setQuoteAliveUntil(rs.aliveUntil);
@@ -1354,7 +1376,8 @@ export const Swap = ({
                   isNotConnectedAltChain ||
                   !fromTokenLists.length ||
                   !!swapError ||
-                  !!errors.recipient
+                  !!errors.recipient ||
+                  !currentQuote
                 }
                 loading={submitLoading}>
                 {'Swap'}
