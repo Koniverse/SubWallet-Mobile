@@ -354,7 +354,7 @@ function History({
     { label: i18n.filterOptions.nftTransaction, value: FilterValue.NFT },
     { label: i18n.filterOptions.stakeTransaction, value: FilterValue.STAKE },
     { label: i18n.filterOptions.claimStakingReward, value: FilterValue.CLAIM },
-    { label: 'Swap', value: FilterValue.CLAIM },
+    { label: 'Swap', value: FilterValue.SWAP },
     // { labe t('Crowdloan transaction', value: FilterValue.CROWDLOAN }, // support crowdloan later
     { label: i18n.filterOptions.successful, value: FilterValue.SUCCESSFUL },
     { label: i18n.filterOptions.failed, value: FilterValue.FAILED },

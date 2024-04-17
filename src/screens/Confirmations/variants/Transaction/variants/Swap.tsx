@@ -94,7 +94,7 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
   return (
     <ConfirmationContent isFullHeight>
       <SwapTransactionBlock data={data} />
-      <MetaInfo>
+      <MetaInfo style={{ paddingHorizontal: theme.paddingXS }}>
         <MetaInfo.Account
           address={recipientAddress}
           label={'Recipient'}
@@ -113,30 +113,30 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
         />
         <MetaInfo.Default label={'Swap route'} />
         <SwapRoute swapRoute={data.quote.route} />
-        {!showQuoteExpired && getWaitingTime > 0 && (
-          <AlertBox
-            type={'warning'}
-            description={`Swapping via ${data.provider.name} can take up to ${getWaitingTime} minutes. Make sure you review all information carefully before submitting.`}
-            title={'Pay attention!'}
-          />
-        )}
-        {!showQuoteExpired && isSwapXCM && (
-          <AlertBox
-            description={
-              'The swap quote has been updated. Make sure to double-check all information before confirming the transaction.'
-            }
-            title={'Pay attention!'}
-            type={'warning'}
-          />
-        )}
-        {showQuoteExpired && (
-          <AlertBox
-            description={'Swap quote expired. Cancel to get a new quote.'}
-            title={'Pay attention!'}
-            type={'warning'}
-          />
-        )}
       </MetaInfo>
+      {!showQuoteExpired && getWaitingTime > 0 && (
+        <AlertBox
+          type={'warning'}
+          description={`Swapping via ${data.provider.name} can take up to ${getWaitingTime} minutes. Make sure you review all information carefully before submitting.`}
+          title={'Pay attention!'}
+        />
+      )}
+      {!showQuoteExpired && isSwapXCM && (
+        <AlertBox
+          description={
+            'The swap quote has been updated. Make sure to double-check all information before confirming the transaction.'
+          }
+          title={'Pay attention!'}
+          type={'warning'}
+        />
+      )}
+      {showQuoteExpired && (
+        <AlertBox
+          description={'Swap quote expired. Cancel to get a new quote.'}
+          title={'Pay attention!'}
+          type={'warning'}
+        />
+      )}
     </ConfirmationContent>
   );
 };
