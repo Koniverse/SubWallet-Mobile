@@ -222,6 +222,7 @@ export const Swap = ({
     return rawFromTokenItems.filter(i => {
       return (
         chainInfoMap[i.originChain] &&
+        i.originChain !== 'hydradx_main' &&
         isEthereumAddress(fromValue) === _isChainEvmCompatible(chainInfoMap[i.originChain])
       );
     });
