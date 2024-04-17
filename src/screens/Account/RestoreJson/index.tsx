@@ -5,8 +5,8 @@ import { DotsThree, FileArrowDown, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, ListRenderItemInfo, Platform, ScrollView, View } from 'react-native';
 import { InputFile } from 'components/common/Field/InputFile';
-import { KeyringPair$Json } from '@polkadot/keyring/types';
-import { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
+import type { KeyringPair$Json } from '@subwallet/keyring/types';
+import type { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
 import * as RNFS from 'react-native-fs';
 import { isKeyringPairs$Json } from 'types/typeGuards';
@@ -27,6 +27,12 @@ import createStyles from './styles';
 import { getButtonIcon } from 'utils/button';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
+import reformatAddress from 'utils/index';
+import { hexToU8a, isHex } from '@polkadot/util';
+import { ethereumEncode, keccakAsU8a, secp256k1Expand } from '@polkadot/util-crypto';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
   let currentAccountsInfo: ResponseJsonGetAccountInfo[] = [];
@@ -42,10 +48,12 @@ const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
 };
 
 function formatJsonFile(jsonFile: any) {
+  // @ts-ignore
+  const filteredJsonFileAccounts = jsonFile.accounts.filter(acc => !acc.meta.isHardware);
   let newJsonFile = jsonFile;
   if (isKeyringPairs$Json(jsonFile)) {
+    newJsonFile.accounts = filteredJsonFileAccounts;
     newJsonFile.accounts.forEach((acc: { meta: { genesisHash: string } }) => (acc.meta.genesisHash = ''));
-
     return newJsonFile;
   } else {
     newJsonFile.meta.genesisHash = '';
@@ -77,7 +85,7 @@ export const RestoreJson = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const theme = useSubWalletTheme().swThemes;
-
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [isShowPasswordField, setIsShowPasswordField] = useState(false);
@@ -124,11 +132,8 @@ export const RestoreJson = () => {
         setIsBusy(false);
         onUpdateErrors('password')([]);
         setAccountsInfo(() => []);
-        if (!isMultiple) {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Home' }],
-          });
+        if (isMultiple) {
+          navigation.navigate('MigratePassword');
         }
       })
       .catch(e => {
@@ -146,10 +151,27 @@ export const RestoreJson = () => {
     try {
       if (isKeyringPairs$Json(fileContent)) {
         fileContent.accounts.forEach(account => {
+          const genesisHash: string = account.meta.originGenesisHash as string;
+
+          let addressPrefix: number | undefined;
+
+          if (account.meta.originGenesisHash) {
+            addressPrefix = findNetworkJsonByGenesisHash(chainInfoMap, genesisHash)?.substrateInfo?.addressPrefix;
+          }
+
+          let address = account.address;
+
+          if (addressPrefix !== undefined) {
+            address = reformatAddress(account.address, addressPrefix);
+          }
+
+          if (isHex(account.address) && hexToU8a(account.address).length !== 20) {
+            address = ethereumEncode(keccakAsU8a(secp256k1Expand(hexToU8a(account.address))));
+          }
           setAccountsInfo(old => [
             ...old,
             {
-              address: account.address,
+              address: address,
               genesisHash: account.meta.genesisHash,
               name: account.meta.name,
             } as ResponseJsonGetAccountInfo,
@@ -199,6 +221,7 @@ export const RestoreJson = () => {
 
   const renderAccount = useCallback(
     ({ item }: ListRenderItemInfo<ResponseJsonGetAccountInfo>) => {
+      console.log('item', item);
       return (
         <View style={{ marginLeft: -theme.margin, marginRight: -theme.margin }}>
           <SelectAccountItem isShowEditBtn={false} key={item.address} address={item.address} accountName={item.name} />
@@ -323,7 +346,12 @@ export const RestoreJson = () => {
         modalVisible={visible}
         modalTitle={i18n.header.accounts}
         onBackButtonPress={hideModal}>
-        <FlatList data={accountsInfo} renderItem={renderAccount} style={styles.accountList} />
+        <FlatList
+          data={accountsInfo}
+          renderItem={renderAccount}
+          style={styles.accountList}
+          contentContainerStyle={{ gap: theme.sizeXS }}
+        />
       </SwModal>
     </ContainerWithSubHeader>
   );

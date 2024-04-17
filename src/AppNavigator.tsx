@@ -380,8 +380,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
 
   const needMigrate = useMemo(
     () =>
-      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
-        .length,
+      !!accounts
+        .filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && !acc.isInjected && !acc.pendingMigrate)
+        .filter(acc => !acc.isMasterPassword).length,
     [accounts],
   );
 

@@ -216,8 +216,9 @@ export const Home = ({ navigation }: Props) => {
 
   const needMigrate = useMemo(
     () =>
-      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
-        .length || currentRoute?.name === 'MigratePassword',
+      !!accounts
+        .filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && !acc.isInjected && !acc.pendingMigrate)
+        .filter(acc => !acc.isMasterPassword).length || currentRoute?.name === 'MigratePassword',
     [accounts, currentRoute?.name],
   );
 
