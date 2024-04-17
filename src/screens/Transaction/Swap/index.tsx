@@ -90,7 +90,7 @@ function getTokenSelectorItem(tokenSlugs: string[], assetRegistryMap: Record<str
   tokenSlugs.forEach(slug => {
     const asset = assetRegistryMap[slug];
 
-    if (asset) {
+    if (asset && asset.originChain !== 'hydradx_main') {
       result.push({
         originChain: asset.originChain,
         slug,
@@ -222,7 +222,6 @@ export const Swap = ({
     return rawFromTokenItems.filter(i => {
       return (
         chainInfoMap[i.originChain] &&
-        i.originChain !== 'hydradx_main' &&
         isEthereumAddress(fromValue) === _isChainEvmCompatible(chainInfoMap[i.originChain])
       );
     });
