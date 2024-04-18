@@ -70,6 +70,9 @@ export const TokenGroupsDetailUpperBlock = ({
     return Object.keys(swapTokenMap)
       .map(tokenSlug => assetRegistryMap[tokenSlug])
       .filter(item => {
+        if (item.originChain === 'hydradx_main') {
+          return false;
+        }
         const chainInfo = chainInfoMap[item.originChain];
         if (isAllAccount) {
           const isAnyValidAccount = accounts.filter(
