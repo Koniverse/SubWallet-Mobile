@@ -176,6 +176,7 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
                     setSelectedSlippage(undefined);
                     onChange(_text);
                   }}
+                  keyboardType={'numeric'}
                   onSubmitField={handleSubmit(handleApplySlippage)}
                   value={value}
                   onBlur={onBlur}
