@@ -29,7 +29,7 @@ import { isAccountAll } from 'utils/accountAll';
 import reformatAddress, { findAccountByAddress } from 'utils/index';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { HistoryItem } from 'components/common/HistoryItem';
-import { TxTypeNameMap } from 'screens/Home/History/shared';
+import { TypeNameMap } from 'screens/Home/History/shared';
 import i18n from 'utils/i18n/i18n';
 import { FontMedium } from 'styles/sharedStyles';
 import { Keyboard, ListRenderItemInfo, View } from 'react-native';
@@ -394,6 +394,7 @@ function History({
       [ExtrinsicType.UNSTAKE_QDOT]: i18n.historyScreen.title.unstakeQDOTTransaction,
       [ExtrinsicType.TOKEN_APPROVE]: i18n.historyScreen.title.tokenApproveTransaction,
       [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.title.evmTransaction,
+      [ExtrinsicType.STAKING_SET_CLAIM_PERMISSIONLESS]: 'Auto claim transaction',
       [ExtrinsicType.SWAP]: 'Swap transaction',
     }),
     [],
@@ -419,12 +420,12 @@ function History({
       const toName = accountMap[quickFormatAddressToCompare(item.to) || ''];
       const key = getHistoryItemKey(item);
 
-      const txtTypeNameMap = TxTypeNameMap();
+      const typeNameMap = TypeNameMap();
       finalHistoryMap[key] = {
         ...item,
         fromName,
         toName,
-        displayData: getDisplayData(item, txtTypeNameMap, typeTitleMap),
+        displayData: getDisplayData(item, typeNameMap, typeTitleMap),
       };
     });
 

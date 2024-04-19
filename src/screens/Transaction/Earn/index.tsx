@@ -8,7 +8,9 @@ import { SWTransactionResponse } from '@subwallet/extension-base/services/transa
 import {
   EarningStatus,
   NominationPoolInfo,
+  NominationYieldPositionInfo,
   OptimalYieldPathParams,
+  PalletNominationPoolsClaimPermission,
   ValidatorInfo,
   YieldPoolType,
   YieldStepType,
@@ -76,12 +78,6 @@ import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { EarningAutoClaimItem } from 'components/Item/Earning/EarningAutoClaimItem';
 import { EarningManageClaimPermissions } from 'components/Modal/Earning/EarningManageClaimPermissions';
-
-export enum PalletNominationPoolsClaimPermission {
-  PERMISSIONED = 'Permissioned',
-  PERMISSIONLESS_COMPOUND = 'PermissionlessCompound',
-  PERMISSIONLESS_WITHDRAW = 'PermissionlessWithdraw',
-}
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -220,7 +216,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [checkValidAccountLoading, setCheckValidAccountLoading] = useState<boolean>(redirectFromPreviewRef.current);
   const [manageAutoClaimModalVisible, setManageAutoClaimModalVisible] = useState<boolean>(false);
   const [stateAutoClaimManage, setAutoStateClaimManage] = useState<PalletNominationPoolsClaimPermission>(
-    PalletNominationPoolsClaimPermission.PERMISSIONED,
+    (compound as NominationYieldPositionInfo)?.claimPermissionStatus ||
+      PalletNominationPoolsClaimPermission.PERMISSIONED,
   );
 
   const isDisabledButton = useMemo(
@@ -559,6 +556,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             address: from,
             amount: _currentAmount,
             selectedPool,
+            claimPermissions: stateAutoClaimManage,
           } as SubmitJoinNominationPool;
         } else {
           return {
@@ -683,6 +681,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     processState.feeStructure,
     processState.steps,
     slug,
+    stateAutoClaimManage,
   ]);
 
   const onBack = useCallback(() => {

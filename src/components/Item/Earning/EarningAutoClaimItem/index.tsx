@@ -4,10 +4,10 @@ import React from 'react';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { GearSix, Info } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
-import { PalletNominationPoolsClaimPermission } from 'screens/Transaction/Earn';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { SET_CLAIM_PERMISSIONS } from 'constants/earning/EarningDataRaw';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { PalletNominationPoolsClaimPermission } from '@subwallet/extension-base/types';
 
 interface Props {
   value: PalletNominationPoolsClaimPermission;

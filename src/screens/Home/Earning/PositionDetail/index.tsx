@@ -1,6 +1,8 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import {
   EarningRewardHistoryItem,
+  NominationYieldPositionInfo,
+  PalletNominationPoolsClaimPermission,
   SpecialYieldPoolInfo,
   SpecialYieldPositionInfo,
   YieldPoolInfo,
@@ -31,6 +33,10 @@ import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
 import { GettingDataModal } from 'components/Modal/GettingDataModal';
+import { EarningAutoClaimItem } from 'components/Item/Earning/EarningAutoClaimItem';
+import { yieldSubmitSetClaimPermissions } from 'messaging/index';
+import { useToast } from 'react-native-toast-notifications';
+import { EarningManageClaimPermissions } from 'components/Modal/Earning/EarningManageClaimPermissions';
 
 interface Props {
   compound: YieldPositionInfo;
@@ -52,6 +58,12 @@ const Component: React.FC<Props> = (props: Props) => {
   const [isLoading, setLoading] = useState<boolean>(false);
   const loadingRef = useRef(isLoading);
   const [state, setState] = React.useState({ num: 0 });
+  const [manageAutoClaimModalVisible, setManageAutoClaimModalVisible] = useState<boolean>(false);
+  const [isHandleAutoCompoundLoading, setIsHandleAutoCompoundLoading] = useState<boolean>(false);
+  const { hideAll, show } = useToast();
+  const [stateAutoClaimManage, setAutoStateClaimManage] = useState<PalletNominationPoolsClaimPermission | undefined>(
+    (compound as NominationYieldPositionInfo).claimPermissionStatus,
+  );
   const counter = useRef(0);
 
   useEffect(() => {
@@ -195,6 +207,84 @@ const Component: React.FC<Props> = (props: Props) => {
     }
   }, [checkChainConnected, getAltChain, navigateToEarnScreen, turnOnChain]);
 
+  const openManageAutoClaimModal = useCallback(
+    () => setManageAutoClaimModalVisible(true),
+    [setManageAutoClaimModalVisible],
+  );
+
+  const handleEnableAutoCompoundSwitch = useCallback(
+    (checked: boolean) => {
+      setIsHandleAutoCompoundLoading(true);
+      const { address, slug } = compound;
+      const claimPermissionless = checked
+        ? PalletNominationPoolsClaimPermission.PERMISSIONLESS_COMPOUND
+        : PalletNominationPoolsClaimPermission.PERMISSIONED;
+
+      if (checked) {
+        setIsHandleAutoCompoundLoading(false);
+        setAutoStateClaimManage(PalletNominationPoolsClaimPermission.PERMISSIONLESS_COMPOUND);
+        openManageAutoClaimModal();
+        return;
+      }
+
+      yieldSubmitSetClaimPermissions({
+        address,
+        slug,
+        claimPermissionless,
+      })
+        .then(rs => {
+          if (rs.errors.length === 0) {
+            setAutoStateClaimManage(claimPermissionless);
+          } else {
+            hideAll();
+            show(rs.errors[0].message, {
+              type: 'danger',
+            });
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        })
+        .finally(() => {
+          setIsHandleAutoCompoundLoading(false);
+        });
+    },
+    [compound, hideAll, openManageAutoClaimModal, show],
+  );
+
+  const handleSetModeAutoCompound = useCallback(
+    (mode: PalletNominationPoolsClaimPermission) => {
+      return new Promise(resolve => {
+        const { address, slug } = compound;
+
+        yieldSubmitSetClaimPermissions({
+          address,
+          slug,
+          claimPermissionless: mode,
+        })
+          .then(rs => {
+            if (rs.errors.length === 0) {
+              setAutoStateClaimManage(mode);
+            } else {
+              setAutoStateClaimManage((compound as NominationYieldPositionInfo).claimPermissionStatus);
+              hideAll();
+              if (rs.errors[0].message !== 'Rejected by user') {
+                show(rs.errors[0].message, {
+                  type: 'danger',
+                });
+              }
+            }
+
+            resolve(mode);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      });
+    },
+    [compound, hideAll, show],
+  );
+
   return (
     <ContainerWithSubHeader
       onPressBack={_goBack}
@@ -225,6 +315,14 @@ const Component: React.FC<Props> = (props: Props) => {
           )}
         </View>
         <View style={styles.infoContainer}>
+          {!!stateAutoClaimManage && (
+            <EarningAutoClaimItem
+              value={stateAutoClaimManage}
+              onValueChange={handleEnableAutoCompoundSwitch}
+              openManageAutoClaimModal={openManageAutoClaimModal}
+              disabled={isHandleAutoCompoundLoading}
+            />
+          )}
           <EarningRewardInfo
             inputAsset={inputAsset}
             compound={compound}
@@ -266,6 +364,18 @@ const Component: React.FC<Props> = (props: Props) => {
       ) : (
         <></>
       )}
+
+      <>
+        {!!stateAutoClaimManage && (
+          <EarningManageClaimPermissions
+            onSubmit={handleSetModeAutoCompound}
+            currentMode={stateAutoClaimManage}
+            setModalVisible={setManageAutoClaimModalVisible}
+            modalVisible={manageAutoClaimModalVisible}
+            onCancel={() => setAutoStateClaimManage((compound as NominationYieldPositionInfo).claimPermissionStatus)}
+          />
+        )}
+      </>
 
       <GettingDataModal isLoading={isLoading} />
     </ContainerWithSubHeader>

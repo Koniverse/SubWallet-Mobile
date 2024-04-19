@@ -161,6 +161,8 @@ export const Confirmations = () => {
           return i18n.header.tokenApproveTransaction;
         case ExtrinsicType.SWAP:
           return 'Swap confirmation';
+        case ExtrinsicType.STAKING_SET_CLAIM_PERMISSIONLESS:
+          return 'Auto claim confirmation';
         default:
           return i18n.header.transactionConfirmation;
       }

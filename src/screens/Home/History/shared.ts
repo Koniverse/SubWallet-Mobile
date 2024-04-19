@@ -52,6 +52,17 @@ export const StakingTypeNameMap = (): Record<string, string> => ({
 
 export const TxTypeNameMap = (): Record<string, string> => ({
   ...StakingTypeNameMap(),
+  [ExtrinsicType.STAKING_SET_CLAIM_PERMISSIONLESS]: 'Auto claim permission',
+  transaction: i18n.historyScreen.title.transaction,
+  submitting: i18n.common.submitting,
+  processing: i18n.common.processing,
+  send: i18n.common.send,
+  receive: i18n.cryptoScreen.receive,
+});
+
+export const TypeNameMap = (): Record<string, string> => ({
+  ...StakingTypeNameMap(),
+  [ExtrinsicType.STAKING_SET_CLAIM_PERMISSIONLESS]: 'Auto claim',
   transaction: i18n.historyScreen.title.transaction,
   submitting: i18n.common.submitting,
   processing: i18n.common.processing,
