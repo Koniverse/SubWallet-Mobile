@@ -20,7 +20,7 @@ const initialState: RequestState = {
   transactionRequest: {},
   connectWCRequest: {},
 
-  // Type of confirmation requets
+  // Type of confirmation requests
   addNetworkRequest: {},
   addTokenRequest: {},
   switchNetworkRequest: {},

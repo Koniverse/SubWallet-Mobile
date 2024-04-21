@@ -157,7 +157,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
       return;
     }
     if (Platform.OS === 'ios') {
-      // Because only iOS-Face ID is require permission, then we need to check permission's availbility
+      // Because only iOS-Face ID is require permission, then we need to check permission's availability
       (async () => {
         try {
           const isBiometricAvailable = await getSupportedBiometryType();
