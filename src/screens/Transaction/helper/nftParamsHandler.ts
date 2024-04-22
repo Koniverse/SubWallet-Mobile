@@ -51,6 +51,7 @@ function statemineParser(nftItem: NftItem) {
     collectionId,
     itemId,
     networkKey: nftItem.chain,
+    assetHubType: nftItem.assetHubType,
   };
 }
 
