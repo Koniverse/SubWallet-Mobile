@@ -10,7 +10,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BalanceValueInfo } from 'types/balance';
 import { YieldGroupInfo } from 'types/earning';
-import { isRelatedToAstar } from 'utils/earning';
 import BigN from 'bignumber.js';
 import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import { _ChainAsset, _MultiChainAsset } from '@subwallet/chain-list/types';
@@ -71,11 +70,6 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
 
       if (chainsByAccountType.includes(chain)) {
         const group = pool.group;
-
-        if (isRelatedToAstar(group)) {
-          continue;
-        }
-
         const exists = result[group];
         const chainInfo = chainInfoMap[chain];
 

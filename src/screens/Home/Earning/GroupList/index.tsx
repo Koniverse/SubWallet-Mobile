@@ -294,24 +294,20 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
           onPress={() => {
             if (isRelatedToAstar(item.group)) {
               Keyboard.dismiss();
-              Alert.alert(
-                'Enter Astar portal',
-                'You are navigating to Astar portal to view and manage your stake in Astar dApp staking v3. SubWallet will offer support for Astar dApp staking v3 soon.',
-                [
-                  {
-                    text: 'Cancel',
-                    style: 'default',
+              Alert.alert(i18n.warningTitle.enterAstarPortal, i18n.warningMessage.enterAstarPortalMessage, [
+                {
+                  text: i18n.buttonTitles.cancel,
+                  style: 'default',
+                },
+                {
+                  text: i18n.buttonTitles.enterAstarPortal,
+                  style: 'default',
+                  isPreferred: false,
+                  onPress: () => {
+                    Linking.openURL('subwallet://browser?url=portal.astar.network');
                   },
-                  {
-                    text: 'Enter Astar portal',
-                    style: 'default',
-                    isPreferred: false,
-                    onPress: () => {
-                      Linking.openURL('subwallet://browser?url=portal.astar.network');
-                    },
-                  },
-                ],
-              );
+                },
+              ]);
               return;
             }
             Keyboard.dismiss();
