@@ -81,7 +81,7 @@ const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
   });
 };
 
-const defaultPoolMap = Object.assign({}, PREDEFINED_STAKING_POOL, { vara_network: 50 });
+const defaultPoolMap = Object.assign({}, PREDEFINED_STAKING_POOL, { vara_network: 62, availTuringTest: 11 });
 
 const sortingOptions: SortOption[] = [
   {
