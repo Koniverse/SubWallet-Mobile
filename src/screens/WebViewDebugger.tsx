@@ -139,7 +139,6 @@ export const WebViewDebugger = () => {
               dispatch(updateBannerHistoryData({}));
               dispatch(updateConfirmationHistoryData({}));
               setNotification("OK, Let's restart app!");
-              mmkvStore.set('isOpenIntroductionFirstTime', false);
             }}>
             Reset static content
           </Button>
