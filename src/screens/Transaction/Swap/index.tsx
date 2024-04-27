@@ -90,14 +90,12 @@ function getTokenSelectorItem(tokenSlugs: string[], assetRegistryMap: Record<str
   tokenSlugs.forEach(slug => {
     const asset = assetRegistryMap[slug];
 
-    if (asset && asset.originChain !== 'hydradx_main') {
-      result.push({
-        originChain: asset.originChain,
-        slug,
-        symbol: asset.symbol,
-        name: asset.name,
-      });
-    }
+    result.push({
+      originChain: asset.originChain,
+      slug,
+      symbol: asset.symbol,
+      name: asset.name,
+    });
   });
 
   return result;
