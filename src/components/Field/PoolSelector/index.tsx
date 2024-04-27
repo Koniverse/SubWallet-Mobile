@@ -18,7 +18,7 @@ interface Props extends FieldBaseProps {
   onPressBookBtn?: () => void;
   onPressLightningBtn?: () => void;
   showLightingBtn?: boolean;
-  recommendId?: number;
+  recommendIds?: number[];
 }
 
 const accountNameTextStyle: StyleProp<any> = {
@@ -49,7 +49,7 @@ export const PoolSelectorField = ({
   onPressBookBtn,
   onPressLightningBtn,
   showLightingBtn = true,
-  recommendId,
+  recommendIds,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -67,7 +67,7 @@ export const PoolSelectorField = ({
             <Text numberOfLines={1} style={accountNameTextStyle}>
               {item ? item.name || toShort(item.address) : placeholder}
             </Text>
-            {item && recommendId && recommendId === item?.id && (
+            {item && recommendIds && recommendIds.length && recommendIds.includes(item.id) && (
               <Typography.Text numberOfLines={1} size={'sm'} style={{ color: theme.colorTextLight4 }}>
                 {'  (Recommended)'}
               </Typography.Text>

@@ -18,6 +18,9 @@ import { RootState } from 'stores/index';
 import { ChainInfo } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
+import { SortFunctionInterface } from 'types/ui-types';
+import { SectionItem } from 'components/LazySectionList';
 
 interface Props<T> {
   items: T[];
@@ -63,6 +66,11 @@ interface Props<T> {
   onModalOpened?: () => void;
   rightIconOption?: RightIconOpt;
   level?: number;
+  grouping?: {
+    renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
+    groupBy: (item: T) => string;
+    sortSection?: SortFunctionInterface<SectionItem<T>>;
+  };
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
@@ -101,6 +109,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     onModalOpened,
     rightIconOption,
     level,
+    grouping,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -324,6 +333,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
               withSearchInput={withSearchInput}
               isShowListWrapper={isShowListWrapper}
               rightIconOption={rightIconOption}
+              grouping={grouping}
               afterListItem={
                 selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
               }

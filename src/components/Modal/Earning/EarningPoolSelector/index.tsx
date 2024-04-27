@@ -1,14 +1,13 @@
 import { useGetPoolTargetList, useYieldPositionDetail } from 'hooks/earning';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Button, Icon, SelectItem } from 'components/design-system-ui';
+import { Button, Icon, SelectItem, Typography } from 'components/design-system-ui';
 import { NominationPoolDataType } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
-import { Keyboard, ListRenderItemInfo } from 'react-native';
+import { Keyboard, ListRenderItemInfo, View } from 'react-native';
 import { StakingPoolItem } from 'components/common/StakingPoolItem';
-import { PREDEFINED_STAKING_POOL } from '@subwallet/extension-base/constants';
 import { PoolSelectorField } from 'components/Field/PoolSelector';
 import { PoolSelectorDetailModal } from 'components/Modal/common/PoolSelectorDetailModal';
-import { ArrowsClockwise, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
+import { ArrowsClockwise, MagnifyingGlass, SortAscending, SortDescending, ThumbsUp } from 'phosphor-react-native';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -16,6 +15,19 @@ import BigN from 'bignumber.js';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { EmptyValidator } from 'components/EmptyValidator';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
+import { PREDEFINED_EARNING_POOL } from 'constants/stakingScreen';
+import { SectionItem } from 'components/LazySectionList';
+import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
+import { FontSemiBold } from 'styles/sharedStyles';
+
+enum EarningPoolGroup {
+  RECOMMEND = 'recommend',
+  OTHERS = 'others',
+}
+
+interface NominationPoolDataTypeItem extends NominationPoolDataType {
+  group: EarningPoolGroup;
+}
 
 interface Props {
   onSelectItem?: (value: string) => void;
@@ -81,7 +93,7 @@ const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
   });
 };
 
-const defaultPoolMap = Object.assign({}, PREDEFINED_STAKING_POOL, { vara_network: 62, availTuringTest: 11 });
+const defaultPoolMap = Object.assign({}, PREDEFINED_EARNING_POOL);
 
 const sortingOptions: SortOption[] = [
   {
@@ -115,6 +127,10 @@ export interface PoolSelectorRef {
   onOpenModal: () => void;
 }
 
+const sortSection = (a: SectionItem<NominationPoolDataTypeItem>, b: SectionItem<NominationPoolDataTypeItem>) => {
+  return b.title.localeCompare(a.title);
+};
+
 export const EarningPoolSelector = forwardRef(
   (
     {
@@ -144,7 +160,63 @@ export const EarningPoolSelector = forwardRef(
       return compound?.nominations.map(item => item.validatorAddress) || [];
     }, [compound]);
 
+    const EarningPoolGroupNameMap = useMemo(
+      () => ({
+        [EarningPoolGroup.RECOMMEND]: 'recommended',
+        [EarningPoolGroup.OTHERS]: 'others',
+      }),
+      [],
+    );
+
     const defaultSelectPool = defaultPoolMap[chain];
+
+    const groupBy = useMemo(
+      () => (item: NominationPoolDataTypeItem) => {
+        const priority = item.group === EarningPoolGroup.RECOMMEND ? '1' : '0';
+        return `${priority}|${EarningPoolGroupNameMap[item.group]}`;
+      },
+      [EarningPoolGroupNameMap],
+    );
+
+    const renderSectionHeader = useCallback(
+      (info: { section: SectionListData<NominationPoolDataTypeItem> }) => {
+        if (defaultSelectPool) {
+          return (
+            <View
+              style={{
+                paddingBottom: theme.sizeXS,
+                marginBottom: -theme.sizeXS,
+                paddingHorizontal: theme.size,
+                backgroundColor: theme.colorBgDefault,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: theme.sizeXXS,
+              }}>
+              <Typography.Text
+                size={'sm'}
+                style={{
+                  // paddingTop: theme.sizeXXS,
+                  color: theme.colorTextLight3,
+                  textTransform: 'uppercase',
+                  ...FontSemiBold,
+                }}>
+                {`${info.section.title.split('|')[1]}`}
+              </Typography.Text>
+              {info.section.title.includes('recommended') && (
+                <Icon phosphorIcon={ThumbsUp} iconColor={theme['cyan-6']} size={'xs'} weight={'fill'} />
+              )}
+            </View>
+          );
+        } else {
+          return <></>;
+        }
+      },
+      [defaultSelectPool, theme],
+    );
+
+    const grouping = useMemo(() => {
+      return { groupBy, sortSection, renderSectionHeader };
+    }, [groupBy, renderSectionHeader]);
 
     useImperativeHandle(
       ref,
@@ -160,19 +232,54 @@ export const EarningPoolSelector = forwardRef(
       return items.find(item => item.idStr === targetPool);
     }, [items, targetPool]);
 
-    const resultList = useMemo(() => {
-      return [...items].sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
-        switch (sortSelection) {
-          case SortKey.MEMBER:
-            return a.memberCounter - b.memberCounter;
-          case SortKey.TOTAL_POOLED:
-            return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
-          case SortKey.DEFAULT:
-          default:
-            return a.id === defaultSelectPool ? -1 : b.id === defaultSelectPool ? 1 : 0; // put recommend item to top
-        }
-      });
-    }, [defaultSelectPool, items, sortSelection]);
+    const resultList: NominationPoolDataTypeItem[] = useMemo(() => {
+      return [...items]
+        .sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
+          if (defaultSelectPool) {
+            const isRecommendedA = defaultSelectPool.includes(a.id);
+            const isRecommendedB = defaultSelectPool.includes(b.id);
+
+            switch (sortSelection) {
+              case SortKey.MEMBER:
+                if (isRecommendedA && !isRecommendedB) {
+                  return -1;
+                } else if (!isRecommendedA && isRecommendedB) {
+                  return 1;
+                } else {
+                  return a.memberCounter - b.memberCounter;
+                }
+              case SortKey.TOTAL_POOLED:
+                if (isRecommendedA && !isRecommendedB) {
+                  return -1;
+                } else if (!isRecommendedA && isRecommendedB) {
+                  return 1;
+                } else {
+                  return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
+                }
+              case SortKey.DEFAULT:
+              default:
+                return isRecommendedA ? -1 : isRecommendedB ? 1 : 0; // put recommend item to top
+            }
+          } else {
+            switch (sortSelection) {
+              case SortKey.MEMBER:
+                return a.memberCounter - b.memberCounter;
+              case SortKey.TOTAL_POOLED:
+                return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
+              case SortKey.DEFAULT:
+              default:
+                return 0;
+            }
+          }
+        })
+        .map(item => {
+          if (PREDEFINED_EARNING_POOL[chain] && PREDEFINED_EARNING_POOL[chain].includes(item.id)) {
+            return { ...item, group: EarningPoolGroup.RECOMMEND };
+          } else {
+            return { ...item, group: EarningPoolGroup.OTHERS };
+          }
+        });
+    }, [chain, defaultSelectPool, items, sortSelection]);
 
     const isDisabled = useMemo(
       () => disabled || !!nominationPoolValueList.length || !items.length,
@@ -212,7 +319,7 @@ export const EarningPoolSelector = forwardRef(
     );
 
     const renderItem = useCallback(
-      ({ item }: ListRenderItemInfo<NominationPoolDataType>) => {
+      ({ item }: ListRenderItemInfo<NominationPoolDataTypeItem>) => {
         const { address, name, id, bondedAmount, symbol, decimals, isProfitable } = item;
 
         return (
@@ -247,7 +354,9 @@ export const EarningPoolSelector = forwardRef(
       if (defaultValidatorAddress) {
         defaultValue = defaultValidatorAddress;
       } else {
-        defaultValue = nominationPoolValueList[0] || String(defaultSelectPool || '');
+        defaultValue =
+          nominationPoolValueList[0] ||
+          String(defaultSelectPool && defaultSelectPool.length ? defaultSelectPool[0] : '');
       }
 
       onSelectItem && onSelectItem(defaultValue);
@@ -274,6 +383,7 @@ export const EarningPoolSelector = forwardRef(
             icon: ({ color }) => <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />,
             onPress: () => sortingModalRef?.current?.onOpenModal(),
           }}
+          grouping={grouping}
           renderSelected={() => (
             <PoolSelectorField
               disabled={isDisabled}
@@ -283,7 +393,7 @@ export const EarningPoolSelector = forwardRef(
               item={selectedPool}
               label={i18n.inputLabel.pool}
               loading={poolLoading}
-              recommendId={defaultSelectPool}
+              recommendIds={defaultSelectPool}
             />
           )}>
           <>
