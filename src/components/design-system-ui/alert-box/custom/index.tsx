@@ -6,6 +6,7 @@ import { convertHexColorToRGBA } from 'utils/color';
 import BackgroundIcon from '../../background-icon';
 import createStyles from './style';
 import Typography from 'components/design-system-ui/typography';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 interface Props {
   title: React.ReactNode | string;
@@ -37,7 +38,7 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
       </View>
       <View style={styles.content}>
         {typeof title === 'string' ? (
-          <Typography.Text size={'md'} style={{ color: theme.colorWhite }}>
+          <Typography.Text size={'md'} style={{ color: theme.colorWhite, ...FontSemiBold }}>
             {title}
           </Typography.Text>
         ) : (

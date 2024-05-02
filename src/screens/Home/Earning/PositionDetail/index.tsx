@@ -329,6 +329,7 @@ const Component: React.FC<Props> = (props: Props) => {
             poolInfo={poolInfo}
             isShowBalance={isShowBalance}
             rewardHistories={filteredRewardHistories}
+            isAutoClaim={!!stateAutoClaimManage}
           />
           <View style={styles.buttonContainer}>
             <Button

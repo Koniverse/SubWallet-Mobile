@@ -8,6 +8,7 @@ import { getBannerButtonIcon } from 'utils/campaign';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { PalletNominationPoolsClaimPermission } from '@subwallet/extension-base/types';
 import CustomAlertBox from 'components/design-system-ui/alert-box/custom';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 interface Props {
   modalVisible: boolean;
@@ -31,8 +32,11 @@ export const EarningManageClaimPermissions = ({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setModeAutoClaim(currentMode);
-  }, [currentMode]);
+    if (modalVisible) {
+      console.log('currentMode', currentMode);
+      setModeAutoClaim(currentMode);
+    }
+  }, [currentMode, modalVisible]);
 
   const titleModeItem = useCallback(
     (mode: PalletNominationPoolsClaimPermission) => {
@@ -43,7 +47,9 @@ export const EarningManageClaimPermissions = ({
       return (
         <View
           style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS, justifyContent: 'space-between' }}>
-          <Typography.Text style={{ color: theme.colorWhite }}>{SET_CLAIM_PERMISSIONS[mode].title}</Typography.Text>
+          <Typography.Text size={'md'} style={{ color: theme.colorWhite, ...FontSemiBold }}>
+            {SET_CLAIM_PERMISSIONS[mode].title}
+          </Typography.Text>
           {modeAutoClaim === mode && (
             <Icon iconColor={theme.colorSuccess} phosphorIcon={CheckCircle} size="sm" weight="fill" />
           )}
@@ -57,10 +63,15 @@ export const EarningManageClaimPermissions = ({
     setModeAutoClaim(key as PalletNominationPoolsClaimPermission);
   }, []);
 
-  const _onCancel = useCallback(() => {
+  const onCloseModal = useCallback(() => {
+    setModeAutoClaim(currentMode);
     onCancel && onCancel();
+  }, [currentMode, onCancel]);
+
+  const _onCancel = useCallback(() => {
+    onCloseModal();
     setModalVisible(false);
-  }, [onCancel, setModalVisible]);
+  }, [onCloseModal, setModalVisible]);
 
   const onSubmitAutoClaimMode = useCallback(() => {
     setIsLoading(true);
@@ -109,8 +120,8 @@ export const EarningManageClaimPermissions = ({
       modalVisible={modalVisible}
       setVisible={setModalVisible}
       footer={footerNode}
-      onChangeModalVisible={onCancel}
-      onBackButtonPress={onCancel}
+      onChangeModalVisible={onCloseModal}
+      onBackButtonPress={onCloseModal}
       modalTitle={'Manage auto claim permission'}>
       <>
         <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4, paddingBottom: theme.padding }}>

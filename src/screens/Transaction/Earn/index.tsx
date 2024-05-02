@@ -722,6 +722,12 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [slug, firstStep, navigation]);
 
   useEffect(() => {
+    if (compound) {
+      setAutoStateClaimManage((compound as NominationYieldPositionInfo)?.claimPermissionStatus);
+    }
+  }, [compound]);
+
+  useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
     let timeout: NodeJS.Timeout;
 
@@ -1175,6 +1181,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                         />
 
                         <EarningAutoClaimItem
+                          style={{ marginTop: theme.sizeXXS, marginBottom: theme.sizeXS }}
                           value={stateAutoClaimManage}
                           onValueChange={handleToggleAutoCompoundSwitch}
                           openManageAutoClaimModal={openManageAutoClaimModal}

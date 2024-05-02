@@ -37,6 +37,7 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Portal } from '@gorhom/portal';
+import { PalletNominationPoolsClaimPermission, RequestSetClaimPermissionless } from '@subwallet/extension-base/types';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
   return {
@@ -97,6 +98,10 @@ export const Confirmations = () => {
 
     if (confirmation.item.isInternal) {
       const transaction = transactionRequest[confirmation.item.id];
+      const isRemoveAutoClaim =
+        !!(transaction.data as RequestSetClaimPermissionless).claimPermissionless &&
+        (transaction.data as RequestSetClaimPermissionless).claimPermissionless ===
+          PalletNominationPoolsClaimPermission.PERMISSIONED;
 
       if (!transaction) {
         return titleMap[confirmation.type] || '';
@@ -162,7 +167,7 @@ export const Confirmations = () => {
         case ExtrinsicType.SWAP:
           return 'Swap confirmation';
         case ExtrinsicType.STAKING_SET_CLAIM_PERMISSIONLESS:
-          return 'Auto claim confirmation';
+          return isRemoveAutoClaim ? 'Remove auto claim' : 'Add auto claim';
         default:
           return i18n.header.transactionConfirmation;
       }

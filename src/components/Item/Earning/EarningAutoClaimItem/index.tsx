@@ -1,5 +1,5 @@
 import { Icon, Tag, Typography, Web3Block } from 'components/design-system-ui';
-import { Switch, TouchableOpacity, View } from 'react-native';
+import { Switch, TouchableOpacity, View, ViewStyle } from 'react-native';
 import React from 'react';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { GearSix, Info } from 'phosphor-react-native';
@@ -14,12 +14,13 @@ interface Props {
   onValueChange: (value: boolean) => void;
   openManageAutoClaimModal: () => void;
   disabled?: boolean;
+  style?: ViewStyle;
 }
 
-export const EarningAutoClaimItem = ({ value, onValueChange, openManageAutoClaimModal, disabled }: Props) => {
+export const EarningAutoClaimItem = ({ value, onValueChange, openManageAutoClaimModal, disabled, style }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   return (
-    <View style={{ backgroundColor: theme.colorBgSecondary, borderRadius: theme.borderRadiusLG }}>
+    <View style={[{ backgroundColor: theme.colorBgSecondary, borderRadius: theme.borderRadiusLG }, style]}>
       <Web3Block
         customStyle={{
           container: { paddingVertical: theme.sizeSM - 2 },
@@ -27,7 +28,7 @@ export const EarningAutoClaimItem = ({ value, onValueChange, openManageAutoClaim
         }}
         leftItem={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
-            <Typography.Text style={{ color: theme.colorWhite }}>{'Auto claim'}</Typography.Text>
+            <Typography.Text style={{ color: theme.colorWhite, ...FontSemiBold }}>{'Auto claim'}</Typography.Text>
             <Icon phosphorIcon={Info} weight={'fill'} iconColor={theme.colorWhite} size={'xs'} />
           </View>
         }
@@ -71,9 +72,9 @@ export const EarningAutoClaimItem = ({ value, onValueChange, openManageAutoClaim
               height: 40,
               justifyContent: 'center',
             }}>
-            <Icon weight={'bold'} size={'sm'} phosphorIcon={GearSix} iconColor={theme['gray-5']} />
+            <Icon size={'sm'} phosphorIcon={GearSix} iconColor={theme['gray-5']} />
             <Typography.Text style={{ color: theme.colorTextLight3, ...FontSemiBold }}>
-              {'Manage auto claim'}
+              {'Manage claim'}
             </Typography.Text>
           </TouchableOpacity>
         </View>

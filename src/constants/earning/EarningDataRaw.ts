@@ -246,14 +246,14 @@ export const SET_CLAIM_PERMISSIONS = {
   [PalletNominationPoolsClaimPermission.PERMISSIONLESS_COMPOUND]: {
     title: 'Auto compound',
     description: 'Your nomination pool staking rewards are auto compounded and staked',
-    icon: 'Lightning',
+    icon: 'ArrowCircleDown',
     iconColor: '#AADA62',
     bgColor: 'lime',
   },
   [PalletNominationPoolsClaimPermission.PERMISSIONLESS_WITHDRAW]: {
     title: 'Auto withdraw',
     description: 'Your nomination pool staking rewards are auto withdrawn to your transferable balance',
-    icon: 'ArrowCircleDown',
+    icon: 'Pen',
     iconColor: '#0078D9',
     bgColor: 'blue',
   },

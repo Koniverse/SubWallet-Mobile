@@ -1,5 +1,4 @@
-import React from 'react';
-
+import React, { useMemo } from 'react';
 import HistoryDetailAmount from './Amount';
 import HistoryDetailFee from './Fee';
 import HistoryDetailHeader from './Header';
@@ -12,19 +11,35 @@ import { formatHistoryDate } from 'utils/customFormatDate';
 import { IconProps } from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ExtrinsicType, LanguageType } from '@subwallet/extension-base/background/KoniTypes';
+import { ExtrinsicType, LanguageType, TransactionAdditionalInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { isAbleToShowFee } from 'components/common/HistoryItem';
 import { SwapLayout } from 'screens/Home/History/parts/SwapLayout';
+import { PalletNominationPoolsClaimPermission } from '@subwallet/extension-base/types';
 
 interface Props {
   data: TransactionHistoryDisplayItem;
 }
+
+const titleDisplayRemoveAutoClaim = 'Remove auto claim';
 
 const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
   const { data } = props;
   const txtTypeNameMap = TxTypeNameMap();
   const historyStatusMap = HistoryStatusMap();
   const language = useSelector((state: RootState) => state.settings.language) as LanguageType;
+  const titleDisplayLayout = useMemo(() => {
+    const isSetClaimPermissionTransaction = (
+      data.additionalInfo as TransactionAdditionalInfo[ExtrinsicType.STAKING_SET_CLAIM_PERMISSIONLESS]
+    )?.claimPermissionless;
+    if (
+      isSetClaimPermissionTransaction &&
+      isSetClaimPermissionTransaction === PalletNominationPoolsClaimPermission.PERMISSIONED
+    ) {
+      return titleDisplayRemoveAutoClaim;
+    }
+
+    return txtTypeNameMap[data.type];
+  }, [data.additionalInfo, data.type, txtTypeNameMap]);
 
   if (data.type === ExtrinsicType.SWAP) {
     return <SwapLayout data={data} />;
@@ -32,7 +47,7 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
 
   return (
     <MetaInfo>
-      <MetaInfo.DisplayType label={i18n.historyScreen.label.transactionType} typeName={txtTypeNameMap[data.type]} />
+      <MetaInfo.DisplayType label={i18n.historyScreen.label.transactionType} typeName={titleDisplayLayout} />
       <HistoryDetailHeader data={data} />
       <MetaInfo.Status
         label={i18n.historyScreen.label.transactionStatus}
