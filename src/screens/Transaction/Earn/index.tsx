@@ -244,7 +244,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const nativeAsset = useMemo(() => chainAsset[nativeTokenSlug], [chainAsset, nativeTokenSlug]);
 
   const assetDecimals = inputAsset ? _getAssetDecimals(inputAsset) : 0;
-  const priceValue = priceMap[inputAsset.priceId || ''] || 0;
+  const priceValue = inputAsset && inputAsset.priceId ? priceMap[inputAsset.priceId] : 0;
   const convertValue = currentAmount ? parseFloat(currentAmount) / 10 ** assetDecimals : 0;
   const transformAmount = convertValue * priceValue;
 
@@ -454,7 +454,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       Alert.alert('Unable to get earning data', 'Please, go back and try again later');
     }
     const value = currentAmount ? parseFloat(currentAmount) / 10 ** assetDecimals : 0;
-    const assetSymbol = inputAsset.symbol;
+    const assetSymbol = inputAsset ? inputAsset.symbol : '';
 
     const assetEarnings =
       poolInfo?.statistic && 'assetEarning' in poolInfo?.statistic ? poolInfo?.statistic.assetEarning : [];
@@ -510,7 +510,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           />
         )}
 
-        <MetaInfo.Chain chain={chainInfoMap[chain].slug} label={i18n.inputLabel.network} />
+        <MetaInfo.Chain chain={chain ? chainInfoMap[chain].slug : ''} label={i18n.inputLabel.network} />
 
         {showFee && (
           <MetaInfo.Number decimals={0} label={i18n.inputLabel.estimatedFee} prefix={'$'} value={estimatedFee} />
@@ -521,7 +521,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     poolInfo,
     currentAmount,
     assetDecimals,
-    inputAsset.symbol,
+    inputAsset,
     chainInfoMap,
     chain,
     estimatedFee,
@@ -740,8 +740,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [compound, isLoading]);
 
   useEffect(() => {
-    setAsset(inputAsset.slug || '');
-  }, [inputAsset.slug, setAsset]);
+    setAsset(inputAsset ? inputAsset.slug : '');
+  }, [inputAsset, setAsset]);
 
   useEffect(() => {
     if (!currentFrom && (isAllAccount || accountSelectorList.length === 1)) {
@@ -1097,7 +1097,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       hidden={[YieldStepType.XCM].includes(submitStepType)}
                       isSubscribe={true}
                       label={`${i18n.inputLabel.availableBalance}:`}
-                      tokenSlug={inputAsset.slug}
+                      tokenSlug={inputAsset ? inputAsset.slug : ''}
                       showNetwork
                     />
 
