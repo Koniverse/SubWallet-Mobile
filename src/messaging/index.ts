@@ -43,6 +43,7 @@ import {
   CronReloadRequest,
   CronServiceType,
   CrowdloanJson,
+  CurrencyType,
   CurrentAccountInfo,
   KeyringState,
   LanguageType,
@@ -596,6 +597,10 @@ export async function subscribeSettings(
   callback: (data: UiSettings) => void,
 ): Promise<UiSettings> {
   return sendMessage('pri(settings.subscribe)', data, callback);
+}
+
+export async function savePriceCurrency(currency: CurrencyType): Promise<boolean> {
+  return sendMessage('pri(settings.savePriceCurrency)', { currency });
 }
 
 export async function tieAccount(address: string, genesisHash: string | null): Promise<boolean> {

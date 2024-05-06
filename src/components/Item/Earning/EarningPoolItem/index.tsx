@@ -14,15 +14,17 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import { BN_TEN } from 'utils/number';
 import { _ChainInfo } from '@subwallet/chain-list/types';
+import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
 
 interface Props {
   poolInfo: YieldPoolInfo;
   onStakeMore: (value: string) => void;
   chain: _ChainInfo;
+  currencyData: CurrencyJson;
 }
 
 const EarningPoolItem = (props: Props) => {
-  const { poolInfo, onStakeMore } = props;
+  const { poolInfo, onStakeMore, currencyData } = props;
   const { metadata, chain, type, slug } = poolInfo;
   const { inputAsset, logo, shortName } = metadata;
   const totalApy = poolInfo?.statistic?.totalApy;
@@ -116,7 +118,8 @@ const EarningPoolItem = (props: Props) => {
               <Number
                 value={total}
                 decimal={0}
-                prefix={'$'}
+                prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
                 intColor={theme.colorSecondary}
                 decimalColor={theme.colorSecondary}
                 unitColor={theme.colorSecondary}

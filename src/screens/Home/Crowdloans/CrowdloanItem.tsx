@@ -9,9 +9,11 @@ import { HideBalanceItem } from 'components/HideBalanceItem';
 import { _CrowdloanItemType } from 'types/index';
 import { customFormatDate } from 'utils/customFormatDate';
 import { _FundStatus } from '@subwallet/chain-list/types';
+import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
 
 interface Props {
   item: _CrowdloanItemType;
+  currencyData: CurrencyJson;
   isShowBalance?: boolean;
 }
 
@@ -35,7 +37,7 @@ function getParaStateLabel(fundStatus: _FundStatus) {
   return '';
 }
 
-export const CrowdloanItem = ({ item, isShowBalance }: Props) => {
+export const CrowdloanItem = ({ item, isShowBalance, currencyData }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
 
@@ -119,7 +121,8 @@ export const CrowdloanItem = ({ item, isShowBalance }: Props) => {
               <Number
                 value={item.contribution.convertedValue}
                 decimal={0}
-                prefix={'$'}
+                prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
                 unitColor={styleSheet.subText.color}
                 intColor={styleSheet.subText.color}
                 decimalColor={styleSheet.subText.color}

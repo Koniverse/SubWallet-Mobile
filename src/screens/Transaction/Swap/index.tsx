@@ -135,7 +135,7 @@ export const Swap = ({
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { accounts, currentAccount, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const hasInternalConfirmations = useSelector((state: RootState) => state.requestState.hasInternalConfirmations);
-  const priceMap = useSelector((state: RootState) => state.price.priceMap);
+  const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const swapPairs = useSelector((state: RootState) => state.swap.swapPairs);
   const confirmTerm = mmkvStore.getBoolean('confirm-swap-term');
   const [termModalVisible, setTermModalVisible] = useState<boolean>(false);
@@ -420,8 +420,20 @@ export const Swap = ({
   const feeItems = useMemo(() => {
     const result: FeeItem[] = [];
     const feeTypeMap: Record<SwapFeeType, FeeItem> = {
-      NETWORK_FEE: { label: 'Network fee', value: new BigN(0), prefix: '$', type: SwapFeeType.NETWORK_FEE },
-      PLATFORM_FEE: { label: 'Protocol fee', value: new BigN(0), prefix: '$', type: SwapFeeType.PLATFORM_FEE },
+      NETWORK_FEE: {
+        label: 'Network fee',
+        value: new BigN(0),
+        prefix: `${(currencyData.isPrefix && currencyData.symbol) || ''}`,
+        suffix: `${(!currencyData.isPrefix && currencyData.symbol) || ''}`,
+        type: SwapFeeType.NETWORK_FEE,
+      },
+      PLATFORM_FEE: {
+        label: 'Protocol fee',
+        value: new BigN(0),
+        prefix: `${(currencyData.isPrefix && currencyData.symbol) || ''}`,
+        suffix: `${(!currencyData.isPrefix && currencyData.symbol) || ''}`,
+        type: SwapFeeType.PLATFORM_FEE,
+      },
       WALLET_FEE: { label: 'Wallet commission', value: new BigN(0), suffix: '%', type: SwapFeeType.WALLET_FEE },
     };
 
@@ -434,7 +446,7 @@ export const Swap = ({
     result.push(feeTypeMap.NETWORK_FEE, feeTypeMap.PLATFORM_FEE);
 
     return result;
-  }, [currentQuote?.feeInfo.feeComponent, getConvertedBalance]);
+  }, [currencyData.isPrefix, currencyData.symbol, currentQuote?.feeInfo.feeComponent, getConvertedBalance]);
 
   const canShowAvailableBalance = useMemo(() => {
     if (fromValue && chainValue && chainInfoMap[chainValue]) {
@@ -1329,7 +1341,13 @@ export const Swap = ({
                             {handleRequestLoading ? (
                               <ActivityIndicator size={20} />
                             ) : (
-                              <Number size={theme.fontSize} decimal={0} prefix={'$'} value={estimatedFeeValue} />
+                              <Number
+                                size={theme.fontSize}
+                                decimal={0}
+                                prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+                                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+                                value={estimatedFeeValue}
+                              />
                             )}
                           </MetaInfo.Default>
                         </MetaInfo>
@@ -1425,6 +1443,7 @@ export const Swap = ({
                 feeAssetInfo={feeAssetInfo}
                 renderSlippage={renderSlippage}
                 handleRequestLoading={handleRequestLoading}
+                currencyData={currencyData}
               />
             )}
 
@@ -1444,6 +1463,7 @@ export const Swap = ({
               estimatedFee={estimatedFeeValue}
               selectedItem={currentFeeOption}
               onSelectItem={onSelectFeeOption}
+              currencyData={currencyData}
             />
 
             <SwapIdleWarningModal

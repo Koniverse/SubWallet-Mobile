@@ -44,7 +44,7 @@ const Component: React.FC<Props> = (props: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
-  const { priceMap } = useSelector((state: RootState) => state.price);
+  const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const { isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
   const [dAppStakingWarningModalVisible, setDAppStakingWarningModalVisible] = useState<boolean>(false);
   const isOpenDAppWarningInPositionDetail = mmkvStore.getBoolean('isOpenDAppWarningInPositionDetail');
@@ -218,7 +218,13 @@ const Component: React.FC<Props> = (props: Props) => {
                 unitOpacity={0.65}
               />
 
-              <Number value={convertActiveStake} decimal={0} prefix={'$'} textStyle={styles.activeTokenValue} />
+              <Number
+                value={convertActiveStake}
+                decimal={0}
+                prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+                textStyle={styles.activeTokenValue}
+              />
             </>
           ) : (
             <HideBalanceItem />

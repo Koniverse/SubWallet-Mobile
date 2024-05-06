@@ -55,6 +55,7 @@ export const TokenGroupsUpperBlock = ({
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const { currencyData } = useSelector((state: RootState) => state.price);
   const { isShowBuyToken } = useShowBuyToken();
   const _toggleBalances = () => {
     updateToggleBalance();
@@ -64,7 +65,7 @@ export const TokenGroupsUpperBlock = ({
   return (
     <View style={containerStyle} pointerEvents="box-none">
       <TouchableOpacity style={{ alignItems: 'center' }} onPress={_toggleBalances}>
-        <BalancesVisibility value={totalValue} startWithSymbol subFloatNumber />
+        <BalancesVisibility value={totalValue} subFloatNumber symbol={currencyData.symbol} />
 
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 3, height: 40 }}>
           <View style={{ marginRight: 8 }}>

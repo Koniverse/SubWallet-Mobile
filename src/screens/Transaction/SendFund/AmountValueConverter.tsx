@@ -18,6 +18,7 @@ export const AmountValueConverter = ({ value, tokenSlug, style }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
+  const { currencyData } = useSelector((state: RootState) => state.price);
 
   const convertedValueBigN = (() => {
     try {
@@ -43,8 +44,10 @@ export const AmountValueConverter = ({ value, tokenSlug, style }: Props) => {
         intOpacity={1}
         unitOpacity={1}
         decimalOpacity={1}
-        prefix={'$'}
+        prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+        suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
         size={theme.fontSizeLG}
+        unitColor={theme.colorSuccess}
         textStyle={{ lineHeight: theme.fontSizeLG * theme.lineHeightLG, color: theme.colorSuccess }}
       />
       <Typography.Text size={'md'} style={{ color: theme.colorSuccess }}>

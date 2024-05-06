@@ -31,6 +31,7 @@ export const CrowdloansScreen = () => {
   const [isRefresh, refresh] = useRefresh();
   const isFocused = useIsFocused();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const { currencyData } = useSelector((state: RootState) => state.price);
   const defaultFilterOpts = [
     { label: i18n.filterOptions.polkadotParachain, value: FilterValue.POLKADOT_PARACHAIN },
     { label: i18n.filterOptions.kusamaParachain, value: FilterValue.KUSAMA_PARACHAIN },
@@ -39,7 +40,7 @@ export const CrowdloansScreen = () => {
   ];
   const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('crowdloan');
   const renderItem = ({ item }: ListRenderItemInfo<_CrowdloanItemType>) => {
-    return <CrowdloanItem item={item} isShowBalance={isShowBalance} />;
+    return <CrowdloanItem currencyData={currencyData} item={item} isShowBalance={isShowBalance} />;
   };
 
   const crowdloanData = useMemo(() => {

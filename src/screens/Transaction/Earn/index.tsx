@@ -100,7 +100,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { poolInfoMap, poolTargetsMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
-  const { priceMap } = useSelector((state: RootState) => state.price);
+  const { priceMap, currencyData } = useSelector((state: RootState) => state.price);
   const defaultTarget = useRef<string | undefined>(target);
   const redirectFromPreviewRef = useRef(!!redirectFromPreview);
   const autoCheckCompoundRef = useRef<boolean>(true);
@@ -513,7 +513,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         <MetaInfo.Chain chain={chain ? chainInfoMap[chain].slug : ''} label={i18n.inputLabel.network} />
 
         {showFee && (
-          <MetaInfo.Number decimals={0} label={i18n.inputLabel.estimatedFee} prefix={'$'} value={estimatedFee} />
+          <MetaInfo.Number
+            decimals={0}
+            label={i18n.inputLabel.estimatedFee}
+            prefix={(currencyData?.isPrefix && currencyData.symbol) || ''}
+            suffix={(!currencyData?.isPrefix && currencyData?.symbol) || ''}
+            value={estimatedFee}
+          />
         )}
       </MetaInfo>
     );
@@ -522,8 +528,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     currentAmount,
     assetDecimals,
     inputAsset,
-    chainInfoMap,
     chain,
+    chainInfoMap,
+    currencyData?.isPrefix,
+    currencyData.symbol,
     estimatedFee,
     getTargetedPool,
     chainAsset,
@@ -1123,7 +1131,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       decimal={0}
                       decimalColor={theme.colorTextLight4}
                       intColor={theme.colorTextLight4}
-                      prefix={'$'}
+                      prefix={(currencyData?.isPrefix && currencyData.symbol) || ''}
+                      suffix={(!currencyData?.isPrefix && currencyData?.symbol) || ''}
                       unitColor={theme.colorTextLight4}
                       value={transformAmount}
                       style={{ marginBottom: theme.marginSM }}

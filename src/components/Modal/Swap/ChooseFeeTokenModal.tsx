@@ -10,6 +10,7 @@ import { RootState } from 'stores/index';
 import { _getAssetPriceId, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { deviceHeight } from 'constants/index';
+import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
 
 interface Props {
   modalVisible: boolean;
@@ -18,6 +19,7 @@ interface Props {
   items: string[] | undefined;
   onSelectItem: (slug: string) => void;
   selectedItem?: string;
+  currencyData: CurrencyJson;
 }
 
 export const ChooseFeeTokenModal = ({
@@ -27,6 +29,7 @@ export const ChooseFeeTokenModal = ({
   selectedItem,
   onSelectItem,
   items,
+  currencyData,
 }: Props) => {
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
@@ -81,7 +84,8 @@ export const ChooseFeeTokenModal = ({
           <Number
             value={estimatedFee}
             decimal={0}
-            prefix={'$'}
+            prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+            suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
             size={38}
             textStyle={{ ...FontSemiBold, lineHeight: 38 }}
             subFloatNumber

@@ -1156,6 +1156,7 @@
     "manageWalletConnectDapp": "Manage WalletConnect Dapp",
     "appLock": "Require unlock",
     "walletTheme": "Wallet theme",
+    "currency": "Currency",
     "language": "Language",
     "notifications": "Notifications",
     "neverRequire": "Never",

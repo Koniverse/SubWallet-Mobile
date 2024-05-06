@@ -1,17 +1,18 @@
-import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
-import { AbstractYieldPositionInfo } from '@subwallet/extension-base/types';
+import { _ChainAsset } from '@subwallet/chain-list/types';
+import { YieldPositionInfo } from '@subwallet/extension-base/types';
 import { NominationPoolInfo, ValidatorInfo } from '@subwallet/extension-base/types/yield/info/chain/target';
 import { SWIconProps } from 'components/design-system-ui/icon';
 import { BalanceValueInfo } from 'types/balance';
 import { PhosphorIcon } from 'utils/campaign';
 import BigN from 'bignumber.js';
+import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
 
-export interface ExtraYieldPositionInfo extends AbstractYieldPositionInfo {
+export type ExtraYieldPositionInfo = YieldPositionInfo & {
   asset: _ChainAsset;
-  chainInfo: _ChainInfo;
   price: number;
+  currency?: CurrencyJson;
   // exchangeRate: number;
-}
+};
 
 export interface YieldGroupInfo {
   maxApy?: number;

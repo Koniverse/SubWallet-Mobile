@@ -23,6 +23,7 @@ import { SwapQuote } from '@subwallet/extension-base/types/swap';
 import { QuoteResetTime } from 'components/Swap/QuoteResetTime';
 import { SwapRoute } from 'components/Swap/SwapRoute';
 import { swapCustomFormatter } from '@subwallet/extension-base/utils';
+import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
 
 interface Props {
   modalVisible: boolean;
@@ -39,6 +40,7 @@ interface Props {
   openSwapSelectorModal: () => void;
   renderSlippage: () => React.JSX.Element;
   handleRequestLoading: boolean;
+  currencyData: CurrencyJson;
 }
 
 const numberMetadata = { maxNumberFormat: 8 };
@@ -58,6 +60,7 @@ export const SwapQuoteDetailModal = ({
   feeAssetInfo,
   renderSlippage,
   handleRequestLoading,
+  currencyData,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -176,7 +179,8 @@ export const SwapQuoteDetailModal = ({
                         label={'Estimated fee'}
                         value={value}
                         decimals={0}
-                        prefix={'$'}
+                        prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+                        suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
                         suffixNode={
                           <Icon
                             phosphorIcon={isViewFeeDetails ? CaretUp : CaretDown}

@@ -23,7 +23,7 @@ type Props = BaseTransactionConfirmationProps;
 const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const { transaction } = props;
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const priceMap = useSelector((state: RootState) => state.price.priceMap);
+  const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const data = transaction.data as SwapTxData;
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
   const recipientAddress = data.recipient || data.address;
@@ -108,7 +108,8 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
           valueColorSchema={'light'}
           decimals={0}
           label={'Estimated transaction fee'}
-          prefix={'$'}
+          prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+          suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
           value={estimatedFeeValue}
         />
         <MetaInfo.Default label={'Swap route'} />
