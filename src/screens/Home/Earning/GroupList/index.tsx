@@ -1,10 +1,10 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import EarningGroupItem from 'components/Item/Earning/EarningGroupItem';
-import { useYieldGroupInfo } from 'hooks/earning';
+import { useGroupYieldPosition, useYieldGroupInfo } from 'hooks/earning';
 import { Trophy } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Alert, Keyboard, Linking, ListRenderItemInfo, RefreshControl } from 'react-native';
+import { Alert, Keyboard, Linking, ListRenderItemInfo, RefreshControl, View } from 'react-native';
 import { EarningScreenNavigationProps } from 'routes/earning';
 import { YieldGroupInfo } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
@@ -19,10 +19,16 @@ import { RootState } from 'stores/index';
 import createStyles from './style';
 import { RootNavigationProps } from 'routes/index';
 import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
-import { YieldPoolInfo } from '@subwallet/extension-base/types';
+import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import { GettingDataModal } from 'components/Modal/GettingDataModal';
 import { useHandleChainConnection } from 'hooks/earning/useHandleChainConnection';
 import { isRelatedToAstar } from 'utils/earning';
+import useAccountBalance, { getBalanceValue } from 'hooks/screen/useAccountBalance';
+import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
+import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
+import useTokenGroup from 'hooks/screen/useTokenGroup';
+import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
+import { BannerGenerator } from 'components/common/BannerGenerator';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -89,8 +95,6 @@ const filterFunction = (items: YieldGroupInfo[], filters: string[]) => {
   });
 };
 
-const defaultSelectionMap = { [FilterOptionType.MAIN_NETWORK]: true };
-
 interface Props {
   isHasAnyPosition: boolean;
   setStep: (value: number) => void;
@@ -106,9 +110,17 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const data = useYieldGroupInfo();
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
-
+  const chainsByAccountType = useGetChainSlugs();
+  const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
+  const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
+  const yieldPositions = useGroupYieldPosition();
+  const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('earning');
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [selectedPoolGroup, setSelectedPoolGroup] = React.useState<YieldGroupInfo | undefined>(undefined);
+
+  const positionSlugs = useMemo(() => {
+    return yieldPositions.map(p => p.slug);
+  }, [yieldPositions]);
 
   const getAltChain = useCallback(
     (poolInfo?: YieldPoolInfo) => {
@@ -132,27 +144,27 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   }, [getAltChain, poolInfoMap, selectedPoolGroup]);
 
   const navigateToEarnScreen = useCallback(
-    (poolGroup: YieldGroupInfo) => {
-      const standAloneTokenSlug = Object.values(poolInfoMap).find(
-        i => i.group === poolGroup.group && i.chain === poolGroup.chain,
-      )?.slug;
-
+    (slug: string) => {
       rootNavigation.navigate('Drawer', {
         screen: 'TransactionAction',
         params: {
           screen: 'Earning',
-          params: { slug: standAloneTokenSlug || '' },
+          params: { slug: slug || '' },
         },
       });
     },
-    [poolInfoMap, rootNavigation],
+    [rootNavigation],
   );
 
   const { checkChainConnected, onConnectChain, isLoading, turnOnChain, setLoading } = useHandleChainConnection(
     selectedPoolGroup?.chain,
     selectedPoolGroup?.name,
     () => {
-      setTimeout(() => selectedPoolGroup && navigateToEarnScreen(selectedPoolGroup), 100);
+      setTimeout(() => {
+        if (selectedPoolGroup && selectedPoolGroup.poolSlugs[0]) {
+          navigateToEarnScreen(selectedPoolGroup.poolSlugs[0]);
+        }
+      }, 100);
     },
     altChainData,
   );
@@ -185,13 +197,8 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const onPressItem = useCallback(
     (chainSlug: string, poolGroup: YieldGroupInfo) => {
       setSelectedPoolGroup(poolGroup);
-      if (poolGroup.poolListLength > 1) {
-        navigation.navigate('EarningPoolList', { group: poolGroup.group, symbol: poolGroup.symbol });
-      } else if (poolGroup.poolListLength === 1) {
-        const poolInfo = Object.values(poolInfoMap).find(
-          i => i.group === poolGroup.group && i.chain === poolGroup.chain,
-        );
 
+      const processPoolOptions = (poolInfo: YieldPoolInfo) => {
         if (!poolInfo) {
           // will not happen
 
@@ -206,18 +213,74 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
           turnOnChain(currentAltChainData.chain);
           setLoading(true);
         } else {
-          navigateToEarnScreen(poolGroup);
+          navigateToEarnScreen(poolInfo.slug);
         }
+      };
+
+      if (poolGroup.poolListLength > 1) {
+        let isHiddenPool = false;
+
+        if (poolGroup.poolListLength === 2 && poolGroup.isRelatedToRelayChain) {
+          poolGroup.poolSlugs.forEach(poolSlug => {
+            const poolInfo = poolInfoMap[poolSlug];
+
+            if (poolInfo.type === YieldPoolType.NATIVE_STAKING) {
+              let minJoinPool: string;
+
+              if (poolInfo.statistic && !positionSlugs.includes(poolSlug)) {
+                minJoinPool = poolInfo.statistic.earningThreshold.join;
+              } else {
+                minJoinPool = '0';
+              }
+
+              const originChainAsset = poolInfo.metadata.inputAsset;
+
+              const availableBalance =
+                originChainAsset && tokenBalanceMap[originChainAsset] && tokenBalanceMap[originChainAsset].free.value;
+              const assetInfo = chainAsset[originChainAsset];
+              const minJoinPoolBalanceValue = getBalanceValue(minJoinPool, _getAssetDecimals(assetInfo));
+
+              if (!availableBalance) {
+                isHiddenPool = true;
+              } else if (minJoinPoolBalanceValue.isGreaterThan(availableBalance)) {
+                isHiddenPool = true;
+              }
+            }
+          });
+        }
+
+        if (isHiddenPool && poolGroup.poolListLength === 2) {
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          const index = poolGroup.poolSlugs.findIndex(poolGroup =>
+            poolGroup.includes(YieldPoolType.NOMINATION_POOL.toLowerCase()),
+          );
+
+          const poolInfo = poolInfoMap[poolGroup.poolSlugs[index]];
+
+          processPoolOptions(poolInfo);
+        } else {
+          navigation.navigate('EarningPoolList', {
+            group: poolGroup.group,
+            symbol: poolGroup.symbol,
+            isRelatedToRelayChain: poolGroup.isRelatedToRelayChain,
+          });
+        }
+      } else if (poolGroup.poolListLength === 1) {
+        const poolInfo = poolInfoMap[poolGroup.poolSlugs[0]];
+        processPoolOptions(poolInfo);
       }
     },
     [
+      chainAsset,
       checkChainConnected,
       getAltChain,
       navigateToEarnScreen,
       navigation,
       onConnectChain,
       poolInfoMap,
+      positionSlugs,
       setLoading,
+      tokenBalanceMap,
       turnOnChain,
     ],
   );
@@ -231,24 +294,20 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
           onPress={() => {
             if (isRelatedToAstar(item.group)) {
               Keyboard.dismiss();
-              Alert.alert(
-                'Enter Astar portal',
-                'You are navigating to Astar portal to view and manage your stake in Astar dApp staking v3. SubWallet will offer support for Astar dApp staking v3 soon.',
-                [
-                  {
-                    text: 'Cancel',
-                    style: 'default',
+              Alert.alert(i18n.warningTitle.enterAstarPortal, i18n.warningMessage.enterAstarPortalMessage, [
+                {
+                  text: i18n.buttonTitles.cancel,
+                  style: 'default',
+                },
+                {
+                  text: i18n.buttonTitles.enterAstarPortal,
+                  style: 'default',
+                  isPreferred: false,
+                  onPress: () => {
+                    Linking.openURL('subwallet://browser?url=portal.astar.network');
                   },
-                  {
-                    text: 'Enter Astar portal',
-                    style: 'default',
-                    isPreferred: false,
-                    onPress: () => {
-                      Linking.openURL('subwallet://browser?url=portal.astar.network');
-                    },
-                  },
-                ],
-              );
+                },
+              ]);
               return;
             }
             Keyboard.dismiss();
@@ -297,7 +356,6 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
         filterOptions={FILTER_OPTIONS}
-        defaultSelectionMap={defaultSelectionMap}
         filterFunction={filterFunction}
         flatListStyle={styles.container}
         renderItem={renderItem}
@@ -313,6 +371,11 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
               refresh(reloadCron({ data: 'staking' }));
             }}
           />
+        }
+        beforeListItem={
+          <View style={{ paddingHorizontal: theme.padding }}>
+            <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
+          </View>
         }
       />
 

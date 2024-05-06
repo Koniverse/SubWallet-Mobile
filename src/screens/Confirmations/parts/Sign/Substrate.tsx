@@ -1,7 +1,7 @@
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
 import { approveSignPasswordV2, approveSignSignature, cancelSignRequest } from 'messaging/index';
@@ -21,12 +21,14 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { DeviceEventEmitter, Platform } from 'react-native';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
+import { useToast } from 'react-native-toast-notifications';
 
 interface Props {
   account: AccountJson;
   id: string;
   payload: ExtrinsicPayload | string;
   navigation: NativeStackNavigationProp<RootStackParamList>;
+  txExpirationTime?: number;
 }
 
 const handleConfirm = async (id: string) => await approveSignPasswordV2({ id });
@@ -38,13 +40,14 @@ const handleSignature = async (id: string, { signature }: SigData) => await appr
 const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMode.PASSWORD];
 
 export const SubstrateSignArea = (props: Props) => {
-  const { account, id, payload, navigation } = props;
+  const { account, id, payload, navigation, txExpirationTime } = props;
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-
+  const { hideAll, show } = useToast();
   const [loading, setLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [isShowQr, setIsShowQr] = useState(false);
 
+  const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
   const signMode = useMemo(() => getSignMode(account), [account]);
   const isMessage = isSubstrateMessage(payload);
   const dispatch = useDispatch();
@@ -113,6 +116,16 @@ export const SubstrateSignArea = (props: Props) => {
   const { onPress: onConfirmPassword } = useUnlockModal(navigation, setLoading);
 
   const onConfirm = useCallback(() => {
+    if (txExpirationTime) {
+      const currentTime = +Date.now();
+
+      if (currentTime >= txExpirationTime) {
+        hideAll();
+        show('Transaction expired', { type: 'danger' });
+        onCancel();
+      }
+    }
+
     switch (signMode) {
       case AccountSignMode.QR:
         onConfirmQr();
@@ -124,7 +137,7 @@ export const SubstrateSignArea = (props: Props) => {
           setLoading(false);
         });
     }
-  }, [onApprovePassword, onConfirmPassword, onConfirmQr, signMode]);
+  }, [hideAll, onApprovePassword, onCancel, onConfirmPassword, onConfirmQr, show, signMode, txExpirationTime]);
 
   const onSuccess = useCallback(
     (sig: SigData) => {
@@ -140,6 +153,23 @@ export const SubstrateSignArea = (props: Props) => {
     setIsScanning(true);
   }, []);
 
+  useEffect(() => {
+    let timer: string | number | NodeJS.Timeout | undefined;
+
+    if (txExpirationTime) {
+      timer = setInterval(() => {
+        if (Date.now() >= txExpirationTime) {
+          setShowQuoteExpired(true);
+          clearInterval(timer);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [txExpirationTime]);
+
   return (
     <ConfirmationFooter>
       <Button disabled={loading} block icon={getButtonIcon(XCircle)} type={'secondary'} onPress={onCancel}>
@@ -147,7 +177,7 @@ export const SubstrateSignArea = (props: Props) => {
       </Button>
       <Button
         block
-        disabled={(isMessage && !modeCanSignMessage.includes(signMode)) || loading}
+        disabled={showQuoteExpired || (isMessage && !modeCanSignMessage.includes(signMode)) || loading}
         icon={getButtonIcon(approveIcon)}
         loading={loading}
         onPress={onConfirm}>

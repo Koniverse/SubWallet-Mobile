@@ -59,6 +59,7 @@ interface Props {
   selectedValidator?: string;
   disabled?: boolean;
   setForceFetchValidator: (val: boolean) => void;
+  defaultValidatorAddress?: string;
 }
 
 type IconSortAscendingType = (iconProps: IconProps) => JSX.Element;
@@ -78,6 +79,7 @@ const searchFunction = (items: ValidatorDataType[], searchString: string) => {
 
 export interface ValidatorSelectorRef {
   resetValue: () => void;
+  onOpenModal: () => void;
 }
 
 export const EarningValidatorSelector = forwardRef(
@@ -92,6 +94,7 @@ export const EarningValidatorSelector = forwardRef(
       disabled,
       setForceFetchValidator,
       slug,
+      defaultValidatorAddress,
     }: Props,
     ref: React.Ref<ValidatorSelectorRef>,
   ) => {
@@ -160,8 +163,9 @@ export const EarningValidatorSelector = forwardRef(
       onCancelSelectValidator,
       onChangeSelectedValidator,
       onInitValidators,
-    } = useSelectValidators(maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
-
+      onAutoSelectValidator,
+    } = useSelectValidators(items, maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
+    const defaultValueRef = useRef({ _default: '_', selected: '_' });
     const [detailItem, setDetailItem] = useState<ValidatorDataType | undefined>(undefined);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
 
@@ -250,19 +254,45 @@ export const EarningValidatorSelector = forwardRef(
       ref,
       () => ({
         resetValue: () => resetValidatorSelector(),
+        onOpenModal: () => {
+          validatorSelectModalRef?.current?.onOpenModal?.();
+        },
       }),
       [resetValidatorSelector],
     );
 
-    useEffect(() => {
-      const defaultValue =
-        nominations?.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity)).join(',') || '';
-      const selected = isSingleSelect ? '' : defaultValue;
-      onInitValidators(defaultValue, selected);
-      onSelectItem && onSelectItem(selected);
+    const externalDefaultValue = useMemo(() => {
+      let defaultSelectedList: ValidatorDataType[] = [];
+      if (defaultValidatorAddress) {
+        const defaultValidator = resultList.find(item => item.address === defaultValidatorAddress);
+        if (defaultValidator) {
+          defaultSelectedList = [defaultValidator];
+        } else {
+          defaultSelectedList = [];
+        }
+      }
 
+      return defaultSelectedList;
+    }, [defaultValidatorAddress, resultList]);
+
+    useEffect(() => {
+      const _default =
+        nominations?.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity)).join(',') || '';
+      let defaultValue = '';
+      if (externalDefaultValue && externalDefaultValue.length) {
+        defaultValue = externalDefaultValue.map(item => getValidatorKey(item.address, item.identity)).join(',');
+      }
+
+      const selected = defaultValue || defaultValidatorAddress || (isSingleSelect ? '' : _default);
+
+      if (defaultValueRef.current._default === _default && defaultValueRef.current.selected === selected) {
+        return;
+      }
+
+      onInitValidators(_default, selected);
+      onSelectItem && onSelectItem(selected);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isSingleSelect, from]);
+    }, [isSingleSelect, from, defaultValidatorAddress]);
 
     const applyBtn = useMemo(
       () => ({
@@ -276,6 +306,18 @@ export const EarningValidatorSelector = forwardRef(
       }),
       [applyLabel, changeValidators.length, onApplyChangeValidators],
     );
+
+    // const customBtn = useMemo(
+    //   () => ({
+    //     icon: Lightning,
+    //     onPressCustomBtn: () => {
+    //       validatorSelectModalRef?.current?.closeModal?.();
+    //       onAutoSelectValidator();
+    //     },
+    //     customBtnDisabled: !items.length,
+    //   }),
+    //   [items.length, onAutoSelectValidator],
+    // );
 
     const renderSortingItem = (item: SortOption) => {
       return (
@@ -321,7 +363,8 @@ export const EarningValidatorSelector = forwardRef(
     const renderSelected = useCallback(
       () => (
         <ValidatorSelectorField
-          onPressLightningBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
+          showLightningBtn={false}
+          onPressLightningBtn={() => onAutoSelectValidator()}
           onPressBookBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
           value={selectedValidator}
           label={
@@ -339,7 +382,7 @@ export const EarningValidatorSelector = forwardRef(
           }
         />
       ),
-      [chain, selectedValidator, validatorLoading],
+      [chain, onAutoSelectValidator, selectedValidator, validatorLoading],
     );
 
     return (
@@ -349,6 +392,7 @@ export const EarningValidatorSelector = forwardRef(
         selectModalType={'multi'}
         ref={validatorSelectModalRef}
         disabled={!chain || !from || disabled}
+        // customBtn={customBtn}
         applyBtn={applyBtn}
         onCloseModal={() => {
           setSortSelection(SortKey.DEFAULT);

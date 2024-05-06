@@ -15,17 +15,29 @@ const settingsSlice = createSlice({
   initialState,
   name: 'logoMaps',
   reducers: {
-    updateLogoMaps(state, action: PayloadAction<AllLogoMap>) {
+    updateChainLogoMaps(state, action: PayloadAction<Record<string, string>>) {
       const payload = action.payload;
-      payload.chainLogoMap.stellaswap = ImageLogosMap.stellaswap;
+      payload.stellaswap = ImageLogosMap.stellaswap;
+      payload.chain_flip_mainnet = ImageLogosMap.chain_flip_mainnet;
+      payload.chain_flip_testnet = ImageLogosMap.chain_flip_testnet;
+      payload.hydradx_mainnet = ImageLogosMap.hydradx_mainnet;
+      payload.hydradx_testnet = ImageLogosMap.hydradx_testnet;
 
       return {
         ...state,
-        ...payload,
+        chainLogoMap: payload,
+      };
+    },
+    updateAssetLogoMaps(state, action: PayloadAction<Record<string, string>>) {
+      const payload = action.payload;
+
+      return {
+        ...state,
+        assetLogoMap: payload,
       };
     },
   },
 });
 
-export const { updateLogoMaps } = settingsSlice.actions;
+export const { updateChainLogoMaps, updateAssetLogoMaps } = settingsSlice.actions;
 export default settingsSlice.reducer;

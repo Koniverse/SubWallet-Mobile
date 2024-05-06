@@ -173,8 +173,10 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
       filteredSelectMap = Object.fromEntries(
         Object.entries(selectedMap).filter(([key]) => isValidSubstrateAddress(key)),
       );
-    } else {
+    } else if (accountAuthType === 'evm') {
       filteredSelectMap = Object.fromEntries(Object.entries(selectedMap).filter(([key]) => isEthereumAddress(key)));
+    } else {
+      filteredSelectMap = { ...selectedMap };
     }
 
     return Object.values(filteredSelectMap).every(value => !value);

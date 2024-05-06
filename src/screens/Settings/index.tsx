@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { DeviceEventEmitter, Linking, Platform, ScrollView, StyleProp, View } from 'react-native';
@@ -77,6 +77,15 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
     return missions.filter(item => item.status === MissionCategoryType.LIVE).length;
   }, [missions]);
   const [hiddenCount, setHiddenCount] = useState(0);
+
+  const onPressContactSupport = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      Linking.openURL('mailto:support@subwallet.app?subject=%5BMobile%20-%20In-app%20support%5D');
+    } else {
+      Linking.openURL('mailto:agent@subwallet.app?subject=%5BMobile%20-%20In-app%20support%5D');
+    }
+  }, []);
+
   const settingList: settingItemType[][] = useMemo(
     () => [
       [
@@ -163,7 +172,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           icon: EnvelopeSimple,
           title: i18n.settings.contactSupport,
           rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL('mailto:agent@subwallet.app?subject=%5BIn-app%20Support%5D'),
+          onPress: onPressContactSupport,
           backgroundColor: '#004BFF',
         },
         {
@@ -189,7 +198,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         },
       ],
     ],
-    [activeMissionPoolNumb, navigation, theme.colorTextLight3, theme.paddingSM],
+    [activeMissionPoolNumb, navigation, onPressContactSupport, theme.colorTextLight3, theme.paddingSM],
   );
 
   const onPressVersionNumber = () => {

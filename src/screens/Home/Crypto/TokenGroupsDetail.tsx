@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Linking, ListRenderItemInfo, TouchableOpacity, View } from 'react-native';
+import { ListRenderItemInfo, View } from 'react-native';
 import { CryptoNavigationProps, TokenGroupsDetailProps } from 'routes/home';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { TokenBalanceItemType } from 'types/balance';
@@ -23,13 +23,7 @@ import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
-import FastImage from 'react-native-fast-image';
-import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
-import { deeplinks } from 'utils/browser';
-import { Button, Icon } from 'components/design-system-ui';
-import { X } from 'phosphor-react-native';
-import { getHideBanner, setHideBanner, tokenDetailBannerKey } from 'utils/storage';
+import { BannerGenerator } from 'components/common/BannerGenerator';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -41,15 +35,13 @@ export const TokenGroupsDetail = ({
     params: { slug: tokenGroupSlug },
   },
 }: TokenGroupsDetailProps) => {
-  const hiddenBanners = getHideBanner(tokenDetailBannerKey);
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<CryptoNavigationProps>();
   const [currentTokenInfo, setCurrentTokenInfo] = useState<CurrentSelectToken | undefined>(undefined);
   const [tokenDetailVisible, setTokenDetailVisible] = useState<boolean>(false);
-  const [isShowBanner, setIsShowBanner] = useState<boolean>(true);
   const assetRegistryMap = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
-  const banners = useGetBannerByScreen('token-details');
+  const { banners, dismissBanner, onPressBanner } = useGetBannerByScreen('token_detail', tokenGroupSlug);
 
   const groupSymbol = useMemo<string>(() => {
     if (tokenGroupSlug) {
@@ -167,11 +159,24 @@ export const TokenGroupsDetail = ({
     });
   }, [currentAccount, navigation, showNoti, tokenGroupSlug]);
 
+  const _onOpenSwap = useCallback(() => {
+    if (currentAccount && currentAccount.isReadOnly) {
+      showNoti(i18n.notificationMessage.watchOnlyNoti);
+      return;
+    }
+
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: { screen: 'Swap', params: { slug: tokenGroupSlug } },
+    });
+  }, [currentAccount, navigation, showNoti, tokenGroupSlug]);
+
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsDetailUpperBlock
         onOpenReceive={onOpenReceive}
         onOpenSendFund={_onOpenSendFund}
+        onOpenSwap={_onOpenSwap}
         balanceValue={tokenBalanceValue}
         onClickBack={onClickBack}
         groupSymbol={groupSymbol}
@@ -179,82 +184,19 @@ export const TokenGroupsDetail = ({
         tokenGroupMap={tokenGroupMap}
       />
     );
-  }, [onOpenReceive, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol, tokenGroupSlug, tokenGroupMap]);
+  }, [
+    onOpenReceive,
+    _onOpenSendFund,
+    _onOpenSwap,
+    tokenBalanceValue,
+    onClickBack,
+    groupSymbol,
+    tokenGroupSlug,
+    tokenGroupMap,
+  ]);
 
   const listFooter = useMemo(() => {
-    if (!banners || banners.length === 0) {
-      return;
-    }
-
-    const openBanner = (url: string) => {
-      const isDeeplink = deeplinks.some(deeplink => url.startsWith(deeplink));
-      if (isDeeplink) {
-        Linking.openURL(url);
-        return;
-      }
-
-      const transformUrl = `subwallet://browser?url=${encodeURIComponent(url)}`;
-      Linking.openURL(transformUrl);
-    };
-
-    const onPressBanner = (item: CampaignBanner) => {
-      return () => {
-        if (item.data.action === 'open_url') {
-          const url = item.data.metadata?.url as string | undefined;
-          if (url) {
-            openBanner(url);
-          }
-        }
-      };
-    };
-
-    return (
-      <>
-        {banners.map(item => {
-          let allowedTokenSlug;
-          try {
-            allowedTokenSlug = JSON.parse(item.condition?.allowedTokenSlug);
-          } catch (error) {
-            allowedTokenSlug = null;
-          }
-
-          if (
-            !item.condition?.allowedTokenSlug ||
-            (allowedTokenSlug.some((slug: string) => tokenGroupSlug.toLowerCase().includes(slug.toLowerCase())) &&
-              !hiddenBanners?.includes(item.campaignId.toString()))
-          ) {
-            return (
-              <TouchableOpacity
-                key={item.campaignId}
-                onPress={onPressBanner(item)}
-                activeOpacity={BUTTON_ACTIVE_OPACITY}>
-                <FastImage
-                  style={{
-                    height: 88,
-                    borderRadius: theme.borderRadiusLG,
-                    marginVertical: theme.marginXS,
-                  }}
-                  resizeMode="cover"
-                  source={{ uri: item.data.media }}
-                />
-                <Button
-                  icon={<Icon phosphorIcon={X} weight="bold" size="sm" />}
-                  onPress={() => {
-                    setIsShowBanner(false);
-                    setHideBanner(tokenDetailBannerKey, item.campaignId.toString());
-                  }}
-                  shape="round"
-                  style={{ position: 'absolute', right: -3, top: 5 }}
-                  size="xs"
-                  type="ghost"
-                />
-              </TouchableOpacity>
-            );
-          }
-          return null;
-        })}
-      </>
-    );
+    return <BannerGenerator banners={banners} dismissBanner={dismissBanner} onPressBanner={onPressBanner} />;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [banners]);
 
@@ -276,7 +218,7 @@ export const TokenGroupsDetail = ({
           loading={isTokenGroupComputing || isAccountBalanceComputing}
           items={tokenBalanceItems}
           layoutHeader={listHeaderNode}
-          layoutFooter={isShowBanner ? listFooter : undefined}
+          layoutFooter={banners.length ? listFooter : undefined}
           renderItem={renderItem}
         />
 
@@ -285,7 +227,6 @@ export const TokenGroupsDetail = ({
           tokenBalanceMap={tokenBalanceMap}
           modalVisible={tokenDetailVisible}
           setVisible={setTokenDetailVisible}
-          onClickBack={onClickBack}
         />
 
         <SelectAccAndTokenModal

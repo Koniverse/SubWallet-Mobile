@@ -181,8 +181,8 @@ const Number: React.FC<SwNumberProps> = props => {
       {suffix && (
         <Typography.Text
           style={{
-            ...unitStyle,
             ...textStyle,
+            ...unitStyle,
             fontSize: decimalFontSize,
           }}>
           &nbsp;{suffix}

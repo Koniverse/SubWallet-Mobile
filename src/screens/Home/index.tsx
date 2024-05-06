@@ -28,14 +28,10 @@ import { Settings } from 'screens/Settings';
 import i18n from 'utils/i18n/i18n';
 import { RootStackParamList } from 'routes/index';
 import { handleTriggerDeeplinkAfterLogin } from 'utils/deeplink';
-import { isFirstOpen, setIsFirstOpen } from '../../App';
-import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
-import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
+import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { mmkvStore } from 'utils/storage';
 import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
-import IntroducingModal from 'components/Modal/IntroducingModal';
-import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 import { TermAndCondition } from 'constants/termAndCondition';
 import { RemindBackupModal } from 'components/Modal/RemindBackupModal';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
@@ -182,8 +178,11 @@ const Wrapper = () => {
         drawerType: 'front',
         swipeEnabled: false,
       }}>
-      {isEmptyAccounts && <Drawer.Screen name="FirstScreen" component={FirstScreen} options={{ headerShown: false }} />}
-      <Drawer.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
+      {isEmptyAccounts ? (
+        <Drawer.Screen name="FirstScreen" component={FirstScreen} options={{ headerShown: false }} />
+      ) : (
+        <Drawer.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
+      )}
     </Drawer.Navigator>
   );
 };
@@ -211,18 +210,19 @@ export const Home = ({ navigation }: Props) => {
   const [isLoading, setLoading] = useState(true);
   const [generalTermVisible, setGeneralTermVisible] = useState<boolean>(false);
   const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
-  const banners = useGetBannerByScreen('home');
-  const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
-  const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
-  const [introducingModalVisible, setIntroducingModalVisible] = useState<boolean>(false);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
-  const isOpenIntroductionFirstTime = mmkvStore.getBoolean('isOpenIntroductionFirstTime');
   const language = useSelector((state: RootState) => state.settings.language);
   mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
   const storedRemindBackupTimeout = mmkvStore.getNumber('storedRemindBackupTimeout');
   const lastTimeLogin = mmkvStore.getNumber('lastTimeLogin');
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const isFocused = useIsFocused();
+  const needMigrate = useMemo(
+    () =>
+      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
+        .length || currentRoute?.name === 'MigratePassword',
+    [accounts, currentRoute?.name],
+  );
 
   useEffect(() => {
     if (isReady && isLoading) {
@@ -231,38 +231,26 @@ export const Home = ({ navigation }: Props) => {
   }, [isReady, isLoading]);
 
   useEffect(() => {
-    if (isReady && !isLoading && !isLocked && isFirstOpen.current && hasMasterPassword && !isEmptyAccounts) {
-      setIsFirstOpen(false);
+    const readyHandleDeeplink =
+      isReady && !isLoading && !isLocked && hasMasterPassword && !isEmptyAccounts && !needMigrate;
+    if (readyHandleDeeplink && isHandleDeeplinkPromise.current) {
       handleTriggerDeeplinkAfterLogin(appNavigatorDeepLinkStatus, navigation);
+      setIsHandleDeeplinkPromise(false);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, isLoading, isLocked]);
+  }, [isReady, isLoading, isLocked, needMigrate]);
 
   useEffect(() => {
     if (isShowCampaignModal) {
       return;
     }
-    if (!isOpenIntroductionFirstTime) {
-      return;
-    }
-    if (firstBanner) {
-      isShowCampaignModal = true;
-      setCampaignModalVisible(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [firstBanner]);
+  }, []);
 
   useEffect(() => {
     if (!isOpenGeneralTermFirstTime) {
       isShowCampaignModal = false;
       setGeneralTermVisible(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!isOpenIntroductionFirstTime) {
-      setIntroducingModalVisible(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -280,13 +268,6 @@ export const Home = ({ navigation }: Props) => {
     setGeneralTermVisible(false);
   };
 
-  const needMigrate = useMemo(
-    () =>
-      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
-        .length || currentRoute?.name === 'MigratePassword',
-    [accounts, currentRoute?.name],
-  );
-
   if (isLoading) {
     return (
       <View style={styles.indicatorWrapper}>
@@ -300,23 +281,7 @@ export const Home = ({ navigation }: Props) => {
       <Wrapper />
 
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
-      {!isLocked && !isEmptyAccounts && !isOpenIntroductionFirstTime && !needMigrate && isFocused && (
-        <IntroducingModal visible={introducingModalVisible} setVisible={setIntroducingModalVisible} />
-      )}
-      {!isLocked &&
-        firstBanner &&
-        isShowCampaignModal &&
-        !isEmptyAccounts &&
-        isOpenIntroductionFirstTime &&
-        !needMigrate &&
-        isFocused && (
-          <CampaignBannerModal
-            visible={campaignModalVisible}
-            banner={firstBanner}
-            setVisible={setCampaignModalVisible}
-          />
-        )}
-      {!isLocked && !isOpenGeneralTermFirstTime && !needMigrate && isFocused && (
+      {!isLocked && !isOpenGeneralTermFirstTime && !needMigrate && (
         <GeneralTermModal
           modalVisible={generalTermVisible}
           setVisible={setGeneralTermVisible}

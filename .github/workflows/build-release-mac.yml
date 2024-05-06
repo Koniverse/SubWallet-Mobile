@@ -5,9 +5,10 @@ on:
     tags: [ "*" ]
 
 jobs:
+  # iOS build workflow -------------------------------------------------
   build-ios:
     name: iOS builds
-    runs-on: mac-worker
+    runs-on: macos-13
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
       GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
@@ -35,25 +36,45 @@ jobs:
             sed -i '' "s/^COINBASE_PAY_ID=.*/COINBASE_PAY_ID=$COINBASE_PAY_ID/" .env.production
             sed -i '' "s/^IOS_CODEPUSH_KEY=.*/IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY/" .env.production
             sed -i '' "s/^ANDROID_CODEPUSH_KEY=.*/ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY/" .env.production
-            sed -i '' "s/^BUNDLE_ENV=.*/BUNDLE_ENV=PRODUCTION/" .env.production
+            sed -i '' "s/^BUNDLE_ENV=.*/BUNDLE_ENV=STAGING/" .env.production
             else
             echo "TRANSAK_API_KEY=$TRANSAK_API_KEY" >> .env.production
             echo "COINBASE_PAY_ID=$COINBASE_PAY_ID" >> .env.production
             echo "IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY" >> .env.production
             echo "ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY" >> .env.production
-            echo "BUNDLE_ENV=PRODUCTION" >> .env.production
+            echo "BUNDLE_ENV=STAGING" >> .env.production
           fi
 
-    - name: Cache Dependencies
-      uses: actions/cache@v2
+    - name: Use Node.js 18
+      uses: actions/setup-node@v4
       with:
-        path: ~/.cache/yarn
+        node-version: 18
+        cache: 'yarn'
+
+    - name: Cache Yarn dependencies
+      uses: actions/cache@v3
+      id: yarn-cache # optional, but allows referencing the step
+      with:
+        path: |
+          .yarn/cache
+          **/node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
 
     - name: Install dependencies
       run: yarn install --immutable | grep -v 'YN0013'
+
+    - name: Restore Pods Cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ios/Pods
+          ~/Library/Caches/CocoaPods
+          ~/.cocoapods
+        key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
 
     - name: Install Pods
       run: cd ios && pod update hermes-engine --no-repo-update && cd ..
@@ -93,9 +114,10 @@ jobs:
           iOS: Published on Appstore!
           Click [here](https://appstoreconnect.apple.com/apps/1633050285/testflight) to check TestFlight
 
+  # Android build workflow -------------------------------------------------
   build-android:
     name: Android builds
-    runs-on: android-worker
+    runs-on: macos-13
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
       GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
@@ -130,13 +152,41 @@ jobs:
             echo "BUNDLE_ENV=PRODUCTION" >> .env.production
           fi
 
-    - name: Cache Dependencies
-      uses: actions/cache@v2
+
+    - name: Use Node.js 18
+      uses: actions/setup-node@v4
       with:
-        path: ~/.cache/yarn
+        node-version: 18
+        cache: 'yarn'
+
+    - name: Cache Yarn dependencies
+      uses: actions/cache@v3
+      id: yarn-cache # optional, but allows referencing the step
+      with:
+        path: |
+          .yarn/cache
+          **/node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
+
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '11'
+
+    - name: Cache Gradle Wrapper
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+    - name: Cache Gradle Dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-caches-
 
     - name: Install dependencies
       run: yarn install --immutable | grep -v 'YN0013'

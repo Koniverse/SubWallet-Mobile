@@ -1,5 +1,5 @@
-import { Icon, Number, Typography } from 'components/design-system-ui';
-import { CaretRight } from 'phosphor-react-native';
+import { Icon, Number, Tag, Typography } from 'components/design-system-ui';
+import { CaretRight, Moon, Sun } from 'phosphor-react-native';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
@@ -21,20 +21,44 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
   const styleSheet = createStyleSheet(theme);
   const isTempEarningCondition = isRelatedToAstar(poolGroup.group);
 
+  const getTagItem = (isTestnet: boolean) => {
+    const tagContent = isTestnet ? 'Testnet' : 'Mainnet';
+    const TagIcon = isTestnet ? Moon : Sun;
+    const tagBgc = isTestnet ? 'rgba(217, 197, 0, 0.1)' : 'rgba(45, 167, 63, 0.1)';
+    const tagColor = isTestnet ? 'yellow' : 'green';
+    const tagIconColor = isTestnet ? theme['yellow-6'] : theme['green-7'];
+
+    return (
+      <Tag
+        icon={<Icon phosphorIcon={TagIcon} size={'xxs'} iconColor={tagIconColor} />}
+        color={tagColor}
+        bgType={'default'}
+        bgColor={tagBgc}>
+        {tagContent}
+      </Tag>
+    );
+  };
+
   return (
     <TouchableOpacity style={styleSheet.infoContainer} activeOpacity={0.5} onPress={onPress}>
       {getTokenLogo(token, undefined, 40)}
       <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>
         <View style={styleSheet.containerRow}>
           <View style={{ flexDirection: 'row', flex: 1 }}>
-            <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>
-              {symbol}
-            </Text>
-            {poolGroup.chain === 'bifrost' && (
-              <Text style={styleSheet.groupChainName} numberOfLines={1} ellipsizeMode={'tail'}>
-                {` (${poolGroup.name})`}
-              </Text>
-            )}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXS }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>
+                  {symbol}
+                </Text>
+                {poolGroup.chain === 'bifrost' && (
+                  <Text style={styleSheet.groupChainName} numberOfLines={1} ellipsizeMode={'tail'}>
+                    {` (${poolGroup.name})`}
+                  </Text>
+                )}
+              </View>
+
+              {poolGroup.isTestnet && getTagItem(poolGroup.isTestnet)}
+            </View>
           </View>
           {!isTempEarningCondition && maxApy && (
             <View style={styleSheet.dataRow}>
@@ -148,7 +172,7 @@ function createStyleSheet(theme: ThemeTypes) {
       lineHeight: theme.fontSizeLG * theme.lineHeightLG,
       ...FontSemiBold,
       color: theme.colorTextTertiary,
-      flex: 1,
+      // flex: 1,
     },
 
     iconWrapper: {

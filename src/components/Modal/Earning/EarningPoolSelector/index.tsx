@@ -1,14 +1,13 @@
 import { useGetPoolTargetList, useYieldPositionDetail } from 'hooks/earning';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Icon, SelectItem } from 'components/design-system-ui';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { Button, Icon, SelectItem, Typography } from 'components/design-system-ui';
 import { NominationPoolDataType } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
-import { Keyboard, ListRenderItemInfo } from 'react-native';
+import { Keyboard, ListRenderItemInfo, View } from 'react-native';
 import { StakingPoolItem } from 'components/common/StakingPoolItem';
-import { PREDEFINED_STAKING_POOL } from '@subwallet/extension-base/constants';
 import { PoolSelectorField } from 'components/Field/PoolSelector';
 import { PoolSelectorDetailModal } from 'components/Modal/common/PoolSelectorDetailModal';
-import { ArrowsClockwise, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
+import { ArrowsClockwise, MagnifyingGlass, SortAscending, SortDescending, ThumbsUp } from 'phosphor-react-native';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -16,6 +15,19 @@ import BigN from 'bignumber.js';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { EmptyValidator } from 'components/EmptyValidator';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
+import { PREDEFINED_EARNING_POOL } from 'constants/stakingScreen';
+import { SectionItem } from 'components/LazySectionList';
+import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
+import { FontSemiBold } from 'styles/sharedStyles';
+
+enum EarningPoolGroup {
+  RECOMMEND = 'recommend',
+  OTHERS = 'others',
+}
+
+interface NominationPoolDataTypeItem extends NominationPoolDataType {
+  group: EarningPoolGroup;
+}
 
 interface Props {
   onSelectItem?: (value: string) => void;
@@ -26,6 +38,7 @@ interface Props {
   targetPool: string;
   disabled?: boolean;
   setForceFetchValidator: (val: boolean) => void;
+  defaultValidatorAddress?: string;
 }
 
 interface FilterOption {
@@ -80,7 +93,7 @@ const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
   });
 };
 
-const defaultPoolMap = Object.assign({}, PREDEFINED_STAKING_POOL, { vara_network: 50 });
+const defaultPoolMap = Object.assign({}, PREDEFINED_EARNING_POOL);
 
 const sortingOptions: SortOption[] = [
   {
@@ -110,194 +123,311 @@ const FILTER_OPTIONS: FilterOption[] = [
   },
 ];
 
-export const EarningPoolSelector = ({
-  slug,
-  onSelectItem,
-  from,
-  poolLoading,
-  targetPool,
-  disabled,
-  chain,
-  setForceFetchValidator,
-}: Props) => {
-  const theme = useSubWalletTheme().swThemes;
-  const items = useGetPoolTargetList(slug) as NominationPoolDataType[];
-  const [detailModalVisible, setDetailModalVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<NominationPoolDataType | undefined>(undefined);
-  const { compound } = useYieldPositionDetail(slug, from);
+export interface PoolSelectorRef {
+  onOpenModal: () => void;
+}
 
-  const poolSelectorRef = useRef<ModalRef>();
-  const sortingModalRef = useRef<ModalRef>();
-
-  const [sortSelection, setSortSelection] = useState<SortKey>(SortKey.DEFAULT);
-  const nominationPoolValueList = useMemo((): string[] => {
-    return compound?.nominations.map(item => item.validatorAddress) || [];
-  }, [compound]);
-
-  const defaultSelectPool = defaultPoolMap[chain];
-
-  const selectedPool = useMemo((): NominationPoolDataType | undefined => {
-    return items.find(item => item.idStr === targetPool);
-  }, [items, targetPool]);
-
-  const resultList = useMemo(() => {
-    return [...items].sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
-      switch (sortSelection) {
-        case SortKey.MEMBER:
-          return a.memberCounter - b.memberCounter;
-        case SortKey.TOTAL_POOLED:
-          return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
-        case SortKey.DEFAULT:
-        default:
-          return 0;
-      }
-    });
-  }, [items, sortSelection]);
-
-  const isDisabled = useMemo(
-    () => disabled || !!nominationPoolValueList.length || !items.length,
-    [disabled, items.length, nominationPoolValueList.length],
-  );
-
-  const renderListEmptyComponent = useCallback(() => {
-    return (
-      <EmptyValidator
-        title={i18n.emptyScreen.selectorEmptyTitle}
-        message={i18n.emptyScreen.selectorEmptyMessage}
-        icon={MagnifyingGlass}
-        validatorTitle={getValidatorLabel(chain).toLowerCase()}
-        isDataEmpty={items.length === 0}
-        onClickReload={setForceFetchValidator}
-      />
-    );
-  }, [chain, items.length, setForceFetchValidator]);
-
-  const renderSortingItem = useCallback(
-    (item: SortOption) => {
-      return (
-        <SelectItem
-          key={item.value}
-          label={item.label}
-          icon={item.desc ? SortDescending : SortAscending}
-          backgroundColor={theme.colorPrimary}
-          isSelected={sortSelection === item.value}
-          onPress={() => {
-            setSortSelection(item.value);
-            sortingModalRef?.current?.onCloseModal();
-          }}
-        />
-      );
-    },
-    [sortSelection, theme.colorPrimary],
-  );
-
-  const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<NominationPoolDataType>) => {
-      const { address, name, id, bondedAmount, symbol, decimals, isProfitable } = item;
-
-      return (
-        <StakingPoolItem
-          address={address}
-          decimals={decimals}
-          id={id}
-          isProfitable={isProfitable}
-          bondedAmount={bondedAmount}
-          name={name}
-          symbol={symbol}
-          key={id}
-          onPress={() => {
-            onSelectItem && onSelectItem(item.id.toString());
-            poolSelectorRef && poolSelectorRef.current?.onCloseModal();
-          }}
-          onPressRightButton={() => {
-            Keyboard.dismiss();
-            setSelectedItem(item);
-            setTimeout(() => {
-              setDetailModalVisible(true);
-            }, 100);
-          }}
-        />
-      );
-    },
-    [onSelectItem],
-  );
-
-  const onPressLightningBtn = useCallback(() => {
-    const poolId = defaultSelectPool;
-
-    poolId !== undefined && onSelectItem && onSelectItem(String(poolId));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug]);
-
-  useEffect(() => {
-    const defaultSelectedPool = nominationPoolValueList[0] || String(defaultSelectPool || '');
-
-    onSelectItem && onSelectItem(defaultSelectedPool);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nominationPoolValueList, items]);
-
-  return (
-    <>
-      <FullSizeSelectModal
-        selectedValueMap={{}}
-        selectModalType={'single'}
-        items={resultList}
-        renderCustomItem={renderItem}
-        searchFunc={searchFunction}
-        title={i18n.header.selectPool}
-        ref={poolSelectorRef}
-        renderListEmptyComponent={renderListEmptyComponent}
-        disabled={isDisabled}
-        isShowFilterBtn={true}
-        filterOptions={FILTER_OPTIONS}
-        filterFunction={filterFunction}
-        onCloseModal={() => setSortSelection(SortKey.DEFAULT)}
-        rightIconOption={{
-          icon: ({ color }) => <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />,
-          onPress: () => sortingModalRef?.current?.onOpenModal(),
-        }}
-        renderSelected={() => (
-          <PoolSelectorField
-            disabled={isDisabled}
-            onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
-            onPressLightningBtn={onPressLightningBtn}
-            showLightingBtn={!!defaultSelectPool}
-            item={selectedPool}
-            label={i18n.inputLabel.selectPool}
-            loading={poolLoading}
-          />
-        )}>
-        <>
-          {!!selectedItem && (
-            <PoolSelectorDetailModal
-              detailItem={selectedItem}
-              detailModalVisible={detailModalVisible}
-              setVisible={setDetailModalVisible}
-            />
-          )}
-
-          <BasicSelectModal
-            level={2}
-            ref={sortingModalRef}
-            title={i18n.header.sorting}
-            items={sortingOptions}
-            selectedValueMap={{ [sortSelection]: true }}
-            onBackButtonPress={() => sortingModalRef.current?.onCloseModal()}
-            renderCustomItem={renderSortingItem}>
-            {
-              <Button
-                style={{ marginTop: 16 }}
-                icon={<Icon phosphorIcon={ArrowsClockwise} size={'md'} />}
-                onPress={() => {
-                  setSortSelection(SortKey.DEFAULT);
-                  sortingModalRef?.current?.onCloseModal();
-                }}>
-                {i18n.buttonTitles.resetSorting}
-              </Button>
-            }
-          </BasicSelectModal>
-        </>
-      </FullSizeSelectModal>
-    </>
-  );
+const sortSection = (a: SectionItem<NominationPoolDataTypeItem>, b: SectionItem<NominationPoolDataTypeItem>) => {
+  return b.title.localeCompare(a.title);
 };
+
+export const EarningPoolSelector = forwardRef(
+  (
+    {
+      slug,
+      onSelectItem,
+      from,
+      poolLoading,
+      targetPool,
+      disabled,
+      chain,
+      setForceFetchValidator,
+      defaultValidatorAddress,
+    }: Props,
+    ref: React.Ref<PoolSelectorRef>,
+  ) => {
+    const theme = useSubWalletTheme().swThemes;
+    const items = useGetPoolTargetList(slug) as NominationPoolDataType[];
+    const [detailModalVisible, setDetailModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<NominationPoolDataType | undefined>(undefined);
+    const { compound } = useYieldPositionDetail(slug, from);
+
+    const poolSelectorRef = useRef<ModalRef>();
+    const sortingModalRef = useRef<ModalRef>();
+
+    const [sortSelection, setSortSelection] = useState<SortKey>(SortKey.DEFAULT);
+    const nominationPoolValueList = useMemo((): string[] => {
+      return compound?.nominations.map(item => item.validatorAddress) || [];
+    }, [compound]);
+
+    const EarningPoolGroupNameMap = useMemo(
+      () => ({
+        [EarningPoolGroup.RECOMMEND]: 'recommended',
+        [EarningPoolGroup.OTHERS]: 'others',
+      }),
+      [],
+    );
+
+    const defaultSelectPool = defaultPoolMap[chain];
+
+    const groupBy = useMemo(
+      () => (item: NominationPoolDataTypeItem) => {
+        const priority = item.group === EarningPoolGroup.RECOMMEND ? '1' : '0';
+        return `${priority}|${EarningPoolGroupNameMap[item.group]}`;
+      },
+      [EarningPoolGroupNameMap],
+    );
+
+    const renderSectionHeader = useCallback(
+      (info: { section: SectionListData<NominationPoolDataTypeItem> }) => {
+        if (defaultSelectPool) {
+          return (
+            <View
+              style={{
+                paddingBottom: theme.sizeXS,
+                marginBottom: -theme.sizeXS,
+                paddingHorizontal: theme.size,
+                backgroundColor: theme.colorBgDefault,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: theme.sizeXXS,
+              }}>
+              <Typography.Text
+                size={'sm'}
+                style={{
+                  // paddingTop: theme.sizeXXS,
+                  color: theme.colorTextLight3,
+                  textTransform: 'uppercase',
+                  ...FontSemiBold,
+                }}>
+                {`${info.section.title.split('|')[1]}`}
+              </Typography.Text>
+              {info.section.title.includes('recommended') && (
+                <Icon phosphorIcon={ThumbsUp} iconColor={theme['cyan-6']} size={'xs'} weight={'fill'} />
+              )}
+            </View>
+          );
+        } else {
+          return <></>;
+        }
+      },
+      [defaultSelectPool, theme],
+    );
+
+    const grouping = useMemo(() => {
+      return { groupBy, sortSection, renderSectionHeader };
+    }, [groupBy, renderSectionHeader]);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        onOpenModal: () => {
+          poolSelectorRef?.current?.onOpenModal?.();
+        },
+      }),
+      [],
+    );
+
+    const selectedPool = useMemo((): NominationPoolDataType | undefined => {
+      return items.find(item => item.idStr === targetPool);
+    }, [items, targetPool]);
+
+    const resultList: NominationPoolDataTypeItem[] = useMemo(() => {
+      return [...items]
+        .sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
+          if (defaultSelectPool) {
+            const isRecommendedA = defaultSelectPool.includes(a.id);
+            const isRecommendedB = defaultSelectPool.includes(b.id);
+
+            switch (sortSelection) {
+              case SortKey.MEMBER:
+                if (isRecommendedA && !isRecommendedB) {
+                  return -1;
+                } else if (!isRecommendedA && isRecommendedB) {
+                  return 1;
+                } else {
+                  return a.memberCounter - b.memberCounter;
+                }
+              case SortKey.TOTAL_POOLED:
+                if (isRecommendedA && !isRecommendedB) {
+                  return -1;
+                } else if (!isRecommendedA && isRecommendedB) {
+                  return 1;
+                } else {
+                  return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
+                }
+              case SortKey.DEFAULT:
+              default:
+                return isRecommendedA ? -1 : isRecommendedB ? 1 : 0; // put recommend item to top
+            }
+          } else {
+            switch (sortSelection) {
+              case SortKey.MEMBER:
+                return a.memberCounter - b.memberCounter;
+              case SortKey.TOTAL_POOLED:
+                return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
+              case SortKey.DEFAULT:
+              default:
+                return 0;
+            }
+          }
+        })
+        .map(item => {
+          if (PREDEFINED_EARNING_POOL[chain] && PREDEFINED_EARNING_POOL[chain].includes(item.id)) {
+            return { ...item, group: EarningPoolGroup.RECOMMEND };
+          } else {
+            return { ...item, group: EarningPoolGroup.OTHERS };
+          }
+        });
+    }, [chain, defaultSelectPool, items, sortSelection]);
+
+    const isDisabled = useMemo(
+      () => disabled || !!nominationPoolValueList.length || !items.length,
+      [disabled, items.length, nominationPoolValueList.length],
+    );
+
+    const renderListEmptyComponent = useCallback(() => {
+      return (
+        <EmptyValidator
+          title={i18n.emptyScreen.selectorEmptyTitle}
+          message={i18n.emptyScreen.selectorEmptyMessage}
+          icon={MagnifyingGlass}
+          validatorTitle={getValidatorLabel(chain).toLowerCase()}
+          isDataEmpty={items.length === 0}
+          onClickReload={setForceFetchValidator}
+        />
+      );
+    }, [chain, items.length, setForceFetchValidator]);
+
+    const renderSortingItem = useCallback(
+      (item: SortOption) => {
+        return (
+          <SelectItem
+            key={item.value}
+            label={item.label}
+            icon={item.desc ? SortDescending : SortAscending}
+            backgroundColor={theme.colorPrimary}
+            isSelected={sortSelection === item.value}
+            onPress={() => {
+              setSortSelection(item.value);
+              sortingModalRef?.current?.onCloseModal();
+            }}
+          />
+        );
+      },
+      [sortSelection, theme.colorPrimary],
+    );
+
+    const renderItem = useCallback(
+      ({ item }: ListRenderItemInfo<NominationPoolDataTypeItem>) => {
+        const { address, name, id, bondedAmount, symbol, decimals, isProfitable } = item;
+
+        return (
+          <StakingPoolItem
+            address={address}
+            decimals={decimals}
+            id={id}
+            isProfitable={isProfitable}
+            bondedAmount={bondedAmount}
+            name={name}
+            symbol={symbol}
+            key={id}
+            onPress={() => {
+              onSelectItem && onSelectItem(item.id.toString());
+              poolSelectorRef && poolSelectorRef.current?.onCloseModal();
+            }}
+            onPressRightButton={() => {
+              Keyboard.dismiss();
+              setSelectedItem(item);
+              setTimeout(() => {
+                setDetailModalVisible(true);
+              }, 100);
+            }}
+          />
+        );
+      },
+      [onSelectItem],
+    );
+
+    useEffect(() => {
+      let defaultValue = '';
+      if (defaultValidatorAddress) {
+        defaultValue = defaultValidatorAddress;
+      } else {
+        defaultValue =
+          nominationPoolValueList[0] ||
+          String(defaultSelectPool && defaultSelectPool.length ? defaultSelectPool[0] : '');
+      }
+
+      onSelectItem && onSelectItem(defaultValue);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [nominationPoolValueList, items]);
+
+    return (
+      <>
+        <FullSizeSelectModal
+          selectedValueMap={{}}
+          selectModalType={'single'}
+          items={resultList}
+          renderCustomItem={renderItem}
+          searchFunc={searchFunction}
+          title={i18n.header.selectPool}
+          ref={poolSelectorRef}
+          renderListEmptyComponent={renderListEmptyComponent}
+          disabled={isDisabled}
+          isShowFilterBtn={true}
+          filterOptions={FILTER_OPTIONS}
+          filterFunction={filterFunction}
+          onCloseModal={() => setSortSelection(SortKey.DEFAULT)}
+          rightIconOption={{
+            icon: ({ color }) => <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />,
+            onPress: () => sortingModalRef?.current?.onOpenModal(),
+          }}
+          grouping={grouping}
+          renderSelected={() => (
+            <PoolSelectorField
+              disabled={isDisabled}
+              onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
+              // onPressLightningBtn={onPressLightningBtn}
+              showLightingBtn={false}
+              item={selectedPool}
+              label={i18n.inputLabel.pool}
+              loading={poolLoading}
+              recommendIds={defaultSelectPool}
+            />
+          )}>
+          <>
+            {!!selectedItem && (
+              <PoolSelectorDetailModal
+                detailItem={selectedItem}
+                detailModalVisible={detailModalVisible}
+                setVisible={setDetailModalVisible}
+              />
+            )}
+
+            <BasicSelectModal
+              level={2}
+              ref={sortingModalRef}
+              title={i18n.header.sorting}
+              items={sortingOptions}
+              selectedValueMap={{ [sortSelection]: true }}
+              onBackButtonPress={() => sortingModalRef.current?.onCloseModal()}
+              renderCustomItem={renderSortingItem}>
+              {
+                <Button
+                  style={{ marginTop: 16 }}
+                  icon={<Icon phosphorIcon={ArrowsClockwise} size={'md'} />}
+                  onPress={() => {
+                    setSortSelection(SortKey.DEFAULT);
+                    sortingModalRef?.current?.onCloseModal();
+                  }}>
+                  {i18n.buttonTitles.resetSorting}
+                </Button>
+              }
+            </BasicSelectModal>
+          </>
+        </FullSizeSelectModal>
+      </>
+    );
+  },
+);

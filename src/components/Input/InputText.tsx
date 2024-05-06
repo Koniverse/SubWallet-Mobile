@@ -1,5 +1,5 @@
 import React, { forwardRef, useMemo } from 'react';
-import { Platform, StyleSheet, TextInput, View, ViewStyle } from 'react-native';
+import { KeyboardTypeOptions, Platform, StyleSheet, TextInput, View, ViewStyle } from 'react-native';
 import { DisabledStyle, FontMedium } from 'styles/sharedStyles';
 import { FieldBaseProps } from 'components/Field/Base';
 import { Warning } from 'components/Warning';
@@ -23,7 +23,10 @@ interface Props extends FieldBaseProps {
   rightIcon?: React.ReactNode;
   disabled?: boolean;
   containerStyle?: ViewStyle;
+  extraTextInputStyle?: ViewStyle;
   readonly?: boolean;
+  maxLength?: number;
+  keyboardType?: KeyboardTypeOptions;
 }
 
 const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInput>) => {
@@ -44,7 +47,10 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
     rightIcon,
     disabled,
     containerStyle,
+    extraTextInputStyle,
     readonly,
+    maxLength,
+    keyboardType,
   } = passwordFieldProps;
   const hasLabel = !!label;
   const styles = useMemo(
@@ -54,13 +60,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
 
   return (
     <>
-      <View
-        style={[
-          styles.inputContainer,
-          containerStyle,
-          { backgroundColor: theme.colorBgSecondary },
-          disabled && DisabledStyle,
-        ]}>
+      <View style={[styles.inputContainer, containerStyle, disabled && DisabledStyle]}>
         {hasLabel && <Typography.Text style={styles.inputLabel}>{label}</Typography.Text>}
         <>
           {leftIcon && (
@@ -74,7 +74,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
             autoCapitalize={'none'}
             placeholder={placeholder}
             autoFocus={autoFocus}
-            style={styles.textInput}
+            style={[styles.textInput, extraTextInputStyle]}
             placeholderTextColor={theme.colorTextLight4}
             selectionColor={theme.colorTextLight4}
             blurOnSubmit={false}
@@ -84,7 +84,9 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
             defaultValue={defaultValue || ''}
             onBlur={onBlur}
             editable={!isBusy}
+            keyboardType={keyboardType}
             selectTextOnFocus={!isBusy}
+            maxLength={maxLength}
             value={value}
           />
           {rightIcon}

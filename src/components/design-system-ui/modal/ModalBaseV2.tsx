@@ -111,6 +111,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       scrollTo(0);
     }, [onChangeModalVisible, scrollTo, setVisible]);
 
+    //this useEffect is handle close modal when app receive confirmation
     useEffect(() => {
       const unsubscribe = DeviceEventEmitter.addListener('closeModal', () => {
         onBackButtonPress ? onBackButtonPress() : onClose();

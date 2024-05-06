@@ -25,7 +25,9 @@ import {
   TransferBlock,
   WithdrawTransactionConfirmation,
   TokenApproveConfirmation,
+  SwapTransactionConfirmation,
 } from './variants';
+import { SwapTxData } from '@subwallet/extension-base/types/swap';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
@@ -77,6 +79,8 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
       return DefaultWithdrawTransactionConfirmation;
     case ExtrinsicType.TOKEN_APPROVE:
       return TokenApproveConfirmation;
+    case ExtrinsicType.SWAP:
+      return SwapTransactionConfirmation;
     default:
       return BaseTransactionConfirmation;
   }
@@ -104,6 +108,19 @@ export const TransactionConfirmation = (props: Props) => {
 
     return <Component transaction={transaction} />;
   }, []);
+
+  const txExpirationTime = useMemo((): number | undefined => {
+    // transaction might only be valid for a certain period of time
+    if (_transaction.extrinsicType === ExtrinsicType.SWAP) {
+      const data = _transaction.data as SwapTxData;
+
+      return data.quote.aliveUntil;
+    }
+    // todo: there might be more types of extrinsic
+
+    return undefined;
+  }, [_transaction.data, _transaction.extrinsicType]);
+
   return (
     <>
       {renderContent(_transaction)}
@@ -113,6 +130,7 @@ export const TransactionConfirmation = (props: Props) => {
           id={item.id}
           payload={substratePayload}
           navigation={navigation}
+          txExpirationTime={txExpirationTime}
         />
       )}
       {type === 'evmSendTransactionRequest' && (
@@ -121,6 +139,7 @@ export const TransactionConfirmation = (props: Props) => {
           payload={item as ConfirmationDefinitions['evmSendTransactionRequest'][0]}
           type="evmSendTransactionRequest"
           navigation={navigation}
+          txExpirationTime={txExpirationTime}
         />
       )}
     </>

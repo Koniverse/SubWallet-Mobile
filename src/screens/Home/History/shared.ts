@@ -47,6 +47,7 @@ export const StakingTypeNameMap = (): Record<string, string> => ({
   [ExtrinsicType.STAKING_CANCEL_UNSTAKE]: i18n.historyScreen.extrinsicType.cancelUnstake,
   [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.extrinsicType.evmExecute,
   [ExtrinsicType.TOKEN_APPROVE]: i18n.historyScreen.extrinsicType.tokenApprove,
+  [ExtrinsicType.SWAP]: 'Swap',
 });
 
 export const TxTypeNameMap = (): Record<string, string> => ({

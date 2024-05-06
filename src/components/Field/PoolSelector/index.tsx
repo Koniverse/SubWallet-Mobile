@@ -4,7 +4,7 @@ import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { Book, Lightning } from 'phosphor-react-native';
-import { ActivityIndicator, Avatar, Button, Icon } from 'components/design-system-ui';
+import { ActivityIndicator, Avatar, Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { toShort } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
@@ -18,6 +18,7 @@ interface Props extends FieldBaseProps {
   onPressBookBtn?: () => void;
   onPressLightningBtn?: () => void;
   showLightingBtn?: boolean;
+  recommendIds?: number[];
 }
 
 const accountNameTextStyle: StyleProp<any> = {
@@ -25,7 +26,7 @@ const accountNameTextStyle: StyleProp<any> = {
   lineHeight: 22,
   ...FontSemiBold,
   color: 'rgba(255, 255, 255, 0.85)',
-  maxWidth: 200,
+  maxWidth: 180,
 };
 
 const blockContentStyle: StyleProp<any> = {
@@ -48,6 +49,7 @@ export const PoolSelectorField = ({
   onPressBookBtn,
   onPressLightningBtn,
   showLightingBtn = true,
+  recommendIds,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -61,9 +63,16 @@ export const PoolSelectorField = ({
               <Avatar value={item?.address || ''} size={24} />
             </View>
           )}
-          <Text numberOfLines={1} style={accountNameTextStyle}>
-            {item ? item.name || toShort(item.address) : placeholder}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            <Text numberOfLines={1} style={accountNameTextStyle}>
+              {item ? item.name || toShort(item.address) : placeholder}
+            </Text>
+            {item && recommendIds && recommendIds.length && recommendIds.includes(item.id) && (
+              <Typography.Text numberOfLines={1} size={'sm'} style={{ color: theme.colorTextLight4 }}>
+                {'  (Recommended)'}
+              </Typography.Text>
+            )}
+          </View>
         </View>
 
         {loading ? (

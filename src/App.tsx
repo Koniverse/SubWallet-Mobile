@@ -36,6 +36,10 @@ import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
 import { useGetEarningStaticData } from 'hooks/static-content/useGetEarningStaticData';
+import { useGetEarningPoolData } from 'hooks/static-content/useGetEarningPoolData';
+import { AppOnlineContentContextProvider } from 'providers/AppOnlineContentProvider';
+import { GlobalModalContextProvider } from 'providers/GlobalModalContext';
+import { useGetAppInstructionData } from 'hooks/static-content/useGetAppInstructionData';
 import { useGetConfig } from 'hooks/static-content/useGetConfig';
 import { mmkvStore } from 'utils/storage';
 import { setIsShowRemindBackupModal } from 'screens/Home';
@@ -139,10 +143,10 @@ export function setPrevDeeplinkUrl(value: string) {
   prevDeeplinkUrl = value;
 }
 
-export const isFirstOpen = { current: true };
+export const isHandleDeeplinkPromise = { current: true };
 
-export function setIsFirstOpen(value: boolean) {
-  isFirstOpen.current = value;
+export function setIsHandleDeeplinkPromise(value: boolean) {
+  isHandleDeeplinkPromise.current = value;
 }
 
 export const App = () => {
@@ -159,8 +163,10 @@ export const App = () => {
   const isI18nReady = useSetupI18n().isI18nReady;
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
+  const { getPoolInfoMap } = useGetEarningPoolData();
   const { getConfig } = useGetConfig();
   const { getEarningStaticData } = useGetEarningStaticData(language);
+  const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
   autoLockParams.isMasterPasswordLocked = isLocked;
 
@@ -196,9 +202,11 @@ export const App = () => {
       SplashScreen.hide();
     }, 100);
     checkIsShowBuyToken();
+    getPoolInfoMap();
     getDAppsData();
     getConfig();
     getEarningStaticData();
+    getAppInstructionData();
 
     DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {
       setNeedUpdateChrome(data);
@@ -218,6 +226,8 @@ export const App = () => {
       Linking.openURL('market://details?id=com.google.android.webview'),
     );
   };
+
+  // TODO: merge GlobalModalContextProvider and AppModalContextProvider
 
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
@@ -240,9 +250,13 @@ export const App = () => {
                     <ScannerContextProvider>
                       <GestureHandlerRootView style={gestureRootStyle}>
                         <PortalProvider>
-                          <AppModalContextProvider>
-                            {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
-                          </AppModalContextProvider>
+                          <GlobalModalContextProvider>
+                            <AppOnlineContentContextProvider>
+                              <AppModalContextProvider>
+                                {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
+                              </AppModalContextProvider>
+                            </AppOnlineContentContextProvider>
+                          </GlobalModalContextProvider>
                         </PortalProvider>
                       </GestureHandlerRootView>
                     </ScannerContextProvider>

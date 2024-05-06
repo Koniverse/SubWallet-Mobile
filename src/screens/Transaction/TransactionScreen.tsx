@@ -9,6 +9,8 @@ import { CancelUnstake } from 'screens/Transaction/CancelUnstake';
 import { Withdraw } from 'screens/Transaction/Withdraw';
 import { SendFund } from 'screens/Transaction/SendFund';
 import SendNFT from 'screens/Transaction/NFT';
+import withPageWrapper from 'components/pageWrapper';
+import { Swap } from 'screens/Transaction/Swap';
 
 const TransactionScreen = () => {
   const TransactionActionStack = createNativeStackNavigator<TransactionActionStackParamList>();
@@ -23,7 +25,11 @@ const TransactionScreen = () => {
       <TransactionActionStack.Screen name="Unbond" component={Unbond} />
       <TransactionActionStack.Screen name="ClaimReward" component={ClaimReward} />
       <TransactionActionStack.Screen name="CancelUnstake" component={CancelUnstake} />
-      <TransactionActionStack.Screen name="Earning" component={EarnTransaction} />
+      <TransactionActionStack.Screen
+        name="Earning"
+        component={withPageWrapper(EarnTransaction, ['price', 'balance', 'earning'])}
+      />
+      <TransactionActionStack.Screen name="Swap" component={withPageWrapper(Swap, ['price', 'balance', 'swap'])} />
     </TransactionActionStack.Navigator>
   );
 };

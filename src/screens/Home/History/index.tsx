@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Aperture,
   ArrowDownLeft,
+  ArrowsLeftRight,
   ArrowUpRight,
   ClockCounterClockwise,
   Database,
@@ -67,6 +68,7 @@ IconMap = {
   crowdloan: Rocket,
   nft: Aperture,
   processing: Spinner,
+  swap: ArrowsLeftRight,
   default: ClockCounterClockwise,
 };
 
@@ -93,6 +95,10 @@ function getIcon(item: TransactionHistoryItem): React.ElementType<IconProps> {
 
   if (item.type === ExtrinsicType.STAKING_CLAIM_REWARD) {
     return IconMap.claim_reward;
+  }
+
+  if (item.type === ExtrinsicType.SWAP) {
+    return IconMap.swap;
   }
 
   if (isTypeStaking(item.type)) {
@@ -173,6 +179,7 @@ enum FilterValue {
   CROWDLOAN = 'crowdloan',
   SUCCESSFUL = 'successful',
   FAILED = 'failed',
+  SWAP = 'swap',
 }
 
 const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[]) => {
@@ -218,6 +225,11 @@ const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[
           break;
         case FilterValue.CROWDLOAN:
           if (item.type === ExtrinsicType.CROWDLOAN) {
+            return true;
+          }
+          break;
+        case FilterValue.SWAP:
+          if (item.type === ExtrinsicType.SWAP) {
             return true;
           }
           break;
@@ -342,6 +354,7 @@ function History({
     { label: i18n.filterOptions.nftTransaction, value: FilterValue.NFT },
     { label: i18n.filterOptions.stakeTransaction, value: FilterValue.STAKE },
     { label: i18n.filterOptions.claimStakingReward, value: FilterValue.CLAIM },
+    { label: 'Swap', value: FilterValue.SWAP },
     // { labe t('Crowdloan transaction', value: FilterValue.CROWDLOAN }, // support crowdloan later
     { label: i18n.filterOptions.successful, value: FilterValue.SUCCESSFUL },
     { label: i18n.filterOptions.failed, value: FilterValue.FAILED },
@@ -381,6 +394,7 @@ function History({
       [ExtrinsicType.UNSTAKE_QDOT]: i18n.historyScreen.title.unstakeQDOTTransaction,
       [ExtrinsicType.TOKEN_APPROVE]: i18n.historyScreen.title.tokenApproveTransaction,
       [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.title.evmTransaction,
+      [ExtrinsicType.SWAP]: 'Swap transaction',
     }),
     [],
   );
