@@ -17,7 +17,7 @@ import {
   _isChainEvmCompatible,
   _parseAssetRefKey,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { Alert, AppState, Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Alert, AppState, Keyboard, Platform, ScrollView, TouchableOpacity, View } from 'react-native';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { SwapToField } from 'components/Swap/SwapToField';
 import BigN from 'bignumber.js';
@@ -90,7 +90,16 @@ function getTokenSelectorItem(tokenSlugs: string[], assetRegistryMap: Record<str
   tokenSlugs.forEach(slug => {
     const asset = assetRegistryMap[slug];
 
-    if (asset && asset.originChain !== 'hydradx_main') {
+    if (Platform.OS === 'android') {
+      if (asset && asset.originChain !== 'hydradx_main') {
+        result.push({
+          originChain: asset.originChain,
+          slug,
+          symbol: asset.symbol,
+          name: asset.name,
+        });
+      }
+    } else {
       result.push({
         originChain: asset.originChain,
         slug,

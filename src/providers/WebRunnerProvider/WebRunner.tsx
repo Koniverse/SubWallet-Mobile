@@ -296,7 +296,9 @@ const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=
 
 const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
 const osWebRunnerURL =
-  Platform.OS === 'android' ? 'file:///android_asset/Web.bundle/site' : `http://localhost:${WEB_SERVER_PORT}/site`;
+  Platform.OS === 'android'
+    ? 'file:///android_asset/Web.bundle/androidSite'
+    : `http://localhost:${WEB_SERVER_PORT}/site`;
 const BASE_URI = !devWebRunnerURL || devWebRunnerURL === '' ? osWebRunnerURL : devWebRunnerURL;
 
 const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlAction): WebRunnerGlobalState => {

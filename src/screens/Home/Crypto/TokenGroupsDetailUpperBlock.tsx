@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { CaretLeft } from 'phosphor-react-native';
@@ -71,7 +71,7 @@ export const TokenGroupsDetailUpperBlock = ({
       .map(tokenSlug => assetRegistryMap[tokenSlug])
       .filter(item => {
         if (item.originChain === 'hydradx_main') {
-          return false;
+          return Platform.OS === 'ios';
         }
         const chainInfo = chainInfoMap[item.originChain];
         if (isAllAccount) {
