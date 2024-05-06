@@ -70,6 +70,7 @@ export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
                 type={'secondary'}
                 onPress={() => {
                   onSetCurrentRemindBackupTimeout();
+                  mmkvStore.set('isOpenGeneralTermFirstTime', true);
                   setVisible(false);
                   setIsShowRemindBackupModal(true);
                 }}>
@@ -80,6 +81,7 @@ export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
                 style={{ flex: 1 }}
                 onPress={() => {
                   onSetCurrentRemindBackupTimeout();
+                  mmkvStore.set('isOpenGeneralTermFirstTime', true);
                   setVisible(false);
                   setIsShowRemindBackupModal(true);
                   onBackUpAccount();
