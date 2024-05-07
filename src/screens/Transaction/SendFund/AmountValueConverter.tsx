@@ -44,8 +44,7 @@ export const AmountValueConverter = ({ value, tokenSlug, style }: Props) => {
         intOpacity={1}
         unitOpacity={1}
         decimalOpacity={1}
-        prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-        suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+        prefix={currencyData?.symbol}
         size={theme.fontSizeLG}
         unitColor={theme.colorSuccess}
         textStyle={{ lineHeight: theme.fontSizeLG * theme.lineHeightLG, color: theme.colorSuccess }}

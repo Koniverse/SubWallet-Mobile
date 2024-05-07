@@ -3,7 +3,7 @@ import { SubScreenContainer } from 'components/SubScreenContainer';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { View } from 'react-native';
-import { sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import {
   CaretRight,
   GlobeHemisphereWest,
@@ -22,6 +22,7 @@ import { RootState } from 'stores/index';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { savePriceCurrency } from 'messaging/index';
 import { CurrencyType } from '@subwallet/extension-base/background/KoniTypes';
+import { staticData, StaticKey } from '@subwallet/extension-base/utils/staticData';
 
 type SelectionItemType = {
   key: string;
@@ -66,6 +67,7 @@ export const GeneralSettings = () => {
         }))
       : [];
   }, [exchangeRateMap, theme]);
+  console.log('currencyItems', currencyItems);
 
   const onSelectCurrency = useCallback((value: string) => {
     setCurrencyLoading(true);
@@ -75,6 +77,7 @@ export const GeneralSettings = () => {
     });
   }, []);
 
+  // @ts-ignore
   return (
     <SubScreenContainer navigation={navigation} title={i18n.header.generalSettings} onPressLeftBtn={onGoback}>
       <View style={containerStyle}>
@@ -122,6 +125,21 @@ export const GeneralSettings = () => {
         <View style={{ width: '100%', gap: theme.paddingXS }}>
           {currencyItems.map(item => (
             <SelectItem
+              wrapperStyle={{ backgroundColor: 'transparent' }}
+              leftItemIcon={
+                <View
+                  style={{
+                    backgroundColor: 'rgba(217, 217, 217, 0.1)',
+                    paddingVertical: theme.sizeXXS,
+                    borderRadius: theme.borderRadiusLG,
+                    width: 48,
+                    alignItems: 'center',
+                  }}>
+                  <Typography.Text style={{ color: theme['gray-6'], ...FontSemiBold }}>
+                    {staticData[StaticKey.CURRENCY_SYMBOL][item.key]?.symbol || ''}
+                  </Typography.Text>
+                </View>
+              }
               key={item.key}
               disabled={currencyLoading}
               isSelected={currency === item.key}

@@ -179,8 +179,7 @@ export const SwapQuoteDetailModal = ({
                         label={'Estimated fee'}
                         value={value}
                         decimals={0}
-                        prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-                        suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+                        prefix={currencyData?.symbol}
                         suffixNode={
                           <Icon
                             phosphorIcon={isViewFeeDetails ? CaretUp : CaretDown}

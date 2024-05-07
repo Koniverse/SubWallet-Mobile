@@ -61,8 +61,7 @@ export const TokenBalanceItem = ({
                   intOpacity={0.45}
                   unitOpacity={0.45}
                   decimalOpacity={0.45}
-                  prefix={(currency?.isPrefix && currency.symbol) || ''}
-                  suffix={(!currency?.isPrefix && currency?.symbol) || ''}
+                  prefix={currency?.symbol}
                   size={theme.fontSizeSM}
                   textStyle={{ ...FontMedium, lineHeight: theme.lineHeightSM * theme.fontSizeSM }}
                 />

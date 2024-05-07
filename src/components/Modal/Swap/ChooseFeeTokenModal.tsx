@@ -84,8 +84,7 @@ export const ChooseFeeTokenModal = ({
           <Number
             value={estimatedFee}
             decimal={0}
-            prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-            suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+            prefix={currencyData?.symbol}
             size={38}
             textStyle={{ ...FontSemiBold, lineHeight: 38 }}
             subFloatNumber

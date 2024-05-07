@@ -84,8 +84,7 @@ export const SwapLayout = ({ data }: Props) => {
       <MetaInfo.Number
         decimals={0}
         label={'Estimated transaction fee'}
-        prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-        suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+        prefix={currencyData?.symbol}
         value={estimatedFeeValue}
       />
       <AlertBox

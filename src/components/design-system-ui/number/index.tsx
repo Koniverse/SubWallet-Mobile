@@ -12,8 +12,8 @@ export interface SwNumberProps {
   size?: number;
   textStyle?: TextStyle;
   subFloatNumber?: boolean;
-  prefix?: string;
-  suffix?: string;
+  prefix?: React.ReactNode;
+  suffix?: React.ReactNode;
   formatType?: 'default' | 'balance' | 'custom';
   customFormatter?: NumberFormatter;
   metadata?: Record<string, number>;

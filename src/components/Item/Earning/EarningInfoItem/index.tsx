@@ -122,8 +122,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
               <Number
                 value={convertedBalanceValue}
                 decimal={0}
-                prefix={(currency?.isPrefix && currency.symbol) || ''}
-                suffix={(!currency?.isPrefix && currency?.symbol) || ''}
+                prefix={currency?.symbol}
                 size={theme.fontSizeSM}
                 intOpacity={0.45}
                 decimalOpacity={0.45}

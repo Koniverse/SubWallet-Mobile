@@ -516,8 +516,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           <MetaInfo.Number
             decimals={0}
             label={i18n.inputLabel.estimatedFee}
-            prefix={(currencyData?.isPrefix && currencyData.symbol) || ''}
-            suffix={(!currencyData?.isPrefix && currencyData?.symbol) || ''}
+            prefix={currencyData?.symbol}
             value={estimatedFee}
           />
         )}
@@ -530,8 +529,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     inputAsset,
     chain,
     chainInfoMap,
-    currencyData?.isPrefix,
-    currencyData.symbol,
+    currencyData?.symbol,
     estimatedFee,
     getTargetedPool,
     chainAsset,
@@ -1131,8 +1129,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       decimal={0}
                       decimalColor={theme.colorTextLight4}
                       intColor={theme.colorTextLight4}
-                      prefix={(currencyData?.isPrefix && currencyData.symbol) || ''}
-                      suffix={(!currencyData?.isPrefix && currencyData?.symbol) || ''}
+                      prefix={currencyData?.symbol}
                       unitColor={theme.colorTextLight4}
                       value={transformAmount}
                       style={{ marginBottom: theme.marginSM }}

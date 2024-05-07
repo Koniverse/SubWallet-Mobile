@@ -108,8 +108,7 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
           valueColorSchema={'light'}
           decimals={0}
           label={'Estimated transaction fee'}
-          prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-          suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+          prefix={currencyData?.symbol}
           value={estimatedFeeValue}
         />
         <MetaInfo.Default label={'Swap route'} />

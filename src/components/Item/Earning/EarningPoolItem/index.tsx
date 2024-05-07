@@ -118,8 +118,7 @@ const EarningPoolItem = (props: Props) => {
               <Number
                 value={total}
                 decimal={0}
-                prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+                prefix={currencyData?.symbol}
                 intColor={theme.colorSecondary}
                 decimalColor={theme.colorSecondary}
                 unitColor={theme.colorSecondary}

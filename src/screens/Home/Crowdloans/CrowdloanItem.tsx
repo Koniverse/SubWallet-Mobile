@@ -121,8 +121,7 @@ export const CrowdloanItem = ({ item, isShowBalance, currencyData }: Props) => {
               <Number
                 value={item.contribution.convertedValue}
                 decimal={0}
-                prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+                prefix={currencyData?.symbol}
                 unitColor={styleSheet.subText.color}
                 intColor={styleSheet.subText.color}
                 decimalColor={styleSheet.subText.color}

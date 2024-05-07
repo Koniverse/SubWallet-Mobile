@@ -423,15 +423,13 @@ export const Swap = ({
       NETWORK_FEE: {
         label: 'Network fee',
         value: new BigN(0),
-        prefix: `${(currencyData.isPrefix && currencyData.symbol) || ''}`,
-        suffix: `${(!currencyData.isPrefix && currencyData.symbol) || ''}`,
+        prefix: `${currencyData.symbol}`,
         type: SwapFeeType.NETWORK_FEE,
       },
       PLATFORM_FEE: {
         label: 'Protocol fee',
         value: new BigN(0),
-        prefix: `${(currencyData.isPrefix && currencyData.symbol) || ''}`,
-        suffix: `${(!currencyData.isPrefix && currencyData.symbol) || ''}`,
+        prefix: `${currencyData.symbol}`,
         type: SwapFeeType.PLATFORM_FEE,
       },
       WALLET_FEE: { label: 'Wallet commission', value: new BigN(0), suffix: '%', type: SwapFeeType.WALLET_FEE },
@@ -446,7 +444,7 @@ export const Swap = ({
     result.push(feeTypeMap.NETWORK_FEE, feeTypeMap.PLATFORM_FEE);
 
     return result;
-  }, [currencyData.isPrefix, currencyData.symbol, currentQuote?.feeInfo.feeComponent, getConvertedBalance]);
+  }, [currencyData.symbol, currentQuote?.feeInfo.feeComponent, getConvertedBalance]);
 
   const canShowAvailableBalance = useMemo(() => {
     if (fromValue && chainValue && chainInfoMap[chainValue]) {
@@ -1344,8 +1342,7 @@ export const Swap = ({
                               <Number
                                 size={theme.fontSize}
                                 decimal={0}
-                                prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-                                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+                                prefix={currencyData?.symbol}
                                 value={estimatedFeeValue}
                               />
                             )}

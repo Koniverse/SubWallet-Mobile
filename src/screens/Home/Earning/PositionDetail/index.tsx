@@ -221,8 +221,7 @@ const Component: React.FC<Props> = (props: Props) => {
               <Number
                 value={convertActiveStake}
                 decimal={0}
-                prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+                prefix={currencyData?.symbol}
                 textStyle={styles.activeTokenValue}
               />
             </>
