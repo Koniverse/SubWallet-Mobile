@@ -21,7 +21,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { savePriceCurrency } from 'messaging/index';
-import { CurrencyType } from '@subwallet/extension-base/background/KoniTypes';
+import { CurrencyJson, CurrencyType } from '@subwallet/extension-base/background/KoniTypes';
 import { staticData, StaticKey } from '@subwallet/extension-base/utils/staticData';
 
 type SelectionItemType = {
@@ -38,7 +38,7 @@ export const GeneralSettings = () => {
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
   const navigation = useNavigation<RootNavigationProps>();
-  const { currency, exchangeRateMap } = useSelector((state: RootState) => state.price);
+  const { currency } = useSelector((state: RootState) => state.price);
   const [iShowCurrencyModal, setIsShowCurrencyModal] = useState<boolean>(false);
   const [currencyLoading, setCurrencyLoading] = useState<boolean>(false);
   const modalRef = useRef<SWModalRefProps>(null);
@@ -56,18 +56,21 @@ export const GeneralSettings = () => {
     navigation.goBack();
   };
 
+  const staticDataCurrencySymbol = useMemo<Record<string, CurrencyJson> | undefined>(() => {
+    return staticData[StaticKey.CURRENCY_SYMBOL] as Record<string, CurrencyJson>;
+  }, []);
+
   const currencyItems = useMemo<SelectionItemType[]>(() => {
-    return exchangeRateMap
-      ? Object.keys(exchangeRateMap).map(item => ({
+    return staticDataCurrencySymbol
+      ? Object.keys(staticDataCurrencySymbol).map(item => ({
           key: item,
           leftIcon: Coins,
           leftIconBgColor: theme['yellow-5'],
-          title: exchangeRateMap[item].label,
-          subTitle: item,
+          title: `${item} - ${staticDataCurrencySymbol[item].label}`,
+          subTitle: staticDataCurrencySymbol[item].symbol,
         }))
       : [];
-  }, [exchangeRateMap, theme]);
-  console.log('currencyItems', currencyItems);
+  }, [staticDataCurrencySymbol, theme]);
 
   const onSelectCurrency = useCallback((value: string) => {
     setCurrencyLoading(true);
@@ -135,9 +138,7 @@ export const GeneralSettings = () => {
                     width: 48,
                     alignItems: 'center',
                   }}>
-                  <Typography.Text style={{ color: theme['gray-6'], ...FontSemiBold }}>
-                    {staticData[StaticKey.CURRENCY_SYMBOL][item.key]?.symbol || ''}
-                  </Typography.Text>
+                  <Typography.Text style={{ color: theme['gray-6'], ...FontSemiBold }}>{item.subTitle}</Typography.Text>
                 </View>
               }
               key={item.key}
