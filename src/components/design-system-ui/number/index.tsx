@@ -5,8 +5,6 @@ import type { BigNumber } from 'bignumber.js';
 import React, { useMemo } from 'react';
 import { TextStyle, View, ViewStyle } from 'react-native';
 import { Typography } from '..';
-import { FontSemiBold } from 'styles/sharedStyles';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 export interface SwNumberProps {
   value: string | number | BigNumber;
@@ -15,6 +13,8 @@ export interface SwNumberProps {
   textStyle?: TextStyle;
   subFloatNumber?: boolean;
   subFloatUnit?: boolean;
+  subFloatUnitStyle?: TextStyle;
+  subFloatUnitFontSize?: number;
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
   formatType?: 'default' | 'balance' | 'custom';
@@ -73,6 +73,8 @@ const Number: React.FC<SwNumberProps> = props => {
     suffix,
     subFloatNumber,
     subFloatUnit,
+    subFloatUnitStyle,
+    subFloatUnitFontSize,
     value,
     intColor = '#fff',
     intOpacity = 1,
@@ -83,7 +85,6 @@ const Number: React.FC<SwNumberProps> = props => {
     textStyle = {},
     style,
   } = props;
-  const theme = useSubWalletTheme().swThemes;
 
   const intStyle = useMemo(
     (): TextStyle => ({
@@ -150,14 +151,9 @@ const Number: React.FC<SwNumberProps> = props => {
             {
               ...unitStyle,
               ...textStyle,
-              fontSize: subFloatUnit ? theme.fontSize : integerFontSize,
+              fontSize: subFloatUnit ? subFloatUnitFontSize : integerFontSize,
             },
-            subFloatUnit && {
-              lineHeight: theme.fontSize,
-              height: integerFontSize + 2,
-              paddingRight: theme.paddingXXS,
-              ...FontSemiBold,
-            },
+            subFloatUnit && subFloatUnitStyle,
           ]}>
           {prefix}
         </Typography.Text>

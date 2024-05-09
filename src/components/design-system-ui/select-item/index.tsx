@@ -23,6 +23,7 @@ export interface SelectItemProps {
   disabled?: boolean;
   rightItem?: React.ReactNode;
   wrapperStyle?: ViewStyle;
+  wrapperDisableStyle?: ViewStyle;
   textStyle?: TextStyle;
 }
 
@@ -42,6 +43,7 @@ const SelectItem = (props: SelectItemProps) => {
     textColor,
     iconWeight = 'fill',
     wrapperStyle,
+    wrapperDisableStyle,
     textStyle,
   } = props;
   const theme = useSubWalletTheme().swThemes;
@@ -49,7 +51,11 @@ const SelectItem = (props: SelectItemProps) => {
 
   return (
     <TouchableOpacity
-      style={[styles.wrapper, wrapperStyle, disabled && styles.wrapperDisable]}
+      style={[
+        styles.wrapper,
+        wrapperStyle,
+        disabled ? (!!wrapperDisableStyle ? wrapperDisableStyle : styles.wrapperDisable) : {},
+      ]}
       onPress={onPress}
       disabled={disabled}
       activeOpacity={disabled ? theme.opacityDisable : theme.opacityPress}>
@@ -68,7 +74,17 @@ const SelectItem = (props: SelectItemProps) => {
       )}
       <Text
         numberOfLines={1}
-        style={[styles.text, textStyle, { color: !disabled ? textColor || '#FFF' : 'rgba(255, 255, 255, 0.3)' }]}>
+        style={[
+          styles.text,
+          textStyle,
+          {
+            color: !disabled
+              ? textColor || '#FFF'
+              : !!wrapperDisableStyle
+              ? textColor || '#FFF'
+              : 'rgba(255, 255, 255, 0.3)',
+          },
+        ]}>
         {label}
       </Text>
       {(rightIcon || rightItem || showUnselect || isSelected) && (

@@ -32,6 +32,13 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subF
           prefix={startWithSymbol ? symbol : undefined}
           size={38}
           subFloatUnit={true}
+          subFloatUnitFontSize={theme.fontSizeXL}
+          subFloatUnitStyle={{
+            lineHeight: theme.fontSizeXL,
+            height: 40,
+            paddingRight: theme.paddingXXS,
+            ...FontSemiBold,
+          }}
           textStyle={{ ...FontSemiBold, lineHeight: 38 }}
           subFloatNumber={subFloatNumber}
           decimalOpacity={0.45}

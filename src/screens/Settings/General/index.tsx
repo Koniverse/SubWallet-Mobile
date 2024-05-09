@@ -167,6 +167,7 @@ export const GeneralSettings = () => {
               leftItemIcon={getSymbolIcon(item)}
               key={item.key}
               disabled={currencyLoading}
+              wrapperDisableStyle={{ opacity: 1 }}
               isSelected={currency === item.key}
               label={item.title}
               onPress={() => onSelectCurrency(item.key)}
