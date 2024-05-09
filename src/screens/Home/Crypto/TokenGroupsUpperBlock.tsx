@@ -86,7 +86,7 @@ export const TokenGroupsUpperBlock = ({
               }}
               decimal={0}
               value={totalChangeValue}
-              prefix={isPriceDecrease ? '- $' : '+ $'}
+              prefix={isPriceDecrease ? `- ${currencyData.symbol}` : `+ ${currencyData.symbol}`}
             />
           )}
 

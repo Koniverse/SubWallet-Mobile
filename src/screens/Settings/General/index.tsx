@@ -3,19 +3,18 @@ import { SubScreenContainer } from 'components/SubScreenContainer';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { View } from 'react-native';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { sharedStyles } from 'styles/sharedStyles';
 import {
   CaretRight,
   GlobeHemisphereWest,
   Image,
   BellSimpleRinging,
   CurrencyCircleDollar,
-  Coins,
   IconProps,
 } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Icon, SelectItem, SwModal, Typography } from 'components/design-system-ui';
+import { Icon, SelectItem, SwModal, Typography, Image as SwImage } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -23,10 +22,12 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { savePriceCurrency } from 'messaging/index';
 import { CurrencyJson, CurrencyType } from '@subwallet/extension-base/background/KoniTypes';
 import { staticData, StaticKey } from '@subwallet/extension-base/utils/staticData';
+import { getCurrencySymbol } from 'utils/currency';
+import { ImageLogosMap } from 'assets/logo';
 
 type SelectionItemType = {
   key: string;
-  leftIcon: React.ElementType<IconProps>;
+  leftIcon: React.ElementType<IconProps> | string;
   leftIconBgColor: string;
   title: string;
   subTitle?: string;
@@ -64,8 +65,8 @@ export const GeneralSettings = () => {
     return staticDataCurrencySymbol
       ? Object.keys(staticDataCurrencySymbol).map(item => ({
           key: item,
-          leftIcon: Coins,
-          leftIconBgColor: theme['yellow-5'],
+          leftIcon: getCurrencySymbol(item).icon,
+          leftIconBgColor: theme.colorBgBorder,
           title: `${item} - ${staticDataCurrencySymbol[item].label}`,
           subTitle: staticDataCurrencySymbol[item].symbol,
         }))
@@ -79,6 +80,40 @@ export const GeneralSettings = () => {
       setIsShowCurrencyModal(false);
     });
   }, []);
+
+  const getSymbolIcon = useCallback(
+    (item: SelectionItemType) => {
+      const getURLSymbol = (() => {
+        if (typeof item.leftIcon === 'string') {
+          return `currency_${item.leftIcon.toLowerCase()}`;
+        }
+
+        return undefined;
+      })();
+
+      // @ts-ignore
+      const logoSrc = getURLSymbol ? ImageLogosMap[getURLSymbol] : undefined;
+
+      return (
+        <View
+          style={{
+            backgroundColor: 'rgba(217, 217, 217, 0.1)',
+            borderRadius: theme.borderRadiusLG,
+            width: 28,
+            height: 28,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          {typeof item.leftIcon === 'string' ? (
+            <SwImage src={logoSrc} style={{ width: 20, height: 20 }} />
+          ) : (
+            <Icon phosphorIcon={item.leftIcon} size={'sm'} weight={'fill'} />
+          )}
+        </View>
+      );
+    },
+    [theme.borderRadiusLG],
+  );
 
   // @ts-ignore
   return (
@@ -129,18 +164,7 @@ export const GeneralSettings = () => {
           {currencyItems.map(item => (
             <SelectItem
               wrapperStyle={{ backgroundColor: 'transparent' }}
-              leftItemIcon={
-                <View
-                  style={{
-                    backgroundColor: 'rgba(217, 217, 217, 0.1)',
-                    paddingVertical: theme.sizeXXS,
-                    borderRadius: theme.borderRadiusLG,
-                    width: 48,
-                    alignItems: 'center',
-                  }}>
-                  <Typography.Text style={{ color: theme['gray-6'], ...FontSemiBold }}>{item.subTitle}</Typography.Text>
-                </View>
-              }
+              leftItemIcon={getSymbolIcon(item)}
               key={item.key}
               disabled={currencyLoading}
               isSelected={currency === item.key}

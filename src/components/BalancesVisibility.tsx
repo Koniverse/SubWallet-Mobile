@@ -31,6 +31,7 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subF
           decimal={0}
           prefix={startWithSymbol ? symbol : undefined}
           size={38}
+          subFloatUnit={true}
           textStyle={{ ...FontSemiBold, lineHeight: 38 }}
           subFloatNumber={subFloatNumber}
           decimalOpacity={0.45}
