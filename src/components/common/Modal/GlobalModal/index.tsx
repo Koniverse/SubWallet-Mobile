@@ -94,9 +94,7 @@ const GlobalModal: React.FC<Props> = ({
         footer={
           externalButtons ? externalButtons : <OnlineButtonGroups buttons={buttons} onPressButton={_onPressButton} />
         }>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={{ width: '100%', paddingTop: 10, maxHeight: deviceHeight * 0.6 }}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ width: '100%', maxHeight: deviceHeight * 0.6 }}>
           <ContentGenerator content={message} />
         </ScrollView>
       </SwModal>

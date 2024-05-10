@@ -9,6 +9,7 @@ import {
 import { updateAppPopupData, updatePopupHistoryData } from 'stores/base/StaticContent';
 import { useDispatch } from 'react-redux';
 import { YieldPositionInfo } from '@subwallet/extension-base/types';
+import { Platform } from 'react-native';
 
 export const useHandleAppPopupMap = (
   appPopupData: AppPopupData[],
@@ -25,7 +26,11 @@ export const useHandleAppPopupMap = (
       const activeList = data.filter(({ info }) => checkPopupExistTime(info));
       const filteredData = activeList
         .filter(({ info }) => {
-          return info.platforms.includes('mobile');
+          if (info.os) {
+            return info.platforms.includes('mobile') && info.os.toLowerCase() === Platform.OS;
+          } else {
+            return info.platforms.includes('mobile');
+          }
         })
         .sort((a, b) => a.priority - b.priority);
 

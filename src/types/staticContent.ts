@@ -14,6 +14,7 @@ export interface AppBasicInfoData {
   start_time: string;
   stop_time: string;
   platforms: string[];
+  os: 'android' | 'ios';
 }
 
 export interface AppContentButtonInstruction {
