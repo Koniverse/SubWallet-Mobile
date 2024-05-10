@@ -93,11 +93,10 @@ export const PositionList = ({ setStep, loading }: Props) => {
   const [isRefresh, refresh] = useRefresh();
   const data = useGroupYieldPosition();
   const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('earning');
-
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { isShowBalance } = useSelector((state: RootState) => state.settings);
-  const { priceMap } = useSelector((state: RootState) => state.price);
+  const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const { assetRegistry: assetInfoMap } = useSelector((state: RootState) => state.assetRegistry);
-  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -111,14 +110,13 @@ export const PositionList = ({ setStep, loading }: Props) => {
     return data
       .map((item): ExtraYieldPositionInfo => {
         const priceToken = assetInfoMap[item.balanceToken];
-        const chainInfo = chainInfoMap[item.chain];
         const price = priceMap[priceToken?.priceId || ''] || 0;
 
         return {
           ...item,
-          chainInfo,
           asset: priceToken,
           price,
+          currency: currencyData,
         };
       })
       .sort((firstItem, secondItem) => {
@@ -130,7 +128,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
         };
         return getValue(secondItem) - getValue(firstItem);
       });
-  }, [assetInfoMap, chainInfoMap, data, priceMap]);
+  }, [assetInfoMap, currencyData, data, priceMap]);
 
   const handleOnPress = useCallback(
     (positionInfo: ExtraYieldPositionInfo): (() => void) => {
@@ -209,14 +207,18 @@ export const PositionList = ({ setStep, loading }: Props) => {
     };
   }, [handlePressStartStaking]);
 
-  const searchFunction = useCallback((_items: ExtraYieldPositionInfo[], searchString: string) => {
-    return _items.filter(({ chain: _chain, asset, chainInfo }) => {
-      return (
-        chainInfo?.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase()) ||
-        asset?.symbol.toLowerCase().includes(searchString.toLowerCase())
-      );
-    });
-  }, []);
+  const searchFunction = useCallback(
+    (_items: ExtraYieldPositionInfo[], searchString: string) => {
+      return _items.filter(({ chain: _chain, asset }) => {
+        const chainInfo = chainInfoMap[_chain];
+        return (
+          chainInfo?.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase()) ||
+          asset?.symbol.toLowerCase().includes(searchString.toLowerCase())
+        );
+      });
+    },
+    [chainInfoMap],
+  );
 
   useEffect(() => {
     const address = currentAccount?.address || '';

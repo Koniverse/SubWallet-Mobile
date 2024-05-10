@@ -21,9 +21,10 @@ interface Props {
 }
 
 const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
-  const { balanceToken, type, slug, group, asset, totalStake, price, chain, chainInfo } = positionInfo;
+  const { balanceToken, type, slug, group, asset, totalStake, price, chain, currency } = positionInfo;
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
   const poolInfo = poolInfoMap[slug];
@@ -77,6 +78,10 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
     );
   };
 
+  const isTestnet = useMemo(() => {
+    return chainInfoMap[positionInfo.chain].isTestnet;
+  }, [chainInfoMap, positionInfo.chain]);
+
   return (
     <TouchableOpacity style={styleSheet.infoContainer} activeOpacity={0.5} onPress={onPress(positionInfo)}>
       {getTokenLogo(balanceToken, showSubLogo ? poolInfo?.metadata?.logo || poolInfo?.chain : undefined, 40)}
@@ -109,7 +114,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
         <View style={styleSheet.balanceInfoRow}>
           <View style={{ flexDirection: 'row', gap: theme.paddingXXS, flex: 1 }}>
             <EarningTypeTag type={type} chain={chain} />
-            {chainInfo.isTestnet && getTagItem(chainInfo.isTestnet)}
+            {isTestnet && getTagItem(isTestnet)}
           </View>
 
           {!isTempEarningCondition &&
@@ -117,7 +122,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
               <Number
                 value={convertedBalanceValue}
                 decimal={0}
-                prefix={'$'}
+                prefix={currency?.symbol}
                 size={theme.fontSizeSM}
                 intOpacity={0.45}
                 decimalOpacity={0.45}

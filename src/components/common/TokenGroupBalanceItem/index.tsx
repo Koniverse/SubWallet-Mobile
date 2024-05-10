@@ -13,6 +13,7 @@ interface Props extends TokenBalanceItemType, TouchableOpacityProps {
 }
 
 export const TokenGroupBalanceItem = ({
+  currency,
   symbol,
   isTestnet,
   priceValue,
@@ -41,7 +42,7 @@ export const TokenGroupBalanceItem = ({
           <Number
             value={isTestnet ? 0 : priceValue}
             decimal={0}
-            prefix={'$'}
+            prefix={currency?.symbol}
             intColor={isTotalBalanceDecrease ? theme.colorError : theme.colorSuccess}
             decimalColor={isTotalBalanceDecrease ? theme.colorError : theme.colorSuccess}
             unitColor={isTotalBalanceDecrease ? theme.colorError : theme.colorSuccess}
@@ -67,7 +68,7 @@ export const TokenGroupBalanceItem = ({
                   intOpacity={0.45}
                   unitOpacity={0.45}
                   decimalOpacity={0.45}
-                  prefix={'$'}
+                  prefix={currency?.symbol}
                   size={theme.fontSizeSM}
                   textStyle={{ ...FontMedium, lineHeight: theme.lineHeightSM * theme.fontSizeSM }}
                 />

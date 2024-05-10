@@ -1,4 +1,4 @@
-import { TouchableOpacity, View } from 'react-native';
+import { TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { CheckCircle, IconProps, IconWeight } from 'phosphor-react-native';
 import Text from 'components/Text';
 import React, { useMemo } from 'react';
@@ -22,6 +22,9 @@ export interface SelectItemProps {
   showUnselect?: boolean;
   disabled?: boolean;
   rightItem?: React.ReactNode;
+  wrapperStyle?: ViewStyle;
+  wrapperDisableStyle?: ViewStyle;
+  textStyle?: TextStyle;
 }
 
 const SelectItem = (props: SelectItemProps) => {
@@ -39,13 +42,20 @@ const SelectItem = (props: SelectItemProps) => {
     rightIcon,
     textColor,
     iconWeight = 'fill',
+    wrapperStyle,
+    wrapperDisableStyle,
+    textStyle,
   } = props;
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
 
   return (
     <TouchableOpacity
-      style={[styles.wrapper, disabled && styles.wrapperDisable]}
+      style={[
+        styles.wrapper,
+        wrapperStyle,
+        disabled ? (!!wrapperDisableStyle ? wrapperDisableStyle : styles.wrapperDisable) : {},
+      ]}
       onPress={onPress}
       disabled={disabled}
       activeOpacity={disabled ? theme.opacityDisable : theme.opacityPress}>
@@ -64,7 +74,17 @@ const SelectItem = (props: SelectItemProps) => {
       )}
       <Text
         numberOfLines={1}
-        style={[styles.text, { color: !disabled ? textColor || '#FFF' : 'rgba(255, 255, 255, 0.3)' }]}>
+        style={[
+          styles.text,
+          textStyle,
+          {
+            color: !disabled
+              ? textColor || '#FFF'
+              : !!wrapperDisableStyle
+              ? textColor || '#FFF'
+              : 'rgba(255, 255, 255, 0.3)',
+          },
+        ]}>
         {label}
       </Text>
       {(rightIcon || rightItem || showUnselect || isSelected) && (

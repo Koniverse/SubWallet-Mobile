@@ -45,6 +45,7 @@ export const TokenGroupsDetailUpperBlock = ({
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
+  const { currencyData } = useSelector((state: RootState) => state.price);
   const { currentAccount, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { assetRegistry: assetRegistryMap } = useSelector((state: RootState) => state.assetRegistry);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
@@ -151,7 +152,7 @@ export const TokenGroupsDetailUpperBlock = ({
         </View>
       </View>
 
-      <BalancesVisibility value={balanceValue} startWithSymbol subFloatNumber />
+      <BalancesVisibility value={balanceValue} symbol={currencyData.symbol} subFloatNumber />
 
       <View style={[_style.actionButtonWrapper]} pointerEvents="box-none">
         <ActionButton
