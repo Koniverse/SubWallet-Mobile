@@ -70,8 +70,8 @@ export const TokenGroupsDetailUpperBlock = ({
     return Object.keys(swapTokenMap)
       .map(tokenSlug => assetRegistryMap[tokenSlug])
       .filter(item => {
-        if (item.originChain === 'hydradx_main') {
-          return Platform.OS === 'ios';
+        if (item.originChain === 'hydradx_main' && Platform.OS === 'android') {
+          return false;
         }
         const chainInfo = chainInfoMap[item.originChain];
         if (isAllAccount) {
@@ -89,6 +89,8 @@ export const TokenGroupsDetailUpperBlock = ({
         }
       });
   }, [accounts, assetRegistryMap, chainInfoMap, currentAccount, isAllAccount, swapTokenMap, tokenGroupSlug]);
+
+  console.log('swapInfos', swapInfos);
 
   const buyInfos = useMemo(() => {
     const groupSlug = tokenGroupSlug || '';
