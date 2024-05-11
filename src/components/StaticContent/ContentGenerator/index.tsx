@@ -26,9 +26,9 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
           fontFamily: 'PlusJakartaSans-Medium',
         },
         link: { color: theme.colorPrimary },
-        heading4: { paddingBottom: 8, color: theme.colorWhite },
-        heading5: { paddingBottom: 8, color: theme.colorWhite },
-        heading6: { paddingBottom: 8, color: theme.colorWhite },
+        heading4: { color: theme.colorWhite },
+        heading5: { color: theme.colorWhite },
+        heading6: { color: theme.colorWhite },
         hr: {
           backgroundColor: '#FFF',
           height: 1,
@@ -45,7 +45,7 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
           marginBottom: 4,
         },
         blockquote: {
-          backgroundColor: theme['gray-2'],
+          backgroundColor: theme.colorBgSecondary,
           borderColor: 'transparent',
           borderLeftWidth: 0,
           marginLeft: 0,
