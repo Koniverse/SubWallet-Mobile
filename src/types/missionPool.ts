@@ -12,7 +12,7 @@ export type MissionInfo = {
   start_time: string | null;
   end_time: string | null;
   url: string;
-  twitter_url: string;
+  twitter_url: string | null;
   reward: string | null;
   total_winner: string | null;
   total_supply: string | null;

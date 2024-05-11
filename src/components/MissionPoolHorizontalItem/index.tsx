@@ -22,7 +22,6 @@ export enum TagStatusType {
   UPCOMING = 'upcoming',
   ARCHIVED = 'archived',
   LIVE = 'live',
-  CLAIMABLE = 'claimable',
 }
 
 export type TagInfo = {
