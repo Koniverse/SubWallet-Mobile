@@ -30,8 +30,10 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
         heading5: { color: theme.colorWhite },
         heading6: { color: theme.colorWhite },
         hr: {
-          backgroundColor: '#FFF',
-          height: 1,
+          backgroundColor: theme.colorBgBorder,
+          height: 2,
+          // marginHorizontal: 12,
+          marginVertical: 4,
         },
         fence: {
           borderColor: theme.colorBgSecondary,
