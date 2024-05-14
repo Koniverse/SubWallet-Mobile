@@ -32,12 +32,14 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
   const [isRefresh] = useRefresh();
 
   const computedMission = useMemo(() => {
-    return missions.map(item => {
-      return {
-        ...item,
-        status: computeStatus(item),
-      };
-    });
+    return !!(missions && missions.length)
+      ? missions.map(item => {
+          return {
+            ...item,
+            status: computeStatus(item),
+          };
+        })
+      : [];
   }, [missions]);
 
   const listByCategory = useMemo(() => {
@@ -46,7 +48,7 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
     }
 
     if (route.name === 'all') {
-      return missions;
+      return computedMission;
     }
 
     return computedMission.filter(item => {
@@ -55,7 +57,7 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
       }
       return false;
     });
-  }, [computedMission, missions, route.name]);
+  }, [computedMission, route.name]);
 
   const searchFunction = (items: MissionInfo[], _searchString: string) => {
     return items.filter(({ name }) => {

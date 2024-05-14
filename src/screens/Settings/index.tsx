@@ -75,12 +75,15 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
   const { lock } = useAppLock();
   const { missions } = useSelector((state: RootState) => state.missionPool);
   const activeMissionPoolNumb = useMemo(() => {
-    const computedMission = missions.map(item => {
-      return {
-        ...item,
-        status: computeStatus(item),
-      };
-    });
+    const computedMission =
+      missions && missions.length
+        ? missions.map(item => {
+            return {
+              ...item,
+              status: computeStatus(item),
+            };
+          })
+        : [];
 
     return computedMission.filter(item => item.status === MissionCategoryType.LIVE).length;
   }, [missions]);
