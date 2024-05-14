@@ -1,5 +1,14 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
-import { BackHandler, DeviceEventEmitter, Platform, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
+import {
+  AppState,
+  BackHandler,
+  DeviceEventEmitter,
+  Platform,
+  StyleProp,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import Typography from '../typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -93,6 +102,18 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
     const [contentHeight, setContentHeight] = useState<number>(0);
     const [childrenHeight, setChildrenHeight] = useState<number>(contentHeight);
     const insets = useSafeAreaInsets();
+
+    useEffect(() => {
+      const unsubscribe = AppState.addEventListener('change', state => {
+        if (state === 'background') {
+          setVisible(false);
+        }
+      });
+
+      return () => {
+        unsubscribe.remove();
+      };
+    }, [setVisible]);
 
     useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
