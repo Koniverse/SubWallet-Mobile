@@ -2,22 +2,20 @@ import React, { useMemo, useRef } from 'react';
 import { Linking, Share, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import reformatAddress, { getNetworkLogo, getScanExplorerAddressInfoUrl, toShort } from 'utils/index';
+import reformatAddress, { getNetworkLogo, toShort } from 'utils/index';
 import { CopySimple, GlobeHemisphereWest, Share as ShareIcon } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
-import {
-  _getBlockExplorerFromChain,
-  _getChainSubstrateAddressPrefix,
-} from '@subwallet/extension-base/services/chain-service/utils';
+import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 import { Button, Icon, QRCode, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
 
 interface Props {
   modalVisible: boolean;
@@ -64,21 +62,8 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalV
   }, [address, chainInfo]);
 
   const scanExplorerAddressUrl = useMemo(() => {
-    let route = '';
-    const blockExplorer = selectedNetwork && _getBlockExplorerFromChain(chainInfo);
-
-    if (blockExplorer && blockExplorer.includes('subscan.io')) {
-      route = 'account';
-    } else {
-      route = 'address';
-    }
-
-    if (blockExplorer) {
-      return `${blockExplorer}${route}/${formattedAddress}`;
-    } else {
-      return getScanExplorerAddressInfoUrl(selectedNetwork || '', formattedAddress);
-    }
-  }, [selectedNetwork, formattedAddress, chainInfo]);
+    return getExplorerLink(chainInfo, formattedAddress, 'account');
+  }, [formattedAddress, chainInfo]);
 
   const onShareImg = () => {
     if (!chainInfo?.slug) {
