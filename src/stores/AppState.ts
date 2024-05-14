@@ -4,6 +4,7 @@ import { AppStateSlice } from 'stores/types';
 const initialState: AppStateSlice = {
   isLocked: false,
   isDisplayConfirmation: true,
+  isDisplayMktCampaign: false,
 };
 
 const appStateSlice = createSlice({
@@ -16,8 +17,11 @@ const appStateSlice = createSlice({
     toggleConfirmationDisplayState(state) {
       state.isDisplayConfirmation = !state.isDisplayConfirmation;
     },
+    updateMktCampaignStatus(state, action: PayloadAction<boolean>) {
+      state.isDisplayMktCampaign = action.payload;
+    },
   },
 });
 
-export const { updateLockState } = appStateSlice.actions;
+export const { updateLockState, updateMktCampaignStatus } = appStateSlice.actions;
 export default appStateSlice.reducer;

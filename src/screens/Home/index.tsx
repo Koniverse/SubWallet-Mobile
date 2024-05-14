@@ -18,7 +18,7 @@ import { HomeStackParamList } from 'routes/home';
 import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
 import withPageWrapper from 'components/pageWrapper';
 import RequestCreateMasterPasswordModal from 'screens/MasterPassword/RequestCreateMasterPasswordModal';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -33,7 +33,10 @@ import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { mmkvStore } from 'utils/storage';
 import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import { TermAndCondition } from 'constants/termAndCondition';
+import { RemindBackupModal } from 'components/Modal/RemindBackupModal';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import { useIsFocused } from '@react-navigation/native';
+import { updateMktCampaignStatus } from 'stores/AppState';
 
 interface tabbarIconColor {
   color: string;
@@ -195,6 +198,11 @@ export enum AppNavigatorDeepLinkStatus {
 }
 
 let isShowCampaignModal = false;
+export const isShowRemindBackupModal = { current: false };
+
+export function setIsShowRemindBackupModal(value: boolean) {
+  isShowRemindBackupModal.current = value;
+}
 
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
@@ -205,9 +213,12 @@ export const Home = ({ navigation }: Props) => {
   const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
   const language = useSelector((state: RootState) => state.settings.language);
-  // const isFocused = useIsFocused();
   mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
-
+  const storedRemindBackupTimeout = mmkvStore.getNumber('storedRemindBackupTimeout');
+  const lastTimeLogin = mmkvStore.getNumber('lastTimeLogin');
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const isFocused = useIsFocused();
+  const dispatch = useDispatch();
   const needMigrate = useMemo(
     () =>
       !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
@@ -246,6 +257,17 @@ export const Home = ({ navigation }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!isLocked && lastTimeLogin && storedRemindBackupTimeout) {
+      if (Date.now() - lastTimeLogin > storedRemindBackupTimeout) {
+        setModalVisible(true);
+        dispatch(updateMktCampaignStatus(false));
+      } else {
+        dispatch(updateMktCampaignStatus(true));
+      }
+    }
+  }, [dispatch, isLocked, lastTimeLogin, storedRemindBackupTimeout]);
+
   const onPressAcceptBtn = () => {
     mmkvStore.set('isOpenGeneralTermFirstTime', true);
     setGeneralTermVisible(false);
@@ -271,6 +293,9 @@ export const Home = ({ navigation }: Props) => {
           onPressAcceptBtn={onPressAcceptBtn}
           disabledOnPressBackDrop={true}
         />
+      )}
+      {!isEmptyAccounts && !needMigrate && isFocused && (
+        <RemindBackupModal modalVisible={modalVisible} setVisible={setModalVisible} />
       )}
     </>
   );

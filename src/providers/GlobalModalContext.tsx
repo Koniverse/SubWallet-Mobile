@@ -1,6 +1,8 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import GlobalModal from 'components/common/Modal/GlobalModal';
 import { AppContentButton } from 'types/staticContent';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface GlobalModalContextProviderProps {
   children?: React.ReactElement;
@@ -25,10 +27,15 @@ export const GlobalModalContext = React.createContext({} as GlobalModalType);
 
 export const GlobalModalContextProvider = ({ children }: GlobalModalContextProviderProps) => {
   const [globalModal, setGlobalModal] = useState<GlobalModalInfo>({});
-  const isShowedPopupModalRef = useRef<boolean>(true);
+  const isDisplayMktCampaign = useSelector((state: RootState) => state.appState.isDisplayMktCampaign);
+  const isShowedPopupModalRef = useRef<boolean>(isDisplayMktCampaign);
+  useEffect(() => {
+    isShowedPopupModalRef.current = isDisplayMktCampaign;
+  }, [isDisplayMktCampaign]);
+
   const hideGlobalModal = useCallback(() => {
-    isShowedPopupModalRef.current = false;
     setGlobalModal(prevState => ({ ...prevState, visible: false }));
+    isShowedPopupModalRef.current = false;
     setTimeout(
       () =>
         setGlobalModal(prevState => ({
@@ -44,11 +51,11 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
 
   const modalVisible = useMemo(() => {
     if (globalModal?.type === 'popup') {
-      return isShowedPopupModalRef.current && !!globalModal.visible;
+      return isShowedPopupModalRef.current && !!globalModal.visible && !!isDisplayMktCampaign;
     } else {
       return !!globalModal.visible;
     }
-  }, [globalModal?.type, globalModal.visible]);
+  }, [globalModal?.type, globalModal.visible, isDisplayMktCampaign]);
 
   return (
     <GlobalModalContext.Provider value={{ setGlobalModal, hideGlobalModal }}>

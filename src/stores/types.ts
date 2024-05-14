@@ -66,6 +66,7 @@ export type AccountsSlice = {
 export type AppStateSlice = {
   isLocked: boolean;
   isDisplayConfirmation: boolean;
+  isDisplayMktCampaign: boolean;
 };
 
 export type AppVersionSlice = {
