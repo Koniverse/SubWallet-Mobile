@@ -49,9 +49,9 @@ import {
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
 import { getStaticContentByDevMode } from 'utils/storage';
-import { STATIC_DATA_DOMAIN } from 'constants/index';
 import { RootRouteProps } from 'routes/index';
 import { SwapPair } from '@subwallet/extension-base/types/swap';
+import { fetchStaticData } from 'utils/fetchStaticData';
 // Setup redux stores
 
 function voidFn() {
@@ -636,11 +636,7 @@ export const getMissionPoolData = (() => {
   const rs = {
     promise,
     start: () => {
-      (async () => {
-        const res = await fetch(`${STATIC_DATA_DOMAIN}/airdrop-campaigns/${dataByDevModeStatus}.json`);
-
-        return (await res.json()) as [];
-      })()
+      fetchStaticData<MissionInfo[]>('airdrop-campaigns', dataByDevModeStatus)
         .then(data => {
           handler.resolve?.(data);
         })

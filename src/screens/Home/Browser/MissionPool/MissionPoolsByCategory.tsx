@@ -16,7 +16,7 @@ import { MissionPoolsContext } from 'screens/Home/Browser/MissionPool/context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import { MissionPoolDetailModal } from 'screens/Home/Browser/MissionPool/MissionPoolDetailModal/MissionPoolDetailModal';
-import { useMissionPools } from 'hooks/useMissionPools';
+import { computeStatus } from 'utils/missionPools';
 
 const ITEM_HEIGHT = missionPoolItemHeight;
 const ITEM_SEPARATOR = missionPoolSeparator;
@@ -30,9 +30,18 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
   const styles = createStyle(theme);
   const { missions } = useSelector((state: RootState) => state.missionPool);
   const [isRefresh] = useRefresh();
-  const { getTagByTimeline } = useMissionPools();
+
+  const computedMission = useMemo(() => {
+    return missions.map(item => {
+      return {
+        ...item,
+        status: computeStatus(item),
+      };
+    });
+  }, [missions]);
+
   const listByCategory = useMemo(() => {
-    if (!missions || !missions.length) {
+    if (!computedMission || !computedMission.length) {
       return [];
     }
 
@@ -40,14 +49,13 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
       return missions;
     }
 
-    return missions.filter(item => {
-      const tag = getTagByTimeline(item);
-      if (tag.slug === route.name) {
+    return computedMission.filter(item => {
+      if (item.status === route.name) {
         return true;
       }
       return false;
     });
-  }, [getTagByTimeline, missions, route.name]);
+  }, [computedMission, missions, route.name]);
 
   const searchFunction = (items: MissionInfo[], _searchString: string) => {
     return items.filter(({ name }) => {

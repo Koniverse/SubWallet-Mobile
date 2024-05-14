@@ -16,10 +16,12 @@ export interface TextInfoItem extends Omit<InfoItemBase, 'valueColorSchema'> {
   valueFontWeight?: 'regular' | 'semibold';
   valueSize?: TextSizeProps;
   ellipsis?: boolean;
+  labelAlign?: 'center' | 'top';
 }
 
 const TextItem: React.FC<TextInfoItem> = ({
   label,
+  labelAlign = 'center',
   value,
   valueColorSchema,
   valueFontWeight,
@@ -42,7 +44,9 @@ const TextItem: React.FC<TextInfoItem> = ({
 
   return (
     <View style={_style.row}>
-      <View style={[_style.col]}>{renderColContent(label, { ..._style.label, ...labelGeneralStyle })}</View>
+      <View style={[_style.col, labelAlign === 'top' && _style['col.v-align-top']]}>
+        {renderColContent(label, { ..._style.label, ...labelGeneralStyle })}
+      </View>
       <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
         {loading ? (
           <ActivityIndicator size={20} />

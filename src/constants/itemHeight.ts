@@ -10,5 +10,5 @@ export const browserHomeItemIconOnly = 44;
 export const browserHomeItemSectionWidth = DEVICE.width * 0.78;
 export const browserListItemHeight = 44;
 export const browserListSeparator = 16;
-export const missionPoolItemHeight = 441;
+export const missionPoolItemHeight = 128;
 export const missionPoolSeparator = 16;
