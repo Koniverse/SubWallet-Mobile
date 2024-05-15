@@ -40,6 +40,7 @@ export interface SWModalProps {
   isUseSafeAreaView?: boolean;
   disabledOnPressBackDrop?: boolean;
   renderHeader?: React.ReactNode;
+  hideWhenCloseApp?: boolean;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -94,6 +95,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       isUseSafeAreaView = true,
       renderHeader,
       disabledOnPressBackDrop,
+      hideWhenCloseApp = true,
     },
     ref,
   ) => {
@@ -105,7 +107,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
 
     useEffect(() => {
       const unsubscribe = AppState.addEventListener('change', state => {
-        if (state === 'background') {
+        if (state === 'background' && hideWhenCloseApp) {
           setVisible(false);
         }
       });
@@ -113,7 +115,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       return () => {
         unsubscribe.remove();
       };
-    }, [setVisible]);
+    }, [hideWhenCloseApp, setVisible]);
 
     useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {

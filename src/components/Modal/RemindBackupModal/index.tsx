@@ -24,7 +24,10 @@ export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const { isAllAccount, currentAccount, accounts } = useSelector((state: RootState) => state.accountState);
   const accountSelectorRef = useRef<ModalRef>();
-  const onSetCurrentRemindBackupTimeout = () => mmkvStore.set('remindBackupTimeout', Date.now());
+  const onSetCurrentRemindBackupTimeout = () => {
+    mmkvStore.set('lastTimeLogin', Date.now());
+    mmkvStore.set('remindBackupTimeout', Date.now());
+  };
   const onSelectItem = (item: AccountJson) => {
     navigation.navigate('AccountExport', { address: item?.address || '' });
   };
@@ -47,6 +50,7 @@ export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
           disabledOnPressBackDrop={true}
           isAllowSwipeDown={false}
           titleTextAlign={'center'}
+          hideWhenCloseApp={false}
           modalTitle={'Back up your seed phrase!'}>
           <View style={{ position: 'relative' }}>
             <View style={{ alignItems: 'center' }}>

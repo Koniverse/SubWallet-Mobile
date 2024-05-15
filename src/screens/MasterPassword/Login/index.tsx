@@ -100,7 +100,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
             onUpdateErrors('password')([i18n.errorMessage.invalidMasterPassword]);
             return;
           }
-          mmkvStore.set('lastTimeLogin', Date.now());
           unlockApp();
           // Lock master password incase always require
           if (timeAutoLock === LockTimeout.ALWAYS) {
