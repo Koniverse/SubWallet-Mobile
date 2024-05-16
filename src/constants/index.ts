@@ -21,6 +21,8 @@ export const TERMS_OF_SERVICE_URL = 'https://docs.subwallet.app/privacy-and-secu
 export const TERMS_OF_USE_URL = 'https://docs.subwallet.app/main/privacy-and-security/terms-of-use';
 export const IMPORT_QR_CODE_URL =
   'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/import-restore-an-account#import-by-qr-code';
+export const BACKUP_SEED_PHRASE_CODE_URL =
+  'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/export-and-backup-an-account';
 export const POLKADOT_VAULT_INSTRUCTION_URL =
   'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/attach-a-polkadot-vault-previously-parity-signer-account';
 export const KEYSTONE_INSTRUCTION_URL =
