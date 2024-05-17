@@ -55,12 +55,20 @@ const MissionPoolSection = () => {
 
   return (
     <>
-      <SectionHeader
-        title={i18n.browser.missionPool}
-        actionTitle={i18n.browser.seeAll}
-        onPress={() => navigation.navigate('MissionPoolsByTabview', { type: 'all' })}
-      />
-      <MissionPoolSectionList data={missions.slice(0, 7)} renderItem={renderMissionPoolItem} />
+      <>
+        {!!(missions && missions.length) ? (
+          <>
+            <SectionHeader
+              title={i18n.browser.missionPool}
+              actionTitle={i18n.browser.seeAll}
+              onPress={() => navigation.navigate('MissionPoolsByTabview', { type: 'all' })}
+            />
+            <MissionPoolSectionList data={missions.slice(0, 7)} renderItem={renderMissionPoolItem} />
+          </>
+        ) : (
+          <></>
+        )}
+      </>
       {selectedMissionPool && (
         <MissionPoolDetailModal modalVisible={visible} data={selectedMissionPool} setVisible={setVisible} />
       )}
