@@ -58,7 +58,7 @@ export default (theme: ThemeTypes) => {
       gap: theme.size,
     },
     introWarning: {
-      marginBottom: theme.margin,
+      marginBottom: theme.marginSM,
     },
     rsWarning: {
       marginBottom: theme.marginLG,

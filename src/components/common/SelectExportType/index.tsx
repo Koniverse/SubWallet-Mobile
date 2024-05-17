@@ -8,6 +8,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import SelectExportTypeStyles from './style';
 import { FileJs, IconProps, Leaf, QrCode, Wallet } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 
 export enum ExportType {
   JSON_FILE = 'json-file',
@@ -100,8 +101,27 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
     [onClickItem, theme, account],
   );
 
+  const accountType = useMemo(() => {
+    if (account?.isExternal) {
+      if (account?.isReadOnly) {
+        return 'watch-only';
+      } else {
+        return 'QR-signer';
+      }
+    }
+  }, [account?.isExternal, account?.isReadOnly]);
+
   return (
     <View style={[styles]}>
+      {!!account?.isExternal && (
+        <View style={{ paddingBottom: theme.paddingSM }}>
+          <AlertBox
+            title={i18n.warningTitle.payAttention}
+            description={`Your account is ${accountType} account, which doesn't support export and back up. Change to another account to use this feature`}
+            type="warning"
+          />
+        </View>
+      )}
       {title && (
         <View>
           <Text style={_style.titleStyle}>{title}</Text>

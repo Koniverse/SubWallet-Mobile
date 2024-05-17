@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Button, PageIcon, SwModal, Typography } from 'components/design-system-ui';
 import { Linking, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -13,8 +13,6 @@ import { AccountSelector } from 'components/Modal/common/AccountSelectorNew';
 import { ModalRef } from 'types/modalRef';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isShowRemindBackupModal, setIsShowRemindBackupModal } from 'screens/Home';
-import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
-import { AccountSignMode } from 'types/signer';
 import { BACKUP_SEED_PHRASE_CODE_URL } from 'constants/index';
 
 interface Props {
@@ -26,8 +24,6 @@ export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { isAllAccount, currentAccount, accounts } = useSelector((state: RootState) => state.accountState);
-  const signMode = useGetAccountSignModeByAddress(currentAccount?.address);
-  const canExport = useMemo((): boolean => signMode === AccountSignMode.PASSWORD, [signMode]);
   const accountSelectorRef = useRef<ModalRef>();
   const onSetCurrentRemindBackupTimeout = () => {
     mmkvStore.set('lastTimeLogin', Date.now());
@@ -38,7 +34,7 @@ export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
   };
 
   const onBackUpAccount = () => {
-    if (isAllAccount || !canExport) {
+    if (isAllAccount) {
       accountSelectorRef.current?.onOpenModal();
     } else {
       navigation.navigate('AccountExport', { address: currentAccount?.address || '' });
