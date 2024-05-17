@@ -19,6 +19,9 @@ import { PREDEFINED_EARNING_POOL } from 'constants/stakingScreen';
 import { SectionItem } from 'components/LazySectionList';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { RootState } from 'stores/index';
+import { useSelector } from 'react-redux';
+import { YieldPoolType } from '@subwallet/extension-base/types';
 
 enum EarningPoolGroup {
   RECOMMEND = 'recommend',
@@ -150,6 +153,7 @@ export const EarningPoolSelector = forwardRef(
     const items = useGetPoolTargetList(slug) as NominationPoolDataType[];
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState<NominationPoolDataType | undefined>(undefined);
+    const { poolInfoMap } = useSelector((state: RootState) => state.earning);
     const { compound } = useYieldPositionDetail(slug, from);
 
     const poolSelectorRef = useRef<ModalRef>();
@@ -177,6 +181,16 @@ export const EarningPoolSelector = forwardRef(
       },
       [EarningPoolGroupNameMap],
     );
+
+    const maxPoolMembersValue = useMemo(() => {
+      const poolInfo = poolInfoMap[slug];
+
+      if (poolInfo.type === YieldPoolType.NOMINATION_POOL) {
+        return poolInfo.maxPoolMembers;
+      }
+
+      return undefined;
+    }, [poolInfoMap, slug]);
 
     const renderSectionHeader = useCallback(
       (info: { section: SectionListData<NominationPoolDataTypeItem> }) => {
@@ -325,6 +339,7 @@ export const EarningPoolSelector = forwardRef(
         return (
           <StakingPoolItem
             address={address}
+            disabled={item.isCrowded}
             decimals={decimals}
             id={id}
             isProfitable={isProfitable}
@@ -402,6 +417,7 @@ export const EarningPoolSelector = forwardRef(
                 detailItem={selectedItem}
                 detailModalVisible={detailModalVisible}
                 setVisible={setDetailModalVisible}
+                maxPoolMembersValue={maxPoolMembersValue}
               />
             )}
 

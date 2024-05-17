@@ -35,6 +35,7 @@ import { EmptyValidator } from 'components/EmptyValidator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ValidatorDataType } from 'types/earning';
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
+import { YieldPoolType } from '@subwallet/extension-base/types';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -122,6 +123,15 @@ export const EarningValidatorSelector = forwardRef(
     const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(chain), [chain]);
     const isSingleSelect = useMemo(() => _isSingleSelect || !isRelayChain, [_isSingleSelect, isRelayChain]);
     const hasReturn = useMemo(() => items[0]?.expectedReturn !== undefined, [items]);
+
+    const maxPoolMembersValue = useMemo(() => {
+      if (poolInfo.type === YieldPoolType.NATIVE_STAKING) {
+        // todo: should also check chain group for pool
+        return poolInfo.maxPoolMembers;
+      }
+
+      return undefined;
+    }, [poolInfo]);
 
     const sortingOptions: SortOption[] = useMemo(() => {
       const result: SortOption[] = [
@@ -434,6 +444,7 @@ export const EarningValidatorSelector = forwardRef(
             <ValidatorSelectorDetailModal
               detailModalVisible={detailModalVisible}
               detailItem={detailItem}
+              maxPoolMembersValue={maxPoolMembersValue}
               networkPrefix={networkPrefix}
               setVisible={setDetailModalVisible}
               chain={chain}

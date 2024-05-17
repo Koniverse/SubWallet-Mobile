@@ -8,6 +8,7 @@ export interface StakingPoolItemStyle {
   contentWrapper: ViewStyle;
   poolNameTextStyle: TextStyle;
   bondedAmountLabelTextStyle: TextStyle;
+  disabledStyle: ViewStyle;
 }
 
 export default (theme: ThemeTypes) =>
@@ -23,6 +24,9 @@ export default (theme: ThemeTypes) =>
       borderRadius: 8,
       marginBottom: 8,
       marginHorizontal: 16,
+    },
+    disabledStyle: {
+      opacity: 0.5,
     },
     contentWrapper: { flexDirection: 'row', alignItems: 'center', flex: 1 },
     avatarWrapper: { alignItems: 'center', marginRight: theme.marginXS },
