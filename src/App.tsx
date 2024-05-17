@@ -105,9 +105,9 @@ const imageBackgroundStyle: StyleProp<any> = {
   backgroundColor: 'black',
 };
 
+let lockWhenActive = false;
 AppState.addEventListener('change', (state: string) => {
-  const { timeAutoLock, lock, isMasterPasswordLocked } = autoLockParams;
-  const lastTimeLogin = mmkvStore.getNumber('lastTimeLogin') || 0;
+  const { isUseBiometric, timeAutoLock, lock, isMasterPasswordLocked } = autoLockParams;
   if (timeAutoLock === undefined) {
     return;
   }
@@ -122,16 +122,22 @@ AppState.addEventListener('change', (state: string) => {
       setIsShowRemindBackupModal(false);
       keyringLock().catch((e: Error) => console.log(e));
     }
-
-    if (isMasterPasswordLocked) {
-      setIsShowRemindBackupModal(false);
-      lock();
+    if (isUseBiometric) {
+      lockWhenActive = true;
+    } else {
+      lockWhenActive = false;
+      if (isMasterPasswordLocked) {
+        setIsShowRemindBackupModal(false);
+        lock();
+      }
     }
   } else if (state === 'active') {
-    const isLockApp = Date.now() - lastTimeLogin > timeAutoLock * 60000;
-    if (isLockApp) {
-      setIsShowRemindBackupModal(false);
-      lock();
+    if (lockWhenActive) {
+      if (isMasterPasswordLocked) {
+        setIsShowRemindBackupModal(false);
+        lock();
+      }
+      lockWhenActive = false;
     }
   }
 });
@@ -154,7 +160,7 @@ export const App = () => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
-  const { timeAutoLock, isPreventLock } = useSelector((state: RootState) => state.mobileSettings);
+  const { isUseBiometric, timeAutoLock, isPreventLock } = useSelector((state: RootState) => state.mobileSettings);
   const { hasMasterPassword, isLocked } = useSelector((state: RootState) => state.accountState);
   const language = useSelector((state: RootState) => state.settings.language);
   const { lock, unlockApp } = useAppLock();
@@ -168,7 +174,6 @@ export const App = () => {
   const { getEarningStaticData } = useGetEarningStaticData(language);
   const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
-  autoLockParams.isMasterPasswordLocked = isLocked;
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -179,14 +184,17 @@ export const App = () => {
       unlockApp();
     }
     firstTimeCheckPincode = true;
+    autoLockParams.isMasterPasswordLocked = isLocked;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLocked]);
+
   useEffect(() => {
     autoLockParams.lock = lock;
     autoLockParams.timeAutoLock = timeAutoLock;
     autoLockParams.hasMasterPassword = hasMasterPassword;
+    autoLockParams.isUseBiometric = isUseBiometric;
     autoLockParams.isPreventLock = isPreventLock;
-  }, [timeAutoLock, isPreventLock, lock, hasMasterPassword, isLocked]);
+  }, [timeAutoLock, isUseBiometric, isPreventLock, lock, hasMasterPassword]);
 
   const isRequiredStoresReady = true;
 

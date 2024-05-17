@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Button, PageIcon, SwModal, Typography } from 'components/design-system-ui';
-import { View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ShieldCheck } from 'phosphor-react-native';
 import { FontMedium } from 'styles/sharedStyles';
@@ -13,6 +13,7 @@ import { AccountSelector } from 'components/Modal/common/AccountSelectorNew';
 import { ModalRef } from 'types/modalRef';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isShowRemindBackupModal, setIsShowRemindBackupModal } from 'screens/Home';
+import { BACKUP_SEED_PHRASE_CODE_URL } from 'constants/index';
 
 interface Props {
   modalVisible: boolean;
@@ -58,14 +59,23 @@ export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
 
               <Typography.Text
                 style={{
+                  fontSize: theme.fontSizeHeading6,
+                  lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
                   color: theme.colorTextLight4,
                   textAlign: 'center',
                   ...FontMedium,
-                  paddingTop: theme.paddingMD,
+                  marginTop: theme.paddingMD,
                 }}>
-                {
-                  'Once your seed phrase is lost, there is no way to recover your account. Back up now to secure your funds.'
-                }
+                <Typography.Text>
+                  {
+                    'Once your seed phrase is lost, there is no way to recover your account. Back up now to secure your funds or learn how to with our'
+                  }
+                </Typography.Text>
+                <Typography.Text
+                  onPress={() => Linking.openURL(BACKUP_SEED_PHRASE_CODE_URL)}
+                  style={{ color: theme.colorLink, textDecorationLine: 'underline' }}>
+                  {' user guide.'}
+                </Typography.Text>
               </Typography.Text>
             </View>
             <View style={{ flexDirection: 'row', gap: theme.paddingSM, marginTop: theme.margin }}>
