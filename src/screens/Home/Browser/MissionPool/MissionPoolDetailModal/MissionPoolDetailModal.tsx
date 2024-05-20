@@ -110,7 +110,7 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
               style={{ flexDirection: 'row', paddingTop: theme.paddingLG, gap: theme.padding }}
               data={data}
               closeDetailModal={() => setVisible(false)}
-              disabledJoinNowBtn={tagData?.slug === MissionCategoryType.ARCHIVED}
+              disabledJoinNowBtn={data.status === MissionCategoryType.ARCHIVED}
             />
           </View>
         </ScrollView>
