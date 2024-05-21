@@ -71,7 +71,7 @@
     "loglevel": "^1.8.1",
     "moment": "^2.29.4",
     "patch-package": "^6.5.0",
-    "phosphor-react-native": "^2.0.0",
+    "phosphor-react-native": "^1.1.2",
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.8.3",
     "querystring": "^0.2.1",
