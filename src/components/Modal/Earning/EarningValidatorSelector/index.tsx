@@ -181,7 +181,6 @@ export const EarningValidatorSelector = forwardRef(
         (Platform.OS === 'android' ? keyboardHeight : 0),
       [insets.bottom, insets.top, keyboardHeight],
     );
-    console.log('OFFSET_BOTTOM', OFFSET_BOTTOM);
 
     const [sortSelection, setSortSelection] = useState<SortKey>(SortKey.DEFAULT);
     const fewValidators = changeValidators.length > 1;

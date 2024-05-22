@@ -91,8 +91,6 @@ export const TokenGroupsDetailUpperBlock = ({
       });
   }, [accounts, assetRegistryMap, chainInfoMap, currentAccount, isAllAccount, swapTokenMap, tokenGroupSlug]);
 
-  console.log('swapInfos', swapInfos);
-
   const buyInfos = useMemo(() => {
     const groupSlug = tokenGroupSlug || '';
     const slugsMap = tokenGroupMap[groupSlug] ? tokenGroupMap[groupSlug] : [groupSlug];
