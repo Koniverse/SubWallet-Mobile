@@ -17,7 +17,7 @@ function filterContractTypes(chainInfoMap: Record<string, _ChainInfo>) {
   return filteredChainInfoMap;
 }
 
-export default function useGetContractSupportedChains(): Record<string, _ChainInfo> {
+export default function useGetNftContractSupportedChains(): Record<string, _ChainInfo> {
   const availableChains = useChainAssets().availableChains;
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 

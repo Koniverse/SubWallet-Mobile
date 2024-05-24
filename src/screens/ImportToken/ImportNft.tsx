@@ -2,7 +2,6 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import InputText from 'components/Input/InputText';
-import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { upsertCustomToken, validateCustomToken } from 'messaging/index';
@@ -35,6 +34,7 @@ import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { FormItem } from 'components/common/FormItem';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
+import useGetNftContractSupportedChains from 'hooks/screen/ImportNft/useGetNftContractSupportedChains';
 
 interface ImportNftFormValues extends TransactionFormValues {
   smartContract: string;
@@ -88,7 +88,7 @@ function getNftType(chain: string, chainInfoMap: Record<string, _ChainInfo>): st
 
 const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const chainInfoMap = useGetContractSupportedChains();
+  const chainInfoMap = useGetNftContractSupportedChains();
   const payload = routeParams?.payload;
   const nftInfo = payload?.payload;
   const [loading, setLoading] = useState(false);
