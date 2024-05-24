@@ -277,6 +277,14 @@ class WebRunnerHandler {
 
 const webRunnerHandler = new WebRunnerHandler();
 
+export const getMajorVersionIOS = (): number => {
+  if (Platform.OS !== 'ios') {
+    throw Error('Platform is not iOS');
+  }
+
+  return parseInt(Platform.Version, 10);
+};
+
 interface WebRunnerGlobalState {
   uri?: string;
   injectScript: string;
@@ -295,10 +303,14 @@ const now = new Date().getTime();
 const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${now}`;
 
 const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
+const iosVersion = getMajorVersionIOS();
 const osWebRunnerURL =
   Platform.OS === 'android'
     ? 'file:///android_asset/Web.bundle/androidSite'
-    : `http://localhost:${WEB_SERVER_PORT}/site`;
+    : iosVersion >= 16
+    ? `http://localhost:${WEB_SERVER_PORT}/site`
+    : `http://localhost:${WEB_SERVER_PORT}/oldSite`;
+
 const BASE_URI = !devWebRunnerURL || devWebRunnerURL === '' ? osWebRunnerURL : devWebRunnerURL;
 
 const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlAction): WebRunnerGlobalState => {
