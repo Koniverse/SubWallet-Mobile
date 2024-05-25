@@ -282,7 +282,7 @@ export const getMajorVersionIOS = (): number => {
     throw Error('Platform is not iOS');
   }
 
-  return parseInt(Platform.Version, 10);
+  return parseFloat(Platform.Version);
 };
 
 interface WebRunnerGlobalState {
@@ -307,7 +307,7 @@ const iosVersion = getMajorVersionIOS();
 const osWebRunnerURL =
   Platform.OS === 'android'
     ? 'file:///android_asset/Web.bundle/androidSite'
-    : iosVersion >= 16
+    : iosVersion >= 16.5
     ? `http://localhost:${WEB_SERVER_PORT}/site`
     : `http://localhost:${WEB_SERVER_PORT}/oldSite`;
 
