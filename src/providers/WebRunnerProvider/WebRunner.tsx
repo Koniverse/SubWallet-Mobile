@@ -279,7 +279,7 @@ const webRunnerHandler = new WebRunnerHandler();
 
 export const getMajorVersionIOS = (): number => {
   if (Platform.OS !== 'ios') {
-    throw Error('Platform is not iOS');
+    return 17;
   }
 
   return parseFloat(Platform.Version);
