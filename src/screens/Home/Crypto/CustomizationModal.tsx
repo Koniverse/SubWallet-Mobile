@@ -40,7 +40,7 @@ const processChainMap = (
   pendingKeys = Object.keys(cachePendingChainMap),
   updateKeys = false,
 ): ChainInfoWithStateAnhStatus[] => {
-  if (!chainKeys || updateKeys) {
+  if (updateKeys) {
     chainKeys = Object.keys(chainInfoMap)
       .filter(key => Object.keys(chainInfoMap[key].providers).length > 0)
       .sort((a, b) => {
@@ -57,7 +57,7 @@ const processChainMap = (
       });
   }
 
-  return chainKeys.map(key => chainInfoMap[key]);
+  return !!chainKeys ? chainKeys.map(key => chainInfoMap[key]) : [];
 };
 
 export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
@@ -69,8 +69,12 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const navigation = useNavigation<RootNavigationProps>();
+  const [isUpdate, setIsUpdate] = useState(true);
 
-  const onCancel = () => modalBaseV2Ref?.current?.close();
+  const onCancel = () => {
+    setIsUpdate(true);
+    modalBaseV2Ref?.current?.close();
+  };
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -95,14 +99,15 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
   }, [chainInfoMap]);
 
   useEffect(() => {
-    setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap)));
-  }, [chainInfoMap, pendingChainMap]);
+    setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap), isUpdate));
+  }, [chainInfoMap, isUpdate, pendingChainMap]);
 
   useEffect(() => {
     cachePendingChainMap = pendingChainMap;
   }, [pendingChainMap]);
 
   const onToggleItem = (item: ChainInfoWithStateAnhStatus) => {
+    setIsUpdate(false);
     setPendingChainMap({ ...pendingChainMap, [item.slug]: !item.active });
     const reject = () => {
       console.warn('Toggle network request failed!');
