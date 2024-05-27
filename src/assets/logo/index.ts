@@ -8,6 +8,7 @@ const ChineseLogo = React.lazy(() => import('./chinese.svg'));
 const FranchiseLogo = React.lazy(() => import('./franchise.svg'));
 const JapaneseLogo = React.lazy(() => import('./japan.svg'));
 const RussianLogo = React.lazy(() => import('./russia.svg'));
+const XLogo = React.lazy(() => import('./x-logo.svg'));
 
 export const ImageLogosMap = {
   parity: require('./207.vault.png'),
@@ -25,10 +26,15 @@ export const ImageLogosMap = {
   chain_flip_testnet: require('./chainflip-mainnet.png'),
   hydradx_mainnet: require('./hydradx.png'),
   hydradx_testnet: require('./hydradx.png'),
+  currency_brl: require('./CurrencyBRL.png'),
+  currency_cny: require('./CurrencyCNY.png'),
+  currency_hkd: require('./CurrencyHKD.png'),
+  currency_vnd: require('./CurrencyVND.png'),
   en: EnglishLogo,
   vi: VietnameseLogo,
   chi: ChineseLogo,
   fr: FranchiseLogo,
   ja: JapaneseLogo,
   ru: RussianLogo,
+  XLogo: XLogo,
 };

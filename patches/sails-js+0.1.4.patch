@@ -1,0 +1,13 @@
+diff --git a/node_modules/sails-js/package.json b/node_modules/sails-js/package.json
+index 3598d98..dc2d744 100644
+--- a/node_modules/sails-js/package.json
++++ b/node_modules/sails-js/package.json
+@@ -2,7 +2,7 @@
+   "name": "sails-js",
+   "version": "0.1.4",
+   "description": "Parser and typescript code generator from Sails IDL files",
+-  "main": "lib/index.js",
++  "main": "./index.js",
+   "preferGlobal": true,
+   "type": "module",
+   "license": "GPL-3.0",

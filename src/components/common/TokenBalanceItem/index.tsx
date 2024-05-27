@@ -13,6 +13,7 @@ interface Props extends TokenBalanceItemType, TouchableOpacityProps {
 }
 
 export const TokenBalanceItem = ({
+  currency,
   symbol,
   isTestnet,
   chainDisplayName,
@@ -60,7 +61,7 @@ export const TokenBalanceItem = ({
                   intOpacity={0.45}
                   unitOpacity={0.45}
                   decimalOpacity={0.45}
-                  prefix={'$'}
+                  prefix={currency?.symbol}
                   size={theme.fontSizeSM}
                   textStyle={{ ...FontMedium, lineHeight: theme.lineHeightSM * theme.fontSizeSM }}
                 />

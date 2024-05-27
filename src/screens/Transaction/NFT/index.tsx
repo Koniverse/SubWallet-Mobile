@@ -175,7 +175,6 @@ const SendNFT: React.FC<SendNFTProps> = ({
 
   useEffect(() => {
     recipientAddressRules.validate(recipientAddressValue).then(result => {
-      console.log(result);
       setRecipientAddressInvalid(!!result);
     });
   }, [recipientAddressRules, recipientAddressValue]);

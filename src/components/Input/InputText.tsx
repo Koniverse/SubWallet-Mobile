@@ -1,5 +1,5 @@
 import React, { forwardRef, useMemo } from 'react';
-import { Platform, StyleSheet, TextInput, View, ViewStyle } from 'react-native';
+import { KeyboardTypeOptions, Platform, StyleSheet, TextInput, View, ViewStyle } from 'react-native';
 import { DisabledStyle, FontMedium } from 'styles/sharedStyles';
 import { FieldBaseProps } from 'components/Field/Base';
 import { Warning } from 'components/Warning';
@@ -26,6 +26,7 @@ interface Props extends FieldBaseProps {
   extraTextInputStyle?: ViewStyle;
   readonly?: boolean;
   maxLength?: number;
+  keyboardType?: KeyboardTypeOptions;
 }
 
 const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInput>) => {
@@ -49,6 +50,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
     extraTextInputStyle,
     readonly,
     maxLength,
+    keyboardType,
   } = passwordFieldProps;
   const hasLabel = !!label;
   const styles = useMemo(
@@ -82,7 +84,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
             defaultValue={defaultValue || ''}
             onBlur={onBlur}
             editable={!isBusy}
-            keyboardType={'numeric'}
+            keyboardType={keyboardType}
             selectTextOnFocus={!isBusy}
             maxLength={maxLength}
             value={value}

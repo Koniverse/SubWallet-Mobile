@@ -25,8 +25,8 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyles();
-  const { timeline, getTagByTimeline } = useMissionPools(data);
-  const tagData = getTagByTimeline(data);
+  const { timeline, getTagData } = useMissionPools(data);
+  const tagData = getTagData(data, true);
 
   return (
     <SwFullSizeModal isUseModalV2 modalVisible={modalVisible} setVisible={setVisible} modalBaseV2Ref={modalBaseV2Ref}>
@@ -43,7 +43,12 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
               <Image src={{ uri: data.logo }} style={{ width: 64, height: 64 }} />
             </View>
             <MetaInfo spaceSize={'ms'} labelFontWeight={'semibold'} valueColorScheme={'light'}>
-              <MetaInfo.Text label={i18n.inputLabel.name} valueFontWeight={'semibold'} value={data.name as string} />
+              <MetaInfo.Text
+                label={i18n.inputLabel.name}
+                labelAlign={'top'}
+                valueFontWeight={'semibold'}
+                value={data.name as string}
+              />
 
               {data.chains && data.chains.length > 1 && (
                 <MetaInfo.Default label={i18n.inputLabel.network}>
@@ -59,7 +64,7 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
                   label={i18n.inputLabel.status}
                   valueColorSchema={'success'}
                   valueFontWeight={'semibold'}
-                  value={tagData.name}
+                  value={tagData?.name || ''}
                 />
               )}
               {data.description && (
@@ -105,7 +110,7 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
               style={{ flexDirection: 'row', paddingTop: theme.paddingLG, gap: theme.padding }}
               data={data}
               closeDetailModal={() => setVisible(false)}
-              disabledJoinNowBtn={tagData.slug === MissionCategoryType.ARCHIVED}
+              disabledJoinNowBtn={data.status === MissionCategoryType.ARCHIVED}
             />
           </View>
         </ScrollView>

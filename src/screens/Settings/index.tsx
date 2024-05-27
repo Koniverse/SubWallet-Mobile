@@ -37,6 +37,7 @@ import env from 'react-native-config';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
+import { computeStatus } from 'utils/missionPools';
 
 const settingTitleStyle: StyleProp<any> = {
   fontSize: 12,
@@ -74,7 +75,17 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
   const { lock } = useAppLock();
   const { missions } = useSelector((state: RootState) => state.missionPool);
   const activeMissionPoolNumb = useMemo(() => {
-    return missions.filter(item => item.status === MissionCategoryType.LIVE).length;
+    const computedMission =
+      missions && missions.length
+        ? missions.map(item => {
+            return {
+              ...item,
+              status: computeStatus(item),
+            };
+          })
+        : [];
+
+    return computedMission.filter(item => item.status === MissionCategoryType.LIVE).length;
   }, [missions]);
   const [hiddenCount, setHiddenCount] = useState(0);
 

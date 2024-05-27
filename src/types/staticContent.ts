@@ -14,6 +14,7 @@ export interface AppBasicInfoData {
   start_time: string;
   stop_time: string;
   platforms: string[];
+  os: 'android' | 'ios';
 }
 
 export interface AppContentButtonInstruction {
@@ -41,9 +42,12 @@ export interface AppContentButton {
   action: AppContentButtonAction | null;
 }
 
+export type ConditionBalanceType = { comparison: string; value: number; chain_asset: string };
+export type ConditionEarningType = { comparison: string; value: number; pool_slug: string };
+
 export interface AppPopupCondition {
-  'condition-balance': { comparison: string; value: number; chain_asset: string }[];
-  'condition-earning': { comparison: string; value: number; pool_slug: string }[];
+  'condition-balance': ConditionBalanceType[];
+  'condition-earning': ConditionEarningType[];
 }
 
 export interface PositionParam {

@@ -433,7 +433,8 @@
     "learnMore": "Tìm hiểu thêm",
     "withdraw": "Withdraw",
     "cancelUnstake": "Cancel unstake",
-    "exploreEarningOptions": "Explore earning options"
+    "exploreEarningOptions": "Explore earning options",
+    "enterAstarPortal": "Truy cập Astar portal"
   },
   "inputLabel": {
     "selectAcc": "Chọn tài khoản",
@@ -1155,6 +1156,7 @@
     "manageWalletConnectDapp": "Quản lý WalletConnect dApp",
     "appLock": "Yêu cầu mở khoá",
     "walletTheme": "Chế độ nền",
+    "currency": "Currency",
     "language": "Ngôn ngữ",
     "notifications": "Thông báo",
     "neverRequire": "Không bao giờ",
@@ -1169,7 +1171,8 @@
     "expiredConnectionTitle": "Kết nối đã quá hạn.",
     "unsupportedNetworkTitle": "Mạng không được hỗ trợ",
     "insufficientBalance": "Insufficient balance",
-    "payAttention": "Chú ý!"
+    "payAttention": "Chú ý!",
+    "enterAstarPortal": "Truy cập Astar portal"
   },
   "warningMessage": {
     "passwordTooShort": "Mật khẩu quá ngắn",
@@ -1203,7 +1206,8 @@
     "unsupportedNetworkMessage": "Có ít nhất 1 mạng đã chọn không khả dụng",
     "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed.",
     "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance",
-    "crossChainTransferWarningMessage": "Vui lòng KHÔNG chuyển tài sản xuyên chuỗi (cross-chain) đến địa chỉ trên sàn giao dịch CEX để tránh gây mất tài sản."
+    "crossChainTransferWarningMessage": "Vui lòng KHÔNG chuyển tài sản xuyên chuỗi (cross-chain) đến địa chỉ trên sàn giao dịch CEX để tránh gây mất tài sản.",
+    "enterAstarPortalMessage": "Vui lòng chuyển hướng đến Astar portal để xem và quản lý stake của bạn trong Astar dApp staking v3"
   },
   "errorMessage": {
     "invalidPinCode": "Mã PIN không hợp lệ",

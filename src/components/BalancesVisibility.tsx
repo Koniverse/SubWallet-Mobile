@@ -29,9 +29,16 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subF
         <Number
           value={value}
           decimal={0}
-          prefix={startWithSymbol ? (symbol ? symbol : '$') : undefined}
-          suffix={!startWithSymbol ? (symbol ? symbol : '$') : undefined}
+          prefix={startWithSymbol ? symbol : undefined}
           size={38}
+          subFloatUnit={true}
+          subFloatUnitFontSize={theme.fontSizeXL}
+          subFloatUnitStyle={{
+            lineHeight: theme.fontSizeXL,
+            height: 40,
+            paddingRight: theme.paddingXXS,
+            ...FontSemiBold,
+          }}
           textStyle={{ ...FontSemiBold, lineHeight: 38 }}
           subFloatNumber={subFloatNumber}
           decimalOpacity={0.45}

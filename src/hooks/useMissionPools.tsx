@@ -6,12 +6,13 @@ import {
   Coin,
   Cube,
   DiceSix,
+  MagicWand,
   MegaphoneSimple,
   SelectionBackground,
-  Trophy,
   User,
 } from 'phosphor-react-native';
 import { TagInfo, TagStatusType, TagType } from 'components/MissionPoolHorizontalItem';
+import capitalize from '@subwallet/react-ui/es/_util/capitalize';
 
 export const useMissionPools = (data?: MissionInfo) => {
   const timeline = useMemo<string>(
@@ -59,11 +60,6 @@ export const useMissionPools = (data?: MissionInfo) => {
         slug: TagType.MANUAL_SELECTION,
         icon: SelectionBackground,
       },
-    };
-  }, []);
-
-  const tagStatusMap = useMemo<Record<string, TagInfo>>(() => {
-    return {
       [TagStatusType.UPCOMING]: {
         theme: 'gray',
         name: 'Upcoming',
@@ -78,43 +74,53 @@ export const useMissionPools = (data?: MissionInfo) => {
         iconWeight: 'fill',
       },
       [TagStatusType.LIVE]: {
-        theme: 'cyan',
+        theme: 'success',
         name: 'Live',
         slug: TagStatusType.LIVE,
         icon: CheckCircle,
         iconWeight: 'fill',
       },
-      [TagStatusType.CLAIMABLE]: {
-        theme: 'lime',
-        name: 'Claimable',
-        slug: TagStatusType.CLAIMABLE,
-        icon: Trophy,
-      },
     };
   }, []);
 
-  const getTagByTimeline = (_data: MissionInfo) => {
-    const localData = _data || data;
-    if (localData.start_time && localData.end_time) {
-      const now = new Date();
-      const start = new Date(localData.start_time);
-      const end = new Date(localData.end_time);
-
-      if (now < start) {
-        return tagStatusMap[TagStatusType.UPCOMING];
-      }
-
-      if (now > end) {
-        return tagStatusMap[TagStatusType.ARCHIVED];
-      }
-
-      if (now >= start && now <= end) {
-        return tagStatusMap[TagStatusType.LIVE];
-      }
+  const getTagData = (_data: MissionInfo, isStatusTag: boolean) => {
+    if (!_data.tags || !_data.tags.length) {
+      return null;
     }
 
-    return tagStatusMap[TagStatusType.UPCOMING];
+    const tagSlug = _data.tags[0];
+    const theme = tagMap[tagSlug]?.theme || 'gray';
+    const name = tagMap[tagSlug]?.name || capitalize(tagSlug.replace('_', ' '));
+    const iconWeight = tagMap[tagSlug]?.iconWeight;
+    const icon = tagMap[tagSlug]?.icon || MagicWand;
+    let missionTheme, missionName, missionIconWeight, missionIcon;
+    const missionStatus = _data?.status;
+
+    if (missionStatus) {
+      missionTheme = tagMap[missionStatus]?.theme || 'gray';
+      missionName = tagMap[missionStatus]?.name;
+      missionIconWeight = tagMap[missionStatus]?.iconWeight;
+      missionIcon = tagMap[missionStatus]?.icon;
+    }
+
+    if (!isStatusTag) {
+      return {
+        slug: tagSlug,
+        theme: theme,
+        name: name,
+        icon: icon,
+        iconWeight: iconWeight,
+      };
+    } else {
+      return {
+        slug: tagSlug,
+        theme: missionTheme || 'gray',
+        name: missionName,
+        icon: missionIcon,
+        iconWeight: missionIconWeight,
+      };
+    }
   };
 
-  return { timeline, tagMap, tagStatusMap, getTagByTimeline };
+  return { timeline, tagMap, getTagData };
 };

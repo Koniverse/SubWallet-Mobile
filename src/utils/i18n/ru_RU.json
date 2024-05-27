@@ -433,7 +433,8 @@
     "learnMore": "Learn more.",
     "withdraw": "Withdraw",
     "cancelUnstake": "Cancel unstake",
-    "exploreEarningOptions": "Explore earning options"
+    "exploreEarningOptions": "Explore earning options",
+    "enterAstarPortal": "Enter Astar portal"
   },
   "inputLabel": {
     "selectAcc": "Выбрать аккаунт",
@@ -1155,6 +1156,7 @@
     "manageWalletConnectDapp": "Управление WalletConnect Dapp",
     "appLock": "Блокировка приложения",
     "walletTheme": "Тема кошелька",
+    "currency": "Currency",
     "language": "Язык",
     "notifications": "Уведомлении",
     "neverRequire": "Never",
@@ -1169,7 +1171,8 @@
     "expiredConnectionTitle": "Connection expired",
     "unsupportedNetworkTitle": "Unsupported network",
     "insufficientBalance": "Insufficient balance",
-    "payAttention": "Pay attention!"
+    "payAttention": "Pay attention!",
+    "enterAstarPortal": "Enter Astar portal"
   },
   "warningMessage": {
     "passwordTooShort": "Пароль слишком короткий",
@@ -1203,7 +1206,8 @@
     "unsupportedNetworkMessage": "There is at least 1 chosen network unavailable",
     "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed.",
     "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance",
-    "crossChainTransferWarningMessage": "Cross-chain transfer to an exchange (CEX) will result in loss of funds. Make sure the receiving address is not an exchange address."
+    "crossChainTransferWarningMessage": "Cross-chain transfer to an exchange (CEX) will result in loss of funds. Make sure the receiving address is not an exchange address.",
+    "enterAstarPortalMessage": "Navigate to Astar portal to view and manage your stake in Astar dApp staking v3"
   },
   "errorMessage": {
     "invalidPinCode": "Неверный PIN-код",

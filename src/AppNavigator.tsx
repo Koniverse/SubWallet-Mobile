@@ -62,7 +62,6 @@ import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { ConnectionList } from 'screens/Settings/WalletConnect/ConnectionList';
 import { ConnectWalletConnect } from 'screens/Settings/WalletConnect/ConnectWalletConnect';
 import { ConnectionDetail } from 'screens/Settings/WalletConnect/ConnectionDetail';
-import useAppLock from 'hooks/useAppLock';
 import LoginScreen from 'screens/MasterPassword/Login';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
@@ -291,7 +290,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount, isNoAccount } = useSelector(
     (state: RootState) => state.accountState,
   );
-  const { isLocked: isLogin } = useAppLock();
+  const isLogin = useSelector((state: RootState) => state.appState.isLocked);
   const [isNavigationReady, setNavigationReady] = useState<boolean>(false);
   const appModalContext = useContext(AppModalContext);
   const isLockedRef = useRef(isLogin);

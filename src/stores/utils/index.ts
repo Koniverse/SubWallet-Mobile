@@ -48,10 +48,10 @@ import {
   YieldPoolInfo,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
-import { getStaticContentByDevMode } from 'utils/storage';
-import { STATIC_DATA_DOMAIN } from 'constants/index';
+import { getStaticContentByDevMode, mmkvStore } from 'utils/storage';
 import { RootRouteProps } from 'routes/index';
 import { SwapPair } from '@subwallet/extension-base/types/swap';
+import { fetchStaticData } from 'utils/fetchStaticData';
 // Setup redux stores
 
 function voidFn() {
@@ -621,6 +621,15 @@ export const updateMissionPoolStore = (missions: MissionInfo[]) => {
   });
 };
 
+const handleError = () => {
+  try {
+    const backupData = JSON.parse(mmkvStore.getString('mission-pools') || '{}');
+    updateMissionPoolStore(backupData as MissionInfo[]);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 export const getMissionPoolData = (() => {
   const dataByDevModeStatus = getStaticContentByDevMode();
   const handler: {
@@ -636,11 +645,7 @@ export const getMissionPoolData = (() => {
   const rs = {
     promise,
     start: () => {
-      (async () => {
-        const res = await fetch(`${STATIC_DATA_DOMAIN}/airdrop-campaigns/${dataByDevModeStatus}.json`);
-
-        return (await res.json()) as [];
-      })()
+      fetchStaticData<MissionInfo[]>('airdrop-campaigns', dataByDevModeStatus)
         .then(data => {
           handler.resolve?.(data);
         })
@@ -651,8 +656,9 @@ export const getMissionPoolData = (() => {
   rs.promise
     .then(data => {
       updateMissionPoolStore(data as MissionInfo[]);
+      mmkvStore.set('mission-pools', JSON.stringify(data));
     })
-    .catch(console.error);
+    .catch(handleError);
 
   return rs;
 })();

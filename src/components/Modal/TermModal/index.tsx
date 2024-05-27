@@ -19,6 +19,7 @@ interface Props {
   beforeContent?: string;
   externalContentStyle?: ViewStyle;
   showAcceptBtn?: boolean;
+  hideWhenCloseApp?: boolean;
 }
 // TODO: use this to update GeneralTerm modal
 export const TermModal = ({
@@ -32,6 +33,7 @@ export const TermModal = ({
   beforeContent,
   externalContentStyle,
   showAcceptBtn = true,
+  hideWhenCloseApp,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const [checked, setChecked] = useState<boolean>(false);
@@ -62,6 +64,7 @@ export const TermModal = ({
       disabledOnPressBackDrop={disabledOnPressBackDrop}
       isAllowSwipeDown={Platform.OS === 'ios' && !disabledOnPressBackDrop}
       titleTextAlign={'center'}
+      hideWhenCloseApp={hideWhenCloseApp}
       modalTitle={title}>
       <View style={{ position: 'relative' }}>
         {beforeContent && (

@@ -18,7 +18,7 @@ interface Props {
 
 export const SwapLayout = ({ data }: Props) => {
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const priceMap = useSelector((state: RootState) => state.price.priceMap);
+  const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const swapInfo = data.additionalInfo as SwapTxData | undefined;
   const { accounts } = useSelector((state: RootState) => state.accountState);
 
@@ -81,7 +81,12 @@ export const SwapLayout = ({ data }: Props) => {
         statusName={historyStatusMap[data.status].name}
         valueColorSchema={historyStatusMap[data.status].schema}
       />
-      <MetaInfo.Number decimals={0} label={'Estimated transaction fee'} prefix={'$'} value={estimatedFeeValue} />
+      <MetaInfo.Number
+        decimals={0}
+        label={'Estimated transaction fee'}
+        prefix={currencyData?.symbol}
+        value={estimatedFeeValue}
+      />
       <AlertBox
         description={'You can view your swap process and details by clicking View on explorer'}
         title={'Helpful tip'}

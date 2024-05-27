@@ -40,6 +40,9 @@ import { useGetEarningPoolData } from 'hooks/static-content/useGetEarningPoolDat
 import { AppOnlineContentContextProvider } from 'providers/AppOnlineContentProvider';
 import { GlobalModalContextProvider } from 'providers/GlobalModalContext';
 import { useGetAppInstructionData } from 'hooks/static-content/useGetAppInstructionData';
+import { useGetConfig } from 'hooks/static-content/useGetConfig';
+import { mmkvStore } from 'utils/storage';
+import { setIsShowRemindBackupModal } from 'screens/Home';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -105,7 +108,6 @@ const imageBackgroundStyle: StyleProp<any> = {
 let lockWhenActive = false;
 AppState.addEventListener('change', (state: string) => {
   const { isUseBiometric, timeAutoLock, lock, isMasterPasswordLocked } = autoLockParams;
-
   if (timeAutoLock === undefined) {
     return;
   }
@@ -114,8 +116,10 @@ AppState.addEventListener('change', (state: string) => {
   }
 
   if (state === 'background') {
+    mmkvStore.set('lastTimeLogin', Date.now());
     if (timeAutoLock === LockTimeout.ALWAYS) {
       // Lock master password incase always require
+      setIsShowRemindBackupModal(false);
       keyringLock().catch((e: Error) => console.log(e));
     }
     if (isUseBiometric) {
@@ -123,12 +127,14 @@ AppState.addEventListener('change', (state: string) => {
     } else {
       lockWhenActive = false;
       if (isMasterPasswordLocked) {
+        setIsShowRemindBackupModal(false);
         lock();
       }
     }
   } else if (state === 'active') {
     if (lockWhenActive) {
       if (isMasterPasswordLocked) {
+        setIsShowRemindBackupModal(false);
         lock();
       }
       lockWhenActive = false;
@@ -164,6 +170,7 @@ export const App = () => {
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
   const { getPoolInfoMap } = useGetEarningPoolData();
+  const { getConfig } = useGetConfig();
   const { getEarningStaticData } = useGetEarningStaticData(language);
   const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
@@ -202,10 +209,10 @@ export const App = () => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 100);
-
     checkIsShowBuyToken();
     getPoolInfoMap();
     getDAppsData();
+    getConfig();
     getEarningStaticData();
     getAppInstructionData();
 

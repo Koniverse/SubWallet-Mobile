@@ -309,7 +309,6 @@ const Component = (
 
   const onSelectAddressBook = useCallback(
     (_value: string) => {
-      console.log('123123');
       onChangeInputText(_value);
       onSideEffectChange?.();
     },

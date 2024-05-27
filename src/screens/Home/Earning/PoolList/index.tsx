@@ -96,6 +96,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const [selectedPoolOpt, setSelectedPoolOpt] = React.useState<YieldPoolInfo | undefined>(undefined);
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
+  const { currencyData } = useSelector((state: RootState) => state.price);
   const chainsByAccountType = useGetChainSlugs();
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
@@ -237,10 +238,11 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
             onPressItem(chainInfoMap[item.chain].slug, item);
           }}
           poolInfo={item}
+          currencyData={currencyData}
         />
       );
     },
-    [chainInfoMap, onPressItem],
+    [chainInfoMap, currencyData, onPressItem],
   );
 
   const searchFunction = useCallback(

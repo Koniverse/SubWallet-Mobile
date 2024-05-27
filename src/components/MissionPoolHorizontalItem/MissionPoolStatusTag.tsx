@@ -11,32 +11,30 @@ interface Props {
 
 export const MissionPoolStatusTag = ({ data }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { getTagByTimeline } = useMissionPools();
+  const { getTagData } = useMissionPools();
 
   if (!data.tags || !data.tags.length) {
     return null;
   }
 
-  const tagData = getTagByTimeline(data);
-  let textColor = tagData.theme;
+  const tagData = getTagData(data, true);
+  if (!tagData) {
+    return <></>;
+  }
   let _theme = tagData.theme;
 
   if (tagData.theme && ['success', 'warning', 'error'].includes(tagData.theme)) {
     _theme = `color${capitalize(tagData.theme)}`;
   }
 
-  const name = tagData.name;
-  const iconWeight = tagData.iconWeight;
-  const icon = tagData.icon;
-
   return (
     <Tag
       shape={'round'}
-      icon={<Icon size={'xs'} phosphorIcon={icon} weight={iconWeight} iconColor={theme[_theme]} />}
+      icon={<Icon size={'xs'} phosphorIcon={tagData.icon} weight={tagData.iconWeight} iconColor={theme[_theme]} />}
       bgType={'default'}
-      bgColor={textColor === 'gray' ? 'rgba(217, 217, 217, 0.1)' : undefined}
-      color={textColor}>
-      {name}
+      bgColor={tagData.theme === 'gray' ? 'rgba(217, 217, 217, 0.1)' : undefined}
+      color={tagData.theme}>
+      {tagData.name}
     </Tag>
   );
 };

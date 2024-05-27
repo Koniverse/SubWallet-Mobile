@@ -12,8 +12,11 @@ export interface SwNumberProps {
   size?: number;
   textStyle?: TextStyle;
   subFloatNumber?: boolean;
-  prefix?: string;
-  suffix?: string;
+  subFloatUnit?: boolean;
+  subFloatUnitStyle?: TextStyle;
+  subFloatUnitFontSize?: number;
+  prefix?: React.ReactNode;
+  suffix?: React.ReactNode;
   formatType?: 'default' | 'balance' | 'custom';
   customFormatter?: NumberFormatter;
   metadata?: Record<string, number>;
@@ -69,6 +72,9 @@ const Number: React.FC<SwNumberProps> = props => {
     customFormatter,
     suffix,
     subFloatNumber,
+    subFloatUnit,
+    subFloatUnitStyle,
+    subFloatUnitFontSize,
     value,
     intColor = '#fff',
     intOpacity = 1,
@@ -141,11 +147,14 @@ const Number: React.FC<SwNumberProps> = props => {
     <View style={[{ flexDirection: 'row', alignItems: 'flex-end' }, style]}>
       {prefix && (
         <Typography.Text
-          style={{
-            ...unitStyle,
-            ...textStyle,
-            fontSize: integerFontSize,
-          }}>
+          style={[
+            {
+              ...unitStyle,
+              ...textStyle,
+              fontSize: subFloatUnit ? subFloatUnitFontSize : integerFontSize,
+            },
+            subFloatUnit && subFloatUnitStyle,
+          ]}>
           {prefix}
         </Typography.Text>
       )}

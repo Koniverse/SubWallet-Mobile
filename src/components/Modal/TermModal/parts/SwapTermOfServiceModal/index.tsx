@@ -27,6 +27,7 @@ export const SwapTermOfServiceModal = ({ modalVisible, setModalVisible, onPressA
       content={content}
       disabledOnPressBackDrop={true}
       showAcceptBtn={false}
+      hideWhenCloseApp={false}
       beforeContent={
         'You’re using third-party swap providers, which may contain inherent risks. Please read the following carefully:'
       }

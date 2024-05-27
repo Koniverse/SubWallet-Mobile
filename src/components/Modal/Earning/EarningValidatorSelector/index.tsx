@@ -4,7 +4,7 @@ import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
-import { Keyboard, ListRenderItemInfo } from 'react-native';
+import { Keyboard, ListRenderItemInfo, Platform } from 'react-native';
 import { StakingValidatorItem } from 'components/common/StakingValidatorItem';
 import { getValidatorKey } from 'utils/transaction/stake';
 import { useSelectValidators } from 'hooks/screen/Transaction/useSelectValidators';
@@ -34,6 +34,7 @@ import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { EmptyValidator } from 'components/EmptyValidator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ValidatorDataType } from 'types/earning';
+import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -165,11 +166,21 @@ export const EarningValidatorSelector = forwardRef(
       onInitValidators,
       onAutoSelectValidator,
     } = useSelectValidators(items, maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
+    const { keyboardHeight } = useKeyboardVisible();
     const defaultValueRef = useRef({ _default: '_', selected: '_' });
     const [detailItem, setDetailItem] = useState<ValidatorDataType | undefined>(undefined);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
 
-    const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - insets.bottom - insets.top - 50;
+    const OFFSET_BOTTOM = useMemo(
+      () =>
+        deviceHeight -
+        STATUS_BAR_HEIGHT -
+        insets.bottom -
+        insets.top -
+        50 -
+        (Platform.OS === 'android' ? keyboardHeight : 0),
+      [insets.bottom, insets.top, keyboardHeight],
+    );
 
     const [sortSelection, setSortSelection] = useState<SortKey>(SortKey.DEFAULT);
     const fewValidators = changeValidators.length > 1;

@@ -433,7 +433,8 @@
     "learnMore": "了解更多",
     "withdraw": "Withdraw",
     "cancelUnstake": "Cancel unstake",
-    "exploreEarningOptions": "Explore earning options"
+    "exploreEarningOptions": "Explore earning options",
+    "enterAstarPortal": "登录Astar portal"
   },
   "inputLabel": {
     "selectAcc": "选择账户",
@@ -1155,6 +1156,7 @@
     "manageWalletConnectDapp": "管理WalletConnect Dapp",
     "appLock": "解锁要求",
     "walletTheme": "钱包主题",
+    "currency": "Currency",
     "language": "语言",
     "notifications": "通知",
     "neverRequire": "永不",
@@ -1169,7 +1171,8 @@
     "expiredConnectionTitle": "连接已过期",
     "unsupportedNetworkTitle": "未支持的网络",
     "insufficientBalance": "Insufficient balance",
-    "payAttention": "请注意！"
+    "payAttention": "请注意！",
+    "enterAstarPortal": "登录Astar portal"
   },
   "warningMessage": {
     "passwordTooShort": "密码过短",
@@ -1203,7 +1206,8 @@
     "unsupportedNetworkMessage": "至少有1项已选的网络不可用",
     "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed.",
     "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance",
-    "crossChainTransferWarningMessage": "请勿将资产跨链转移到中心化交易所（CEX）上的地址，以防止资产丢失。"
+    "crossChainTransferWarningMessage": "请勿将资产跨链转移到中心化交易所（CEX）上的地址，以防止资产丢失。",
+    "enterAstarPortalMessage": "请导航到Astar portal以查看并管理你在Astar dApp staking v3里的质押"
   },
   "errorMessage": {
     "invalidPinCode": "PIN码无效",

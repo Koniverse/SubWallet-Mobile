@@ -102,7 +102,6 @@ export function getTokenNetworkKeyMap(): Record<string, string[]> {
         result[tgKey].push(networkKey);
       }
     } catch (e) {
-      console.log(networkKey, chainInfo);
       return;
     }
   });
