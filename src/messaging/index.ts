@@ -54,6 +54,7 @@ import {
   NominatorMetadata,
   OptionInputAddress,
   PriceJson,
+  RequestAccountBatchExportV2,
   RequestAccountCreateExternalV2,
   RequestAccountCreateHardwareMultiple,
   RequestAccountCreateHardwareV2,
@@ -623,6 +624,12 @@ export async function exportAccounts(
   password: string,
 ): Promise<{ exportedJson: KeyringPairs$Json }> {
   return sendMessage('pri(accounts.batchExport)', { addresses, password });
+}
+
+export async function exportAccountsV2(
+  request: RequestAccountBatchExportV2,
+): Promise<{ exportedJson: KeyringPairs$Json }> {
+  return sendMessage('pri(accounts.batchExportV2)', request);
 }
 
 export async function checkPublicAndPrivateKey(

@@ -8,6 +8,7 @@ import { RootState } from 'stores/index';
 import {
   Copy,
   CopySimple,
+  Export,
   FileArrowDown,
   MagnifyingGlass,
   PlusCircle,
@@ -36,6 +37,7 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import useGoHome from 'hooks/screen/useGoHome';
+import { AccountExportSelector } from 'screens/Account/AccountExportSelector';
 
 const renderListEmptyComponent = () => {
   return (
@@ -65,6 +67,7 @@ export const AccountsScreen = ({
     params: { pathName },
   },
 }: AccountsScreenProps) => {
+  const accountExportRef = useRef<ModalRef>();
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
@@ -332,6 +335,10 @@ export const AccountsScreen = ({
         autoFocus={false}
         afterListItem={renderFooterComponent()}
         placeholder={i18n.placeholder.accountName}
+        rightIconOption={{
+          icon: ({ color }) => <Icon phosphorIcon={Export} weight={'fill'} iconColor={color} size={'md'} />,
+          onPress: () => accountExportRef && accountExportRef.current?.onOpenModal(),
+        }}
       />
 
       <AccountCreationArea
@@ -418,6 +425,8 @@ export const AccountsScreen = ({
         onCompleteModal={onCompleteDeleteModal}
         setVisible={setDeleteVisible}
       />
+
+      <AccountExportSelector items={accounts} accountExportRef={accountExportRef} />
     </>
   );
 };
