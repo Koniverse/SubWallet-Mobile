@@ -1,7 +1,7 @@
 import AvatarGroup from 'components/common/AvatarGroup';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { DotsThree, FileArrowDown, X } from 'phosphor-react-native';
+import { DotsThree, FileArrowDown, Warning, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, ListRenderItemInfo, Platform, ScrollView, View } from 'react-native';
 import { InputFile } from 'components/common/Field/InputFile';
@@ -14,7 +14,7 @@ import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from 'messaging/ind
 import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { Warning } from 'components/Warning';
+import { Warning as WarningComponent } from 'components/Warning';
 import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
@@ -22,7 +22,7 @@ import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFo
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { Button, Icon, SelectItem, SwModal, Typography } from 'components/design-system-ui';
+import { Button, Icon, PageIcon, SelectItem, SwModal, Typography } from 'components/design-system-ui';
 import createStyles from './styles';
 import { getButtonIcon } from 'utils/button';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
@@ -33,6 +33,7 @@ import { hexToU8a, isHex } from '@polkadot/util';
 import { ethereumEncode, keccakAsU8a, secp256k1Expand } from '@polkadot/util-crypto';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { FontMedium } from 'styles/sharedStyles';
 
 const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
   let currentAccountsInfo: ResponseJsonGetAccountInfo[] = [];
@@ -48,11 +49,8 @@ const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
 };
 
 function formatJsonFile(jsonFile: any) {
-  // @ts-ignore
-  const filteredJsonFileAccounts = jsonFile.accounts.filter(acc => !acc.meta.isHardware);
   let newJsonFile = jsonFile;
   if (isKeyringPairs$Json(jsonFile)) {
-    newJsonFile.accounts = filteredJsonFileAccounts;
     newJsonFile.accounts.forEach((acc: { meta: { genesisHash: string } }) => (acc.meta.genesisHash = ''));
     return newJsonFile;
   } else {
@@ -93,6 +91,7 @@ export const RestoreJson = () => {
   const [isBusy, setIsBusy] = useState(false);
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
   const [visible, setVisible] = useState(false);
+  const [warningModalVisible, setWarningModalVisible] = useState(false);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
 
   const addresses = useMemo(() => accountsInfo.map(acc => acc.address), [accountsInfo]);
@@ -134,6 +133,11 @@ export const RestoreJson = () => {
         setAccountsInfo(() => []);
         if (isMultiple) {
           navigation.navigate('MigratePassword');
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          });
         }
       })
       .catch(e => {
@@ -211,8 +215,18 @@ export const RestoreJson = () => {
     onChangeValue('fileName')(`${fileInfo[0].name}`);
     RNFS.readFile(fileUri, 'ascii')
       .then(res => {
+        const file = JSON.parse(res) as KeyringPair$Json | KeyringPairs$Json;
+        if ('accounts' in file) {
+          const isIncludeHardware = file.accounts.some(
+            acc => acc.meta.isHardware && acc.meta.hardwareType === 'ledger',
+          );
+
+          if (isIncludeHardware) {
+            setWarningModalVisible(true);
+          }
+        }
         onChangeValue('file')(res);
-        _onReadFile(JSON.parse(res) as KeyringPair$Json | KeyringPairs$Json);
+        _onReadFile(file);
       })
       .catch(() => {
         setFileError(true);
@@ -221,7 +235,6 @@ export const RestoreJson = () => {
 
   const renderAccount = useCallback(
     ({ item }: ListRenderItemInfo<ResponseJsonGetAccountInfo>) => {
-      console.log('item', item);
       return (
         <View style={{ marginLeft: -theme.margin, marginRight: -theme.margin }}>
           <SelectAccountItem isShowEditBtn={false} key={item.address} address={item.address} accountName={item.name} />
@@ -251,7 +264,7 @@ export const RestoreJson = () => {
 
   useEffect(() => {
     let amount = true;
-    if (isShowPasswordField) {
+    if (isShowPasswordField && !warningModalVisible) {
       setTimeout(() => {
         if (amount) {
           focus('password')();
@@ -283,7 +296,7 @@ export const RestoreJson = () => {
           <Typography.Text style={styles.title}>{i18n.importAccount.importJsonSubtitle}</Typography.Text>
           <InputFile disabled={isBusy} onChangeResult={_onChangeFile} fileName={formState.data.fileName} />
           {isFileError && (
-            <Warning
+            <WarningComponent
               style={styles.error}
               title={i18n.warningTitle.error}
               message={i18n.warningMessage.invalidJsonFile}
@@ -352,6 +365,39 @@ export const RestoreJson = () => {
           style={styles.accountList}
           contentContainerStyle={{ gap: theme.sizeXS }}
         />
+      </SwModal>
+
+      <SwModal
+        isUseModalV2
+        setVisible={setWarningModalVisible}
+        modalVisible={warningModalVisible}
+        footer={
+          <Button
+            onPress={() => {
+              setTimeout(() => {
+                focus('password')();
+              }, 300);
+              setWarningModalVisible(false);
+            }}>
+            I understand
+          </Button>
+        }
+        modalTitle={'Pay attention'}
+        titleTextAlign={'center'}>
+        <View style={{ paddingVertical: theme.padding, alignItems: 'center', gap: theme.padding }}>
+          <PageIcon icon={Warning} color={theme.colorWarning} />
+
+          <Typography.Text
+            style={{
+              color: theme.colorTextTertiary,
+              ...FontMedium,
+              textAlign: 'center',
+            }}>
+            {
+              'Your imported Ledger account(s) will show up as watch-only account(s) because Ledger is not yet supported on SubWallet mobile app'
+            }
+          </Typography.Text>
+        </View>
       </SwModal>
     </ContainerWithSubHeader>
   );
