@@ -71,6 +71,7 @@ interface Props<T> {
     groupBy: (item: T) => string;
     sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
+  showAccountSignModeIcon?: boolean;
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
@@ -110,6 +111,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     rightIconOption,
     level,
     grouping,
+    showAccountSignModeIcon,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -214,6 +216,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
             item={item}
             selectedValueMap={selectedValueMap}
             onSelectItem={_onSelectItem}
+            showAccountSignModeIcon={showAccountSignModeIcon}
             onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
           />
         </>

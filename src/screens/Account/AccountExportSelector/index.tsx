@@ -173,7 +173,7 @@ export const AccountExportSelector = ({ items, accountExportRef }: Props) => {
         selectModalType={'multi'}
         selectModalItemType={'account'}
         placeholder={i18n.placeholder.accountName}
-        title={i18n.header.selectAccount}
+        title={i18n.header.exportAccount}
         ref={accountExportRef}
         closeModalAfterSelect={false}
         applyBtn={{
@@ -185,6 +185,7 @@ export const AccountExportSelector = ({ items, accountExportRef }: Props) => {
         filterFunction={filterFunction}
         isShowFilterBtn={true}
         filterOptions={filterOptions}
+        showAccountSignModeIcon={true}
         isShowInput={true}>
         <>
           <SwFullSizeModal
