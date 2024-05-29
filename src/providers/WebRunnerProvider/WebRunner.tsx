@@ -300,18 +300,25 @@ interface WebRunnerControlAction {
 
 const now = new Date().getTime();
 
+let needFallBack = false;
+
 const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${now}`;
 
 const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
 const iosVersion = getMajorVersionIOS();
-const osWebRunnerURL =
-  Platform.OS === 'android'
-    ? 'file:///android_asset/Web.bundle/androidSite'
-    : iosVersion >= 16.5
-    ? `http://localhost:${WEB_SERVER_PORT}/site`
-    : `http://localhost:${WEB_SERVER_PORT}/oldSite`;
 
-const BASE_URI = !devWebRunnerURL || devWebRunnerURL === '' ? osWebRunnerURL : devWebRunnerURL;
+const getBaseUri = () => {
+  const osWebRunnerURL =
+    Platform.OS === 'android'
+      ? 'file:///android_asset/Web.bundle/androidSite'
+      : iosVersion >= 16.4 && !needFallBack
+      ? `http://localhost:${WEB_SERVER_PORT}/site`
+      : `http://localhost:${WEB_SERVER_PORT}/oldSite`;
+
+  return !devWebRunnerURL || devWebRunnerURL === '' ? osWebRunnerURL : devWebRunnerURL;
+};
+
+let BASE_URI = getBaseUri();
 
 const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlAction): WebRunnerGlobalState => {
   const { type } = action;
@@ -414,7 +421,18 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
           onLoadStart={onLoadStart}
           onLoadProgress={onLoadProgress}
           onError={e => console.debug('### WebRunner error', e)}
-          onHttpError={e => console.debug('### WebRunner HttpError', e)}
+          onHttpError={e => {
+            const old = needFallBack;
+            needFallBack = true;
+            if (!old) {
+              BASE_URI = getBaseUri();
+
+              webRunnerHandler.sleep();
+              webRunnerHandler.active();
+              webRunnerHandler.reload();
+            }
+            console.debug('### WebRunner HttpError', e);
+          }}
           javaScriptEnabled={true}
           allowFileAccess={true}
           allowUniversalAccessFromFileURLs={true}
