@@ -86,7 +86,9 @@ const PasswordModal = ({
       onChangeValue('password')('');
       onUpdateErrors('password')([]);
     } else {
-      focus('password')();
+      setTimeout(() => {
+        focus('password')();
+      }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
@@ -119,10 +121,10 @@ const PasswordModal = ({
         )}
 
         <Button
-          style={{ marginVertical: 16 }}
+          style={{ marginTop: !!errors.length ? 0 : 8 }}
           loading={isBusy}
           onPress={onPress}
-          disabled={!formState.data.password || formState.errors.password.length > 0 || !isNetConnected || isBusy}>
+          disabled={!formState.data.password || errors.length > 0 || !isNetConnected || isBusy}>
           {i18n.common.confirm}
         </Button>
       </View>

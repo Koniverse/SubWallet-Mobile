@@ -371,6 +371,8 @@ export const RestoreJson = () => {
         isUseModalV2
         setVisible={setWarningModalVisible}
         modalVisible={warningModalVisible}
+        isAllowSwipeDown={false}
+        disabledOnPressBackDrop={true}
         footer={
           <Button
             onPress={() => {

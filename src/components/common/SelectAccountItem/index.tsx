@@ -19,6 +19,7 @@ interface Props {
   onPressDetailBtn?: () => void;
   onSelectAccount?: (selectAccount: string) => void;
   isShowEditBtn?: boolean;
+  isShowMultiCheck?: boolean;
 }
 
 export const SelectAccountItem = ({
@@ -29,6 +30,7 @@ export const SelectAccountItem = ({
   onPressDetailBtn,
   onSelectAccount,
   isShowEditBtn = true,
+  isShowMultiCheck = false,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const signMode = useGetAccountSignModeByAddress(address);
@@ -97,7 +99,7 @@ export const SelectAccountItem = ({
         </View>
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
-        {isSelected && (
+        {!isShowMultiCheck && isSelected && (
           <View style={{ paddingHorizontal: theme.paddingSM - 2 }}>
             <Icon phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} size={'sm'} weight={'fill'} />
           </View>
@@ -116,6 +118,17 @@ export const SelectAccountItem = ({
             icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme.colorTextTertiary} />}
             onPress={onPressDetailBtn}
           />
+        )}
+
+        {isShowMultiCheck && (
+          <View style={{ paddingHorizontal: theme.paddingSM }}>
+            <Icon
+              phosphorIcon={CheckCircle}
+              iconColor={isSelected ? theme.colorSuccess : theme.colorTextLight4}
+              size={'sm'}
+              weight={'fill'}
+            />
+          </View>
         )}
       </View>
     </TouchableOpacity>

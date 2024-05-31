@@ -57,6 +57,7 @@ export type RootStackParamList = {
   AboutSubWallet: undefined;
   AccountExport: { address: string };
   ExportJson: { address: string };
+  ExportAllAccount: undefined;
   BrowserHome?: NavigatorScreenParams<undefined> | undefined;
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };

@@ -96,6 +96,7 @@ import {
 import { mmkvStore } from 'utils/storage';
 import { EarningPreview } from 'screens/EarningPreview';
 import { EarningPreviewPools } from 'screens/EarningPreview/EarningPreviewPools';
+import { ExportAllAccount } from 'screens/Account/ExportAllAccount';
 
 interface Props {
   isAppReady: boolean;
@@ -650,6 +651,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="AddProvider" component={AddProvider} />
                 <Stack.Screen name="EditAccount" component={AccountDetail} />
                 <Stack.Screen name="RestoreJson" component={RestoreJson} options={{ gestureEnabled: false }} />
+                <Stack.Screen
+                  name="ExportAllAccount"
+                  component={ExportAllAccount}
+                  options={{ gestureEnabled: false }}
+                />
                 <Stack.Screen
                   name="ImportSecretPhrase"
                   component={ImportSecretPhrase}

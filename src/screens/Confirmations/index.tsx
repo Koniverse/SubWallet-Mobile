@@ -37,6 +37,8 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Portal } from '@gorhom/portal';
+import { getSignMode } from 'utils/account';
+import { AccountSignMode } from 'types/signer';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
   return {
@@ -196,7 +198,8 @@ export const Confirmations = () => {
         isMessage = confirmation.type === 'evmSignatureRequest';
       }
 
-      if (account?.isReadOnly || !canSign) {
+      const signMode = getSignMode(account);
+      if (account?.isReadOnly || signMode === AccountSignMode.LEDGER || !canSign) {
         return (
           <NotSupportConfirmation
             account={account}
