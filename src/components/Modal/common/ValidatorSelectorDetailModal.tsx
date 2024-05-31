@@ -148,13 +148,17 @@ export const ValidatorSelectorDetailModal = ({
           {!!maxPoolMembersValue && !!ratePercent && (isParaChain || isRelayChain) && (
             <MetaInfo.Default label={isParaChain ? 'Delegator' : 'Nominator'} labelAlign="top">
               <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                <Number decimal={0} value={nominatorCount} intColor={getSchemaColor(ratePercent, theme)} />
+                <Number size={14} decimal={0} value={nominatorCount} intColor={getSchemaColor(ratePercent, theme)} />
                 <Typography.Text
-                  size={'md'}
                   style={{ paddingHorizontal: theme.paddingXXS / 2, color: getSchemaColor(ratePercent, theme) }}>
                   {'/'}
                 </Typography.Text>
-                <Number decimal={0} value={maxPoolMembersValue} intColor={getSchemaColor(ratePercent, theme)} />
+                <Number
+                  size={14}
+                  decimal={0}
+                  value={maxPoolMembersValue}
+                  intColor={getSchemaColor(ratePercent, theme)}
+                />
               </View>
             </MetaInfo.Default>
           )}

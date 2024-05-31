@@ -76,18 +76,24 @@ export const PoolSelectorDetailModal = ({ detailModalVisible, detailItem, setVis
             value={bondedAmount || '0'}
           />
 
-          {!maxPoolMembersValue && <MetaInfo.Number label={i18n.inputLabel.totalMembers} value={memberCounter} />}
+          {!maxPoolMembersValue && (
+            <MetaInfo.Number label={'Member'} value={memberCounter} valueColorSchema={'light'} />
+          )}
 
           {!!maxPoolMembersValue && !!ratePercent && (
             <MetaInfo.Default label={'Member'}>
               <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                <Number decimal={0} value={memberCounter} intColor={getSchemaColor(ratePercent, theme)} />
+                <Number size={14} decimal={0} value={memberCounter} intColor={getSchemaColor(ratePercent, theme)} />
                 <Typography.Text
-                  size={'md'}
                   style={{ paddingHorizontal: theme.paddingXXS / 2, color: getSchemaColor(ratePercent, theme) }}>
                   {'/'}
                 </Typography.Text>
-                <Number decimal={0} value={maxPoolMembersValue} intColor={getSchemaColor(ratePercent, theme)} />
+                <Number
+                  size={14}
+                  decimal={0}
+                  value={maxPoolMembersValue}
+                  intColor={getSchemaColor(ratePercent, theme)}
+                />
               </View>
             </MetaInfo.Default>
           )}
