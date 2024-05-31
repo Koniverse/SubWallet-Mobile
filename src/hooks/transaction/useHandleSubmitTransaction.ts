@@ -7,7 +7,6 @@ import i18n from 'utils/i18n/i18n';
 import { AppModalContext } from 'providers/AppModalContext';
 import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
-import BigN from 'bignumber.js';
 
 export const insufficientMessages = ['残高不足', 'Недостаточный баланс', 'Insufficient balance'];
 
@@ -58,15 +57,13 @@ const useHandleSubmitTransaction = (
             const _data = handleDataForInsufficientAlert(estimateFee);
             Alert.alert(
               i18n.warningTitle.insufficientBalance,
-              new BigN(_data.availableBalance).isZero()
-                ? (i18n.formatString(
-                    i18n.warningMessage.insufficientBalanceMessage,
-                    _data.availableBalance,
-                    _data.symbol,
-                    _data.existentialDeposit,
-                    _data.maintainBalance || '12', // ED + 2 for Vara Network
-                  ) as string)
-                : i18n.warningMessage.insufficientBalanceMessageV2,
+              i18n.formatString(
+                i18n.warningMessage.insufficientBalanceMessage,
+                _data.availableBalance,
+                _data.symbol,
+                _data.existentialDeposit,
+                _data.maintainBalance || '12', // ED + 2 for Vara Network
+              ) as string,
               [
                 {
                   text: 'I understand',

@@ -23,8 +23,8 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.AccountGroup
           addresses={addressList}
-          content={i18n.formatString(i18n.common.selectedValidators, data.selectedValidators.length)}
-          label={data.type === StakingType.POOLED ? i18n.inputLabel.pool : i18n.inputLabel.validators}
+          content={i18n.formatString(i18n.common.selectedValidators, data.selectedValidators.length) as string}
+          label={data.type === StakingType.POOLED ? i18n.inputLabel.pool : i18n.inputLabel.validator}
         />
 
         <MetaInfo.Number decimals={decimals} label={i18n.inputLabel.amount} suffix={symbol} value={data.amount} />

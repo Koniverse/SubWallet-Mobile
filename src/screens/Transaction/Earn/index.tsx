@@ -883,12 +883,12 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [accountSelectorList.length, chainInfoMap, checkValidAccountLoading, navigation, poolChain]);
 
   useEffect(() => {
-    if (!compound || redirectFromPreviewRef.current) {
+    if (!isLoading && !checkValidAccountLoading && (!compound || redirectFromPreviewRef.current)) {
       isPressInfoBtnRef.current = false;
-      setTimeout(() => setDetailModalVisible(true), 300);
+      setTimeout(() => setDetailModalVisible(true), 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!compound]);
+  }, [!!compound, isLoading, checkValidAccountLoading]);
 
   const isUnstakeAll = useMemo(() => {
     if (compound) {
