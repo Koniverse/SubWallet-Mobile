@@ -10,11 +10,11 @@ import { deviceWidth } from 'constants/index';
 import Typography from 'components/design-system-ui/typography';
 
 interface Props {
-  title: string;
+  title: React.ReactNode | string;
   description: React.ReactNode | string;
   iconColor: string;
   titleColor?: string;
-  icon: PhosphorIcon;
+  icon?: PhosphorIcon;
 }
 
 const classesStyles: StyleProp<any> = {
@@ -61,14 +61,18 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
         />
       </View>
       <View style={styles.content}>
-        <RenderHtml
-          contentWidth={deviceWidth}
-          systemFonts={['PlusJakartaSans-Medium']}
-          classesStyles={classesStyles}
-          tagsStyles={tagStyles}
-          source={{ html: `<span style="color: ${titleColor || 'white'}" class="title">${title}</span>` }}
-          defaultTextProps={{ allowFontScaling: false }}
-        />
+        {typeof title === 'string' ? (
+          <RenderHtml
+            contentWidth={deviceWidth}
+            systemFonts={['PlusJakartaSans-Medium']}
+            classesStyles={classesStyles}
+            tagsStyles={tagStyles}
+            source={{ html: `<span style="color: ${titleColor || 'white'}" class="title">${title}</span>` }}
+            defaultTextProps={{ allowFontScaling: false }}
+          />
+        ) : (
+          title
+        )}
         {typeof description === 'string' ? (
           <RenderHtml
             contentWidth={100}

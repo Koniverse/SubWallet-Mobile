@@ -81,6 +81,7 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
       return TokenApproveConfirmation;
     case ExtrinsicType.SWAP:
       return SwapTransactionConfirmation;
+    case ExtrinsicType.STAKING_SET_CLAIM_PERMISSIONLESS:
     default:
       return BaseTransactionConfirmation;
   }

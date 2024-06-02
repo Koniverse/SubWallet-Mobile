@@ -32,10 +32,11 @@ type Props = {
   inputAsset: _ChainAsset;
   isShowBalance: boolean;
   rewardHistories: EarningRewardHistoryItem[];
+  isAutoClaim?: boolean;
 };
 
 const EarningRewardInfo: React.FC<Props> = (props: Props) => {
-  const { inputAsset, compound, isShowBalance, rewardHistories, poolInfo } = props;
+  const { inputAsset, compound, isShowBalance, rewardHistories, poolInfo, isAutoClaim } = props;
   const { slug, type } = compound;
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
@@ -154,7 +155,11 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
               <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Visit Astar portal'}</Typography.Text>
             )}
             {canClaim && (
-              <Button size="xs" onPress={onPressWithdraw}>
+              <Button
+                activeStyle={{ backgroundColor: theme['gray-2'] }}
+                style={{ backgroundColor: isAutoClaim ? theme['gray-2'] : undefined }}
+                size="xs"
+                onPress={onPressWithdraw}>
                 {type === YieldPoolType.NATIVE_STAKING && isDAppStaking
                   ? 'Check rewards'
                   : i18n.buttonTitles.claimRewards}

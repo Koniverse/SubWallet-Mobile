@@ -8,7 +8,9 @@ import { SWTransactionResponse } from '@subwallet/extension-base/services/transa
 import {
   EarningStatus,
   NominationPoolInfo,
+  NominationYieldPositionInfo,
   OptimalYieldPathParams,
+  PalletNominationPoolsClaimPermission,
   ValidatorInfo,
   YieldPoolType,
   YieldStepType,
@@ -74,6 +76,8 @@ import reformatAddress from 'utils/index';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { EarningAutoClaimItem } from 'components/Item/Earning/EarningAutoClaimItem';
+import { EarningManageClaimPermissions } from 'components/Modal/Earning/EarningManageClaimPermissions';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -210,6 +214,11 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [isShowAlert, setIsShowAlert] = useState<boolean>(false);
   const [useParamValidator, setUseParamValidator] = useState<boolean>(redirectFromPreviewRef.current);
   const [checkValidAccountLoading, setCheckValidAccountLoading] = useState<boolean>(redirectFromPreviewRef.current);
+  const [manageAutoClaimModalVisible, setManageAutoClaimModalVisible] = useState<boolean>(false);
+  const [stateAutoClaimManage, setAutoStateClaimManage] = useState<PalletNominationPoolsClaimPermission>(
+    (compound as NominationYieldPositionInfo)?.claimPermissionStatus ||
+      PalletNominationPoolsClaimPermission.PERMISSIONED,
+  );
 
   const isDisabledButton = useMemo(
     () =>
@@ -553,6 +562,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             address: from,
             amount: _currentAmount,
             selectedPool,
+            claimPermissions: stateAutoClaimManage,
           } as SubmitJoinNominationPool;
         } else {
           return {
@@ -677,6 +687,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     processState.feeStructure,
     processState.steps,
     slug,
+    stateAutoClaimManage,
   ]);
 
   const onBack = useCallback(() => {
@@ -717,7 +728,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [slug, firstStep, navigation]);
 
   useEffect(() => {
-    let timer: NodeJS.Timer;
+    if (compound) {
+      setAutoStateClaimManage((compound as NominationYieldPositionInfo)?.claimPermissionStatus);
+    }
+  }, [compound]);
+
+  useEffect(() => {
+    let timer: string | number | NodeJS.Timeout | undefined;
     let timeout: NodeJS.Timeout;
 
     if (isLoading && redirectFromPreviewRef.current) {
@@ -1031,6 +1048,25 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     }
   })();
 
+  const handleSetModeAutoCompound = useCallback((mode: PalletNominationPoolsClaimPermission) => {
+    return new Promise(resolve => {
+      setAutoStateClaimManage(mode);
+      resolve(mode);
+    });
+  }, []);
+
+  const openManageAutoClaimModal = useCallback(() => {
+    setManageAutoClaimModalVisible(true);
+  }, []);
+
+  const handleToggleAutoCompoundSwitch = useCallback((checked: boolean) => {
+    setAutoStateClaimManage(
+      checked
+        ? PalletNominationPoolsClaimPermission.PERMISSIONLESS_COMPOUND
+        : PalletNominationPoolsClaimPermission.PERMISSIONED,
+    );
+  }, []);
+
   return (
     <>
       {!isTransactionDone ? (
@@ -1136,18 +1172,27 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                     />
 
                     {poolType === YieldPoolType.NOMINATION_POOL && (
-                      <EarningPoolSelector
-                        ref={poolSelectorRef}
-                        from={currentFrom}
-                        slug={slug}
-                        chain={poolChain}
-                        onSelectItem={onChangeTarget}
-                        poolLoading={targetLoading}
-                        targetPool={poolTarget}
-                        disabled={submitLoading}
-                        setForceFetchValidator={setForceFetchValidator}
-                        defaultValidatorAddress={compound ? '' : defaultTarget.current}
-                      />
+                      <>
+                        <EarningPoolSelector
+                          ref={poolSelectorRef}
+                          from={currentFrom}
+                          slug={slug}
+                          chain={poolChain}
+                          onSelectItem={onChangeTarget}
+                          poolLoading={targetLoading}
+                          targetPool={poolTarget}
+                          disabled={submitLoading}
+                          setForceFetchValidator={setForceFetchValidator}
+                          defaultValidatorAddress={compound ? '' : defaultTarget.current}
+                        />
+
+                        <EarningAutoClaimItem
+                          style={{ marginTop: theme.sizeXXS, marginBottom: theme.sizeXS }}
+                          value={stateAutoClaimManage}
+                          onValueChange={handleToggleAutoCompoundSwitch}
+                          openManageAutoClaimModal={openManageAutoClaimModal}
+                        />
+                      </>
                     )}
 
                     {poolType === YieldPoolType.NATIVE_STAKING && (
@@ -1212,6 +1257,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       navigation.goBack();
                     }
                   }}
+                />
+
+                <EarningManageClaimPermissions
+                  modalVisible={manageAutoClaimModalVisible}
+                  setModalVisible={setManageAutoClaimModalVisible}
+                  currentMode={stateAutoClaimManage}
+                  onSubmit={handleSetModeAutoCompound}
                 />
               </>
             )}

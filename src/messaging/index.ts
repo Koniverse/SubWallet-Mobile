@@ -156,6 +156,7 @@ import {
   RequestYieldWithdrawal,
   ValidateYieldProcessParams,
   YieldPoolInfo,
+  RequestSetClaimPermissionless,
 } from '@subwallet/extension-base/types';
 import type { KeyringPair$Json } from '@subwallet/keyring/types';
 import type { KeyringAddress, KeyringPairs$Json } from '@subwallet/ui-keyring/types';
@@ -1536,6 +1537,10 @@ export async function yieldSubmitNominationPoolUnstaking(data: RequestStakePooli
 
 export async function yieldSubmitRedeem(data: RequestYieldFastWithdrawal) {
   return sendMessage('pri(yield.submitRedeem)', data);
+}
+
+export async function yieldSubmitSetClaimPermissions(data: RequestSetClaimPermissionless) {
+  return sendMessage('pri(yield.setClaimPermissionless.submit)', data);
 }
 
 /* Earning */

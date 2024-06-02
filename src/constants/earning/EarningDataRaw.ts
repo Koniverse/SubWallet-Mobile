@@ -1,4 +1,4 @@
-import { YieldPoolType } from '@subwallet/extension-base/types';
+import { PalletNominationPoolsClaimPermission, YieldPoolType } from '@subwallet/extension-base/types';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 
 export const EARNING_POOL_DETAIL_DATA: StaticDataProps[] = [
@@ -241,3 +241,20 @@ export const UNSTAKE_ALERT_DATA: StaticDataProps[] = [
     ],
   },
 ];
+
+export const SET_CLAIM_PERMISSIONS = {
+  [PalletNominationPoolsClaimPermission.PERMISSIONLESS_COMPOUND]: {
+    title: 'Auto compound',
+    description: 'Your nomination pool staking rewards are auto compounded and staked',
+    icon: 'ArrowCircleDown',
+    iconColor: '#AADA62',
+    bgColor: 'lime',
+  },
+  [PalletNominationPoolsClaimPermission.PERMISSIONLESS_WITHDRAW]: {
+    title: 'Auto withdraw',
+    description: 'Your nomination pool staking rewards are auto withdrawn to your transferable balance',
+    icon: 'Pen',
+    iconColor: '#0078D9',
+    bgColor: 'blue',
+  },
+};
