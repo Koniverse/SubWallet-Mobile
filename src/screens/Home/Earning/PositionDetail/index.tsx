@@ -54,6 +54,14 @@ const Component: React.FC<Props> = (props: Props) => {
   const [state, setState] = React.useState({ num: 0 });
   const counter = useRef(0);
 
+  const isDisableStakeMore = useMemo(() => {
+    return (
+      poolInfo.type === YieldPoolType.LIQUID_STAKING &&
+      poolInfo.chain === 'parallel' &&
+      poolInfo.group === 'DOT-Polkadot'
+    );
+  }, [poolInfo.chain, poolInfo.group, poolInfo.type]);
+
   useEffect(() => {
     loadingRef.current = isLoading;
   }, [isLoading]);
@@ -246,6 +254,7 @@ const Component: React.FC<Props> = (props: Props) => {
               {poolInfo?.type === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
             </Button>
             <Button
+              disabled={isDisableStakeMore}
               block={true}
               type="secondary"
               icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}
