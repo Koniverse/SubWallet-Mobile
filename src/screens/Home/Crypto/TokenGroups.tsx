@@ -174,6 +174,11 @@ export const TokenGroups = () => {
       return;
     }
 
+    if (currentAccount && currentAccount.isHardware && currentAccount.hardwareType === 'ledger') {
+      showNoti(i18n.formatString(i18n.notificationMessage.accountTypeNoti, 'ledger') as string);
+      return;
+    }
+
     const onSuccess = () => {
       navigation.navigate('Drawer', {
         screen: 'TransactionAction',

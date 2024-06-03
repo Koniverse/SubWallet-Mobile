@@ -1271,6 +1271,7 @@
   },
   "notificationMessage": {
     "watchOnlyNoti": "使用しているアカウントはウォッチ専用です。資産を送信することはできません",
+    "accountTypeNoti": "The account you are using is {0}, you cannot send assets with it",
     "comingSoon": "近日公開",
     "pleaseTryAgain": "エラーが発生しました。もう一度やり直してください",
     "deleteNftCollectionSuccessfully": "NFTコレクションを正常に削除しました",

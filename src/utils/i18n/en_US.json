@@ -1271,6 +1271,7 @@
   },
   "notificationMessage": {
     "watchOnlyNoti": "The account you are using is watch-only, you cannot send assets with it",
+    "accountTypeNoti": "The account you are using is {0}, you cannot send assets with it",
     "comingSoon": "Coming soon",
     "pleaseTryAgain": "An error occurred, please try again",
     "deleteNftCollectionSuccessfully": "Deleted NFT collection successfully",

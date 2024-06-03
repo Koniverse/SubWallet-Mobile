@@ -1271,6 +1271,7 @@
   },
   "notificationMessage": {
     "watchOnlyNoti": "Tài khoản bạn đang sử dụng là tài khoản chỉ xem, bạn không thể gửi tài sản trên tài khoản này.",
+    "accountTypeNoti": "The account you are using is {0}, you cannot send assets with it",
     "comingSoon": "Sắp ra mắt",
     "pleaseTryAgain": "Có lỗi xảy ra. Vui lòng thử lại",
     "deleteNftCollectionSuccessfully": "Đã xóa bộ sưu tập NFT thành công",

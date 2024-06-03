@@ -1271,6 +1271,7 @@
   },
   "notificationMessage": {
     "watchOnlyNoti": "Аккаунт, который вы используете, предназначен только для просмотра, вы не можете отправлять активы с ним.",
+    "accountTypeNoti": "The account you are using is {0}, you cannot send assets with it",
     "comingSoon": "Уже скоро!",
     "pleaseTryAgain": "Произошла ошибка. Пожалуйста, попробуйте еще раз",
     "deleteNftCollectionSuccessfully": "Коллекция NFT успешно удалена",

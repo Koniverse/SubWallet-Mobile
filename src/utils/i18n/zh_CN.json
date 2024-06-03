@@ -1271,6 +1271,7 @@
   },
   "notificationMessage": {
     "watchOnlyNoti": "你正在使用仅可查看的账户，故无法发送资产",
+    "accountTypeNoti": "The account you are using is {0}, you cannot send assets with it",
     "comingSoon": "即将推出",
     "pleaseTryAgain": "发生了错误，请重试",
     "deleteNftCollectionSuccessfully": "NFT收藏集删除成功",

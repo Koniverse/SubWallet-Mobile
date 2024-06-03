@@ -153,6 +153,11 @@ export const TokenGroupsDetail = ({
       return;
     }
 
+    if (currentAccount && currentAccount.isHardware && currentAccount.hardwareType === 'ledger') {
+      showNoti(i18n.formatString(i18n.notificationMessage.accountTypeNoti, 'ledger') as string);
+      return;
+    }
+
     navigation.navigate('Drawer', {
       screen: 'TransactionAction',
       params: { screen: 'SendFund', params: { slug: tokenGroupSlug } },
@@ -162,6 +167,11 @@ export const TokenGroupsDetail = ({
   const _onOpenSwap = useCallback(() => {
     if (currentAccount && currentAccount.isReadOnly) {
       showNoti(i18n.notificationMessage.watchOnlyNoti);
+      return;
+    }
+
+    if (currentAccount && currentAccount.isHardware && currentAccount.hardwareType === 'ledger') {
+      showNoti(i18n.formatString(i18n.notificationMessage.accountTypeNoti, 'ledger') as string);
       return;
     }
 
