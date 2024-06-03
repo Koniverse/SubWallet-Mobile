@@ -11,6 +11,7 @@ import { useMissionPools } from 'hooks/useMissionPools';
 import { MissionPoolTag } from 'components/MissionPoolHorizontalItem/MissionPoolTag';
 import LinearGradient from 'react-native-linear-gradient';
 import { MissionPoolStatusTag } from 'components/MissionPoolHorizontalItem/MissionPoolStatusTag';
+import { ImageLogosMap } from 'assets/logo';
 
 export enum TagType {
   FCFS = 'fcfs',
@@ -56,7 +57,10 @@ export const MissionPoolHorizontalItem = ({ data, onPressItem, containerStyle, i
       />
 
       <View style={styles.missionItemContent}>
-        <Image src={{ uri: data.logo }} style={{ width: 40, height: 40, marginTop: isBasic ? 4 : theme.paddingXS }} />
+        <Image
+          src={data.logo ? { uri: data.logo } : ImageLogosMap.default}
+          style={{ width: 40, height: 40, marginTop: isBasic ? 4 : theme.paddingXS }}
+        />
         <View style={{ flex: 1, paddingLeft: theme.paddingSM }}>
           <Typography.Text size={'md'} ellipsis style={styles.missionItemName}>
             {data.name}

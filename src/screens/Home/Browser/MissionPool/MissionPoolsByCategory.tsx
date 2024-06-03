@@ -61,7 +61,7 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
 
   const searchFunction = (items: MissionInfo[], _searchString: string) => {
     return items.filter(({ name }) => {
-      return name && name.toLowerCase().includes(searchString.toLowerCase());
+      return name ? name.toLowerCase().includes(searchString.toLowerCase()) : true;
     });
   };
 
