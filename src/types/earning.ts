@@ -1,12 +1,19 @@
 import { _ChainAsset } from '@subwallet/chain-list/types';
-import { YieldPositionInfo } from '@subwallet/extension-base/types';
+import { PalletNominationPoolsBondedPoolInner, YieldPositionInfo } from '@subwallet/extension-base/types';
 import { NominationPoolInfo, ValidatorInfo } from '@subwallet/extension-base/types/yield/info/chain/target';
 import { SWIconProps } from 'components/design-system-ui/icon';
 import { BalanceValueInfo } from 'types/balance';
 import { PhosphorIcon } from 'utils/campaign';
 import BigN from 'bignumber.js';
 import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
+import { InfoItemBase } from 'components/MetaInfo/types';
 
+export type NominationPoolState = Pick<PalletNominationPoolsBondedPoolInner, 'state'>;
+export interface EarningStatusUiProps {
+  schema: InfoItemBase['valueColorSchema'];
+  icon: PhosphorIcon;
+  name: string;
+}
 export type ExtraYieldPositionInfo = YieldPositionInfo & {
   asset: _ChainAsset;
   price: number;
