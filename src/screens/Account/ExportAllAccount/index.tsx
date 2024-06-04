@@ -8,7 +8,7 @@ import PasswordModal from 'components/Modal/PasswordModal';
 import { exportAccountsV2 } from 'messaging/index';
 import { AccountSignMode } from 'types/signer';
 import { getSignMode } from 'utils/account';
-import { Button, Icon, SelectItem, SwFullSizeModal } from 'components/design-system-ui';
+import { Button, Icon, SelectItem, SwFullSizeModal, Typography } from 'components/design-system-ui';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
@@ -23,6 +23,7 @@ import { EmptyList } from 'components/EmptyList';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 const filterOptions = [
   {
@@ -269,6 +270,15 @@ export const ExportAllAccount = () => {
                 description={i18n.warning.warningAccMessage}
                 type="warning"
               />
+              <Typography.Text
+                style={{
+                  ...FontSemiBold,
+                  color: theme.colorTextSecondary,
+                  textTransform: 'uppercase',
+                }}
+                size={'sm'}>
+                {i18n.exportAccount.yourJsonFile}
+              </Typography.Text>
 
               <SelectItem
                 onPress={onExportJson}
@@ -279,6 +289,12 @@ export const ExportAllAccount = () => {
                   <Icon phosphorIcon={DownloadSimple} size={'sm'} iconColor={theme.colorTextTertiary} weight={'bold'} />
                 }
               />
+
+              <Typography.Text style={{ color: theme.colorTextTertiary }}>
+                {
+                  'Click on the file to download and select where you want to keep your backup file. We recommend you keep it in a password-protected folder to secure your assets'
+                }
+              </Typography.Text>
             </View>
 
             <Button

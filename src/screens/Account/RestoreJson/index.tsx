@@ -131,14 +131,10 @@ export const RestoreJson = () => {
         setIsBusy(false);
         onUpdateErrors('password')([]);
         setAccountsInfo(() => []);
-        if (isMultiple) {
-          navigation.navigate('MigratePassword');
-        } else {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Home' }],
-          });
-        }
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       })
       .catch(e => {
         setIsBusy(false);

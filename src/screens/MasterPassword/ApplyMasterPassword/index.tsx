@@ -1,5 +1,5 @@
 import useConfirmModal from 'hooks/modal/useConfirmModal';
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { ScrollView, View } from 'react-native';
@@ -91,8 +91,6 @@ const ApplyMasterPassword = () => {
     [accounts, migrated],
   );
 
-  console.log('canMigrate', canMigrate);
-
   const needMigrate = useMemo(() => {
     return canMigrate.filter(acc => !acc.isMasterPassword);
   }, [canMigrate]);
@@ -135,15 +133,6 @@ const ApplyMasterPassword = () => {
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
-
-  useLayoutEffect(() => {
-    if (!isLocked && !needMigrate.length) {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
-    }
-  }, [isLocked, navigation, needMigrate.length]);
 
   useEffect(() => {
     migrateAddressRef.current = migrateAccount?.address || '';
