@@ -8,14 +8,7 @@ import { Keyboard, ListRenderItemInfo, Platform } from 'react-native';
 import { StakingValidatorItem } from 'components/common/StakingValidatorItem';
 import { getValidatorKey } from 'utils/transaction/stake';
 import { useSelectValidators } from 'hooks/screen/Transaction/useSelectValidators';
-import {
-  ArrowsClockwise,
-  CheckCircle,
-  IconProps,
-  MagnifyingGlass,
-  SortAscending,
-  SortDescending,
-} from 'phosphor-react-native';
+import { ArrowsClockwise, CheckCircle, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ValidatorSelectorField } from 'components/Field/ValidatorSelector';
 import { ValidatorSelectorDetailModal } from 'components/Modal/common/ValidatorSelectorDetailModal';
@@ -35,6 +28,7 @@ import { EmptyValidator } from 'components/EmptyValidator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ValidatorDataType } from 'types/earning';
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
+import DotBadge from 'components/design-system-ui/badge/DotBadge';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -62,11 +56,6 @@ interface Props {
   setForceFetchValidator: (val: boolean) => void;
   defaultValidatorAddress?: string;
 }
-
-type IconSortAscendingType = (iconProps: IconProps) => JSX.Element;
-const iconSortAscending: IconSortAscendingType = ({ color }) => (
-  <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />
-);
 
 const searchFunction = (items: ValidatorDataType[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
@@ -412,7 +401,11 @@ export const EarningValidatorSelector = forwardRef(
         renderListEmptyComponent={renderListEmptyComponent}
         renderSelected={renderSelected}
         rightIconOption={{
-          icon: iconSortAscending,
+          icon: () => (
+            <DotBadge dot={sortSelection !== SortKey.DEFAULT}>
+              <Icon phosphorIcon={SortAscending} size="md" />
+            </DotBadge>
+          ),
           onPress: () => sortingModalRef?.current?.onOpenModal(),
         }}
         renderCustomItem={renderItem}

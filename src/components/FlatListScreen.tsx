@@ -138,6 +138,7 @@ export function FlatListScreen<T>({
           searchRef={searchRef}
           isShowFilterBtn={isShowFilterBtn}
           onPressFilterBtn={openFilterModal}
+          isHasSelectedFilter={!!selectedFilters.length}
         />
       )}
       {isNetConnected ? (
