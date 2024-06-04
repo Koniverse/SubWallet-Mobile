@@ -155,6 +155,14 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     const result: YieldPoolInfo[] = [];
 
     pools.forEach(poolInfo => {
+      if (
+        poolInfo.type === YieldPoolType.LIQUID_STAKING &&
+        poolInfo.chain === 'parallel' &&
+        poolInfo.group === 'DOT-Polkadot'
+      ) {
+        return;
+      }
+
       if (poolInfo.type === YieldPoolType.NATIVE_STAKING && isRelatedToRelayChain) {
         let minJoinPool: string;
 
