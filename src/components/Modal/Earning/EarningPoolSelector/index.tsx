@@ -19,6 +19,7 @@ import { PREDEFINED_EARNING_POOL } from 'constants/stakingScreen';
 import { SectionItem } from 'components/LazySectionList';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { FontSemiBold } from 'styles/sharedStyles';
+import DotBadge from 'components/design-system-ui/badge/DotBadge';
 
 enum EarningPoolGroup {
   RECOMMEND = 'recommend',
@@ -380,7 +381,11 @@ export const EarningPoolSelector = forwardRef(
           filterFunction={filterFunction}
           onCloseModal={() => setSortSelection(SortKey.DEFAULT)}
           rightIconOption={{
-            icon: ({ color }) => <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />,
+            icon: () => (
+              <DotBadge dot={sortSelection !== SortKey.DEFAULT}>
+                <Icon phosphorIcon={SortAscending} size="md" />
+              </DotBadge>
+            ),
             onPress: () => sortingModalRef?.current?.onOpenModal(),
           }}
           grouping={grouping}

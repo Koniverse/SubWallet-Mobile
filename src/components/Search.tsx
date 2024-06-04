@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Platform,
   StyleProp,
@@ -13,6 +13,7 @@ import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { Button, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import DotBadge from 'components/design-system-ui/badge/DotBadge';
 
 interface Props extends TextInputProps {
   onSearch: (text: string) => void;
@@ -22,6 +23,7 @@ interface Props extends TextInputProps {
   searchRef?: React.RefObject<TextInput>;
   onSubmitEditing?: TextInputProps['onSubmitEditing'];
   isShowFilterBtn?: boolean;
+  isHasSelectedFilter?: boolean;
   onPressFilterBtn?: () => void;
   style?: StyleProp<ViewStyle>;
 }
@@ -49,9 +51,19 @@ export const Search = (searchProps: Props) => {
     placeholder,
     isShowFilterBtn,
     onPressFilterBtn,
+    isHasSelectedFilter,
     ...restProps
   } = searchProps;
   const theme = useSubWalletTheme().swThemes;
+
+  const filterIcon = useMemo(
+    () => (
+      <DotBadge dot={!!isHasSelectedFilter}>
+        <Icon phosphorIcon={FadersHorizontal} size={'sm'} iconColor={'#A6A6A6'} />
+      </DotBadge>
+    ),
+    [isHasSelectedFilter],
+  );
 
   return (
     <TouchableWithoutFeedback onPress={() => searchRef?.current?.focus()}>
@@ -99,7 +111,7 @@ export const Search = (searchProps: Props) => {
             style={{ position: 'absolute', right: 4, marginVertical: 'auto' }}
             size={'xs'}
             type={'ghost'}
-            icon={<Icon phosphorIcon={FadersHorizontal} size={'sm'} iconColor={'#A6A6A6'} />}
+            icon={filterIcon}
             onPress={onPressFilterBtn}
           />
         )}
