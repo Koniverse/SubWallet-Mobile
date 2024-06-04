@@ -257,7 +257,13 @@ const Component: React.FC<Props> = (props: Props) => {
               disabled={isDisableStakeMore}
               block={true}
               type="secondary"
-              icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}
+              icon={
+                <Icon
+                  phosphorIcon={PlusCircle}
+                  iconColor={isDisableStakeMore ? theme.colorTextLight5 : theme.colorWhite}
+                  weight="fill"
+                />
+              }
               onPress={onEarnMore}>
               {poolInfo?.type === YieldPoolType.LENDING ? 'Supply more' : i18n.buttonTitles.stakeMore}
             </Button>
