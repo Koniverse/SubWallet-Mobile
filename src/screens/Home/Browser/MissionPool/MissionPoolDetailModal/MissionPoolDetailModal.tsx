@@ -84,7 +84,7 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
               )}
               {data.reward && (
                 <MetaInfo.Text
-                  label={i18n.inputLabel.totalReward}
+                  label={i18n.inputLabel.totalRewards}
                   valueColorSchema={'gray'}
                   valueFontWeight={'semibold'}
                   value={data.reward}
@@ -98,7 +98,7 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
               />
               {data.total_winner && (
                 <MetaInfo.Text
-                  label={i18n.inputLabel.totalWinner}
+                  label={i18n.inputLabel.totalWinners}
                   valueColorSchema={'gray'}
                   valueFontWeight={'semibold'}
                   value={data.total_winner}
