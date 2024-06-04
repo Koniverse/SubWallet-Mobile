@@ -537,10 +537,10 @@
     "nftId": "NFT ID",
     "collectionId": "Collection ID",
     "name": "Name",
-    "totalSupply": "Total supply",
+    "totalSupply": "Total token supply",
     "totalWinner": "Total winner",
     "totalWinners": "Total winners",
-    "timeline": "Time line",
+    "timeline": "Timeline",
     "derivativeTokenBalance": "Derivative token balance",
     "nominationInfo": "Nomination info",
     "fastUnstake": "Fast Unstake"
