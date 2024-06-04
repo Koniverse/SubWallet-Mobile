@@ -76,6 +76,14 @@ const filterFunction = (items: AccountJson[], filters: string[]) => {
   });
 };
 
+const searchFunc = (items: AccountJson[], searchText: string) => {
+  return items.filter(
+    acc =>
+      (acc.name && acc.name.toLowerCase().includes(searchText.toLowerCase())) ||
+      acc.address.toLowerCase().includes(searchText.toLowerCase()),
+  );
+};
+
 export const ExportAllAccount = () => {
   const fullAccounts = useSelector((state: RootState) => state.accountState.accounts);
   const theme = useSubWalletTheme().swThemes;
@@ -245,6 +253,7 @@ export const ExportAllAccount = () => {
         isShowFilterBtn={true}
         flatListStyle={{ gap: theme.paddingXS }}
         afterListItem={renderFooter()}
+        searchFunction={searchFunc}
       />
 
       <SwFullSizeModal
