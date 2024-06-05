@@ -103,6 +103,7 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
   const [selectedPoolOpt, setSelectedPoolOpt] = React.useState<YieldPoolInfo | undefined>(undefined);
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const { accounts, isNoAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { currencyData } = useSelector((state: RootState) => state.price);
   const [isContainOnlySubstrate] = analysisAccounts(accounts);
   const getAltChain = useCallback(
     (poolInfo?: YieldPoolInfo) => {
@@ -191,7 +192,10 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
     if (!pools.length) {
       return [];
     }
-    const result = [...pools];
+    const result = [...pools].filter(
+      item =>
+        !(item.type === YieldPoolType.LIQUID_STAKING && item.chain === 'parallel' && item.group === 'DOT-Polkadot'),
+    );
 
     result.sort((a, b) => {
       const getType = (pool: YieldPoolInfo) => {
@@ -254,10 +258,11 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
             onPressItem(chainInfoMap[item.chain].slug, item);
           }}
           poolInfo={item}
+          currencyData={currencyData}
         />
       );
     },
-    [chainInfoMap, onPressItem],
+    [chainInfoMap, currencyData, onPressItem],
   );
 
   const searchFunction = useCallback(
