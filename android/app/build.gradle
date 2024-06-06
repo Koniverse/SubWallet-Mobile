@@ -76,7 +76,7 @@ android {
         applicationId "app.subwallet.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 391
+        versionCode 392
         versionName "1.1.63"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
