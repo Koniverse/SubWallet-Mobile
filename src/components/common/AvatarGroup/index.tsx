@@ -12,6 +12,7 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 interface Props {
   addresses?: string[];
   avatarSize?: number;
+  avatarGroupStyle?: ViewStyle;
 }
 
 const sizeAva = {
@@ -19,7 +20,7 @@ const sizeAva = {
   large: 24,
 };
 
-const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize }: Props) => {
+const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize, avatarGroupStyle }: Props) => {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const theme = useSubWalletTheme().swThemes;
   const _style = AvatarGroupStyle();
@@ -52,7 +53,7 @@ const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize }: Props) 
       }
 
       if (index === 2) {
-        avatarStyles.push({ opacity: 1 });
+        avatarStyles.push({ opacity: 0.7 });
       }
 
       if (index === 2 && countMore > 0) {
@@ -65,34 +66,33 @@ const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize }: Props) 
   );
 
   return (
-    <View style={[_style.container, countMore > 0 && _style.mlStrong]}>
-      {noAllAccount.slice(0, 3).map((account, index) => {
-        return (
-          <View key={index} style={getAvatarStyle(index, noAllAccount.length)}>
-            <Avatar
-              size={avatarSize}
-              value={account}
-              identPrefix={42}
-              theme={isEthereumAddress(account) ? 'ethereum' : 'polkadot'}
-            />
-          </View>
-        );
-      })}
-      {countMore > 0 && (
-        <Text
-          style={{
-            fontSize: theme.fontSizeXS,
-            lineHeight: theme.fontSizeXS * theme.lineHeightXS,
-            position: 'absolute',
-            color: theme.colorTextBase,
-            ...FontBold,
-            right: 0,
-            bottom: 0,
-            width: avatarSize,
-            height: avatarSize,
-            textAlign: 'center',
-          }}>{`+${countMore}`}</Text>
-      )}
+    <View style={[_style.container, avatarGroupStyle]}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {noAllAccount.slice(0, 3).map((account, index) => {
+          return (
+            <View key={index} style={getAvatarStyle(index, noAllAccount.length)}>
+              <Avatar
+                size={avatarSize}
+                value={account}
+                identPrefix={42}
+                theme={isEthereumAddress(account) ? 'ethereum' : 'polkadot'}
+              />
+            </View>
+          );
+        })}
+        {countMore > 0 && (
+          <Text
+            style={{
+              fontSize: 9,
+              position: 'absolute',
+              color: theme.colorTextBase,
+              ...FontBold,
+              right: (avatarSize - theme.fontSizeXS - 2) / 2,
+              bottom: (avatarSize - theme.fontSizeXS - 2) / 2,
+              textAlign: 'center',
+            }}>{`+${countMore}`}</Text>
+        )}
+      </View>
     </View>
   );
 };

@@ -216,7 +216,13 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
           <Button
             style={{ width: '100%' }}
             disabled={loading}
-            icon={<Icon phosphorIcon={XCircle} weight={'fill'} />}
+            icon={
+              <Icon
+                phosphorIcon={XCircle}
+                weight={'fill'}
+                iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
+              />
+            }
             onPress={onCancel}
             type={'secondary'}>
             {i18n.buttonTitles.cancel}

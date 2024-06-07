@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -20,6 +20,7 @@ interface Props {
   onSelectAccount?: (selectAccount: string) => void;
   isShowEditBtn?: boolean;
   isShowMultiCheck?: boolean;
+  avatarGroupStyle?: ViewStyle;
 }
 
 export const SelectAccountItem = ({
@@ -31,6 +32,7 @@ export const SelectAccountItem = ({
   onSelectAccount,
   isShowEditBtn = true,
   isShowMultiCheck = false,
+  avatarGroupStyle,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const signMode = useGetAccountSignModeByAddress(address);
@@ -63,7 +65,7 @@ export const SelectAccountItem = ({
       onPress={() => onSelectAccount && onSelectAccount(address)}>
       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 2 }}>
         {isAllAccount ? (
-          <AvatarGroup />
+          <AvatarGroup avatarGroupStyle={avatarGroupStyle} />
         ) : (
           <Avatar value={address} size={40} theme={isEthereumAddress(address) ? 'ethereum' : 'polkadot'} />
         )}

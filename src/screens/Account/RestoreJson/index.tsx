@@ -359,6 +359,7 @@ export const RestoreJson = () => {
           data={accountsInfo}
           renderItem={renderAccount}
           style={styles.accountList}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: theme.sizeXS }}
         />
       </SwModal>

@@ -270,6 +270,7 @@ export const AccountsScreen = ({
             accountName={item.name}
             isSelected={currentAccountAddress === item.address}
             isAllAccount={isAllAccount}
+            avatarGroupStyle={{ width: 40 }}
             onSelectAccount={selectAccount}
             onPressDetailBtn={() => {
               navigation.navigate('EditAccount', { address: item.address, name: item.name || '' });

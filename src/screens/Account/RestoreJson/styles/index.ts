@@ -1,6 +1,7 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
+import { deviceHeight } from 'constants/index';
 
 export interface ComponentStyle {
   wrapper: ViewStyle;
@@ -50,6 +51,7 @@ const createStyles = (theme: ThemeTypes) => {
     },
     accountList: {
       width: '100%',
+      maxHeight: deviceHeight * 0.5,
     },
     accountItem: {
       paddingTop: theme.paddingSM,

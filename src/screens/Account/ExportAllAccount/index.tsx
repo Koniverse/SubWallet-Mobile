@@ -216,6 +216,7 @@ export const ExportAllAccount = () => {
           onPressDetailBtn={() => {
             navigation.navigate('EditAccount', { address: item.address, name: item.name || '' });
           }}
+          avatarGroupStyle={{ width: 40 }}
         />
       );
     },
@@ -255,6 +256,7 @@ export const ExportAllAccount = () => {
         flatListStyle={{ gap: theme.paddingXS }}
         afterListItem={renderFooter()}
         searchFunction={searchFunc}
+        autoFocus={false}
       />
 
       <SwFullSizeModal

@@ -273,7 +273,19 @@ export const EarningPoolSelector = forwardRef(
                 }
               case SortKey.DEFAULT:
               default:
-                return isRecommendedA ? -1 : isRecommendedB ? 1 : 0; // put recommend item to top
+                if (isRecommendedA && !isRecommendedB) {
+                  return -1;
+                } else if (!isRecommendedA && isRecommendedB) {
+                  return 1;
+                }
+
+                if (a.isCrowded && !b.isCrowded) {
+                  return 1;
+                } else if (!a.isCrowded && b.isCrowded) {
+                  return -1;
+                }
+
+                return 0;
             }
           } else {
             switch (sortSelection) {
@@ -283,6 +295,12 @@ export const EarningPoolSelector = forwardRef(
                 return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
               case SortKey.DEFAULT:
               default:
+                if (a.isCrowded && !b.isCrowded) {
+                  return 1;
+                } else if (!a.isCrowded && b.isCrowded) {
+                  return -1;
+                }
+
                 return 0;
             }
           }
