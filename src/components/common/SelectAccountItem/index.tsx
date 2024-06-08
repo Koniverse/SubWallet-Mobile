@@ -21,6 +21,8 @@ interface Props {
   isShowEditBtn?: boolean;
   isShowMultiCheck?: boolean;
   avatarGroupStyle?: ViewStyle;
+  isUseCustomAccountSign?: boolean;
+  customAccountSignMode?: React.ElementType<IconProps>;
 }
 
 export const SelectAccountItem = ({
@@ -33,6 +35,8 @@ export const SelectAccountItem = ({
   isShowEditBtn = true,
   isShowMultiCheck = false,
   avatarGroupStyle,
+  isUseCustomAccountSign,
+  customAccountSignMode,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const signMode = useGetAccountSignModeByAddress(address);
@@ -107,9 +111,15 @@ export const SelectAccountItem = ({
           </View>
         )}
 
-        {accountSignModeIcon && (
+        {!isUseCustomAccountSign && accountSignModeIcon && (
           <View style={{ paddingHorizontal: theme.paddingSM - 2 }}>
             <Icon phosphorIcon={accountSignModeIcon} size={'sm'} iconColor={theme.colorTextTertiary} />
+          </View>
+        )}
+
+        {isUseCustomAccountSign && (
+          <View style={{ paddingHorizontal: theme.paddingSM - 2 }}>
+            <Icon phosphorIcon={customAccountSignMode} size={'sm'} iconColor={theme.colorTextTertiary} />
           </View>
         )}
 

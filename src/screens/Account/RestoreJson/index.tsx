@@ -1,7 +1,7 @@
 import AvatarGroup from 'components/common/AvatarGroup';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { DotsThree, FileArrowDown, Warning, X } from 'phosphor-react-native';
+import { DotsThree, Eye, FileArrowDown, QrCode, Swatches, Warning, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, ListRenderItemInfo, Platform, ScrollView, View } from 'react-native';
 import { InputFile } from 'components/common/Field/InputFile';
@@ -35,14 +35,21 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { FontMedium } from 'styles/sharedStyles';
 
+export interface ExtendResponseJsonGetAccountInfo extends ResponseJsonGetAccountInfo {
+  hardwareType?: 'ledger';
+  isExternal?: boolean;
+  isHardware: boolean;
+  isReadonly: boolean;
+}
+
 const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
-  let currentAccountsInfo: ResponseJsonGetAccountInfo[] = [];
+  let currentAccountsInfo: ExtendResponseJsonGetAccountInfo[] = [];
   jsonFile.accounts.forEach(account => {
     currentAccountsInfo.push({
       address: account.address,
       genesisHash: account.meta.genesisHash,
       name: account.meta.name,
-    } as ResponseJsonGetAccountInfo);
+    } as ExtendResponseJsonGetAccountInfo);
   });
 
   return currentAccountsInfo;
@@ -89,7 +96,7 @@ export const RestoreJson = () => {
   const [isShowPasswordField, setIsShowPasswordField] = useState(false);
   const [isFileError, setFileError] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
-  const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
+  const [accountsInfo, setAccountsInfo] = useState<ExtendResponseJsonGetAccountInfo[]>([]);
   const [visible, setVisible] = useState(false);
   const [warningModalVisible, setWarningModalVisible] = useState(false);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -174,14 +181,18 @@ export const RestoreJson = () => {
               address: address,
               genesisHash: account.meta.genesisHash,
               name: account.meta.name,
-            } as ResponseJsonGetAccountInfo,
+              hardwareType: account.meta.hardwareType,
+              isExternal: account.meta.isExternal,
+              isHardware: account.meta.isHardware,
+              isReadonly: account.meta.isReadOnly,
+            } as ExtendResponseJsonGetAccountInfo,
           ]);
         });
       } else {
         jsonGetAccountInfo(fileContent)
           .then(accountInfo => {
             onChangeValue('accountAddress')(accountInfo.address);
-            setAccountsInfo(old => [...old, accountInfo]);
+            setAccountsInfo(old => [...old, accountInfo as ExtendResponseJsonGetAccountInfo]);
           })
           .catch(() => {
             setFileError(true);
@@ -229,15 +240,34 @@ export const RestoreJson = () => {
       });
   };
 
+  const getAccountInfoIcon = useCallback((item: ExtendResponseJsonGetAccountInfo) => {
+    if (item.isExternal) {
+      if (item.isHardware) {
+        return Swatches;
+      } else if (item.isReadonly) {
+        return Eye;
+      } else {
+        return QrCode;
+      }
+    }
+  }, []);
+
   const renderAccount = useCallback(
-    ({ item }: ListRenderItemInfo<ResponseJsonGetAccountInfo>) => {
+    ({ item }: ListRenderItemInfo<ExtendResponseJsonGetAccountInfo>) => {
       return (
         <View style={{ marginLeft: -theme.margin, marginRight: -theme.margin }}>
-          <SelectAccountItem isShowEditBtn={false} key={item.address} address={item.address} accountName={item.name} />
+          <SelectAccountItem
+            isShowEditBtn={false}
+            key={item.address}
+            address={item.address}
+            accountName={item.name}
+            isUseCustomAccountSign
+            customAccountSignMode={getAccountInfoIcon(item)}
+          />
         </View>
       );
     },
-    [theme.margin],
+    [getAccountInfoIcon, theme.margin],
   );
 
   const _onPressBack = useCallback(() => {
