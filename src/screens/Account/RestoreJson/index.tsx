@@ -354,6 +354,7 @@ export const RestoreJson = () => {
         setVisible={setVisible}
         modalVisible={visible}
         modalTitle={i18n.header.accounts}
+        isAllowSwipeDown={Platform.OS === 'ios'}
         onBackButtonPress={hideModal}>
         <FlatList
           data={accountsInfo}

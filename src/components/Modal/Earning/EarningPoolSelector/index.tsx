@@ -249,6 +249,7 @@ export const EarningPoolSelector = forwardRef(
 
     const resultList: NominationPoolDataTypeItem[] = useMemo(() => {
       return [...items]
+        .filter(item => item.state !== 'Blocked')
         .sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
           if (defaultSelectPool) {
             const isRecommendedA = defaultSelectPool.includes(a.id);
