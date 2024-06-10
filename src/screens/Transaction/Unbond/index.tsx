@@ -36,8 +36,6 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useWatch } from 'react-hook-form';
 import { FormItem } from 'components/common/FormItem';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
-import { getInputValuesFromString } from 'components/Input/InputAmount';
-import { useGetBalance } from 'hooks/balance';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import { isActionFromValidator } from '@subwallet/extension-base/services/earning-service/utils';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
@@ -102,7 +100,6 @@ export const Unbond = ({
 
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo?.type;
@@ -151,15 +148,6 @@ export const Unbond = ({
       return undefined;
     }
   }, [currentValidator, positionInfo]);
-  const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
-  const existentialDeposit = useMemo(() => {
-    const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
-    if (assetInfo) {
-      return assetInfo.minAmount || '0';
-    }
-
-    return '0';
-  }, [assetRegistry, chainValue]);
 
   const showFastLeave = useMemo(() => {
     return poolInfo?.metadata.availableMethod.defaultUnstake && poolInfo?.metadata.availableMethod.fastUnstake;
@@ -230,13 +218,11 @@ export const Unbond = ({
   const handleDataForInsufficientAlert = useCallback(
     (estimateFee: AmountData) => {
       return {
-        existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
-        availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
-        maintainBalance: getInputValuesFromString(poolInfo?.metadata.maintainBalance || '0', estimateFee.decimals),
+        chainName: chainInfoMap[chainValue]?.name || '',
         symbol: estimateFee.symbol,
       };
     },
-    [existentialDeposit, nativeTokenBalance.value, poolInfo?.metadata.maintainBalance],
+    [chainInfoMap, chainValue],
   );
   const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
   const { onError, onSuccess } = useHandleSubmitTransaction(

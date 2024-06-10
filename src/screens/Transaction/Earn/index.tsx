@@ -68,12 +68,16 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { STAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
-import { insufficientMessages } from 'hooks/transaction/useHandleSubmitTransaction';
 import { useGetBalance } from 'hooks/balance';
 import reformatAddress from 'utils/index';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { _ChainAsset } from '@subwallet/chain-list/types';
+import {
+  _handleDisplayForEarningError,
+  _handleDisplayInsufficientEarningError,
+} from '@subwallet/extension-base/core/logic-validation/earning';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -241,7 +245,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     [chainAsset, poolInfo?.metadata?.inputAsset],
   );
 
-  const nativeAsset = useMemo(() => chainAsset[nativeTokenSlug], [chainAsset, nativeTokenSlug]);
+  const nativeAsset: _ChainAsset | undefined = useMemo(
+    () => chainAsset[nativeTokenSlug],
+    [chainAsset, nativeTokenSlug],
+  );
 
   const assetDecimals = inputAsset ? _getAssetDecimals(inputAsset) : 0;
   const priceValue = inputAsset && inputAsset.priceId ? priceMap[inputAsset.priceId] : 0;
@@ -326,40 +333,45 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, []);
 
   const handleDataForInsufficientAlert = useCallback(() => {
-    const _assetDecimals = nativeAsset.decimals || 0;
-    const existentialDeposit = nativeAsset.minAmount || '0';
+    const _assetDecimals = nativeAsset?.decimals || 0;
+
     return {
-      existentialDeposit: getInputValuesFromString(existentialDeposit, _assetDecimals),
-      availableBalance: getInputValuesFromString(nativeTokenBalance.value, _assetDecimals),
-      maintainBalance: getInputValuesFromString(poolInfo?.metadata?.maintainBalance || '0', _assetDecimals),
-      symbol: nativeAsset.symbol,
+      minJoinPool: getInputValuesFromString(poolInfo?.statistic?.earningThreshold.join || '0', _assetDecimals),
+      symbol: nativeAsset?.symbol || '',
+      chain: chainInfoMap[poolChain].name,
+      isXCM: poolInfo?.type === YieldPoolType.LENDING || poolInfo?.type === YieldPoolType.LIQUID_STAKING,
     };
-  }, [nativeAsset, nativeTokenBalance.value, poolInfo?.metadata?.maintainBalance]);
+  }, [
+    chainInfoMap,
+    nativeAsset?.decimals,
+    nativeAsset?.symbol,
+    poolChain,
+    poolInfo?.statistic?.earningThreshold.join,
+    poolInfo?.type,
+  ]);
 
   const onError = useCallback(
     (error: Error) => {
-      if (insufficientMessages.some(v => error.message.includes(v))) {
-        const _data = handleDataForInsufficientAlert();
-        const isAvailableBalanceEqualZero = new BigN(_data.availableBalance).isZero();
-        const isAmountGtAvailableBalance = new BigN(convertValue).gt(_data.availableBalance);
-        let alertMessage = '';
-        if (isAmountGtAvailableBalance && !isAvailableBalanceEqualZero) {
-          alertMessage = i18n.warningMessage.insufficientBalanceMessageV2;
-        } else {
-          alertMessage = i18n.formatString(
-            i18n.warningMessage.insufficientBalanceMessage,
-            _data.availableBalance,
-            _data.symbol,
-            _data.existentialDeposit,
-            _data.maintainBalance || '0',
-          ) as string;
-        }
+      const { chain: _chain, isXCM, minJoinPool, symbol } = handleDataForInsufficientAlert();
+      const balanceDisplayInfo = _handleDisplayInsufficientEarningError(
+        error,
+        isXCM,
+        nativeTokenBalance.value || '0',
+        currentAmount || '0',
+        minJoinPool,
+      );
 
-        Alert.alert(i18n.warningTitle.insufficientBalance, alertMessage, [
+      if (balanceDisplayInfo) {
+        // @ts-ignore
+        let message = balanceDisplayInfo.message.replaceAll('{{minJoinPool}}', minJoinPool);
+        message = message.replaceAll('{{symbol}}', symbol);
+        message = message.replaceAll('{{chain}}', _chain);
+        Alert.alert(balanceDisplayInfo.title, message, [
           {
             text: 'I understand',
           },
         ]);
+
         dispatchProcessState({
           type: EarningActionType.STEP_ERROR_ROLLBACK,
           payload: error,
@@ -372,6 +384,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             text: 'I understand',
           },
         ]);
+
         dispatchProcessState({
           type: EarningActionType.STEP_ERROR_ROLLBACK,
           payload: error,
@@ -388,7 +401,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         payload: error,
       });
     },
-    [convertValue, handleDataForInsufficientAlert, hideAll, show],
+    [currentAmount, handleDataForInsufficientAlert, hideAll, nativeTokenBalance.value, show],
   );
 
   const onSuccess = useCallback(
@@ -396,23 +409,21 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       return (rs: SWTransactionResponse): boolean => {
         const { errors: _errors, id, warnings } = rs;
         if (_errors.length || warnings.length) {
+          const error = _errors[0]; // we only handle the first error for now
+
           if (_errors[0]?.message !== 'Rejected by user') {
-            if (
-              _errors[0]?.message.startsWith('UnknownError Connection to Indexed DataBase server lost') ||
-              _errors[0]?.message.startsWith('Provided address is invalid, the capitalization checksum test failed') ||
-              _errors[0]?.message.startsWith('connection not open on send()')
-            ) {
+            const displayInfo = _handleDisplayForEarningError(error);
+
+            if (displayInfo) {
               hideAll();
-              show(
-                'Your selected network has lost connection. Update it by re-enabling it or changing network provider',
-                { type: 'danger', duration: 8000 },
-              );
+              show(displayInfo.message, { type: 'danger', duration: 8000 });
 
               return false;
             }
 
             hideAll();
-            onError(_errors[0]);
+            onError(error);
+
             return false;
           } else {
             dispatchProcessState({
@@ -717,7 +728,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [slug, firstStep, navigation]);
 
   useEffect(() => {
-    let timer: NodeJS.Timer;
+    let timer: string | number | NodeJS.Timeout | undefined;
     let timeout: NodeJS.Timeout;
 
     if (isLoading && redirectFromPreviewRef.current) {

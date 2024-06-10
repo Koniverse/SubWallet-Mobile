@@ -38,8 +38,6 @@ import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
-import { useGetBalance } from 'hooks/balance';
-import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 
 interface ClaimRewardFormValues extends TransactionFormValues {
@@ -105,7 +103,6 @@ const ClaimReward = ({
   const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
   const { earningRewards, poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
 
   const {
     title,
@@ -142,25 +139,14 @@ const ClaimReward = ({
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chainValue);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
-  const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
-  const existentialDeposit = useMemo(() => {
-    const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
-    if (assetInfo) {
-      return assetInfo.minAmount || '0';
-    }
-
-    return '0';
-  }, [assetRegistry, chainValue]);
   const handleDataForInsufficientAlert = useCallback(
     (estimateFee: AmountData) => {
       return {
-        existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
-        availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
-        maintainBalance: getInputValuesFromString(poolInfo?.metadata.maintainBalance || '0', estimateFee.decimals),
+        chainName: chainInfoMap[chainValue]?.name || '',
         symbol: estimateFee.symbol,
       };
     },
-    [existentialDeposit, nativeTokenBalance.value, poolInfo?.metadata.maintainBalance],
+    [chainInfoMap, chainValue],
   );
 
   const { onError, onSuccess } = useHandleSubmitTransaction(
