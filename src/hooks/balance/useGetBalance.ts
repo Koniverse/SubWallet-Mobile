@@ -1,5 +1,5 @@
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import { AmountData, AmountDataWithId } from '@subwallet/extension-base/background/KoniTypes';
+import { AmountData, AmountDataWithId, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { _getChainNativeTokenSlug } from '@subwallet/extension-base/services/chain-service/utils';
 import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -10,7 +10,13 @@ import { useIsFocused } from '@react-navigation/native';
 
 const DEFAULT_BALANCE = { value: '0', symbol: '', decimals: 18 };
 
-const useGetBalance = (chain = '', address = '', tokenSlug = '', isSubscribe = false) => {
+const useGetBalance = (
+  chain = '',
+  address = '',
+  tokenSlug = '',
+  isSubscribe = false,
+  extrinsicType?: ExtrinsicType,
+) => {
   const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
   const { assetSettingMap, assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
 
@@ -108,24 +114,31 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '', isSubscribe = f
 
         if (isSubscribe) {
           promiseList.push(
-            subscribeFreeBalance({ address, networkKey: chain }, onNativeBalanceSubscribe)
+            subscribeFreeBalance({ address, networkKey: chain, extrinsicType }, onNativeBalanceSubscribe)
               .then(onNativeBalanceSubscribe)
               .catch(onNativeError),
           );
         } else {
-          promiseList.push(getFreeBalance({ address, networkKey: chain }).then(onNativeBalance).catch(onNativeError));
+          promiseList.push(
+            getFreeBalance({ address, networkKey: chain, extrinsicType }).then(onNativeBalance).catch(onNativeError),
+          );
         }
 
         if (tokenSlug && tokenSlug !== nativeTokenSlug) {
           if (isSubscribe) {
             promiseList.push(
-              subscribeFreeBalance({ address, networkKey: chain, token: tokenSlug }, onTokenBalanceSubscribe)
+              subscribeFreeBalance(
+                { address, networkKey: chain, token: tokenSlug, extrinsicType },
+                onTokenBalanceSubscribe,
+              )
                 .then(onTokenBalanceSubscribe)
                 .catch(onTokenError),
             );
           } else {
             promiseList.push(
-              getFreeBalance({ address, networkKey: chain, token: tokenSlug }).then(onTokenBalance).catch(onTokenError),
+              getFreeBalance({ address, networkKey: chain, token: tokenSlug, extrinsicType })
+                .then(onTokenBalance)
+                .catch(onTokenError),
             );
           }
         }
@@ -172,6 +185,7 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '', isSubscribe = f
     nativeTokenActive,
     isSubscribe,
     isFocused,
+    extrinsicType,
   ]);
 
   return { refreshBalance, tokenBalance, nativeTokenBalance, nativeTokenSlug, isLoading, error, chainInfo };

@@ -373,15 +373,6 @@ export const SendFund = ({
     ...getValues(),
   };
 
-  const {
-    error: isGetBalanceError,
-    isLoading: isGetBalanceLoading,
-    nativeTokenBalance,
-    nativeTokenSlug,
-    tokenBalance,
-    chainInfo,
-  } = useGetBalance(chainValue, fromValue, assetValue);
-
   const { chainInfoMap, chainStatusMap } = useSelector((root: RootState) => root.chainStore);
   const { assetSettingMap, multiChainAssetMap, xcmRefMap } = useSelector((root: RootState) => root.assetRegistry);
   const assetRegistry = useChainAssets().chainAssetRegistry;
@@ -454,6 +445,15 @@ export const SendFund = ({
       }
     }
   }, [chainValue, currentChainAsset, destChainValue]);
+
+  const {
+    error: isGetBalanceError,
+    isLoading: isGetBalanceLoading,
+    nativeTokenBalance,
+    nativeTokenSlug,
+    tokenBalance,
+    chainInfo,
+  } = useGetBalance(chainValue, fromValue, assetValue, false, extrinsicType);
 
   // const fromChainNetworkPrefix = useGetChainPrefixBySlug(chainValue); // will use it for account selector later
   const destChainNetworkPrefix = useGetChainPrefixBySlug(destChainValue);
