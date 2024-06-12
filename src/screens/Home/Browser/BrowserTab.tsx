@@ -11,16 +11,7 @@ import React, {
 } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import {
-  Alert,
-  Linking,
-  NativeSyntheticEvent,
-  Platform,
-  SafeAreaView,
-  Share,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Linking, NativeSyntheticEvent, Platform, SafeAreaView, Share, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -470,12 +461,18 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
         url.startsWith('mailto:') ||
         url.startsWith('maps:') ||
         url.startsWith('geo:') ||
-        url.startsWith('sms:')
+        url.startsWith('sms:') ||
+        url.startsWith('tg:') ||
+        url.startsWith('https://x.com') ||
+        url.startsWith('https://m.youtube.com') ||
+        url.startsWith('https://www.reddit.com') ||
+        url.startsWith('https://discord.com') ||
+        url.startsWith('https://apps.apple.com')
       ) {
         Linking.openURL(url).catch(er => {
-          Alert.alert('Failed to open Link: ' + er.message);
+          console.log('Failed to open Link: ' + er.message);
         });
-        return false;
+        return !url.startsWith('tg:');
       }
       const urlParsed = new urlParse(url);
       if (url.startsWith('wc:')) {
