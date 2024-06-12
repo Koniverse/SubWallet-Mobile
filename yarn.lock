@@ -5146,10 +5146,10 @@
     "@polkadot/util" "^12.5.1"
     eventemitter3 "^5.0.1"
 
-"@subwallet/extension-base@1.2.4-0", "@subwallet/extension-base@^1.2.4-0":
-  version "1.2.4-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.2.4-0.tgz#58a22837c7d86d475ccc6205841311ad75a6b94f"
-  integrity sha512-D2dai7aoQCCqUy8JGX3Db/N8sFjOmPxfr1anfwgauYOrmhxgDdJEXsTVq5JYqpunRahGQfR9xwRMjJCCi8nsgg==
+"@subwallet/extension-base@1.2.5-0", "@subwallet/extension-base@^1.2.5-0":
+  version "1.2.5-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.2.5-0.tgz#ee01c306b48089b5809e78c5634f776cd8e519a2"
+  integrity sha512-BCiHAvuGo0UGFvKquy1+99p7mQgMcK2bp5WfkaW5w1HCfY1tuExqU6jI+gnFK7nrhZDUSiBvZzsJ7NszdbgZOg==
   dependencies:
     "@acala-network/api" "^5.0.2"
     "@apollo/client" "^3.7.14"
@@ -5184,10 +5184,10 @@
     "@sora-substrate/type-definitions" "^1.17.7"
     "@substrate/connect" "^0.8.9"
     "@subwallet/chain-list" "0.2.67"
-    "@subwallet/extension-base" "^1.2.4-0"
-    "@subwallet/extension-chains" "^1.2.4-0"
-    "@subwallet/extension-dapp" "^1.2.4-0"
-    "@subwallet/extension-inject" "^1.2.4-0"
+    "@subwallet/extension-base" "^1.2.5-0"
+    "@subwallet/extension-chains" "^1.2.5-0"
+    "@subwallet/extension-dapp" "^1.2.5-0"
+    "@subwallet/extension-inject" "^1.2.5-0"
     "@subwallet/keyring" "^0.1.5"
     "@subwallet/ui-keyring" "^0.1.5"
     "@walletconnect/keyvaluestorage" "^1.1.1"
@@ -5226,31 +5226,31 @@
     web3-eth-contract "^1.10.0"
     web3-utils "^1.10.0"
 
-"@subwallet/extension-chains@1.2.4-0", "@subwallet/extension-chains@^1.2.4-0":
-  version "1.2.4-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.2.4-0.tgz#d67fbae1d14dafb6db2dfc89f80b181b1b52600d"
-  integrity sha512-rn1IvQ4OGHrNVkxwvvIlmd8uDDE9PHJKn3A+Am14mQIOKV/EF3xG+0huuym+Nf9pVvsiAV0V3dg3Lo7cmfo4PQ==
+"@subwallet/extension-chains@1.2.5-0", "@subwallet/extension-chains@^1.2.5-0":
+  version "1.2.5-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.2.5-0.tgz#18bb58c108385ab4e15ec55d5977b3b2cd965f97"
+  integrity sha512-qvpp/068HTtufprc3pJc2Ei2Jzs9gRnZHA0JYG+yiQtzB+dZOQk72zl83VmpgtduH3+YVn3U3NdMCsXwvsDvRw==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/networks" "^12.6.2"
     "@polkadot/util" "^12.6.2"
     "@polkadot/util-crypto" "^12.6.2"
-    "@subwallet/extension-inject" "^1.2.4-0"
+    "@subwallet/extension-inject" "^1.2.5-0"
 
-"@subwallet/extension-dapp@1.2.4-0", "@subwallet/extension-dapp@^1.2.4-0":
-  version "1.2.4-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.2.4-0.tgz#458f3670166c51cd81597a4c93a089b88b0d49dc"
-  integrity sha512-V0vQeAbfvBX7GlpbxcO4y/3WIGj//xNlzkc2a2krfR4T2whPi+30GXIE8XMXiAEIo/vgLdvwfzj0qJcNltJngQ==
+"@subwallet/extension-dapp@1.2.5-0", "@subwallet/extension-dapp@^1.2.5-0":
+  version "1.2.5-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.2.5-0.tgz#96887ac3e488f16619cb6c354733bf9288a0762d"
+  integrity sha512-1ReuMf3XDLgOW7kYU2At3qD3knBB2Mwu+aeS11dwijU6rebE4z8MABjU4zek+vEXkT2flhd6uIAc5IHxCGIPVQ==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/util" "^12.6.2"
     "@polkadot/util-crypto" "^12.6.2"
-    "@subwallet/extension-inject" "^1.2.4-0"
+    "@subwallet/extension-inject" "^1.2.5-0"
 
-"@subwallet/extension-inject@^1.2.4-0":
-  version "1.2.4-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.2.4-0.tgz#a4a2ee858c602f5cfb989796b9a9e86bc474fc3f"
-  integrity sha512-zU1i/73hRpy+wZO4PxjTUfFA9HSPmxwOiQ+wqVq6IuBTMsB5ZMhXneNpCTHU6Ryb70NprvK05pfUjPJ7s8b7jQ==
+"@subwallet/extension-inject@^1.2.5-0":
+  version "1.2.5-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.2.5-0.tgz#b6b16b854bf1da887c99754161de9e98a099586f"
+  integrity sha512-I7Cvr9Gc78DjrW8yNaklABhMNEWnNsd5otMq2+7woTZrSrQ0+Bjc9an0y2oLK3FnXhwUugfSh3h4KnSq4jdPHA==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/rpc-provider" "^11.0.3"
