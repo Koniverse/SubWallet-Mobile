@@ -11,6 +11,8 @@ import { getSignMode } from 'utils/account';
 import { AccountSignMode } from 'types/signer';
 import { ALL_STAKING_ACTIONS } from 'constants/transaction';
 import { useToast } from 'react-native-toast-notifications';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import { getDevMode } from 'utils/storage';
 
 //todo: i18n
 //todo: solve error
@@ -22,7 +24,7 @@ const usePreCheckAction = (
   const { show, hideAll } = useToast();
 
   const account = useGetAccountByAddress(address);
-
+  const isDevMode = getDevMode();
   const getAccountTypeTitle = useCallback((_account: AccountJson): string => {
     const signMode = getSignMode(_account);
 
@@ -54,6 +56,7 @@ const usePreCheckAction = (
           let block = false;
           let accountTitle = getAccountTypeTitle(account);
           let defaultMessage = 'The account you are using is {{accountTitle}}, you cannot use this feature with it';
+          const isEthereumAccount = isEthereumAddress(account.address);
 
           switch (mode) {
             case AccountSignMode.READ_ONLY:
@@ -71,6 +74,13 @@ const usePreCheckAction = (
 
           if (ALL_STAKING_ACTIONS.includes(action)) {
             defaultMessage = 'You are using a {{accountTitle}}. Staking is not supported with this account type';
+          }
+
+          if (mode === AccountSignMode.QR) {
+            if (isEthereumAccount && !isDevMode) {
+              accountTitle = 'EVM QR signer account';
+              block = true;
+            }
           }
 
           // if (mode === AccountSignMode.LEDGER) {
@@ -115,7 +125,7 @@ const usePreCheckAction = (
         }
       };
     },
-    [account, blockAllAccount, getAccountTypeTitle, hideAll, message, show],
+    [account, blockAllAccount, getAccountTypeTitle, hideAll, isDevMode, message, show],
   );
 };
 
