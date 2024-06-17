@@ -91,14 +91,14 @@ function getTokenSelectorItem(tokenSlugs: string[], assetRegistryMap: Record<str
     const asset = assetRegistryMap[slug];
 
     if (Platform.OS === 'android') {
-      if (asset && asset.originChain !== 'hydradx_main') {
-        result.push({
-          originChain: asset.originChain,
-          slug,
-          symbol: asset.symbol,
-          name: asset.name,
-        });
-      }
+      // if (asset && asset.originChain !== 'hydradx_main') {
+      result.push({
+        originChain: asset.originChain,
+        slug,
+        symbol: asset.symbol,
+        name: asset.name,
+      });
+      // }
     } else {
       result.push({
         originChain: asset.originChain,

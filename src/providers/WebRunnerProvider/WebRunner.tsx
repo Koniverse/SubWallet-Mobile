@@ -50,6 +50,18 @@ function isWebRunnerAlive(eventData: NativeSyntheticEvent<WebViewMessage>): bool
   }
 }
 
+let needFallBack = false;
+
+export const getMajorVersionIOS = (): number => {
+  if (Platform.OS !== 'ios') {
+    return 17;
+  }
+
+  return parseFloat(Platform.Version);
+};
+
+const iosVersion = getMajorVersionIOS();
+
 class WebRunnerHandler {
   eventEmitter?: EventEmitter;
   webRef?: React.RefObject<WebView<{}>>;
@@ -247,9 +259,53 @@ class WebRunnerHandler {
     });
   }
 
+  async getAllFiles(folderPath: string, path: string): Promise<Array<string>> {
+    const filePaths: string[] = [];
+    const assetDirItems = await RNFS.readDirAssets(path);
+    for (const dirItem of assetDirItems) {
+      if (dirItem.isFile()) {
+        filePaths.push(dirItem.path);
+      } else {
+        await RNFS.mkdir(`${folderPath}/${dirItem.path}`);
+        const dirItemFiles = await this.getAllFiles(folderPath, dirItem.path);
+        filePaths.push(...dirItemFiles);
+      }
+    }
+    console.log('filePaths', filePaths);
+    return filePaths;
+  }
+
   constructor() {
-    if (Platform.OS === 'ios') {
-      this.server = new StaticServer(WEB_SERVER_PORT, RNFS.MainBundlePath + '/Web.bundle', { localOnly: true });
+    if (Platform.OS === 'android') {
+      const DOCUMENT_DIRECTORY_PATH = RNFS.DocumentDirectoryPath;
+      const BUNDLE_PATH = 'Web.bundle';
+      const ANDROID_BUNDLE_PATH = `${DOCUMENT_DIRECTORY_PATH}/${BUNDLE_PATH}`;
+      (async () => {
+        const hasCopiedAssets = await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`);
+        const lastAppCopyVersion = mmkvStore.getString('last-app-copy-version');
+        if (hasCopiedAssets && getVersion() === lastAppCopyVersion) {
+          return;
+        }
+        const files = await this.getAllFiles(DOCUMENT_DIRECTORY_PATH, BUNDLE_PATH);
+        if (hasCopiedAssets) {
+          files.map(async filePath => {
+            await RNFS.unlink(filePath);
+          });
+        }
+        await RNFS.mkdir(ANDROID_BUNDLE_PATH);
+        await Promise.all(
+          files.map(async filePath => {
+            await RNFS.copyFileAssets(filePath, `${DOCUMENT_DIRECTORY_PATH}/${filePath}`);
+          }),
+        );
+      })();
+      this.server = new StaticServer(WEB_SERVER_PORT, ANDROID_BUNDLE_PATH, { localOnly: true });
+    } else {
+      let target = '/Web.bundle';
+      if (iosVersion < 16.4 || needFallBack) {
+        target = '/OldWeb.bundle';
+      }
+      this.server = new StaticServer(WEB_SERVER_PORT, RNFS.MainBundlePath + target, { localOnly: true });
     }
     AppState.addEventListener('change', (state: string) => {
       const now = new Date().getTime();
@@ -277,14 +333,6 @@ class WebRunnerHandler {
 
 const webRunnerHandler = new WebRunnerHandler();
 
-export const getMajorVersionIOS = (): number => {
-  if (Platform.OS !== 'ios') {
-    return 17;
-  }
-
-  return parseFloat(Platform.Version);
-};
-
 interface WebRunnerGlobalState {
   uri?: string;
   injectScript: string;
@@ -300,20 +348,12 @@ interface WebRunnerControlAction {
 
 const now = new Date().getTime();
 
-let needFallBack = false;
-
 const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${now}`;
 
 const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
-const iosVersion = getMajorVersionIOS();
 
 const getBaseUri = () => {
-  const osWebRunnerURL =
-    Platform.OS === 'android'
-      ? 'file:///android_asset/Web.bundle/androidSite'
-      : iosVersion >= 16.4 && !needFallBack
-      ? `http://localhost:${WEB_SERVER_PORT}/site`
-      : `http://localhost:${WEB_SERVER_PORT}/oldSite`;
+  const osWebRunnerURL = `http://localhost:${WEB_SERVER_PORT}/site`;
 
   return !devWebRunnerURL || devWebRunnerURL === '' ? osWebRunnerURL : devWebRunnerURL;
 };
