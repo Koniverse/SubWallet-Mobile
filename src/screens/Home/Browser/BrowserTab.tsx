@@ -11,16 +11,7 @@ import React, {
 } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import {
-  Alert,
-  Linking,
-  NativeSyntheticEvent,
-  Platform,
-  SafeAreaView,
-  Share,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Linking, NativeSyntheticEvent, Platform, SafeAreaView, Share, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -165,7 +156,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const navigation = useNavigation<RootNavigationProps>();
-  const historyItems = useSelector((state: RootState) => state.browser.history);
+  const { history: historyItems, externalApplicationUrlList } = useSelector((state: RootState) => state.browser);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [initWebViewSource, setInitWebViewSource] = useState<string | null>(null);
   const [progressNumber, setProgressNumber] = useState<number>(0);
@@ -463,17 +454,22 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     },
   }));
 
+  const isExternalAppUrl = useCallback(
+    (url: string) => {
+      if (externalApplicationUrlList && externalApplicationUrlList.length) {
+        return externalApplicationUrlList.some(item => url.startsWith(item));
+      } else {
+        return false;
+      }
+    },
+    [externalApplicationUrlList],
+  );
+
   const onShouldStartLoadWithRequest = useCallback(
     ({ url }: WebViewNavigation) => {
-      if (
-        url.startsWith('tel:') ||
-        url.startsWith('mailto:') ||
-        url.startsWith('maps:') ||
-        url.startsWith('geo:') ||
-        url.startsWith('sms:')
-      ) {
+      if (isExternalAppUrl(url)) {
         Linking.openURL(url).catch(er => {
-          Alert.alert('Failed to open Link: ' + er.message);
+          console.log('Failed to open Link: ' + er.message);
         });
         return false;
       }
@@ -520,7 +516,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
 
       return true;
     },
-    [dispatch, toast],
+    [dispatch, isExternalAppUrl, toast],
   );
 
   const onOutOfMemmories = () => {

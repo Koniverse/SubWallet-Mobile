@@ -4,7 +4,7 @@ import EarningScreen from 'screens/Home/Earning';
 
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Aperture, Globe, Rocket, Vault, Wallet } from 'phosphor-react-native';
+import { Aperture, Globe, Parachute, Vault, Wallet } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,11 +12,9 @@ import { BOTTOM_BAR_HEIGHT, deviceWidth } from 'constants/index';
 import { ColorMap } from 'styles/color';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { FirstScreen } from 'screens/Home/FirstScreen';
-import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 import { BrowserScreen } from 'screens/Home/Browser';
 import { HomeStackParamList } from 'routes/home';
 import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
-import withPageWrapper from 'components/pageWrapper';
 import RequestCreateMasterPasswordModal from 'screens/MasterPassword/RequestCreateMasterPasswordModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -37,6 +35,9 @@ import { RemindBackupModal } from 'components/Modal/RemindBackupModal';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { useIsFocused } from '@react-navigation/native';
 import { updateMktCampaignStatus } from 'stores/AppState';
+import { MissionPools } from 'screens/Home/Browser/MissionPool';
+import { computeStatus } from 'utils/missionPools';
+import { MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
 
 interface tabbarIconColor {
   color: string;
@@ -47,8 +48,8 @@ const tokenTabbarIcon = ({ color }: tabbarIconColor) => {
 const nftTabbarIcon = ({ color }: tabbarIconColor) => {
   return <Aperture size={24} color={color} weight={'fill'} />;
 };
-const crowdloanTabbarIcon = ({ color }: tabbarIconColor) => {
-  return <Rocket size={24} color={color} weight={'fill'} />;
+const missionPoolTabBarIcon = ({ color }: tabbarIconColor) => {
+  return <Parachute size={24} color={color} weight={'fill'} />;
 };
 const stakingTabbarIcon = ({ color }: tabbarIconColor) => {
   return <Vault size={24} color={color} weight={'fill'} />;
@@ -82,6 +83,21 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
     props.style = [[...props.style], customStyle];
     return <TouchableOpacity {...props} activeOpacity={1} />;
   };
+
+  const { missions } = useSelector((state: RootState) => state.missionPool);
+  const activeMissionPoolNumb = useMemo(() => {
+    const computedMission =
+      missions && missions.length
+        ? missions.map(item => {
+            return {
+              ...item,
+              status: computeStatus(item),
+            };
+          })
+        : [];
+
+    return computedMission.filter(item => item.status === MissionCategoryType.LIVE).length;
+  }, [missions]);
 
   return (
     <Tab.Navigator
@@ -154,12 +170,23 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
         />
       )}
       <Tab.Screen
-        name={'Crowdloans'}
-        component={withPageWrapper(CrowdloansScreen, ['crowdloan', 'price', 'chainStore', 'logoMaps'])}
+        name={'MissionPools'}
+        component={MissionPools}
         options={{
-          tabBarLabel: i18n.tabName.crowdloans,
+          tabBarLabel: 'Missions',
           tabBarHideOnKeyboard: Platform.OS === 'android',
-          tabBarIcon: crowdloanTabbarIcon,
+          tabBarIcon: missionPoolTabBarIcon,
+          tabBarBadge: activeMissionPoolNumb === 0 ? undefined : activeMissionPoolNumb,
+          tabBarBadgeStyle: {
+            top: Platform.OS === 'ios' ? 0 : 9,
+            minWidth: 14,
+            maxHeight: 14,
+            borderRadius: 7,
+            fontSize: 10,
+            lineHeight: 13,
+            alignSelf: undefined,
+            backgroundColor: theme.colorError,
+          },
         }}
       />
     </Tab.Navigator>

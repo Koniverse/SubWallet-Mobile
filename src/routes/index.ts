@@ -62,7 +62,6 @@ export type RootStackParamList = {
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
   BrowserListByTabview: { type: string };
-  MissionPoolsByTabview: { type: string };
   ConfirmationPopup: undefined;
   Confirmations: undefined;
   DAppAccess: undefined;
@@ -93,6 +92,7 @@ export type RootStackParamList = {
   };
   ManageAddressBook: undefined;
   DeriveAccount: undefined;
+  Crowdloans: undefined;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -114,7 +114,6 @@ export type TransferNftProps = NativeStackScreenProps<RootStackParamList, 'Trans
 export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
 export type BrowserTabsManagerProps = NativeStackScreenProps<RootStackParamList, 'BrowserTabsManager'>;
 export type BrowserListByTabviewProps = NativeStackScreenProps<RootStackParamList, 'BrowserListByTabview'>;
-export type MissionPoolsByTabviewProps = NativeStackScreenProps<RootStackParamList, 'MissionPoolsByTabview'>;
 export type BrowserHomeProps = NativeStackScreenProps<RootStackParamList, 'BrowserHome'>;
 export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'BrowserSearch'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;

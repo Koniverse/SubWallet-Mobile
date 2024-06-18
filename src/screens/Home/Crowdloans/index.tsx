@@ -7,7 +7,7 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { _CrowdloanItemType } from 'types/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -17,6 +17,7 @@ import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { useRefresh } from 'hooks/useRefresh';
 import { reloadCron } from 'messaging/index';
 import { BannerGenerator } from 'components/common/BannerGenerator';
+import { RootNavigationProps } from 'routes/index';
 
 enum FilterValue {
   POLKADOT_PARACHAIN = 'Polkadot parachain',
@@ -27,6 +28,7 @@ enum FilterValue {
 
 export const CrowdloansScreen = () => {
   const theme = useSubWalletTheme().swThemes;
+  const navigation = useNavigation<RootNavigationProps>();
   const items: _CrowdloanItemType[] = useGetCrowdloanList();
   const [isRefresh, refresh] = useRefresh();
   const isFocused = useIsFocused();
@@ -99,17 +101,15 @@ export const CrowdloansScreen = () => {
     <FlatListScreen
       isShowFilterBtn
       title={i18n.header.crowdloans}
-      titleTextAlign={'left'}
       flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
       renderListEmptyComponent={renderListEmptyComponent}
       renderItem={renderItem}
       autoFocus={false}
+      onPressBack={() => navigation.goBack()}
       items={crowdloanData}
-      showLeftBtn={false}
       searchFunction={doFilterOptions}
       filterOptions={defaultFilterOpts}
       filterFunction={getListByFilterOpt}
-      isShowMainHeader
       placeholder={i18n.placeholder.searchProject}
       refreshControl={<RefreshControl tintColor={theme.colorWhite} refreshing={isRefresh} onRefresh={onRefresh} />}
       beforeListItem={

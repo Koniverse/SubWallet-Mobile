@@ -79,7 +79,6 @@ import queryString from 'querystring';
 import { connectWalletConnect } from 'utils/walletConnect';
 import { useToast } from 'react-native-toast-notifications';
 import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview';
-import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { DeriveAccount } from 'screens/Account/DeriveAccount';
 import { useGroupYieldPosition } from 'hooks/earning';
 import { isEthereumAddress } from '@polkadot/util-crypto';
@@ -97,6 +96,7 @@ import { mmkvStore } from 'utils/storage';
 import { EarningPreview } from 'screens/EarningPreview';
 import { EarningPreviewPools } from 'screens/EarningPreview/EarningPreviewPools';
 import { ExportAllAccount } from 'screens/Account/ExportAllAccount';
+import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 
 interface Props {
   isAppReady: boolean;
@@ -633,7 +633,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ConnectList" component={ConnectionListScreen} />
                 <Stack.Screen name="ConnectDetail" component={ConnectionDetail} />
                 <Stack.Screen name="ConnectWalletConnect" component={ConnectWalletConnect} />
-                <Stack.Screen name="MissionPoolsByTabview" component={MissionPoolsByTabview} />
+                <Stack.Screen name="Crowdloans" component={CrowdloansScreen} />
                 <Stack.Screen
                   name="CreatePassword"
                   component={CreateMasterPassword}

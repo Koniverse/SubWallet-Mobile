@@ -43,6 +43,7 @@ import { useGetAppInstructionData } from 'hooks/static-content/useGetAppInstruct
 import { useGetConfig } from 'hooks/static-content/useGetConfig';
 import { mmkvStore } from 'utils/storage';
 import { setIsShowRemindBackupModal } from 'screens/Home';
+import { useGetBrowserConfig } from 'hooks/static-content/useGetBrowserConfig';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -171,6 +172,7 @@ export const App = () => {
   const { getDAppsData } = useGetDAppList();
   const { getPoolInfoMap } = useGetEarningPoolData();
   const { getConfig } = useGetConfig();
+  const { getBrowserConfig } = useGetBrowserConfig();
   const { getEarningStaticData } = useGetEarningStaticData(language);
   const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
@@ -213,6 +215,7 @@ export const App = () => {
     getPoolInfoMap();
     getDAppsData();
     getConfig();
+    getBrowserConfig();
     getEarningStaticData();
     getAppInstructionData();
 

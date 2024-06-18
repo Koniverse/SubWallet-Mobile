@@ -1,130 +1,113 @@
-import React, { useState } from 'react';
-import { MissionPoolsByTabviewProps } from 'routes/index';
-import { MaterialTopTabNavigationOptions, createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Animated, View } from 'react-native';
-import { Typography } from 'components/design-system-ui';
-import { FontSemiBold } from 'styles/sharedStyles';
-import { ThemeTypes } from 'styles/themes';
+import React, { useMemo, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
-import { ParamListBase, RouteProp } from '@react-navigation/native';
-import { missionCategories } from 'screens/Home/Browser/MissionPool/predefined';
-import { MissionPoolsByCategory } from 'screens/Home/Browser/MissionPool/MissionPoolsByCategory';
-import { Search } from 'components/Search';
-import { MissionPoolsContext } from 'screens/Home/Browser/MissionPool/context';
+import { FlatListScreen } from 'components/FlatListScreen';
+import { Keyboard, ListRenderItemInfo } from 'react-native';
+import { MissionInfo } from 'types/missionPool';
+import { MissionPoolHorizontalItem } from 'components/MissionPoolHorizontalItem';
+import { MissionPoolDetailModal } from 'screens/Home/Browser/MissionPool/MissionPoolDetailModal/MissionPoolDetailModal';
+import { computeStatus } from 'utils/missionPools';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { EmptyList } from 'components/EmptyList';
+import { GlobeHemisphereWest } from 'phosphor-react-native';
+import { useRefresh } from 'hooks/useRefresh';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
-type RoutesType = {
-  key: string;
-  title: string;
-};
-type TabbarType = {
-  focused: boolean;
-};
-const Tab = createMaterialTopTabNavigator();
-const transparent = { backgroundColor: 'transparent' };
-const screenOptions:
-  | MaterialTopTabNavigationOptions
-  | ((props: { route: RouteProp<ParamListBase, string>; navigation: any }) => MaterialTopTabNavigationOptions)
-  | undefined = () => ({
-  tabBarStyle: { height: 28, ...transparent },
-  tabBarItemStyle: {
-    width: 'auto',
-    paddingLeft: 0,
-    paddingRight: 0,
-  },
-  tabBarIconStyle: { width: 'auto', marginLeft: -2, marginRight: -2, top: -12 },
-  tabBarScrollEnabled: true,
-  lazy: true,
-  tabBarShowLabel: false,
-  tabBarIndicatorStyle: transparent,
-  animationEnabled: false,
-});
-const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
-  const wrapperStyle = {
-    paddingHorizontal: 8,
-    paddingLeft: item.title.toLocaleLowerCase() === 'all' ? 16 : undefined,
-  };
-  const spaceStyle = {
-    height: 2,
-    marginTop: theme.marginXXS,
-    backgroundColor: focused ? theme.colorPrimary : 'transparent',
-  };
-  return (
-    <View style={wrapperStyle}>
-      <Typography.Text style={{ ...FontSemiBold, color: focused ? theme.colorTextLight1 : theme.colorTextLight4 }}>
-        {item.title}
-      </Typography.Text>
-      <View style={spaceStyle} />
-    </View>
-  );
-};
-export const MissionPoolsByTabview = ({ route, navigation }: MissionPoolsByTabviewProps) => {
-  const theme = useSubWalletTheme().swThemes;
-  const [searchString, setSearchString] = useState<string>('');
-  const categoryTabRoutes = missionCategories.map(item => ({ key: item.slug, title: item.name }));
-  const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
-
-  const av = new Animated.Value(0);
-  av.addListener(() => {
-    return;
+function getListByFilterOpt(items: MissionInfo[], filterOptions: string[]) {
+  if (filterOptions.length === 0) {
+    return items;
+  }
+  let result: MissionInfo[];
+  result = items.filter(({ status }) => {
+    if (status && filterOptions.includes(status)) {
+      return true;
+    }
+    return false;
   });
 
-  const tabScreenOptions = (item: RoutesType) => {
-    return {
-      tabBarIcon: ({ focused }: TabbarType) => tabbarIcon(focused, item, theme),
-    };
+  return result;
+}
+
+enum FilterValue {
+  UPCOMING = 'upcoming',
+  LIVE = 'live',
+  ARCHIVED = 'archived',
+}
+
+const filterOpts = [
+  { label: 'Upcoming', value: FilterValue.UPCOMING },
+  { label: 'Live', value: FilterValue.LIVE },
+  { label: 'Archived', value: FilterValue.ARCHIVED },
+];
+
+export const MissionPools = () => {
+  const theme = useSubWalletTheme().swThemes;
+  const [selectedMissionPool, setSelectedMissionPool] = useState<MissionInfo | undefined>(undefined);
+  const [visible, setVisible] = useState<boolean>(false);
+  const { missions } = useSelector((state: RootState) => state.missionPool);
+  const [isRefresh] = useRefresh();
+
+  const computedMission = useMemo(() => {
+    return missions && missions.length
+      ? missions.map(item => {
+          return {
+            ...item,
+            status: computeStatus(item),
+          };
+        })
+      : [];
+  }, [missions]);
+
+  const renderItem = ({ item }: ListRenderItemInfo<MissionInfo>) => (
+    <MissionPoolHorizontalItem
+      data={item}
+      onPressItem={() => {
+        Keyboard.dismiss();
+        setSelectedMissionPool(item);
+        setVisible(true);
+      }}
+    />
+  );
+
+  const renderEmpty = () => {
+    return (
+      <EmptyList
+        title={i18n.emptyScreen.missionPoolsEmptyTitle}
+        icon={GlobeHemisphereWest}
+        message={i18n.emptyScreen.missionPoolsEmptyMessage}
+        isRefresh={isRefresh}
+      />
+    );
   };
 
-  const screenListener = {
-    focus: () => {
-      Animated.timing(av, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    },
+  const searchFunction = (items: MissionInfo[], _searchString: string) => {
+    return items.filter(({ name }) => {
+      return name ? name.toLowerCase().includes(_searchString.toLowerCase()) : true;
+    });
   };
 
   return (
-    <MissionPoolsContext.Provider value={{ searchString }}>
-      <ContainerWithSubHeader
+    <>
+      <FlatListScreen
+        flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
+        items={computedMission}
+        renderListEmptyComponent={renderEmpty}
         title={i18n.header.missionPools}
-        showLeftBtn
-        onPressBack={() => {
-          navigation.canGoBack() && navigation.goBack();
-        }}>
-        <>
-          <Search
-            autoFocus={false}
-            placeholder={i18n.placeholder.campaignName}
-            onClearSearchString={() => setSearchString('')}
-            onSearch={setSearchString}
-            searchText={searchString}
-            style={{ marginBottom: theme.padding, marginTop: theme.marginXS, marginHorizontal: theme.padding }}
-            isShowFilterBtn={false}
-          />
+        isShowFilterBtn
+        renderItem={renderItem}
+        searchFunction={searchFunction}
+        filterFunction={getListByFilterOpt}
+        filterOptions={filterOpts}
+        isShowMainHeader
+        showLeftBtn={false}
+        titleTextAlign={'left'}
+        placeholder={i18n.placeholder.campaignName}
+        autoFocus={false}
+      />
 
-          <Tab.Navigator
-            overScrollMode={'always'}
-            sceneContainerStyle={transparent}
-            screenOptions={screenOptions}
-            screenListeners={screenListener}
-            style={transparent}>
-            {allTabRoutes.map(item => {
-              return (
-                <Tab.Screen
-                  key={item.key}
-                  name={item.key}
-                  initialParams={{ navigationType: route.params.type }}
-                  component={MissionPoolsByCategory}
-                  options={tabScreenOptions(item)}
-                />
-              );
-            })}
-          </Tab.Navigator>
-        </>
-      </ContainerWithSubHeader>
-    </MissionPoolsContext.Provider>
+      {selectedMissionPool && (
+        <MissionPoolDetailModal modalVisible={visible} data={selectedMissionPool} setVisible={setVisible} />
+      )}
+    </>
   );
 };

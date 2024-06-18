@@ -9,6 +9,7 @@ const initialState: BrowserSlice = {
   bookmarks: [],
   defaultDesktopMode: [],
   desktopMode: [],
+  externalApplicationUrlList: [],
 };
 
 function generateId(prefix?: string): string {
@@ -132,8 +133,12 @@ const browserSlice = createSlice({
     updateDefaultDesktopMode: (state, { payload }: PayloadAction<BrowserSlice['defaultDesktopMode']>) => {
       state.defaultDesktopMode = payload;
     },
+    updateExternalApplicationUrlList: (state, action: PayloadAction<BrowserSlice['externalApplicationUrlList']>) => {
+      state.externalApplicationUrlList = action.payload;
+    },
   },
 });
 
-export const { resetBrowserSetting, updateDesktopMode, updateDefaultDesktopMode } = browserSlice.actions;
+export const { resetBrowserSetting, updateDesktopMode, updateDefaultDesktopMode, updateExternalApplicationUrlList } =
+  browserSlice.actions;
 export default browserSlice.reducer;

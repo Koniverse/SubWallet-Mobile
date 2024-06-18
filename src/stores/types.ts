@@ -137,6 +137,7 @@ export type BrowserSlice = {
   bookmarks: StoredSiteInfo[];
   defaultDesktopMode: string[];
   desktopMode: string[];
+  externalApplicationUrlList: string[];
 };
 
 export type BackgroundServiceSlice = {
