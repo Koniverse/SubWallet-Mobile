@@ -12,16 +12,11 @@ interface Props {
   style: StyleProp<ViewStyle>;
   closeDetailModal?: () => void;
   disabledJoinNowBtn?: boolean;
+  onPressJoinNow(url: string): Promise<void>;
 }
 
-export const MissionPoolFooter = ({ data, style, closeDetailModal, disabledJoinNowBtn }: Props) => {
+export const MissionPoolFooter = ({ data, style, disabledJoinNowBtn, onPressJoinNow }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-
-  const onPressJoinNow = async (url: string) => {
-    const transformUrl = `subwallet://browser?url=${encodeURIComponent(url)}`;
-    closeDetailModal && closeDetailModal();
-    Linking.openURL(transformUrl);
-  };
 
   return (
     <View style={style}>

@@ -54,6 +54,7 @@ export const GlobalInstructionModal = ({
       isUseForceHidden={false}
       modalVisible={visible}
       isUseModalV2
+      level={3}
       modalBaseV2Ref={modalBaseV2Ref}>
       <SafeAreaView
         style={{

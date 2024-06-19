@@ -1,6 +1,7 @@
 export type MissionCategory = {
   name: string;
   slug: string;
+  color: string;
 };
 
 export type MissionInfo = {
@@ -21,4 +22,5 @@ export type MissionInfo = {
   backdrop_image: string;
   campaign_url: string | null;
   chains: string[] | null;
+  categories: MissionCategory[];
 };

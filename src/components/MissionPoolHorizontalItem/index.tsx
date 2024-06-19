@@ -12,6 +12,7 @@ import { MissionPoolTag } from 'components/MissionPoolHorizontalItem/MissionPool
 import LinearGradient from 'react-native-linear-gradient';
 import { MissionPoolStatusTag } from 'components/MissionPoolHorizontalItem/MissionPoolStatusTag';
 import { ImageLogosMap } from 'assets/logo';
+import { MissionPoolCategory } from 'components/MissionPoolHorizontalItem/MissionPoolCategories';
 
 export enum TagType {
   FCFS = 'fcfs',
@@ -87,6 +88,7 @@ export const MissionPoolHorizontalItem = ({ data, onPressItem, containerStyle, i
             }}>
             <MissionPoolTag data={data} />
             <MissionPoolStatusTag data={data} />
+            <MissionPoolCategory data={data} />
           </View>
         </View>
       </View>

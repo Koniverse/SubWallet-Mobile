@@ -12,6 +12,7 @@ import { EmptyList } from 'components/EmptyList';
 import { GlobeHemisphereWest } from 'phosphor-react-native';
 import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 
 function getListByFilterOpt(items: MissionInfo[], filterOptions: string[]) {
   if (filterOptions.length === 0) {
@@ -46,6 +47,15 @@ export const MissionPools = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const { missions } = useSelector((state: RootState) => state.missionPool);
   const [isRefresh] = useRefresh();
+  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('crowdloan');
+
+  const currentConfirmation = useMemo(() => {
+    if (selectedMissionPool) {
+      return getCurrentConfirmation(selectedMissionPool.id.toString());
+    } else {
+      return undefined;
+    }
+  }, [getCurrentConfirmation, selectedMissionPool]);
 
   const computedMission = useMemo(() => {
     return missions && missions.length
@@ -106,7 +116,13 @@ export const MissionPools = () => {
       />
 
       {selectedMissionPool && (
-        <MissionPoolDetailModal modalVisible={visible} data={selectedMissionPool} setVisible={setVisible} />
+        <MissionPoolDetailModal
+          modalVisible={visible}
+          data={selectedMissionPool}
+          setVisible={setVisible}
+          currentConfirmations={currentConfirmation}
+          renderConfirmationButtons={renderConfirmationButtons}
+        />
       )}
     </>
   );

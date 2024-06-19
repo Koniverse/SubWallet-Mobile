@@ -3,32 +3,21 @@ import { AppOnlineContentContext } from 'providers/AppOnlineContentProvider';
 import { View } from 'react-native';
 import { Button } from 'components/design-system-ui';
 
-const useGetConfirmationByScreen = (screen: string, compareValue?: string) => {
-  const {
-    appConfirmationMap,
-    checkPositionParam,
-    checkBannerVisible,
-    confirmationHistoryMap,
-    updateConfirmationHistoryMap,
-  } = useContext(AppOnlineContentContext);
+const useGetConfirmationByScreen = (screen: string) => {
+  const { appConfirmationMap, checkPositionParam, updateConfirmationHistoryMap } = useContext(AppOnlineContentContext);
 
   const confirmations = useMemo(() => {
-    const displayedConfirmation = appConfirmationMap[screen];
+    return appConfirmationMap[screen] || [];
+  }, [appConfirmationMap, screen]);
 
-    if (displayedConfirmation && displayedConfirmation.length) {
-      return displayedConfirmation.filter(confirmation => {
-        const confirmationHistory = confirmationHistoryMap[`${confirmation.position}-${confirmation.id}`];
-        const isConfirmationVisible = confirmationHistory && checkBannerVisible(confirmationHistory.showTimes);
-        if (compareValue) {
-          return checkPositionParam(screen, confirmation.position_params, compareValue) && isConfirmationVisible;
-        } else {
-          return isConfirmationVisible;
-        }
+  const getCurrentConfirmation = useCallback(
+    (compareVal: string) => {
+      return confirmations.filter(item => {
+        return checkPositionParam(screen, item.position_params, compareVal);
       });
-    } else {
-      return [];
-    }
-  }, [appConfirmationMap, screen, confirmationHistoryMap, checkBannerVisible, compareValue, checkPositionParam]);
+    },
+    [checkPositionParam, confirmations, screen],
+  );
 
   const renderConfirmationButtons = useCallback(
     (onPressCancel: () => void, onPressOk: () => void) => {
@@ -37,7 +26,7 @@ const useGetConfirmationByScreen = (screen: string, compareValue?: string) => {
       }
       const confirmationId = `${confirmations[0].position}-${confirmations[0].id}`;
       return (
-        <View style={{ flexDirection: 'row', gap: 12 }}>
+        <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
           <Button
             block
             type={'secondary'}
@@ -62,7 +51,7 @@ const useGetConfirmationByScreen = (screen: string, compareValue?: string) => {
     [confirmations, updateConfirmationHistoryMap],
   );
 
-  return { confirmations, renderConfirmationButtons };
+  return { confirmations, renderConfirmationButtons, getCurrentConfirmation };
 };
 
 export default useGetConfirmationByScreen;

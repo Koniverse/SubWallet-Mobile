@@ -82,6 +82,7 @@ const GlobalModal: React.FC<Props> = ({
   return (
     <>
       <SwModal
+        level={2}
         setVisible={noop}
         isUseForceHidden={false}
         modalVisible={visible}

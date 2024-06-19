@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { customFormatDate } from 'utils/customFormatDate';
 import { MissionInfo } from 'types/missionPool';
 import {
@@ -122,5 +122,19 @@ export const useMissionPools = (data?: MissionInfo) => {
     }
   };
 
-  return { timeline, tagMap, getTagData };
+  const getMissionPoolCategory = useCallback((_data: MissionInfo) => {
+    if (!_data || !_data.categories || !_data.categories.length) {
+      return null;
+    }
+
+    return _data.categories.map(item => {
+      return {
+        slug: item.slug,
+        name: item.name,
+        color: item.color,
+      };
+    });
+  }, []);
+
+  return { timeline, tagMap, getTagData, getMissionPoolCategory };
 };
