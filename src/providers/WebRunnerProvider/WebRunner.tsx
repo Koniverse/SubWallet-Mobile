@@ -298,6 +298,7 @@ class WebRunnerHandler {
             await RNFS.copyFileAssets(filePath, `${DOCUMENT_DIRECTORY_PATH}/${filePath}`);
           }),
         );
+        this.reload();
       })();
       this.server = new StaticServer(WEB_SERVER_PORT, ANDROID_BUNDLE_PATH, { localOnly: true });
     } else {
