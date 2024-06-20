@@ -8,7 +8,7 @@ import createStyles from './style';
 import { ImageBackground, Linking, ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MetaInfo from 'components/MetaInfo';
-import { MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
+import { MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useMissionPools } from 'hooks/useMissionPools';
 import { MissionPoolFooter } from 'components/MissionPoolHorizontalItem/MissionPoolFooter';
@@ -153,7 +153,7 @@ export const MissionPoolDetailModal = ({
               style={{ flexDirection: 'row', paddingTop: theme.paddingLG, gap: theme.padding }}
               data={data}
               closeDetailModal={() => setVisible(false)}
-              disabledJoinNowBtn={data.status === MissionCategoryType.ARCHIVED}
+              disabledJoinNowBtn={data.status === MissionPoolType.ARCHIVED}
               onPressJoinNow={onPressJoinNow}
             />
           </View>

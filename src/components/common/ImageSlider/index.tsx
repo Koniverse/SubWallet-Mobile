@@ -11,12 +11,13 @@ const { width: screenWidth } = Dimensions.get('window');
 interface ImageSliderProps {
   data: string[];
   onPressItem: (param: number) => void;
+  height?: number;
 }
 type ImageSliderItem = {
   item: string;
   index: number;
 };
-const ImageSlider: React.FC<ImageSliderProps> = ({ data, onPressItem }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ data, onPressItem, height = 152 }) => {
   const stylesheet = createStylesheet();
   const progressValue = useSharedValue<number>(0);
   const carouselRef = useRef<ICarouselInstance>(null);
@@ -49,7 +50,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ data, onPressItem }) => {
         ref={carouselRef}
         loop
         width={screenWidth}
-        height={152}
+        height={height}
         autoPlay
         data={data}
         onScrollBegin={onScrollBegin}

@@ -1,22 +1,18 @@
-import React, { useMemo } from 'react';
-import { MaterialTopTabNavigationOptions, createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import i18n from 'utils/i18n/i18n';
+import React, { useState } from 'react';
+import { createMaterialTopTabNavigator, MaterialTopTabNavigationOptions } from '@react-navigation/material-top-tabs';
+import { ParamListBase, RouteProp } from '@react-navigation/native';
+import { ThemeTypes } from 'styles/themes';
 import { Animated, View } from 'react-native';
 import { Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { ThemeTypes } from 'styles/themes';
-import i18n from 'utils/i18n/i18n';
-import { ParamListBase, RouteProp, useNavigation } from '@react-navigation/native';
 import { MissionPoolType, missionTypes } from 'screens/Home/Browser/MissionPool/predefined';
-import { MissionPoolsByCategory } from 'screens/Home/Browser/MissionPool/MissionPoolsByCategory';
-import { MissionPoolsNavigationProps } from 'routes/home';
-import ImageSlider from 'components/common/ImageSlider';
-import { MagnifyingGlass } from 'phosphor-react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { computeStatus } from 'utils/missionPools';
-import { RootNavigationProps } from 'routes/index';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { MissionPoolSearchByTabviewProps } from 'routes/index';
+import { MissionPoolSearchByType } from 'screens/Home/Browser/MissionPool/MissionPoolSearchByTabView/MissionPoolSearchByType';
+import { Search } from 'components/Search';
+import { MissionPoolsContext } from 'screens/Home/Browser/MissionPool/context';
 
 type RoutesType = {
   key: string;
@@ -42,7 +38,6 @@ const screenOptions:
   lazy: true,
   tabBarShowLabel: false,
   tabBarIndicatorStyle: transparent,
-  animationEnabled: false,
 });
 const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
   const wrapperStyle = {
@@ -64,62 +59,45 @@ const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
   );
 };
 
-export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) => {
+const av = new Animated.Value(0);
+av.addListener(() => {
+  return;
+});
+
+const screenListener = {
+  focus: () => {
+    Animated.timing(av, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  },
+};
+
+export const MissionPoolSearchByTabView = ({ route, navigation }: MissionPoolSearchByTabviewProps) => {
   const theme = useSubWalletTheme().swThemes;
   const categoryTabRoutes = missionTypes
     .filter(i => i.slug !== MissionPoolType.ARCHIVED)
     .map(item => ({ key: item.slug, title: item.name }));
   const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
-  const { missions } = useSelector((state: RootState) => state.missionPool);
-
-  const rootNavigation = useNavigation<RootNavigationProps>();
-
-  const av = new Animated.Value(0);
-  av.addListener(() => {
-    return;
-  });
-
+  const [searchString, setSearchString] = useState<string>('');
   const tabScreenOptions = (item: RoutesType) => {
     return {
       tabBarIcon: ({ focused }: TabbarType) => tabbarIcon(focused, item, theme),
     };
   };
 
-  const computedMission = useMemo(() => {
-    return missions && missions.length
-      ? missions.map(item => {
-          return {
-            ...item,
-            status: computeStatus(item),
-          };
-        })
-      : [];
-  }, [missions]);
-
-  const liveMissionImages = useMemo(() => {
-    return computedMission.filter(item => item.status === MissionPoolType.LIVE).map(_item => _item.backdrop_image);
-  }, [computedMission]);
-
-  const screenListener = {
-    focus: () => {
-      Animated.timing(av, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    },
-  };
-
   return (
-    <>
-      <ContainerWithSubHeader
-        isShowMainHeader
-        title={i18n.header.missionPools}
-        showLeftBtn={false}
-        titleTextAlign={'left'}
-        rightIcon={MagnifyingGlass}
-        onPressRightIcon={() => rootNavigation.navigate('MissionPoolSearchByTabView', { type: 'all' })}>
-        <ImageSlider data={liveMissionImages} onPressItem={() => {}} />
+    <MissionPoolsContext.Provider value={{ searchString }}>
+      <ContainerWithSubHeader title={'Search'} onPressBack={() => navigation.goBack()}>
+        <Search
+          placeholder={i18n.placeholder.campaignName}
+          onClearSearchString={() => setSearchString('')}
+          onSearch={setSearchString}
+          searchText={searchString}
+          style={{ marginBottom: theme.padding, marginTop: theme.marginXS, marginHorizontal: theme.padding }}
+          isShowFilterBtn={false}
+        />
         <Tab.Navigator
           overScrollMode={'always'}
           sceneContainerStyle={transparent}
@@ -132,13 +110,13 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
                 key={item.key}
                 name={item.key}
                 initialParams={{ navigationType: route.params.type }}
-                component={MissionPoolsByCategory}
+                component={MissionPoolSearchByType}
                 options={tabScreenOptions(item)}
               />
             );
           })}
         </Tab.Navigator>
       </ContainerWithSubHeader>
-    </>
+    </MissionPoolsContext.Provider>
   );
 };

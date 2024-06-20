@@ -35,9 +35,9 @@ import { RemindBackupModal } from 'components/Modal/RemindBackupModal';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { useIsFocused } from '@react-navigation/native';
 import { updateMktCampaignStatus } from 'stores/AppState';
-import { MissionPools } from 'screens/Home/Browser/MissionPool';
+import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { computeStatus } from 'utils/missionPools';
-import { MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
+import { MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
 
 interface tabbarIconColor {
   color: string;
@@ -96,7 +96,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
           })
         : [];
 
-    return computedMission.filter(item => item.status === MissionCategoryType.LIVE).length;
+    return computedMission.filter(item => item.status === MissionPoolType.LIVE).length;
   }, [missions]);
 
   return (
@@ -171,7 +171,8 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
       )}
       <Tab.Screen
         name={'MissionPools'}
-        component={MissionPools}
+        initialParams={{ type: 'all' }}
+        component={MissionPoolsByTabview}
         options={{
           tabBarLabel: 'Missions',
           tabBarHideOnKeyboard: Platform.OS === 'android',

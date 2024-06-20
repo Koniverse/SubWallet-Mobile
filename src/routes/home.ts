@@ -24,3 +24,4 @@ export type HomeStackParamList = {
 
 type NavigationProps = NativeStackScreenProps<HomeStackParamList>;
 export type HomeNavigationProps = NavigationProps['navigation'];
+export type MissionPoolsNavigationProps = NativeStackScreenProps<HomeStackParamList, 'MissionPools'>;

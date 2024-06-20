@@ -62,6 +62,9 @@ export type RootStackParamList = {
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
   BrowserListByTabview: { type: string };
+  MissionPoolsByTabview: { type: string };
+  MissionPoolSearchByTabView: { type: string };
+  MissionPoolSearchByType: { type: string };
   ConfirmationPopup: undefined;
   Confirmations: undefined;
   DAppAccess: undefined;
@@ -113,6 +116,8 @@ export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'Rem
 export type TransferNftProps = NativeStackScreenProps<RootStackParamList, 'TransferNft'>;
 export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
 export type BrowserTabsManagerProps = NativeStackScreenProps<RootStackParamList, 'BrowserTabsManager'>;
+export type MissionPoolSearchByTabviewProps = NativeStackScreenProps<RootStackParamList, 'MissionPoolSearchByTabView'>;
+export type MissionPoolSearchByTypeProps = NativeStackScreenProps<RootStackParamList, 'MissionPoolSearchByType'>;
 export type BrowserListByTabviewProps = NativeStackScreenProps<RootStackParamList, 'BrowserListByTabview'>;
 export type BrowserHomeProps = NativeStackScreenProps<RootStackParamList, 'BrowserHome'>;
 export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'BrowserSearch'>;

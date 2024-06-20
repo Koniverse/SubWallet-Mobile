@@ -197,7 +197,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
               .filter(item => item.property === 'poolSlug')
               .map(param => param.value);
             return allowPoolSlugs.some(slug => value.toLowerCase().includes(slug.toLowerCase()));
-          case 'crowdloan':
+          case 'missionPools':
             const selectedIds = positionParams.filter(item => item.property === 'id').map(param => param.value);
             return selectedIds.some(id => value.toLowerCase().includes(id.toLowerCase()));
           default:

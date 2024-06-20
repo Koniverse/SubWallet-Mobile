@@ -4,6 +4,11 @@ export type MissionCategory = {
   color: string;
 };
 
+export type MissionTag = {
+  name: string;
+  slug: string;
+};
+
 export type MissionInfo = {
   id: number;
   name: string | null;

@@ -1,7 +1,7 @@
 import { MissionInfo } from 'types/missionPool';
-import { MissionCategoryType } from 'screens/Home/Browser/MissionPool/predefined';
+import { MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
 
-export function computeStatus(item: MissionInfo): MissionCategoryType {
+export function computeStatus(item: MissionInfo): MissionPoolType {
   const now = Date.now();
 
   try {
@@ -9,7 +9,7 @@ export function computeStatus(item: MissionInfo): MissionCategoryType {
       const startTime = new Date(item.start_time).getTime();
 
       if (now < startTime) {
-        return MissionCategoryType.UPCOMING;
+        return MissionPoolType.UPCOMING;
       }
     }
   } catch (error) {
@@ -21,12 +21,12 @@ export function computeStatus(item: MissionInfo): MissionCategoryType {
       const endTime = new Date(item.end_time).getTime();
 
       if (now > endTime) {
-        return MissionCategoryType.ARCHIVED;
+        return MissionPoolType.ARCHIVED;
       }
     }
   } catch (error) {
     console.error(error);
   }
 
-  return MissionCategoryType.LIVE;
+  return MissionPoolType.LIVE;
 }
