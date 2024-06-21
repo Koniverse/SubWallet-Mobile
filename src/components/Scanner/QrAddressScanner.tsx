@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { QrCodeScanner } from 'components/QrCodeScanner';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { getDevMode } from 'utils/storage';
 
 interface Props {
   visible: boolean;
@@ -23,6 +24,7 @@ interface Props {
 const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVisible }: Props) => {
   const [error, setError] = useState<string>('');
   const addressScannerRef = useRef<SWModalRefProps>(null);
+  const isDevMode = getDevMode();
   const dispatch = useDispatch();
   const handleRead = useCallback(
     (event: BarCodeReadEvent) => {
@@ -35,6 +37,11 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVis
           return;
         }
 
+        if (qrAccount.isEthereum && !isDevMode) {
+          setError('Invalid QR code. EVM networks are not supported');
+          return;
+        }
+
         setError('');
         onSuccess(qrAccount);
         onHideModal();
@@ -42,7 +49,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVis
         setError((e as Error).message);
       }
     },
-    [onHideModal, onSuccess, type],
+    [isDevMode, onHideModal, onSuccess, type],
   );
 
   const onPressLibraryBtn = async () => {
@@ -59,6 +66,11 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVis
 
         if (!qrAccount) {
           setError(i18n.warningMessage.invalidQRCode);
+          return;
+        }
+
+        if (qrAccount.isEthereum && !isDevMode) {
+          setError('Invalid QR code. EVM networks are not supported');
           return;
         }
 

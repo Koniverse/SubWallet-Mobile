@@ -22,7 +22,6 @@ import { RootStackParamList } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
 import createStyle from './styles';
 import i18n from 'utils/i18n/i18n';
-import { getDevMode } from 'utils/storage';
 
 interface Props {
   title: string;
@@ -44,7 +43,6 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
-  const isDevMode = getDevMode();
 
   const styles = useMemo(() => createStyle(theme), [theme]);
   const goHome = useGoHome();
@@ -64,12 +62,6 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   const onSubmit = useCallback(
     (account: QrAccount) => {
       setLoading(true);
-
-      if (account.isEthereum && !isDevMode) {
-        toast.show('Invalid QR code. EVM networks are not supported', { type: 'danger' });
-        setLoading(false);
-        return;
-      }
 
       setTimeout(() => {
         createAccountExternalV2({
@@ -95,7 +87,7 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
           });
       }, 300);
     },
-    [accountName, isDevMode, onComplete, toast],
+    [accountName, onComplete, toast],
   );
 
   const { onOpenModal, onScan, isScanning, onHideModal, setIsScanning } = useModalScanner(onSubmit);
