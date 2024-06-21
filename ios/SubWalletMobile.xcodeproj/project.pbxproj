@@ -145,8 +145,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				35A0F85A2C20584C00B379C9 /* OldWeb.bundle */,
 				3977831E29CEA0080039730D /* fonts */,
+				35A0F85A2C20584C00B379C9 /* OldWeb.bundle */,
 				F1F1508628C6028D004B2C94 /* PageJs.bundle */,
 				F16BB9D8292A5C7B00F9E935 /* Web.bundle */,
 				13B07FAE1A68108700A75B9A /* SubWalletMobile */,
