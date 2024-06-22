@@ -19,6 +19,8 @@ const LONG_TIMEOUT = 360000; //6*60*1000
 const ACCEPTABLE_RESPONSE_TIME = 30000;
 export const NEED_UPDATE_CHROME = 'need_update_chrome';
 
+const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
+
 const getJsInjectContent = () => {
   let injectedJS = `
   // Update config data
@@ -276,30 +278,32 @@ class WebRunnerHandler {
 
   constructor() {
     if (Platform.OS === 'android') {
-      const DOCUMENT_DIRECTORY_PATH = RNFS.DocumentDirectoryPath;
-      const BUNDLE_PATH = 'Web.bundle';
-      const ANDROID_BUNDLE_PATH = `${DOCUMENT_DIRECTORY_PATH}/${BUNDLE_PATH}`;
-      (async () => {
-        const hasCopiedAssets = await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`);
-        const lastAppCopyVersion = mmkvStore.getString('last-app-copy-version');
-        if (hasCopiedAssets && getVersion() === lastAppCopyVersion) {
-          return;
-        }
-        const files = await this.getAllFiles(DOCUMENT_DIRECTORY_PATH, BUNDLE_PATH);
-        if (hasCopiedAssets) {
-          files.map(async filePath => {
-            await RNFS.unlink(filePath);
-          });
-        }
-        await RNFS.mkdir(ANDROID_BUNDLE_PATH);
-        await Promise.all(
-          files.map(async filePath => {
-            await RNFS.copyFileAssets(filePath, `${DOCUMENT_DIRECTORY_PATH}/${filePath}`);
-          }),
-        );
-        this.reload();
-      })();
-      this.server = new StaticServer(WEB_SERVER_PORT, ANDROID_BUNDLE_PATH, { localOnly: true });
+      if (!oldLocalStorageBackUpData) {
+        const DOCUMENT_DIRECTORY_PATH = RNFS.DocumentDirectoryPath;
+        const BUNDLE_PATH = 'Web.bundle';
+        const ANDROID_BUNDLE_PATH = `${DOCUMENT_DIRECTORY_PATH}/${BUNDLE_PATH}`;
+        (async () => {
+          const hasCopiedAssets = await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`);
+          const lastAppCopyVersion = mmkvStore.getString('last-app-copy-version');
+          if (hasCopiedAssets && getVersion() === lastAppCopyVersion) {
+            return;
+          }
+          const files = await this.getAllFiles(DOCUMENT_DIRECTORY_PATH, BUNDLE_PATH);
+          if (hasCopiedAssets) {
+            files.map(async filePath => {
+              await RNFS.unlink(filePath);
+            });
+          }
+          await RNFS.mkdir(ANDROID_BUNDLE_PATH);
+          await Promise.all(
+            files.map(async filePath => {
+              await RNFS.copyFileAssets(filePath, `${DOCUMENT_DIRECTORY_PATH}/${filePath}`);
+            }),
+          );
+          this.reload();
+        })();
+        this.server = new StaticServer(WEB_SERVER_PORT, ANDROID_BUNDLE_PATH, { localOnly: true });
+      }
     } else {
       let target = '/Web.bundle';
       if (iosVersion < 16.4 || needFallBack) {
@@ -353,7 +357,10 @@ const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=
 const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
 
 const getBaseUri = () => {
-  const osWebRunnerURL = `http://localhost:${WEB_SERVER_PORT}/site`;
+  const osWebRunnerURL =
+    Platform.OS === 'android' && !!oldLocalStorageBackUpData
+      ? 'file:///android_asset/Web.bundle/androidSite'
+      : `http://localhost:${WEB_SERVER_PORT}/site`;
 
   return !devWebRunnerURL || devWebRunnerURL === '' ? osWebRunnerURL : devWebRunnerURL;
 };
@@ -394,12 +401,13 @@ interface Props {
   webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
 }
-const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
+
 if (oldLocalStorageBackUpData) {
   // BACKUP-001: Migrate backed up local storage from 1.1.12 and remove old key
   mmkvStore.set('backup-localstorage', oldLocalStorageBackUpData);
   mmkvStore.set('webRunnerLastMigrationTime', new Date().toString());
   mmkvStore.delete('backupStorage');
+  webRunnerHandler.rerender();
 }
 
 export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter }: Props) => {
