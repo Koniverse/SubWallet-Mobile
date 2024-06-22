@@ -109,8 +109,8 @@ export const MissionPoolSearchByType: React.FC<NativeStackScreenProps<RootStackP
     <View style={styles.container}>
       <LazyFlatList<MissionInfo>
         searchFunction={searchFunction}
-        maxToRenderPerBatch={12}
-        initialNumToRender={12}
+        maxToRenderPerBatch={5}
+        initialNumToRender={5}
         removeClippedSubviews
         items={listByCategory}
         keyExtractor={keyExtractor}
