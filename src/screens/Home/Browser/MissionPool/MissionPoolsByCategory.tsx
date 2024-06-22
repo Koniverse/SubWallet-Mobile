@@ -52,7 +52,8 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
     }
 
     return computedMission.filter(item => {
-      if (item.status === route.name) {
+      const categories = item.categories.map(i => i.slug);
+      if (categories.includes(route.name)) {
         return true;
       }
       return false;

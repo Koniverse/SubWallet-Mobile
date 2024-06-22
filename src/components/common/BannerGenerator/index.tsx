@@ -138,7 +138,7 @@ export const BannerGenerator = ({ banners, dismissBanner, onPressBanner }: Props
           instructionDataList={instructionDataList}
         />
       ) : (
-        <BannerSlider data={bannerUrlList} renderItem={renderItem} onCloseBanner={onCloseBanner} />
+        <BannerSlider data={bannerUrlList} renderItem={renderItem} onCloseBanner={onCloseBanner} height={110} />
       )}
     </>
   );

@@ -12,13 +12,14 @@ interface BannerSliderProps {
   data: string[];
   renderItem: ({ item, index }: BannerSliderItem) => React.JSX.Element;
   onCloseBanner: () => void;
+  height?: number;
 }
 
 export type BannerSliderItem = {
   item: string;
   index: number;
 };
-const BannerSlider: React.FC<BannerSliderProps> = ({ data, renderItem, onCloseBanner }) => {
+const BannerSlider: React.FC<BannerSliderProps> = ({ data, renderItem, onCloseBanner, height = 152 }) => {
   const stylesheet = createStylesheet();
   const progressValue = useSharedValue<number>(0);
   const carouselRef = useRef<ICarouselInstance>(null);
@@ -42,7 +43,7 @@ const BannerSlider: React.FC<BannerSliderProps> = ({ data, renderItem, onCloseBa
         ref={carouselRef}
         loop
         width={screenWidth}
-        height={152}
+        height={height}
         autoPlay
         data={data}
         onScrollBegin={onScrollBegin}

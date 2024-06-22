@@ -7,7 +7,7 @@ import { ThemeTypes } from 'styles/themes';
 import { Animated, View } from 'react-native';
 import { Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { MissionPoolType, missionTypes } from 'screens/Home/Browser/MissionPool/predefined';
+import { missionCategories } from 'screens/Home/Browser/MissionPool/predefined';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MissionPoolSearchByTabviewProps } from 'routes/index';
 import { MissionPoolSearchByType } from 'screens/Home/Browser/MissionPool/MissionPoolSearchByTabView/MissionPoolSearchByType';
@@ -59,32 +59,31 @@ const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
   );
 };
 
-const av = new Animated.Value(0);
-av.addListener(() => {
-  return;
-});
-
-const screenListener = {
-  focus: () => {
-    Animated.timing(av, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  },
-};
-
 export const MissionPoolSearchByTabView = ({ route, navigation }: MissionPoolSearchByTabviewProps) => {
   const theme = useSubWalletTheme().swThemes;
-  const categoryTabRoutes = missionTypes
-    .filter(i => i.slug !== MissionPoolType.ARCHIVED)
-    .map(item => ({ key: item.slug, title: item.name }));
-  const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
+  const categoryTabRoutes = missionCategories.map(item => ({ key: item.slug, title: item.name }));
+  const allTabRoutes = [...categoryTabRoutes];
   const [searchString, setSearchString] = useState<string>('');
+
+  const av = new Animated.Value(0);
+  av.addListener(() => {
+    return;
+  });
+
   const tabScreenOptions = (item: RoutesType) => {
     return {
       tabBarIcon: ({ focused }: TabbarType) => tabbarIcon(focused, item, theme),
     };
+  };
+
+  const screenListener = {
+    focus: () => {
+      Animated.timing(av, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    },
   };
 
   return (

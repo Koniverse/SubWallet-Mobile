@@ -18,12 +18,45 @@ import { useRefresh } from 'hooks/useRefresh';
 import { reloadCron } from 'messaging/index';
 import { BannerGenerator } from 'components/common/BannerGenerator';
 import { RootNavigationProps } from 'routes/index';
+import { _FundStatus } from '@subwallet/chain-list/types';
 
 enum FilterValue {
   POLKADOT_PARACHAIN = 'Polkadot parachain',
   KUSAMA_PARACHAIN = 'Kusama parachain',
   WON = 'won',
   IN_AUCTION = 'in_auction',
+}
+
+function getListByFilterOpt(crowdloanItems: _CrowdloanItemType[], filterOptions: string[]) {
+  if (filterOptions.length === 0) {
+    return crowdloanItems;
+  }
+  let result: _CrowdloanItemType[];
+  result = crowdloanItems.filter(item => {
+    for (const filter of filterOptions) {
+      if (filter === FilterValue.POLKADOT_PARACHAIN) {
+        if (item.relayChainSlug === 'polkadot') {
+          return true;
+        }
+      } else if (filter === FilterValue.KUSAMA_PARACHAIN) {
+        if (item.relayChainSlug === 'kusama') {
+          return true;
+        }
+      } else if (filter === FilterValue.WON) {
+        if (item.fundStatus === _FundStatus.WON) {
+          return true;
+        }
+      } else if (filter === FilterValue.IN_AUCTION) {
+        if (item.fundStatus === _FundStatus.IN_AUCTION) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  });
+
+  return result;
 }
 
 export const CrowdloansScreen = () => {
@@ -67,21 +100,6 @@ export const CrowdloansScreen = () => {
     }
     return itemList;
   }, []);
-
-  function getListByFilterOpt(crowdloanItems: _CrowdloanItemType[], filterOptions: string[]) {
-    if (filterOptions.length === 0) {
-      return crowdloanItems;
-    }
-    let result: _CrowdloanItemType[];
-    result = crowdloanItems.filter(({ chainName, fundStatus = '' }) => {
-      if (filterOptions.includes(chainName) || filterOptions.includes(fundStatus)) {
-        return true;
-      }
-      return false;
-    });
-
-    return result;
-  }
 
   const onRefresh = useCallback(() => refresh(reloadCron({ data: 'crowdloan' })), [refresh]);
 

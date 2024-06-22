@@ -8,7 +8,7 @@ import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
 import { ParamListBase, RouteProp, useNavigation } from '@react-navigation/native';
-import { MissionPoolType, missionTypes } from 'screens/Home/Browser/MissionPool/predefined';
+import { missionCategories, MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
 import { MissionPoolsByCategory } from 'screens/Home/Browser/MissionPool/MissionPoolsByCategory';
 import { MissionPoolsNavigationProps } from 'routes/home';
 import ImageSlider from 'components/common/ImageSlider';
@@ -66,10 +66,8 @@ const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
 
 export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) => {
   const theme = useSubWalletTheme().swThemes;
-  const categoryTabRoutes = missionTypes
-    .filter(i => i.slug !== MissionPoolType.ARCHIVED)
-    .map(item => ({ key: item.slug, title: item.name }));
-  const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
+  const categoryTabRoutes = missionCategories.map(item => ({ key: item.slug, title: item.name }));
+  const allTabRoutes = [...categoryTabRoutes];
   const { missions } = useSelector((state: RootState) => state.missionPool);
 
   const rootNavigation = useNavigation<RootNavigationProps>();
