@@ -263,6 +263,10 @@ const ConnectionListScreen = (props: JSX.IntrinsicAttributes) => {
   return withPageWrapper(ConnectionList as ComponentType, ['walletConnect'])(props);
 };
 
+const CrowdloanListScreen = (props: JSX.IntrinsicAttributes) => {
+  return withPageWrapper(CrowdloansScreen as ComponentType, ['crowdloan'])(props);
+};
+
 type DeepLinkSubscriptionType = {
   url: string;
 };
@@ -635,7 +639,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ConnectList" component={ConnectionListScreen} />
                 <Stack.Screen name="ConnectDetail" component={ConnectionDetail} />
                 <Stack.Screen name="ConnectWalletConnect" component={ConnectWalletConnect} />
-                <Stack.Screen name="Crowdloans" component={CrowdloansScreen} />
+                <Stack.Screen name="Crowdloans" component={CrowdloanListScreen} />
                 <Stack.Screen
                   name="CreatePassword"
                   component={CreateMasterPassword}
