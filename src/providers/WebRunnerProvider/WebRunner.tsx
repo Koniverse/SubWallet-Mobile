@@ -19,7 +19,11 @@ const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 360000; //6*60*1000
 const ACCEPTABLE_RESPONSE_TIME = 30000;
 export const NEED_UPDATE_CHROME = 'need_update_chrome';
-const backupDataForAndroid = mmkvStore.getBoolean('backup-data-for-android');
+const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
+const backupLocalStorage = mmkvStore.getString('backup-localstorage');
+
+const backupDataForAndroid =
+  !oldLocalStorageBackUpData && !backupLocalStorage ? mmkvStore.getBoolean('backup-data-for-android') : true;
 
 const getJsInjectContent = () => {
   let injectedJS = `
@@ -402,9 +406,6 @@ interface Props {
   webRunnerEventEmitter: EventEmitter;
   isReady: boolean;
 }
-
-const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
-const backupLocalStorage = mmkvStore.getString('backup-localstorage');
 
 if (oldLocalStorageBackUpData) {
   // BACKUP-001: Migrate backed up local storage from 1.1.12 and remove old key
