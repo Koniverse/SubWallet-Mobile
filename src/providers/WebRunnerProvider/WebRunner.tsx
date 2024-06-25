@@ -20,10 +20,12 @@ const LONG_TIMEOUT = 360000; //6*60*1000
 const ACCEPTABLE_RESPONSE_TIME = 30000;
 export const NEED_UPDATE_CHROME = 'need_update_chrome';
 const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
-const backupLocalStorage = mmkvStore.getString('backup-localstorage');
+const localStorageBackUpData = mmkvStore.getString('backup-localstorage');
+const isNoBackupData = !oldLocalStorageBackUpData && !localStorageBackUpData;
+const isFirstLaunch = mmkvStore.getAllKeys().length === 0;
+const _isCompleteBackUpData = mmkvStore.getBoolean('backup-data-for-android');
 
-const backupDataForAndroid =
-  !oldLocalStorageBackUpData && !backupLocalStorage ? mmkvStore.getBoolean('backup-data-for-android') : true;
+const isCompleteBackUpData = isNoBackupData && !isFirstLaunch ? _isCompleteBackUpData : true;
 
 const getJsInjectContent = () => {
   let injectedJS = `
@@ -282,7 +284,7 @@ class WebRunnerHandler {
 
   constructor() {
     if (Platform.OS === 'android') {
-      if (backupDataForAndroid) {
+      if (isCompleteBackUpData) {
         const DOCUMENT_DIRECTORY_PATH = RNFS.DocumentDirectoryPath;
         const BUNDLE_PATH = 'Web.bundle';
         const ANDROID_BUNDLE_PATH = `${DOCUMENT_DIRECTORY_PATH}/${BUNDLE_PATH}`;
@@ -362,7 +364,7 @@ const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
 
 const getBaseUri = () => {
   const osWebRunnerURL =
-    Platform.OS === 'android' && !backupDataForAndroid
+    Platform.OS === 'android' && !isCompleteBackUpData
       ? 'file:///android_asset/FallbackWeb.bundle/site'
       : `http://localhost:${WEB_SERVER_PORT}/site`;
 
@@ -426,7 +428,7 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
   webRunnerHandler.active();
 
   useEffect(() => {
-    if (isReady && !oldLocalStorageBackUpData && !backupLocalStorage) {
+    if (isReady && isNoBackupData && !isFirstLaunch) {
       backupStorageData(true, false, () => {
         mmkvStore.set('backup-data-for-android', true);
         RNRestart.Restart();
