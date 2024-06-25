@@ -110,7 +110,11 @@ export const needBackup = (message: string): boolean => {
 };
 
 // Backup and restore data
-export const backupStorageData = (forceBackup: boolean = false, markAppIsSetup: boolean = true) => {
+export const backupStorageData = (
+  forceBackup: boolean = false,
+  markAppIsSetup: boolean = true,
+  callback?: () => void,
+) => {
   mobileBackup()
     .then(response => {
       if (typeof response.storage !== 'string') {
@@ -125,6 +129,7 @@ export const backupStorageData = (forceBackup: boolean = false, markAppIsSetup: 
         mmkvStore.set('webRunnerLastBackupTime', lastBackupTime.toString());
         mmkvStore.set('webRunnerLastBackupTimestamp', lastBackupTime.getTime());
         mmkvStore.set('app-is-setup', markAppIsSetup);
+        callback && callback();
         // console.debug('** Backup storage data success');
       }
     })

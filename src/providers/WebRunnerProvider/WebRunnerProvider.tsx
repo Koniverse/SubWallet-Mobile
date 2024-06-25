@@ -75,7 +75,12 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
         reload,
         isNetConnected,
       }}>
-      <WebRunner webRunnerRef={webRef} webRunnerStateRef={webStateRef} webRunnerEventEmitter={eventEmitter} />
+      <WebRunner
+        webRunnerRef={webRef}
+        webRunnerStateRef={webStateRef}
+        webRunnerEventEmitter={eventEmitter}
+        isReady={isReady}
+      />
       {children}
     </WebRunnerContext.Provider>
   );

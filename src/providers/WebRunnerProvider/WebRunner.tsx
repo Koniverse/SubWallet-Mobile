@@ -1,7 +1,7 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
 import { AppState, DeviceEventEmitter, NativeSyntheticEvent, Platform, View } from 'react-native';
 import EventEmitter from 'eventemitter3';
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import WebView from 'react-native-webview';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
@@ -11,13 +11,19 @@ import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import { mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
+import { backupStorageData, mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
 import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
+import RNRestart from 'react-native-restart';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 360000; //6*60*1000
 const ACCEPTABLE_RESPONSE_TIME = 30000;
 export const NEED_UPDATE_CHROME = 'need_update_chrome';
+const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
+const backupLocalStorage = mmkvStore.getString('backup-localstorage');
+
+const backupDataForAndroid =
+  !oldLocalStorageBackUpData && !backupLocalStorage ? mmkvStore.getBoolean('backup-data-for-android') : true;
 
 const getJsInjectContent = () => {
   let injectedJS = `
@@ -49,6 +55,18 @@ function isWebRunnerAlive(eventData: NativeSyntheticEvent<WebViewMessage>): bool
     return false;
   }
 }
+
+let needFallBack = false;
+
+export const getMajorVersionIOS = (): number => {
+  if (Platform.OS !== 'ios') {
+    return 17;
+  }
+
+  return parseFloat(Platform.Version);
+};
+
+const iosVersion = getMajorVersionIOS();
 
 class WebRunnerHandler {
   eventEmitter?: EventEmitter;
@@ -247,9 +265,55 @@ class WebRunnerHandler {
     });
   }
 
+  async getAllFiles(folderPath: string, path: string): Promise<Array<string>> {
+    const filePaths: string[] = [];
+    const assetDirItems = await RNFS.readDirAssets(path);
+    for (const dirItem of assetDirItems) {
+      if (dirItem.isFile()) {
+        filePaths.push(dirItem.path);
+      } else {
+        await RNFS.mkdir(`${folderPath}/${dirItem.path}`);
+        const dirItemFiles = await this.getAllFiles(folderPath, dirItem.path);
+        filePaths.push(...dirItemFiles);
+      }
+    }
+    return filePaths;
+  }
+
   constructor() {
-    if (Platform.OS === 'ios') {
-      this.server = new StaticServer(WEB_SERVER_PORT, RNFS.MainBundlePath + '/Web.bundle', { localOnly: true });
+    if (Platform.OS === 'android') {
+      if (backupDataForAndroid) {
+        const DOCUMENT_DIRECTORY_PATH = RNFS.DocumentDirectoryPath;
+        const BUNDLE_PATH = 'Web.bundle';
+        const ANDROID_BUNDLE_PATH = `${DOCUMENT_DIRECTORY_PATH}/${BUNDLE_PATH}`;
+        (async () => {
+          const hasCopiedAssets = await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`);
+          const lastAppCopyVersion = mmkvStore.getString('last-app-copy-version');
+          if (hasCopiedAssets && getVersion() === lastAppCopyVersion) {
+            return;
+          }
+          const files = await this.getAllFiles(DOCUMENT_DIRECTORY_PATH, BUNDLE_PATH);
+          if (hasCopiedAssets) {
+            files.map(async filePath => {
+              await RNFS.unlink(filePath);
+            });
+          }
+          await RNFS.mkdir(ANDROID_BUNDLE_PATH);
+          await Promise.all(
+            files.map(async filePath => {
+              await RNFS.copyFileAssets(filePath, `${DOCUMENT_DIRECTORY_PATH}/${filePath}`);
+            }),
+          );
+          this.reload();
+        })();
+        this.server = new StaticServer(WEB_SERVER_PORT, ANDROID_BUNDLE_PATH, { localOnly: true });
+      }
+    } else {
+      let target = '/Web.bundle';
+      if (iosVersion < 16.4 || needFallBack) {
+        target = '/OldWeb.bundle';
+      }
+      this.server = new StaticServer(WEB_SERVER_PORT, RNFS.MainBundlePath + target, { localOnly: true });
     }
     AppState.addEventListener('change', (state: string) => {
       const now = new Date().getTime();
@@ -277,14 +341,6 @@ class WebRunnerHandler {
 
 const webRunnerHandler = new WebRunnerHandler();
 
-export const getMajorVersionIOS = (): number => {
-  if (Platform.OS !== 'ios') {
-    return 17;
-  }
-
-  return parseFloat(Platform.Version);
-};
-
 interface WebRunnerGlobalState {
   uri?: string;
   injectScript: string;
@@ -300,20 +356,15 @@ interface WebRunnerControlAction {
 
 const now = new Date().getTime();
 
-let needFallBack = false;
-
 const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${now}`;
 
 const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
-const iosVersion = getMajorVersionIOS();
 
 const getBaseUri = () => {
   const osWebRunnerURL =
-    Platform.OS === 'android'
-      ? 'file:///android_asset/Web.bundle/androidSite'
-      : iosVersion >= 16.4 && !needFallBack
-      ? `http://localhost:${WEB_SERVER_PORT}/site`
-      : `http://localhost:${WEB_SERVER_PORT}/oldSite`;
+    Platform.OS === 'android' && !backupDataForAndroid
+      ? 'file:///android_asset/FallbackWeb.bundle/site'
+      : `http://localhost:${WEB_SERVER_PORT}/site`;
 
   return !devWebRunnerURL || devWebRunnerURL === '' ? osWebRunnerURL : devWebRunnerURL;
 };
@@ -353,8 +404,9 @@ interface Props {
   webRunnerRef: React.RefObject<WebView<{}>>;
   webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
+  isReady: boolean;
 }
-const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
+
 if (oldLocalStorageBackUpData) {
   // BACKUP-001: Migrate backed up local storage from 1.1.12 and remove old key
   mmkvStore.set('backup-localstorage', oldLocalStorageBackUpData);
@@ -362,7 +414,7 @@ if (oldLocalStorageBackUpData) {
   mmkvStore.delete('backupStorage');
 }
 
-export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter }: Props) => {
+export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter, isReady }: Props) => {
   const [runnerGlobalState, dispatchRunnerGlobalState] = useReducer(webRunnerReducer, {
     injectScript: getJsInjectContent(),
     runnerRef: webRunnerRef,
@@ -372,6 +424,15 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
 
   webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
   webRunnerHandler.active();
+
+  useEffect(() => {
+    if (isReady && !oldLocalStorageBackUpData && !backupLocalStorage) {
+      backupStorageData(true, false, () => {
+        mmkvStore.set('backup-data-for-android', true);
+        RNRestart.Restart();
+      });
+    }
+  }, [isReady]);
 
   const onMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
     try {
