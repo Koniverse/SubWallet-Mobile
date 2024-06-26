@@ -20,12 +20,10 @@ const LONG_TIMEOUT = 360000; //6*60*1000
 const ACCEPTABLE_RESPONSE_TIME = 30000;
 export const NEED_UPDATE_CHROME = 'need_update_chrome';
 const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
-const localStorageBackUpData = mmkvStore.getString('backup-localstorage');
-const isNoBackupData = !oldLocalStorageBackUpData && !localStorageBackUpData;
 const isFirstLaunch = mmkvStore.getAllKeys().length === 0;
-const _isCompleteBackUpData = mmkvStore.getBoolean('backup-data-for-android');
+const storedCompleteBackUpData = mmkvStore.getBoolean('backup-data-for-android');
 
-const isCompleteBackUpData = isNoBackupData && !isFirstLaunch ? _isCompleteBackUpData : true;
+const completeBackUpData = !isFirstLaunch ? storedCompleteBackUpData : true;
 
 const getJsInjectContent = () => {
   let injectedJS = `
@@ -284,7 +282,7 @@ class WebRunnerHandler {
 
   constructor() {
     if (Platform.OS === 'android') {
-      if (isCompleteBackUpData) {
+      if (completeBackUpData) {
         const DOCUMENT_DIRECTORY_PATH = RNFS.DocumentDirectoryPath;
         const BUNDLE_PATH = 'Web.bundle';
         const ANDROID_BUNDLE_PATH = `${DOCUMENT_DIRECTORY_PATH}/${BUNDLE_PATH}`;
@@ -364,7 +362,7 @@ const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
 
 const getBaseUri = () => {
   const osWebRunnerURL =
-    Platform.OS === 'android' && !isCompleteBackUpData
+    Platform.OS === 'android' && !completeBackUpData
       ? 'file:///android_asset/FallbackWeb.bundle/site'
       : `http://localhost:${WEB_SERVER_PORT}/site`;
 
@@ -428,7 +426,7 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
   webRunnerHandler.active();
 
   useEffect(() => {
-    if (isReady && isNoBackupData && !isFirstLaunch) {
+    if (Platform.OS === 'android' && isReady && !isFirstLaunch && !storedCompleteBackUpData) {
       backupStorageData(true, false, () => {
         mmkvStore.set('backup-data-for-android', true);
         RNRestart.Restart();
