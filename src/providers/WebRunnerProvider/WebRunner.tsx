@@ -426,11 +426,17 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
   webRunnerHandler.active();
 
   useEffect(() => {
-    if (Platform.OS === 'android' && isReady && !isFirstLaunch && !storedCompleteBackUpData) {
-      backupStorageData(true, false, () => {
+    if (Platform.OS === 'android') {
+      if (isFirstLaunch) {
         mmkvStore.set('backup-data-for-android', true);
-        RNRestart.Restart();
-      });
+      }
+
+      if (!isFirstLaunch && isReady && !storedCompleteBackUpData) {
+        backupStorageData(true, false, () => {
+          mmkvStore.set('backup-data-for-android', true);
+          RNRestart.Restart();
+        });
+      }
     }
   }, [isReady]);
 
