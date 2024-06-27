@@ -8,7 +8,6 @@ import {
   _getAssetDecimals,
   _getContractAddressOfToken,
   _getOriginChainOfAsset,
-  _getTokenMinAmount,
   _isAssetFungibleToken,
   _isChainEvmCompatible,
   _isNativeToken,
@@ -865,7 +864,6 @@ export const SendFund = ({
         // Handle transfer action
         submitData(processState.currentStep)
           .catch(e => {
-            console.log('e---------------', e);
             onError(e as Error);
           })
           .finally(() => {
@@ -918,33 +916,16 @@ export const SendFund = ({
         }
       }
 
-      if (_isNativeToken(assetInfo)) {
-        const minAmount = _getTokenMinAmount(assetInfo);
-        const bnMinAmount = new BN(minAmount);
+      if (isTransferAll) {
+        setForceTransferAll(true);
+        forceTransferAllRef.current = true;
 
-        if (bnMinAmount.gt(BN_ZERO) && isTransferAll && !forceTransferAll && chainValue === destChainValue) {
-          Alert.alert('Pay attention!', 'Transferring all will remove all assets on this network. Are you sure?', [
-            { text: i18n.buttonTitles.cancel },
-            { text: 'Transfer', onPress: () => doSubmit(values) },
-          ]);
-
-          return;
-        }
+        return;
       }
 
       doSubmit(values);
     },
-    [
-      appModalContext,
-      assetInfo,
-      forceTransferAll,
-      chainInfoMap,
-      chainValue,
-      destChainValue,
-      doSubmit,
-      isTransferAll,
-      theme.colorWarning,
-    ],
+    [appModalContext, chainInfoMap, chainValue, destChainValue, doSubmit, isTransferAll, theme.colorWarning],
   );
 
   const isNextButtonDisable = (() => {

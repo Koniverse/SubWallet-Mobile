@@ -13,7 +13,6 @@ const useHandleSubmitMultiTransaction = (
   const { hideAll, show } = useToast();
   const onError = useCallback(
     (error: Error) => {
-      console.log('error 2 2 2', error);
       hideAll();
       show(error.message, {
         type: 'danger',
@@ -34,6 +33,7 @@ const useHandleSubmitMultiTransaction = (
         const { errors: _errors, id, warnings } = rs;
         if (_errors.length || warnings.length) {
           if (_errors[0]?.message !== 'Rejected by user') {
+            let currentErrorMessage = '';
             if (
               _errors[0]?.message.startsWith('UnknownError Connection to Indexed DataBase server lost') ||
               _errors[0]?.message.startsWith('Provided address is invalid, the capitalization checksum test failed') ||
@@ -49,7 +49,7 @@ const useHandleSubmitMultiTransaction = (
             } else {
               if (!warnings[0] || warnings[0].warningType !== 'notEnoughExistentialDeposit' || !setIgnoreWarnings) {
                 hideAll();
-                console.log('_errors', _errors);
+                currentErrorMessage = _errors[0]?.message || '';
                 show(_errors[0]?.message || warnings[0]?.message, {
                   type: _errors.length ? 'danger' : 'warning',
                   duration: 8000,
@@ -59,7 +59,12 @@ const useHandleSubmitMultiTransaction = (
 
             if (!_errors.length) {
               warnings[0] && setIgnoreWarnings?.(true);
+            } else {
+              if (currentErrorMessage !== _errors[0].message) {
+                onError(_errors[0]);
+              }
             }
+            currentErrorMessage = '';
 
             return false;
           } else {
@@ -72,8 +77,6 @@ const useHandleSubmitMultiTransaction = (
             return false;
           }
         } else if (id) {
-          warnings[0] && setIgnoreWarnings?.(true);
-
           dispatchProcessState({
             type: CommonActionType.STEP_COMPLETE,
             payload: rs,
@@ -87,14 +90,12 @@ const useHandleSubmitMultiTransaction = (
           }
 
           return true;
-        } else {
-          warnings[0] && setIgnoreWarnings?.(true);
-
-          return false;
         }
+
+        return false;
       };
     },
-    [dispatchProcessState, hideAll, onDone, setIgnoreWarnings, setTransactionDone, show, triggerOnChangeValue],
+    [dispatchProcessState, hideAll, onDone, onError, setIgnoreWarnings, setTransactionDone, show, triggerOnChangeValue],
   );
 
   return useMemo(
