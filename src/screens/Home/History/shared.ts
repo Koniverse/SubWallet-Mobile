@@ -46,7 +46,7 @@ export const StakingTypeNameMap = (): Record<string, string> => ({
   [ExtrinsicType.STAKING_CLAIM_REWARD]: i18n.historyScreen.extrinsicType.claimReward,
   [ExtrinsicType.STAKING_CANCEL_UNSTAKE]: i18n.historyScreen.extrinsicType.cancelUnstake,
   [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.extrinsicType.evmExecute,
-  [ExtrinsicType.TOKEN_APPROVE]: i18n.historyScreen.extrinsicType.tokenApprove,
+  [ExtrinsicType.TOKEN_SPENDING_APPROVAL]: i18n.historyScreen.extrinsicType.tokenApprove,
   [ExtrinsicType.SWAP]: 'Swap',
 });
 

@@ -38,7 +38,7 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
   const displayData = item.displayData;
   const _style = HistoryItemStyles(theme);
 
-  const showAmount = useMemo(() => item.type !== ExtrinsicType.TOKEN_APPROVE, [item.type]);
+  const showAmount = useMemo(() => item.type !== ExtrinsicType.TOKEN_SPENDING_APPROVAL, [item.type]);
 
   return (
     <>

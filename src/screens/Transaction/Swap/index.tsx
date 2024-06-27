@@ -38,15 +38,13 @@ import { ChooseFeeTokenModal } from 'components/Modal/Swap/ChooseFeeTokenModal';
 import { SwapQuoteDetailModal } from 'components/Modal/Swap/SwapQuoteDetailModal';
 import { SwapQuotesSelectorModal } from 'components/Modal/Swap/SwapQuotesSelectorModal';
 import {
-  OptimalSwapPath,
   SlippageType,
-  SwapFeeComponent,
   SwapFeeType,
   SwapProviderId,
   SwapQuote,
   SwapRequest,
-  SwapStepType,
 } from '@subwallet/extension-base/types/swap';
+import { CommonFeeComponent, CommonOptimalPath, CommonStepType } from '@subwallet/extension-base/types/service-base';
 import {
   addLazy,
   formatNumberString,
@@ -58,7 +56,7 @@ import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { findAccountByAddress } from 'utils/account';
 import { getLatestSwapQuote, handleSwapRequest, handleSwapStep, validateSwapProcess } from 'messaging/swap';
-import { DEFAULT_SWAP_PROCESS, SwapActionType, swapReducer } from 'reducers/swap';
+import { DEFAULT_COMMON_PROCESS, CommonActionType, commonProcessReducer } from 'reducers/transaction-process';
 import { FormItem } from 'components/common/FormItem';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { useToast } from 'react-native-toast-notifications';
@@ -75,6 +73,7 @@ import { SwapIdleWarningModal } from 'components/Modal/Swap/SwapIdleWarningModal
 import { SendFundProps } from 'routes/transaction/transactionAction';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { SwapError } from '@subwallet/extension-base/background/errors/SwapError';
+import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMultiTransaction';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -172,8 +171,8 @@ export const Swap = ({
   const destChainValue = useWatch<SwapFormValues>({ name: 'destChain', control });
   const { checkChainConnected, turnOnChain } = useChainChecker(false);
   const accountInfo = useGetAccountByAddress(fromValue);
-  const [processState, dispatchProcessState] = useReducer(swapReducer, DEFAULT_SWAP_PROCESS);
-
+  const [processState, dispatchProcessState] = useReducer(commonProcessReducer, DEFAULT_COMMON_PROCESS);
+  const { onError, onSuccess } = useHandleSubmitMultiTransaction(onDone, setTransactionDone, dispatchProcessState);
   const destChainNetworkPrefix = useGetChainPrefixBySlug(destChainValue);
   const destChainGenesisHash = chainInfoMap[destChainValue]?.substrateInfo?.genesisHash || '';
   const accountSelectorRef = useRef<ModalRef>();
@@ -183,7 +182,7 @@ export const Swap = ({
   const [quoteAliveUntil, setQuoteAliveUntil] = useState<number | undefined>(undefined);
   const [currentQuoteRequest, setCurrentQuoteRequest] = useState<SwapRequest | undefined>(undefined);
   const [isFormInvalid, setIsFormInvalid] = useState<boolean>(false);
-  const [currentOptimalSwapPath, setOptimalSwapPath] = useState<OptimalSwapPath | undefined>(undefined);
+  const [currentOptimalSwapPath, setOptimalSwapPath] = useState<CommonOptimalPath | undefined>(undefined);
   const [slippageModalVisible, setSlippageModalVisible] = useState<boolean>(false);
   const [swapQuoteModalVisible, setSwapQuoteModalVisible] = useState<boolean>(false);
   const [chooseFeeModalVisible, setChooseFeeModalVisible] = useState<boolean>(false);
@@ -339,7 +338,7 @@ export const Swap = ({
   );
 
   const getConvertedBalance = useCallback(
-    (feeItem: SwapFeeComponent) => {
+    (feeItem: CommonFeeComponent) => {
       const asset = assetRegistryMap[feeItem.tokenSlug];
 
       if (asset) {
@@ -455,7 +454,7 @@ export const Swap = ({
   }, [fromValue, chainValue, chainInfoMap]);
 
   const isSwapXCM = useMemo(() => {
-    return processState.steps.some(item => item.type === SwapStepType.XCM);
+    return processState.steps.some(item => item.type === CommonStepType.XCM);
   }, [processState.steps]);
 
   const currentPair = useMemo(() => {
@@ -683,74 +682,6 @@ export const Swap = ({
     );
   }, [currentQuote, fromAssetInfo, theme.colorTextLight4, theme.colorWhite, theme.fontSize, toAssetInfo]);
 
-  const onError = useCallback(
-    (error: Error) => {
-      setTransactionDone(false);
-      hideAll();
-      show(error.message, { type: 'danger' });
-
-      dispatchProcessState({
-        type: SwapActionType.STEP_ERROR_ROLLBACK,
-        payload: error,
-      });
-    },
-    [hideAll, show],
-  );
-
-  const onSuccess = useCallback(
-    (lastStep: boolean, needRollback: boolean): ((rs: SWTransactionResponse) => boolean) => {
-      return (rs: SWTransactionResponse): boolean => {
-        const { errors: _errors, id, warnings } = rs;
-
-        if (_errors.length || warnings.length) {
-          if (_errors[0]?.message !== 'Rejected by user') {
-            if (
-              _errors[0]?.message.startsWith('UnknownError Connection to Indexed DataBase server lost') ||
-              _errors[0]?.message.startsWith('Provided address is invalid, the capitalization checksum test failed') ||
-              _errors[0]?.message.startsWith('connection not open on send()')
-            ) {
-              hideAll();
-              show(
-                'Your selected network has lost connection. Update it by re-enabling it or changing network provider',
-                { type: 'danger' },
-              );
-
-              return false;
-            }
-
-            // hideAll();
-            onError(_errors[0]);
-
-            return false;
-          } else {
-            dispatchProcessState({
-              type: needRollback ? SwapActionType.STEP_ERROR_ROLLBACK : SwapActionType.STEP_ERROR,
-              payload: _errors[0],
-            });
-            setTransactionDone(false);
-            return false;
-          }
-        } else if (id) {
-          dispatchProcessState({
-            type: SwapActionType.STEP_COMPLETE,
-            payload: rs,
-          });
-
-          if (lastStep) {
-            onDone(id);
-            setTransactionDone(true);
-            return false;
-          }
-
-          return true;
-        } else {
-          return false;
-        }
-      };
-    },
-    [hideAll, onDone, onError, show],
-  );
-
   const onSubmit = useCallback(
     (values: SwapFormValues) => {
       if (chainValue && !checkChainConnected(chainValue)) {
@@ -787,7 +718,7 @@ export const Swap = ({
 
         const submitData = async (step: number): Promise<boolean> => {
           dispatchProcessState({
-            type: SwapActionType.STEP_SUBMIT,
+            type: CommonActionType.STEP_SUBMIT,
             payload: null,
           });
 
@@ -812,11 +743,11 @@ export const Swap = ({
                 return false;
               } else {
                 dispatchProcessState({
-                  type: SwapActionType.STEP_COMPLETE,
+                  type: CommonActionType.STEP_COMPLETE,
                   payload: true,
                 });
                 dispatchProcessState({
-                  type: SwapActionType.STEP_SUBMIT,
+                  type: CommonActionType.STEP_SUBMIT,
                   payload: null,
                 });
 
@@ -984,7 +915,7 @@ export const Swap = ({
                         steps: result.process.steps,
                         feeStructure: result.process.totalFee,
                       },
-                      type: SwapActionType.STEP_CREATE,
+                      type: CommonActionType.STEP_CREATE,
                     });
 
                     setQuoteOptions(result.quote.quotes);

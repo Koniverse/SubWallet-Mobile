@@ -392,7 +392,7 @@ function History({
       [ExtrinsicType.UNSTAKE_SDOT]: i18n.historyScreen.title.unstakeSDOTTransaction,
       [ExtrinsicType.UNSTAKE_STDOT]: i18n.historyScreen.title.unstakeSTDOTTransaction,
       [ExtrinsicType.UNSTAKE_QDOT]: i18n.historyScreen.title.unstakeQDOTTransaction,
-      [ExtrinsicType.TOKEN_APPROVE]: i18n.historyScreen.title.tokenApproveTransaction,
+      [ExtrinsicType.TOKEN_SPENDING_APPROVAL]: i18n.historyScreen.title.tokenApproveTransaction,
       [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.title.evmTransaction,
       [ExtrinsicType.SWAP]: 'Swap transaction',
     }),

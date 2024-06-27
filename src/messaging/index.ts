@@ -99,9 +99,6 @@ import {
   RequestSubscribeStaking,
   RequestSubscribeStakingReward,
   RequestTransfer,
-  RequestTransferCheckReferenceCount,
-  RequestTransferCheckSupporting,
-  RequestTransferExistentialDeposit,
   RequestTuringCancelStakeCompound,
   RequestTuringStakeCompound,
   RequestUnbondingSubmit,
@@ -135,7 +132,6 @@ import {
   StakingRewardJson,
   StakingType,
   SubscriptionServiceType,
-  SupportTransferResponse,
   ThemeNames,
   TransactionHistoryItem,
   UiSettings,
@@ -155,6 +151,7 @@ import {
   RequestYieldLeave,
   RequestYieldStepSubmit,
   RequestYieldWithdrawal,
+  TokenSpendingApprovalParams,
   ValidateYieldProcessParams,
   YieldPoolInfo,
 } from '@subwallet/extension-base/types';
@@ -179,6 +176,8 @@ import { AuthUrls } from '@subwallet/extension-base/services/request-service/typ
 import { _getKnownHashes } from 'utils/defaultChains';
 import { needBackup, triggerBackup } from 'utils/storage';
 import { WindowOpenParams } from '@subwallet/extension-base/background/types';
+import { RequestOptimalTransferProcess } from '@subwallet/extension-base/services/balance-service/helpers';
+import { CommonOptimalPath } from '@subwallet/extension-base/types/service-base';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -1214,20 +1213,6 @@ export async function disableAllNetwork(): Promise<boolean> {
   return sendMessage('pri(chainService.disableAllChains)', null);
 }
 
-export async function transferCheckReferenceCount(request: RequestTransferCheckReferenceCount): Promise<boolean> {
-  return sendMessage('pri(transfer.checkReferenceCount)', request);
-}
-
-export async function transferCheckSupporting(
-  request: RequestTransferCheckSupporting,
-): Promise<SupportTransferResponse> {
-  return sendMessage('pri(transfer.checkSupporting)', request);
-}
-
-export async function transferGetExistentialDeposit(request: RequestTransferExistentialDeposit): Promise<string> {
-  return sendMessage('pri(transfer.getExistentialDeposit)', request);
-}
-
 export async function cancelSubscription(request: string): Promise<boolean> {
   return sendMessage('pri(subscription.cancel)', request);
 }
@@ -1243,8 +1228,16 @@ export async function subscribeFreeBalance(
   return sendMessage('pri(freeBalance.subscribe)', request, callback);
 }
 
+export async function approveSpending(request: TokenSpendingApprovalParams): Promise<SWTransactionResponse> {
+  return sendMessage('pri(accounts.approveSpending)', request);
+}
+
 export async function getMaxTransfer(request: RequestMaxTransferable): Promise<AmountData> {
   return sendMessage('pri(transfer.getMaxTransferable)', request);
+}
+
+export async function getOptimalTransferProcess(request: RequestOptimalTransferProcess): Promise<CommonOptimalPath> {
+  return sendMessage('pri(accounts.getOptimalTransferProcess)', request);
 }
 
 export async function substrateNftSubmitTransaction(request: NftTransactionRequest): Promise<SWTransactionResponse> {
