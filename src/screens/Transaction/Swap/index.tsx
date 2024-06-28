@@ -28,7 +28,7 @@ import { isAccountAll } from 'utils/accountAll';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { InputAddress } from 'components/Input/InputAddress';
 import i18n from 'utils/i18n/i18n';
-import { Icon, Typography, Number, ActivityIndicator, Button, Divider } from 'components/design-system-ui';
+import { ActivityIndicator, Button, Divider, Icon, Number, Typography } from 'components/design-system-ui';
 import { ArrowsDownUp, CaretRight, Info, PencilSimpleLine } from 'phosphor-react-native';
 import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
 import MetaInfo from 'components/MetaInfo';
@@ -74,6 +74,8 @@ import { SendFundProps } from 'routes/transaction/transactionAction';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { SwapError } from '@subwallet/extension-base/background/errors/SwapError';
 import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMultiTransaction';
+import usePreCheckAction from 'hooks/account/usePreCheckAction';
+import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -173,6 +175,7 @@ export const Swap = ({
   const accountInfo = useGetAccountByAddress(fromValue);
   const [processState, dispatchProcessState] = useReducer(commonProcessReducer, DEFAULT_COMMON_PROCESS);
   const { onError, onSuccess } = useHandleSubmitMultiTransaction(onDone, setTransactionDone, dispatchProcessState);
+  const onPreCheck = usePreCheckAction(fromValue);
   const destChainNetworkPrefix = useGetChainPrefixBySlug(destChainValue);
   const destChainGenesisHash = chainInfoMap[destChainValue]?.substrateInfo?.genesisHash || '';
   const accountSelectorRef = useRef<ModalRef>();
@@ -1324,7 +1327,7 @@ export const Swap = ({
             </ScrollView>
             <View style={{ margin: theme.margin }}>
               <Button
-                onPress={handleSubmit(onSubmit)}
+                onPress={onPreCheck(handleSubmit(onSubmit), ExtrinsicType.SWAP)}
                 disabled={
                   submitLoading ||
                   handleRequestLoading ||

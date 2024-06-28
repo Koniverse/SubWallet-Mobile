@@ -39,6 +39,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Portal } from '@gorhom/portal';
 import { getSignMode } from 'utils/account';
 import { AccountSignMode } from 'types/signer';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import { getDevMode } from 'utils/storage';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
   return {
@@ -69,6 +71,7 @@ export const Confirmations = () => {
   const [index, setIndex] = useState(0);
   const confirmation = confirmationQueue[index] || null;
   useHandlerHardwareBackPress(true);
+  const isDevMode = getDevMode();
   const titleMap = useMemo(
     () => ({
       addNetworkRequest: i18n.header.addNetworkRequest,
@@ -199,7 +202,14 @@ export const Confirmations = () => {
       }
 
       const signMode = getSignMode(account);
-      if (account?.isReadOnly || signMode === AccountSignMode.LEDGER || !canSign) {
+      const isEvm = isEthereumAddress(account?.address);
+      const notSupport =
+        signMode === AccountSignMode.READ_ONLY ||
+        signMode === AccountSignMode.UNKNOWN ||
+        (signMode === AccountSignMode.QR && isEvm && !isDevMode) ||
+        !canSign;
+
+      if (notSupport) {
         return (
           <NotSupportConfirmation
             account={account}
@@ -254,7 +264,7 @@ export const Confirmations = () => {
     }
 
     return null;
-  }, [confirmation, navigation]);
+  }, [confirmation, isDevMode, navigation]);
 
   useEffect(() => {
     if (numberOfConfirmations) {

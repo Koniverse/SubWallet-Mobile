@@ -19,7 +19,6 @@ import { isSameAddress } from '@subwallet/extension-base/utils';
 import { CancelUnstakeSelector } from 'components/Modal/common/CancelUnstakeSelector';
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
-import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { CancelUnstakeProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
@@ -28,6 +27,8 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
+import usePreCheckAction from 'hooks/account/usePreCheckAction';
+import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 
 interface CancelUnstakeFormValues extends TransactionFormValues {
   unstakeIndex: string;
@@ -108,8 +109,7 @@ export const CancelUnstake = ({
   }, [accounts, allPositionInfos, chainInfoMap, poolChain, poolType]);
 
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
-
-  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
+  const onPreCheck = usePreCheckAction(fromValue);
 
   const onSubmit = useCallback(() => {
     if (!positionInfo) {
@@ -205,7 +205,7 @@ export const CancelUnstake = ({
                     iconColor={!isBalanceReady ? theme.colorTextLight5 : theme.colorWhite}
                   />
                 }
-                onPress={onPreCheckReadOnly(onSubmit)}>
+                onPress={onPreCheck(onSubmit, ExtrinsicType.STAKING_CANCEL_UNSTAKE)}>
                 {i18n.buttonTitles.continue}
               </Button>
             </View>
