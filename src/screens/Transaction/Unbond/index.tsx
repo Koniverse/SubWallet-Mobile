@@ -13,7 +13,6 @@ import { AmountData, ExtrinsicType, NominationInfo } from '@subwallet/extension-
 import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
-import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { ScrollView, View } from 'react-native';
 import { MinusCircle } from 'phosphor-react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
@@ -42,6 +41,7 @@ import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { mmkvStore } from 'utils/storage';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { UNSTAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
+import usePreCheckAction from 'hooks/account/usePreCheckAction';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -110,6 +110,7 @@ export const Unbond = ({
   const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
   const accountInfo = useGetAccountByAddress(fromValue);
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
+  const onPreCheck = usePreCheckAction(fromValue);
 
   const unstakeDataRaw = useMemo(() => {
     try {
@@ -224,7 +225,6 @@ export const Unbond = ({
     },
     [chainInfoMap, chainValue],
   );
-  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
   const { onError, onSuccess } = useHandleSubmitTransaction(
     onDone,
     setTransactionDone,
@@ -312,6 +312,26 @@ export const Unbond = ({
       setFrom(accountList[0].address);
     }
   }, [accountList, fromValue, setFrom]);
+
+  const exType = useMemo(() => {
+    if (poolType === YieldPoolType.NOMINATION_POOL || poolType === YieldPoolType.NATIVE_STAKING) {
+      return ExtrinsicType.STAKING_UNBOND;
+    }
+
+    if (poolType === YieldPoolType.LIQUID_STAKING) {
+      if (chainValue === 'moonbeam') {
+        return ExtrinsicType.UNSTAKE_STDOT;
+      }
+
+      return ExtrinsicType.UNSTAKE_LDOT;
+    }
+
+    if (poolType === YieldPoolType.LENDING) {
+      return ExtrinsicType.UNSTAKE_LDOT;
+    }
+
+    return ExtrinsicType.STAKING_UNBOND;
+  }, [poolType, chainValue]);
 
   return (
     <>
@@ -444,7 +464,7 @@ export const Unbond = ({
                     iconColor={isDisableSubmitBtn ? theme.colorTextLight5 : theme.colorWhite}
                   />
                 }
-                onPress={onPreCheckReadOnly(onSubmit)}>
+                onPress={onPreCheck(onSubmit, exType)}>
                 {poolType === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
               </Button>
             </View>

@@ -7,12 +7,11 @@ import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { ScrollView, View } from 'react-native';
-import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
+import { AmountData, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
-import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { AccountJson } from '@subwallet/extension-base/background/types';
@@ -39,6 +38,7 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
+import usePreCheckAction from 'hooks/account/usePreCheckAction';
 
 interface ClaimRewardFormValues extends TransactionFormValues {
   bondReward: string;
@@ -182,8 +182,7 @@ const ClaimReward = ({
         });
     }, 300);
   }, [fromValue, bondReward, slug, reward?.unclaimedReward, onSuccess, onError]);
-
-  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
+  const onPreCheck = usePreCheckAction(fromValue);
 
   useEffect(() => {
     setChain(poolInfo?.chain);
@@ -292,7 +291,7 @@ const ClaimReward = ({
                     }
                   />
                 }
-                onPress={onPreCheckReadOnly(onSubmit)}>
+                onPress={onPreCheck(onSubmit, ExtrinsicType.STAKING_CLAIM_REWARD)}>
                 {i18n.buttonTitles.continue}
               </Button>
             </View>
