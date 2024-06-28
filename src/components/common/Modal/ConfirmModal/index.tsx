@@ -1,6 +1,6 @@
 import { Button, Icon, Logo, PageIcon, SwModal } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CheckCircle, PlugsConnected } from 'phosphor-react-native';
+import { CheckCircle, PlugsConnected, XCircle } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { VoidFunction } from 'types/index';
@@ -11,6 +11,7 @@ import { noop } from 'utils/function';
 interface Props {
   message: string;
   messageIcon?: string;
+  customIcon?: React.ReactNode;
   title: string;
   visible: boolean;
   onCompleteModal?: VoidFunction;
@@ -25,6 +26,7 @@ const ConfirmModal: React.FC<Props> = ({
   title,
   message,
   messageIcon,
+  customIcon,
   completeBtnTitle,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -41,7 +43,11 @@ const ConfirmModal: React.FC<Props> = ({
       footer={
         <>
           <View style={styles.footerModalStyle}>
-            <Button type="secondary" style={{ flex: 1, marginRight: 12 }} onPress={onCancelModal}>
+            <Button
+              type="secondary"
+              style={{ flex: 1, marginRight: 12 }}
+              onPress={onCancelModal}
+              icon={<Icon phosphorIcon={XCircle} size={'lg'} weight={'fill'} />}>
               {i18n.common.cancel}
             </Button>
             <Button
@@ -60,6 +66,8 @@ const ConfirmModal: React.FC<Props> = ({
         <View style={{ paddingBottom: 20 }}>
           {messageIcon ? (
             <Logo network={messageIcon} size={100} />
+          ) : customIcon ? (
+            <>{customIcon}</>
           ) : (
             <PageIcon icon={PlugsConnected} color={theme.colorWarning} />
           )}

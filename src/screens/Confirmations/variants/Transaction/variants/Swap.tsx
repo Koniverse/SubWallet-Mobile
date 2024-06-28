@@ -5,7 +5,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 import { BaseTransactionConfirmationProps } from './Base';
-import { SwapStepType, SwapTxData } from '@subwallet/extension-base/types/swap';
+import { CommonStepType } from '@subwallet/extension-base/types/service-base';
+import { SwapTxData } from '@subwallet/extension-base/types/swap';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { BN_TEN, BN_ZERO } from 'utils/chainBalances';
@@ -67,7 +68,7 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
   };
 
   const isSwapXCM = useMemo(() => {
-    return data.process.steps.some(item => item.type === SwapStepType.XCM);
+    return data.process.steps.some(item => item.type === CommonStepType.XCM);
   }, [data.process.steps]);
 
   const getWaitingTime = useMemo(() => {
