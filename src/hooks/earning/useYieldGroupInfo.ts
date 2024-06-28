@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
-import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { useMemo } from 'react';
@@ -17,6 +16,7 @@ import { BN_TEN } from 'utils/number';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { _getAssetOriginChain } from '@subwallet/extension-base/services/chain-service/utils';
 import { BN_ZERO } from '@subwallet/extension-base/utils';
+import useGetChainSlugsByCurrentAccount from 'hooks/common/useGetChainSlugsByCurrentAccount';
 
 const isRelatedToRelayChain = (
   group: string,
@@ -57,7 +57,7 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const chainsByAccountType = useGetChainSlugs();
+  const chainsByAccountType = useGetChainSlugsByCurrentAccount();
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap, tokenGroupBalanceMap } = useAccountBalance(tokenGroupMap, true);
   const { priceMap } = useSelector((state: RootState) => state.price);
