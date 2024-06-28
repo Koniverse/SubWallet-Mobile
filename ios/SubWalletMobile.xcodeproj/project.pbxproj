@@ -12,6 +12,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */; };
+		355DBB332C2EBD3000028BB5 /* OldWeb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 355DBB322C2EBD3000028BB5 /* OldWeb.bundle */; };
 		4027831F29CEA0080040230D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4027831E29CEA0080040230D /* fonts */; };
 		402FCA172A72402100B40279 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 402FCA152A72402100B40279 /* RCTMinimizer.m */; };
 		7699B88040F8A987B510C191 /* libPods-SubWalletMobile-SubWalletMobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */; };
@@ -43,6 +44,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SubWalletMobile/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile-SubWalletMobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		355DBB322C2EBD3000028BB5 /* OldWeb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = OldWeb.bundle; path = ../html/OldWeb.bundle; sourceTree = "<group>"; };
 		3B4402A12AC88292D35C810B /* Pods-SubWalletMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.debug.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		4027831E29CEA0080040230D /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		402FCA152A72402100B40279 /* RCTMinimizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTMinimizer.m; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.m; sourceTree = "<group>"; };
@@ -62,7 +64,7 @@
 /* Begin PBXFrameworksBuildPhase section */
 		00E402EB1AD99517003FC87E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 				7699B88040F8A987B510C191 /* libPods-SubWalletMobile-SubWalletMobileTests.a in Frameworks */,
 			);
@@ -70,7 +72,7 @@
 		};
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 				0C80B921A6F3F58F76C40292 /* libPods-SubWalletMobile.a in Frameworks */,
 			);
@@ -142,6 +144,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				355DBB322C2EBD3000028BB5 /* OldWeb.bundle */,
 				4027831E29CEA0080040230D /* fonts */,
 				F1F1508628C6028D004B2C94 /* PageJs.bundle */,
 				F16BB9D8292A5C7B00F9E935 /* Web.bundle */,
@@ -277,7 +280,7 @@
 /* Begin PBXResourcesBuildPhase section */
 		00E402EC1AD99517003FC87E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 				F1554EFC292D590F00302F08 /* Images-2.xcassets in Resources */,
 			);
@@ -285,8 +288,9 @@
 		};
 		13B07F8E1A680F5B00A75B9A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
+				355DBB332C2EBD3000028BB5 /* OldWeb.bundle in Resources */,
 				3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */,
 				81AB9BB82411601600AC10FF /* SplashScreen.storyboard in Resources */,
 				4027831F29CEA0080040230D /* fonts in Resources */,
@@ -301,7 +305,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
@@ -317,7 +321,7 @@
 		};
 		00EEFC60759A1940268276C0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -334,7 +338,7 @@
 		};
 		A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -356,7 +360,7 @@
 		};
 		C38B50BA6292516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -378,7 +382,7 @@
 		};
 		C59DA0FBD6956966B86A4029 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -395,7 +399,7 @@
 		};
 		E236C05ADACE081402540202 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -412,7 +416,7 @@
 		};
 		F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -429,7 +433,7 @@
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -451,7 +455,7 @@
 /* Begin PBXSourcesBuildPhase section */
 		00E402EA1AD99517003FC87E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 				00E402F31AD99517003FC87E /* SubWalletMobileTests.m in Sources */,
 			);
@@ -459,7 +463,7 @@
 		};
 		13B07F871A680F5B00A75B9A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147484027;
+			buildActionMask = 8;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				402FCA172A72402100B40279 /* RCTMinimizer.m in Sources */,
