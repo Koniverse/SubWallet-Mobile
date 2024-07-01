@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { MaterialTopTabNavigationOptions, createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -7,16 +7,16 @@ import { Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
-import { ParamListBase, RouteProp, useNavigation } from '@react-navigation/native';
-import { missionCategories, MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
+import { ParamListBase, RouteProp } from '@react-navigation/native';
+import { missionCategories, missionTypes } from 'screens/Home/Browser/MissionPool/predefined';
 import { MissionPoolsByCategory } from 'screens/Home/Browser/MissionPool/MissionPoolsByCategory';
 import { MissionPoolsNavigationProps } from 'routes/home';
-import ImageSlider from 'components/common/ImageSlider';
-import { MagnifyingGlass } from 'phosphor-react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { computeStatus } from 'utils/missionPools';
-import { RootNavigationProps } from 'routes/index';
+import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
+import { BannerGenerator } from 'components/common/BannerGenerator';
+import { Search } from 'components/Search';
+import { MissionPoolsContext } from 'screens/Home/Browser/MissionPool/context';
+import FilterModal from 'components/common/FilterModal';
+import { useFilterModal } from 'hooks/useFilterModal';
 
 type RoutesType = {
   key: string;
@@ -26,7 +26,7 @@ type TabbarType = {
   focused: boolean;
 };
 const Tab = createMaterialTopTabNavigator();
-const transparent = { backgroundColor: 'transparent' };
+const transparent = { backgroundColor: 'transparent', paddingTop: 0 };
 const screenOptions:
   | MaterialTopTabNavigationOptions
   | ((props: { route: RouteProp<ParamListBase, string>; navigation: any }) => MaterialTopTabNavigationOptions)
@@ -68,10 +68,10 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
   const theme = useSubWalletTheme().swThemes;
   const categoryTabRoutes = missionCategories.map(item => ({ key: item.slug, title: item.name }));
   const allTabRoutes = [...categoryTabRoutes];
-  const { missions } = useSelector((state: RootState) => state.missionPool);
-
-  const rootNavigation = useNavigation<RootNavigationProps>();
-
+  const [searchString, setSearchString] = useState<string>('');
+  const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('crowdloan');
+  const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
+    useFilterModal();
   const av = new Animated.Value(0);
   av.addListener(() => {
     return;
@@ -83,21 +83,6 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
     };
   };
 
-  const computedMission = useMemo(() => {
-    return missions && missions.length
-      ? missions.map(item => {
-          return {
-            ...item,
-            status: computeStatus(item),
-          };
-        })
-      : [];
-  }, [missions]);
-
-  const liveMissionImages = useMemo(() => {
-    return computedMission.filter(item => item.status === MissionPoolType.LIVE).map(_item => _item.backdrop_image);
-  }, [computedMission]);
-
   const screenListener = {
     focus: () => {
       Animated.timing(av, {
@@ -108,16 +93,39 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
     },
   };
 
+  const filterOptions = useMemo(
+    () => [
+      ...missionTypes.map(c => ({
+        label: c.name,
+        value: c.slug,
+      })),
+    ],
+    [],
+  );
+
   return (
-    <>
+    <MissionPoolsContext.Provider value={{ searchString, selectedFilters }}>
       <ContainerWithSubHeader
         isShowMainHeader
         title={i18n.header.missionPools}
         showLeftBtn={false}
-        titleTextAlign={'left'}
-        rightIcon={MagnifyingGlass}
-        onPressRightIcon={() => rootNavigation.navigate('MissionPoolSearchByTabView', { type: 'all' })}>
-        <ImageSlider data={liveMissionImages} onPressItem={() => {}} />
+        titleTextAlign={'left'}>
+        {banners && banners.length ? (
+          <View style={{ marginHorizontal: theme.margin, marginTop: -theme.marginXS, marginBottom: theme.marginXXS }}>
+            <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
+          </View>
+        ) : (
+          <></>
+        )}
+        <Search
+          placeholder={i18n.placeholder.campaignName}
+          onClearSearchString={() => setSearchString('')}
+          onSearch={setSearchString}
+          searchText={searchString}
+          style={{ marginBottom: theme.padding, marginTop: theme.marginXS, marginHorizontal: theme.padding }}
+          isShowFilterBtn={true}
+          onPressFilterBtn={openFilterModal}
+        />
         <Tab.Navigator
           overScrollMode={'always'}
           sceneContainerStyle={transparent}
@@ -137,6 +145,16 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
           })}
         </Tab.Navigator>
       </ContainerWithSubHeader>
-    </>
+
+      {!!(filterOptions && filterOptions.length && filterSelectionMap) && (
+        <FilterModal
+          filterModalRef={filterModalRef}
+          options={filterOptions}
+          onChangeOption={onChangeFilterOption}
+          optionSelectionMap={filterSelectionMap}
+          onApplyFilter={onApplyFilter}
+        />
+      )}
+    </MissionPoolsContext.Provider>
   );
 };
