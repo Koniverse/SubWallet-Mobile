@@ -83,9 +83,18 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
     props.style = [[...props.style], customStyle];
     return <TouchableOpacity {...props} activeOpacity={1} />;
   };
+  const storedLiveMissionPools = useMemo(() => {
+    try {
+      const result = JSON.parse(mmkvStore.getString('storedLiveMissionPools') || '[]');
+      return result;
+    } catch (e) {
+      return [];
+    }
+  }, []);
+  const [missionPoolIds, setMissionPoolIds] = useState<number[]>(storedLiveMissionPools);
 
   const { missions } = useSelector((state: RootState) => state.missionPool);
-  const activeMissionPoolNumb = useMemo(() => {
+  const activeMissionPool = useMemo(() => {
     const computedMission =
       missions && missions.length
         ? missions.map(item => {
@@ -96,9 +105,13 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
           })
         : [];
 
-    return computedMission.filter(item => item.status === MissionPoolType.LIVE).length;
+    return computedMission.filter(item => item.status === MissionPoolType.LIVE);
   }, [missions]);
 
+  const activeMissionPoolNumb = useMemo(() => {
+    return activeMissionPool.map(item => item.id).filter(i => !missionPoolIds.includes(i)).length;
+  }, [activeMissionPool, missionPoolIds]);
+  console.log('activeMissionPoolNumb', activeMissionPoolNumb);
   return (
     <Tab.Navigator
       initialRouteName={'Tokens'}
@@ -172,6 +185,13 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
       <Tab.Screen
         name={'MissionPools'}
         initialParams={{ type: 'all' }}
+        listeners={() => ({
+          tabPress: () => {
+            const missionPoolActiveIds = activeMissionPool.map(item => item.id);
+            setMissionPoolIds(missionPoolActiveIds);
+            mmkvStore.set('storedLiveMissionPools', JSON.stringify(missionPoolActiveIds));
+          },
+        })}
         component={MissionPoolsByTabview}
         options={{
           tabBarLabel: 'Missions',

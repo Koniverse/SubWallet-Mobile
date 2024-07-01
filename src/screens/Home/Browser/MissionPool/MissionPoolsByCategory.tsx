@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
@@ -17,6 +17,7 @@ import { RootStackParamList } from 'routes/index';
 import { MissionPoolDetailModal } from 'screens/Home/Browser/MissionPool/MissionPoolDetailModal/MissionPoolDetailModal';
 import { computeStatus } from 'utils/missionPools';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
+import { MissionPoolsContext } from 'screens/Home/Browser/MissionPool/context';
 
 const ITEM_HEIGHT = missionPoolItemHeight;
 const ITEM_SEPARATOR = missionPoolSeparator;
@@ -30,17 +31,45 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
   const { missions } = useSelector((state: RootState) => state.missionPool);
   const [isRefresh] = useRefresh();
   const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('missionPools');
+  const { searchString, selectedFilters } = useContext(MissionPoolsContext);
+
+  const missionPoolsSortFunc = useCallback((itemA: MissionInfo, itemB: MissionInfo) => {
+    const statusOrder: Record<string, number> = {
+      live: 0,
+      upcoming: 1,
+      archived: 2,
+    };
+
+    const getStatusOrderValue = (status: string | undefined | null): number => {
+      if (status && status in statusOrder) {
+        return statusOrder[status];
+      } else {
+        return statusOrder.archived;
+      }
+    };
+
+    const statusA = getStatusOrderValue(itemA.status);
+    const statusB = getStatusOrderValue(itemB.status);
+
+    if (statusA !== statusB) {
+      return statusA - statusB;
+    }
+
+    return (itemA.ordinal || 0) - (itemB.ordinal || 0);
+  }, []);
 
   const computedMission = useMemo(() => {
-    return !!(missions && missions.length)
-      ? missions.map(item => {
-          return {
-            ...item,
-            status: computeStatus(item),
-          };
-        })
+    return missions && missions.length
+      ? missions
+          .map(item => {
+            return {
+              ...item,
+              status: computeStatus(item),
+            };
+          })
+          .sort(missionPoolsSortFunc)
       : [];
-  }, [missions]);
+  }, [missionPoolsSortFunc, missions]);
 
   const listByCategory = useMemo(() => {
     if (!computedMission || !computedMission.length) {
@@ -59,6 +88,41 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
       return false;
     });
   }, [computedMission, route.name]);
+
+  const searchFunction = (items: MissionInfo[], _searchString: string) => {
+    return items.filter(({ name }) => {
+      return name ? name.toLowerCase().includes(searchString.toLowerCase()) : true;
+    });
+  };
+
+  const filterFunction = useCallback((items: MissionInfo[], filters: string[]) => {
+    if (!filters.length) {
+      return items;
+    }
+
+    return items.filter(item => {
+      for (const filter of filters) {
+        switch (filter) {
+          case 'live':
+            if (item.status === 'live') {
+              return true;
+            }
+            break;
+          case 'archived':
+            if (item.status === 'archived') {
+              return true;
+            }
+            break;
+          case 'upcoming':
+            if (item.status === 'upcoming') {
+              return true;
+            }
+            break;
+        }
+      }
+      return false;
+    });
+  }, []);
 
   const renderEmpty = () => {
     return (
@@ -99,6 +163,7 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
   return (
     <View style={styles.container}>
       <LazyFlatList<MissionInfo>
+        searchFunction={searchFunction}
         maxToRenderPerBatch={5}
         initialNumToRender={5}
         removeClippedSubviews
@@ -108,7 +173,9 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
         getItemLayout={getItemLayout}
         renderListEmptyComponent={renderEmpty}
         flatListStyle={{ gap: theme.paddingXS }}
-        searchString={''}
+        searchString={searchString}
+        filterFunction={filterFunction}
+        selectedFilters={selectedFilters}
       />
 
       {selectedMissionPool && (
@@ -129,7 +196,7 @@ function createStyle(theme: ThemeTypes) {
     container: {
       flex: 1,
       paddingHorizontal: theme.padding,
-      paddingTop: theme.padding,
+      paddingTop: theme.paddingSM,
     },
   });
 }

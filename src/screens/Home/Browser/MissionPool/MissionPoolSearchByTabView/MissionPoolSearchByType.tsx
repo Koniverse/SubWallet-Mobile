@@ -25,13 +25,13 @@ const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 
 export const MissionPoolSearchByType: React.FC<NativeStackScreenProps<RootStackParamList>> = ({ route }) => {
   const theme = useSubWalletTheme().swThemes;
-  const styles = createStyle(theme);
-  const { missions } = useSelector((state: RootState) => state.missionPool);
-  const { searchString } = useContext(MissionPoolsContext);
   const [selectedMissionPool, setSelectedMissionPool] = useState<MissionInfo | undefined>(undefined);
   const [visible, setVisible] = useState<boolean>(false);
-  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('missionPools');
+  const styles = createStyle(theme);
+  const { missions } = useSelector((state: RootState) => state.missionPool);
   const [isRefresh] = useRefresh();
+  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('missionPools');
+  const { searchString } = useContext(MissionPoolsContext);
 
   const currentConfirmation = useMemo(() => {
     if (selectedMissionPool) {
@@ -80,6 +80,7 @@ export const MissionPoolSearchByType: React.FC<NativeStackScreenProps<RootStackP
 
   const renderItem = ({ item }: ListRenderItemInfo<MissionInfo>) => (
     <MissionPoolHorizontalItem
+      containerStyle={{ marginHorizontal: theme.padding }}
       data={item}
       onPressItem={() => {
         Keyboard.dismiss();
@@ -139,12 +140,12 @@ function createStyle(theme: ThemeTypes) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      paddingTop: theme.padding,
-      paddingHorizontal: theme.padding,
       marginBottom: theme.margin,
     },
     contentContainer: {
       gap: theme.sizeXS,
+      paddingTop: theme.paddingSM,
+      marginBottom: theme.margin,
     },
   });
 }
