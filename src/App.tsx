@@ -2,7 +2,7 @@ import { ExternalRequestContextProvider } from 'providers/ExternalRequestContext
 import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useState } from 'react';
 import { AppState, DeviceEventEmitter, ImageBackground, Linking, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext, WebRunnerContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
@@ -45,6 +45,7 @@ import { mmkvStore } from 'utils/storage';
 import { setIsShowRemindBackupModal } from 'screens/Home';
 import { useGetBrowserConfig } from 'hooks/static-content/useGetBrowserConfig';
 import RNRestart from 'react-native-restart';
+import { ImageLogosMap } from 'assets/logo';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -103,9 +104,8 @@ const imageBackgroundStyle: StyleProp<any> = {
   justifyContent: 'flex-end',
   position: 'relative',
   width: deviceWidth,
-  height: deviceHeight,
+  height: deviceHeight + STATUS_BAR_HEIGHT,
   backgroundColor: 'black',
-  marginTop: 40,
 };
 
 let lockWhenActive = false;
@@ -363,11 +363,9 @@ export const App = () => {
             </ImageBackground>
           </View>
         )}
-
         {isUpdateComplete && (
-          <View style={{ width: deviceWidth, height: deviceHeight, justifyContent: 'flex-end' }}>
+          <View style={{ width: deviceWidth, height: deviceHeight + STATUS_BAR_HEIGHT, justifyContent: 'flex-end' }}>
             <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={imageBackgroundStyle}>
-              <StatusBar backgroundColor={'rgba(0, 0, 0, 1)'} translucent={true} />
               <View
                 style={{
                   flex: 1,
@@ -413,17 +411,15 @@ export const App = () => {
                     }}>
                     {'Restart your app'}
                   </Typography.Title>
-                  <PageIcon
-                    customIcon={<Icon phosphorIcon={Warning} iconColor={theme.swThemes.colorWarning} customSize={64} />}
-                    color={theme.swThemes.colorWarning}
-                    backgroundColor={'rgba(217, 197, 0, 0.1)'}
-                  />
+                  <Suspense>
+                    <ImageLogosMap.RestartLogo width={112} height={112} />
+                  </Suspense>
                   <Typography.Text
                     style={{
                       color: theme.swThemes.colorTextLight4,
                       textAlign: 'center',
                       paddingTop: theme.swThemes.paddingMD,
-                      paddingHorizontal: theme.swThemes.padding,
+                      paddingHorizontal: theme.swThemes.paddingLG,
                       ...FontMedium,
                     }}>
                     {

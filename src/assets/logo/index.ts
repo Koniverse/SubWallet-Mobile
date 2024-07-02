@@ -9,6 +9,7 @@ const FranchiseLogo = React.lazy(() => import('./franchise.svg'));
 const JapaneseLogo = React.lazy(() => import('./japan.svg'));
 const RussianLogo = React.lazy(() => import('./russia.svg'));
 const XLogo = React.lazy(() => import('./x-logo.svg'));
+const RestartLogo = React.lazy(() => import('./restart-logo.svg'));
 
 export const ImageLogosMap = {
   parity: require('./207.vault.png'),
@@ -37,4 +38,5 @@ export const ImageLogosMap = {
   ja: JapaneseLogo,
   ru: RussianLogo,
   XLogo: XLogo,
+  RestartLogo: RestartLogo,
 };

@@ -146,13 +146,13 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
-    if (authMethod === 'master-password' && !isUpdateComplete) {
+    if (authMethod === 'master-password') {
       setTimeout(() => {
         focus('password')();
       }, 100);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authMethod, isUpdateComplete]);
+  }, [authMethod]);
   useEffect(() => forceCloseModalV2(true), []);
   useEffect(() => {
     if (!isUseBiometric) {
@@ -270,14 +270,16 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
             </Typography.Text>
             {authMethod === 'master-password' && (
               <>
-                <InlinePassword
-                  ref={formState.refs.password}
-                  defaultValue={formState.data.password}
-                  onChangeText={value => onChangeValue('password')(value)}
-                  errorMessages={formState.errors.password}
-                  onSubmitField={onSubmitField('password')}
-                  containerStyle={{ marginBottom: 0 }}
-                />
+                {!isUpdateComplete && (
+                  <InlinePassword
+                    ref={formState.refs.password}
+                    defaultValue={formState.data.password}
+                    onChangeText={value => onChangeValue('password')(value)}
+                    errorMessages={formState.errors.password}
+                    onSubmitField={onSubmitField('password')}
+                    containerStyle={{ marginBottom: 0 }}
+                  />
+                )}
 
                 <View style={styles.fullWidth}>
                   <TouchableOpacity style={styles.forgotpasswordButton} onPress={onToggleModal}>
