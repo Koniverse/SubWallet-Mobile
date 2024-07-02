@@ -152,7 +152,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
       }, 100);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authMethod]);
+  }, [authMethod, isUpdateComplete]);
   useEffect(() => forceCloseModalV2(true), []);
   useEffect(() => {
     if (!isUseBiometric) {

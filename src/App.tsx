@@ -411,7 +411,7 @@ export const App = () => {
                       lineHeight: theme.swThemes.fontSizeXL * theme.swThemes.lineHeightHeading4,
                       paddingBottom: theme.swThemes.paddingXL,
                     }}>
-                    {'Update completed'}
+                    {'Restart your app'}
                   </Typography.Title>
                   <PageIcon
                     customIcon={<Icon phosphorIcon={Warning} iconColor={theme.swThemes.colorWarning} customSize={64} />}
@@ -423,9 +423,12 @@ export const App = () => {
                       color: theme.swThemes.colorTextLight4,
                       textAlign: 'center',
                       paddingTop: theme.swThemes.paddingMD,
+                      paddingHorizontal: theme.swThemes.padding,
                       ...FontMedium,
                     }}>
-                    {'Your update is completed. Please restart app to continue'}
+                    {
+                      'The latest version of SubWallet is installed on your device. Restart the app to complete the update'
+                    }
                   </Typography.Text>
                 </View>
                 <Button onPress={onPressRestart} style={{ margin: 16 }}>
