@@ -2,9 +2,9 @@ import { ExternalRequestContextProvider } from 'providers/ExternalRequestContext
 import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useState } from 'react';
 import { AppState, DeviceEventEmitter, ImageBackground, Linking, StatusBar, StyleProp, View } from 'react-native';
-import { ThemeContext } from 'providers/contexts';
+import { ThemeContext, WebRunnerContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { FontMedium, FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
@@ -44,6 +44,8 @@ import { useGetConfig } from 'hooks/static-content/useGetConfig';
 import { mmkvStore } from 'utils/storage';
 import { setIsShowRemindBackupModal } from 'screens/Home';
 import { useGetBrowserConfig } from 'hooks/static-content/useGetBrowserConfig';
+import RNRestart from 'react-native-restart';
+import { ImageLogosMap } from 'assets/logo';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -102,7 +104,7 @@ const imageBackgroundStyle: StyleProp<any> = {
   justifyContent: 'flex-end',
   position: 'relative',
   width: deviceWidth,
-  height: deviceHeight,
+  height: deviceHeight + STATUS_BAR_HEIGHT,
   backgroundColor: 'black',
 };
 
@@ -176,6 +178,7 @@ export const App = () => {
   const { getEarningStaticData } = useGetEarningStaticData(language);
   const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
+  const { isUpdateComplete, setUpdateComplete } = useContext(WebRunnerContext);
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -238,6 +241,11 @@ export const App = () => {
     );
   };
 
+  const onPressRestart = () => {
+    setUpdateComplete && setUpdateComplete(false);
+    RNRestart.Restart();
+  };
+
   // TODO: merge GlobalModalContextProvider and AppModalContextProvider
 
   return (
@@ -292,7 +300,7 @@ export const App = () => {
                   paddingBottom: 40,
                   alignItems: 'center',
                   backgroundColor: theme.swThemes.colorBgSecondary,
-                  opacity: 0.8,
+                  opacity: 0.3,
                   marginBottom: -32,
                 }}>
                 <Image src={Images.SubWalletLogoGradient} style={{ width: 66, height: 100 }} />
@@ -349,6 +357,78 @@ export const App = () => {
                 </View>
                 <Button onPress={onPressUpdateWebView} style={{ margin: 16 }}>
                   Update Webview
+                </Button>
+                <SafeAreaView edges={['bottom']} />
+              </View>
+            </ImageBackground>
+          </View>
+        )}
+        {isUpdateComplete && (
+          <View style={{ width: deviceWidth, height: deviceHeight + STATUS_BAR_HEIGHT, justifyContent: 'flex-end' }}>
+            <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={imageBackgroundStyle}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'flex-end',
+                  paddingBottom: 40,
+                  alignItems: 'center',
+                  backgroundColor: theme.swThemes.colorBgSecondary,
+                  opacity: 0.3,
+                  marginBottom: -32,
+                }}>
+                <Image src={Images.SubWalletLogoGradient} style={{ width: 66, height: 100 }} />
+                <Text style={logoTextStyle}>SubWallet</Text>
+                <Text style={logoSubTextStyle}>{i18n.title.slogan}</Text>
+              </View>
+              <View
+                style={{
+                  maxHeight: deviceHeight * 0.6,
+                  backgroundColor: theme.swThemes.colorBgDefault,
+                  borderTopLeftRadius: theme.swThemes.borderRadiusXXL,
+                  borderTopRightRadius: theme.swThemes.borderRadiusXXL,
+                }}>
+                <View
+                  style={{
+                    paddingTop: theme.swThemes.paddingXS,
+                    paddingHorizontal: theme.swThemes.padding,
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      width: 70,
+                      height: 5,
+                      borderRadius: 100,
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      marginBottom: 16,
+                    }}
+                  />
+                  <Typography.Title
+                    style={{
+                      color: theme.swThemes.colorWhite,
+                      fontSize: theme.swThemes.fontSizeXL,
+                      lineHeight: theme.swThemes.fontSizeXL * theme.swThemes.lineHeightHeading4,
+                      paddingBottom: theme.swThemes.paddingXL,
+                    }}>
+                    {'Restart your app'}
+                  </Typography.Title>
+                  <Suspense>
+                    <ImageLogosMap.RestartLogo width={112} height={112} />
+                  </Suspense>
+                  <Typography.Text
+                    style={{
+                      color: theme.swThemes.colorTextLight4,
+                      textAlign: 'center',
+                      paddingTop: theme.swThemes.paddingMD,
+                      paddingHorizontal: theme.swThemes.paddingLG,
+                      ...FontMedium,
+                    }}>
+                    {
+                      'The latest version of SubWallet is installed on your device. Restart the app to complete the update'
+                    }
+                  </Typography.Text>
+                </View>
+                <Button onPress={onPressRestart} style={{ margin: 16 }}>
+                  Restart app
                 </Button>
                 <SafeAreaView edges={['bottom']} />
               </View>

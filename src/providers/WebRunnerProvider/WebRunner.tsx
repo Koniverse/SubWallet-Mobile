@@ -13,7 +13,6 @@ import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { backupStorageData, mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
 import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
-import RNRestart from 'react-native-restart';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 360000; //6*60*1000
@@ -405,6 +404,7 @@ interface Props {
   webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
   isReady: boolean;
+  setUpdateComplete: (value: boolean) => void;
 }
 
 if (oldLocalStorageBackUpData) {
@@ -414,99 +414,101 @@ if (oldLocalStorageBackUpData) {
   mmkvStore.delete('backupStorage');
 }
 
-export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter, isReady }: Props) => {
-  const [runnerGlobalState, dispatchRunnerGlobalState] = useReducer(webRunnerReducer, {
-    injectScript: getJsInjectContent(),
-    runnerRef: webRunnerRef,
-    stateRef: webRunnerStateRef,
-    eventEmitter: webRunnerEventEmitter,
-  });
+export const WebRunner = React.memo(
+  ({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter, isReady, setUpdateComplete }: Props) => {
+    const [runnerGlobalState, dispatchRunnerGlobalState] = useReducer(webRunnerReducer, {
+      injectScript: getJsInjectContent(),
+      runnerRef: webRunnerRef,
+      stateRef: webRunnerStateRef,
+      eventEmitter: webRunnerEventEmitter,
+    });
 
-  webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
-  webRunnerHandler.active();
+    webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
+    webRunnerHandler.active();
 
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      if (isFirstLaunch) {
-        mmkvStore.set('backup-data-for-android', true);
-      }
-
-      if (!isFirstLaunch && isReady && !storedCompleteBackUpData) {
-        backupStorageData(true, false, () => {
+    useEffect(() => {
+      if (Platform.OS === 'android') {
+        if (isFirstLaunch) {
           mmkvStore.set('backup-data-for-android', true);
-          RNRestart.Restart();
-        });
-      }
-    }
-  }, [isReady]);
-
-  const onMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
-    try {
-      // BACKUP-002: Check is account & keyring exist to back up
-      const webData = JSON.parse(eventData.nativeEvent.data);
-      if (webData?.backupStorage && Object.keys(webData?.backupStorage || {})?.length > 0) {
-        const isAccount = Object.keys(webData.backupStorage).find((item: string) => item.startsWith('account:'));
-        if (isAccount && webData.backupStorage['keyring:subwallet']) {
-          mmkvStore.set('backup-localstorage', JSON.stringify(webData.backupStorage));
         }
-        return;
+
+        if (!isFirstLaunch && isReady && !storedCompleteBackUpData) {
+          backupStorageData(true, false, () => {
+            mmkvStore.set('backup-data-for-android', true);
+            setUpdateComplete(true);
+          });
+        }
       }
-    } catch (e) {
-      console.log('parse json failed', e);
-    }
-    webRunnerHandler.onRunnerMessage(eventData);
-  };
+    }, [isReady, setUpdateComplete]);
 
-  const onLoadStart = () => {
-    // BACKUP-002: Back up local storage for first open app purpose
-    if (webRunnerRef.current) {
-      webRunnerRef.current.injectJavaScript(
-        'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
-      );
-    }
-  };
+    const onMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
+      try {
+        // BACKUP-002: Check is account & keyring exist to back up
+        const webData = JSON.parse(eventData.nativeEvent.data);
+        if (webData?.backupStorage && Object.keys(webData?.backupStorage || {})?.length > 0) {
+          const isAccount = Object.keys(webData.backupStorage).find((item: string) => item.startsWith('account:'));
+          if (isAccount && webData.backupStorage['keyring:subwallet']) {
+            mmkvStore.set('backup-localstorage', JSON.stringify(webData.backupStorage));
+          }
+          return;
+        }
+      } catch (e) {
+        console.log('parse json failed', e);
+      }
+      webRunnerHandler.onRunnerMessage(eventData);
+    };
 
-  const onLoadProgress = () => {
-    // BACKUP-002: Back up local storage for first open app purpose
-    if (webRunnerRef.current) {
-      webRunnerRef.current.injectJavaScript(
-        'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
-      );
-    }
-  };
+    const onLoadStart = () => {
+      // BACKUP-002: Back up local storage for first open app purpose
+      if (webRunnerRef.current) {
+        webRunnerRef.current.injectJavaScript(
+          'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
+        );
+      }
+    };
 
-  return (
-    <View style={{ height: 0 }}>
-      {runnerGlobalState.uri && (
-        <WebView
-          ref={webRunnerRef}
-          source={{ uri: runnerGlobalState.uri }}
-          onMessage={onMessage}
-          originWhitelist={['*']}
-          injectedJavaScript={runnerGlobalState.injectScript}
-          webviewDebuggingEnabled
-          onLoadStart={onLoadStart}
-          onLoadProgress={onLoadProgress}
-          onError={e => console.debug('### WebRunner error', e)}
-          onHttpError={e => {
-            const old = needFallBack;
-            needFallBack = true;
-            if (!old) {
-              BASE_URI = getBaseUri();
+    const onLoadProgress = () => {
+      // BACKUP-002: Back up local storage for first open app purpose
+      if (webRunnerRef.current) {
+        webRunnerRef.current.injectJavaScript(
+          'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
+        );
+      }
+    };
 
-              webRunnerHandler.sleep();
-              webRunnerHandler.active();
-              webRunnerHandler.reload();
-            }
-            console.debug('### WebRunner HttpError', e);
-          }}
-          javaScriptEnabled={true}
-          allowFileAccess={true}
-          allowUniversalAccessFromFileURLs={true}
-          allowFileAccessFromFileURLs={true}
-          domStorageEnabled={true}
-        />
-      )}
-    </View>
-  );
-});
+    return (
+      <View style={{ height: 0 }}>
+        {runnerGlobalState.uri && (
+          <WebView
+            ref={webRunnerRef}
+            source={{ uri: runnerGlobalState.uri }}
+            onMessage={onMessage}
+            originWhitelist={['*']}
+            injectedJavaScript={runnerGlobalState.injectScript}
+            webviewDebuggingEnabled
+            onLoadStart={onLoadStart}
+            onLoadProgress={onLoadProgress}
+            onError={e => console.debug('### WebRunner error', e)}
+            onHttpError={e => {
+              const old = needFallBack;
+              needFallBack = true;
+              if (!old) {
+                BASE_URI = getBaseUri();
+
+                webRunnerHandler.sleep();
+                webRunnerHandler.active();
+                webRunnerHandler.reload();
+              }
+              console.debug('### WebRunner HttpError', e);
+            }}
+            javaScriptEnabled={true}
+            allowFileAccess={true}
+            allowUniversalAccessFromFileURLs={true}
+            allowFileAccessFromFileURLs={true}
+            domStorageEnabled={true}
+          />
+        )}
+      </View>
+    );
+  },
+);

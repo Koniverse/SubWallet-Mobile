@@ -1,6 +1,6 @@
 import { Button, Image, Typography } from 'components/design-system-ui';
 import useFormControl from 'hooks/screen/useFormControl';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
   DeviceEventEmitter,
   ImageBackground,
@@ -39,6 +39,7 @@ import { backupStorageData, mmkvStore } from 'utils/storage';
 import { setBuildNumber } from 'stores/AppVersion';
 import { LockTimeout } from 'stores/types';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
+import { WebRunnerContext } from 'providers/contexts';
 
 interface LoginProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -80,6 +81,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [authMethod, setAuthMethod] = useState<AuthMethod>(isUseBiometric ? 'biometric' : 'master-password');
   const styles = createStyles();
   const { unlockApp, resetPinCode } = useAppLock();
+  const { isUpdateComplete } = useContext(WebRunnerContext);
   const formConfig = {
     password: {
       name: i18n.common.walletPassword,
@@ -268,14 +270,16 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
             </Typography.Text>
             {authMethod === 'master-password' && (
               <>
-                <InlinePassword
-                  ref={formState.refs.password}
-                  defaultValue={formState.data.password}
-                  onChangeText={value => onChangeValue('password')(value)}
-                  errorMessages={formState.errors.password}
-                  onSubmitField={onSubmitField('password')}
-                  containerStyle={{ marginBottom: 0 }}
-                />
+                {!isUpdateComplete && (
+                  <InlinePassword
+                    ref={formState.refs.password}
+                    defaultValue={formState.data.password}
+                    onChangeText={value => onChangeValue('password')(value)}
+                    errorMessages={formState.errors.password}
+                    onSubmitField={onSubmitField('password')}
+                    containerStyle={{ marginBottom: 0 }}
+                  />
+                )}
 
                 <View style={styles.fullWidth}>
                   <TouchableOpacity style={styles.forgotpasswordButton} onPress={onToggleModal}>
