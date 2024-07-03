@@ -251,40 +251,42 @@ export const App = () => {
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
       <>
-        <View style={{ flex: 1 }}>
-          <ToastProvider
-            duration={TOAST_DURATION}
-            renderToast={toast => <CustomToast toast={toast} />}
-            placement="top"
-            normalColor={theme.colors.notification}
-            textStyle={{ textAlign: 'center', ...FontMedium }}
-            successColor={theme.colors.primary}
-            warningColor={theme.colors.notification_warning}
-            offsetTop={STATUS_BAR_HEIGHT + 40}
-            dangerColor={theme.colors.notification_danger}>
-            <ThemeContext.Provider value={theme}>
-              <SigningContextProvider>
-                <ExternalRequestContextProvider>
-                  <QrSignerContextProvider>
-                    <ScannerContextProvider>
-                      <GestureHandlerRootView style={gestureRootStyle}>
-                        <PortalProvider>
-                          <GlobalModalContextProvider>
-                            <AppOnlineContentContextProvider>
-                              <AppModalContextProvider>
-                                {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
-                              </AppModalContextProvider>
-                            </AppOnlineContentContextProvider>
-                          </GlobalModalContextProvider>
-                        </PortalProvider>
-                      </GestureHandlerRootView>
-                    </ScannerContextProvider>
-                  </QrSignerContextProvider>
-                </ExternalRequestContextProvider>
-              </SigningContextProvider>
-            </ThemeContext.Provider>
-          </ToastProvider>
-        </View>
+        {!isUpdateComplete && (
+          <View style={{ flex: 1 }}>
+            <ToastProvider
+              duration={TOAST_DURATION}
+              renderToast={toast => <CustomToast toast={toast} />}
+              placement="top"
+              normalColor={theme.colors.notification}
+              textStyle={{ textAlign: 'center', ...FontMedium }}
+              successColor={theme.colors.primary}
+              warningColor={theme.colors.notification_warning}
+              offsetTop={STATUS_BAR_HEIGHT + 40}
+              dangerColor={theme.colors.notification_danger}>
+              <ThemeContext.Provider value={theme}>
+                <SigningContextProvider>
+                  <ExternalRequestContextProvider>
+                    <QrSignerContextProvider>
+                      <ScannerContextProvider>
+                        <GestureHandlerRootView style={gestureRootStyle}>
+                          <PortalProvider>
+                            <GlobalModalContextProvider>
+                              <AppOnlineContentContextProvider>
+                                <AppModalContextProvider>
+                                  {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
+                                </AppModalContextProvider>
+                              </AppOnlineContentContextProvider>
+                            </GlobalModalContextProvider>
+                          </PortalProvider>
+                        </GestureHandlerRootView>
+                      </ScannerContextProvider>
+                    </QrSignerContextProvider>
+                  </ExternalRequestContextProvider>
+                </SigningContextProvider>
+              </ThemeContext.Provider>
+            </ToastProvider>
+          </View>
+        )}
         {!isAppReady && (
           <View style={layerScreenStyle}>
             <LoadingScreen />
@@ -427,7 +429,7 @@ export const App = () => {
                     }
                   </Typography.Text>
                 </View>
-                <Button onPress={onPressRestart} style={{ margin: 16 }}>
+                <Button onPress={onPressRestart} style={{ marginTop: 16, marginHorizontal: 16, marginBottom: 46 }}>
                   Restart app
                 </Button>
                 <SafeAreaView edges={['bottom']} />
