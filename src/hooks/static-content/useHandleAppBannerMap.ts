@@ -8,7 +8,6 @@ import BigN from 'bignumber.js';
 import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
 import { getOutputValuesFromString } from 'components/Input/InputAmount';
 import { BN_ZERO } from 'utils/chainBalances';
-import useFetchNftCollection from 'hooks/screen/Home/Nft/useFetchNftCollection';
 
 export const useHandleAppBannerMap = (
   yieldPositionList: YieldPositionInfo[],
@@ -19,7 +18,7 @@ export const useHandleAppBannerMap = (
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { balanceMap } = useSelector((state: RootState) => state.balance);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const { nftCollections } = useFetchNftCollection();
+  const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
 
   const hasMoneyArr = useMemo(() => {
     let result: string[] = [];

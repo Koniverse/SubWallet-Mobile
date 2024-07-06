@@ -377,7 +377,6 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeNftItems,
           name: 'subscribeNftItems',
           relatedStores: ['nft'],
-          isStartImmediately: true,
         });
         _DataContext.addHandler({
           ...subscribeNftCollections,
