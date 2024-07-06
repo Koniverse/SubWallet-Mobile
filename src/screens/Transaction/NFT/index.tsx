@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
+import { ExtrinsicType, NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
@@ -37,6 +37,7 @@ import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { useWatch } from 'react-hook-form';
 import { FormItem } from 'components/common/FormItem';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
+import usePreCheckAction from 'hooks/account/usePreCheckAction';
 
 const DEFAULT_ITEM: NftItem = {
   collectionId: 'unknown',
@@ -166,6 +167,9 @@ const SendNFT: React.FC<SendNFTProps> = ({
     ...useWatch<SendNftFormValues>({ control }),
     ...getValues(),
   };
+  const fromValue = useWatch<SendNftFormValues>({ name: 'from', control });
+
+  const onPreCheck = usePreCheckAction(fromValue);
 
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
 
@@ -230,8 +234,6 @@ const SendNFT: React.FC<SendNFTProps> = ({
     [addressPrefix, nftItem, onError, onSuccess],
   );
 
-  const handleSend = useCallback(() => handleSubmit(onSubmitForm)(), [handleSubmit, onSubmitForm]);
-
   useEffect(() => {
     onChangeChainValue(nftItem.chain);
   }, [nftItem.chain, onChangeChainValue]);
@@ -248,7 +250,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
           disabled={loading}
           rightButtonTitle={i18n.transferNft.send}
           disableRightButton={disableSubmit}
-          onPressRightIcon={handleSend}>
+          onPressRightIcon={onPreCheck(handleSubmit(onSubmitForm), ExtrinsicType.SEND_NFT)}>
           <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <>
               <ScrollView
@@ -272,7 +274,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
                       value={value}
                       onChangeText={onChange}
                       placeholder={i18n.placeholder.accountAddress}
-                      onSubmitEditing={handleSend}
+                      onSubmitEditing={onPreCheck(handleSubmit(onSubmitForm), ExtrinsicType.SEND_NFT)}
                       disabled={loading}
                       chain={nftChain}
                       fitNetwork
@@ -287,7 +289,10 @@ const SendNFT: React.FC<SendNFTProps> = ({
               </ScrollView>
 
               <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
-                <Button loading={loading} disabled={disableSubmit} onPress={handleSend}>
+                <Button
+                  loading={loading}
+                  disabled={disableSubmit}
+                  onPress={onPreCheck(handleSubmit(onSubmitForm), ExtrinsicType.SEND_NFT)}>
                   {i18n.transferNft.send}
                 </Button>
               </View>
