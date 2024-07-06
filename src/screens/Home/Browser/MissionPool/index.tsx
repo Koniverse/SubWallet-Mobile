@@ -69,7 +69,7 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
   const categoryTabRoutes = missionCategories.map(item => ({ key: item.slug, title: item.name }));
   const allTabRoutes = [...categoryTabRoutes];
   const [searchString, setSearchString] = useState<string>('');
-  const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('crowdloan');
+  const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('missionPools');
   const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
     useFilterModal();
   const av = new Animated.Value(0);
