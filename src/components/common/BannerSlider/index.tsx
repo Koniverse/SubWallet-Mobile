@@ -49,7 +49,7 @@ const BannerSlider: React.FC<BannerSliderProps> = ({ data, renderItem, onCloseBa
         onScrollBegin={onScrollBegin}
         onScrollEnd={onScrollEnd}
         scrollAnimationDuration={800}
-        autoPlayInterval={3000}
+        autoPlayInterval={6000}
         renderItem={renderItem}
       />
       <View style={[stylesheet.indicator, { width: 10 * data.length }]}>

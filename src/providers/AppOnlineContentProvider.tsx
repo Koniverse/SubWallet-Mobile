@@ -4,17 +4,12 @@ import { deeplinks } from 'utils/browser';
 import { Linking } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { getOutputValuesFromString } from 'screens/Transaction/SendFund/Amount';
-import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
-import BigN from 'bignumber.js';
 import { useGroupYieldPosition } from 'hooks/earning';
 import {
   AppBannerData,
   AppBasicInfoData,
   AppConfirmationData,
   AppPopupData,
-  ConditionBalanceType,
-  ConditionEarningType,
   OnlineContentDataType,
   PopupFrequency,
   PopupHistoryData,
@@ -23,7 +18,6 @@ import { GlobalModalContext } from 'providers/GlobalModalContext';
 import { RootRouteProps } from 'routes/index';
 import { STATIC_DATA_DOMAIN } from 'constants/index';
 import { getStaticContentByDevMode } from 'utils/storage';
-import { YieldPositionInfo } from '@subwallet/extension-base/types';
 import { useHandleAppPopupMap } from 'hooks/static-content/useHandleAppPopupMap';
 import { useHandleAppBannerMap } from 'hooks/static-content/useHandleAppBannerMap';
 import { useHandleAppConfirmationMap } from 'hooks/static-content/useHandleAppConfirmationMap';
@@ -101,37 +95,14 @@ const dataByDevModeStatus = getStaticContentByDevMode();
 
 export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentContextProviderProps) => {
   const globalAppModalContext = useContext(GlobalModalContext);
-  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
-  const { balanceMap } = useSelector((state: RootState) => state.balance);
-  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const yieldPositionList = useGroupYieldPosition();
 
-  const {
-    appPopupData,
-    appBannerData,
-    appConfirmationData,
-    popupHistoryMap,
-    bannerHistoryMap,
-    confirmationHistoryMap,
-  } = useSelector((state: RootState) => state.staticContent);
+  const { popupHistoryMap, bannerHistoryMap, confirmationHistoryMap } = useSelector(
+    (state: RootState) => state.staticContent,
+  );
 
   const getAppContentData = useCallback(async (dataType: OnlineContentDataType) => {
     return await axios.get(`${STATIC_DATA_DOMAIN}/app-${dataType}s/${dataByDevModeStatus}.json`);
-  }, []);
-
-  const checkComparison = useCallback((comparison: string, value: string, comparisonValue: string) => {
-    switch (comparison) {
-      case 'eq':
-        return new BigN(value).eq(comparisonValue);
-      case 'gt':
-        return new BigN(value).gt(comparisonValue);
-      case 'gte':
-        return new BigN(value).gte(comparisonValue);
-      case 'lt':
-        return new BigN(value).lt(comparisonValue);
-      case 'lte':
-        return new BigN(value).lte(comparisonValue);
-    }
   }, []);
 
   //check popup exist time
@@ -210,67 +181,17 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     [],
   );
 
-  const checkBalanceCondition = useCallback(
-    (conditionBalance: ConditionBalanceType[]) => {
-      const conditionBalanceList = conditionBalance.map(item => {
-        return Object.values(balanceMap).some(info => {
-          const balanceData = info[item.chain_asset];
-          const decimals = _getAssetDecimals(assetRegistry[item.chain_asset]);
-          const freeBalance = balanceData?.free;
-          const lockedBalance = balanceData?.locked;
-          const value = new BigN(freeBalance).plus(lockedBalance).toString();
-          const comparisonValue = getOutputValuesFromString(item.value.toString(), decimals);
-          return checkComparison(item.comparison, value, comparisonValue);
-        });
-      });
-
-      return conditionBalanceList.some(item => item);
-    },
-    [assetRegistry, balanceMap, checkComparison],
-  );
-
-  const checkEarningCondition = useCallback(
-    (_yieldPositionList: YieldPositionInfo[], conditionEarning: ConditionEarningType[]) => {
-      const conditionEarningList = conditionEarning.map(condition => {
-        const yieldPosition = _yieldPositionList.find(item => item.slug === condition.pool_slug);
-        if (yieldPosition) {
-          const chainInfo = chainInfoMap[yieldPosition.chain];
-          const decimals = chainInfo?.substrateInfo?.decimals || chainInfo?.evmInfo?.decimals;
-          const activeStake = yieldPosition.totalStake;
-          const comparisonValue = getOutputValuesFromString(condition.value.toString(), decimals || 0);
-          return checkComparison(condition.comparison, activeStake, comparisonValue);
-        } else {
-          return false;
-        }
-      });
-      return conditionEarningList.some(item => item);
-    },
-    [chainInfoMap, checkComparison],
-  );
-
   const { setAppPopupData, updatePopupHistoryMap, appPopupMap } = useHandleAppPopupMap(
-    appPopupData,
-    popupHistoryMap,
     yieldPositionList,
     checkPopupExistTime,
-    checkBalanceCondition,
-    checkEarningCondition,
   );
-  const { setAppBannerData, updateBannerHistoryMap, appBannerMap } = useHandleAppBannerMap(
-    appBannerData,
-    bannerHistoryMap,
+
+  const { appBannerMap, setAppBannerData, updateBannerHistoryMap } = useHandleAppBannerMap(
     yieldPositionList,
     checkPopupExistTime,
-    checkBalanceCondition,
-    checkEarningCondition,
   );
-  const { setAppConfirmationData, updateConfirmationHistoryMap, appConfirmationMap } = useHandleAppConfirmationMap(
-    appConfirmationData,
-    confirmationHistoryMap,
-    yieldPositionList,
-    checkBalanceCondition,
-    checkEarningCondition,
-  );
+  const { appConfirmationMap, setAppConfirmationData, updateConfirmationHistoryMap } =
+    useHandleAppConfirmationMap(yieldPositionList);
 
   useEffect(() => {
     const popupPromise = getAppContentData('popup');

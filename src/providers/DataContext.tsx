@@ -373,11 +373,16 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           isStartImmediately: true,
         });
         _DataContext.addHandler({ ...subscribeCrowdloan, name: 'subscribeCrowdloan', relatedStores: ['crowdloan'] });
-        _DataContext.addHandler({ ...subscribeNftItems, name: 'subscribeNftItems', relatedStores: ['nft'] });
+        _DataContext.addHandler({
+          ...subscribeNftItems,
+          name: 'subscribeNftItems',
+          relatedStores: ['nft'],
+        });
         _DataContext.addHandler({
           ...subscribeNftCollections,
           name: 'subscribeNftCollections',
           relatedStores: ['nft'],
+          isStartImmediately: true,
         });
 
         /* Staking */
