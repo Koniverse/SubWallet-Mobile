@@ -20,7 +20,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  AnimatedStyleProp,
   AnimatedStyle,
 } from 'react-native-reanimated';
 import { TokenBalanceItemType } from 'types/balance';
@@ -32,6 +31,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { tokenItem, tokenItemMarginBottom } from 'constants/itemHeight';
 import { reloadCron } from 'messaging/index';
+import { BannerGenerator } from 'components/common/BannerGenerator';
+import { AppBannerData } from 'types/staticContent';
 
 interface Props {
   layoutHeader: React.ReactElement;
@@ -43,6 +44,9 @@ interface Props {
   renderItem: ListRenderItem<TokenBalanceItemType>;
   refresh?: () => void;
   loading?: boolean;
+  banners?: AppBannerData[];
+  onPressBanner?: (id: string) => (url?: string | undefined) => void;
+  dismissBanner?: (ids: string[]) => void;
 }
 
 const flatListContentContainerStyle: StyleProp<any> = {
@@ -69,6 +73,9 @@ export const TokensLayout = ({
   loading,
   renderItem,
   style,
+  banners,
+  dismissBanner,
+  onPressBanner,
 }: Props) => {
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -85,7 +92,7 @@ export const TokensLayout = ({
     return tokenBalanceItems.slice(0, pageNumber * PAGE_SIZE);
   }, [tokenBalanceItems, pageNumber]);
 
-  const headerStyles = useAnimatedStyle((): AnimatedStyleProp<ViewStyle> => {
+  const headerStyles = useAnimatedStyle(() => {
     const translateY = interpolate(yOffset.value, [0, 200], [0, -10], Extrapolate.CLAMP);
     const opacity = interpolate(yOffset.value, [0, 200], [1, 0], Extrapolate.CLAMP);
     return {
@@ -94,7 +101,7 @@ export const TokensLayout = ({
       transform: [{ translateY }],
     };
   }, []);
-  const stickyHeaderStyles = useAnimatedStyle((): AnimatedStyleProp<ViewStyle> => {
+  const stickyHeaderStyles = useAnimatedStyle(() => {
     const opacity = interpolate(yOffset.value, [210, 218], [1, 0], Extrapolate.CLAMP);
     const translateY = interpolate(yOffset.value, [210, 218], [0, -40], Extrapolate.CLAMP);
     return {
@@ -150,8 +157,16 @@ export const TokensLayout = ({
   };
 
   const customRenderItem = (data: ListRenderItemInfo<TokenBalanceItemType>) => {
-    if (listActions && data.item?.slug === null) {
-      return <Animated.View style={stickyHeaderStyles}>{listActions}</Animated.View>;
+    if (data.item?.slug === null) {
+      return (
+        <View style={{ marginBottom: theme.marginSM }}>
+          {!!listActions && <Animated.View style={stickyHeaderStyles}>{listActions}</Animated.View>}
+
+          {!!(banners && banners.length) && (
+            <BannerGenerator banners={banners} dismissBanner={dismissBanner} onPressBanner={onPressBanner} />
+          )}
+        </View>
+      );
     }
 
     return renderItem(data);
@@ -194,7 +209,8 @@ export const TokensLayout = ({
     }
     setPageNumber(prev => prev + 1);
   };
-  const handledTokenListData = listActions ? [{ slug: null }, ...tokenListData] : tokenListData;
+  const handledTokenListData =
+    listActions || !!(banners && banners.length) ? [{ slug: null }, ...tokenListData] : tokenListData;
 
   // TODO: Move these codes to style folder in next refactor
   const flex1 = { flex: 1 };

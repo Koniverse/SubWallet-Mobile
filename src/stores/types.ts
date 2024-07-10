@@ -9,6 +9,7 @@ import {
   ConfirmationType,
   CrowdloanItem,
   KeyringState,
+  MantaPayConfig,
   NftCollection,
   NftItem,
   NominatorMetadata,
@@ -278,4 +279,12 @@ export interface EarningStore extends BaseReduxStore {
 
 export interface SwapStore extends BaseReduxStore {
   swapPairs: SwapPair[];
+}
+
+export interface MantaPayStore {
+  configs: MantaPayConfig[];
+  isSyncing: boolean;
+  progress: number;
+  needManualSync?: boolean;
+  reduxStatus: ReduxStatus;
 }

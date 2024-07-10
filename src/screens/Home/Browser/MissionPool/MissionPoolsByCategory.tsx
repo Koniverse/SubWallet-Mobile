@@ -143,7 +143,7 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
 
   const currentConfirmation = useMemo(() => {
     if (selectedMissionPool) {
-      return getCurrentConfirmation(selectedMissionPool.id.toString());
+      return getCurrentConfirmation([selectedMissionPool.id.toString()]);
     } else {
       return undefined;
     }

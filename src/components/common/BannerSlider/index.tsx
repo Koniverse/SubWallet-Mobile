@@ -42,14 +42,14 @@ const BannerSlider: React.FC<BannerSliderProps> = ({ data, renderItem, onCloseBa
       <Carousel
         ref={carouselRef}
         loop
-        width={screenWidth}
+        width={screenWidth - 32}
         height={height}
         autoPlay
         data={data}
         onScrollBegin={onScrollBegin}
         onScrollEnd={onScrollEnd}
         scrollAnimationDuration={800}
-        autoPlayInterval={6000}
+        autoPlayInterval={7000}
         renderItem={renderItem}
       />
       <View style={[stylesheet.indicator, { width: 10 * data.length }]}>
@@ -58,10 +58,9 @@ const BannerSlider: React.FC<BannerSliderProps> = ({ data, renderItem, onCloseBa
         ))}
       </View>
       <Button
-        icon={<Icon phosphorIcon={X} weight="bold" size="sm" />}
+        icon={<Icon phosphorIcon={X} weight="bold" size="xs" />}
         onPress={onCloseBanner}
-        shape="round"
-        style={{ position: 'absolute', right: -3, top: 5 }}
+        style={{ position: 'absolute', right: -4, top: 4 }}
         size="xs"
         type="ghost"
       />

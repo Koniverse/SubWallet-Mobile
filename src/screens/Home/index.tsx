@@ -111,7 +111,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const activeMissionPoolNumb = useMemo(() => {
     return activeMissionPool.map(item => item.id).filter(i => !missionPoolIds.includes(i)).length;
   }, [activeMissionPool, missionPoolIds]);
-  console.log('activeMissionPoolNumb', activeMissionPoolNumb);
+
   return (
     <Tab.Navigator
       initialRouteName={'Tokens'}

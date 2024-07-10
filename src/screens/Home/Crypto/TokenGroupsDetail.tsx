@@ -23,7 +23,6 @@ import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
-import { BannerGenerator } from 'components/common/BannerGenerator';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -205,11 +204,6 @@ export const TokenGroupsDetail = ({
     tokenGroupMap,
   ]);
 
-  const listFooter = useMemo(() => {
-    return <BannerGenerator banners={banners} dismissBanner={dismissBanner} onPressBanner={onPressBanner} />;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [banners]);
-
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (
       <View key={item.slug} style={[itemWrapperStyle, { backgroundColor: theme.colorBgSecondary }]}>
@@ -228,8 +222,10 @@ export const TokenGroupsDetail = ({
           loading={isTokenGroupComputing || isAccountBalanceComputing}
           items={tokenBalanceItems}
           layoutHeader={listHeaderNode}
-          layoutFooter={banners.length ? listFooter : undefined}
           renderItem={renderItem}
+          banners={banners}
+          dismissBanner={dismissBanner}
+          onPressBanner={onPressBanner}
         />
 
         <TokenDetailModal

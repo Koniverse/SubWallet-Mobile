@@ -131,7 +131,7 @@ export const useHandleAppBannerMap = (
               const freeBalance = balanceData?.free;
               const lockedBalance = balanceData?.locked;
               const value = new BigN(freeBalance).plus(lockedBalance).toString();
-              const comparisonValue = getOutputValuesFromString(_item.value.toString(), decimals);
+              const comparisonValue = getOutputValuesFromString(_item.value?.toString(), decimals);
 
               return checkComparison(_item.comparison, value, comparisonValue);
             });

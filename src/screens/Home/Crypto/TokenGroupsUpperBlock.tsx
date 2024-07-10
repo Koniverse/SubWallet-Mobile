@@ -27,11 +27,11 @@ interface Props {
 }
 
 const actionButtonWrapper: StyleProp<any> = {
-  paddingTop: 24,
+  paddingTop: 16,
   flexDirection: 'row',
   width: '100%',
   justifyContent: 'center',
-  paddingBottom: 25,
+  paddingBottom: 24,
 };
 
 const containerStyle: StyleProp<any> = {
@@ -64,10 +64,10 @@ export const TokenGroupsUpperBlock = ({
 
   return (
     <View style={containerStyle} pointerEvents="box-none">
-      <TouchableOpacity style={{ alignItems: 'center' }} onPress={_toggleBalances}>
+      <TouchableOpacity style={{ alignItems: 'center', paddingTop: theme.paddingSM - 2 }} onPress={_toggleBalances}>
         <BalancesVisibility value={totalValue} subFloatNumber symbol={currencyData.symbol} />
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 3, height: 40 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', height: 40 }}>
           <View style={{ marginRight: 8 }}>
             <Icon
               size="md"
@@ -135,7 +135,7 @@ export const TokenGroupsUpperBlock = ({
         </View>
       </TouchableOpacity>
 
-      <View style={[actionButtonWrapper]} pointerEvents="box-none">
+      <View style={actionButtonWrapper} pointerEvents="box-none">
         <ActionButton
           label={i18n.cryptoScreen.address}
           icon={ButtonIcon.Receive}

@@ -45,7 +45,7 @@ import {
   validateYieldProcess,
 } from 'messaging/index';
 import { PlusCircle } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Alert, Keyboard, ScrollView, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -78,6 +78,8 @@ import {
   _handleDisplayForEarningError,
   _handleDisplayInsufficientEarningError,
 } from '@subwallet/extension-base/core/logic-validation/earning';
+import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
+import { GlobalModalContext } from 'providers/GlobalModalContext';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -214,7 +216,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [isShowAlert, setIsShowAlert] = useState<boolean>(false);
   const [useParamValidator, setUseParamValidator] = useState<boolean>(redirectFromPreviewRef.current);
   const [checkValidAccountLoading, setCheckValidAccountLoading] = useState<boolean>(redirectFromPreviewRef.current);
-
+  const globalAppModalContext = useContext(GlobalModalContext);
   const isDisabledButton = useMemo(
     () =>
       checkMintLoading ||
@@ -325,6 +327,17 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       }
     }
   }, [poolTarget, poolTargetsMap, poolType, slug]);
+
+  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('earning');
+
+  const currentConfirmations = useMemo(() => {
+    if (slug) {
+      console.log('slug', slug);
+      return getCurrentConfirmation([slug]);
+    } else {
+      return undefined;
+    }
+  }, [slug, getCurrentConfirmation]);
 
   const handleOpenDetailModal = useCallback((): void => {
     Keyboard.dismiss();
@@ -689,6 +702,23 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     processState.steps,
     slug,
   ]);
+
+  const onPressSubmit = useCallback(() => {
+    if (currentConfirmations && currentConfirmations.length) {
+      globalAppModalContext.setGlobalModal({
+        visible: true,
+        title: currentConfirmations[0].name,
+        message: currentConfirmations[0].content,
+        type: 'confirmation',
+        externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
+          onSubmit();
+          globalAppModalContext.hideGlobalModal();
+        }),
+      });
+    } else {
+      onSubmit();
+    }
+  }, [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons]);
 
   const onBack = useCallback(() => {
     if (firstStep) {
@@ -1198,7 +1228,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                         iconColor={isDisabledButton ? theme.colorTextLight5 : theme.colorWhite}
                       />
                     }
-                    onPress={preCheckAction(onSubmit, ExtrinsicType.JOIN_YIELD_POOL)}>
+                    onPress={preCheckAction(onPressSubmit, ExtrinsicType.JOIN_YIELD_POOL)}>
                     {i18n.buttonTitles.stake}
                   </Button>
                 </View>

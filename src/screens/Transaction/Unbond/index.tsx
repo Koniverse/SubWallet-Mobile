@@ -4,7 +4,7 @@ import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import InputCheckBox from 'components/Input/InputCheckBox';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 import { useYieldPositionDetail } from 'hooks/earning';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useSelector } from 'react-redux';
 import { accountFilterFunc } from 'screens/Transaction/helper/earning';
@@ -42,6 +42,8 @@ import { mmkvStore } from 'utils/storage';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { UNSTAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
+import { GlobalModalContext } from 'providers/GlobalModalContext';
+import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -104,14 +106,22 @@ export const Unbond = ({
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo?.type;
   const poolChain = poolInfo?.chain;
-
+  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('earning');
   const [isTransactionDone, setTransactionDone] = useState(false);
   const { list: allPositions } = useYieldPositionDetail(slug);
   const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
   const accountInfo = useGetAccountByAddress(fromValue);
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
   const onPreCheck = usePreCheckAction(fromValue);
+  const globalAppModalContext = useContext(GlobalModalContext);
 
+  const currentConfirmations = useMemo(() => {
+    if (slug) {
+      return getCurrentConfirmation([slug]);
+    } else {
+      return undefined;
+    }
+  }, [getCurrentConfirmation, slug]);
   const unstakeDataRaw = useMemo(() => {
     try {
       const storedData = JSON.parse(mmkvStore.getString('unstakeStaticData') || '{}')[0] as StaticDataProps;
@@ -265,6 +275,23 @@ export const Unbond = ({
         });
     }, 300);
   }, [positionInfo, getValues, slug, poolInfo, mustChooseValidator, currentValidator, onSuccess, onError]);
+
+  const onPressSubmit = useCallback(() => {
+    if (currentConfirmations && currentConfirmations.length) {
+      globalAppModalContext.setGlobalModal({
+        visible: true,
+        title: currentConfirmations[0].name,
+        message: currentConfirmations[0].content,
+        type: 'confirmation',
+        externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
+          onSubmit();
+          globalAppModalContext.hideGlobalModal();
+        }),
+      });
+    } else {
+      onSubmit();
+    }
+  }, [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons]);
 
   const nominators = useMemo(() => {
     if (fromValue && positionInfo?.nominations && positionInfo.nominations.length) {
@@ -464,7 +491,7 @@ export const Unbond = ({
                     iconColor={isDisableSubmitBtn ? theme.colorTextLight5 : theme.colorWhite}
                   />
                 }
-                onPress={onPreCheck(onSubmit, exType)}>
+                onPress={onPreCheck(onPressSubmit, exType)}>
                 {poolType === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
               </Button>
             </View>

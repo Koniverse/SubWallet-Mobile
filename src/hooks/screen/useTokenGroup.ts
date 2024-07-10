@@ -1,11 +1,14 @@
 import { _getMultiChainAsset, _isNativeTokenBySlug } from '@subwallet/extension-base/services/chain-service/utils';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isTokenAvailable } from 'utils/chainAndAsset';
 import { TokenGroupHookType } from 'types/hook';
-import { AssetRegistryStore, ChainStore } from 'stores/types';
+import { AssetRegistryStore } from 'stores/types';
 import useChainAssets from 'hooks/chain/useChainAssets';
+import { _ChainAsset } from '@subwallet/chain-list/types';
+import { _MANTA_ZK_CHAIN_GROUP, _ZK_ASSET_PREFIX } from '@subwallet/extension-base/services/chain-service/constants';
+import { useIsMantaPayEnabled } from 'hooks/account/useIsMantaPayEnabled';
 
 function sortTokenSlugs(tokenSlugs: string[]) {
   tokenSlugs.sort((a, b) => {
@@ -49,8 +52,6 @@ function sortTokenGroups(tokenGroups: string[]) {
 
 function getTokenGroup(
   assetRegistryMap: AssetRegistryStore['assetRegistry'],
-  assetSettingMap: AssetRegistryStore['assetSettingMap'],
-  chainStateMap: ChainStore['chainStateMap'],
   filteredChains?: string[],
 ): TokenGroupHookType {
   const result: TokenGroupHookType = {
@@ -60,10 +61,6 @@ function getTokenGroup(
   };
 
   Object.values(assetRegistryMap).forEach(chainAsset => {
-    if (!isTokenAvailable(chainAsset, assetSettingMap, chainStateMap, true)) {
-      return;
-    }
-
     const chain = chainAsset.originChain;
 
     if (filteredChains && !filteredChains.includes(chain)) {
@@ -102,16 +99,46 @@ export default function useTokenGroup(filteredChains?: string[], lazy?: boolean)
   const assetRegistryMap = useChainAssets().chainAssetRegistry;
   const assetSettingMap = useSelector((state: RootState) => state.assetRegistry.assetSettingMap);
   const chainStateMap = useSelector((state: RootState) => state.chainStore.chainStateMap);
+  const isMantaEnabled = useIsMantaPayEnabled();
+  const excludedAssets = useMemo(() => {
+    const _excludedAssets: string[] = [];
+
+    // exclude zkAssets if not enabled
+    if (!isMantaEnabled) {
+      Object.values(assetRegistryMap).forEach(chainAsset => {
+        if (_MANTA_ZK_CHAIN_GROUP.includes(chainAsset.originChain) && chainAsset.symbol.startsWith(_ZK_ASSET_PREFIX)) {
+          excludedAssets.push(chainAsset.slug);
+        }
+      });
+    }
+
+    return _excludedAssets;
+  }, [assetRegistryMap, isMantaEnabled]);
+
+  const filteredAssetRegistryMap = useMemo(() => {
+    const _filteredAssetRegistryMap: Record<string, _ChainAsset> = {};
+
+    Object.values(assetRegistryMap).forEach(chainAsset => {
+      if (
+        isTokenAvailable(chainAsset, assetSettingMap, chainStateMap, true) &&
+        !excludedAssets.includes(chainAsset.slug)
+      ) {
+        _filteredAssetRegistryMap[chainAsset.slug] = chainAsset;
+      }
+    });
+
+    return _filteredAssetRegistryMap;
+  }, [assetRegistryMap, assetSettingMap, chainStateMap, excludedAssets]);
   const [result, setResult] = useState<TokenGroupHookType>(
-    lazy ? DEFAULT_RESULT : getTokenGroup(assetRegistryMap, assetSettingMap, chainStateMap, filteredChains),
+    lazy ? DEFAULT_RESULT : getTokenGroup(filteredAssetRegistryMap, filteredChains),
   );
 
   useEffect(() => {
     const timeoutID = setTimeout(() => {
-      setResult(getTokenGroup(assetRegistryMap, assetSettingMap, chainStateMap, filteredChains));
+      setResult(getTokenGroup(filteredAssetRegistryMap, filteredChains));
     });
     return () => clearTimeout(timeoutID);
-  }, [assetRegistryMap, assetSettingMap, chainStateMap, filteredChains]);
+  }, [filteredAssetRegistryMap, filteredChains]);
 
   return result;
 }

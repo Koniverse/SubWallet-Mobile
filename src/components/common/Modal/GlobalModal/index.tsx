@@ -32,7 +32,7 @@ const GlobalModal: React.FC<Props> = ({
   const [instructionModalVisible, setInstructionModalVisible] = useState(false);
   const instructionDataList: StaticDataProps[] = useMemo(() => {
     try {
-      const result = JSON.parse(mmkvStore.getString('app-instruction-data') || '[]');
+      const result = JSON.parse(mmkvStore.getString('earningDetailData') || '[]');
       return result;
     } catch (e) {
       console.error(e);

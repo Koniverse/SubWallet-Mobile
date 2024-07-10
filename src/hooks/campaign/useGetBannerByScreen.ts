@@ -36,7 +36,7 @@ const useGetBannerByScreen = (screen: string, compareValue?: string) => {
         const bannerHistory = bannerHistoryMap[`${banner.position}-${banner.id}`];
         const isBannerVisible = checkBannerVisible(bannerHistory?.showTimes) && checkPopupExistTime(banner.info);
         if (compareValue) {
-          return checkPositionParam(screen, banner.position_params, compareValue) && isBannerVisible;
+          return checkPositionParam(screen, banner.position_params, [compareValue]) && isBannerVisible;
         } else {
           return isBannerVisible;
         }

@@ -44,6 +44,8 @@ import {
   getChainLogoMaps,
   getAssetsLogoMaps,
   subscribeSwapPairs,
+  subscribeMantaPayConfig,
+  subscribeMantaPaySyncingState,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -219,6 +221,18 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeAddressBook,
           name: 'subscribeAddressBook',
           relatedStores: ['accountState'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeMantaPayConfig,
+          name: 'subscribeMantaPayConfig',
+          relatedStores: ['mantaPay'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeMantaPaySyncingState,
+          name: 'subscribeMantaPaySyncingState',
+          relatedStores: ['mantaPay'],
           isStartImmediately: true,
         });
 

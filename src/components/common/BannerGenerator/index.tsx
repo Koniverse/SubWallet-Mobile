@@ -2,39 +2,38 @@ import { StyleProp, TouchableOpacity } from 'react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { Button, Icon } from 'components/design-system-ui';
 import { X } from 'phosphor-react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import FastImage from 'react-native-fast-image';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AppBannerData } from 'types/staticContent';
-import { GlobalInstructionModal } from 'components/common/Modal/GlobalModal/GlobalInstructionModal';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { mmkvStore } from 'utils/storage';
 import BannerSlider, { BannerSliderItem } from 'components/common/BannerSlider';
+import { GlobalInstructionModalContext } from 'providers/GlobalInstructionModalContext';
 
 interface Props {
   banners: AppBannerData[];
-  dismissBanner: (ids: string[]) => void;
-  onPressBanner: (id: string) => (url?: string) => void;
+  dismissBanner?: (ids: string[]) => void;
+  onPressBanner?: (id: string) => (url?: string) => void;
+  extraStyle?: StyleProp<any>;
 }
 
 interface BannerProps {
   data: AppBannerData;
   dismissBanner?: (ids: string[]) => void;
-  onPressBanner: (id: string) => (url?: string) => void;
+  onPressBanner?: (id: string) => (url?: string) => void;
   instructionDataList: StaticDataProps[];
   extraStyle?: StyleProp<any>;
 }
 
 const Banner = ({ data, dismissBanner, onPressBanner, instructionDataList, extraStyle }: BannerProps) => {
   const theme = useSubWalletTheme().swThemes;
+  const { setGlobalModal, hideGlobalModal } = useContext(GlobalInstructionModalContext);
   const bannerId = useMemo(() => `${data.position}-${data.id}`, [data.id, data.position]);
-  const [instructionModalVisible, setInstructionModalVisible] = useState(false);
 
   const currentInstructionData = useMemo(() => {
     if (data.instruction) {
-      return instructionDataList.find(
-        item => item.group === data.instruction?.group && item.slug === data.instruction?.slug,
-      );
+      return instructionDataList.find(item => item.slug === data.instruction?.slug);
     } else {
       return undefined;
     }
@@ -44,57 +43,65 @@ const Banner = ({ data, dismissBanner, onPressBanner, instructionDataList, extra
     const url = data.action?.url;
     const instruction = data.instruction;
     if (instruction) {
-      setInstructionModalVisible(true);
+      setGlobalModal({
+        visible: true,
+        title: currentInstructionData?.title || 'Instruction',
+        media: currentInstructionData?.media || '',
+        instruction: instruction,
+        data: currentInstructionData?.instructions,
+        onPressCancelBtn: () => hideGlobalModal(),
+        onPressConfirmBtn: () => {
+          hideGlobalModal();
+          onPressBanner && onPressBanner(bannerId)(data.action.url);
+        },
+      });
       return;
     }
 
     if (url) {
-      onPressBanner(bannerId)(url);
+      onPressBanner && onPressBanner(bannerId)(url);
     }
-  }, [bannerId, data.action?.url, data.instruction, onPressBanner]);
+  }, [
+    bannerId,
+    currentInstructionData?.instructions,
+    currentInstructionData?.media,
+    currentInstructionData?.title,
+    data.action.url,
+    data.instruction,
+    hideGlobalModal,
+    onPressBanner,
+    setGlobalModal,
+  ]);
 
   return (
     <>
-      <TouchableOpacity onPress={_onPressBanner} activeOpacity={BUTTON_ACTIVE_OPACITY}>
+      <TouchableOpacity
+        style={{ marginTop: theme.marginXS }}
+        onPress={_onPressBanner}
+        activeOpacity={BUTTON_ACTIVE_OPACITY}>
         <FastImage
-          style={[{ height: 88, borderRadius: theme.borderRadiusLG, marginVertical: theme.marginXS }, extraStyle]}
+          style={[{ height: 68, borderRadius: theme.borderRadiusLG }, extraStyle]}
           resizeMode="cover"
           source={{ uri: data.media }}
         />
         {!!dismissBanner && (
           <Button
-            icon={<Icon phosphorIcon={X} weight="bold" size="sm" />}
+            icon={<Icon phosphorIcon={X} weight="bold" size="xs" />}
             onPress={() => dismissBanner([bannerId])}
-            shape="round"
-            style={{ position: 'absolute', right: -3, top: 5 }}
+            style={{ position: 'absolute', right: 0, top: 0 }}
             size="xs"
             type="ghost"
           />
         )}
       </TouchableOpacity>
-
-      {data.instruction && currentInstructionData && (
-        <GlobalInstructionModal
-          title={currentInstructionData.title || 'Instruction'}
-          media={currentInstructionData.media || ''}
-          visible={instructionModalVisible}
-          instruction={data.instruction}
-          data={currentInstructionData.instructions}
-          onPressCancelBtn={() => setInstructionModalVisible(false)}
-          onPressConfirmBtn={() => {
-            setInstructionModalVisible(false);
-            onPressBanner(bannerId)(data.action.url);
-          }}
-        />
-      )}
     </>
   );
 };
 
-export const BannerGenerator = ({ banners, dismissBanner, onPressBanner }: Props) => {
+export const BannerGenerator = ({ banners, dismissBanner, onPressBanner, extraStyle }: Props) => {
   const instructionDataList: StaticDataProps[] = useMemo(() => {
     try {
-      const result = JSON.parse(mmkvStore.getString('app-instruction-data') || '[]');
+      const result = JSON.parse(mmkvStore.getString('appInstructionData') || '[]');
       return result;
     } catch (e) {
       console.error(e);
@@ -108,20 +115,20 @@ export const BannerGenerator = ({ banners, dismissBanner, onPressBanner }: Props
       const bannerItem = banners[index];
       return (
         <Banner
-          extraStyle={{ width: '92%' }}
           key={bannerItem.id}
           onPressBanner={onPressBanner}
           data={bannerItem}
           instructionDataList={instructionDataList}
+          extraStyle={extraStyle}
         />
       );
     },
-    [banners, instructionDataList, onPressBanner],
+    [banners, extraStyle, instructionDataList, onPressBanner],
   );
 
   const onCloseBanner = useCallback(() => {
     const bannerIdList = banners.map(banner => `${banner.position}-${banner.id}`);
-    dismissBanner(bannerIdList);
+    dismissBanner && dismissBanner(bannerIdList);
   }, [banners, dismissBanner]);
 
   if (!banners || banners.length === 0) {
@@ -136,9 +143,10 @@ export const BannerGenerator = ({ banners, dismissBanner, onPressBanner }: Props
           onPressBanner={onPressBanner}
           dismissBanner={dismissBanner}
           instructionDataList={instructionDataList}
+          extraStyle={extraStyle}
         />
       ) : (
-        <BannerSlider data={bannerUrlList} renderItem={renderItem} onCloseBanner={onCloseBanner} height={110} />
+        <BannerSlider data={bannerUrlList} renderItem={renderItem} onCloseBanner={onCloseBanner} height={90} />
       )}
     </>
   );
