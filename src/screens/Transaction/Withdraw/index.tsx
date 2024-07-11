@@ -107,7 +107,7 @@ export const Withdraw = ({
   const inputAsset = useGetChainAssetInfo(poolInfo?.metadata.inputAsset);
   const decimals = inputAsset?.decimals || 0;
   const symbol = inputAsset?.symbol || '';
-  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('earning');
+  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('withdraw');
   const globalAppModalContext = useContext(GlobalModalContext);
 
   const currentConfirmations = useMemo(() => {

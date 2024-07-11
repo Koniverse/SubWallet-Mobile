@@ -328,11 +328,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     }
   }, [poolTarget, poolTargetsMap, poolType, slug]);
 
-  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('earning');
+  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('stake');
 
   const currentConfirmations = useMemo(() => {
     if (slug) {
-      console.log('slug', slug);
       return getCurrentConfirmation([slug]);
     } else {
       return undefined;
