@@ -203,7 +203,9 @@ export const Swap = ({
   const optimalQuoteRef = useRef<SwapQuote | undefined>(undefined);
   const [requestUserInteractToContinue, setRequestUserInteractToContinue] = useState<boolean>(false);
   const continueRefreshQuoteRef = useRef<boolean>(false);
+  const scrollRef = useRef<ScrollView>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [isScrollEnd, setIsScrollEnd] = useState<boolean>(false);
   const accountSelectorList = useMemo(() => {
     return accounts.filter(({ address }) => !isAccountAll(address));
   }, [accounts]);
@@ -384,29 +386,19 @@ export const Swap = ({
     return totalBalance;
   }, [assetRegistryMap, currentQuote?.feeInfo.feeComponent, priceMap]);
 
-  const destinationSwapValue = useMemo(() => {
-    if (currentQuote) {
-      const decimals = _getAssetDecimals(fromAssetInfo);
-
-      return new BigN(fromAmountValue || 0).div(BN_TEN.pow(decimals)).multipliedBy(currentQuote.rate);
-    }
-
-    return BN_ZERO;
-  }, [currentQuote, fromAmountValue, fromAssetInfo]);
-
   const minimumReceived = useMemo(() => {
-    const calcMinimumReceived = (value: BigN) => {
+    const calcMinimumReceived = (value: string) => {
       const adjustedValue = supportSlippageSelection
         ? value
-        : value.multipliedBy(new BigN(1).minus(currentSlippage.slippage));
+        : new BigN(value).multipliedBy(new BigN(1).minus(currentSlippage.slippage)).integerValue(BigN.ROUND_DOWN);
 
       return adjustedValue.toString().includes('e')
         ? formatNumberString(adjustedValue.toString())
         : adjustedValue.toString();
     };
 
-    return calcMinimumReceived(destinationSwapValue);
-  }, [supportSlippageSelection, destinationSwapValue, currentSlippage.slippage]);
+    return calcMinimumReceived(currentQuote?.toAmount || '0');
+  }, [supportSlippageSelection, currentQuote?.toAmount, currentSlippage.slippage]);
 
   const showRecipientField = useMemo(() => {
     if (fromValue && toAssetInfo?.originChain && chainInfoMap[toAssetInfo?.originChain]) {
@@ -459,6 +451,16 @@ export const Swap = ({
   const isSwapXCM = useMemo(() => {
     return processState.steps.some(item => item.type === CommonStepType.XCM);
   }, [processState.steps]);
+
+  const isSwapAssetHub = useMemo(() => {
+    const providerId = currentQuote?.provider?.id;
+
+    return providerId
+      ? [SwapProviderId.KUSAMA_ASSET_HUB, SwapProviderId.POLKADOT_ASSET_HUB, SwapProviderId.ROCOCO_ASSET_HUB].includes(
+          providerId,
+        )
+      : false;
+  }, [currentQuote?.provider?.id]);
 
   const currentPair = useMemo(() => {
     if (fromTokenSlugValue && toTokenSlugValue) {
@@ -847,6 +849,19 @@ export const Swap = ({
   );
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('!!currentQuote', !!currentQuote && !isScrollEnd);
+      if (!!currentQuote && !isScrollEnd) {
+        setIsScrollEnd(true);
+        console.log('scrollRef');
+        scrollRef.current?.scrollToEnd();
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [currentQuote, isScrollEnd]);
+
+  useEffect(() => {
     if (!confirmTerm) {
       setTermModalVisible(true);
     }
@@ -1113,13 +1128,23 @@ export const Swap = ({
     };
   }, [chainValue, destChainValue, dirtyFields.recipient, fromValue, trigger]);
 
-  const renderAlertBox = () => {
+  const renderAlertBox = useCallback(() => {
     const multichainAsset = fromAssetInfo?.multiChainAsset;
     const fromAssetName = multichainAsset && multiChainAssetMap[multichainAsset]?.name;
     const toAssetName = chainInfoMap[toAssetInfo?.originChain]?.name;
 
     return (
-      <>
+      <View style={{ gap: theme.sizeXS }}>
+        {isSwapAssetHub && !isFormInvalid && (
+          <AlertBox
+            description={
+              'Swapping on Asset Hub is in beta with a limited number of pairs and low liquidity. Continue at your own risk'
+            }
+            title={'Pay attention!'}
+            type={'warning'}
+          />
+        )}
+
         {isSwapXCM && fromAssetName && toAssetName && (
           <AlertBox
             description={`The amount you entered is higher than your available balance on ${toAssetName} network. You need to first transfer cross-chain from ${fromAssetName} network to ${toAssetName} network to continue swapping`}
@@ -1127,9 +1152,18 @@ export const Swap = ({
             type={'warning'}
           />
         )}
-      </>
+      </View>
     );
-  };
+  }, [
+    chainInfoMap,
+    fromAssetInfo?.multiChainAsset,
+    isFormInvalid,
+    isSwapAssetHub,
+    isSwapXCM,
+    multiChainAssetMap,
+    theme.sizeXS,
+    toAssetInfo?.originChain,
+  ]);
 
   return (
     <>
@@ -1149,6 +1183,7 @@ export const Swap = ({
             <ScrollView
               style={{ flex: 1, paddingHorizontal: 16, marginTop: theme.paddingXS }}
               showsVerticalScrollIndicator={false}
+              ref={scrollRef}
               keyboardShouldPersistTaps={'handled'}>
               {isAllAccount && (
                 <AccountSelector
@@ -1202,11 +1237,12 @@ export const Swap = ({
               </View>
 
               <SwapToField
+                decimals={_getAssetDecimals(toAssetInfo)}
                 toAsset={toAssetInfo}
                 assetValue={toTokenSlugValue}
                 chainValue={toChainValue}
                 tokenSelectorItems={toTokenItems}
-                swapValue={destinationSwapValue}
+                swapValue={currentQuote?.toAmount || 0}
                 chainInfo={chainInfoMap[toChainValue]}
                 onSelectToken={onSelectToToken}
                 loading={handleRequestLoading && showQuoteArea}

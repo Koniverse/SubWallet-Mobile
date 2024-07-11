@@ -1,13 +1,11 @@
 import { SwapTxData } from '@subwallet/extension-base/types/swap';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { BN_TEN } from 'utils/chainBalances';
 import {
   _getAssetDecimals,
   _getAssetOriginChain,
   _getAssetSymbol,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import BigN from 'bignumber.js';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
@@ -34,11 +32,6 @@ export const SwapTransactionBlock = ({ data }: Props) => {
   const fromAssetInfo = useMemo(() => {
     return assetRegistryMap[swapInfo.quote.pair.from] || undefined;
   }, [assetRegistryMap, swapInfo.quote.pair.from]);
-
-  const destinationValue = new BigN(swapInfo.quote.fromAmount)
-    .div(BN_TEN.pow(_getAssetDecimals(fromAssetInfo)))
-    .multipliedBy(swapInfo.quote.rate)
-    .multipliedBy(1 - swapInfo.slippage);
 
   return (
     <MetaInfo hasBackgroundWrapper>
@@ -75,8 +68,8 @@ export const SwapTransactionBlock = ({ data }: Props) => {
 
           <Number
             style={{ marginTop: theme.marginSM - 2, marginBottom: theme.marginXXS }}
-            value={destinationValue}
-            decimal={0}
+            value={swapInfo.quote.toAmount || 0}
+            decimal={_getAssetDecimals(toAssetInfo)}
             metadata={numberMetadata}
             formatType={'custom'}
             customFormatter={swapCustomFormatter}

@@ -3,8 +3,6 @@ import { View } from 'react-native';
 import { Icon, Typography, Number, Web3Block } from 'components/design-system-ui';
 import { CheckCircle, CircleWavyCheck } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import BigN from 'bignumber.js';
-import { BN_TEN } from 'utils/chainBalances';
 import { SwapQuote } from '@subwallet/extension-base/types/swap';
 import { swapCustomFormatter } from '@subwallet/extension-base/utils';
 
@@ -26,10 +24,6 @@ export const SwapQuotesItem = ({ isRecommend, quote, selected, onSelect, decimal
     onSelect?.(quote);
   }, [onSelect, quote]);
 
-  const destinationSwapValue = useMemo(() => {
-    return new BigN(quote.fromAmount).div(BN_TEN.pow(decimals)).multipliedBy(quote.rate);
-  }, [decimals, quote.fromAmount, quote.rate]);
-
   const leftItem = useMemo(() => {
     return (
       <View>
@@ -44,8 +38,8 @@ export const SwapQuotesItem = ({ isRecommend, quote, selected, onSelect, decimal
           <Number
             customFormatter={swapCustomFormatter}
             size={theme.fontSize}
-            value={destinationSwapValue}
-            decimal={0}
+            value={quote.toAmount || '0'}
+            decimal={decimals}
             suffix={symbol}
             formatType={'custom'}
             metadata={numberMetadata}
@@ -54,9 +48,10 @@ export const SwapQuotesItem = ({ isRecommend, quote, selected, onSelect, decimal
       </View>
     );
   }, [
-    destinationSwapValue,
+    decimals,
     isRecommend,
     quote.provider.name,
+    quote.toAmount,
     symbol,
     theme.colorPrimary,
     theme.colorTextLight4,

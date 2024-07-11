@@ -140,6 +140,24 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     }
   }, [decimals, forceUpdateMaxValue, maxValue, onChangeValue]);
 
+  useEffect(() => {
+    if (inputValue && inputValue.length > (getMaxLengthText(inputValue) || 0)) {
+      let valueStr = inputValue.toString();
+      const decimalPointIndex = valueStr.indexOf('.');
+
+      if (decimalPointIndex !== -1) {
+        valueStr = valueStr.slice(0, decimalPointIndex + decimals + 1);
+        valueStr = valueStr.replace(/0+$/, '');
+
+        if (valueStr.endsWith('.')) {
+          valueStr = valueStr.slice(0, -1);
+        }
+      }
+
+      setInputValue(valueStr);
+    }
+  }, [decimals, getMaxLengthText, inputValue, value]);
+
   return (
     <>
       <View style={[_style.container, disable && DisabledStyle]}>

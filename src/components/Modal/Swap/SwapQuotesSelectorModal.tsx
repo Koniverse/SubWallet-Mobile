@@ -30,12 +30,6 @@ export const SwapQuotesSelectorModal = ({
   const theme = useSubWalletTheme().swThemes;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const getFromAssetInfo = useCallback(
-    (quote: SwapQuote) => {
-      return assetRegistryMap[quote.pair.from] || undefined;
-    },
-    [assetRegistryMap],
-  );
 
   const getToAssetInfo = useCallback(
     (quote: SwapQuote) => {
@@ -47,7 +41,7 @@ export const SwapQuotesSelectorModal = ({
   const renderItems = useCallback(
     (_items: SwapQuote[]) => {
       return _items.map(item => {
-        const decimals = _getAssetDecimals(getFromAssetInfo(item));
+        const decimals = _getAssetDecimals(getToAssetInfo(item));
         const symbol = _getAssetSymbol(getToAssetInfo(item));
 
         return (
@@ -63,7 +57,7 @@ export const SwapQuotesSelectorModal = ({
         );
       });
     },
-    [getFromAssetInfo, getToAssetInfo, onSelectItem, optimalQuoteItem?.provider.id, selectedItem?.provider.id],
+    [getToAssetInfo, onSelectItem, optimalQuoteItem?.provider.id, selectedItem?.provider.id],
   );
 
   return (
