@@ -24,7 +24,7 @@ const AlertBoxMarkdown: React.FC<Props> = (props: Props) => {
 
   return (
     <View style={styles.wrapper}>
-      {icon && (
+      {!!(icon && iconColor) && (
         <View style={{ marginLeft: -4 }}>
           <BackgroundIcon
             backgroundColor={convertHexColorToRGBA(iconColor, 0.1)}

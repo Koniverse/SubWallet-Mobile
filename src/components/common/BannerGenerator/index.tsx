@@ -24,9 +24,17 @@ interface BannerProps {
   onPressBanner?: (id: string) => (url?: string) => void;
   instructionDataList: StaticDataProps[];
   extraStyle?: StyleProp<any>;
+  isMultipleBanner?: boolean;
 }
 
-const Banner = ({ data, dismissBanner, onPressBanner, instructionDataList, extraStyle }: BannerProps) => {
+const Banner = ({
+  data,
+  dismissBanner,
+  onPressBanner,
+  instructionDataList,
+  extraStyle,
+  isMultipleBanner,
+}: BannerProps) => {
   const theme = useSubWalletTheme().swThemes;
   const { setGlobalModal, hideGlobalModal } = useContext(GlobalInstructionModalContext);
   const bannerId = useMemo(() => `${data.position}-${data.id}`, [data.id, data.position]);
@@ -76,7 +84,7 @@ const Banner = ({ data, dismissBanner, onPressBanner, instructionDataList, extra
   return (
     <>
       <TouchableOpacity
-        style={{ marginTop: theme.marginXS }}
+        style={{ marginTop: isMultipleBanner ? theme.marginSM : 0 }}
         onPress={_onPressBanner}
         activeOpacity={BUTTON_ACTIVE_OPACITY}>
         <FastImage
@@ -120,6 +128,7 @@ export const BannerGenerator = ({ banners, dismissBanner, onPressBanner, extraSt
           data={bannerItem}
           instructionDataList={instructionDataList}
           extraStyle={extraStyle}
+          isMultipleBanner={true}
         />
       );
     },
@@ -144,9 +153,10 @@ export const BannerGenerator = ({ banners, dismissBanner, onPressBanner, extraSt
           dismissBanner={dismissBanner}
           instructionDataList={instructionDataList}
           extraStyle={extraStyle}
+          isMultipleBanner={false}
         />
       ) : (
-        <BannerSlider data={bannerUrlList} renderItem={renderItem} onCloseBanner={onCloseBanner} height={90} />
+        <BannerSlider data={bannerUrlList} renderItem={renderItem} onCloseBanner={onCloseBanner} height={80} />
       )}
     </>
   );

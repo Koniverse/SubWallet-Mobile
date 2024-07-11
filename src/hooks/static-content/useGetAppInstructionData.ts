@@ -40,17 +40,12 @@ export const useGetAppInstructionData = (language: string) => {
         console.log('get instruction error', e);
         const earningStaticData = mmkvStore.getString('earningStaticData');
         const unstakeStaticData = mmkvStore.getString('unstakeStaticData');
-        const mktCampaignStaticData = mmkvStore.getString('appInstructionData');
         if (!earningStaticData) {
           mmkvStore.set('earningStaticData', JSON.stringify(EARNING_POOL_DETAIL_DATA));
         }
 
         if (!unstakeStaticData) {
           mmkvStore.set('unstakeStaticData', JSON.stringify(UNSTAKE_ALERT_DATA));
-        }
-
-        if (!mktCampaignStaticData) {
-          mmkvStore.set('unstakeStaticData', JSON.stringify([]));
         }
       });
   }, [language]);
