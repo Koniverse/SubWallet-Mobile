@@ -1411,6 +1411,7 @@ export const Swap = ({
                 renderSlippage={renderSlippage}
                 handleRequestLoading={handleRequestLoading}
                 currencyData={currencyData}
+                decimals={_getAssetDecimals(toAssetInfo)}
               />
             )}
 

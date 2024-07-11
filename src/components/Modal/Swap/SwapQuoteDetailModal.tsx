@@ -41,6 +41,7 @@ interface Props {
   renderSlippage: () => React.JSX.Element;
   handleRequestLoading: boolean;
   currencyData: CurrencyJson;
+  decimals: number;
 }
 
 const numberMetadata = { maxNumberFormat: 8 };
@@ -61,6 +62,7 @@ export const SwapQuoteDetailModal = ({
   renderSlippage,
   handleRequestLoading,
   currencyData,
+  decimals,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -159,6 +161,7 @@ export const SwapQuoteDetailModal = ({
                       value={minimumReceived}
                       suffix={symbol}
                       unitColor={theme.colorTextLight4}
+                      decimals={decimals}
                     />
                   </MetaInfo>
                   <View

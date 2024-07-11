@@ -64,10 +64,17 @@ function getTokenTypeSupported(chainInfo: _ChainInfo) {
   const result: TokenTypeOption[] = [];
 
   tokenTypes.forEach(tokenType => {
-    result.push({
-      label: tokenType.toString(),
-      value: tokenType,
-    });
+    if (tokenType === _AssetType.GRC20) {
+      result.push({
+        label: 'VFT',
+        value: tokenType,
+      });
+    } else {
+      result.push({
+        label: tokenType.toString(),
+        value: tokenType,
+      });
+    }
   });
 
   return result;
@@ -337,7 +344,12 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             onSelectItem={onSelectTokenType}
             selectedValueMap={selectedTokenTypeData ? { [selectedTokenTypeData]: true } : {}}
             tokenTypeRef={tokenTypeRef}
-            renderSelected={() => <TokenTypeSelectField value={selectedTokenTypeData} showIcon />}
+            renderSelected={() => (
+              <TokenTypeSelectField
+                value={selectedTokenTypeData === _AssetType.GRC20 ? 'VFT' : selectedTokenTypeData}
+                showIcon
+              />
+            )}
           />
 
           <FormItem
