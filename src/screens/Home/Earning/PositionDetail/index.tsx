@@ -54,13 +54,17 @@ const Component: React.FC<Props> = (props: Props) => {
   const [state, setState] = React.useState({ num: 0 });
   const counter = useRef(0);
 
-  const isDisableStakeMore = useMemo(() => {
-    return (
-      poolInfo.type === YieldPoolType.LIQUID_STAKING &&
-      poolInfo.chain === 'parallel' &&
-      poolInfo.group === 'DOT-Polkadot'
-    );
-  }, [poolInfo.chain, poolInfo.group, poolInfo.type]);
+  const isChainUnsupported = useMemo(() => {
+    if (poolInfo.chain === 'parallel' && poolInfo.type === YieldPoolType.LIQUID_STAKING) {
+      return true;
+    }
+
+    if (poolInfo.chain === 'interlay' && poolInfo.type === YieldPoolType.LENDING) {
+      return true;
+    }
+
+    return false;
+  }, [poolInfo.chain, poolInfo.type]);
 
   useEffect(() => {
     loadingRef.current = isLoading;
@@ -209,7 +213,7 @@ const Component: React.FC<Props> = (props: Props) => {
       title={'Earning position detail'}
       onPressRightIcon={onEarnMore}
       showRightBtn={true}
-      disableRightButton={isDisableStakeMore}
+      disableRightButton={isChainUnsupported}
       rightIcon={Plus}>
       <ScrollView contentContainerStyle={styles.wrapper} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
@@ -255,13 +259,13 @@ const Component: React.FC<Props> = (props: Props) => {
               {poolInfo?.type === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
             </Button>
             <Button
-              disabled={isDisableStakeMore}
+              disabled={isChainUnsupported}
               block={true}
               type="secondary"
               icon={
                 <Icon
                   phosphorIcon={PlusCircle}
-                  iconColor={isDisableStakeMore ? theme.colorTextLight5 : theme.colorWhite}
+                  iconColor={isChainUnsupported ? theme.colorTextLight5 : theme.colorWhite}
                   weight="fill"
                 />
               }

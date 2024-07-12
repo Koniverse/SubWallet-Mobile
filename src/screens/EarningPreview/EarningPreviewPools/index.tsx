@@ -194,7 +194,10 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
     }
     const result = [...pools].filter(
       item =>
-        !(item.type === YieldPoolType.LIQUID_STAKING && item.chain === 'parallel' && item.group === 'DOT-Polkadot'),
+        !(
+          (item.chain === 'parallel' && item.type === YieldPoolType.LIQUID_STAKING) ||
+          (item.chain === 'interlay' && item.type === YieldPoolType.LENDING)
+        ),
     );
 
     result.sort((a, b) => {
