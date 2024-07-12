@@ -8,7 +8,6 @@ import ConnectParitySigner from 'screens/Account/ConnectQrSigner/ConnectParitySi
 import ImportQrCode from 'screens/Account/ImportQrCode';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { GeneralSettings } from 'screens/Settings/General';
-import { SendFund } from 'screens/Transaction/SendFund';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
 import { AccountsScreen } from 'screens/Account/AccountsScreen';
@@ -47,7 +46,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AddProvider } from 'screens/AddProvider';
 import TransactionScreen from 'screens/Transaction/TransactionScreen';
-import SendNFT from 'screens/Transaction/NFT';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { Keyboard, Linking, Platform, StatusBar } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -617,8 +615,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
             <>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }}>
                 <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-                <Stack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
-                <Stack.Screen name="SendNFT" component={SendNFT} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />

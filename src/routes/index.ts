@@ -45,7 +45,6 @@ export type RootStackParamList = {
   NetworksSetting: { chainName?: string };
   NetworkSettingDetail: { chainSlug: string };
   ImportNetwork: undefined;
-  SendFund: { slug?: string; recipient?: string };
   Drawer: NavigatorScreenParams<WrapperParamList>;
   EarningPreview: { chain?: string; type?: string; target?: string };
   EarningPreviewPools: {
@@ -87,12 +86,6 @@ export type RootStackParamList = {
   AttachReadOnly: undefined;
   ImportQrCode: undefined;
   TransactionAction: NavigatorScreenParams<TransactionActionStackParamList>;
-  SendNFT: {
-    chain: string;
-    collectionId: string;
-    itemId: string;
-    owner: string;
-  };
   ManageAddressBook: undefined;
   DeriveAccount: undefined;
   Crowdloans: undefined;
@@ -107,7 +100,6 @@ export type EarningPreviewProps = NativeStackScreenProps<RootStackParamList, 'Ea
 export type EarningPreviewPoolsProps = NativeStackScreenProps<RootStackParamList, 'EarningPreviewPools'>;
 export type ImportSecretPhraseProps = NativeStackScreenProps<RootStackParamList, 'ImportSecretPhrase'>;
 export type AccountsScreenProps = NativeStackScreenProps<RootStackParamList, 'AccountsScreen'>;
-export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund'>;
 export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;
 export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;
 export type AccountExportProps = NativeStackScreenProps<RootStackParamList, 'AccountExport'>;
