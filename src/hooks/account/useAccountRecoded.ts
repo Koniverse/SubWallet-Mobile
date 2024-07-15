@@ -8,13 +8,21 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Recoded } from 'types/ui-types';
 import { recodeAddress } from 'utils/account';
+import { KeypairType } from '@polkadot/util-crypto/types';
 
-const useAccountRecoded = (address: string, genesisHash?: string | null): Recoded => {
+const useAccountRecoded = (
+  address: string,
+  genesisHash?: string | null,
+  givenType: KeypairType = 'sr25519',
+): Recoded => {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const account = useMemo(() => accounts.find(acc => acc.address === address), [accounts, address]);
   const networkInfo = useChainInfo(undefined, account?.originGenesisHash || genesisHash || account?.genesisHash);
 
-  return useMemo(() => recodeAddress(address, accounts, networkInfo), [accounts, address, networkInfo]);
+  return useMemo(
+    () => recodeAddress(address, accounts, networkInfo, givenType),
+    [accounts, address, givenType, networkInfo],
+  );
 };
 
 export default useAccountRecoded;

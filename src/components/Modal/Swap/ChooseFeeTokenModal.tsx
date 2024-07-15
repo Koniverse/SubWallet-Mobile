@@ -61,6 +61,7 @@ export const ChooseFeeTokenModal = ({
             key={index}
             selected={!!selectedItem}
             symbol={_getAssetSymbol(getFeeAssetInfo(item))}
+            // value={1}
             value={getConvertedAmountToPay()}
             onSelect={onSelectItem}
           />

@@ -105,11 +105,13 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
     if (account?.isExternal) {
       if (account?.isReadOnly) {
         return 'watch-only';
+      } else if (account?.isHardware && account?.hardwareType === 'ledger') {
+        return 'ledger';
       } else {
         return 'QR-signer';
       }
     }
-  }, [account?.isExternal, account?.isReadOnly]);
+  }, [account]);
 
   return (
     <View style={[styles]}>

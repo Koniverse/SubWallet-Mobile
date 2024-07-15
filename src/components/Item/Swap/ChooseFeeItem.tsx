@@ -6,6 +6,7 @@ import BigN from 'bignumber.js';
 import { CheckCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { swapCustomFormatter } from '@subwallet/extension-base/utils';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 interface Props {
   value?: string | number | BigN;
@@ -40,11 +41,13 @@ export const ChooseFeeItem = ({ tokenSlug, value, symbol, selected, onSelect }: 
             metadata={numberMetadata}
           />
         ) : (
-          <Typography.Text>{symbol}</Typography.Text>
+          <Typography.Text size={'md'} style={{ color: theme.colorWhite, ...FontSemiBold }}>
+            {symbol}
+          </Typography.Text>
         )}
       </View>
     ),
-    [symbol, value],
+    [symbol, theme.colorWhite, value],
   );
 
   const rightItem = useMemo(() => {
