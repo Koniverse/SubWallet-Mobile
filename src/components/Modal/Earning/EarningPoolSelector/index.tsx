@@ -91,6 +91,11 @@ const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
             return true;
           }
           break;
+        case 'Blocked':
+          if (item.state === 'Blocked') {
+            return true;
+          }
+          break;
       }
     }
     return false;
@@ -124,6 +129,10 @@ const FILTER_OPTIONS: FilterOption[] = [
   {
     label: i18n.common.destroying,
     value: 'Destroying',
+  },
+  {
+    label: i18n.common.blocked,
+    value: 'Blocked',
   },
 ];
 
@@ -249,7 +258,6 @@ export const EarningPoolSelector = forwardRef(
 
     const resultList: NominationPoolDataTypeItem[] = useMemo(() => {
       return [...items]
-        .filter(item => item.state !== 'Blocked')
         .sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
           if (defaultSelectPool) {
             const isRecommendedA = defaultSelectPool.includes(a.id);
@@ -359,7 +367,7 @@ export const EarningPoolSelector = forwardRef(
         return (
           <StakingPoolItem
             address={address}
-            disabled={item.isCrowded}
+            disabled={item.isCrowded || item.state === 'Blocked'}
             decimals={decimals}
             id={id}
             isProfitable={isProfitable}

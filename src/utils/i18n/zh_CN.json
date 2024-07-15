@@ -114,6 +114,7 @@
     "viewDetail": "查看详细",
     "on": "上",
     "block": "封锁",
+    "blocked": "Blocked",
     "unblock": "解锁",
     "forgetAll": "忘记全部",
     "disconnectAll": "断开全部",
