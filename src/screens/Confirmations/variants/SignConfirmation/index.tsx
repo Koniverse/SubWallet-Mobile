@@ -4,7 +4,7 @@ import AccountItemWithName from 'components/common/Account/Item/AccountItemWithN
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
 import useParseSubstrateRequestPayload from 'hooks/transaction/confirmation/useParseSubstrateRequestPayload';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Text } from 'react-native';
 
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';
@@ -14,6 +14,14 @@ import createStyle from './styles';
 import { BaseDetailModal, SubstrateMessageDetail, SubstrateTransactionDetail, SubstrateSignArea } from '../../parts';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
+import { ExtrinsicPayload } from '@polkadot/types/interfaces';
+import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
+import useMetadata from 'hooks/transaction/confirmation/useMetadata';
+import { isRawPayload } from 'utils/confirmation/request/substrate';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { enableChain } from 'messaging/index';
+import { noop } from 'utils/function';
 
 interface Props {
   request: SigningRequest;
@@ -22,13 +30,30 @@ interface Props {
 
 const SignConfirmation: React.FC<Props> = (props: Props) => {
   const { request, navigation } = props;
-  const { id, account } = request;
+  const { account } = request;
   const theme = useSubWalletTheme().swThemes;
+  const { chainInfoMap, chainStateMap } = useSelector((root: RootState) => root.chainStore);
+  const genesisHash = useMemo(() => {
+    const _payload = request.request.payload;
+
+    return isRawPayload(_payload)
+      ? account.originGenesisHash || chainInfoMap.polkadot.substrateInfo?.genesisHash || ''
+      : _payload.genesisHash;
+  }, [account, chainInfoMap, request]);
 
   const styles = useMemo(() => createStyle(theme), [theme]);
+  const { chain } = useMetadata(genesisHash);
+  const chainInfo = useGetChainInfoByGenesisHash(genesisHash);
+  const { payload } = useParseSubstrateRequestPayload(chain, request.request);
+  const isMessage = useMemo(() => isSubstrateMessage(payload), [payload]);
 
-  const payload = useParseSubstrateRequestPayload(request.request);
-  const isMessage = isSubstrateMessage(payload);
+  useEffect(() => {
+    if (!isMessage && chainInfo) {
+      const chainState = chainStateMap[chainInfo.slug];
+
+      !chainState.active && enableChain(chainInfo.slug, false).then(noop).catch(console.error);
+    }
+  }, [chainStateMap, chainInfo, isMessage]);
 
   return (
     <React.Fragment>
@@ -39,17 +64,23 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
         <AccountItemWithName accountName={account.name} address={account.address} avatarSize={24} isSelected={true} />
         <BaseDetailModal title={isMessage ? i18n.confirmation.messageDetail : i18n.confirmation.transactionDetail}>
           {isMessage ? (
-            <SubstrateMessageDetail bytes={payload} />
+            <SubstrateMessageDetail bytes={payload as string} />
           ) : (
             <SubstrateTransactionDetail
               account={account}
-              payload={payload}
+              payload={payload as ExtrinsicPayload}
               request={request.request.payload as SignerPayloadJSON}
             />
           )}
         </BaseDetailModal>
       </ConfirmationContent>
-      <SubstrateSignArea payload={payload} account={account} id={id} navigation={navigation} />
+      <SubstrateSignArea
+        account={account}
+        id={request.id}
+        isInternal={request.isInternal}
+        request={request.request}
+        navigation={navigation}
+      />
     </React.Fragment>
   );
 };

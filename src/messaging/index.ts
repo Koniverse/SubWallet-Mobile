@@ -178,6 +178,9 @@ import { needBackup, triggerBackup } from 'utils/storage';
 import { WindowOpenParams } from '@subwallet/extension-base/background/types';
 import { RequestOptimalTransferProcess } from '@subwallet/extension-base/services/balance-service/helpers';
 import { CommonOptimalPath } from '@subwallet/extension-base/types/service-base';
+import { createRegistry } from '@subwallet/extension-base/utils';
+import { _getChainNativeTokenBasicInfo } from '@subwallet/extension-base/services/chain-service/utils';
+import { base64Encode } from '@polkadot/util-crypto';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -1470,6 +1473,46 @@ export async function getMetadata(genesisHash?: string | null, isPartial = false
   }
 
   return null;
+}
+
+export async function getMetadataRaw(chainInfo: _ChainInfo | null, genesisHash?: string | null): Promise<Chain | null> {
+  if (!genesisHash) {
+    return null;
+  }
+
+  const data = await sendMessage('pri(metadata.find)', { genesisHash });
+
+  const { rawMetadata, specVersion } = data;
+
+  if (!rawMetadata) {
+    return null;
+  }
+
+  if (!chainInfo) {
+    return null;
+  }
+
+  const registry = createRegistry(chainInfo, data);
+
+  const tokenInfo = _getChainNativeTokenBasicInfo(chainInfo);
+
+  return {
+    specVersion,
+    genesisHash,
+    name: chainInfo.name,
+    hasMetadata: true,
+    definition: {
+      types: data.types,
+      userExtensions: data.userExtensions,
+      metaCalls: base64Encode(data.rawMetadata),
+    } as MetadataDef,
+    icon: chainInfo.icon,
+    isUnknown: false,
+    ss58Format: chainInfo.substrateInfo?.addressPrefix || 42,
+    tokenDecimals: tokenInfo.decimals,
+    tokenSymbol: tokenInfo.symbol,
+    registry: registry,
+  };
 }
 
 export async function completeBannerCampaign(request: RequestCampaignBannerComplete): Promise<boolean> {

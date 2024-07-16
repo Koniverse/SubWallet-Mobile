@@ -5,7 +5,6 @@ import { ConfirmationQueueItem } from 'stores/base/RequestState';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SigningRequest } from '@subwallet/extension-base/background/types';
-import useParseSubstrateRequestPayload from 'hooks/transaction/confirmation/useParseSubstrateRequestPayload';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
@@ -97,10 +96,6 @@ export const TransactionConfirmation = (props: Props) => {
 
   const _transaction = useMemo(() => transactionRequest[id], [transactionRequest, id]);
 
-  const substratePayload = useParseSubstrateRequestPayload(
-    type === 'signingRequest' ? (item as SigningRequest).request : undefined,
-  );
-
   const renderContent = useCallback((transaction: SWTransactionResult): React.ReactNode => {
     const { extrinsicType } = transaction;
 
@@ -127,8 +122,10 @@ export const TransactionConfirmation = (props: Props) => {
       {type === 'signingRequest' && (
         <SubstrateSignArea
           account={(item as SigningRequest).account}
+          extrinsicType={_transaction.extrinsicType}
           id={item.id}
-          payload={substratePayload}
+          isInternal={item.isInternal}
+          request={(item as SigningRequest).request}
           navigation={navigation}
           txExpirationTime={txExpirationTime}
         />
