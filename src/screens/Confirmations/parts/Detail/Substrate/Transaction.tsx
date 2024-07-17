@@ -9,6 +9,8 @@ import React, { useMemo, useRef } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import { Chain } from '@subwallet/extension-chains/types';
+import { Typography } from 'components/design-system-ui';
+import { FontMonoRegular } from 'styles/sharedStyles';
 
 interface Decoded {
   args: AnyJson | null;
@@ -54,24 +56,24 @@ const renderMethod = (data: string, { args, method }: Decoded): React.ReactNode 
   }
 
   return (
-    <div className="method-container">
+    <>
       <MetaInfo.Data label={'Method'}>
-        <details>
-          <summary>
+        <>
+          <Typography.Text style={{ color: 'rgba(255, 255, 255, 0.45)', ...FontMonoRegular }}>
             {method.section}.{method.method}
+          </Typography.Text>
+          <Typography.Text style={{ color: 'rgba(255, 255, 255, 0.45)', ...FontMonoRegular }}>
             {method.meta ? `(${method.meta.args.map(({ name }) => name).join(', ')})` : ''}
-          </summary>
-          <pre>{JSON.stringify(args, null, 2)}</pre>
-        </details>
+          </Typography.Text>
+          <Typography.Text style={{ color: 'rgba(255, 255, 255, 0.45)', ...FontMonoRegular }}>
+            {JSON.stringify(args, null, 2)}
+          </Typography.Text>
+        </>
       </MetaInfo.Data>
       {method.meta && (
-        <MetaInfo.Data label={'Info'}>
-          <details>
-            <summary>{method.meta.docs.map(d => d.toString().trim()).join(' ')}</summary>
-          </details>
-        </MetaInfo.Data>
+        <MetaInfo.Data label={'Info'}>{method.meta.docs.map(d => d.toString().trim()).join(' ')}</MetaInfo.Data>
       )}
-    </div>
+    </>
   );
 };
 

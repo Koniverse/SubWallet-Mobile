@@ -11,3 +11,36 @@ index 3598d98..dc2d744 100644
    "preferGlobal": true,
    "type": "module",
    "license": "GPL-3.0",
+diff --git a/node_modules/sails-js/transaction-builder.d.ts b/node_modules/sails-js/transaction-builder.d.ts
+index 0cdff92..3aad847 100644
+--- a/node_modules/sails-js/transaction-builder.d.ts
++++ b/node_modules/sails-js/transaction-builder.d.ts
+@@ -1,4 +1,5 @@
+ import { GearApi, HexString } from '@gear-js/api';
++import { SubmittableExtrinsic } from '@polkadot/api/promise/types';
+ import { SignerOptions } from '@polkadot/api/types';
+ import { IKeyringPair } from '@polkadot/types/types';
+ import { TypeRegistry } from '@polkadot/types';
+@@ -49,4 +50,8 @@ export declare class TransactionBuilder<ResponseType> {
+      * ## Sign and send transaction
+      */
+     signAndSend(): Promise<IMethodReturnType<ResponseType>>;
++    /**
++     * ## Extrinsic
++     */
++    tx: SubmittableExtrinsic;
+ }
+diff --git a/node_modules/sails-js/transaction-builder.js b/node_modules/sails-js/transaction-builder.js
+index 23e632f..e6c0d50 100644
+--- a/node_modules/sails-js/transaction-builder.js
++++ b/node_modules/sails-js/transaction-builder.js
+@@ -200,6 +200,9 @@ class TransactionBuilder {
+             },
+         };
+     }
++    get tx () {
++        return this._tx;
++    }
+ }
+
+ export { TransactionBuilder };

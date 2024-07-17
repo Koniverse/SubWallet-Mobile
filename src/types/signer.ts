@@ -2,6 +2,8 @@ export enum AccountSignMode {
   PASSWORD = 'password',
   QR = 'qr',
   LEDGER = 'ledger',
+  LEGACY_LEDGER = 'legacy-ledger',
+  GENERIC_LEDGER = 'generic-ledger',
   READ_ONLY = 'readonly',
   ALL_ACCOUNT = 'ALL_ACCOUNT',
   UNKNOWN = 'unknown',
