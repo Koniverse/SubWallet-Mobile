@@ -5,7 +5,6 @@ import { Chain } from '@subwallet/extension-chains/types';
 import { RefObject } from 'react';
 import WebView from 'react-native-webview';
 import { WebRunnerStatus } from 'providers/contexts';
-import { getSavedMeta, setSavedMeta } from 'utils/MetadataCache';
 import { WebviewError, WebviewNotReadyError, WebviewResponseError } from '../errors/WebViewErrors';
 import EventEmitter from 'eventemitter3';
 import type {
@@ -1444,14 +1443,7 @@ export async function getMetadata(genesisHash?: string | null, isPartial = false
   // const chains = await getNetworkMap();
   const parsedChains = _getKnownHashes({});
 
-  let request = getSavedMeta(genesisHash);
-
-  if (!request) {
-    request = sendMessage('pri(metadata.get)', genesisHash || null);
-    setSavedMeta(genesisHash, request);
-  }
-
-  const def = await request;
+  const def = await sendMessage('pri(metadata.get)', genesisHash || null);
 
   if (def) {
     return metadataExpand(def, isPartial);
@@ -1481,7 +1473,6 @@ export async function getMetadataRaw(chainInfo: _ChainInfo | null, genesisHash?:
   }
 
   const data = await sendMessage('pri(metadata.find)', { genesisHash });
-
   const { rawMetadata, specVersion } = data;
 
   if (!rawMetadata) {
