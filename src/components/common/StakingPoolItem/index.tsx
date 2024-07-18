@@ -19,6 +19,7 @@ interface Props {
   onPressRightButton?: () => void;
   isProfitable: boolean;
   disabled?: boolean;
+  disabledUI?: boolean;
 }
 
 export const StakingPoolItem = ({
@@ -32,12 +33,13 @@ export const StakingPoolItem = ({
   onPressRightButton,
   isProfitable,
   disabled,
+  disabledUI,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = StakingPoolItemStyle(theme);
   return (
     <TouchableOpacity
-      style={[_style.container, disabled && _style.disabledStyle]}
+      style={[_style.container, disabled && _style.disabledStyle, disabledUI && _style.disabledStyle]}
       onPress={onPress}
       disabled={disabled}>
       <View style={_style.avatarWrapper}>

@@ -23,6 +23,7 @@ import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { YieldPoolType } from '@subwallet/extension-base/types';
 import DotBadge from 'components/design-system-ui/badge/DotBadge';
+import { useToast } from 'react-native-toast-notifications';
 
 enum EarningPoolGroup {
   RECOMMEND = 'recommend',
@@ -165,6 +166,7 @@ export const EarningPoolSelector = forwardRef(
     const [selectedItem, setSelectedItem] = useState<NominationPoolDataType | undefined>(undefined);
     const { poolInfoMap } = useSelector((state: RootState) => state.earning);
     const { compound } = useYieldPositionDetail(slug, from);
+    const { hideAll, show } = useToast();
 
     const poolSelectorRef = useRef<ModalRef>();
     const sortingModalRef = useRef<ModalRef>();
@@ -360,6 +362,19 @@ export const EarningPoolSelector = forwardRef(
       [sortSelection, theme.colorPrimary],
     );
 
+    const onPressItem = useCallback(
+      (item: NominationPoolDataTypeItem) => {
+        if (item.state === 'Blocked') {
+          hideAll();
+          show('This pool is blocked. Select another to continue', { type: 'normal' });
+          return;
+        }
+        onSelectItem && onSelectItem(item.id.toString());
+        poolSelectorRef && poolSelectorRef.current?.onCloseModal();
+      },
+      [hideAll, onSelectItem, show],
+    );
+
     const renderItem = useCallback(
       ({ item }: ListRenderItemInfo<NominationPoolDataTypeItem>) => {
         const { address, name, id, bondedAmount, symbol, decimals, isProfitable } = item;
@@ -367,7 +382,8 @@ export const EarningPoolSelector = forwardRef(
         return (
           <StakingPoolItem
             address={address}
-            disabled={item.isCrowded || item.state === 'Blocked'}
+            disabled={item.isCrowded}
+            disabledUI={item.state === 'Blocked'}
             decimals={decimals}
             id={id}
             isProfitable={isProfitable}
@@ -375,10 +391,7 @@ export const EarningPoolSelector = forwardRef(
             name={name}
             symbol={symbol}
             key={id}
-            onPress={() => {
-              onSelectItem && onSelectItem(item.id.toString());
-              poolSelectorRef && poolSelectorRef.current?.onCloseModal();
-            }}
+            onPress={() => onPressItem(item)}
             onPressRightButton={() => {
               Keyboard.dismiss();
               setSelectedItem(item);
@@ -389,7 +402,7 @@ export const EarningPoolSelector = forwardRef(
           />
         );
       },
-      [onSelectItem],
+      [onPressItem],
     );
 
     useEffect(() => {
