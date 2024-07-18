@@ -29,7 +29,8 @@ const usePreCheckAction = (
     const signMode = getSignMode(_account);
 
     switch (signMode) {
-      case AccountSignMode.LEDGER:
+      case AccountSignMode.GENERIC_LEDGER:
+      case AccountSignMode.LEGACY_LEDGER:
         return 'Ledger account';
       case AccountSignMode.ALL_ACCOUNT:
         return 'All account';
@@ -61,7 +62,8 @@ const usePreCheckAction = (
           switch (mode) {
             case AccountSignMode.READ_ONLY:
             case AccountSignMode.UNKNOWN:
-            case AccountSignMode.LEDGER: // TODO: change later
+            case AccountSignMode.GENERIC_LEDGER: // TODO: change later
+            case AccountSignMode.LEGACY_LEDGER: // TODO: change later
               block = true;
               break;
             case AccountSignMode.ALL_ACCOUNT:

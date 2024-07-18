@@ -42,7 +42,8 @@ export const SelectAccountItem = ({
   const signMode = useGetAccountSignModeByAddress(address);
   const accountSignModeIcon = useMemo((): React.ElementType<IconProps> | undefined => {
     switch (signMode) {
-      case AccountSignMode.LEDGER:
+      case AccountSignMode.GENERIC_LEDGER:
+      case AccountSignMode.LEGACY_LEDGER:
         return Swatches;
       case AccountSignMode.QR:
         return QrCode;

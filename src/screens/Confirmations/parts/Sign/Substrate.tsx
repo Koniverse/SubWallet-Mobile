@@ -24,10 +24,9 @@ import { isRawPayload } from 'utils/confirmation/request/substrate';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import useParseSubstrateRequestPayload from 'hooks/transaction/confirmation/useParseSubstrateRequestPayload';
 import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
-import { _isRuntimeUpdated, detectTranslate } from '@subwallet/extension-base/utils';
+import { _isRuntimeUpdated } from '@subwallet/extension-base/utils';
 import { toShort } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Trans } from 'react-i18next';
 import { NotNeedMigrationGens } from 'constants/ledger';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
@@ -153,15 +152,22 @@ export const SubstrateSignArea = (props: Props) => {
             type: 'error',
             title: 'Error!',
             description: (
-              <Trans
-                components={{
-                  highlight: <a className="link" href={metadataFAQUrl} target="__blank" />,
-                }}
-                i18nKey={detectTranslate(
-                  "{{networkName}} network's metadata is out of date. Update metadata using <highlight>this guide</highlight> and try again",
-                )}
-                values={{ networkName }}
-              />
+              <Text
+                style={{
+                  paddingHorizontal: theme.padding,
+                  fontSize: theme.fontSize,
+                  lineHeight: theme.fontSize * theme.lineHeight,
+                  color: theme.colorTextDescription,
+                  ...FontMedium,
+                }}>
+                <Text>{`${networkName} network's metadata is out of date, which may cause the transaction to fail. Update metadata using `}</Text>
+                <Text
+                  style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
+                  onPress={() => Linking.openURL(metadataFAQUrl)}>
+                  {i18n.attachAccount.readThisInstructionForMoreDetailsP2}
+                </Text>
+                <Text>{' or approve transaction at your own risk'}</Text>
+              </Text>
             ),
           };
         }
@@ -183,14 +189,25 @@ export const SubstrateSignArea = (props: Props) => {
                 type: 'info',
                 title: 'Helpful tip',
                 description: (
-                  <Trans
-                    components={{
-                      highlight: <a className="link" href={genericFAQUrl} target="__blank" />,
-                    }}
-                    i18nKey={detectTranslate(
-                      'To sign this transaction, open “Polkadot” app on Ledger, hit Refresh and Approve again. For a better experience, re-attach your Polkadot new account using <highlight>this guide</highlight>',
-                    )}
-                  />
+                  <Text
+                    style={{
+                      paddingHorizontal: theme.padding,
+                      fontSize: theme.fontSize,
+                      lineHeight: theme.fontSize * theme.lineHeight,
+                      color: theme.colorTextDescription,
+                      ...FontMedium,
+                    }}>
+                    <Text>
+                      {
+                        'To sign this transaction, open “Polkadot” app on Ledger, hit Refresh and Approve again. For a better experience, re-attach your Polkadot new account using '
+                      }
+                    </Text>
+                    <Text
+                      style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
+                      onPress={() => Linking.openURL(genericFAQUrl)}>
+                      {'this guide'}
+                    </Text>
+                  </Text>
                 ),
               };
             } else {
@@ -198,15 +215,21 @@ export const SubstrateSignArea = (props: Props) => {
                 type: 'info',
                 title: 'Helpful tip',
                 description: (
-                  <Trans
-                    components={{
-                      highlight: <a className="link" href={migrationFAQUrl} target="__blank" />,
-                    }}
-                    i18nKey={detectTranslate(
-                      'To sign this transaction, open “Polkadot Migration” app on Ledger, hit Refresh and Approve again. For a better experience, move your assets on {{networkName}} network to the Polkadot new account using <highlight>this guide</highlight>',
-                    )}
-                    values={{ networkName }}
-                  />
+                  <Text
+                    style={{
+                      paddingHorizontal: theme.padding,
+                      fontSize: theme.fontSize,
+                      lineHeight: theme.fontSize * theme.lineHeight,
+                      color: theme.colorTextDescription,
+                      ...FontMedium,
+                    }}>
+                    <Text>{`To sign this transaction, open “Polkadot Migration” app on Ledger, hit Refresh and Approve again. For a better experience, move your assets on ${networkName} network to the Polkadot new account using `}</Text>
+                    <Text
+                      style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
+                      onPress={() => Linking.openURL(migrationFAQUrl)}>
+                      {'this guide'}
+                    </Text>
+                  </Text>
                 ),
               };
             }
@@ -234,13 +257,19 @@ export const SubstrateSignArea = (props: Props) => {
     loadingChain,
     networkName,
     signMode,
+    theme.colorLink,
+    theme.colorTextDescription,
+    theme.fontSize,
+    theme.lineHeight,
+    theme.padding,
   ]);
 
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
       case AccountSignMode.QR:
         return QrCode;
-      case AccountSignMode.LEDGER:
+      case AccountSignMode.GENERIC_LEDGER:
+      case AccountSignMode.LEGACY_LEDGER:
         return Swatches;
       default:
         return CheckCircle;
@@ -348,7 +377,11 @@ export const SubstrateSignArea = (props: Props) => {
 
   return (
     <>
-      {alertData && <AlertBox description={alertData.description} title={alertData.title} type={alertData.type} />}
+      {alertData && (
+        <View style={{ paddingHorizontal: theme.padding, width: '100%' }}>
+          <AlertBox description={alertData.description} title={alertData.title} type={alertData.type} />
+        </View>
+      )}
 
       <SwModal
         modalVisible={isShowWarningModal}

@@ -327,7 +327,8 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
             return <QrRequest network={network} handlerStart={onSubmitQr} baseProps={baseProps} />;
           }
           break;
-        case AccountSignMode.LEDGER:
+        case AccountSignMode.GENERIC_LEDGER:
+        case AccountSignMode.LEGACY_LEDGER:
           //   if (handleSignLedger) {
           //     return (
           //       <Wrapper>

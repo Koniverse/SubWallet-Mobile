@@ -38,28 +38,6 @@ export const findAccountByAddress = (accounts: AccountJson[], address?: string):
   }
 };
 
-export const getAccountSignMode = (account: AccountJson | null | undefined): AccountSignMode => {
-  if (!account) {
-    return AccountSignMode.UNKNOWN;
-  } else {
-    if (account.address === ALL_ACCOUNT_KEY) {
-      return AccountSignMode.ALL_ACCOUNT;
-    } else {
-      if (account.isExternal) {
-        if (account.isHardware) {
-          return AccountSignMode.LEDGER;
-        } else if (account.isReadOnly) {
-          return AccountSignMode.READ_ONLY;
-        } else {
-          return AccountSignMode.QR;
-        }
-      } else {
-        return AccountSignMode.PASSWORD;
-      }
-    }
-  }
-};
-
 export const accountCanSign = (signMode: AccountSignMode): boolean => {
   return MODE_CAN_SIGN.includes(signMode);
 };
@@ -99,7 +77,11 @@ export const getSignMode = (account: AccountJson | null | undefined): AccountSig
     } else {
       if (account.isExternal) {
         if (account.isHardware) {
-          return AccountSignMode.LEDGER;
+          if (account.isGeneric) {
+            return AccountSignMode.GENERIC_LEDGER;
+          } else {
+            return AccountSignMode.LEGACY_LEDGER;
+          }
         } else if (account.isReadOnly) {
           return AccountSignMode.READ_ONLY;
         } else {
