@@ -1506,6 +1506,14 @@ export async function getMetadataRaw(chainInfo: _ChainInfo | null, genesisHash?:
   };
 }
 
+export const getMetadataHash = async (chain: string) => {
+  return sendMessage('pri(metadata.hash)', { chain });
+};
+
+export const shortenMetadata = async (chain: string, txBlob: string) => {
+  return sendMessage('pri(metadata.transaction.shorten)', { chain, txBlob });
+};
+
 export async function completeBannerCampaign(request: RequestCampaignBannerComplete): Promise<boolean> {
   return sendMessage('pri(campaign.banner.complete)', request);
 }

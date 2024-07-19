@@ -3,10 +3,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { TypeRegistry } from '@polkadot/types';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
 import { isRawPayload } from 'utils/confirmation/request/substrate';
-import { _isRuntimeUpdated, getMetadataHash } from '@subwallet/extension-base/utils';
+import { _isRuntimeUpdated } from '@subwallet/extension-base/utils';
 import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
 import { Chain } from '@subwallet/extension-chains/types';
 import { SignerPayloadJSON } from '@polkadot/types/types';
+import { getMetadataHash } from 'messaging/index';
 
 const registry = new TypeRegistry();
 
@@ -92,7 +93,7 @@ const useParseSubstrateRequestPayload = (chain: Chain | null, request?: RequestS
       setHashLoading(true);
 
       getMetadataHash(chainSlug)
-        .then(_metadataHash => {
+        .then(({ metadataHash: _metadataHash }) => {
           setMetadataHash(_metadataHash);
         })
         .catch(console.log)

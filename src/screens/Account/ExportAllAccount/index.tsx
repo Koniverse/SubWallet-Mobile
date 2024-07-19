@@ -35,12 +35,8 @@ const filterOptions = [
     value: AccountSignMode.QR,
   },
   {
-    label: 'Ledger legacy account',
-    value: AccountSignMode.LEGACY_LEDGER,
-  },
-  {
-    label: 'Ledger generic account',
-    value: AccountSignMode.GENERIC_LEDGER,
+    label: 'Ledger account',
+    value: 'ledger',
   },
   {
     label: 'Watch-only account',
@@ -65,16 +61,16 @@ const filterFunction = (items: AccountJson[], filters: string[]) => {
 
   return items.filter(item => {
     const signMode = getSignMode(item);
+    console.log('signMode', signMode);
+    console.log('filters', filters);
     for (const filter of filters) {
       switch (filter) {
         case AccountSignMode.PASSWORD:
           return signMode === AccountSignMode.PASSWORD;
         case AccountSignMode.QR:
           return signMode === AccountSignMode.QR;
-        case AccountSignMode.GENERIC_LEDGER:
-          return signMode === AccountSignMode.GENERIC_LEDGER;
-        case AccountSignMode.LEGACY_LEDGER:
-          return signMode === AccountSignMode.LEGACY_LEDGER;
+        case 'ledger':
+          return signMode === AccountSignMode.LEGACY_LEDGER || signMode === AccountSignMode.GENERIC_LEDGER;
         case AccountSignMode.READ_ONLY:
           return signMode === AccountSignMode.READ_ONLY;
       }

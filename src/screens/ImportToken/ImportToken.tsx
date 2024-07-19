@@ -64,12 +64,7 @@ function getTokenTypeSupported(chainInfo: _ChainInfo) {
   const result: TokenTypeOption[] = [];
 
   tokenTypes.forEach(tokenType => {
-    if (tokenType === _AssetType.GRC20) {
-      result.push({
-        label: 'VFT',
-        value: tokenType,
-      });
-    } else {
+    if (tokenType !== _AssetType.GRC20) {
       result.push({
         label: tokenType.toString(),
         value: tokenType,
@@ -153,9 +148,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     }
 
     const reformattedAddress =
-      selectedTokenTypeData === _AssetType.GRC20
-        ? contractAddress
-        : reformatAddress(contractAddress, chainNetworkPrefix);
+      selectedTokenTypeData === _AssetType.VFT ? contractAddress : reformatAddress(contractAddress, chainNetworkPrefix);
 
     setBusy(true);
 
@@ -207,8 +200,8 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   }, [chainInfoMap, chain]);
   const chainNetworkPrefix = useGetChainPrefixBySlug(chain);
 
-  const isSelectGRC20 = useMemo(() => {
-    return selectedTokenTypeData === _AssetType.GRC20;
+  const isSelectGearToken = useMemo(() => {
+    return selectedTokenTypeData === _AssetType.VFT;
   }, [selectedTokenTypeData]);
 
   const contractAddressRules = useMemo(
@@ -218,12 +211,12 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           [_AssetType.ERC20].includes(selectedTokenTypeData as _AssetType) && isEthereumAddress(value);
         const isValidWasmContract =
           [_AssetType.PSP22].includes(selectedTokenTypeData as _AssetType) && isValidSubstrateAddress(value);
-        const isValidGrc20Contract =
-          [_AssetType.GRC20].includes(selectedTokenTypeData as _AssetType) && isValidSubstrateAddress(value);
-        const reformattedAddress = isValidGrc20Contract ? value : reformatAddress(value, chainNetworkPrefix);
+        const isValidGearContract =
+          [_AssetType.VFT].includes(selectedTokenTypeData as _AssetType) && isValidSubstrateAddress(value);
+        const reformattedAddress = isValidGearContract ? value : reformatAddress(value, chainNetworkPrefix);
 
         if (value !== '') {
-          if (isValidEvmContract || isValidWasmContract || isValidGrc20Contract) {
+          if (isValidEvmContract || isValidWasmContract || isValidGearContract) {
             return validateCustomToken({
               contractAddress: reformattedAddress,
               originChain: chain,
@@ -344,12 +337,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             onSelectItem={onSelectTokenType}
             selectedValueMap={selectedTokenTypeData ? { [selectedTokenTypeData]: true } : {}}
             tokenTypeRef={tokenTypeRef}
-            renderSelected={() => (
-              <TokenTypeSelectField
-                value={selectedTokenTypeData === _AssetType.GRC20 ? 'VFT' : selectedTokenTypeData}
-                showIcon
-              />
-            )}
+            renderSelected={() => <TokenTypeSelectField value={selectedTokenTypeData} showIcon />}
           />
 
           <FormItem
@@ -359,7 +347,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             render={({ field: { value, onChange, ref, onBlur } }) => (
               <InputAddress
                 ref={ref}
-                label={isSelectGRC20 ? 'Program ID' : i18n.importToken.contractAddress}
+                label={isSelectGearToken ? 'Program ID' : i18n.importToken.contractAddress}
                 value={value}
                 onChangeText={onChange}
                 placeholder={i18n.placeholder.typeOrPasteContractAddress}
