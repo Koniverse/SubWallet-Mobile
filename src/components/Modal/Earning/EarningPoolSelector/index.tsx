@@ -260,6 +260,11 @@ export const EarningPoolSelector = forwardRef(
 
     const resultList: NominationPoolDataTypeItem[] = useMemo(() => {
       return [...items]
+        .map(item => {
+          const _disabled = item.isCrowded || item.state === 'Blocked';
+
+          return { ...item, disabled: _disabled };
+        })
         .sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
           if (defaultSelectPool) {
             const isRecommendedA = defaultSelectPool.includes(a.id);
@@ -290,9 +295,9 @@ export const EarningPoolSelector = forwardRef(
                   return 1;
                 }
 
-                if (a.isCrowded && !b.isCrowded) {
+                if (a.disabled && !b.disabled) {
                   return 1;
-                } else if (!a.isCrowded && b.isCrowded) {
+                } else if (!a.disabled && b.disabled) {
                   return -1;
                 }
 
@@ -306,9 +311,9 @@ export const EarningPoolSelector = forwardRef(
                 return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
               case SortKey.DEFAULT:
               default:
-                if (a.isCrowded && !b.isCrowded) {
+                if (a.disabled && !b.disabled) {
                   return 1;
-                } else if (!a.isCrowded && b.isCrowded) {
+                } else if (!a.disabled && b.disabled) {
                   return -1;
                 }
 
