@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { approveWalletConnectSession, rejectWalletConnectSession } from 'messaging/index';
 import { isAccountAll } from 'utils/accountAll';
@@ -29,6 +29,8 @@ import { RootState } from 'stores/index';
 import { Minimizer } from '../../../../NativeModules';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AddNetworkWCModal } from 'components/WalletConnect/Network/AddNetworkWCModal';
+import { detectChanInfo } from 'utils/fetchNetworkByChainId';
 
 interface Props {
   request: WalletConnectSessionRequest;
@@ -63,11 +65,16 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
   const dispatch = useDispatch();
+  const [addNetworkModalVisible, setAddNetworkModalVisible] = useState(false);
+  const [blockAddNetwork, setBlockAddNetwork] = useState(false);
+  const [networkNeedToImport, setNetworkNeedToImport] = useState<string[]>([]);
 
   const {
+    isExitedAnotherUnsupportedNamespace,
     isExpired,
     isUnSupportCase,
     missingType,
+    noNetwork,
     namespaceAccounts,
     onApplyAccounts,
     onCancelSelectAccounts,
@@ -82,7 +89,45 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
   }, [namespaceAccounts]);
 
   const [loading, setLoading] = useState(false);
+  const checkNetworksConnected = useMemo((): string[] => {
+    let needConnectedNetwork: string[] = [];
 
+    Object.values(namespaceAccounts).forEach(value => {
+      const { networks } = value;
+      const [unsupportedNetworks, supportedNetworks] = networks.reduce<[string[], string[]]>(
+        ([unsupportedNetworks_, supportedNetworks_], { slug, supported }) => {
+          if (supported) {
+            supportedNetworks_.push(slug);
+          } else {
+            const chainData = slug.split(':');
+
+            if (chainData.length > 1) {
+              const [namespace, chainId] = chainData;
+
+              if (namespace === WALLET_CONNECT_EIP155_NAMESPACE) {
+                unsupportedNetworks_.push(chainId);
+              } else if (namespace === WALLET_CONNECT_POLKADOT_NAMESPACE) {
+                setBlockAddNetwork(true);
+              }
+            }
+          }
+
+          return [unsupportedNetworks_, supportedNetworks_];
+        },
+        [[], []],
+      );
+
+      // When the network to be imported is a required network, only one network import is allowed.
+      if (isUnSupportCase && unsupportedNetworks.length === 1) {
+        needConnectedNetwork = [...unsupportedNetworks];
+      } else if (!isUnSupportCase && supportedNetworks.length === 0) {
+        // When networks to be imported are optional networks, and only allow the import if there is no network required by the Dapp that the extension supports.
+        needConnectedNetwork = [...unsupportedNetworks];
+      }
+    });
+
+    return needConnectedNetwork;
+  }, [isUnSupportCase, namespaceAccounts]);
   const _onSelectAccount = useCallback(
     (namespace: string): ((address: string, applyImmediately?: boolean) => VoidFunction) => {
       return (address: string, applyImmediately = false) => {
@@ -150,11 +195,28 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
 
   const isSupportCase = !isUnSupportCase && !isExpired;
 
+  useEffect(() => {
+    if (checkNetworksConnected.length > 0 && !blockAddNetwork && !isExitedAnotherUnsupportedNamespace) {
+      detectChanInfo(checkNetworksConnected)
+        .then(rs => {
+          if (rs) {
+            setNetworkNeedToImport([rs]);
+            setAddNetworkModalVisible(true);
+          } else {
+            setBlockAddNetwork(true);
+          }
+        })
+        .catch(() => {
+          setBlockAddNetwork(true);
+        });
+    }
+  }, [blockAddNetwork, checkNetworksConnected, isExitedAnotherUnsupportedNamespace]);
+
   return (
     <React.Fragment>
       <ConfirmationContent>
         <ConfirmationGeneralInfo request={request} gap={0} />
-        {isUnSupportCase && (
+        {(isUnSupportCase || blockAddNetwork) && (
           <View>
             <View style={{ paddingBottom: 8 }}>
               <AlertBox
@@ -167,7 +229,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
             <WCNetworkSupported networks={supportedChains} />
           </View>
         )}
-        {!isUnSupportCase && isExpired && (
+        {!isUnSupportCase && isExpired && !noNetwork && (
           <>
             <AlertBox
               description={i18n.warningMessage.expiredConnectionMessage}
@@ -176,7 +238,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
             />
           </>
         )}
-        {isSupportCase && (
+        {isSupportCase && !blockAddNetwork && (
           <View style={{ gap: theme.padding }}>
             {Object.entries(namespaceAccounts).map(([namespace, value]) => {
               const { appliedAccounts, availableAccounts, networks, selectedAccounts } = value;
@@ -209,6 +271,13 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
               );
             })}
           </View>
+        )}
+        {noNetwork && (
+          <AlertBox
+            description={'We are unable to detect any network from the dApp through WalletConnect'}
+            title={'Network undetected'}
+            type="warning"
+          />
         )}
       </ConfirmationContent>
       <ConfirmationFooter>
@@ -268,6 +337,13 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
           </>
         )}
       </ConfirmationFooter>
+      <AddNetworkWCModal
+        networkToAdd={networkNeedToImport}
+        setVisible={setAddNetworkModalVisible}
+        visible={addNetworkModalVisible}
+        cancelRequest={onCancel}
+        requestId={request.id}
+      />
     </React.Fragment>
   );
 };

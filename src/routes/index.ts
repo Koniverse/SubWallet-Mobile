@@ -44,7 +44,7 @@ export type RootStackParamList = {
   ImportPrivateKey: undefined;
   NetworksSetting: { chainName?: string };
   NetworkSettingDetail: { chainSlug: string };
-  ImportNetwork: undefined;
+  ImportNetwork: { chainIds: string[]; id: string } | undefined;
   Drawer: NavigatorScreenParams<WrapperParamList>;
   EarningPreview: { chain?: string; type?: string; target?: string };
   EarningPreviewPools: {
@@ -116,6 +116,7 @@ export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'Bro
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
 export type ImportTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportToken'>;
+export type ImportNetworkProps = NativeStackScreenProps<RootStackParamList, 'ImportNetwork'>;
 export type ImportNftProps = NativeStackScreenProps<RootStackParamList, 'ImportNft'>;
 export type UnlockModalProps = NativeStackScreenProps<RootStackParamList, 'UnlockModal'>;
 export type ConnectListProps = NativeStackScreenProps<RootStackParamList, 'ConnectList'>;
