@@ -7,6 +7,8 @@ export enum AccountSignMode {
   READ_ONLY = 'readonly',
   ALL_ACCOUNT = 'ALL_ACCOUNT',
   UNKNOWN = 'unknown',
+  LEGACY_LEDGER = 'legacy-ledger',
+  GENERIC_LEDGER = 'generic-ledger',
 }
 
 export interface BaseSignProps {

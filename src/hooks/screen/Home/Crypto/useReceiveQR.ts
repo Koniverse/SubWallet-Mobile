@@ -12,19 +12,53 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { getAccountType } from 'utils/index';
 import { RootState } from 'stores/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
-import { getAccountTypeByTokenGroup } from 'hooks/screen/Home/Crypto/utils';
 import { findAccountByAddress } from 'utils/account';
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
+import { _ChainAsset } from '@subwallet/chain-list/types';
+import { _MANTA_ZK_CHAIN_GROUP, _ZK_ASSET_PREFIX } from '@subwallet/extension-base/services/chain-service/constants';
+import { MantaPayConfig } from '@subwallet/extension-base/background/KoniTypes';
 
 type ReceiveSelectedResult = {
   selectedAccount?: string;
   selectedNetwork?: string;
 };
+
+const getChainsByTokenGroup = (tokenGroupSlug: string, assetRegistryMap: Record<string, _ChainAsset>): string[] => {
+  // case tokenGroupSlug is token slug
+  if (assetRegistryMap[tokenGroupSlug]) {
+    return [assetRegistryMap[tokenGroupSlug].originChain];
+  }
+
+  // case tokenGroupSlug is multiChainAsset slug
+
+  const assetRegistryItems: _ChainAsset[] = Object.values(assetRegistryMap).filter(assetItem => {
+    return _isAssetFungibleToken(assetItem) && _getMultiChainAsset(assetItem) === tokenGroupSlug;
+  });
+
+  const map: Record<string, boolean> = {};
+
+  for (const assetItem of assetRegistryItems) {
+    const chainSlug = assetRegistryMap[assetItem.slug].originChain;
+
+    map[chainSlug] = true;
+  }
+
+  return Object.keys(map);
+};
+
+function isMantaPayEnabled(account: AccountJson | null, configs: MantaPayConfig[]) {
+  for (const config of configs) {
+    if (config.address === account?.address) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 export default function useReceiveQR(tokenGroupSlug?: string) {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
@@ -32,12 +66,12 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   const assetRegistryMap = useChainAssets().chainAssetRegistry;
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const isAllAccount = useSelector((state: RootState) => state.accountState.isAllAccount);
+  const mantaPayConfigs = useSelector((state: RootState) => state.mantaPay.configs);
   const [tokenSelectorItems, setTokenSelectorItems] = useState<TokenItemType[]>([]);
   const [isQrModalVisible, setQrModalVisible] = useState<boolean>(false);
   const [{ selectedAccount, selectedNetwork }, setReceiveSelectedResult] = useState<ReceiveSelectedResult>({
     selectedAccount: isAllAccount ? undefined : currentAccount?.address,
   });
-
   useEffect(() => {
     if (!isQrModalVisible) {
       setReceiveSelectedResult({ selectedAccount: isAllAccount ? undefined : currentAccount?.address });
@@ -54,13 +88,39 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     }
 
     if (tokenGroupSlug) {
-      const targetAccountType = getAccountTypeByTokenGroup(tokenGroupSlug, assetRegistryMap, chainInfoMap);
+      const chains = getChainsByTokenGroup(tokenGroupSlug, assetRegistryMap);
 
-      if (targetAccountType === 'ALL') {
-        return accounts.filter(a => !checkIsAccountAll(a.address));
-      }
+      return accounts.filter(account => {
+        const isEvm = isEthereumAddress(account.address);
+        const isAll = checkIsAccountAll(account.address);
 
-      return accounts.filter(a => getAccountType(a.address) === targetAccountType);
+        if (isAll) {
+          return false;
+        }
+
+        if (account.isHardware) {
+          if (!account.isGeneric) {
+            if (!isEvm) {
+              const availableGen: string[] = account.availableGenesisHashes || [];
+              const networks = availableGen
+                .map(gen => findNetworkJsonByGenesisHash(chainInfoMap, gen)?.slug)
+                .filter(slug => slug) as string[];
+
+              return networks.some(n => chains.includes(n));
+            }
+          }
+        }
+
+        return chains.some(chain => {
+          const info = chainInfoMap[chain];
+
+          if (info) {
+            return isEvm === _isChainEvmCompatible(info);
+          } else {
+            return false;
+          }
+        });
+      });
     }
 
     return accounts.filter(a => !checkIsAccountAll(a.address));
@@ -91,11 +151,18 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
       const acc = findAccountByAddress(accounts, _selectedAccount);
 
       return Object.values(assetRegistryMap).filter(asset => {
+        const availableGen: string[] = acc?.availableGenesisHashes || [];
+
         if (
-          acc?.originGenesisHash &&
-          chainInfoMap[asset.originChain].substrateInfo?.genesisHash !== acc.originGenesisHash
+          acc?.isHardware &&
+          !acc?.isGeneric &&
+          !availableGen.includes(chainInfoMap[asset.originChain].substrateInfo?.genesisHash || '')
         ) {
           return false;
+        }
+
+        if (_MANTA_ZK_CHAIN_GROUP.includes(asset.originChain) && asset.symbol.startsWith(_ZK_ASSET_PREFIX)) {
+          return isMantaPayEnabled(acc, mantaPayConfigs);
         }
 
         if (_isAssetFungibleToken(asset)) {
@@ -111,7 +178,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
         return false;
       });
     },
-    [tokenGroupSlug, assetRegistryMap, accounts, chainInfoMap],
+    [tokenGroupSlug, assetRegistryMap, accounts, chainInfoMap, mantaPayConfigs],
   );
 
   const onOpenReceive = useCallback(() => {
@@ -123,14 +190,19 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
       accountRef && accountRef.current?.onOpenModal();
     } else {
       // if currentAccount is ledger type
-      if (currentAccount.originGenesisHash) {
-        const network = findNetworkJsonByGenesisHash(chainInfoMap, currentAccount.originGenesisHash);
+      if (currentAccount.isHardware) {
+        if (!currentAccount.isGeneric) {
+          const availableGen: string[] = currentAccount.availableGenesisHashes || [];
+          const networks = availableGen
+            .map(gen => findNetworkJsonByGenesisHash(chainInfoMap, gen)?.slug)
+            .filter(slug => slug) as string[];
 
-        if (network) {
-          setReceiveSelectedResult(prevState => ({ ...prevState, selectedNetwork: network.slug }));
-          setQrModalVisible(true);
+          if (networks.length === 1) {
+            setReceiveSelectedResult(prevState => ({ ...prevState, selectedNetwork: networks[0] }));
+            setQrModalVisible(true);
 
-          return;
+            return;
+          }
         }
       }
 

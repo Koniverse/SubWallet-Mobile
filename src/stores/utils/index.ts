@@ -12,6 +12,8 @@ import {
   ConfirmationsQueue,
   CrowdloanJson,
   KeyringState,
+  MantaPayConfig,
+  MantaPaySyncState,
   NftCollection,
   NftJson,
   NominatorMetadata,
@@ -264,6 +266,28 @@ export const getAssetsLogoMaps = lazySubscribeMessage(
 //
 // export const subscribeAppSettings = lazySubscribeMessage('pri(accounts.subscribeWithCurrentAddress)', {}, updateCurrentAccountState, updateCurrentAccountState);
 //
+
+export const updateMantaPayConfig = (data: MantaPayConfig[]) => {
+  store.dispatch({ type: 'mantaPay/updateConfig', payload: data });
+};
+
+export const subscribeMantaPayConfig = lazySubscribeMessage(
+  'pri(mantaPay.subscribeConfig)',
+  null,
+  updateMantaPayConfig,
+  updateMantaPayConfig,
+);
+
+export const updateMantaPaySyncing = (data: MantaPaySyncState) => {
+  store.dispatch({ type: 'mantaPay/updateIsSyncing', payload: data });
+};
+
+export const subscribeMantaPaySyncingState = lazySubscribeMessage(
+  'pri(mantaPay.subscribeSyncingState)',
+  null,
+  updateMantaPaySyncing,
+  updateMantaPaySyncing,
+);
 
 export const updateAuthUrls = (data: AuthUrls) => {
   store.dispatch({ type: 'settings/updateAuthUrls', payload: data });

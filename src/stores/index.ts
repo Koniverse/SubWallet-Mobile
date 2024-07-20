@@ -36,6 +36,7 @@ import PriceReducer from './feature/Price';
 import EarningReducer from './feature/Earning';
 import StakingReducer from './feature/Staking';
 import WalletConnectReducer from './feature/WalletConnect';
+import MantaPayReducer from './feature/MantaPay';
 import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
 import SwapReducer from './feature/Swap';
@@ -84,6 +85,7 @@ const rootReducer = combineReducers({
   swap: SwapReducer,
   // mission pool
   missionPool: MissionPoolReducer,
+  mantaPay: MantaPayReducer,
 
   // Common
   chainStore: persistReducer(

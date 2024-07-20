@@ -3,14 +3,20 @@
 
 import useAccountRecoded from './useAccountRecoded';
 import { useMemo } from 'react';
+import { KeypairType } from '@polkadot/util-crypto/types';
 
 interface Result {
   address: string;
   prefix: number;
 }
 
-const useAccountAvatarInfo = (address: string, preventPrefix?: boolean, genesisHash?: string | null): Result => {
-  const { formatted, originGenesisHash, prefix } = useAccountRecoded(address || '', genesisHash);
+const useAccountAvatarInfo = (
+  address: string,
+  preventPrefix?: boolean,
+  genesisHash?: string | null,
+  givenType: KeypairType = 'sr25519',
+): Result => {
+  const { formatted, originGenesisHash, prefix } = useAccountRecoded(address || '', genesisHash, givenType);
 
   const avatarAddress = useMemo((): string => {
     if (originGenesisHash) {
