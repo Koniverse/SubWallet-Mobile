@@ -123,7 +123,9 @@ const EarningWithdrawMeta: React.FC<Props> = (props: Props) => {
             return (
               <View style={styles.timeRow}>
                 <Typography.Text style={styles.timeText}>
-                  {i18n.earningScreen.withdrawInfo.waitingForWithdrawal}
+                  {item.chain === 'acala'
+                    ? i18n.earningScreen.withdrawInfo.availableForWithdrawal
+                    : i18n.earningScreen.withdrawInfo.waitingForWithdrawal}
                 </Typography.Text>
                 {item.status === UnstakingStatus.CLAIMABLE && (
                   <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />
