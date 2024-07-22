@@ -32,4 +32,5 @@ export const PREDEFINED_EARNING_POOL: Record<string, number[]> = {
   vara_network: [62, 29, 50],
   aleph: [82],
   availTuringTest: [11],
+  avail_mainnet: [4],
 };

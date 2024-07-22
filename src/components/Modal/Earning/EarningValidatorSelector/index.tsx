@@ -30,6 +30,7 @@ import { ValidatorDataType } from 'types/earning';
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 import { YieldPoolType } from '@subwallet/extension-base/types';
 import DotBadge from 'components/design-system-ui/badge/DotBadge';
+import { autoSelectValidatorOptimally } from 'utils/earning';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -72,6 +73,9 @@ export interface ValidatorSelectorRef {
   resetValue: () => void;
   onOpenModal: () => void;
 }
+
+const AVAIL_CHAIN = 'avail_mainnet';
+const AVAIL_VALIDATOR = '5FjdibsxmNFas5HWcT2i1AXbpfgiNfWqezzo88H2tskxWdt2';
 
 export const EarningValidatorSelector = forwardRef(
   (
@@ -169,6 +173,7 @@ export const EarningValidatorSelector = forwardRef(
     const defaultValueRef = useRef({ _default: '_', selected: '_' });
     const [detailItem, setDetailItem] = useState<ValidatorDataType | undefined>(undefined);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
+    const [autoValidator, setAutoValidator] = useState('');
 
     const OFFSET_BOTTOM = useMemo(
       () =>
@@ -286,8 +291,24 @@ export const EarningValidatorSelector = forwardRef(
     }, [defaultValidatorAddress, resultList]);
 
     useEffect(() => {
+      if (chain === AVAIL_CHAIN) {
+        setAutoValidator(old => {
+          if (old) {
+            return old;
+          } else {
+            const _selectedValidator = autoSelectValidatorOptimally(items, 16, true, AVAIL_VALIDATOR);
+
+            return _selectedValidator.map(item => getValidatorKey(item.address, item.identity)).join(',');
+          }
+        });
+      }
+    }, [chain, items]);
+
+    useEffect(() => {
       const _default =
-        nominations?.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity)).join(',') || '';
+        nominations?.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity)).join(',') ||
+        autoValidator ||
+        '';
       let defaultValue = '';
       if (externalDefaultValue && externalDefaultValue.length) {
         defaultValue = externalDefaultValue.map(item => getValidatorKey(item.address, item.identity)).join(',');
@@ -302,7 +323,7 @@ export const EarningValidatorSelector = forwardRef(
       onInitValidators(_default, selected);
       onSelectItem && onSelectItem(selected);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isSingleSelect, from, defaultValidatorAddress]);
+    }, [isSingleSelect, from, defaultValidatorAddress, autoValidator]);
 
     const applyBtn = useMemo(
       () => ({

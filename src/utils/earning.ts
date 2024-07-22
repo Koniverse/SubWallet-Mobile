@@ -68,6 +68,7 @@ export function isRelatedToAstar(slug: string) {
 export function autoSelectValidatorOptimally(
   validators: ValidatorInfo[],
   maxCount = 1,
+  simple = false,
   preSelectValidators?: string,
 ): ValidatorInfo[] {
   if (!validators.length) {
@@ -76,24 +77,31 @@ export function autoSelectValidatorOptimally(
 
   const preSelectValidatorAddresses = preSelectValidators ? preSelectValidators.split(',') : [];
 
-  const shuffleValidators = [...validators];
-
-  shuffle<ValidatorInfo>(shuffleValidators);
-
   const result: ValidatorInfo[] = [];
+  const notPreSelected: ValidatorInfo[] = [];
 
-  for (const v of shuffleValidators) {
+  for (const v of validators) {
+    if (preSelectValidatorAddresses.includes(v.address)) {
+      result.push(v);
+    } else {
+      notPreSelected.push(v);
+    }
+  }
+
+  if (result.length >= maxCount) {
+    shuffle<ValidatorInfo>(result);
+
+    return result.slice(0, maxCount - 1);
+  }
+
+  shuffle<ValidatorInfo>(notPreSelected);
+
+  for (const v of notPreSelected) {
     if (result.length === maxCount) {
       break;
     }
 
-    if (preSelectValidatorAddresses.includes(v.address)) {
-      result.push(v);
-
-      continue;
-    }
-
-    if (v.commission !== 100 && !v.blocked && v.identity && v.topQuartile) {
+    if (v.commission !== 100 && !v.blocked && (!simple ? v.identity && v.topQuartile : true)) {
       result.push(v);
     }
   }
