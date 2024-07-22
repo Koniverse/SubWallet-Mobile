@@ -9,15 +9,17 @@ import { ActivityIndicator, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapTokenSelectField } from 'components/Field/SwapTokenSelect';
 import { formatNumberString, swapCustomFormatter } from '@subwallet/extension-base/utils';
+import { BN_TEN } from 'utils/chainBalances';
 
 interface Props {
   tokenSelectorItems: TokenItemType[];
   assetValue: string;
   chainValue: string;
   chainInfo: _ChainInfo;
-  swapValue: BigN;
+  swapValue: BigN | string | number;
   onSelectToken?: (item: string) => void;
   toAsset?: _ChainAsset;
+  decimals: number;
   loading?: boolean;
 }
 
@@ -29,6 +31,7 @@ export const SwapToField = ({
   onSelectToken,
   swapValue,
   toAsset,
+  decimals,
   loading,
 }: Props) => {
   const tokenSelectorRef = useRef<ModalRef>();
@@ -49,12 +52,14 @@ export const SwapToField = ({
   // }, [decimals, priceId, priceMap, swapValue]);
 
   const convertedDestinationSwapValue = useMemo(() => {
-    if (swapValue.toString().includes('e')) {
-      return formatNumberString(swapValue.toString());
+    const convertValue = new BigN(swapValue).div(BN_TEN.pow(decimals));
+
+    if (convertValue.toString().includes('e')) {
+      return formatNumberString(convertValue.toString());
     } else {
-      return swapValue.toString();
+      return convertValue.toString();
     }
-  }, [swapValue]);
+  }, [decimals, swapValue]);
 
   return (
     <View

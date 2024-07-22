@@ -3,14 +3,14 @@
 
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { AccountSignMode } from 'types/signer';
-import { getAccountSignMode } from 'utils/account';
+import { getSignMode } from 'utils/account';
 import { useMemo } from 'react';
 
 const useGetAccountSignModeByAddress = (address?: string): AccountSignMode => {
   const account = useGetAccountByAddress(address);
 
   return useMemo((): AccountSignMode => {
-    return getAccountSignMode(account);
+    return getSignMode(account);
   }, [account]);
 };
 

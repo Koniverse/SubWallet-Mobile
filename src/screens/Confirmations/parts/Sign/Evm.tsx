@@ -72,7 +72,8 @@ export const EvmSignArea = (props: Props) => {
     switch (signMode) {
       case AccountSignMode.QR:
         return QrCode;
-      case AccountSignMode.LEDGER:
+      case AccountSignMode.GENERIC_LEDGER:
+      case AccountSignMode.LEGACY_LEDGER:
         return Swatches;
       default:
         return CheckCircle;

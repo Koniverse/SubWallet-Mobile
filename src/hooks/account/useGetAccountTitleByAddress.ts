@@ -13,7 +13,8 @@ const useGetAccountTitleByAddress = (address?: string): string => {
 
   return useMemo((): string => {
     switch (signMode) {
-      case AccountSignMode.LEDGER:
+      case AccountSignMode.GENERIC_LEDGER:
+      case AccountSignMode.LEGACY_LEDGER:
         return i18n.common.ledgerAccount;
       case AccountSignMode.ALL_ACCOUNT:
         return i18n.common.allAccounts;

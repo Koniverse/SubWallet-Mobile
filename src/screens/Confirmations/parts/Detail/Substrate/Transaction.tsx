@@ -1,18 +1,21 @@
-import { ExtrinsicEra, ExtrinsicPayload } from '@polkadot/types/interfaces';
-import { SignerPayloadJSON } from '@polkadot/types/types';
-import { bnToBn, formatNumber } from '@polkadot/util';
+import { Call, ExtrinsicEra, ExtrinsicPayload } from '@polkadot/types/interfaces';
+import { AnyJson, SignerPayloadJSON } from '@polkadot/types/types';
+import { BN, bnToBn, formatNumber } from '@polkadot/util';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
 import useMetadata from 'hooks/transaction/confirmation/useMetadata';
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
+import { Chain } from '@subwallet/extension-chains/types';
+import { Typography } from 'components/design-system-ui';
+import { FontMonoRegular } from 'styles/sharedStyles';
 
-// interface Decoded {
-//   args: AnyJson | null;
-//   method: Call | null;
-// }
+interface Decoded {
+  args: AnyJson | null;
+  method: Call | null;
+}
 
 interface Props {
   payload: ExtrinsicPayload;
@@ -20,32 +23,59 @@ interface Props {
   account: AccountJson;
 }
 
-// const displayDecodeVersion = (message: string, chain: Chain, specVersion: BN): string => {
-//   return `${message}: chain=${
-//     chain.name
-//   }, specVersion=${chain.specVersion.toString()} (request specVersion=${specVersion.toString()})`;
-// };
+const displayDecodeVersion = (message: string, chain: Chain, specVersion: BN): string => {
+  return `${message}: chain=${
+    chain.name
+  }, specVersion=${chain.specVersion.toString()} (request specVersion=${specVersion.toString()})`;
+};
 
-// const decodeMethod = (data: string, chain: Chain, specVersion: BN): Decoded => {
-//   let args: AnyJson | null = null;
-//   let method: Call | null = null;
-//
-//   try {
-//     if (specVersion.eqn(chain.specVersion)) {
-//       method = chain.registry.createType('Call', data);
-//       args = (method.toHuman() as { args: AnyJson }).args;
-//     } else {
-//       console.log(displayDecodeVersion('Outdated metadata to decode', chain, specVersion));
-//     }
-//   } catch (error) {
-//     console.error(`${displayDecodeVersion('Error decoding method', chain, specVersion)}:: ${(error as Error).message}`);
-//
-//     args = null;
-//     method = null;
-//   }
-//
-//   return { args, method };
-// };
+const decodeMethod = (data: string, chain: Chain, specVersion: BN): Decoded => {
+  let args: AnyJson | null = null;
+  let method: Call | null = null;
+
+  try {
+    if (specVersion.eqn(chain.specVersion)) {
+      method = chain.registry.createType('Call', data);
+      args = (method.toHuman() as { args: AnyJson }).args;
+    } else {
+      console.log(displayDecodeVersion('Outdated metadata to decode', chain, specVersion));
+    }
+  } catch (error) {
+    console.error(`${displayDecodeVersion('Error decoding method', chain, specVersion)}:: ${(error as Error).message}`);
+
+    args = null;
+    method = null;
+  }
+
+  return { args, method };
+};
+
+const renderMethod = (data: string, { args, method }: Decoded): React.ReactNode => {
+  if (!args || !method) {
+    return <MetaInfo.Data label={'Method data'}>{data}</MetaInfo.Data>;
+  }
+
+  return (
+    <>
+      <MetaInfo.Data label={'Method'}>
+        <>
+          <Typography.Text style={{ color: 'rgba(255, 255, 255, 0.45)', ...FontMonoRegular }}>
+            {method.section}.{method.method}
+          </Typography.Text>
+          <Typography.Text style={{ color: 'rgba(255, 255, 255, 0.45)', ...FontMonoRegular }}>
+            {method.meta ? `(${method.meta.args.map(({ name }) => name).join(', ')})` : ''}
+          </Typography.Text>
+          <Typography.Text style={{ color: 'rgba(255, 255, 255, 0.45)', ...FontMonoRegular }}>
+            {JSON.stringify(args, null, 2)}
+          </Typography.Text>
+        </>
+      </MetaInfo.Data>
+      {method.meta && (
+        <MetaInfo.Data label={'Info'}>{method.meta.docs.map(d => d.toString().trim()).join(' ')}</MetaInfo.Data>
+      )}
+    </>
+  );
+};
 
 const mortalityAsString = (era: ExtrinsicEra, hexBlockNumber: string): string => {
   if (era.isImmortalEra) {
@@ -59,7 +89,7 @@ const mortalityAsString = (era: ExtrinsicEra, hexBlockNumber: string): string =>
     i18n.confirmation.lifeTimeContent,
     formatNumber(mortal.birth(blockNumber)),
     formatNumber(mortal.death(blockNumber)),
-  );
+  ) as string;
 };
 
 const SubstrateTransactionDetail: React.FC<Props> = (props: Props) => {
@@ -70,15 +100,13 @@ const SubstrateTransactionDetail: React.FC<Props> = (props: Props) => {
   } = props;
   // const theme = useSubWalletTheme().swThemes;
 
-  const chain = useMetadata(genesisHash);
-
+  const { chain } = useMetadata(genesisHash);
   const chainInfo = useGetChainInfoByGenesisHash(genesisHash);
   const specVersion = useRef(bnToBn(hexSpec)).current;
-  // const decoded = useMemo(
-  //   () => (chain && chain.hasMetadata ? decodeMethod(method, chain, specVersion) : { args: null, method: null }),
-  //   [method, chain, specVersion],
-  // );
-
+  const decoded = useMemo(
+    () => (chain && chain.hasMetadata ? decodeMethod(method, chain, specVersion) : { args: null, method: null }),
+    [method, chain, specVersion],
+  );
   // const styles = useMemo(() => createStyle(theme), [theme]);
 
   return (
@@ -104,7 +132,7 @@ const SubstrateTransactionDetail: React.FC<Props> = (props: Props) => {
           value={tip.toNumber()}
         />
       )}
-      <MetaInfo.Data label={i18n.inputLabel.methodData}>{method}</MetaInfo.Data>
+      {renderMethod(method, decoded)}
       <MetaInfo.Data label={i18n.common.lifetime}>{mortalityAsString(era, blockNumber)}</MetaInfo.Data>
     </MetaInfo>
   );

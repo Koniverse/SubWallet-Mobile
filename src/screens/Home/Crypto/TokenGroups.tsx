@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { TokenBalanceItemType } from 'types/balance';
 import { CryptoNavigationProps } from 'routes/home';
 import { TokensLayout } from 'screens/Home/Crypto/shared/TokensLayout';
-import { ListRenderItemInfo, StyleProp, View } from 'react-native';
+import { ListRenderItemInfo, Platform, StyleProp, View } from 'react-native';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 import { TokenGroupBalanceItem } from 'components/common/TokenGroupBalanceItem';
 import { LeftIconButton } from 'components/LeftIconButton';
@@ -178,13 +178,17 @@ export const TokenGroups = () => {
     }
 
     const onSuccess = () => {
-      navigation.navigate('Drawer', {
-        screen: 'TransactionAction',
-        params: {
-          screen: 'SendFund',
-          params: {},
-        },
-      });
+      if (Platform.OS === 'ios' && parseFloat(Platform.Version) < 16.4) {
+        navigation.navigate('Drawer', {
+          screen: 'TransactionAction',
+          params: { screen: 'OldSendFund', params: {} },
+        });
+      } else {
+        navigation.navigate('Drawer', {
+          screen: 'TransactionAction',
+          params: { screen: 'SendFund', params: {} },
+        });
+      }
     };
 
     onSuccess();

@@ -14,6 +14,7 @@ import { Recoded } from 'types/ui-types';
 import SInfo, { RNSensitiveInfoOptions } from 'react-native-sensitive-info';
 import { Alert } from 'react-native';
 import i18n from './i18n/i18n';
+import { KeypairType } from '@polkadot/util-crypto/types';
 
 export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {
@@ -38,26 +39,14 @@ export const findAccountByAddress = (accounts: AccountJson[], address?: string):
   }
 };
 
-export const getAccountSignMode = (account: AccountJson | null | undefined): AccountSignMode => {
-  if (!account) {
-    return AccountSignMode.UNKNOWN;
-  } else {
-    if (account.address === ALL_ACCOUNT_KEY) {
-      return AccountSignMode.ALL_ACCOUNT;
-    } else {
-      if (account.isExternal) {
-        if (account.isHardware) {
-          return AccountSignMode.LEDGER;
-        } else if (account.isReadOnly) {
-          return AccountSignMode.READ_ONLY;
-        } else {
-          return AccountSignMode.QR;
-        }
-      } else {
-        return AccountSignMode.PASSWORD;
-      }
-    }
-  }
+export const formatAccountAddress = (account: AccountJson, networkInfo: _ChainInfo | null): string => {
+  const prefix =
+    networkInfo && _getChainSubstrateAddressPrefix(networkInfo) !== -1
+      ? _getChainSubstrateAddressPrefix(networkInfo)
+      : 42;
+  const isEthereum = account.type === 'ethereum' || (!!networkInfo && _isChainEvmCompatible(networkInfo));
+
+  return reformatAddress(account.address, prefix, isEthereum);
 };
 
 export const accountCanSign = (signMode: AccountSignMode): boolean => {
@@ -99,7 +88,11 @@ export const getSignMode = (account: AccountJson | null | undefined): AccountSig
     } else {
       if (account.isExternal) {
         if (account.isHardware) {
-          return AccountSignMode.LEDGER;
+          if (account.isGeneric) {
+            return AccountSignMode.GENERIC_LEDGER;
+          } else {
+            return AccountSignMode.LEGACY_LEDGER;
+          }
         } else if (account.isReadOnly) {
           return AccountSignMode.READ_ONLY;
         } else {
@@ -141,6 +134,7 @@ export const recodeAddress = (
   address: string | undefined,
   accounts: AccountWithChildren[],
   networkInfo: _ChainInfo | null,
+  type?: KeypairType,
 ): Recoded => {
   if (!address) {
     return defaultRecoded;
@@ -154,7 +148,7 @@ export const recodeAddress = (
     networkInfo && _getChainSubstrateAddressPrefix(networkInfo) !== -1
       ? _getChainSubstrateAddressPrefix(networkInfo)
       : 42;
-  const isEthereum = isEthereumAddress(address) || (!!networkInfo && _isChainEvmCompatible(networkInfo));
+  const isEthereum = type === 'ethereum' || (!!networkInfo && _isChainEvmCompatible(networkInfo));
 
   return {
     account,

@@ -10,6 +10,8 @@ import { AccountSignMode } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import AvatarGroup from 'components/common/AvatarGroup';
+import useAccountAvatarInfo from 'hooks/account/useAccountAvatarInfo';
+import { KeypairType } from '@polkadot/util-crypto/types';
 
 interface Props {
   address: string;
@@ -23,6 +25,9 @@ interface Props {
   avatarGroupStyle?: ViewStyle;
   isUseCustomAccountSign?: boolean;
   customAccountSignMode?: React.ElementType<IconProps>;
+  genesisHash?: string | null;
+  preventPrefix?: boolean;
+  type?: KeypairType;
 }
 
 export const SelectAccountItem = ({
@@ -37,12 +42,23 @@ export const SelectAccountItem = ({
   avatarGroupStyle,
   isUseCustomAccountSign,
   customAccountSignMode,
+  genesisHash,
+  preventPrefix,
+  type: givenType,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const { address: formattedAddress, prefix } = useAccountAvatarInfo(
+    address ?? '',
+    preventPrefix,
+    genesisHash,
+    givenType,
+  );
+
   const signMode = useGetAccountSignModeByAddress(address);
   const accountSignModeIcon = useMemo((): React.ElementType<IconProps> | undefined => {
     switch (signMode) {
-      case AccountSignMode.LEDGER:
+      case AccountSignMode.LEGACY_LEDGER:
+      case AccountSignMode.GENERIC_LEDGER:
         return Swatches;
       case AccountSignMode.QR:
         return QrCode;
@@ -71,7 +87,12 @@ export const SelectAccountItem = ({
         {isAllAccount ? (
           <AvatarGroup avatarGroupStyle={avatarGroupStyle} />
         ) : (
-          <Avatar value={address} size={40} theme={isEthereumAddress(address) ? 'ethereum' : 'polkadot'} />
+          <Avatar
+            identPrefix={prefix}
+            value={formattedAddress}
+            size={40}
+            theme={isEthereumAddress(address) ? 'ethereum' : 'polkadot'}
+          />
         )}
 
         <View style={{ paddingLeft: theme.paddingXS, justifyContent: 'center', flex: 1 }}>
@@ -99,7 +120,7 @@ export const SelectAccountItem = ({
                 paddingRight: 16,
                 flex: 1,
               }}>
-              {toShort(address, 9, 9)}
+              {toShort(formattedAddress, 9, 9)}
             </Typography.Text>
           )}
         </View>

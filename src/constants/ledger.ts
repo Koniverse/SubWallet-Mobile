@@ -112,6 +112,20 @@ export const PredefinedLedgerNetwork: LedgerNetwork[] = [
   // }
 ];
 
+export const POLKADOT_KEY = 'polkadot';
+export const POLKADOT_SLIP_44 = 354;
+
+export const PolkadotDerivationPathGens: string[] = [POLKADOT_KEY].map(
+  slug => ChainInfoMap[slug].substrateInfo?.genesisHash || '',
+);
+export const StandardDerivationPathGens: string[] = Object.values(PredefinedLedgerNetwork)
+  .filter(network => {
+    return network.slug !== POLKADOT_KEY && network.slip44 === POLKADOT_SLIP_44 && !network.isGeneric;
+  })
+  .map(({ genesisHash }) => genesisHash);
+
+export const NotNeedMigrationGens: string[] = [...PolkadotDerivationPathGens, ...StandardDerivationPathGens];
+
 /*
   BLOCK
   *: All network,

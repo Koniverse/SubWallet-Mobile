@@ -642,7 +642,7 @@
     "warningCreatePasswordTitle": "Always choose a strong password!"
   },
   "message": {
-    "claimRewardMessage1": "Your rewards will be bonded back into the pool after claiming",
+    "claimRewardMessage1": "Your rewards will be staked back into the pool after claiming",
     "claimRewardMessage2": "Your rewards will be added to your transferable balance after claiming",
     "deleteNetworkMessage": "You are about to delete this network",
     "deleteTokenMessage": "You are about to delete this token",

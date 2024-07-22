@@ -40,6 +40,7 @@ const ConfirmModal: React.FC<Props> = ({
       modalTitle={title}
       titleTextAlign="center"
       isUseModalV2
+      level={5}
       footer={
         <>
           <View style={styles.footerModalStyle}>

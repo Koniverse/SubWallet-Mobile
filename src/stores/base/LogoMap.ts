@@ -5,6 +5,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
 import { AllLogoMap } from '@subwallet/extension-base/background/KoniTypes';
 import { AssetLogoMap, ChainLogoMap } from '@subwallet/chain-list';
 import { ImageLogosMap } from 'assets/logo';
+import { SwapProviderId } from '@subwallet/extension-base/types/swap';
 
 const initialState: AllLogoMap = {
   chainLogoMap: ChainLogoMap,
@@ -22,7 +23,9 @@ const settingsSlice = createSlice({
       payload.chain_flip_testnet = ImageLogosMap.chain_flip_testnet;
       payload.hydradx_mainnet = ImageLogosMap.hydradx_mainnet;
       payload.hydradx_testnet = ImageLogosMap.hydradx_testnet;
-
+      payload[SwapProviderId.POLKADOT_ASSET_HUB.toLowerCase()] = ImageLogosMap.polkadot_assethub;
+      payload[SwapProviderId.KUSAMA_ASSET_HUB.toLowerCase()] = ImageLogosMap.kusama_assethub;
+      payload[SwapProviderId.ROCOCO_ASSET_HUB.toLowerCase()] = ImageLogosMap.rococo_assethub;
       return {
         ...state,
         chainLogoMap: payload,

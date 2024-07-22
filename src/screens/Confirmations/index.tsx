@@ -202,9 +202,13 @@ export const Confirmations = () => {
       }
 
       const signMode = getSignMode(account);
+      console.log('signMode', signMode);
       const isEvm = isEthereumAddress(account?.address);
       const notSupport =
         signMode === AccountSignMode.READ_ONLY ||
+        signMode === AccountSignMode.LEDGER ||
+        signMode === AccountSignMode.GENERIC_LEDGER ||
+        signMode === AccountSignMode.LEGACY_LEDGER ||
         signMode === AccountSignMode.UNKNOWN ||
         (signMode === AccountSignMode.QR && isEvm && !isDevMode) ||
         !canSign;

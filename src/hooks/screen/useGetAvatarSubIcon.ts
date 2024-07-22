@@ -3,11 +3,12 @@ import { Eye, HardDrives, QrCode } from 'phosphor-react-native';
 import { useMemo } from 'react';
 import { AccountSignMode } from 'types/signer';
 import { AvatarSubIcon } from 'types/ui-types';
-import { getAccountSignMode } from 'utils/account';
+import { getSignMode } from 'utils/account';
 
 const useGetAvatarSubIcon = (account: AccountJson | null | undefined, size: number): AvatarSubIcon | undefined => {
   return useMemo((): AvatarSubIcon | undefined => {
-    const signMode = getAccountSignMode(account);
+    const signMode = getSignMode(account);
+    console.log('signMode', signMode);
     switch (signMode) {
       case AccountSignMode.QR:
         return {
@@ -19,7 +20,8 @@ const useGetAvatarSubIcon = (account: AccountJson | null | undefined, size: numb
           size: size,
           Icon: Eye,
         };
-      case AccountSignMode.LEDGER:
+      case AccountSignMode.GENERIC_LEDGER:
+      case AccountSignMode.LEGACY_LEDGER:
         return {
           size: size,
           Icon: HardDrives,
