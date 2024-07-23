@@ -11,16 +11,7 @@ import React, {
 } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import {
-  Alert,
-  Linking,
-  NativeSyntheticEvent,
-  Platform,
-  SafeAreaView,
-  Share,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Linking, NativeSyntheticEvent, Platform, SafeAreaView, Share, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -43,7 +34,7 @@ import {
   WebViewProgressEvent,
 } from 'react-native-webview/lib/WebViewTypes';
 import * as RNFS from 'react-native-fs';
-import { DEVICE } from 'constants/index';
+import { DEVICE, regex } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
 import { addToHistory, updateLatestItemInHistory, updateTab, updateTabScreenshot } from 'stores/updater';
@@ -139,6 +130,17 @@ const getJsInjectContent = (showLog?: boolean) => {
   return injectedJS;
 };
 
+const injectScriptHandler: { script: string | null; promise: Promise<void> } = {
+  script: null,
+  promise: new Promise<void>(() => {}),
+};
+
+injectScriptHandler.promise = (async () => {
+  const injectPageJsContent = await InjectPageJsScript.get();
+  injectScriptHandler.script =
+    getJsInjectContent() + BridgeScript + injectPageJsContent + ConnectToNovaScript + DAppScript;
+})();
+
 //todo: Update better style
 const PhishingBlockerLayer = () => {
   const theme = useSubWalletTheme().swThemes;
@@ -154,7 +156,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const navigation = useNavigation<RootNavigationProps>();
-  const historyItems = useSelector((state: RootState) => state.browser.history);
+  const { history: historyItems, externalApplicationUrlList } = useSelector((state: RootState) => state.browser);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [initWebViewSource, setInitWebViewSource] = useState<string | null>(null);
   const [progressNumber, setProgressNumber] = useState<number>(0);
@@ -163,7 +165,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     canGoBack: false,
     canGoForward: false,
   });
-  const [injectedScripts, setInjectedScripts] = useState<string | null>(null);
+  const [injectedScripts, setInjectedScripts] = useState<string | null>(injectScriptHandler.script);
   const [isShowPhishingWarning, setIsShowPhishingWarning] = useState<boolean>(false);
   const webviewRef = useRef<WebView>(null);
   const browserSv = useRef<BrowserService | null>(null);
@@ -386,25 +388,12 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   ];
 
   useEffect(() => {
-    let isSync = true;
-
-    (async () => {
-      const injectPageJsContent = await InjectPageJsScript.get();
-
-      if (isSync) {
-        const injectScripts =
-          getJsInjectContent() + BridgeScript + injectPageJsContent + ConnectToNovaScript + DAppScript;
-
-        setInjectedScripts(injectScripts);
-      }
-    })();
-
-    return () => {
-      isSync = false;
-
-      clearCurrentBrowserSv();
-    };
-  }, [tabId]);
+    if (!injectScriptHandler.script) {
+      injectScriptHandler.promise.then(() => {
+        setInjectedScripts(injectScriptHandler.script);
+      });
+    }
+  }, []);
 
   const onLoadProgress = useCallback(
     ({ nativeEvent: { progress } }: WebViewProgressEvent) => {
@@ -465,17 +454,22 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     },
   }));
 
+  const isExternalAppUrl = useCallback(
+    (url: string) => {
+      if (externalApplicationUrlList && externalApplicationUrlList.length) {
+        return externalApplicationUrlList.some(item => url.startsWith(item));
+      } else {
+        return false;
+      }
+    },
+    [externalApplicationUrlList],
+  );
+
   const onShouldStartLoadWithRequest = useCallback(
     ({ url }: WebViewNavigation) => {
-      if (
-        url.startsWith('tel:') ||
-        url.startsWith('mailto:') ||
-        url.startsWith('maps:') ||
-        url.startsWith('geo:') ||
-        url.startsWith('sms:')
-      ) {
+      if (isExternalAppUrl(url)) {
         Linking.openURL(url).catch(er => {
-          Alert.alert('Failed to open Link: ' + er.message);
+          console.log('Failed to open Link: ' + er.message);
         });
         return false;
       }
@@ -516,9 +510,13 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
         return false;
       }
 
+      if (urlParsed.protocol === 'http:') {
+        Linking.openURL(url.replace(regex.httpProtocol, 'https://'));
+      }
+
       return true;
     },
-    [dispatch, toast],
+    [dispatch, isExternalAppUrl, toast],
   );
 
   const onOutOfMemmories = () => {
@@ -555,6 +553,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
         allowsInlineMediaPlayback
         allowUniversalAccessFromFileURLs
         allowFileAccessFromFileURLs
+        mediaPlaybackRequiresUserAction={false}
         domStorageEnabled
         javaScriptEnabled
         injectedJavaScript={`

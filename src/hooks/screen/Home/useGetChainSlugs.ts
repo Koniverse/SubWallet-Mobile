@@ -8,20 +8,21 @@ import { useSelector } from 'react-redux';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AccountType } from 'types/ui-types';
 import { RootState } from 'stores/index';
-import { findAccountByAddress } from 'utils/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { isAccountAll } from 'utils/accountAll';
+import { analysisAccounts } from 'hooks/screen/Home/Crypto/useGetChainSlugsByAccountType';
+import { KeypairType } from '@polkadot/util-crypto/types';
 
 function getChainsAccountType(
   accountType: AccountType,
   chainInfoMap: Record<string, _ChainInfo>,
-  accountNetwork?: string,
+  accountNetworks?: string[],
 ): string[] {
   const result: string[] = [];
 
   Object.keys(chainInfoMap).forEach(chain => {
-    if (accountNetwork) {
-      if (chain === accountNetwork) {
+    if (accountNetworks) {
+      if (accountNetworks.includes(chain)) {
         result.push(chain);
       }
     } else {
@@ -42,49 +43,65 @@ function getChainsAccountType(
   return result;
 }
 
-export function useGetChainSlugs(address?: string): string[] {
+function getAccountType(type: KeypairType) {
+  if (type === 'ethereum') {
+    return 'ETHEREUM';
+  } else if (['ed25519', 'sr25519', 'ecdsa'].includes(type)) {
+    return 'SUBSTRATE';
+  }
+
+  return undefined;
+}
+
+export function useGetChainSlugs(): string[] {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
 
   const accountType = useMemo(() => {
+    const foundAccountType = currentAccount?.type ? getAccountType(currentAccount?.type) : undefined;
+
+    if (foundAccountType) {
+      return foundAccountType;
+    }
+
     let _accountType: AccountType = 'ALL';
 
-    if (address) {
-      if (isAccountAll(address)) {
-        return 'ALL';
-      }
+    if (currentAccount?.address) {
+      if (isAccountAll(currentAccount.address)) {
+        const [isContainOnlySubstrate, isContainOnlyEthereum] = analysisAccounts(accounts);
 
-      if (isEthereumAddress(address)) {
+        if (isContainOnlyEthereum) {
+          _accountType = 'ETHEREUM';
+        } else if (isContainOnlySubstrate) {
+          _accountType = 'SUBSTRATE';
+        }
+      } else if (isEthereumAddress(currentAccount?.address)) {
         _accountType = 'ETHEREUM';
       } else {
-        _accountType = 'SUBSTRATE';
-      }
-    } else if (currentAccount?.type) {
-      if (currentAccount.type === 'ethereum') {
-        _accountType = 'ETHEREUM';
-      } else if (['ed25519', 'sr25519', 'ecdsa'].includes(currentAccount.type)) {
         _accountType = 'SUBSTRATE';
       }
     }
 
     return _accountType;
-  }, [address, currentAccount?.type]);
+  }, [accounts, currentAccount?.address, currentAccount?.type]);
 
   const accountNetwork = useMemo(() => {
-    let account: AccountJson | null = currentAccount;
+    const account: AccountJson | null = currentAccount;
 
-    if (address) {
-      account = findAccountByAddress(accounts, address);
-    }
+    if (account?.isHardware) {
+      const isEthereum = isEthereumAddress(account.address || '');
 
-    const originGenesisHash = account?.originGenesisHash;
+      if (isEthereum) {
+        return undefined;
+      } else {
+        const availableGen: string[] = account.availableGenesisHashes || [];
 
-    if (originGenesisHash) {
-      return findNetworkJsonByGenesisHash(chainInfoMap, originGenesisHash)?.slug;
+        return availableGen.map(gen => findNetworkJsonByGenesisHash(chainInfoMap, gen)?.slug || '');
+      }
     } else {
       return undefined;
     }
-  }, [accounts, address, chainInfoMap, currentAccount]);
+  }, [chainInfoMap, currentAccount]);
 
   return useMemo<string[]>(() => {
     return getChainsAccountType(accountType, chainInfoMap, accountNetwork);

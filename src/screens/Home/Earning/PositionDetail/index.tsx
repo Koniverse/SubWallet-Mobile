@@ -44,7 +44,7 @@ const Component: React.FC<Props> = (props: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
-  const { priceMap } = useSelector((state: RootState) => state.price);
+  const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const { isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
   const [dAppStakingWarningModalVisible, setDAppStakingWarningModalVisible] = useState<boolean>(false);
   const isOpenDAppWarningInPositionDetail = mmkvStore.getBoolean('isOpenDAppWarningInPositionDetail');
@@ -53,6 +53,14 @@ const Component: React.FC<Props> = (props: Props) => {
   const loadingRef = useRef(isLoading);
   const [state, setState] = React.useState({ num: 0 });
   const counter = useRef(0);
+
+  const isDisableStakeMore = useMemo(() => {
+    return (
+      poolInfo.type === YieldPoolType.LIQUID_STAKING &&
+      poolInfo.chain === 'parallel' &&
+      poolInfo.group === 'DOT-Polkadot'
+    );
+  }, [poolInfo.chain, poolInfo.group, poolInfo.type]);
 
   useEffect(() => {
     loadingRef.current = isLoading;
@@ -201,6 +209,7 @@ const Component: React.FC<Props> = (props: Props) => {
       title={'Earning position detail'}
       onPressRightIcon={onEarnMore}
       showRightBtn={true}
+      disableRightButton={isDisableStakeMore}
       rightIcon={Plus}>
       <ScrollView contentContainerStyle={styles.wrapper} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
@@ -218,7 +227,12 @@ const Component: React.FC<Props> = (props: Props) => {
                 unitOpacity={0.65}
               />
 
-              <Number value={convertActiveStake} decimal={0} prefix={'$'} textStyle={styles.activeTokenValue} />
+              <Number
+                value={convertActiveStake}
+                decimal={0}
+                prefix={currencyData?.symbol}
+                textStyle={styles.activeTokenValue}
+              />
             </>
           ) : (
             <HideBalanceItem />
@@ -241,9 +255,16 @@ const Component: React.FC<Props> = (props: Props) => {
               {poolInfo?.type === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
             </Button>
             <Button
+              disabled={isDisableStakeMore}
               block={true}
               type="secondary"
-              icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}
+              icon={
+                <Icon
+                  phosphorIcon={PlusCircle}
+                  iconColor={isDisableStakeMore ? theme.colorTextLight5 : theme.colorWhite}
+                  weight="fill"
+                />
+              }
               onPress={onEarnMore}>
               {poolInfo?.type === YieldPoolType.LENDING ? 'Supply more' : i18n.buttonTitles.stakeMore}
             </Button>

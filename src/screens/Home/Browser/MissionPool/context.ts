@@ -3,4 +3,5 @@ import { MissionPoolsContainerProps } from 'screens/Home/Browser/MissionPool/typ
 
 export const MissionPoolsContext = React.createContext<MissionPoolsContainerProps>({
   searchString: '',
+  selectedFilters: [],
 });

@@ -6,7 +6,6 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { NetworkField } from 'components/Field/Network';
-import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import { TextField } from 'components/Field/Text';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { completeConfirmation, upsertCustomToken, validateCustomToken } from 'messaging/index';
@@ -40,6 +39,7 @@ import { FormItem } from 'components/common/FormItem';
 import reformatAddress from 'utils/index';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import InputText from 'components/Input/InputText';
+import useGetFungibleContractSupportedChains from 'hooks/screen/ImportNft/useGetFungibleContractSupportedChains';
 
 interface ImportTokenFormValues extends TransactionFormValues {
   selectedTokenType: string;
@@ -64,10 +64,12 @@ function getTokenTypeSupported(chainInfo: _ChainInfo) {
   const result: TokenTypeOption[] = [];
 
   tokenTypes.forEach(tokenType => {
-    result.push({
-      label: tokenType.toString(),
-      value: tokenType,
-    });
+    if (tokenType !== _AssetType.GRC20) {
+      result.push({
+        label: tokenType.toString(),
+        value: tokenType,
+      });
+    }
   });
 
   return result;
@@ -91,7 +93,7 @@ function getTokenType(chain: string, chainInfoMap: Record<string, _ChainInfo>): 
 
 export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const chainInfoMap = useGetContractSupportedChains();
+  const chainInfoMap = useGetFungibleContractSupportedChains();
   const [isBusy, setBusy] = useState<boolean>(false);
   const toast = useToast();
   useHandlerHardwareBackPress(isBusy);
@@ -145,6 +147,9 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       return;
     }
 
+    const reformattedAddress =
+      selectedTokenTypeData === _AssetType.VFT ? contractAddress : reformatAddress(contractAddress, chainNetworkPrefix);
+
     setBusy(true);
 
     if (payload) {
@@ -168,7 +173,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       priceId: priceId,
       minAmount: null,
       assetType: selectedTokenTypeData as _AssetType,
-      metadata: _parseMetadataForSmartContractAsset(contractAddress),
+      metadata: _parseMetadataForSmartContractAsset(reformattedAddress),
       multiChainAsset: null,
       hasValue: _isChainTestNet(chainInfoMap[chain]),
       icon: '',
@@ -195,6 +200,10 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   }, [chainInfoMap, chain]);
   const chainNetworkPrefix = useGetChainPrefixBySlug(chain);
 
+  const isSelectGearToken = useMemo(() => {
+    return selectedTokenTypeData === _AssetType.VFT;
+  }, [selectedTokenTypeData]);
+
   const contractAddressRules = useMemo(
     () => ({
       validate: (value: string): Promise<ValidateResult> => {
@@ -202,9 +211,12 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           [_AssetType.ERC20].includes(selectedTokenTypeData as _AssetType) && isEthereumAddress(value);
         const isValidWasmContract =
           [_AssetType.PSP22].includes(selectedTokenTypeData as _AssetType) && isValidSubstrateAddress(value);
-        const reformattedAddress = reformatAddress(value, chainNetworkPrefix);
+        const isValidGearContract =
+          [_AssetType.VFT].includes(selectedTokenTypeData as _AssetType) && isValidSubstrateAddress(value);
+        const reformattedAddress = isValidGearContract ? value : reformatAddress(value, chainNetworkPrefix);
+
         if (value !== '') {
-          if (isValidEvmContract || isValidWasmContract) {
+          if (isValidEvmContract || isValidWasmContract || isValidGearContract) {
             return validateCustomToken({
               contractAddress: reformattedAddress,
               originChain: chain,
@@ -335,7 +347,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             render={({ field: { value, onChange, ref, onBlur } }) => (
               <InputAddress
                 ref={ref}
-                label={i18n.importToken.contractAddress}
+                label={isSelectGearToken ? 'Program ID' : i18n.importToken.contractAddress}
                 value={value}
                 onChangeText={onChange}
                 placeholder={i18n.placeholder.typeOrPasteContractAddress}

@@ -40,6 +40,16 @@ const intersectionArray = (array1: AccountJson[], array2: AccountJson[]): Accoun
   return array1.filter(account => array2.find(acc => acc.address === account.address));
 };
 
+const filterAccountMigrated = (acc: AccountJson) => {
+  return (
+    acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword && !acc.isInjected && !acc.pendingMigrate
+  );
+};
+
+const filterAccountCanMigrate = (acc: AccountJson) => {
+  return acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && !acc.isInjected && !acc.pendingMigrate;
+};
+
 const ApplyMasterPassword = () => {
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
@@ -64,13 +74,11 @@ const ApplyMasterPassword = () => {
   };
   const { onPress } = useUnlockModal(navigation);
 
-  const migratedRef = useRef<AccountJson[]>(
-    accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword),
-  );
+  const migratedRef = useRef<AccountJson[]>(accounts.filter(filterAccountMigrated));
 
   const migrated = useMemo(() => {
     const oldVal = migratedRef.current;
-    const newVal = accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword);
+    const newVal = accounts.filter(filterAccountMigrated);
     const result = intersectionArray(oldVal, newVal);
 
     migratedRef.current = result;
@@ -79,10 +87,7 @@ const ApplyMasterPassword = () => {
   }, [accounts]);
 
   const canMigrate = useMemo(
-    () =>
-      accounts
-        .filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal)
-        .filter(acc => !migrated.find(item => item.address === acc.address)),
+    () => accounts.filter(filterAccountCanMigrate).filter(acc => !migrated.find(item => item.address === acc.address)),
     [accounts, migrated],
   );
 
@@ -137,7 +142,7 @@ const ApplyMasterPassword = () => {
     if (isLocked && needMigrate.length) {
       setStep('Introduction');
     }
-  }, [isLocked, needMigrate.length]);
+  }, [isLocked, navigation, needMigrate.length]);
 
   useEffect(() => {
     onUpdateErrors('password')(undefined);

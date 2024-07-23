@@ -5,27 +5,34 @@ import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeBy
 import { useMemo } from 'react';
 import { AccountSignMode } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 const useGetAccountTitleByAddress = (address?: string): string => {
   const signMode = useGetAccountSignModeByAddress(address);
+  const isEvm = useMemo(() => isEthereumAddress(address || ''), [address]);
 
   return useMemo((): string => {
     switch (signMode) {
-      case AccountSignMode.LEDGER:
+      case AccountSignMode.GENERIC_LEDGER:
+      case AccountSignMode.LEGACY_LEDGER:
         return i18n.common.ledgerAccount;
       case AccountSignMode.ALL_ACCOUNT:
         return i18n.common.allAccounts;
       case AccountSignMode.PASSWORD:
         return i18n.common.normalAccount;
       case AccountSignMode.QR:
-        return i18n.common.qrSignerAccount;
+        if (isEvm) {
+          return 'EVM QR signer account';
+        } else {
+          return 'Substrate QR signer account';
+        }
       case AccountSignMode.READ_ONLY:
         return i18n.common.watchOnlyAccount;
       case AccountSignMode.UNKNOWN:
       default:
         return i18n.common.unknownAccount;
     }
-  }, [signMode]);
+  }, [isEvm, signMode]);
 };
 
 export default useGetAccountTitleByAddress;

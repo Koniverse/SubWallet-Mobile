@@ -1,5 +1,5 @@
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { TextInput, TextStyle, View } from 'react-native';
 import BigN from 'bignumber.js';
 import { Button } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -13,13 +13,15 @@ interface InputAmountProps {
   placeholder?: string;
   decimals: number;
   value: string;
-  onChangeValue: (value: string, isInValid: boolean) => void;
+  onChangeValue: (value: string, isInValid?: boolean) => void;
   maxValue: string;
   disable?: boolean;
   errorMessages?: string[];
   onSetMax?: (value: boolean) => void;
   showMaxButton?: boolean;
   forceUpdateMaxValue?: object;
+  textAlign?: 'center' | 'left' | 'right';
+  externalStyle?: TextStyle;
 }
 
 const isValidInput = (input: string) => {
@@ -61,6 +63,8 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     onSetMax,
     forceUpdateMaxValue,
     showMaxButton = true,
+    textAlign,
+    externalStyle,
   } = props;
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [preservedDecimals, setPreservedDecimals] = useState(decimals);
@@ -136,11 +140,29 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     }
   }, [decimals, forceUpdateMaxValue, maxValue, onChangeValue]);
 
+  useEffect(() => {
+    if (inputValue && inputValue.length > (getMaxLengthText(inputValue) || 0)) {
+      let valueStr = inputValue.toString();
+      const decimalPointIndex = valueStr.indexOf('.');
+
+      if (decimalPointIndex !== -1) {
+        valueStr = valueStr.slice(0, decimalPointIndex + decimals + 1);
+        valueStr = valueStr.replace(/0+$/, '');
+
+        if (valueStr.endsWith('.')) {
+          valueStr = valueStr.slice(0, -1);
+        }
+      }
+
+      setInputValue(valueStr);
+    }
+  }, [decimals, getMaxLengthText, inputValue, value]);
+
   return (
     <>
       <View style={[_style.container, disable && DisabledStyle]}>
         <TextInput
-          style={_style.inputTextStyle}
+          style={[_style.inputTextStyle, externalStyle]}
           autoCorrect={false}
           keyboardType={'decimal-pad'}
           returnKeyType={'done'}
@@ -151,6 +173,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
           maxLength={getMaxLengthText(inputValue)}
           placeholderTextColor={theme.colorTextLight4}
           editable={!disable}
+          textAlign={textAlign}
         />
         {showMaxButton && (
           <Button

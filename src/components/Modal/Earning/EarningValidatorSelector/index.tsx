@@ -4,18 +4,11 @@ import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
-import { Keyboard, ListRenderItemInfo } from 'react-native';
+import { Keyboard, ListRenderItemInfo, Platform } from 'react-native';
 import { StakingValidatorItem } from 'components/common/StakingValidatorItem';
 import { getValidatorKey } from 'utils/transaction/stake';
 import { useSelectValidators } from 'hooks/screen/Transaction/useSelectValidators';
-import {
-  ArrowsClockwise,
-  CheckCircle,
-  IconProps,
-  MagnifyingGlass,
-  SortAscending,
-  SortDescending,
-} from 'phosphor-react-native';
+import { ArrowsClockwise, CheckCircle, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ValidatorSelectorField } from 'components/Field/ValidatorSelector';
 import { ValidatorSelectorDetailModal } from 'components/Modal/common/ValidatorSelectorDetailModal';
@@ -34,6 +27,10 @@ import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { EmptyValidator } from 'components/EmptyValidator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ValidatorDataType } from 'types/earning';
+import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
+import { YieldPoolType } from '@subwallet/extension-base/types';
+import DotBadge from 'components/design-system-ui/badge/DotBadge';
+import { autoSelectValidatorOptimally } from 'utils/earning';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -59,12 +56,8 @@ interface Props {
   selectedValidator?: string;
   disabled?: boolean;
   setForceFetchValidator: (val: boolean) => void;
+  defaultValidatorAddress?: string;
 }
-
-type IconSortAscendingType = (iconProps: IconProps) => JSX.Element;
-const iconSortAscending: IconSortAscendingType = ({ color }) => (
-  <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />
-);
 
 const searchFunction = (items: ValidatorDataType[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
@@ -78,7 +71,11 @@ const searchFunction = (items: ValidatorDataType[], searchString: string) => {
 
 export interface ValidatorSelectorRef {
   resetValue: () => void;
+  onOpenModal: () => void;
 }
+
+const AVAIL_CHAIN = 'avail_mainnet';
+const AVAIL_VALIDATOR = '5FjdibsxmNFas5HWcT2i1AXbpfgiNfWqezzo88H2tskxWdt2';
 
 export const EarningValidatorSelector = forwardRef(
   (
@@ -92,6 +89,7 @@ export const EarningValidatorSelector = forwardRef(
       disabled,
       setForceFetchValidator,
       slug,
+      defaultValidatorAddress,
     }: Props,
     ref: React.Ref<ValidatorSelectorRef>,
   ) => {
@@ -118,6 +116,15 @@ export const EarningValidatorSelector = forwardRef(
     const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(chain), [chain]);
     const isSingleSelect = useMemo(() => _isSingleSelect || !isRelayChain, [_isSingleSelect, isRelayChain]);
     const hasReturn = useMemo(() => items[0]?.expectedReturn !== undefined, [items]);
+
+    const maxPoolMembersValue = useMemo(() => {
+      if (poolInfo.type === YieldPoolType.NATIVE_STAKING) {
+        // todo: should also check chain group for pool
+        return poolInfo.maxPoolMembers;
+      }
+
+      return undefined;
+    }, [poolInfo]);
 
     const sortingOptions: SortOption[] = useMemo(() => {
       const result: SortOption[] = [
@@ -160,12 +167,24 @@ export const EarningValidatorSelector = forwardRef(
       onCancelSelectValidator,
       onChangeSelectedValidator,
       onInitValidators,
-    } = useSelectValidators(maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
-
+      onAutoSelectValidator,
+    } = useSelectValidators(items, maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
+    const { keyboardHeight } = useKeyboardVisible();
+    const defaultValueRef = useRef({ _default: '_', selected: '_' });
     const [detailItem, setDetailItem] = useState<ValidatorDataType | undefined>(undefined);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
+    const [autoValidator, setAutoValidator] = useState('');
 
-    const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - insets.bottom - insets.top - 50;
+    const OFFSET_BOTTOM = useMemo(
+      () =>
+        deviceHeight -
+        STATUS_BAR_HEIGHT -
+        insets.bottom -
+        insets.top -
+        50 -
+        (Platform.OS === 'android' ? keyboardHeight : 0),
+      [insets.bottom, insets.top, keyboardHeight],
+    );
 
     const [sortSelection, setSortSelection] = useState<SortKey>(SortKey.DEFAULT);
     const fewValidators = changeValidators.length > 1;
@@ -250,19 +269,61 @@ export const EarningValidatorSelector = forwardRef(
       ref,
       () => ({
         resetValue: () => resetValidatorSelector(),
+        onOpenModal: () => {
+          validatorSelectModalRef?.current?.onOpenModal?.();
+        },
       }),
       [resetValidatorSelector],
     );
 
-    useEffect(() => {
-      const defaultValue =
-        nominations?.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity)).join(',') || '';
-      const selected = isSingleSelect ? '' : defaultValue;
-      onInitValidators(defaultValue, selected);
-      onSelectItem && onSelectItem(selected);
+    const externalDefaultValue = useMemo(() => {
+      let defaultSelectedList: ValidatorDataType[] = [];
+      if (defaultValidatorAddress) {
+        const defaultValidator = resultList.find(item => item.address === defaultValidatorAddress);
+        if (defaultValidator) {
+          defaultSelectedList = [defaultValidator];
+        } else {
+          defaultSelectedList = [];
+        }
+      }
 
+      return defaultSelectedList;
+    }, [defaultValidatorAddress, resultList]);
+
+    useEffect(() => {
+      if (chain === AVAIL_CHAIN) {
+        setAutoValidator(old => {
+          if (old) {
+            return old;
+          } else {
+            const _selectedValidator = autoSelectValidatorOptimally(items, 16, true, AVAIL_VALIDATOR);
+
+            return _selectedValidator.map(item => getValidatorKey(item.address, item.identity)).join(',');
+          }
+        });
+      }
+    }, [chain, items]);
+
+    useEffect(() => {
+      const _default =
+        nominations?.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity)).join(',') ||
+        autoValidator ||
+        '';
+      let defaultValue = '';
+      if (externalDefaultValue && externalDefaultValue.length) {
+        defaultValue = externalDefaultValue.map(item => getValidatorKey(item.address, item.identity)).join(',');
+      }
+
+      const selected = defaultValue || defaultValidatorAddress || (isSingleSelect ? '' : _default);
+
+      if (defaultValueRef.current._default === _default && defaultValueRef.current.selected === selected) {
+        return;
+      }
+
+      onInitValidators(_default, selected);
+      onSelectItem && onSelectItem(selected);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isSingleSelect, from]);
+    }, [isSingleSelect, from, defaultValidatorAddress, autoValidator]);
 
     const applyBtn = useMemo(
       () => ({
@@ -276,6 +337,18 @@ export const EarningValidatorSelector = forwardRef(
       }),
       [applyLabel, changeValidators.length, onApplyChangeValidators],
     );
+
+    // const customBtn = useMemo(
+    //   () => ({
+    //     icon: Lightning,
+    //     onPressCustomBtn: () => {
+    //       validatorSelectModalRef?.current?.closeModal?.();
+    //       onAutoSelectValidator();
+    //     },
+    //     customBtnDisabled: !items.length,
+    //   }),
+    //   [items.length, onAutoSelectValidator],
+    // );
 
     const renderSortingItem = (item: SortOption) => {
       return (
@@ -321,7 +394,8 @@ export const EarningValidatorSelector = forwardRef(
     const renderSelected = useCallback(
       () => (
         <ValidatorSelectorField
-          onPressLightningBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
+          showLightningBtn={false}
+          onPressLightningBtn={() => onAutoSelectValidator()}
           onPressBookBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
           value={selectedValidator}
           label={
@@ -339,7 +413,7 @@ export const EarningValidatorSelector = forwardRef(
           }
         />
       ),
-      [chain, selectedValidator, validatorLoading],
+      [chain, onAutoSelectValidator, selectedValidator, validatorLoading],
     );
 
     return (
@@ -349,6 +423,7 @@ export const EarningValidatorSelector = forwardRef(
         selectModalType={'multi'}
         ref={validatorSelectModalRef}
         disabled={!chain || !from || disabled}
+        // customBtn={customBtn}
         applyBtn={applyBtn}
         onCloseModal={() => {
           setSortSelection(SortKey.DEFAULT);
@@ -357,7 +432,11 @@ export const EarningValidatorSelector = forwardRef(
         renderListEmptyComponent={renderListEmptyComponent}
         renderSelected={renderSelected}
         rightIconOption={{
-          icon: iconSortAscending,
+          icon: () => (
+            <DotBadge dot={sortSelection !== SortKey.DEFAULT}>
+              <Icon phosphorIcon={SortAscending} size="md" />
+            </DotBadge>
+          ),
           onPress: () => sortingModalRef?.current?.onOpenModal(),
         }}
         renderCustomItem={renderItem}
@@ -379,6 +458,7 @@ export const EarningValidatorSelector = forwardRef(
             <ValidatorSelectorDetailModal
               detailModalVisible={detailModalVisible}
               detailItem={detailItem}
+              maxPoolMembersValue={maxPoolMembersValue}
               networkPrefix={networkPrefix}
               setVisible={setDetailModalVisible}
               chain={chain}

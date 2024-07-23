@@ -23,9 +23,13 @@ interface Props<T> {
   loading?: boolean;
   isShowListWrapper?: boolean;
   getItemLayout?: (
-    data: readonly T[] | null | undefined,
+    data: ArrayLike<T> | null | undefined,
     index: number,
   ) => { length: number; offset: number; index: number };
+  maxToRenderPerBatch?: number;
+  initialNumToRender?: number;
+  removeClippedSubviews?: boolean;
+  keyExtractor?: (item: T, index: number) => string;
 }
 
 const ItemSeparatorStyle: StyleProp<ViewStyle> = {
@@ -51,6 +55,10 @@ export function LazyFlatList<T>({
   sortFunction = defaultSortFunc,
   isShowListWrapper,
   getItemLayout,
+  maxToRenderPerBatch = 12,
+  initialNumToRender = 12,
+  removeClippedSubviews,
+  keyExtractor,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
   const flatListRef = useRef<FlatList>(null);
@@ -130,9 +138,11 @@ export function LazyFlatList<T>({
             contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
             getItemLayout={getItemLayout}
             onEndReachedThreshold={0.5}
-            maxToRenderPerBatch={12}
-            initialNumToRender={12}
+            maxToRenderPerBatch={maxToRenderPerBatch}
+            initialNumToRender={initialNumToRender}
+            removeClippedSubviews={removeClippedSubviews}
             showsVerticalScrollIndicator={false}
+            keyExtractor={keyExtractor}
           />
         </View>
       ) : (

@@ -18,6 +18,9 @@ import { RootState } from 'stores/index';
 import { ChainInfo } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
+import { SortFunctionInterface } from 'types/ui-types';
+import { SectionItem } from 'components/LazySectionList';
 
 interface Props<T> {
   items: T[];
@@ -45,6 +48,12 @@ interface Props<T> {
     onPressApplyBtn: () => void;
     applyBtnDisabled?: boolean;
   };
+  customBtn?: {
+    label?: string;
+    icon: React.ElementType<IconProps>;
+    onPressCustomBtn: () => void;
+    customBtnDisabled?: boolean;
+  };
   closeModalAfterSelect?: boolean;
   children?: React.ReactNode;
   isShowContent?: boolean;
@@ -57,6 +66,12 @@ interface Props<T> {
   onModalOpened?: () => void;
   rightIconOption?: RightIconOpt;
   level?: number;
+  grouping?: {
+    renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
+    groupBy: (item: T) => string;
+    sortSection?: SortFunctionInterface<SectionItem<T>>;
+  };
+  showAccountSignModeIcon?: boolean;
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
@@ -82,6 +97,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     onSelectItem,
     disabled,
     applyBtn,
+    customBtn,
     closeModalAfterSelect = true,
     children,
     isShowContent = true,
@@ -94,6 +110,8 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     onModalOpened,
     rightIconOption,
     level,
+    grouping,
+    showAccountSignModeIcon,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -198,6 +216,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
             item={item}
             selectedValueMap={selectedValueMap}
             onSelectItem={_onSelectItem}
+            showAccountSignModeIcon={showAccountSignModeIcon}
             onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
           />
         </>
@@ -244,8 +263,25 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
             paddingHorizontal: theme.padding,
             ...MarginBottomForSubmitButton,
             paddingTop: theme.padding,
+            flexDirection: 'row',
+            gap: theme.sizeSM,
           }}>
+          {customBtn && (
+            <Button
+              disabled={customBtn?.customBtnDisabled}
+              type={'secondary'}
+              icon={
+                <Icon
+                  phosphorIcon={customBtn?.icon}
+                  size={'lg'}
+                  iconColor={customBtn?.customBtnDisabled ? theme.colorTextLight5 : theme.colorWhite}
+                />
+              }
+              onPress={customBtn?.onPressCustomBtn}
+            />
+          )}
           <Button
+            block
             disabled={applyBtn?.applyBtnDisabled}
             icon={
               <Icon
@@ -300,6 +336,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
               withSearchInput={withSearchInput}
               isShowListWrapper={isShowListWrapper}
               rightIconOption={rightIconOption}
+              grouping={grouping}
               afterListItem={
                 selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
               }

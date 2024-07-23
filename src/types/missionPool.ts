@@ -1,6 +1,12 @@
 export type MissionCategory = {
   name: string;
   slug: string;
+  color: string;
+};
+
+export type MissionTag = {
+  name: string;
+  slug: string;
 };
 
 export type MissionInfo = {
@@ -12,7 +18,7 @@ export type MissionInfo = {
   start_time: string | null;
   end_time: string | null;
   url: string;
-  twitter_url: string;
+  twitter_url: string | null;
   reward: string | null;
   total_winner: string | null;
   total_supply: string | null;
@@ -21,4 +27,5 @@ export type MissionInfo = {
   backdrop_image: string;
   campaign_url: string | null;
   chains: string[] | null;
+  categories: MissionCategory[];
 };

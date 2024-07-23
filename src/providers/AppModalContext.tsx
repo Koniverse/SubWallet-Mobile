@@ -10,6 +10,7 @@ export type ConfirmModalInfo = {
   title?: string;
   message?: string;
   messageIcon?: string;
+  customIcon?: React.ReactNode;
   completeBtnTitle?: string;
   onCancelModal?: () => void | undefined;
   onCompleteModal?: () => void | undefined;
@@ -50,6 +51,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         title={confirmModal.title || ''}
         message={confirmModal.message || ''}
         messageIcon={confirmModal.messageIcon}
+        customIcon={confirmModal.customIcon}
         onCancelModal={confirmModal.onCancelModal}
         onCompleteModal={confirmModal.onCompleteModal}
         completeBtnTitle={confirmModal.completeBtnTitle}

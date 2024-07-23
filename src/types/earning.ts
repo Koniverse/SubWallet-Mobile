@@ -1,16 +1,25 @@
-import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
-import { AbstractYieldPositionInfo } from '@subwallet/extension-base/types';
+import { _ChainAsset } from '@subwallet/chain-list/types';
+import { PalletNominationPoolsBondedPoolInner, YieldPositionInfo } from '@subwallet/extension-base/types';
 import { NominationPoolInfo, ValidatorInfo } from '@subwallet/extension-base/types/yield/info/chain/target';
 import { SWIconProps } from 'components/design-system-ui/icon';
 import { BalanceValueInfo } from 'types/balance';
 import { PhosphorIcon } from 'utils/campaign';
+import BigN from 'bignumber.js';
+import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
+import { InfoItemBase } from 'components/MetaInfo/types';
 
-export interface ExtraYieldPositionInfo extends AbstractYieldPositionInfo {
-  asset: _ChainAsset;
-  chainInfo: _ChainInfo;
-  price: number;
-  // exchangeRate: number;
+export type NominationPoolState = Pick<PalletNominationPoolsBondedPoolInner, 'state'>;
+export interface EarningStatusUiProps {
+  schema: InfoItemBase['valueColorSchema'];
+  icon: PhosphorIcon;
+  name: string;
 }
+export type ExtraYieldPositionInfo = YieldPositionInfo & {
+  asset: _ChainAsset;
+  price: number;
+  currency?: CurrencyJson;
+  // exchangeRate: number;
+};
 
 export interface YieldGroupInfo {
   maxApy?: number;
@@ -22,6 +31,11 @@ export interface YieldGroupInfo {
   name?: string;
   chain: string;
   poolListLength: number;
+  poolSlugs: string[];
+  description: string;
+  totalValueStaked: BigN;
+  minJoin?: string;
+  isRelatedToRelayChain: boolean;
 }
 
 export interface EarningTagType {

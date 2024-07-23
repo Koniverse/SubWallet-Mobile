@@ -1,7 +1,12 @@
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { _getAssetDecimals, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
+import {
+  _getAssetDecimals,
+  _getAssetSymbol,
+  _isChainEvmCompatible,
+} from '@subwallet/extension-base/services/chain-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import {
+  EarningStatus,
   NominationPoolInfo,
   OptimalYieldPathParams,
   ValidatorInfo,
@@ -24,7 +29,7 @@ import EarningProcessItem from 'components/Item/Earning/EarningProcessItem';
 import MetaInfo from 'components/MetaInfo';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import EarningPoolDetailModal from 'components/Modal/Earning/EarningPoolDetailModal';
-import { EarningPoolSelector } from 'components/Modal/Earning/EarningPoolSelector';
+import { EarningPoolSelector, PoolSelectorRef } from 'components/Modal/Earning/EarningPoolSelector';
 import { EarningValidatorSelector, ValidatorSelectorRef } from 'components/Modal/Earning/EarningValidatorSelector';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
@@ -59,18 +64,20 @@ import { parseNominations } from 'utils/transaction/stake';
 import { accountFilterFunc, getJoinYieldParams } from '../helper/earning';
 import createStyle from './style';
 import { useYieldPositionDetail } from 'hooks/earning';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { STAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
-import { insufficientMessages } from 'hooks/transaction/useHandleSubmitTransaction';
 import { useGetBalance } from 'hooks/balance';
 import reformatAddress from 'utils/index';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
-
-// interface _YieldAssetExpectedEarning extends YieldAssetExpectedEarning {
-//   symbol: string;
-// }
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { _ChainAsset } from '@subwallet/chain-list/types';
+import {
+  _handleDisplayForEarningError,
+  _handleDisplayInsufficientEarningError,
+} from '@subwallet/extension-base/core/logic-validation/earning';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -85,13 +92,22 @@ export const insufficientXCMMessages = ['You can only enter a maximum'];
 const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const {
     route: {
-      params: { slug },
+      params: { slug, target, redirectFromPreview },
     },
   } = props;
 
   const navigation = useNavigation<RootNavigationProps>();
+  const isFocused = useIsFocused();
   const theme = useSubWalletTheme().swThemes;
   const { show, hideAll } = useToast();
+  const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
+  const { poolInfoMap, poolTargetsMap } = useSelector((state: RootState) => state.earning);
+  const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
+  const { priceMap, currencyData } = useSelector((state: RootState) => state.price);
+  const defaultTarget = useRef<string | undefined>(target);
+  const redirectFromPreviewRef = useRef(!!redirectFromPreview);
+  const autoCheckCompoundRef = useRef<boolean>(true);
 
   const {
     title,
@@ -100,12 +116,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       setValue,
       formState: { errors },
       getValues,
+      setFocus,
     },
     onChangeFromValue: setFrom,
     onChangeAssetValue: setAsset,
     onTransactionDone: onDone,
     transactionDoneInfo,
-  } = useTransaction<StakeFormValues>('stake', {
+  } = useTransaction<StakeFormValues>('earn', {
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -118,17 +135,12 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const currentAmount = useWatch<StakeFormValues>({ name: 'value', control });
   const chain = useWatch<StakeFormValues>({ name: 'chain', control });
   const poolTarget = useWatch<StakeFormValues>({ name: 'target', control });
-
   const accountSelectorRef = useRef<ModalRef>();
   const validatorSelectorRef = useRef<ValidatorSelectorRef>(null);
+  const poolSelectorRef = useRef<PoolSelectorRef>(null);
+  const isReadyToShowAlertRef = useRef<boolean>(true);
   const fromRef = useRef<string>(currentFrom);
   const isPressInfoBtnRef = useRef<boolean>(false);
-
-  const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
-  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const { poolInfoMap, poolTargetsMap } = useSelector((state: RootState) => state.earning);
-  const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
-  const { priceMap } = useSelector((state: RootState) => state.price);
   const nativeTokenSlug = useGetNativeTokenSlug(chain);
 
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
@@ -141,7 +153,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const preCheckAction = usePreCheckAction(currentFrom);
   const { compound } = useYieldPositionDetail(slug);
   const { nativeTokenBalance } = useGetBalance(chain, currentFrom);
-
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo?.type || '';
   const poolChain = poolInfo?.chain || '';
@@ -191,7 +202,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [forceFetchValidator, setForceFetchValidator] = useState(false);
-  const [targetLoading, setTargetLoading] = useState(false);
+  const [targetLoading, setTargetLoading] = useState(true);
   const [stepLoading, setStepLoading] = useState<boolean>(true);
   const [submitString, setSubmitString] = useState<string | undefined>();
   const [connectionError, setConnectionError] = useState<string>();
@@ -200,6 +211,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [checkMintLoading, setCheckMintLoading] = useState(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isShowAlert, setIsShowAlert] = useState<boolean>(false);
+  const [useParamValidator, setUseParamValidator] = useState<boolean>(redirectFromPreviewRef.current);
+  const [checkValidAccountLoading, setCheckValidAccountLoading] = useState<boolean>(redirectFromPreviewRef.current);
 
   const isDisabledButton = useMemo(
     () =>
@@ -231,10 +245,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     [chainAsset, poolInfo?.metadata?.inputAsset],
   );
 
-  const nativeAsset = useMemo(() => chainAsset[nativeTokenSlug], [chainAsset, nativeTokenSlug]);
+  const nativeAsset: _ChainAsset | undefined = useMemo(
+    () => chainAsset[nativeTokenSlug],
+    [chainAsset, nativeTokenSlug],
+  );
 
   const assetDecimals = inputAsset ? _getAssetDecimals(inputAsset) : 0;
-  const priceValue = priceMap[inputAsset.priceId || ''] || 0;
+  const priceValue = inputAsset && inputAsset.priceId ? priceMap[inputAsset.priceId] : 0;
   const convertValue = currentAmount ? parseFloat(currentAmount) / 10 ** assetDecimals : 0;
   const transformAmount = convertValue * priceValue;
 
@@ -316,40 +333,45 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, []);
 
   const handleDataForInsufficientAlert = useCallback(() => {
-    const _assetDecimals = nativeAsset.decimals || 0;
-    const existentialDeposit = nativeAsset.minAmount || '0';
+    const _assetDecimals = nativeAsset?.decimals || 0;
+
     return {
-      existentialDeposit: getInputValuesFromString(existentialDeposit, _assetDecimals),
-      availableBalance: getInputValuesFromString(nativeTokenBalance.value, _assetDecimals),
-      maintainBalance: getInputValuesFromString(poolInfo?.metadata?.maintainBalance || '0', _assetDecimals),
-      symbol: nativeAsset.symbol,
+      minJoinPool: getInputValuesFromString(poolInfo?.statistic?.earningThreshold.join || '0', _assetDecimals),
+      symbol: nativeAsset?.symbol || '',
+      chain: chainInfoMap[poolChain].name,
+      isXCM: poolInfo?.type === YieldPoolType.LENDING || poolInfo?.type === YieldPoolType.LIQUID_STAKING,
     };
-  }, [nativeAsset, nativeTokenBalance.value, poolInfo?.metadata?.maintainBalance]);
+  }, [
+    chainInfoMap,
+    nativeAsset?.decimals,
+    nativeAsset?.symbol,
+    poolChain,
+    poolInfo?.statistic?.earningThreshold.join,
+    poolInfo?.type,
+  ]);
 
   const onError = useCallback(
     (error: Error) => {
-      if (insufficientMessages.some(v => error.message.includes(v))) {
-        const _data = handleDataForInsufficientAlert();
-        const isAvailableBalanceEqualZero = new BigN(_data.availableBalance).isZero();
-        const isAmountGtAvailableBalance = new BigN(convertValue).gt(_data.availableBalance);
-        let alertMessage = '';
-        if (isAmountGtAvailableBalance && !isAvailableBalanceEqualZero) {
-          alertMessage = i18n.warningMessage.insufficientBalanceMessageV2;
-        } else {
-          alertMessage = i18n.formatString(
-            i18n.warningMessage.insufficientBalanceMessage,
-            _data.availableBalance,
-            _data.symbol,
-            _data.existentialDeposit,
-            _data.maintainBalance || '0',
-          ) as string;
-        }
+      const { chain: _chain, isXCM, minJoinPool, symbol } = handleDataForInsufficientAlert();
+      const balanceDisplayInfo = _handleDisplayInsufficientEarningError(
+        error,
+        isXCM,
+        nativeTokenBalance.value || '0',
+        currentAmount || '0',
+        minJoinPool,
+      );
 
-        Alert.alert(i18n.warningTitle.insufficientBalance, alertMessage, [
+      if (balanceDisplayInfo) {
+        // @ts-ignore
+        let message = balanceDisplayInfo.message.replaceAll('{{minJoinPool}}', minJoinPool);
+        message = message.replaceAll('{{symbol}}', symbol);
+        message = message.replaceAll('{{chain}}', _chain);
+        Alert.alert(balanceDisplayInfo.title, message, [
           {
             text: 'I understand',
           },
         ]);
+
         dispatchProcessState({
           type: EarningActionType.STEP_ERROR_ROLLBACK,
           payload: error,
@@ -362,6 +384,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             text: 'I understand',
           },
         ]);
+
         dispatchProcessState({
           type: EarningActionType.STEP_ERROR_ROLLBACK,
           payload: error,
@@ -378,7 +401,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         payload: error,
       });
     },
-    [convertValue, handleDataForInsufficientAlert, hideAll, show],
+    [currentAmount, handleDataForInsufficientAlert, hideAll, nativeTokenBalance.value, show],
   );
 
   const onSuccess = useCallback(
@@ -386,23 +409,21 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       return (rs: SWTransactionResponse): boolean => {
         const { errors: _errors, id, warnings } = rs;
         if (_errors.length || warnings.length) {
+          const error = _errors[0]; // we only handle the first error for now
+
           if (_errors[0]?.message !== 'Rejected by user') {
-            if (
-              _errors[0]?.message.startsWith('UnknownError Connection to Indexed DataBase server lost') ||
-              _errors[0]?.message.startsWith('Provided address is invalid, the capitalization checksum test failed') ||
-              _errors[0]?.message.startsWith('connection not open on send()')
-            ) {
+            const displayInfo = _handleDisplayForEarningError(error);
+
+            if (displayInfo) {
               hideAll();
-              show(
-                'Your selected network has lost connection. Update it by re-enabling it or changing network provider',
-                { type: 'danger', duration: 8000 },
-              );
+              show(displayInfo.message, { type: 'danger', duration: 8000 });
 
               return false;
             }
 
             hideAll();
-            onError(_errors[0]);
+            onError(error);
+
             return false;
           } else {
             dispatchProcessState({
@@ -444,7 +465,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       Alert.alert('Unable to get earning data', 'Please, go back and try again later');
     }
     const value = currentAmount ? parseFloat(currentAmount) / 10 ** assetDecimals : 0;
-    const assetSymbol = inputAsset.symbol;
+    const assetSymbol = inputAsset ? inputAsset.symbol : '';
 
     const assetEarnings =
       poolInfo?.statistic && 'assetEarning' in poolInfo?.statistic ? poolInfo?.statistic.assetEarning : [];
@@ -461,7 +482,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         if ('minBond' in targeted) {
           const minTargetJoin = new BigN(targeted.minBond || '0');
 
-          minJoinPool = minTargetJoin.gt(minJoinPool || '0') ? minTargetJoin.toString() : minJoinPool;
+          minJoinPool = minTargetJoin.gt(minPoolJoin || '0') ? minTargetJoin.toString() : minPoolJoin;
         } else {
           minJoinPool = minPoolJoin;
         }
@@ -500,10 +521,15 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           />
         )}
 
-        <MetaInfo.Chain chain={chainInfoMap[chain].slug} label={i18n.inputLabel.network} />
+        <MetaInfo.Chain chain={chain ? chainInfoMap[chain].slug : ''} label={i18n.inputLabel.network} />
 
         {showFee && (
-          <MetaInfo.Number decimals={0} label={i18n.inputLabel.estimatedFee} prefix={'$'} value={estimatedFee} />
+          <MetaInfo.Number
+            decimals={0}
+            label={i18n.inputLabel.estimatedFee}
+            prefix={currencyData?.symbol}
+            value={estimatedFee}
+          />
         )}
       </MetaInfo>
     );
@@ -511,9 +537,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     poolInfo,
     currentAmount,
     assetDecimals,
-    inputAsset.symbol,
-    chainInfoMap,
+    inputAsset,
     chain,
+    chainInfoMap,
+    currencyData?.symbol,
     estimatedFee,
     getTargetedPool,
     chainAsset,
@@ -665,7 +692,14 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const onBack = useCallback(() => {
     if (firstStep) {
-      navigation.goBack();
+      if (!slug || redirectFromPreviewRef.current) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+        });
+      } else {
+        navigation.goBack();
+      }
     } else {
       Alert.alert(
         'Cancel earning process?',
@@ -674,6 +708,14 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           {
             text: 'Cancel earning',
             onPress: () => {
+              if (redirectFromPreviewRef.current) {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+                });
+                return;
+              }
+
               navigation.goBack();
             },
           },
@@ -683,21 +725,48 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         ],
       );
     }
-  }, [firstStep, navigation]);
+  }, [slug, firstStep, navigation]);
 
   useEffect(() => {
-    setTimeout(() => setIsLoading(false), 350);
-  }, []);
+    let timer: string | number | NodeJS.Timeout | undefined;
+    let timeout: NodeJS.Timeout;
 
-  useEffect(() => {
-    setAsset(inputAsset.slug || '');
-  }, [inputAsset.slug, setAsset]);
+    if (isLoading && redirectFromPreviewRef.current) {
+      const checkCompoundReady = () => {
+        if (compound) {
+          clearInterval(timer);
+          clearTimeout(timeout);
+          setIsLoading(false);
+        }
+      };
 
-  useEffect(() => {
-    if (!currentFrom && accountSelectorList.length === 1) {
-      setFrom(accountSelectorList[0].address);
+      timer = setInterval(checkCompoundReady, 500);
+
+      timeout = setTimeout(() => {
+        clearInterval(timer);
+        setIsLoading(false);
+      }, 5000);
+    } else {
+      setTimeout(() => setIsLoading(false), 350);
     }
-  }, [accountSelectorList, currentFrom, setFrom]);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(timeout);
+    };
+  }, [compound, isLoading]);
+
+  useEffect(() => {
+    setAsset(inputAsset ? inputAsset.slug : '');
+  }, [inputAsset, setAsset]);
+
+  useEffect(() => {
+    if (!currentFrom && (isAllAccount || accountSelectorList.length === 1)) {
+      if ((redirectFromPreviewRef.current && accountSelectorList.length >= 1) || accountSelectorList.length === 1) {
+        setFrom(accountSelectorList[0].address);
+      }
+    }
+  }, [accountSelectorList, currentFrom, isAllAccount, setFrom]);
 
   useEffect(() => {
     if (currentStep === 0) {
@@ -808,11 +877,170 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [chain, chainState?.active, forceFetchValidator, currentFrom, slug]);
 
   useEffect(() => {
-    if (!compound) {
-      isPressInfoBtnRef.current = false;
-      setTimeout(() => setDetailModalVisible(true), 300);
+    if (redirectFromPreviewRef.current && !accountSelectorList.length && checkValidAccountLoading) {
+      const isChainEvm = chainInfoMap[poolChain] && _isChainEvmCompatible(chainInfoMap[poolChain]);
+      const accountType = isChainEvm ? EVM_ACCOUNT_TYPE : SUBSTRATE_ACCOUNT_TYPE;
+      const chainName = chainInfoMap[poolChain]?.name;
+      navigation.navigate('Home', {
+        screen: 'Main',
+        params: {
+          screen: 'Earning',
+          params: { screen: 'EarningList', params: { step: 1, noAccountValid: true, accountType, chain: chainName } },
+        },
+      });
+    } else {
+      setCheckValidAccountLoading(false);
     }
+  }, [accountSelectorList.length, chainInfoMap, checkValidAccountLoading, navigation, poolChain]);
+
+  useEffect(() => {
+    if (!isLoading && !checkValidAccountLoading && (!compound || redirectFromPreviewRef.current)) {
+      isPressInfoBtnRef.current = false;
+      setTimeout(() => setDetailModalVisible(true), 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!compound, isLoading, checkValidAccountLoading]);
+
+  const isUnstakeAll = useMemo(() => {
+    if (compound) {
+      if (compound.nominations && compound.nominations.length) {
+        return compound.nominations.some(item => item.activeStake === '0' && item.status === EarningStatus.NOT_EARNING);
+      } else {
+        return true;
+      }
+    }
+
+    return false;
   }, [compound]);
+
+  useEffect(() => {
+    if (redirectFromPreviewRef.current && !targetLoading && isShowAlert && !isLoading && isFocused) {
+      if (!isAllAccount && !!compound && autoCheckCompoundRef.current) {
+        autoCheckCompoundRef.current = false;
+
+        if (isUnstakeAll) {
+          if (poolType === YieldPoolType.NOMINATION_POOL) {
+            isReadyToShowAlertRef.current &&
+              Alert.alert(
+                'Pay attention',
+                "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
+                [
+                  {
+                    text: 'I understand',
+                    onPress: () => {
+                      isReadyToShowAlertRef.current = true;
+                    },
+                  },
+                ],
+              );
+
+            isReadyToShowAlertRef.current = false;
+
+            return;
+          } else if (poolType === YieldPoolType.NATIVE_STAKING) {
+            if (_STAKING_CHAIN_GROUP.para.includes(chain)) {
+              isReadyToShowAlertRef.current &&
+                Alert.alert(
+                  'Pay attention',
+                  "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
+                  [
+                    {
+                      text: 'I understand',
+                      onPress: () => {
+                        isReadyToShowAlertRef.current = true;
+                      },
+                    },
+                  ],
+                );
+              isReadyToShowAlertRef.current = false;
+            }
+
+            return;
+          }
+        }
+
+        const content =
+          poolType === YieldPoolType.NATIVE_STAKING
+            ? `This account is currently nominating ${compound.nominations.length} validators. You can change validators or change your account on the Account tab`
+            : poolType === YieldPoolType.NOMINATION_POOL
+            ? 'This account is currently a member of a nomination pool. You can continue using nomination pool, explore other Earning options or change your account on the Account tab'
+            : '';
+
+        const onPressCancel = () => {
+          if (poolType === YieldPoolType.NOMINATION_POOL) {
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'Home',
+                  params: {
+                    screen: 'Main',
+                    params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 2 } } },
+                  },
+                },
+              ],
+            });
+          }
+
+          setUseParamValidator(false);
+        };
+
+        const onPressContinue = () => {
+          isReadyToShowAlertRef.current = true;
+          if (poolType === YieldPoolType.NATIVE_STAKING) {
+            onChangeTarget(defaultTarget.current || '');
+          }
+        };
+
+        isReadyToShowAlertRef.current &&
+          Alert.alert('Pay attention', content, [
+            {
+              text:
+                poolType === YieldPoolType.NATIVE_STAKING
+                  ? 'Change validators'
+                  : poolType === YieldPoolType.NOMINATION_POOL
+                  ? 'Use nomination pool'
+                  : '',
+              onPress: onPressContinue,
+            },
+            {
+              text:
+                poolType === YieldPoolType.NATIVE_STAKING
+                  ? 'Keep current validators'
+                  : poolType === YieldPoolType.NOMINATION_POOL
+                  ? 'Explore Earning options'
+                  : '',
+              onPress: onPressCancel,
+            },
+          ]);
+        isReadyToShowAlertRef.current = false;
+      }
+    }
+  }, [
+    isLoading,
+    targetLoading,
+    compound,
+    isUnstakeAll,
+    poolType,
+    chain,
+    navigation,
+    onChangeTarget,
+    isShowAlert,
+    isAllAccount,
+    isFocused,
+  ]);
+
+  const validatorDefaultValue = (() => {
+    if (useParamValidator) {
+      return defaultTarget.current;
+    } else {
+      if (target === 'not-support' || !!compound) {
+        return undefined;
+      } else {
+        return defaultTarget.current;
+      }
+    }
+  })();
 
   return (
     <>
@@ -826,7 +1054,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           onPressBack={onBack}
           onPressRightHeaderBtn={handleOpenDetailModal}>
           <>
-            {!isLoading ? (
+            {(isLoading || checkValidAccountLoading) && (
+              <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                <ActivityIndicator size={32} />
+              </View>
+            )}
+
+            {!isLoading && !checkValidAccountLoading && (
               <>
                 <ScrollView
                   showsVerticalScrollIndicator={false}
@@ -857,6 +1091,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                     accountSelectorRef={accountSelectorRef}
                     disabled={submitLoading || !isAllAccount}
                     onSelectItem={item => {
+                      setUseParamValidator(false);
                       setFrom(item.address);
                       fromRef.current = item.address;
                       accountSelectorRef && accountSelectorRef.current?.onCloseModal();
@@ -879,7 +1114,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       hidden={[YieldStepType.XCM].includes(submitStepType)}
                       isSubscribe={true}
                       label={`${i18n.inputLabel.availableBalance}:`}
-                      tokenSlug={inputAsset.slug}
+                      tokenSlug={inputAsset ? inputAsset.slug : ''}
                       showNetwork
                     />
 
@@ -905,7 +1140,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       decimal={0}
                       decimalColor={theme.colorTextLight4}
                       intColor={theme.colorTextLight4}
-                      prefix={'$'}
+                      prefix={currencyData?.symbol}
                       unitColor={theme.colorTextLight4}
                       value={transformAmount}
                       style={{ marginBottom: theme.marginSM }}
@@ -913,6 +1148,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
                     {poolType === YieldPoolType.NOMINATION_POOL && (
                       <EarningPoolSelector
+                        ref={poolSelectorRef}
                         from={currentFrom}
                         slug={slug}
                         chain={poolChain}
@@ -921,6 +1157,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                         targetPool={poolTarget}
                         disabled={submitLoading}
                         setForceFetchValidator={setForceFetchValidator}
+                        defaultValidatorAddress={compound ? '' : defaultTarget.current}
                       />
                     )}
 
@@ -935,6 +1172,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                         onSelectItem={onChangeTarget}
                         disabled={submitLoading}
                         ref={validatorSelectorRef}
+                        defaultValidatorAddress={validatorDefaultValue}
                       />
                     )}
                   </View>
@@ -964,23 +1202,31 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                     {i18n.buttonTitles.stake}
                   </Button>
                 </View>
+
+                <EarningPoolDetailModal
+                  modalVisible={detailModalVisible}
+                  slug={slug}
+                  setVisible={setDetailModalVisible}
+                  onStakeMore={() => {
+                    setDetailModalVisible(false);
+                    setIsShowAlert(true);
+                    setFocus('value');
+                  }}
+                  isShowStakeMoreBtn={!isPressInfoBtnRef.current}
+                  onPressBack={() => {
+                    if (!slug || redirectFromPreviewRef.current) {
+                      navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+                      });
+                    } else {
+                      navigation.goBack();
+                    }
+                  }}
+                />
               </>
-            ) : (
-              <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-                <ActivityIndicator size={32} />
-              </View>
             )}
           </>
-          <EarningPoolDetailModal
-            modalVisible={detailModalVisible}
-            slug={slug}
-            setVisible={setDetailModalVisible}
-            onStakeMore={() => setDetailModalVisible(false)}
-            isShowStakeMoreBtn={!isPressInfoBtnRef.current}
-            onPressBack={() => {
-              navigation.goBack();
-            }}
-          />
         </TransactionLayout>
       ) : (
         <TransactionDone transactionDoneInfo={transactionDoneInfo} />

@@ -84,7 +84,7 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
           systemFonts={['PlusJakartaSans-Medium']}
           classesStyles={getTitleClassesStyle()}
           tagsStyles={tagStyles}
-          source={{ html: `<span class="title">${title}</span>` }}
+          source={{ html: `<span style="color: ${titleColor || 'white'}" class="title">${title}</span>` }}
           defaultTextProps={{ allowFontScaling: false }}
         />
         {typeof description === 'string' ? (

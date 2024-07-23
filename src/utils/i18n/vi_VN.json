@@ -433,7 +433,8 @@
     "learnMore": "Tìm hiểu thêm",
     "withdraw": "Withdraw",
     "cancelUnstake": "Cancel unstake",
-    "exploreEarningOptions": "Explore earning options"
+    "exploreEarningOptions": "Explore earning options",
+    "enterAstarPortal": "Truy cập Astar portal"
   },
   "inputLabel": {
     "selectAcc": "Chọn tài khoản",
@@ -518,6 +519,7 @@
     "nominationStatus": "Trạng thái nomination",
     "pooledStatus": "Trạng thái pool",
     "totalReward": "Tổng phần thưởng",
+    "totalRewards": "Tổng phần thưởng",
     "minimumStaked": "Số stake tối thiểu để có lợi nhuận",
     "maxNomination": "Số nominator tối đa",
     "validators": "Chọn validator",
@@ -535,9 +537,10 @@
     "nftId": "NFT ID",
     "collectionId": "Collection ID",
     "name": "Name",
-    "totalSupply": "Total supply",
+    "totalSupply": "Total token supply",
     "totalWinner": "Total winner",
-    "timeline": "Time line",
+    "totalWinners": "Total winners",
+    "timeline": "Timeline",
     "derivativeTokenBalance": "Derivative token balance",
     "nominationInfo": "Nomination info",
     "fastUnstake": "Fast Unstake"
@@ -652,6 +655,9 @@
     "poolId": "Pool #{0}",
     "applyDoneTitle": "Bạn đã hoàn thành!",
     "applyDoneMessage": "Bạn đã cập nhật thành công mật khẩu chính cho tất cả các tài khoản",
+    "submitted": "Gửi thành công",
+    "transactionSubmit": "Gửi giao dịch thành công!",
+    "transactionSubmitMessage": "Vui lòng theo dõi quá trình thực hiện giao dịch trong mục Lịch sử hoặc về trang chủ",
     "requestCreateMasterPassword": "Mật khẩu chính của bạn là mật khẩu cho phép truy cập vào nhiều tài khoản. Khi mật khẩu chính được xác nhận, bạn sẽ không cần phải nhập mật khẩu cho mỗi giao dịch.",
     "transactionDoneMessage": "Yêu cầu của bạn đã được gửi đi. Bạn có thể theo dõi tiến trình trên trang Lịch sử.",
     "buyMessage": "Bạn sẽ được chuyển đến trang của Nhà cung cấp để tiếp tục giao dịch",
@@ -1152,6 +1158,7 @@
     "manageWalletConnectDapp": "Quản lý WalletConnect dApp",
     "appLock": "Yêu cầu mở khoá",
     "walletTheme": "Chế độ nền",
+    "currency": "Currency",
     "language": "Ngôn ngữ",
     "notifications": "Thông báo",
     "neverRequire": "Không bao giờ",
@@ -1165,7 +1172,9 @@
     "updateNetwork": "Cập nhật mạng",
     "expiredConnectionTitle": "Kết nối đã quá hạn.",
     "unsupportedNetworkTitle": "Mạng không được hỗ trợ",
-    "insufficientBalance": "Insufficient balance"
+    "insufficientBalance": "Insufficient balance",
+    "payAttention": "Chú ý!",
+    "enterAstarPortal": "Truy cập Astar portal"
   },
   "warningMessage": {
     "passwordTooShort": "Mật khẩu quá ngắn",
@@ -1198,7 +1207,9 @@
     "expiredConnectionMessage": "Kết nối đã quá hạn. Vui lòng kết nối lại với dApp",
     "unsupportedNetworkMessage": "Có ít nhất 1 mạng đã chọn không khả dụng",
     "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed.",
-    "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance"
+    "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance",
+    "crossChainTransferWarningMessage": "Vui lòng KHÔNG chuyển tài sản xuyên chuỗi (cross-chain) đến địa chỉ trên sàn giao dịch CEX để tránh gây mất tài sản.",
+    "enterAstarPortalMessage": "Vui lòng chuyển hướng đến Astar portal để xem và quản lý stake của bạn trong Astar dApp staking v3"
   },
   "errorMessage": {
     "invalidPinCode": "Mã PIN không hợp lệ",
@@ -1262,6 +1273,7 @@
   },
   "notificationMessage": {
     "watchOnlyNoti": "Tài khoản bạn đang sử dụng là tài khoản chỉ xem, bạn không thể gửi tài sản trên tài khoản này.",
+    "accountTypeNoti": "The account you are using is {0}, you cannot send assets with it",
     "comingSoon": "Sắp ra mắt",
     "pleaseTryAgain": "Có lỗi xảy ra. Vui lòng thử lại",
     "deleteNftCollectionSuccessfully": "Đã xóa bộ sưu tập NFT thành công",

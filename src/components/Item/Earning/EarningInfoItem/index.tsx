@@ -1,13 +1,13 @@
 import { YieldPoolType } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
-import { Icon, Number, Typography } from 'components/design-system-ui';
+import { Icon, Number, Tag, Typography } from 'components/design-system-ui';
 import EarningTypeTag from 'components/Tag/EarningTypeTag';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRight, Moon, Sun } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { FontBold, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { ExtraYieldPositionInfo } from 'types/earning';
 import { getTokenLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -21,9 +21,10 @@ interface Props {
 }
 
 const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
-  const { balanceToken, type, slug, group, asset, totalStake, price, chain } = positionInfo;
+  const { balanceToken, type, slug, group, asset, totalStake, price, chain, currency } = positionInfo;
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
   const poolInfo = poolInfoMap[slug];
@@ -46,6 +47,40 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
   const convertedBalanceValue = useMemo(() => {
     return new BigN(balanceValue).div(BN_TEN.pow(asset.decimals || 0)).multipliedBy(price);
   }, [asset.decimals, balanceValue, price]);
+
+  const getTagItem = (isTestnet: boolean) => {
+    const tagContent = isTestnet ? 'Testnet' : 'Mainnet';
+    const TagIcon = isTestnet ? Moon : Sun;
+    const tagBgc = isTestnet ? 'rgba(217, 197, 0, 0.1)' : 'rgba(45, 167, 63, 0.1)';
+    const tagColor = isTestnet ? 'yellow' : 'green';
+    const tagIconColor = isTestnet ? theme['yellow-6'] : theme['green-7'];
+
+    return (
+      <Tag
+        icon={<Icon phosphorIcon={TagIcon} size={'xxs'} iconColor={tagIconColor} />}
+        color={tagColor}
+        bgType={'default'}
+        bgColor={tagBgc}>
+        <Typography.Text
+          ellipsis
+          style={{
+            fontSize: theme.fontSizeXS,
+            textAlign: 'center',
+            lineHeight: theme.fontSizeXS * theme.lineHeightXS,
+            paddingLeft: 4,
+            color: tagColor,
+            flexShrink: 1,
+            ...FontBold,
+          }}>
+          {tagContent}
+        </Typography.Text>
+      </Tag>
+    );
+  };
+
+  const isTestnet = useMemo(() => {
+    return chainInfoMap[positionInfo.chain].isTestnet;
+  }, [chainInfoMap, positionInfo.chain]);
 
   return (
     <TouchableOpacity style={styleSheet.infoContainer} activeOpacity={0.5} onPress={onPress(positionInfo)}>
@@ -77,30 +112,17 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
             ))}
         </View>
         <View style={styleSheet.balanceInfoRow}>
-          <EarningTypeTag type={type} chain={chain} />
-
-          {/*<View style={{ alignItems: 'flex-start' }}>*/}
-          {/*  <Tag*/}
-          {/*    color={staking.type === StakingType.NOMINATED ? 'warning' : 'success'}*/}
-          {/*    closable={false}*/}
-          {/*    bgType={'default'}*/}
-          {/*    icon={*/}
-          {/*      staking.type === StakingType.NOMINATED ? (*/}
-          {/*        <Icon phosphorIcon={User} size={'xxs'} weight={'bold'} iconColor={theme.colorWarning} />*/}
-          {/*      ) : (*/}
-          {/*        <Icon phosphorIcon={Users} size={'xxs'} weight={'bold'} iconColor={theme.colorSuccess} />*/}
-          {/*      )*/}
-          {/*    }>*/}
-          {/*    {staking.type === StakingType.NOMINATED ? i18n.filterOptions.nominated : i18n.filterOptions.pooled}*/}
-          {/*  </Tag>*/}
-          {/*</View>*/}
+          <View style={{ flexDirection: 'row', gap: theme.paddingXXS, flex: 1 }}>
+            <EarningTypeTag type={type} chain={chain} />
+            {isTestnet && getTagItem(isTestnet)}
+          </View>
 
           {!isTempEarningCondition &&
             (isShowBalance ? (
               <Number
                 value={convertedBalanceValue}
                 decimal={0}
-                prefix={'$'}
+                prefix={currency?.symbol}
                 size={theme.fontSizeSM}
                 intOpacity={0.45}
                 decimalOpacity={0.45}

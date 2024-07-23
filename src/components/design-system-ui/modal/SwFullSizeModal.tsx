@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BackHandler, DeviceEventEmitter, Platform, StyleProp, View } from 'react-native';
+import { AppState, BackHandler, DeviceEventEmitter, Platform, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ModalProps } from 'react-native-modal/dist/modal';
 import ModalBase from 'components/design-system-ui/modal/ModalBase';
@@ -55,6 +55,18 @@ const SwFullSizeModal = ({
     });
     return () => backHandler.remove();
   }, [modalVisible]);
+
+  useEffect(() => {
+    const unsubscribe = AppState.addEventListener('change', state => {
+      if (state === 'background') {
+        setVisible(false);
+      }
+    });
+
+    return () => {
+      unsubscribe.remove();
+    };
+  }, [setVisible]);
 
   return (
     <>

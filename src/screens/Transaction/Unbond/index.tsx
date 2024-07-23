@@ -13,7 +13,6 @@ import { AmountData, ExtrinsicType, NominationInfo } from '@subwallet/extension-
 import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
-import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { ScrollView, View } from 'react-native';
 import { MinusCircle } from 'phosphor-react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
@@ -36,14 +35,13 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useWatch } from 'react-hook-form';
 import { FormItem } from 'components/common/FormItem';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
-import { getInputValuesFromString } from 'components/Input/InputAmount';
-import { useGetBalance } from 'hooks/balance';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import { isActionFromValidator } from '@subwallet/extension-base/services/earning-service/utils';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { mmkvStore } from 'utils/storage';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { UNSTAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
+import usePreCheckAction from 'hooks/account/usePreCheckAction';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -102,7 +100,6 @@ export const Unbond = ({
 
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo?.type;
@@ -113,6 +110,7 @@ export const Unbond = ({
   const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
   const accountInfo = useGetAccountByAddress(fromValue);
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
+  const onPreCheck = usePreCheckAction(fromValue);
 
   const unstakeDataRaw = useMemo(() => {
     try {
@@ -151,15 +149,6 @@ export const Unbond = ({
       return undefined;
     }
   }, [currentValidator, positionInfo]);
-  const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
-  const existentialDeposit = useMemo(() => {
-    const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
-    if (assetInfo) {
-      return assetInfo.minAmount || '0';
-    }
-
-    return '0';
-  }, [assetRegistry, chainValue]);
 
   const showFastLeave = useMemo(() => {
     return poolInfo?.metadata.availableMethod.defaultUnstake && poolInfo?.metadata.availableMethod.fastUnstake;
@@ -230,15 +219,12 @@ export const Unbond = ({
   const handleDataForInsufficientAlert = useCallback(
     (estimateFee: AmountData) => {
       return {
-        existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
-        availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
-        maintainBalance: getInputValuesFromString(poolInfo?.metadata.maintainBalance || '0', estimateFee.decimals),
+        chainName: chainInfoMap[chainValue]?.name || '',
         symbol: estimateFee.symbol,
       };
     },
-    [existentialDeposit, nativeTokenBalance.value, poolInfo?.metadata.maintainBalance],
+    [chainInfoMap, chainValue],
   );
-  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
   const { onError, onSuccess } = useHandleSubmitTransaction(
     onDone,
     setTransactionDone,
@@ -326,6 +312,26 @@ export const Unbond = ({
       setFrom(accountList[0].address);
     }
   }, [accountList, fromValue, setFrom]);
+
+  const exType = useMemo(() => {
+    if (poolType === YieldPoolType.NOMINATION_POOL || poolType === YieldPoolType.NATIVE_STAKING) {
+      return ExtrinsicType.STAKING_UNBOND;
+    }
+
+    if (poolType === YieldPoolType.LIQUID_STAKING) {
+      if (chainValue === 'moonbeam') {
+        return ExtrinsicType.UNSTAKE_STDOT;
+      }
+
+      return ExtrinsicType.UNSTAKE_LDOT;
+    }
+
+    if (poolType === YieldPoolType.LENDING) {
+      return ExtrinsicType.UNSTAKE_LDOT;
+    }
+
+    return ExtrinsicType.STAKING_UNBOND;
+  }, [poolType, chainValue]);
 
   return (
     <>
@@ -458,7 +464,7 @@ export const Unbond = ({
                     iconColor={isDisableSubmitBtn ? theme.colorTextLight5 : theme.colorWhite}
                   />
                 }
-                onPress={onPreCheckReadOnly(onSubmit)}>
+                onPress={onPreCheck(onSubmit, exType)}>
                 {poolType === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
               </Button>
             </View>

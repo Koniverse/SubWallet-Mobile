@@ -18,6 +18,7 @@ interface Props {
   onPress?: () => void;
   onPressRightButton?: () => void;
   isProfitable: boolean;
+  disabled?: boolean;
 }
 
 export const StakingPoolItem = ({
@@ -30,11 +31,15 @@ export const StakingPoolItem = ({
   onPress,
   onPressRightButton,
   isProfitable,
+  disabled,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = StakingPoolItemStyle(theme);
   return (
-    <TouchableOpacity style={_style.container} onPress={onPress}>
+    <TouchableOpacity
+      style={[_style.container, disabled && _style.disabledStyle]}
+      onPress={onPress}
+      disabled={disabled}>
       <View style={_style.avatarWrapper}>
         <Avatar value={address} size={40} theme={isEthereumAddress(address) ? 'ethereum' : 'polkadot'} />
       </View>
@@ -77,9 +82,16 @@ export const StakingPoolItem = ({
         </View>
       </View>
       <Button
+        style={{ position: 'absolute', right: 0, zIndex: 10 }}
         type={'ghost'}
         size={'xs'}
-        icon={<Icon phosphorIcon={DotsThree} size={'sm'} iconColor={theme.colorTextLight3} />}
+        icon={
+          <Icon
+            phosphorIcon={DotsThree}
+            size={'sm'}
+            iconColor={disabled ? theme.colorTextLight1 : theme.colorTextLight3}
+          />
+        }
         onPress={onPressRightButton}
       />
     </TouchableOpacity>

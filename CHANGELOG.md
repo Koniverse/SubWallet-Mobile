@@ -1,3 +1,276 @@
+## 1.1.71 (411)
+
+
+## 1.1.70 (410)
+
+
+## 1.1.69 (409)
+
+
+## 1.1.69 (408)
+
+
+## 1.1.68 (407)
+
+
+## 1.1.68 (406)
+
+
+## 1.1.67 (405)
+
+
+## 1.1.67 (404)
+
+
+## 1.1.67 (403)
+
+
+## 1.1.67 (402)
+
+
+## 1.1.66 (401)
+
+
+## 1.1.66 (400)
+
+
+## 1.1.65 (399)
+
+
+## 1.1.65 (398)
+
+
+## 1.1.65 (397)
+
+
+## 1.1.64 (396)
+
+
+## 1.1.63 (395)
+
+
+## 1.1.63 (394)
+
+
+## 1.1.63 (393)
+
+
+## 1.1.63 (392)
+
+
+## 1.1.63 (391)
+
+
+## 1.1.63 (390)
+
+
+## 1.1.62 (389)
+
+
+## 1.1.62 (388)
+
+
+## 1.1.61 (387)
+
+
+## 1.1.61 (386)
+
+
+## 1.1.60 (385)
+
+
+## 1.1.60 (384)
+
+
+## 1.1.59 (383)
+
+
+## 1.1.59 (382)
+
+
+## 1.1.58 (381)
+
+
+## 1.1.58 (380)
+
+
+## 1.1.57 (379)
+
+
+## 1.1.57 (378)
+
+
+## 1.1.57 (377)
+
+
+## 1.1.57 (376)
+- Add popup to remind users to perform backups for mobile app (#1282)
+- Add popup to remind users to perform backups for mobile app (#1282)
+
+## 1.1.56 (375)
+
+
+## 1.1.55 (374)
+
+
+## 1.1.54 (373)
+
+
+## 1.1.53 (372)
+
+
+## 1.1.53 (371)
+
+
+## 1.1.53 (370)
+
+
+## 1.1.53 (369)
+
+
+## 1.1.52 (368)
+
+
+## 1.1.52 (367)
+
+
+## 1.1.51 (366)
+
+
+## 1.1.51 (365)
+
+
+## 1.1.50 (364)
+
+
+## 1.1.50 (363)
+
+
+## 1.1.49 (362)
+
+
+## 1.1.49 (361)
+
+
+## 1.1.49 (360)
+
+
+## 1.1.49 (359)
+
+
+## 1.1.48 (358)
+
+
+## 1.1.48 (357)
+
+
+## 1.1.48 (356)
+
+
+## 1.1.48 (355)
+- Adjust banner height (#1538)
+- Hide scroll in InstructionModal (#1538)
+- Add slider for Banner (#1538)
+- Add slider for Banner (#1538)
+- Fix crash app bug in Marketing campaign feature (#1538)
+- Fix crash app bug in Marketing campaign feature (#1538)
+- Fix bug Marketing Campaign feature (#1538)
+- Fix bug Marketing Campaign feature (#1538)
+- Update handle data by Redux store (#1538)
+- Update filter data by time and move logic from AppNavigator to AppOnlineContentProvider (#1538)
+- Fix some UI bug (#1538)
+- Fix some UI bug (#1538)
+- Update check popup and banner exist real-time (#1538)
+- Disable onPressBackDrop and allow swipe down on GlobalModal (#1538)
+- Fix bug display popup (#1538)
+- Fix bug do not show instruction modal (#1538)
+- Update AppConfirmation mechanism (send-fund) (#1538)
+- Fix bug do not show image in AppPopup (#1538)
+- Update AppInstruction mechanism (#1538)
+- Update AppBanner mechanism (#1538)
+- Update base and AppPopup mechanism (#1538)
+
+## 1.1.47 (354)
+
+
+## 1.1.47 (353)
+- Add only Testnet tag in PositionList and GroupList (#1560)
+
+## 1.1.47 (352)
+- Improve UX UI for earning feature (#1560)
+- Improve UX UI for earning feature (#1560)
+
+## 1.1.46 (351)
+
+
+## 1.1.46 (350)
+- Fix bug in EarningPreview screen (#1484)
+- Update filter for EarningPreviewOptions (#1484)
+- Fix bug in EarningPreview screen (#1484)
+- Fix bug in EarningPreview screen (#1484)
+- Fix bug StakingReward feature (#1484)
+- Fix bug StakingReward feature (#1484)
+- Fix bug StakingReward feature (#1484)
+- Fix bug access deeplink when no account (#1484)
+- Update logic for StakingReward features (#1484)
+- Fix some UI bug in StartEarning screen (#1484)
+- Fix some navigation bug in StartEarning screen (#1484)
+- Fix UI bug in StartEarning screen (#1484)
+- Fix bug in StartEarning screen (#1484)
+- Fix bug do not show Alert when app do not have any account (#1484)
+- Update App for Staking Reward (#1484)
+
+## 1.1.45 (349)
+
+
+## 1.1.44 (348)
+
+
+## 1.1.44 (347)
+- Update web-runner 1.1.51 (#1559)
+
+## 1.1.44 (346)
+
+
+## 1.1.44 (345)
+
+
+## 1.1.44 (344)
+
+
+## 1.1.44 (343)
+- Add Swap button (#1541)
+
+## 1.1.44 (342)
+
+
+## 1.1.43 (341)
+- Fix bug do not show account on the Accounts token details screen in case all balance is locked (#1529)
+
+## 1.1.43 (340)
+
+
+## 1.1.42 (339)
+- Navigation support users by platform (#1542)
+
+## 1.1.42 (338)
+
+
+## 1.1.41 (337)
+
+
+## 1.1.41 (336)
+
+
+## 1.1.40 (335)
+
+
+## 1.1.40 (334)
+
+
+## 1.1.39 (333)
+- Update transaction result screen (#1506)
+
 ## 1.1.38 (332)
 
 

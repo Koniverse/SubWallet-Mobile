@@ -2,6 +2,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type TransactionActionStackParamList = {
   SendFund: { slug?: string; recipient?: string };
+  OldSendFund: { slug?: string; recipient?: string };
   SendNFT: {
     chain: string;
     collectionId: string;
@@ -9,7 +10,8 @@ export type TransactionActionStackParamList = {
     owner: string;
   };
   Stake: { chain?: string; type?: string };
-  Earning: { slug: string };
+  Earning: { slug: string; target?: string; redirectFromPreview?: boolean };
+  Swap: { slug?: string };
   Unbond: { slug: string };
   Withdraw: { slug: string };
   ClaimReward: { slug: string };
@@ -20,6 +22,7 @@ export type NavigationProps = NativeStackScreenProps<TransactionActionStackParam
 export type TransactionActionNavigationProps = NavigationProps['navigation'];
 
 export type SendFundProps = NativeStackScreenProps<TransactionActionStackParamList, 'SendFund'>;
+export type OldSendFundProps = NativeStackScreenProps<TransactionActionStackParamList, 'OldSendFund'>;
 export type SendNFTProps = NativeStackScreenProps<TransactionActionStackParamList, 'SendNFT'>;
 export type StakeProps = NativeStackScreenProps<TransactionActionStackParamList, 'Stake'>;
 export type UnbondProps = NativeStackScreenProps<TransactionActionStackParamList, 'Unbond'>;
@@ -27,3 +30,4 @@ export type ClaimRewardProps = NativeStackScreenProps<TransactionActionStackPara
 export type WithdrawProps = NativeStackScreenProps<TransactionActionStackParamList, 'Withdraw'>;
 export type CancelUnstakeProps = NativeStackScreenProps<TransactionActionStackParamList, 'CancelUnstake'>;
 export type EarningProps = NativeStackScreenProps<TransactionActionStackParamList, 'Earning'>;
+export type SwapProps = NativeStackScreenProps<TransactionActionStackParamList, 'Swap'>;

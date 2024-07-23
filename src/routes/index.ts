@@ -45,18 +45,25 @@ export type RootStackParamList = {
   NetworksSetting: { chainName?: string };
   NetworkSettingDetail: { chainSlug: string };
   ImportNetwork: undefined;
-  SendFund: { slug?: string; recipient?: string };
   Drawer: NavigatorScreenParams<WrapperParamList>;
+  EarningPreview: { chain?: string; type?: string; target?: string };
+  EarningPreviewPools: {
+    group: string;
+    symbol: string;
+  };
   Languages: undefined;
   Security: undefined;
   AboutSubWallet: undefined;
   AccountExport: { address: string };
   ExportJson: { address: string };
+  ExportAllAccount: undefined;
   BrowserHome?: NavigatorScreenParams<undefined> | undefined;
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
   BrowserListByTabview: { type: string };
   MissionPoolsByTabview: { type: string };
+  MissionPoolSearchByTabView: { type: string };
+  MissionPoolSearchByType: { type: string };
   ConfirmationPopup: undefined;
   Confirmations: undefined;
   DAppAccess: undefined;
@@ -79,14 +86,9 @@ export type RootStackParamList = {
   AttachReadOnly: undefined;
   ImportQrCode: undefined;
   TransactionAction: NavigatorScreenParams<TransactionActionStackParamList>;
-  SendNFT: {
-    chain: string;
-    collectionId: string;
-    itemId: string;
-    owner: string;
-  };
   ManageAddressBook: undefined;
   DeriveAccount: undefined;
+  Crowdloans: undefined;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -94,9 +96,10 @@ export type RootNavigationProps = NavigationProps['navigation'];
 export type RootRouteProps = NavigationProps['route'];
 export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'CreateAccount'>;
 export type CreatePasswordProps = NativeStackScreenProps<RootStackParamList, 'CreatePassword'>;
+export type EarningPreviewProps = NativeStackScreenProps<RootStackParamList, 'EarningPreview'>;
+export type EarningPreviewPoolsProps = NativeStackScreenProps<RootStackParamList, 'EarningPreviewPools'>;
 export type ImportSecretPhraseProps = NativeStackScreenProps<RootStackParamList, 'ImportSecretPhrase'>;
 export type AccountsScreenProps = NativeStackScreenProps<RootStackParamList, 'AccountsScreen'>;
-export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund'>;
 export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;
 export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;
 export type AccountExportProps = NativeStackScreenProps<RootStackParamList, 'AccountExport'>;
@@ -105,8 +108,9 @@ export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'Rem
 export type TransferNftProps = NativeStackScreenProps<RootStackParamList, 'TransferNft'>;
 export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
 export type BrowserTabsManagerProps = NativeStackScreenProps<RootStackParamList, 'BrowserTabsManager'>;
+export type MissionPoolSearchByTabviewProps = NativeStackScreenProps<RootStackParamList, 'MissionPoolSearchByTabView'>;
+export type MissionPoolSearchByTypeProps = NativeStackScreenProps<RootStackParamList, 'MissionPoolSearchByType'>;
 export type BrowserListByTabviewProps = NativeStackScreenProps<RootStackParamList, 'BrowserListByTabview'>;
-export type MissionPoolsByTabviewProps = NativeStackScreenProps<RootStackParamList, 'MissionPoolsByTabview'>;
 export type BrowserHomeProps = NativeStackScreenProps<RootStackParamList, 'BrowserHome'>;
 export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'BrowserSearch'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;

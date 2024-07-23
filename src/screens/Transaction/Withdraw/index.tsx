@@ -26,7 +26,6 @@ import { isAccountAll } from 'utils/accountAll';
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { WithdrawProps } from 'routes/transaction/transactionAction';
@@ -37,11 +36,10 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
-import { useGetBalance } from 'hooks/balance';
-import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import useYieldPositionDetail from '../../../hooks/earning/useYieldPositionDetail';
 import { yieldSubmitStakingWithdrawal } from 'messaging/index';
+import usePreCheckAction from 'hooks/account/usePreCheckAction';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -70,7 +68,6 @@ export const Withdraw = ({
 
   const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
 
   const [loading, setLoading] = useState(false);
@@ -99,6 +96,7 @@ export const Withdraw = ({
   const { list: allPositionInfos } = useYieldPositionDetail(slug);
   const { list: yieldPositions } = useYieldPositionDetail(slug, fromValue);
   const yieldPosition = yieldPositions[0];
+  const type = yieldPosition.type;
 
   const accountInfo = useGetAccountByAddress(fromValue);
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
@@ -109,25 +107,14 @@ export const Withdraw = ({
   const symbol = inputAsset?.symbol || '';
 
   const accountSelectorRef = useRef<ModalRef>();
-  const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
-  const existentialDeposit = useMemo(() => {
-    const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
-    if (assetInfo) {
-      return assetInfo.minAmount || '0';
-    }
-
-    return '0';
-  }, [assetRegistry, chainValue]);
   const handleDataForInsufficientAlert = useCallback(
     (estimateFee: AmountData) => {
       return {
-        existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
-        availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
-        maintainBalance: getInputValuesFromString(poolInfo?.metadata.maintainBalance || '0', estimateFee.decimals),
+        chainName: chainInfoMap[chainValue]?.name || '',
         symbol: estimateFee.symbol,
       };
     },
-    [existentialDeposit, nativeTokenBalance.value, poolInfo?.metadata.maintainBalance],
+    [chainInfoMap, chainValue],
   );
   const { onError, onSuccess } = useHandleSubmitTransaction(
     onDone,
@@ -152,7 +139,7 @@ export const Withdraw = ({
     return undefined;
   }, [fromValue, yieldPosition]);
 
-  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
+  const onPreCheck = usePreCheckAction(fromValue);
 
   const onSubmit = useCallback(() => {
     setLoading(true);
@@ -197,6 +184,22 @@ export const Withdraw = ({
       setFrom(accountList[0].address);
     }
   }, [accountList, fromValue, setFrom]);
+
+  const exType = useMemo(() => {
+    if (type === YieldPoolType.LIQUID_STAKING) {
+      if (chainValue === 'moonbeam') {
+        return ExtrinsicType.EVM_EXECUTE;
+      } else {
+        return ExtrinsicType.UNKNOWN;
+      }
+    }
+
+    if (type === YieldPoolType.LENDING) {
+      return ExtrinsicType.UNKNOWN;
+    }
+
+    return ExtrinsicType.STAKING_WITHDRAW;
+  }, [type, chainValue]);
 
   return (
     <>
@@ -265,7 +268,7 @@ export const Withdraw = ({
                     }
                   />
                 }
-                onPress={onPreCheckReadOnly(onSubmit)}>
+                onPress={onPreCheck(onSubmit, exType)}>
                 {i18n.buttonTitles.continue}
               </Button>
             </View>

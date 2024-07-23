@@ -7,9 +7,16 @@ interface Props<T> {
   selectedValueMap: Record<string, boolean>;
   onSelectItem?: (item: T) => void;
   onCloseModal?: () => void;
+  showAccountSignModeIcon?: boolean;
 }
 
-export function AccountSelectItem<T>({ item, selectedValueMap, onSelectItem, onCloseModal }: Props<T>) {
+export function AccountSelectItem<T>({
+  item,
+  selectedValueMap,
+  onSelectItem,
+  onCloseModal,
+  showAccountSignModeIcon,
+}: Props<T>) {
   const { address, name } = item as AccountJson;
   return (
     <AccountItemWithName
@@ -18,6 +25,7 @@ export function AccountSelectItem<T>({ item, selectedValueMap, onSelectItem, onC
       address={address}
       accountName={name}
       isSelected={!!selectedValueMap[address]}
+      showAccountSignModeIcon={showAccountSignModeIcon}
       onPress={() => {
         onSelectItem && onSelectItem(item);
         onCloseModal && onCloseModal();

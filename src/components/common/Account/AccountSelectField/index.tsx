@@ -10,6 +10,8 @@ import AccountSelectFieldStyles from './style';
 import { CaretDown } from 'phosphor-react-native';
 import { DisabledStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { formatAccountAddress } from 'utils/account';
+import useChainInfo from 'hooks/chain/useChainInfo';
 
 interface Props {
   onPress: () => void;
@@ -21,7 +23,11 @@ const AccountSelectField = ({ disabled, onPress }: Props) => {
   const _style = AccountSelectFieldStyles(theme);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const isAll = useMemo((): boolean => !!currentAccount && isAccountAll(currentAccount.address), [currentAccount]);
-  // TODO: reformat address when have new network info
+  const networkInfo = useChainInfo(undefined, currentAccount?.originGenesisHash ?? currentAccount?.genesisHash);
+  const address = useMemo(
+    (): string => (currentAccount ? formatAccountAddress(currentAccount, networkInfo) : ''),
+    [currentAccount, networkInfo],
+  );
 
   return (
     <TouchableOpacity activeOpacity={1} onPress={onPress} disabled={disabled} style={disabled && DisabledStyle}>
@@ -39,7 +45,7 @@ const AccountSelectField = ({ disabled, onPress }: Props) => {
         <Typography.Text style={_style.accountNameStyle} ellipsis={true}>
           {isAll ? i18n.common.allAccounts : currentAccount?.name}
         </Typography.Text>
-        {!isAll && <Text style={_style.accountAddressStyle}>{`(...${currentAccount?.address.slice(-3)})`}</Text>}
+        {!isAll && <Text style={_style.accountAddressStyle}>{`(...${address.slice(-3)})`}</Text>}
         <Icon phosphorIcon={CaretDown} size={'xxs'} />
       </View>
     </TouchableOpacity>

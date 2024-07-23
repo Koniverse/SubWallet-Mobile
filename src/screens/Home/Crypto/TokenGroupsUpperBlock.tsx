@@ -55,6 +55,7 @@ export const TokenGroupsUpperBlock = ({
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const { currencyData } = useSelector((state: RootState) => state.price);
   const { isShowBuyToken } = useShowBuyToken();
   const _toggleBalances = () => {
     updateToggleBalance();
@@ -64,7 +65,7 @@ export const TokenGroupsUpperBlock = ({
   return (
     <View style={containerStyle} pointerEvents="box-none">
       <TouchableOpacity style={{ alignItems: 'center' }} onPress={_toggleBalances}>
-        <BalancesVisibility value={totalValue} startWithSymbol subFloatNumber />
+        <BalancesVisibility value={totalValue} subFloatNumber symbol={currencyData.symbol} />
 
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 3, height: 40 }}>
           <View style={{ marginRight: 8 }}>
@@ -85,7 +86,7 @@ export const TokenGroupsUpperBlock = ({
               }}
               decimal={0}
               value={totalChangeValue}
-              prefix={isPriceDecrease ? '- $' : '+ $'}
+              prefix={isPriceDecrease ? `- ${currencyData.symbol}` : `+ ${currencyData.symbol}`}
             />
           )}
 
@@ -139,20 +140,36 @@ export const TokenGroupsUpperBlock = ({
           label={i18n.cryptoScreen.address}
           icon={ButtonIcon.Receive}
           onPress={onOpenReceive}
-          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
         />
         <ActionButton
           label={i18n.cryptoScreen.send}
           icon={ButtonIcon.SendFund}
           onPress={onOpenSendFund}
-          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
         />
+        {isShowBuyToken && (
+          <ActionButton
+            label={i18n.cryptoScreen.swap}
+            icon={ButtonIcon.Swap}
+            onPress={() =>
+              navigation.navigate('Drawer', {
+                screen: 'TransactionAction',
+                params: {
+                  screen: 'Swap',
+                  params: {},
+                },
+              })
+            }
+            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
+          />
+        )}
         {isShowBuyToken && (
           <ActionButton
             label={i18n.cryptoScreen.buy}
             icon={ButtonIcon.Buy}
             onPress={() => navigation.navigate('Drawer', { screen: 'BuyToken', params: {} })}
-            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
           />
         )}
       </View>

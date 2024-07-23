@@ -23,6 +23,7 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
   });
   const [isReady, setIsReady] = useState(lastIsReady);
   const [isNetConnected, setIsNetConnected] = useState(lastIsNetConnected);
+  const [isUpdateComplete, setUpdateComplete] = useState(false);
 
   useEffect(() => {
     setupWebview(webRef, eventEmitter);
@@ -74,8 +75,16 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
         eventEmitter,
         reload,
         isNetConnected,
+        isUpdateComplete,
+        setUpdateComplete,
       }}>
-      <WebRunner webRunnerRef={webRef} webRunnerStateRef={webStateRef} webRunnerEventEmitter={eventEmitter} />
+      <WebRunner
+        webRunnerRef={webRef}
+        webRunnerStateRef={webStateRef}
+        webRunnerEventEmitter={eventEmitter}
+        isReady={isReady}
+        setUpdateComplete={setUpdateComplete}
+      />
       {children}
     </WebRunnerContext.Provider>
   );

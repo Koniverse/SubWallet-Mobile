@@ -7,19 +7,18 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { _CrowdloanItemType } from 'types/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { Linking, ListRenderItemInfo, RefreshControl, TouchableOpacity } from 'react-native';
+import { ListRenderItemInfo, RefreshControl, View } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
-import FastImage from 'react-native-fast-image';
-import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
-import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 import { useRefresh } from 'hooks/useRefresh';
 import { reloadCron } from 'messaging/index';
-import { deeplinks } from 'utils/browser';
+import { BannerGenerator } from 'components/common/BannerGenerator';
+import { RootNavigationProps } from 'routes/index';
+import { _FundStatus } from '@subwallet/chain-list/types';
 
 enum FilterValue {
   POLKADOT_PARACHAIN = 'Polkadot parachain',
@@ -28,45 +27,56 @@ enum FilterValue {
   IN_AUCTION = 'in_auction',
 }
 
+function getListByFilterOpt(crowdloanItems: _CrowdloanItemType[], filterOptions: string[]) {
+  if (filterOptions.length === 0) {
+    return crowdloanItems;
+  }
+  let result: _CrowdloanItemType[];
+  result = crowdloanItems.filter(item => {
+    for (const filter of filterOptions) {
+      if (filter === FilterValue.POLKADOT_PARACHAIN) {
+        if (item.relayChainSlug === 'polkadot') {
+          return true;
+        }
+      } else if (filter === FilterValue.KUSAMA_PARACHAIN) {
+        if (item.relayChainSlug === 'kusama') {
+          return true;
+        }
+      } else if (filter === FilterValue.WON) {
+        if (item.fundStatus === _FundStatus.WON) {
+          return true;
+        }
+      } else if (filter === FilterValue.IN_AUCTION) {
+        if (item.fundStatus === _FundStatus.IN_AUCTION) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  });
+
+  return result;
+}
+
 export const CrowdloansScreen = () => {
   const theme = useSubWalletTheme().swThemes;
+  const navigation = useNavigation<RootNavigationProps>();
   const items: _CrowdloanItemType[] = useGetCrowdloanList();
   const [isRefresh, refresh] = useRefresh();
   const isFocused = useIsFocused();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const { currencyData } = useSelector((state: RootState) => state.price);
   const defaultFilterOpts = [
     { label: i18n.filterOptions.polkadotParachain, value: FilterValue.POLKADOT_PARACHAIN },
     { label: i18n.filterOptions.kusamaParachain, value: FilterValue.KUSAMA_PARACHAIN },
     { label: i18n.filterOptions.won, value: FilterValue.WON },
     { label: i18n.filterOptions.inAuction, value: FilterValue.IN_AUCTION },
   ];
-  const banners = useGetBannerByScreen('crowdloan');
+  const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('crowdloan');
   const renderItem = ({ item }: ListRenderItemInfo<_CrowdloanItemType>) => {
-    return <CrowdloanItem item={item} isShowBalance={isShowBalance} />;
+    return <CrowdloanItem currencyData={currencyData} item={item} isShowBalance={isShowBalance} />;
   };
-
-  const openBanner = async (url: string) => {
-    const isDeeplink = deeplinks.some(deeplink => url.startsWith(deeplink));
-    if (isDeeplink) {
-      Linking.openURL(url);
-      return;
-    }
-
-    const transformUrl = `subwallet://browser?url=${encodeURIComponent(url)}`;
-    Linking.openURL(transformUrl);
-  };
-
-  const onPressBanner = useCallback((item: CampaignBanner) => {
-    return () => {
-      if (item.data.action === 'open_url') {
-        const url = item.data.metadata?.url as string | undefined;
-
-        if (url) {
-          openBanner(url);
-        }
-      }
-    };
-  }, []);
 
   const crowdloanData = useMemo(() => {
     const result = items.sort(
@@ -91,21 +101,6 @@ export const CrowdloansScreen = () => {
     return itemList;
   }, []);
 
-  function getListByFilterOpt(crowdloanItems: _CrowdloanItemType[], filterOptions: string[]) {
-    if (filterOptions.length === 0) {
-      return crowdloanItems;
-    }
-    let result: _CrowdloanItemType[];
-    result = crowdloanItems.filter(({ chainName, fundStatus = '' }) => {
-      if (filterOptions.includes(chainName) || filterOptions.includes(fundStatus)) {
-        return true;
-      }
-      return false;
-    });
-
-    return result;
-  }
-
   const onRefresh = useCallback(() => refresh(reloadCron({ data: 'crowdloan' })), [refresh]);
 
   const renderListEmptyComponent = () => {
@@ -124,39 +119,21 @@ export const CrowdloansScreen = () => {
     <FlatListScreen
       isShowFilterBtn
       title={i18n.header.crowdloans}
-      titleTextAlign={'left'}
       flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
       renderListEmptyComponent={renderListEmptyComponent}
       renderItem={renderItem}
       autoFocus={false}
+      onPressBack={() => navigation.goBack()}
       items={crowdloanData}
-      showLeftBtn={false}
       searchFunction={doFilterOptions}
       filterOptions={defaultFilterOpts}
       filterFunction={getListByFilterOpt}
-      isShowMainHeader
       placeholder={i18n.placeholder.searchProject}
       refreshControl={<RefreshControl tintColor={theme.colorWhite} refreshing={isRefresh} onRefresh={onRefresh} />}
       beforeListItem={
-        <>
-          {banners.map(item => (
-            <TouchableOpacity
-              key={item.campaignId}
-              onPress={onPressBanner(item)}
-              activeOpacity={BUTTON_ACTIVE_OPACITY}
-              style={{ marginHorizontal: theme.margin }}>
-              <FastImage
-                style={{
-                  height: 88,
-                  borderRadius: theme.borderRadiusLG,
-                  marginVertical: theme.marginXS,
-                }}
-                resizeMode="cover"
-                source={{ uri: item.data.media }}
-              />
-            </TouchableOpacity>
-          ))}
-        </>
+        <View style={{ paddingHorizontal: theme.padding }}>
+          <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
+        </View>
       }
     />
   );

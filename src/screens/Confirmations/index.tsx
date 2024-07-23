@@ -37,6 +37,10 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Portal } from '@gorhom/portal';
+import { getSignMode } from 'utils/account';
+import { AccountSignMode } from 'types/signer';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import { getDevMode } from 'utils/storage';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
   return {
@@ -67,6 +71,7 @@ export const Confirmations = () => {
   const [index, setIndex] = useState(0);
   const confirmation = confirmationQueue[index] || null;
   useHandlerHardwareBackPress(true);
+  const isDevMode = getDevMode();
   const titleMap = useMemo(
     () => ({
       addNetworkRequest: i18n.header.addNetworkRequest,
@@ -157,8 +162,10 @@ export const Confirmations = () => {
           return i18n.header.unstakeSTDOTTransaction;
         case ExtrinsicType.UNSTAKE_QDOT:
           return i18n.header.unstakeQDOTTransaction;
-        case ExtrinsicType.TOKEN_APPROVE:
-          return i18n.header.tokenApproveTransaction;
+        case ExtrinsicType.TOKEN_SPENDING_APPROVAL:
+          return i18n.header.tokenApprove;
+        case ExtrinsicType.SWAP:
+          return 'Swap confirmation';
         default:
           return i18n.header.transactionConfirmation;
       }
@@ -194,7 +201,19 @@ export const Confirmations = () => {
         isMessage = confirmation.type === 'evmSignatureRequest';
       }
 
-      if (account?.isReadOnly || !canSign) {
+      const signMode = getSignMode(account);
+      console.log('signMode', signMode);
+      const isEvm = isEthereumAddress(account?.address);
+      const notSupport =
+        signMode === AccountSignMode.READ_ONLY ||
+        signMode === AccountSignMode.LEDGER ||
+        signMode === AccountSignMode.GENERIC_LEDGER ||
+        signMode === AccountSignMode.LEGACY_LEDGER ||
+        signMode === AccountSignMode.UNKNOWN ||
+        (signMode === AccountSignMode.QR && isEvm && !isDevMode) ||
+        !canSign;
+
+      if (notSupport) {
         return (
           <NotSupportConfirmation
             account={account}
@@ -206,7 +225,7 @@ export const Confirmations = () => {
       }
     }
 
-    if (confirmation.item.isInternal) {
+    if (confirmation.item.isInternal && confirmation.type !== 'connectWCRequest') {
       return <TransactionConfirmation confirmation={confirmation} navigation={navigation} />;
     }
 
@@ -249,7 +268,7 @@ export const Confirmations = () => {
     }
 
     return null;
-  }, [confirmation, navigation]);
+  }, [confirmation, isDevMode, navigation]);
 
   useEffect(() => {
     if (numberOfConfirmations) {

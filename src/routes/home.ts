@@ -16,7 +16,7 @@ export type TokenGroupsDetailProps = NativeStackScreenProps<CryptoStackParamList
 export type HomeStackParamList = {
   Tokens: NavigatorScreenParams<CryptoStackParamList>;
   NFTs: NavigatorScreenParams<NFTStackParamList>;
-  Crowdloans: undefined;
+  MissionPools: { type: string };
   Staking: NavigatorScreenParams<StakingScreenStackParamList> | undefined;
   Browser: NavigatorScreenParams<BrowserHomeProps>;
   Earning: NavigatorScreenParams<EarningScreenStackParamList>;
@@ -24,3 +24,4 @@ export type HomeStackParamList = {
 
 type NavigationProps = NativeStackScreenProps<HomeStackParamList>;
 export type HomeNavigationProps = NavigationProps['navigation'];
+export type MissionPoolsNavigationProps = NativeStackScreenProps<HomeStackParamList, 'MissionPools'>;

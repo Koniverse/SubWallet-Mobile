@@ -9,6 +9,7 @@ import {
   ConfirmationType,
   CrowdloanItem,
   KeyringState,
+  MantaPayConfig,
   NftCollection,
   NftItem,
   NominatorMetadata,
@@ -47,6 +48,8 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { MissionInfo } from 'types/missionPool';
 import { DAPPCategory, DAppInfo } from 'types/browser';
 import { RootRouteProps } from 'routes/index';
+import { AppBannerData, AppConfirmationData, AppPopupData, PopupHistoryData } from 'types/staticContent';
+import { SwapPair } from '@subwallet/extension-base/types/swap';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -64,6 +67,7 @@ export type AccountsSlice = {
 export type AppStateSlice = {
   isLocked: boolean;
   isDisplayConfirmation: boolean;
+  isDisplayMktCampaign: boolean;
 };
 
 export type AppVersionSlice = {
@@ -134,6 +138,7 @@ export type BrowserSlice = {
   bookmarks: StoredSiteInfo[];
   defaultDesktopMode: string[];
   desktopMode: string[];
+  externalApplicationUrlList: string[];
 };
 
 export type BackgroundServiceSlice = {
@@ -161,9 +166,18 @@ export interface AppSettings extends UiSettings, Omit<SettingsStruct, 'camera' |
   currentRoute: RootRouteProps | undefined;
 }
 
+export interface AppOnlineContent {
+  appPopupData: AppPopupData[];
+  appBannerData: AppBannerData[];
+  appConfirmationData: AppConfirmationData[];
+  popupHistoryMap: Record<string, PopupHistoryData>;
+  bannerHistoryMap: Record<string, PopupHistoryData>;
+  confirmationHistoryMap: Record<string, PopupHistoryData>;
+}
+
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {
   currentAccount: AccountJson | null;
-
+  isNoAccount: boolean;
   isAllAccount: boolean;
 }
 
@@ -261,4 +275,16 @@ export interface EarningStore extends BaseReduxStore {
   rewardHistories: EarningRewardHistoryItem[];
   minAmountPercentMap: Record<string, number>;
   poolTargetsMap: Record<string, YieldPoolTarget[]>;
+}
+
+export interface SwapStore extends BaseReduxStore {
+  swapPairs: SwapPair[];
+}
+
+export interface MantaPayStore {
+  configs: MantaPayConfig[];
+  isSyncing: boolean;
+  progress: number;
+  needManualSync?: boolean;
+  reduxStatus: ReduxStatus;
 }

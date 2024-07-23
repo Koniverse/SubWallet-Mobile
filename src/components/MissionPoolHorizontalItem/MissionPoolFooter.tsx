@@ -1,26 +1,22 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Linking, StyleProp, View, ViewStyle } from 'react-native';
 import { Button, Icon } from 'components/design-system-ui';
-import { GlobeHemisphereWest, PlusCircle, TwitterLogo } from 'phosphor-react-native';
+import { GlobeHemisphereWest, PlusCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MissionInfo } from 'types/missionPool';
 import i18n from 'utils/i18n/i18n';
+import { ImageLogosMap } from 'assets/logo';
 
 interface Props {
   data: MissionInfo;
   style: StyleProp<ViewStyle>;
   closeDetailModal?: () => void;
   disabledJoinNowBtn?: boolean;
+  onPressJoinNow(url: string): Promise<void>;
 }
 
-export const MissionPoolFooter = ({ data, style, closeDetailModal, disabledJoinNowBtn }: Props) => {
+export const MissionPoolFooter = ({ data, style, disabledJoinNowBtn, onPressJoinNow }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-
-  const onPressJoinNow = async (url: string) => {
-    const transformUrl = `subwallet://browser?url=${encodeURIComponent(url)}`;
-    closeDetailModal && closeDetailModal();
-    Linking.openURL(transformUrl);
-  };
 
   return (
     <View style={style}>
@@ -34,7 +30,11 @@ export const MissionPoolFooter = ({ data, style, closeDetailModal, disabledJoinN
       />
       <Button
         style={{ borderWidth: 2, borderColor: theme.colorBgBorder }}
-        icon={<Icon phosphorIcon={TwitterLogo} size={'sm'} weight={'fill'} />}
+        icon={
+          <Suspense>
+            <ImageLogosMap.XLogo width={16} height={16} />
+          </Suspense>
+        }
         size={'xs'}
         shape={'circle'}
         type={'secondary'}

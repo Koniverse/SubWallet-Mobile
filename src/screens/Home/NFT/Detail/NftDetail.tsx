@@ -16,7 +16,7 @@ import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { accountCanSign, findAccountByAddress, getAccountSignMode } from 'utils/account';
+import { accountCanSign, findAccountByAddress, getSignMode } from 'utils/account';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import reformatAddress from 'utils/index';
@@ -193,7 +193,7 @@ const NftDetail = ({
 
   const canSend = useMemo((): boolean => {
     if (ownerAccount) {
-      const signMode = getAccountSignMode(ownerAccount);
+      const signMode = getSignMode(ownerAccount);
       return accountCanSign(signMode);
     } else {
       return false;

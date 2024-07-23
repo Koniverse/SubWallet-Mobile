@@ -25,3 +25,12 @@ export const CHAIN_TYPE_MAP = {
   astar: ['astar', 'shiden', 'shibuya'],
   amplitude: ['amplitude', 'amplitude_test', 'kilt', 'kilt_peregrine'],
 };
+
+export const PREDEFINED_EARNING_POOL: Record<string, number[]> = {
+  polkadot: [39],
+  kusama: [80],
+  vara_network: [62, 29, 50],
+  aleph: [82],
+  availTuringTest: [11],
+  avail_mainnet: [4],
+};

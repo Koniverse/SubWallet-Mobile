@@ -6,12 +6,13 @@ import { AddressBookInfo, KeyringState } from '@subwallet/extension-base/backgro
 import { AccountJson, AccountsContext } from '@subwallet/extension-base/background/types';
 import { AccountState, ReduxStatus } from 'stores/types';
 import { isAccountAll } from '@subwallet/extension-base/utils';
+import { isNoAccount } from 'utils/account';
 
 const initialState: AccountState = {
   // CurrentAccount
   currentAccount: null,
   isAllAccount: false,
-
+  isNoAccount: true,
   // KeyringState
   isReady: false,
   hasMasterPassword: false,
@@ -46,6 +47,7 @@ const accountStateSlice = createSlice({
       return {
         ...state,
         ...payload,
+        isNoAccount: isNoAccount(payload.accounts),
         reduxStatus: ReduxStatus.READY,
       };
     },

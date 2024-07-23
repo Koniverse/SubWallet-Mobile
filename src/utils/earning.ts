@@ -4,6 +4,8 @@ import { Database, HandsClapping, Leaf, User, Users } from 'phosphor-react-nativ
 import { ThemeTypes } from 'styles/themes';
 import { EarningTagType } from 'types/earning';
 import { convertHexColorToRGBA } from 'utils/color';
+import { ValidatorInfo } from '@subwallet/extension-base/types/yield/info/chain/target';
+import { shuffle } from 'utils/common';
 
 export const createEarningTypeTags = (theme: ThemeTypes, chain: string): Record<YieldPoolType, EarningTagType> => {
   return {
@@ -61,4 +63,48 @@ export function isRelatedToAstar(slug: string) {
     'ASTR-Astar',
     'shibuya-NATIVE-SBY',
   ].includes(slug);
+}
+
+export function autoSelectValidatorOptimally(
+  validators: ValidatorInfo[],
+  maxCount = 1,
+  simple = false,
+  preSelectValidators?: string,
+): ValidatorInfo[] {
+  if (!validators.length) {
+    return [];
+  }
+
+  const preSelectValidatorAddresses = preSelectValidators ? preSelectValidators.split(',') : [];
+
+  const result: ValidatorInfo[] = [];
+  const notPreSelected: ValidatorInfo[] = [];
+
+  for (const v of validators) {
+    if (preSelectValidatorAddresses.includes(v.address)) {
+      result.push(v);
+    } else {
+      notPreSelected.push(v);
+    }
+  }
+
+  if (result.length >= maxCount) {
+    shuffle<ValidatorInfo>(result);
+
+    return result.slice(0, maxCount - 1);
+  }
+
+  shuffle<ValidatorInfo>(notPreSelected);
+
+  for (const v of notPreSelected) {
+    if (result.length === maxCount) {
+      break;
+    }
+
+    if (v.commission !== 100 && !v.blocked && (!simple ? v.identity && v.topQuartile : true)) {
+      result.push(v);
+    }
+  }
+
+  return result;
 }

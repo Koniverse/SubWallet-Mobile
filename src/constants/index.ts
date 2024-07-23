@@ -11,12 +11,18 @@ type DeviceInfo = {
   height: number;
 };
 
+type RegexType = {
+  httpProtocol: RegExp;
+};
+
 export const WIKI_URL = 'https://docs.subwallet.app/';
 export const PRIVACY_AND_POLICY_URL = 'https://docs.subwallet.app/privacy-and-security/privacy-policy';
 export const TERMS_OF_SERVICE_URL = 'https://docs.subwallet.app/privacy-and-security/terms-of-service';
 export const TERMS_OF_USE_URL = 'https://docs.subwallet.app/main/privacy-and-security/terms-of-use';
 export const IMPORT_QR_CODE_URL =
   'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/import-restore-an-account#import-by-qr-code';
+export const BACKUP_SEED_PHRASE_CODE_URL =
+  'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/export-and-backup-an-account';
 export const POLKADOT_VAULT_INSTRUCTION_URL =
   'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/attach-a-polkadot-vault-previously-parity-signer-account';
 export const KEYSTONE_INSTRUCTION_URL =
@@ -52,3 +58,6 @@ export const DEVICE: DeviceInfo = {
 };
 export const ALL_KEY = 'all';
 export const isDevMode = !!env.DEBUG;
+export const regex: RegexType = {
+  httpProtocol: /^http:\/\//,
+};

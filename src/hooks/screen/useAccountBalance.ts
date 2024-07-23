@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { _ChainAsset, _MultiChainAsset } from '@subwallet/chain-list/types';
-import { APIItemState } from '@subwallet/extension-base/background/KoniTypes';
+import { APIItemState, CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
 import {
   _getAssetDecimals,
   _getAssetOriginChain,
@@ -25,6 +25,7 @@ import { SubstrateBalance } from '@subwallet/extension-base/types';
 const BN_0 = new BigN(0);
 const BN_10 = new BigN(10);
 const BN_100 = new BigN(100);
+const defaultCurrency = { label: 'United States Dollar', symbol: 'USD', isPrefix: true };
 
 export function getBalanceValue(balance: string, decimals: number): BigN {
   return new BigN(balance).div(BN_10.pow(decimals));
@@ -34,7 +35,12 @@ export function getConvertedBalanceValue(balance: BigN, price: number): BigN {
   return balance ? balance.multipliedBy(new BigN(price)) : BN_0;
 }
 
-function getDefaultBalanceItem(slug: string, symbol: string, logoKey: string): TokenBalanceItemType {
+function getDefaultBalanceItem(
+  slug: string,
+  symbol: string,
+  logoKey: string,
+  currency?: CurrencyJson,
+): TokenBalanceItemType {
   return {
     free: {
       value: new BigN(0),
@@ -58,6 +64,7 @@ function getDefaultBalanceItem(slug: string, symbol: string, logoKey: string): T
     priceValue: 0,
     logoKey,
     slug,
+    currency: currency || defaultCurrency,
     symbol,
   };
 }
@@ -66,6 +73,7 @@ function getDefaultTokenGroupBalance(
   tokenGroupKey: string,
   assetRegistryMap: AssetRegistryStore['assetRegistry'],
   multiChainAsset?: _MultiChainAsset,
+  currency?: CurrencyJson,
 ): TokenBalanceItemType {
   let symbol: string;
 
@@ -77,13 +85,17 @@ function getDefaultTokenGroupBalance(
     symbol = _getAssetSymbol(assetRegistryMap[tokenGroupKey]);
   }
 
-  return getDefaultBalanceItem(tokenGroupKey, symbol, symbol.toLowerCase());
+  return getDefaultBalanceItem(tokenGroupKey, symbol, symbol.toLowerCase(), currency);
 }
 
-function getDefaultTokenBalance(tokenSlug: string, chainAsset: _ChainAsset): TokenBalanceItemType {
+function getDefaultTokenBalance(
+  tokenSlug: string,
+  chainAsset: _ChainAsset,
+  currency?: CurrencyJson,
+): TokenBalanceItemType {
   const symbol = _getAssetSymbol(chainAsset);
 
-  return getDefaultBalanceItem(tokenSlug, symbol, symbol.toLowerCase());
+  return getDefaultBalanceItem(tokenSlug, symbol, symbol.toLowerCase(), currency);
 }
 
 function getAccountBalance(
@@ -96,6 +108,7 @@ function getAccountBalance(
   multiChainAssetMap: AssetRegistryStore['multiChainAssetMap'],
   chainInfoMap: ChainStore['chainInfoMap'],
   isShowZeroBalance: boolean,
+  currency?: CurrencyJson,
 ): AccountBalanceHookType {
   const totalBalanceInfo: AccountBalanceHookType['totalBalanceInfo'] = {
     convertedValue: new BigN(0),
@@ -113,7 +126,7 @@ function getAccountBalance(
     const tokenGroupNotSupport: boolean[] = [];
     // note: multiChainAsset may be undefined due to tokenGroupKey may be a tokenSlug
     const multiChainAsset: _MultiChainAsset | undefined = multiChainAssetMap[tokenGroupKey];
-    const tokenGroupBalance = getDefaultTokenGroupBalance(tokenGroupKey, assetRegistryMap, multiChainAsset);
+    const tokenGroupBalance = getDefaultTokenGroupBalance(tokenGroupKey, assetRegistryMap, multiChainAsset, currency);
 
     tokenGroupMap[tokenGroupKey].forEach(tokenSlug => {
       const chainAsset = assetRegistryMap[tokenSlug];
@@ -130,7 +143,8 @@ function getAccountBalance(
         return;
       }
 
-      const tokenBalance = getDefaultTokenBalance(tokenSlug, chainAsset);
+      const tokenBalance = getDefaultTokenBalance(tokenSlug, chainAsset, currency);
+      tokenBalance.currency = currency;
       const originChain = _getAssetOriginChain(chainAsset);
       const decimals = _getAssetDecimals(chainAsset);
 
@@ -266,7 +280,10 @@ function getAccountBalance(
     // make sure priceId exists and token group has monetary value
     // todo: check if multiChainAsset has monetary value too (after Nampc updates the background)
     if (!tokenGroupPriceId || (assetRegistryMap[tokenGroupKey] && !_isAssetValuable(assetRegistryMap[tokenGroupKey]))) {
-      tokenGroupBalanceMap[tokenGroupKey] = tokenGroupBalance;
+      tokenGroupBalance.currency = currency;
+      if (!tokenGroupBalance.isNotSupport) {
+        tokenGroupBalanceMap[tokenGroupKey] = tokenGroupBalance;
+      }
 
       return;
     }
@@ -283,11 +300,13 @@ function getAccountBalance(
       tokenGroupBalance.priceChangeStatus = 'decrease';
     }
 
-    tokenGroupBalanceMap[tokenGroupKey] = tokenGroupBalance;
-    totalBalanceInfo.convertedValue = totalBalanceInfo.convertedValue.plus(tokenGroupBalance.total.convertedValue);
-    totalBalanceInfo.converted24hValue = totalBalanceInfo.converted24hValue.plus(
-      tokenGroupBalance.total.pastConvertedValue,
-    );
+    if (!tokenGroupBalance.isNotSupport) {
+      tokenGroupBalanceMap[tokenGroupKey] = tokenGroupBalance;
+      totalBalanceInfo.convertedValue = totalBalanceInfo.convertedValue.plus(tokenGroupBalance.total.convertedValue);
+      totalBalanceInfo.converted24hValue = totalBalanceInfo.converted24hValue.plus(
+        tokenGroupBalance.total.pastConvertedValue,
+      );
+    }
   });
 
   // Compute total balance change
@@ -336,6 +355,7 @@ export default function useAccountBalance(
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const price24hMap = useSelector((state: RootState) => state.price.price24hMap);
+  const currency = useSelector((state: RootState) => state.price.currencyData);
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
   const isShowZeroBalanceSetting = useSelector((state: RootState) => state.settings.isShowZeroBalance);
@@ -373,6 +393,7 @@ export default function useAccountBalance(
           multiChainAssetMap,
           chainInfoMap,
           isShowZeroBalance,
+          currency,
         ),
       );
     });
@@ -381,6 +402,7 @@ export default function useAccountBalance(
     assetRegistryMap,
     balanceMap,
     chainInfoMap,
+    currency,
     currentAccount,
     isShowZeroBalance,
     multiChainAssetMap,

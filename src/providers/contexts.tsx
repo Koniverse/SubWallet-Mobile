@@ -19,6 +19,8 @@ export interface WebviewElement {
   webState: WebRunnerState;
   isReady?: boolean;
   isNetConnected?: boolean;
+  isUpdateComplete?: boolean;
+  setUpdateComplete?: (value: boolean) => void;
   eventEmitter?: EventEmitter;
 }
 

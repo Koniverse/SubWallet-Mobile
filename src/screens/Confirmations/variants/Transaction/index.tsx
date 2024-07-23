@@ -5,7 +5,6 @@ import { ConfirmationQueueItem } from 'stores/base/RequestState';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SigningRequest } from '@subwallet/extension-base/background/types';
-import useParseSubstrateRequestPayload from 'hooks/transaction/confirmation/useParseSubstrateRequestPayload';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
@@ -25,7 +24,9 @@ import {
   TransferBlock,
   WithdrawTransactionConfirmation,
   TokenApproveConfirmation,
+  SwapTransactionConfirmation,
 } from './variants';
+import { SwapTxData } from '@subwallet/extension-base/types/swap';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
@@ -75,8 +76,10 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
     case ExtrinsicType.UNSTAKE_STDOT:
     case ExtrinsicType.UNSTAKE_VMANTA:
       return DefaultWithdrawTransactionConfirmation;
-    case ExtrinsicType.TOKEN_APPROVE:
+    case ExtrinsicType.TOKEN_SPENDING_APPROVAL:
       return TokenApproveConfirmation;
+    case ExtrinsicType.SWAP:
+      return SwapTransactionConfirmation;
     default:
       return BaseTransactionConfirmation;
   }
@@ -93,10 +96,6 @@ export const TransactionConfirmation = (props: Props) => {
 
   const _transaction = useMemo(() => transactionRequest[id], [transactionRequest, id]);
 
-  const substratePayload = useParseSubstrateRequestPayload(
-    type === 'signingRequest' ? (item as SigningRequest).request : undefined,
-  );
-
   const renderContent = useCallback((transaction: SWTransactionResult): React.ReactNode => {
     const { extrinsicType } = transaction;
 
@@ -104,15 +103,31 @@ export const TransactionConfirmation = (props: Props) => {
 
     return <Component transaction={transaction} />;
   }, []);
+
+  const txExpirationTime = useMemo((): number | undefined => {
+    // transaction might only be valid for a certain period of time
+    if (_transaction.extrinsicType === ExtrinsicType.SWAP) {
+      const data = _transaction.data as SwapTxData;
+
+      return data.quote.aliveUntil;
+    }
+    // todo: there might be more types of extrinsic
+
+    return undefined;
+  }, [_transaction.data, _transaction.extrinsicType]);
+
   return (
     <>
       {renderContent(_transaction)}
       {type === 'signingRequest' && (
         <SubstrateSignArea
           account={(item as SigningRequest).account}
+          extrinsicType={_transaction.extrinsicType}
           id={item.id}
-          payload={substratePayload}
+          isInternal={item.isInternal}
+          request={(item as SigningRequest).request}
           navigation={navigation}
+          txExpirationTime={txExpirationTime}
         />
       )}
       {type === 'evmSendTransactionRequest' && (
@@ -121,6 +136,7 @@ export const TransactionConfirmation = (props: Props) => {
           payload={item as ConfirmationDefinitions['evmSendTransactionRequest'][0]}
           type="evmSendTransactionRequest"
           navigation={navigation}
+          txExpirationTime={txExpirationTime}
         />
       )}
     </>

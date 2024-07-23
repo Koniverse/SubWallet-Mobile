@@ -8,7 +8,6 @@ import ConnectParitySigner from 'screens/Account/ConnectQrSigner/ConnectParitySi
 import ImportQrCode from 'screens/Account/ImportQrCode';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { GeneralSettings } from 'screens/Settings/General';
-import { SendFund } from 'screens/Transaction/SendFund';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
 import { AccountsScreen } from 'screens/Account/AccountsScreen';
@@ -47,7 +46,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AddProvider } from 'screens/AddProvider';
 import TransactionScreen from 'screens/Transaction/TransactionScreen';
-import SendNFT from 'screens/Transaction/NFT';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { Keyboard, Linking, Platform, StatusBar } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -62,7 +60,6 @@ import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { ConnectionList } from 'screens/Settings/WalletConnect/ConnectionList';
 import { ConnectWalletConnect } from 'screens/Settings/WalletConnect/ConnectWalletConnect';
 import { ConnectionDetail } from 'screens/Settings/WalletConnect/ConnectionDetail';
-import useAppLock from 'hooks/useAppLock';
 import LoginScreen from 'screens/MasterPassword/Login';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
@@ -70,7 +67,7 @@ import { AppModalContext } from 'providers/AppModalContext';
 import { PortalHost } from '@gorhom/portal';
 import { findAccountByAddress } from 'utils/index';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
-import { saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
+import { enableChain, saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
 import urlParse from 'url-parse';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { transformUniversalToNative } from 'utils/deeplink';
@@ -80,11 +77,25 @@ import queryString from 'querystring';
 import { connectWalletConnect } from 'utils/walletConnect';
 import { useToast } from 'react-native-toast-notifications';
 import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview';
-import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { DeriveAccount } from 'screens/Account/DeriveAccount';
 import { useGroupYieldPosition } from 'hooks/earning';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AboutSubWallet } from 'screens/Settings/AboutSubWallet';
 import { updateCurrentRoute } from 'stores/utils';
+import { AppOnlineContentContext } from 'providers/AppOnlineContentProvider';
+import { _ChainInfo } from '@subwallet/chain-list/types';
+import { AccountJson } from '@subwallet/extension-base/background/types';
+import { isAccountAll } from '@subwallet/extension-base/utils';
+import {
+  _getSubstrateGenesisHash,
+  _isChainEvmCompatible,
+} from '@subwallet/extension-base/services/chain-service/utils';
+import { mmkvStore } from 'utils/storage';
+import { EarningPreview } from 'screens/EarningPreview';
+import { EarningPreviewPools } from 'screens/EarningPreview/EarningPreviewPools';
+import { ExportAllAccount } from 'screens/Account/ExportAllAccount';
+import { CrowdloansScreen } from 'screens/Home/Crowdloans';
+import { MissionPoolSearchByTabView } from 'screens/Home/Browser/MissionPool/MissionPoolSearchByTabView';
 
 interface Props {
   isAppReady: boolean;
@@ -155,6 +166,17 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
               screens: {
                 EarningList: {
                   path: 'earning-list',
+                  stringify: {
+                    chain: (chain: string) => chain,
+                    noAccountValid: (noAccountValid: boolean) => noAccountValid,
+                  },
+                },
+                EarningPoolList: {
+                  path: 'earning-pool-list',
+                  stringify: {
+                    group: (group: string) => group,
+                    symbol: (symbol: string) => symbol,
+                  },
                 },
                 EarningPositionDetail: {
                   path: 'earning-position-detail',
@@ -169,6 +191,39 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
             },
           },
         },
+      },
+    },
+    Drawer: {
+      path: 'drawer',
+      screens: {
+        TransactionAction: {
+          path: 'transaction-action',
+          screens: {
+            Earning: {
+              path: 'earning',
+              stringify: {
+                slug: (slug: string) => slug,
+                target: (target: string) => target,
+                redirectFromPreview: (redirectFromPreview: boolean) => redirectFromPreview,
+              },
+            },
+          },
+        },
+      },
+    },
+    EarningPreview: {
+      path: 'earning-preview',
+      stringify: {
+        chain: (chain: string) => chain,
+        type: (type: string) => type,
+        target: (target: string) => target,
+      },
+    },
+    EarningPreviewPools: {
+      path: 'earning-preview-pools',
+      stringify: {
+        group: (group: string) => group,
+        symbol: (symbol: string) => symbol,
       },
     },
   },
@@ -206,8 +261,24 @@ const ConnectionListScreen = (props: JSX.IntrinsicAttributes) => {
   return withPageWrapper(ConnectionList as ComponentType, ['walletConnect'])(props);
 };
 
+const CrowdloanListScreen = (props: JSX.IntrinsicAttributes) => {
+  return withPageWrapper(CrowdloansScreen as ComponentType, ['crowdloan'])(props);
+};
+
 type DeepLinkSubscriptionType = {
   url: string;
+};
+
+export const getFilteredAccount = (chainInfo: _ChainInfo) => (account: AccountJson) => {
+  if (isAccountAll(account.address)) {
+    return false;
+  }
+
+  if (account.originGenesisHash && _getSubstrateGenesisHash(chainInfo) !== account.originGenesisHash) {
+    return false;
+  }
+
+  return _isChainEvmCompatible(chainInfo) === isEthereumAddress(account.address);
 };
 
 const AppNavigator = ({ isAppReady }: Props) => {
@@ -220,10 +291,10 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const data = useGroupYieldPosition();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
-  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount } = useSelector(
+  const { accounts, hasMasterPassword, isReady, isLocked, isAllAccount, isNoAccount } = useSelector(
     (state: RootState) => state.accountState,
   );
-  const { isLocked: isLogin } = useAppLock();
+  const isLogin = useSelector((state: RootState) => state.appState.isLocked);
   const [isNavigationReady, setNavigationReady] = useState<boolean>(false);
   const appModalContext = useContext(AppModalContext);
   const isLockedRef = useRef(isLogin);
@@ -234,6 +305,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const finishLoginProgressRef = useRef<Function | null>(null);
   const waitForLoginProcessRef = useRef<Promise<boolean> | null>(null);
   const isPreventDeepLinkRef = useRef(isEmptyAccounts || !hasMasterPassword || hasConfirmations);
+  const { showAppPopup } = useContext(AppOnlineContentContext);
 
   useEffect(() => {
     if (!isLocked && finishLoginProgressRef.current) {
@@ -311,10 +383,12 @@ const AppNavigator = ({ isAppReady }: Props) => {
 
   const needMigrate = useMemo(
     () =>
-      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
-        .length,
+      !!accounts
+        .filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && !acc.isInjected && !acc.pendingMigrate)
+        .filter(acc => !acc.isMasterPassword).length,
     [accounts],
   );
+
   const needMigrateMasterPassword = needMigrate && hasMasterPassword && currentRoute;
 
   const linking: LinkingOptions<RootStackParamList> = {
@@ -324,7 +398,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       return null;
     },
     subscribe: listener => {
-      const onReceiveURL = ({ url }: DeepLinkSubscriptionType) => {
+      const onReceiveURL = async ({ url }: DeepLinkSubscriptionType) => {
         const parseUrl = new urlParse(url);
         const urlQuery = parseUrl.query.substring(1);
         const urlQueryMap: Record<string, string> = {};
@@ -380,12 +454,36 @@ const AppNavigator = ({ isAppReady }: Props) => {
           }
         }
 
+        if (parseUrl.hostname === 'earning-preview-pools') {
+          listener(url);
+          return;
+        }
+
+        if (parseUrl.pathname.startsWith('/transaction-action/earning')) {
+          if (isEmptyAccounts) {
+            navigationRef.current?.navigate('Home');
+          } else {
+            if (isLockedRef.current || isPreventDeepLinkRef.current) {
+              return;
+            }
+
+            mmkvStore.set('storedDeeplink', url);
+            listener(url);
+          }
+
+          return;
+        }
+
         //enable Network
-        const originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+        let originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+        if (urlQueryMap.chain) {
+          originChain = urlQueryMap.chain;
+        }
         const isChainConnected = checkChainConnected(originChain);
 
         if (!isChainConnected && originChain) {
-          updateAssetSetting({
+          await enableChain(originChain);
+          await updateAssetSetting({
             tokenSlug: urlQueryMap.slug,
             assetSetting: {
               visible: true,
@@ -393,6 +491,20 @@ const AppNavigator = ({ isAppReady }: Props) => {
             autoEnableNativeToken: true,
           });
         }
+
+        if (parseUrl.hostname === 'earning-preview') {
+          if (isNoAccount) {
+            listener(url);
+          } else {
+            if (isLockedRef.current || isPreventDeepLinkRef.current) {
+              return;
+            }
+
+            listener(url);
+          }
+          return;
+        }
+
         if (isLockedRef.current || isPreventDeepLinkRef.current) {
           return;
         }
@@ -408,10 +520,15 @@ const AppNavigator = ({ isAppReady }: Props) => {
     console.warn('AppNavigator.tsx / Error boundary: ', error, stackTrace);
   };
 
-  const onUpdateRoute = useCallback((state: NavigationState | undefined) => {
-    updateCurrentRoute(state?.routes[state?.index]);
-    setCurrentRoute(state?.routes[state?.index]);
-  }, []);
+  const onUpdateRoute = useCallback(
+    (state: NavigationState | undefined) => {
+      const _currentRoute = state?.routes[state?.index];
+      showAppPopup(_currentRoute);
+      updateCurrentRoute(_currentRoute);
+      setCurrentRoute(_currentRoute);
+    },
+    [showAppPopup],
+  );
 
   useEffect(() => {
     let amount = true;
@@ -498,13 +615,18 @@ const AppNavigator = ({ isAppReady }: Props) => {
             <>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }}>
                 <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-                <Stack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
-                <Stack.Screen name="SendNFT" component={SendNFT} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
+                <Stack.Screen name="MissionPoolSearchByTabView" component={MissionPoolSearchByTabView} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
+                <Stack.Screen name="EarningPreview" component={EarningPreview} options={{ gestureEnabled: false }} />
+                <Stack.Screen
+                  name="EarningPreviewPools"
+                  component={EarningPreviewPools}
+                  options={{ gestureEnabled: false }}
+                />
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
                 <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
@@ -513,7 +635,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ConnectList" component={ConnectionListScreen} />
                 <Stack.Screen name="ConnectDetail" component={ConnectionDetail} />
                 <Stack.Screen name="ConnectWalletConnect" component={ConnectWalletConnect} />
-                <Stack.Screen name="MissionPoolsByTabview" component={MissionPoolsByTabview} />
+                <Stack.Screen name="Crowdloans" component={CrowdloanListScreen} />
                 <Stack.Screen
                   name="CreatePassword"
                   component={CreateMasterPassword}
@@ -531,6 +653,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="AddProvider" component={AddProvider} />
                 <Stack.Screen name="EditAccount" component={AccountDetail} />
                 <Stack.Screen name="RestoreJson" component={RestoreJson} options={{ gestureEnabled: false }} />
+                <Stack.Screen
+                  name="ExportAllAccount"
+                  component={ExportAllAccount}
+                  options={{ gestureEnabled: false }}
+                />
                 <Stack.Screen
                   name="ImportSecretPhrase"
                   component={ImportSecretPhrase}

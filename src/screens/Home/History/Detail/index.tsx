@@ -10,9 +10,13 @@ import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { ArrowSquareUpRight } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { Linking, View } from 'react-native';
-import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
+import {
+  getChainflipExplorerLink,
+  getExplorerLink,
+} from '@subwallet/extension-base/services/transaction-service/utils';
 import { ExtrinsicType, TransactionAdditionalInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { ChainflipSwapTxData, SwapProviderId, SwapTxData } from '@subwallet/extension-base/types/swap';
 
 type Props = {
   onChangeModalVisible: () => void;
@@ -58,8 +62,16 @@ export function HistoryDetailModal({
       originChainInfo = chainInfoMap[additionalInfo.originalChain] || chainInfo;
     }
 
-    const link =
+    let link =
       data.extrinsicHash && data.extrinsicHash !== '' && getExplorerLink(originChainInfo, data.extrinsicHash, 'tx');
+
+    if (extrinsicType === ExtrinsicType.SWAP) {
+      const additionalInfo = data.additionalInfo as SwapTxData;
+
+      if ([SwapProviderId.CHAIN_FLIP_TESTNET, SwapProviderId.CHAIN_FLIP_MAINNET].includes(additionalInfo.provider.id)) {
+        link = getChainflipExplorerLink(additionalInfo as ChainflipSwapTxData, originChainInfo);
+      }
+    }
 
     if (link) {
       return (

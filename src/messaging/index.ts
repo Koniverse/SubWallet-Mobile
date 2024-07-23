@@ -5,7 +5,6 @@ import { Chain } from '@subwallet/extension-chains/types';
 import { RefObject } from 'react';
 import WebView from 'react-native-webview';
 import { WebRunnerStatus } from 'providers/contexts';
-import { getSavedMeta, setSavedMeta } from 'utils/MetadataCache';
 import { WebviewError, WebviewNotReadyError, WebviewResponseError } from '../errors/WebViewErrors';
 import EventEmitter from 'eventemitter3';
 import type {
@@ -43,6 +42,7 @@ import {
   CronReloadRequest,
   CronServiceType,
   CrowdloanJson,
+  CurrencyType,
   CurrentAccountInfo,
   KeyringState,
   LanguageType,
@@ -53,6 +53,7 @@ import {
   NominatorMetadata,
   OptionInputAddress,
   PriceJson,
+  RequestAccountBatchExportV2,
   RequestAccountCreateExternalV2,
   RequestAccountCreateHardwareMultiple,
   RequestAccountCreateHardwareV2,
@@ -97,9 +98,6 @@ import {
   RequestSubscribeStaking,
   RequestSubscribeStakingReward,
   RequestTransfer,
-  RequestTransferCheckReferenceCount,
-  RequestTransferCheckSupporting,
-  RequestTransferExistentialDeposit,
   RequestTuringCancelStakeCompound,
   RequestTuringStakeCompound,
   RequestUnbondingSubmit,
@@ -133,7 +131,6 @@ import {
   StakingRewardJson,
   StakingType,
   SubscriptionServiceType,
-  SupportTransferResponse,
   ThemeNames,
   TransactionHistoryItem,
   UiSettings,
@@ -153,6 +150,7 @@ import {
   RequestYieldLeave,
   RequestYieldStepSubmit,
   RequestYieldWithdrawal,
+  TokenSpendingApprovalParams,
   ValidateYieldProcessParams,
   YieldPoolInfo,
 } from '@subwallet/extension-base/types';
@@ -177,6 +175,11 @@ import { AuthUrls } from '@subwallet/extension-base/services/request-service/typ
 import { _getKnownHashes } from 'utils/defaultChains';
 import { needBackup, triggerBackup } from 'utils/storage';
 import { WindowOpenParams } from '@subwallet/extension-base/background/types';
+import { RequestOptimalTransferProcess } from '@subwallet/extension-base/services/balance-service/helpers';
+import { CommonOptimalPath } from '@subwallet/extension-base/types/service-base';
+import { createRegistry } from '@subwallet/extension-base/utils';
+import { _getChainNativeTokenBasicInfo } from '@subwallet/extension-base/services/chain-service/utils';
+import { base64Encode } from '@polkadot/util-crypto';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -598,6 +601,10 @@ export async function subscribeSettings(
   return sendMessage('pri(settings.subscribe)', data, callback);
 }
 
+export async function savePriceCurrency(currency: CurrencyType): Promise<boolean> {
+  return sendMessage('pri(settings.savePriceCurrency)', { currency });
+}
+
 export async function tieAccount(address: string, genesisHash: string | null): Promise<boolean> {
   return sendMessage('pri(accounts.tie)', { address, genesisHash });
 }
@@ -618,6 +625,12 @@ export async function exportAccounts(
   password: string,
 ): Promise<{ exportedJson: KeyringPairs$Json }> {
   return sendMessage('pri(accounts.batchExport)', { addresses, password });
+}
+
+export async function exportAccountsV2(
+  request: RequestAccountBatchExportV2,
+): Promise<{ exportedJson: KeyringPairs$Json }> {
+  return sendMessage('pri(accounts.batchExportV2)', request);
 }
 
 export async function checkPublicAndPrivateKey(
@@ -1202,20 +1215,6 @@ export async function disableAllNetwork(): Promise<boolean> {
   return sendMessage('pri(chainService.disableAllChains)', null);
 }
 
-export async function transferCheckReferenceCount(request: RequestTransferCheckReferenceCount): Promise<boolean> {
-  return sendMessage('pri(transfer.checkReferenceCount)', request);
-}
-
-export async function transferCheckSupporting(
-  request: RequestTransferCheckSupporting,
-): Promise<SupportTransferResponse> {
-  return sendMessage('pri(transfer.checkSupporting)', request);
-}
-
-export async function transferGetExistentialDeposit(request: RequestTransferExistentialDeposit): Promise<string> {
-  return sendMessage('pri(transfer.getExistentialDeposit)', request);
-}
-
 export async function cancelSubscription(request: string): Promise<boolean> {
   return sendMessage('pri(subscription.cancel)', request);
 }
@@ -1231,8 +1230,16 @@ export async function subscribeFreeBalance(
   return sendMessage('pri(freeBalance.subscribe)', request, callback);
 }
 
+export async function approveSpending(request: TokenSpendingApprovalParams): Promise<SWTransactionResponse> {
+  return sendMessage('pri(accounts.approveSpending)', request);
+}
+
 export async function getMaxTransfer(request: RequestMaxTransferable): Promise<AmountData> {
   return sendMessage('pri(transfer.getMaxTransferable)', request);
+}
+
+export async function getOptimalTransferProcess(request: RequestOptimalTransferProcess): Promise<CommonOptimalPath> {
+  return sendMessage('pri(accounts.getOptimalTransferProcess)', request);
 }
 
 export async function substrateNftSubmitTransaction(request: NftTransactionRequest): Promise<SWTransactionResponse> {
@@ -1436,14 +1443,7 @@ export async function getMetadata(genesisHash?: string | null, isPartial = false
   // const chains = await getNetworkMap();
   const parsedChains = _getKnownHashes({});
 
-  let request = getSavedMeta(genesisHash);
-
-  if (!request) {
-    request = sendMessage('pri(metadata.get)', genesisHash || null);
-    setSavedMeta(genesisHash, request);
-  }
-
-  const def = await request;
+  const def = await sendMessage('pri(metadata.get)', genesisHash || null);
 
   if (def) {
     return metadataExpand(def, isPartial);
@@ -1466,6 +1466,53 @@ export async function getMetadata(genesisHash?: string | null, isPartial = false
 
   return null;
 }
+
+export async function getMetadataRaw(chainInfo: _ChainInfo | null, genesisHash?: string | null): Promise<Chain | null> {
+  if (!genesisHash) {
+    return null;
+  }
+
+  const data = await sendMessage('pri(metadata.find)', { genesisHash });
+  const { rawMetadata, specVersion } = data;
+
+  if (!rawMetadata) {
+    return null;
+  }
+
+  if (!chainInfo) {
+    return null;
+  }
+
+  const registry = createRegistry(chainInfo, data);
+
+  const tokenInfo = _getChainNativeTokenBasicInfo(chainInfo);
+
+  return {
+    specVersion,
+    genesisHash,
+    name: chainInfo.name,
+    hasMetadata: true,
+    definition: {
+      types: data.types,
+      userExtensions: data.userExtensions,
+      metaCalls: base64Encode(data.rawMetadata),
+    } as MetadataDef,
+    icon: chainInfo.icon,
+    isUnknown: false,
+    ss58Format: chainInfo.substrateInfo?.addressPrefix || 42,
+    tokenDecimals: tokenInfo.decimals,
+    tokenSymbol: tokenInfo.symbol,
+    registry: registry,
+  };
+}
+
+export const getMetadataHash = async (chain: string) => {
+  return sendMessage('pri(metadata.hash)', { chain });
+};
+
+export const shortenMetadata = async (chain: string, txBlob: string) => {
+  return sendMessage('pri(metadata.transaction.shorten)', { chain, txBlob });
+};
 
 export async function completeBannerCampaign(request: RequestCampaignBannerComplete): Promise<boolean> {
   return sendMessage('pri(campaign.banner.complete)', request);

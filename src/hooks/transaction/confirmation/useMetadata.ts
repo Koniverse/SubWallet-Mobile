@@ -2,25 +2,82 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { Chain } from '@subwallet/extension-chains/types';
-import { getMetadata } from 'messaging/index';
+import { getMetadata, getMetadataRaw } from 'messaging/index';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
+import { _ChainInfo } from '@subwallet/chain-list/types';
 
-export default function useMetadata(genesisHash?: string | null, isPartial?: boolean): Chain | null {
+interface Result {
+  chain: Chain | null;
+  loadingChain: boolean;
+}
+
+export default function useMetadata(genesisHash?: string | null, isPartial?: boolean): Result {
   const [chain, setChain] = useState<Chain | null>(null);
+  const [loadingChain, setLoadingChain] = useState(true);
+  const _chainInfo = useGetChainInfoByGenesisHash(genesisHash || '');
+  const [chainInfo, setChainInfo] = useState<_ChainInfo | null>(_chainInfo);
+  const chainString = useMemo(() => JSON.stringify(chainInfo), [chainInfo]);
+
+  useEffect(() => {
+    const updated = JSON.stringify(_chainInfo);
+
+    if (updated !== chainString) {
+      setChainInfo(_chainInfo);
+    }
+  }, [_chainInfo, chainString]);
 
   useEffect((): void => {
+    setLoadingChain(true);
+
     if (genesisHash) {
-      getMetadata(genesisHash, isPartial)
-        .then(setChain)
-        .catch((error): void => {
+      const getChainByMetaStore = async () => {
+        try {
+          const _chain = await getMetadata(genesisHash, isPartial);
+
+          return _chain;
+        } catch (error) {
+          console.error(error);
+
+          return null;
+        }
+      };
+
+      const fetchData = async () => {
+        try {
+          const chainFromRaw = await getMetadataRaw(chainInfo, genesisHash);
+          const chainFromMetaStore = await getChainByMetaStore();
+
+          if (chainFromRaw && chainFromMetaStore) {
+            if (chainFromRaw.specVersion >= chainFromMetaStore.specVersion) {
+              setChain(chainFromRaw);
+            } else {
+              setChain(chainFromMetaStore);
+            }
+
+            setLoadingChain(false);
+          } else {
+            setChain(chainFromRaw || chainFromMetaStore || null);
+            setLoadingChain(false);
+          }
+        } catch (error) {
           console.error(error);
           setChain(null);
-        });
+          setLoadingChain(false);
+        }
+      };
+
+      fetchData().catch(error => {
+        console.error(error);
+        setChain(null);
+        setLoadingChain(false);
+      });
     } else {
+      setLoadingChain(false);
       setChain(null);
     }
-  }, [genesisHash, isPartial]);
+  }, [chainInfo, genesisHash, isPartial]);
 
-  return chain;
+  return useMemo(() => ({ chain, loadingChain }), [chain, loadingChain]);
 }

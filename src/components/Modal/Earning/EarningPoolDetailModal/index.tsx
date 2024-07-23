@@ -1,4 +1,3 @@
-import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { calculateReward, isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
 import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import { Button, Icon, SwFullSizeModal, Tag, Typography } from 'components/design-system-ui';
@@ -23,13 +22,13 @@ import { RootState } from 'stores/index';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { balanceFormatter, formatNumber } from 'utils/number';
 import createStyles from './style';
-import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { getTokenLogo } from 'utils/index';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { mmkvStore } from 'utils/storage';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { noop } from 'utils/function';
 import { EARNING_POOL_DETAIL_DATA } from 'constants/earning/EarningDataRaw';
+import { useGetEarningPoolDetailModalData } from 'hooks/earning/useGetEarningPoolDetailModalData';
 
 interface Props {
   slug: string;
@@ -38,6 +37,11 @@ interface Props {
   onStakeMore?: (value: string) => void;
   isShowStakeMoreBtn?: boolean;
   onPressBack?: () => void;
+  onlinePoolInfoMap?: Record<string, YieldPoolInfo>;
+  externalBtnTitle?: string;
+  onPressExternalBtn?: () => void;
+  onPressExternalBack?: () => void;
+  redirectFromFirstScreen?: boolean;
 }
 export interface BoxProps {
   icon: string;
@@ -51,17 +55,31 @@ export interface StaticDataProps {
   instructions: BoxProps[];
   locale?: string;
   slug: YieldPoolType | 'DAPP_STAKING' | 'UNSTAKE_INFO';
+  title: string | null;
+  media: string | null;
 }
 
 const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
-  const { slug, setVisible: _setVisible, modalVisible, onStakeMore, isShowStakeMoreBtn = true, onPressBack } = props;
+  const {
+    slug,
+    setVisible: _setVisible,
+    modalVisible,
+    onStakeMore,
+    isShowStakeMoreBtn = true,
+    onPressBack,
+    onlinePoolInfoMap,
+    externalBtnTitle,
+    onPressExternalBtn,
+    onPressExternalBack,
+    redirectFromFirstScreen,
+  } = props;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
   const scrollRef = useRef<ScrollView>(null);
   const checkRef = useRef<number>(Date.now());
 
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { poolInfoMap } = useSelector((state: RootState) => state.earning);
+  const { poolInfoMap: _poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const [scrollHeight, setScrollHeight] = useState<number>(0);
@@ -81,7 +99,13 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     }
   }, []);
 
+  const poolInfoMap = useMemo(() => {
+    return onlinePoolInfoMap ? onlinePoolInfoMap : _poolInfoMap;
+  }, [_poolInfoMap, onlinePoolInfoMap]);
+
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
+
+  const { data } = useGetEarningPoolDetailModalData(earningStaticData, poolInfo);
   const title = useMemo(() => {
     if (!poolInfo) {
       return '';
@@ -177,11 +201,15 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   }, [poolInfo]);
 
   const tags = useMemo(() => {
+    if (!poolInfo) {
+      return undefined;
+    }
+
     const asset = assetRegistry[poolInfo?.metadata.inputAsset];
     const symbol = asset.symbol;
     if (poolInfo?.statistic && 'assetEarning' in poolInfo?.statistic && poolInfo?.statistic?.assetEarning) {
       const assetEarning = poolInfo?.statistic?.assetEarning;
-      const data = assetEarning.map(item => {
+      const _data = assetEarning.map(item => {
         let result: { slug: string; apy: number; symbol: string } = { slug: item.slug, apy: 0, symbol: symbol };
         result.slug = item.slug;
         if (!item.apy) {
@@ -194,8 +222,9 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
         return result;
       });
 
-      return data.filter(item => item.apy);
+      return _data.filter(item => item.apy);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assetRegistry, poolInfo?.metadata.inputAsset, poolInfo?.statistic]);
 
   const getAltChain = useCallback(
@@ -218,181 +247,6 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     },
     [_setVisible],
   );
-
-  const replaceEarningValue = useCallback((target: BoxProps, searchString: string, replaceValue: string) => {
-    if (target.title.includes(searchString)) {
-      target.title = target.title.replace(searchString, replaceValue);
-    }
-
-    if (typeof target.description === 'string' && target.description?.includes(searchString)) {
-      // @ts-ignore
-      target.description = target.description.replaceAll(searchString, replaceValue);
-    }
-  }, []);
-
-  const convertTime = useCallback((_number?: number): string => {
-    if (_number !== undefined) {
-      const isDay = _number > 24;
-      const time = isDay ? Math.floor(_number / 24) : _number;
-      const unit = isDay ? (time === 1 ? 'day' : 'days') : time === 1 ? 'hour' : 'hours';
-      return [time, unit].join(' ');
-    } else {
-      return 'unknown time';
-    }
-  }, []);
-
-  const unBondedTime = useMemo((): string => {
-    let time: number | undefined;
-    if (poolInfo?.statistic && 'unstakingPeriod' in poolInfo?.statistic) {
-      time = poolInfo?.statistic.unstakingPeriod;
-    }
-    return convertTime(time);
-  }, [poolInfo?.statistic, convertTime]);
-
-  const data: BoxProps[] = useMemo(() => {
-    if (!poolInfo) {
-      return [];
-    }
-
-    switch (poolInfo?.type) {
-      case YieldPoolType.NOMINATION_POOL: {
-        const _label = getValidatorLabel(poolInfo?.chain);
-        const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
-        const maxCandidatePerFarmer = poolInfo?.statistic?.maxCandidatePerFarmer || 0;
-        const inputAsset = assetRegistry[poolInfo?.metadata.inputAsset];
-        const maintainAsset = assetRegistry[poolInfo?.metadata.maintainAsset];
-        const paidOut = poolInfo?.statistic?.eraTime;
-
-        if (inputAsset && maintainAsset) {
-          const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
-          const maintainBalance = getInputValuesFromString(
-            poolInfo?.metadata.maintainBalance || '0',
-            maintainDecimals || 0,
-          );
-          const earningData =
-            earningStaticData.find(item => item.slug === YieldPoolType.NOMINATION_POOL)?.instructions || [];
-          return earningData.map(item => {
-            const _item: BoxProps = { ...item, icon: item.icon };
-            replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
-            replaceEarningValue(_item, '{validatorType}', label);
-            replaceEarningValue(_item, '{periodNumb}', unBondedTime);
-            replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
-            replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
-            if (paidOut !== undefined) {
-              replaceEarningValue(_item, '{paidOut}', paidOut.toString());
-            }
-
-            return _item;
-          });
-        } else {
-          return [];
-        }
-      }
-      case YieldPoolType.NATIVE_STAKING: {
-        const _label = getValidatorLabel(poolInfo?.chain);
-        const label = _label.slice(0, 1).toLowerCase().concat(_label.slice(1)).concat('s');
-        const maxCandidatePerFarmer = poolInfo?.statistic?.maxCandidatePerFarmer || 0;
-        const inputAsset = assetRegistry[poolInfo?.metadata.inputAsset];
-        const maintainAsset = assetRegistry[poolInfo?.metadata.maintainAsset];
-        const paidOut = poolInfo?.statistic?.eraTime;
-
-        if (inputAsset && maintainAsset) {
-          const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
-          const maintainBalance = getInputValuesFromString(
-            poolInfo?.metadata.maintainBalance || '0',
-            maintainDecimals || 0,
-          );
-
-          if (_STAKING_CHAIN_GROUP.astar.includes(poolInfo?.chain)) {
-            const earningData = earningStaticData.find(item => item.slug === 'DAPP_STAKING')?.instructions || [];
-            return earningData.map(item => {
-              const _item: BoxProps = { ...item, icon: item.icon };
-              replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
-              replaceEarningValue(_item, '{periodNumb}', unBondedTime);
-              replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
-              replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
-
-              if (paidOut !== undefined) {
-                replaceEarningValue(_item, '{paidOut}', paidOut.toString());
-              }
-
-              return _item;
-            });
-          }
-          const earningData =
-            earningStaticData.find(item => item.slug === YieldPoolType.NATIVE_STAKING)?.instructions || [];
-          return earningData.map(item => {
-            const _item: BoxProps = { ...item, icon: item.icon };
-
-            replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
-            replaceEarningValue(_item, '{validatorType}', label);
-            replaceEarningValue(_item, '{periodNumb}', unBondedTime);
-            replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
-            replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
-            if (paidOut !== undefined) {
-              replaceEarningValue(_item, '{paidOut}', paidOut.toString());
-            }
-            return _item;
-          });
-        } else {
-          return [];
-        }
-      }
-      case YieldPoolType.LIQUID_STAKING: {
-        const derivativeSlug = poolInfo?.metadata.derivativeAssets?.[0] || '';
-        const derivative = assetRegistry[derivativeSlug];
-        const inputAsset = assetRegistry[poolInfo?.metadata.inputAsset];
-        const maintainAsset = assetRegistry[poolInfo?.metadata.maintainAsset];
-
-        if (derivative && inputAsset && maintainAsset) {
-          const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
-          const maintainBalance = getInputValuesFromString(
-            poolInfo?.metadata.maintainBalance || '0',
-            maintainDecimals || 0,
-          );
-          const earningData =
-            earningStaticData.find(item => item.slug === YieldPoolType.LIQUID_STAKING)?.instructions || [];
-          return earningData.map(item => {
-            const _item: BoxProps = { ...item, icon: item.icon };
-            replaceEarningValue(_item, '{derivative}', derivative.symbol);
-            replaceEarningValue(_item, '{periodNumb}', unBondedTime);
-            replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);
-            replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
-            replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
-            return _item;
-          });
-        } else {
-          return [];
-        }
-      }
-      case YieldPoolType.LENDING: {
-        const derivativeSlug = poolInfo?.metadata.derivativeAssets?.[0] || '';
-        const derivative = assetRegistry[derivativeSlug];
-        const inputAsset = assetRegistry[poolInfo?.metadata.inputAsset];
-        const maintainAsset = assetRegistry[poolInfo?.metadata.maintainAsset];
-
-        if (derivative && inputAsset && maintainAsset) {
-          const { symbol: maintainSymbol, decimals: maintainDecimals } = maintainAsset;
-          const maintainBalance = getInputValuesFromString(
-            poolInfo?.metadata.maintainBalance || '0',
-            maintainDecimals || 0,
-          );
-          const earningData = earningStaticData.find(item => item.slug === YieldPoolType.LENDING)?.instructions || [];
-          return earningData.map(item => {
-            const _item: BoxProps = { ...item, icon: item.icon };
-
-            replaceEarningValue(_item, '{derivative}', derivative.symbol);
-            replaceEarningValue(_item, '{inputToken}', inputAsset.symbol);
-            replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
-            replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
-            return _item;
-          });
-        } else {
-          return [];
-        }
-      }
-    }
-  }, [assetRegistry, earningStaticData, poolInfo, replaceEarningValue, unBondedTime]);
 
   const [showScrollEnd, setShowScrollEnd] = useState(false);
   const [isScrollEnd, setIsScrollEnd] = useState(false);
@@ -511,7 +365,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     setVisible(false);
     setIsScrollEnd(false);
     setShowScrollEnd(false);
-  }, [setVisible]);
+    !!onPressExternalBack && onPressExternalBack();
+  }, [onPressExternalBack, setVisible]);
 
   const goBack = useCallback(() => {
     setVisible(false);
@@ -540,8 +395,8 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       modalBaseV2Ref={modalBaseV2Ref}
       isUseModalV2
       modalVisible={modalVisible}
-      setVisible={setVisible}
-      onChangeModalVisible={onGoBack}>
+      setVisible={!redirectFromFirstScreen ? setVisible : noop}
+      onChangeModalVisible={noop}>
       <SafeAreaView
         style={{
           flex: 1,
@@ -659,6 +514,23 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               loading={loading}
               disabled={!isScrollEnd && showScrollEnd}>
               {buttonTitle}
+            </Button>
+          )}
+
+          {onlinePoolInfoMap && (
+            <Button
+              icon={
+                <Icon
+                  phosphorIcon={PlusCircle}
+                  weight="fill"
+                  iconColor={isScrollEnd || !showScrollEnd ? theme.colorWhite : theme.colorTextLight5}
+                />
+              }
+              size="sm"
+              onPress={onPressExternalBtn}
+              loading={loading}
+              disabled={!isScrollEnd && showScrollEnd}>
+              {externalBtnTitle}
             </Button>
           )}
         </View>

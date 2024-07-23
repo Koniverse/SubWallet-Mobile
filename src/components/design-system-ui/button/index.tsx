@@ -103,7 +103,7 @@ const Button: React.FC<ButtonProps> = props => {
   ];
 
   const underlayColor = (StyleSheet.flatten(activeStyle ? activeStyle : _style[`${buttonType}Highlight`]) as any)
-    .backgroundColor;
+    ?.backgroundColor;
 
   const iconNode = useMemo(() => {
     if (loading) {

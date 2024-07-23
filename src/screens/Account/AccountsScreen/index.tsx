@@ -8,6 +8,7 @@ import { RootState } from 'stores/index';
 import {
   Copy,
   CopySimple,
+  Export,
   FileArrowDown,
   MagnifyingGlass,
   PlusCircle,
@@ -269,6 +270,7 @@ export const AccountsScreen = ({
             accountName={item.name}
             isSelected={currentAccountAddress === item.address}
             isAllAccount={isAllAccount}
+            avatarGroupStyle={{ width: 40 }}
             onSelectAccount={selectAccount}
             onPressDetailBtn={() => {
               navigation.navigate('EditAccount', { address: item.address, name: item.name || '' });
@@ -332,6 +334,10 @@ export const AccountsScreen = ({
         autoFocus={false}
         afterListItem={renderFooterComponent()}
         placeholder={i18n.placeholder.accountName}
+        rightIconOption={{
+          icon: ({ color }) => <Icon phosphorIcon={Export} weight={'fill'} iconColor={color} size={'md'} />,
+          onPress: () => navigation.navigate('ExportAllAccount'),
+        }}
       />
 
       <AccountCreationArea

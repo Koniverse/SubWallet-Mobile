@@ -96,17 +96,19 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
 
     const result: BalanceItem[] = [];
 
-    const filterAddress = (address: string, free?: string) => {
+    const filterAddress = (address: string, free?: string, locked?: string) => {
       if (isAllAccount) {
-        const isZeroFreeBalance = new BigN(free || 0).eq(BN_ZERO);
-        return !isAccountAll(address) && !isZeroFreeBalance;
+        const isZeroBalance = new BigN(free || 0).eq(BN_ZERO) && new BigN(locked || 0).eq(BN_ZERO);
+        return !isAccountAll(address) && !isZeroBalance;
       } else {
         return isSameAddress(address, currentAccount?.address || '');
       }
     };
 
     for (const [address, info] of Object.entries(balanceMap)) {
-      if (filterAddress(address, info[currentTokenInfo.slug]?.free || '0')) {
+      if (
+        filterAddress(address, info[currentTokenInfo.slug]?.free || '0', info[currentTokenInfo.slug]?.locked || '0')
+      ) {
         const item = info[currentTokenInfo.slug];
 
         if (item && item.state === APIItemState.READY) {
