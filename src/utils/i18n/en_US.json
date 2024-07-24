@@ -1165,7 +1165,7 @@
     "alwaysRequire": "Always"
   },
   "warningTitle": {
-    "whatIfLoseRecoveryPhrase": "What if I lose the recovery phrase?",
+    "whatIfLoseRecoveryPhrase": "What if I lose the seed phrase?",
     "warning": "Warning",
     "error": "Error!",
     "clearHistory": "Clear history",

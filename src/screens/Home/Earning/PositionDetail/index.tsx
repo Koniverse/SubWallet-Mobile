@@ -258,6 +258,7 @@ const Component: React.FC<Props> = (props: Props) => {
               disabled={isDisableStakeMore}
               block={true}
               type="secondary"
+              externalTextStyle={{ flex: 1 }}
               icon={
                 <Icon
                   phosphorIcon={PlusCircle}
