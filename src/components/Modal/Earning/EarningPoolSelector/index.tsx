@@ -15,7 +15,6 @@ import BigN from 'bignumber.js';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { EmptyValidator } from 'components/EmptyValidator';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
-import { PREDEFINED_EARNING_POOL } from 'constants/stakingScreen';
 import { SectionItem } from 'components/LazySectionList';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -23,6 +22,7 @@ import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { YieldPoolType } from '@subwallet/extension-base/types';
 import DotBadge from 'components/design-system-ui/badge/DotBadge';
+import { fetchStaticData } from 'utils/fetchStaticData';
 
 enum EarningPoolGroup {
   RECOMMEND = 'recommend',
@@ -97,8 +97,6 @@ const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
   });
 };
 
-const defaultPoolMap = Object.assign({}, PREDEFINED_EARNING_POOL);
-
 const sortingOptions: SortOption[] = [
   {
     desc: false,
@@ -164,6 +162,7 @@ export const EarningPoolSelector = forwardRef(
     const nominationPoolValueList = useMemo((): string[] => {
       return compound?.nominations.map(item => item.validatorAddress) || [];
     }, [compound]);
+    const [defaultPoolMap, setDefaultPoolMap] = useState<Record<string, number[]>>({});
 
     const EarningPoolGroupNameMap = useMemo(
       () => ({
@@ -173,7 +172,7 @@ export const EarningPoolSelector = forwardRef(
       [],
     );
 
-    const defaultSelectPool = defaultPoolMap[chain];
+    const defaultSelectPool = defaultPoolMap?.[chain];
 
     const groupBy = useMemo(
       () => (item: NominationPoolDataTypeItem) => {
@@ -195,7 +194,7 @@ export const EarningPoolSelector = forwardRef(
 
     const renderSectionHeader = useCallback(
       (info: { section: SectionListData<NominationPoolDataTypeItem> }) => {
-        if (defaultSelectPool) {
+        if (defaultPoolMap?.[chain] && defaultPoolMap?.[chain].length) {
           return (
             <View
               style={{
@@ -226,7 +225,7 @@ export const EarningPoolSelector = forwardRef(
           return <></>;
         }
       },
-      [defaultSelectPool, theme],
+      [chain, defaultPoolMap, theme],
     );
 
     const grouping = useMemo(() => {
@@ -251,9 +250,9 @@ export const EarningPoolSelector = forwardRef(
       return [...items]
         .filter(item => item.state !== 'Blocked')
         .sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
-          if (defaultSelectPool) {
-            const isRecommendedA = defaultSelectPool.includes(a.id);
-            const isRecommendedB = defaultSelectPool.includes(b.id);
+          if (defaultPoolMap?.[chain] && defaultPoolMap?.[chain].length) {
+            const isRecommendedA = defaultPoolMap?.[chain].includes(a.id);
+            const isRecommendedB = defaultPoolMap?.[chain].includes(b.id);
 
             switch (sortSelection) {
               case SortKey.MEMBER:
@@ -307,14 +306,13 @@ export const EarningPoolSelector = forwardRef(
           }
         })
         .map(item => {
-          if (PREDEFINED_EARNING_POOL[chain] && PREDEFINED_EARNING_POOL[chain].includes(item.id)) {
+          if (defaultPoolMap?.[chain] && defaultPoolMap?.[chain].includes(item.id)) {
             return { ...item, group: EarningPoolGroup.RECOMMEND };
           } else {
             return { ...item, group: EarningPoolGroup.OTHERS };
           }
         });
-    }, [chain, defaultSelectPool, items, sortSelection]);
-
+    }, [chain, defaultPoolMap, items, sortSelection]);
     const isDisabled = useMemo(
       () => disabled || !!nominationPoolValueList.length || !items.length,
       [disabled, items.length, nominationPoolValueList.length],
@@ -385,6 +383,14 @@ export const EarningPoolSelector = forwardRef(
     );
 
     useEffect(() => {
+      fetchStaticData<Record<string, number[]>>('nomination-pool-recommendation')
+        .then(earningPoolRecommendation => {
+          setDefaultPoolMap(earningPoolRecommendation);
+        })
+        .catch(console.error);
+    }, []);
+
+    useEffect(() => {
       let defaultValue = '';
       if (defaultValidatorAddress) {
         defaultValue = defaultValidatorAddress;
@@ -432,7 +438,7 @@ export const EarningPoolSelector = forwardRef(
               item={selectedPool}
               label={i18n.inputLabel.pool}
               loading={poolLoading}
-              recommendIds={defaultSelectPool}
+              recommendIds={defaultPoolMap?.[chain]}
             />
           )}>
           <>

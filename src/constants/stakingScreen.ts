@@ -1,3 +1,5 @@
+import { fetchStaticData } from 'utils/fetchStaticData';
+
 export const CHAIN_TYPE_MAP = {
   relay: [
     'polkadot',
@@ -34,3 +36,7 @@ export const PREDEFINED_EARNING_POOL: Record<string, number[]> = {
   availTuringTest: [11],
   avail_mainnet: [30, 12, 4],
 };
+
+export const PREDEFINED_EARNING_POOL_PROMISE = fetchStaticData<Record<string, number[]>>(
+  'nomination-pool-recommendation',
+);
