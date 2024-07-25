@@ -1145,7 +1145,7 @@ export const Swap = ({
           />
         )}
 
-        {isSwapXCM && fromAssetName && toAssetName && (
+        {isSwapXCM && fromAssetName && toAssetName && !isFormInvalid && (
           <AlertBox
             description={`The amount you entered is higher than your available balance on ${toAssetName} network. You need to first transfer cross-chain from ${fromAssetName} network to ${toAssetName} network to continue swapping`}
             title={'Action needed'}

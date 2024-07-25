@@ -155,11 +155,11 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     const result: YieldPoolInfo[] = [];
 
     pools.forEach(poolInfo => {
-      if (
-        poolInfo.type === YieldPoolType.LIQUID_STAKING &&
-        poolInfo.chain === 'parallel' &&
-        poolInfo.group === 'DOT-Polkadot'
-      ) {
+      if (poolInfo.chain === 'parallel' && poolInfo.type === YieldPoolType.LIQUID_STAKING) {
+        return;
+      }
+
+      if (poolInfo.chain === 'interlay' && poolInfo.type === YieldPoolType.LENDING) {
         return;
       }
 
