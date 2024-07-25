@@ -291,6 +291,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
             onPressBtn: url => {
               handleButtonPress(`${filteredPopupList[0].position}-${filteredPopupList[0].id}`)('popup', url);
             },
+            isChangeLogPopup: filteredPopupList[0].info.is_changelog_popup,
           });
       }
     },

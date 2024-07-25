@@ -15,6 +15,7 @@ export interface AppBasicInfoData {
   stop_time: string;
   platforms: string[];
   os: 'android' | 'ios';
+  is_changelog_popup?: boolean;
 }
 
 export interface AppContentButtonInstruction {

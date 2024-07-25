@@ -114,6 +114,10 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
           marginLeft: 8,
           marginRight: 8,
         },
+        code_inline: {
+          backgroundColor: 'transparent',
+          color: theme.colorTextTertiary,
+        },
         ...markdownStyle,
       }}>
       {content}

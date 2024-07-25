@@ -56,8 +56,6 @@ const GlobalModal: React.FC<Props> = ({
     }
   }, [instructionButton, instructionDataList]);
 
-  console.log('currentInstructionData', currentInstructionData);
-
   const onAccept = useCallback(
     (url?: string) => {
       setInstructionModalVisible(false);
@@ -107,6 +105,7 @@ const GlobalModal: React.FC<Props> = ({
           data={currentInstructionData.instructions}
           onPressCancelBtn={() => onAccept()}
           onPressConfirmBtn={() => onAccept(instructionButton.action?.url)}
+          faq_url={currentInstructionData.faq_url}
         />
       )}
     </>

@@ -27,6 +27,7 @@ interface Props {
   visible: boolean;
   title: string;
   media?: string;
+  faq_url?: string;
   data: BoxProps[];
   instruction: AppContentButtonInstruction;
   onPressCancelBtn: () => void;
@@ -39,6 +40,7 @@ export const GlobalInstructionModal = ({
   title,
   data,
   media,
+  faq_url,
   onPressCancelBtn,
   onPressConfirmBtn,
 }: Props) => {
@@ -75,8 +77,8 @@ export const GlobalInstructionModal = ({
   }, []);
 
   const onPressFaq = useCallback(() => {
-    Linking.openURL('https://docs.subwallet.app/main/web-dashboard-user-guide/earning/faqs');
-  }, []);
+    Linking.openURL(faq_url || 'https://docs.subwallet.app/main/web-dashboard-user-guide/earning/faqs');
+  }, [faq_url]);
 
   return (
     <SwFullSizeModal
