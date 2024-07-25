@@ -190,17 +190,10 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
       });
   };
 
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus, blur } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
 
-  useEffect(() => {
-    setTimeout(() => {
-      focus('provider')();
-    }, HIDE_MODAL_DURATION);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const isSubmitDisabled = useCallback(() => {
     return providerValidation.status !== 'success';
   }, [providerValidation.status]);
@@ -281,19 +274,23 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
         .then(chainInfo => {
           if (chainInfo.length > 0) {
             const { rpcUrls } = chainInfo[0];
-            console.log('rpcUrls', rpcUrls);
 
             if (rpcUrls.length > 0) {
               onChangeValue('provider')(rpcUrls[0]);
               setTimeout(() => {
                 providerValidateFunc(rpcUrls[0]);
+                formState.refs.provider.current?.blur();
               }, 300);
             }
           }
         })
         .catch(console.error);
+    } else {
+      setTimeout(() => {
+        focus('provider')();
+      }, HIDE_MODAL_DURATION);
     }
-  }, [blur, onChangeValue, providerValidateFunc, routeParams?.chainIds]);
+  }, [focus, formState.refs.provider, onChangeValue, providerValidateFunc, routeParams?.chainIds]);
 
   const providerSuffix = useCallback(() => {
     if (!isShowConnectionStatus) {
