@@ -96,7 +96,7 @@ export const Withdraw = ({
   const { list: allPositionInfos } = useYieldPositionDetail(slug);
   const { list: yieldPositions } = useYieldPositionDetail(slug, fromValue);
   const yieldPosition = yieldPositions[0];
-  const type = yieldPosition.type;
+  const type = yieldPosition?.type;
 
   const accountInfo = useGetAccountByAddress(fromValue);
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
