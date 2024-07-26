@@ -59,16 +59,19 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
           color: theme.colorWhite,
           fontSize: theme.fontSizeLG,
           lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+          paddingVertical: theme.marginXXS,
         },
         heading5: {
           color: theme.colorWhite,
           fontSize: theme.fontSize,
           lineHeight: theme.fontSize * theme.lineHeight,
+          paddingVertical: theme.marginXXS,
         },
         heading6: {
           color: theme.colorWhite,
           fontSize: theme.fontSizeSM,
           lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+          paddingVertical: theme.marginXXS,
         },
         hr: {
           backgroundColor: theme.colorBgBorder,
@@ -84,8 +87,8 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
           fontFamily: 'PlusJakartaSans-Medium',
         },
         image: {
-          marginTop: 12,
-          marginBottom: 12,
+          marginTop: 8,
+          marginBottom: 8,
         },
         blockquote: {
           backgroundColor: theme.colorBgSecondary,

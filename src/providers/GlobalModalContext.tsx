@@ -34,7 +34,6 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
   const [installType, setInstallType] = useState<'store' | 'apk' | undefined>(undefined);
   const isDisplayMktCampaign = useSelector((state: RootState) => state.appState.isDisplayMktCampaign);
   const isShowedPopupModalRef = useRef<boolean>(isDisplayMktCampaign);
-  console.log('isChangeLogPopup', globalModal.isChangeLogPopup);
   useEffect(() => {
     isShowedPopupModalRef.current = isDisplayMktCampaign;
   }, [isDisplayMktCampaign]);

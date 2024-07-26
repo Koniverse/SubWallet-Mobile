@@ -65,7 +65,6 @@ const subWalletModalSeparator: StyleProp<any> = {
 
 export const Confirmations = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
   const { confirmationQueue, numberOfConfirmations } = useConfirmationsInfo();
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
   const [index, setIndex] = useState(0);
@@ -202,7 +201,6 @@ export const Confirmations = () => {
       }
 
       const signMode = getSignMode(account);
-      console.log('signMode', signMode);
       const isEvm = isEthereumAddress(account?.address);
       const notSupport =
         signMode === AccountSignMode.READ_ONLY ||

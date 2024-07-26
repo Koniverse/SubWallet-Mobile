@@ -9,6 +9,8 @@ import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-serv
 import { getOutputValuesFromString } from 'components/Input/InputAmount';
 import { BN_ZERO } from 'utils/chainBalances';
 import useFetchAllNftCollection from 'hooks/screen/Home/Nft/useFetchAllNftCollection';
+import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
+import { _CrowdloanItemType } from 'types/index';
 
 export const useHandleAppBannerMap = (
   yieldPositionList: YieldPositionInfo[],
@@ -20,6 +22,7 @@ export const useHandleAppBannerMap = (
   const { balanceMap } = useSelector((state: RootState) => state.balance);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { nftCollections } = useFetchAllNftCollection();
+  const crowdloanList: _CrowdloanItemType[] = useGetCrowdloanList();
 
   const hasMoneyArr = useMemo(() => {
     let result: string[] = [];
@@ -170,6 +173,14 @@ export const useHandleAppBannerMap = (
           isPassValidation.push(!!dataFilterByNftCondition);
         }
 
+        if (item.conditions['condition-crowdloan'] && item.conditions['condition-crowdloan'].length) {
+          const dataFilterByCrowdloaCondition = crowdloanList.find(c =>
+            item.conditions['condition-crowdloan'].find(cond => cond.chain === c.chainSlug),
+          );
+
+          isPassValidation.push(!!dataFilterByCrowdloaCondition);
+        }
+
         if (
           item.conditions['condition-has-money'] &&
           item.conditions['condition-has-money'][0] &&
@@ -195,6 +206,7 @@ export const useHandleAppBannerMap = (
     balanceMap,
     chainInfoMap,
     checkComparison,
+    crowdloanList,
     hasMoneyArr,
     nftCollections,
     yieldPositionList,

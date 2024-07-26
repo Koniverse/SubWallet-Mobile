@@ -386,7 +386,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           relatedStores: ['balance'],
           isStartImmediately: true,
         });
-        _DataContext.addHandler({ ...subscribeCrowdloan, name: 'subscribeCrowdloan', relatedStores: ['crowdloan'] });
+        _DataContext.addHandler({
+          ...subscribeCrowdloan,
+          name: 'subscribeCrowdloan',
+          relatedStores: ['crowdloan'],
+          isStartImmediately: true,
+        });
         _DataContext.addHandler({
           ...subscribeNftItems,
           name: 'subscribeNftItems',
