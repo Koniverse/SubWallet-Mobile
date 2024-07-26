@@ -10,6 +10,7 @@ interface GlobalInstructionModalContextProviderProps {
 export type GlobalInstructionModalInfo = {
   visible?: boolean;
   title?: string;
+  faq_url?: string;
   media?: string;
   data?: BoxProps[];
   instruction?: AppContentButtonInstruction;
@@ -57,6 +58,7 @@ export const GlobalInstructionModalContextProvider = ({ children }: GlobalInstru
           onPressConfirmBtn={globalModal.onPressConfirmBtn}
           onPressCancelBtn={globalModal.onPressCancelBtn}
           media={globalModal.media}
+          faq_url={globalModal.faq_url}
         />
       )}
     </GlobalInstructionModalContext.Provider>

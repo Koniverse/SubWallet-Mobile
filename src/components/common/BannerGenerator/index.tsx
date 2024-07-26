@@ -62,6 +62,7 @@ const Banner = ({
           hideGlobalModal();
           onPressBanner && onPressBanner(bannerId)(data.action.url);
         },
+        faq_url: currentInstructionData?.faq_url,
       });
       return;
     }
@@ -71,6 +72,7 @@ const Banner = ({
     }
   }, [
     bannerId,
+    currentInstructionData?.faq_url,
     currentInstructionData?.instructions,
     currentInstructionData?.media,
     currentInstructionData?.title,
