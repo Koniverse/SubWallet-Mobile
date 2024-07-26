@@ -114,6 +114,7 @@
     "viewDetail": "詳細を表示",
     "on": "の上",
     "block": "このサイトをブロック",
+    "blocked": "Blocked",
     "unblock": "このサイトのブロックを解除",
     "forgetAll": "サイトの情報をすべて消去する",
     "disconnectAll": "すべてを切断",
