@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Button, Icon, Number, SwModal, Typography } from 'components/design-system-ui';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
 import BigN from 'bignumber.js';
 import { ThemeTypes } from 'styles/themes';
@@ -18,7 +18,11 @@ import { BN_ZERO, isSameAddress } from '@subwallet/extension-base/utils';
 import { BalanceItem } from '@subwallet/extension-base/types';
 import { deviceHeight } from 'constants/index';
 import { EmptyList } from 'components/EmptyList';
-import { ArrowCircleLeft, Coins } from 'phosphor-react-native';
+import { ArrowCircleLeft, ArrowSquareOut, Coins } from 'phosphor-react-native';
+import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
+import reformatAddress from 'utils/index';
+import { _ChainAsset } from '@subwallet/chain-list/types';
+import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
 
 export type ItemType = {
   symbol: string;
@@ -63,6 +67,8 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const { isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
   const { balanceMap } = useSelector((state: RootState) => state.balance);
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const items: ItemType[] = useMemo(() => {
     const symbol = currentTokenInfo?.symbol || '';
     const balanceInfo = currentTokenInfo ? tokenBalanceMap[currentTokenInfo.slug] : undefined;
@@ -88,7 +94,10 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
   const _onSelectType = (value: string) => {
     setSelectedTab(value as 'tokenDetails' | 'accountDetails');
   };
-
+  const tokenInfo = useMemo(
+    (): _ChainAsset | undefined => currentTokenInfo && assetRegistry[currentTokenInfo?.slug],
+    [assetRegistry, currentTokenInfo],
+  );
   const accountItems = useMemo((): BalanceItem[] => {
     if (!currentTokenInfo?.slug) {
       return [];
@@ -124,6 +133,19 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
       return bTotal.minus(aTotal).toNumber();
     });
   }, [balanceMap, currentAccount?.address, currentTokenInfo?.slug, isAllAccount]);
+  const addressPrefix = useGetChainPrefixBySlug(tokenInfo?.originChain);
+  const reformatedAddress = useMemo(
+    () => currentAccount?.address && reformatAddress(currentAccount?.address, addressPrefix),
+    [currentAccount?.address, addressPrefix],
+  );
+  const chainInfo = useMemo(() => {
+    if (tokenInfo?.originChain === undefined) {
+      return undefined;
+    }
+
+    return chainInfoMap[tokenInfo.originChain];
+  }, [chainInfoMap, tokenInfo?.originChain]);
+  const link = chainInfo !== undefined && reformatedAddress && getExplorerLink(chainInfo, reformatedAddress, 'account');
 
   return (
     <SwModal
@@ -145,34 +167,46 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
           />
         )}
         {selectedTab === 'tokenDetails' ? (
-          <View style={_style.blockContainer}>
-            {items.map(item => (
-              <View key={item.key} style={_style.row}>
-                <Typography.Text style={{ ...FontSemiBold, color: theme.colorTextLight1 }}>
-                  {item.label}
-                </Typography.Text>
+          <>
+            <View style={_style.blockContainer}>
+              {items.map(item => (
+                <View key={item.key} style={_style.row}>
+                  <Typography.Text style={{ ...FontSemiBold, color: theme.colorTextLight1 }}>
+                    {item.label}
+                  </Typography.Text>
 
-                <Number
-                  style={_style.value}
-                  textStyle={{ ...FontMedium }}
-                  decimal={0}
-                  decimalOpacity={0.45}
-                  intOpacity={0.85}
-                  size={14}
-                  suffix={item.symbol}
-                  unitOpacity={0.85}
-                  value={item.value}
-                />
-              </View>
-            ))}
-          </View>
+                  <Number
+                    style={_style.value}
+                    textStyle={{ ...FontMedium }}
+                    decimal={0}
+                    decimalOpacity={0.45}
+                    intOpacity={0.85}
+                    size={14}
+                    suffix={item.symbol}
+                    unitOpacity={0.85}
+                    value={item.value}
+                  />
+                </View>
+              ))}
+            </View>
+            {!isAllAccount && !!link && (
+              <Button
+                style={{ marginTop: theme.margin }}
+                icon={<Icon phosphorIcon={ArrowSquareOut} size={'lg'} />}
+                onPress={() => Linking.openURL(link)}>
+                View on explorer
+              </Button>
+            )}
+          </>
         ) : (
           <ScrollView
             showsVerticalScrollIndicator={false}
             style={{ maxHeight: deviceHeight * 0.6 }}
             contentContainerStyle={{ gap: theme.paddingSM }}>
             {accountItems && accountItems.length ? (
-              accountItems.map(item => <AccountTokenDetail key={item.address} item={item} />)
+              accountItems.map(item => (
+                <AccountTokenDetail key={item.address} item={item} chainInfoMap={chainInfoMap} />
+              ))
             ) : (
               <View style={{ paddingTop: theme.padding }}>
                 <EmptyList

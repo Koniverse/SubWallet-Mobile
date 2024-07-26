@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { Avatar, Number, Typography } from 'components/design-system-ui';
-import { View } from 'react-native';
+import { Avatar, Button, Icon, Number, Typography } from 'components/design-system-ui';
+import { Linking, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import reformatAddress, { toShort } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -9,21 +9,31 @@ import { BalanceItem } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { _ChainAsset } from '@subwallet/chain-list/types';
+import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import MetaInfo from 'components/MetaInfo';
+import { ArrowSquareOut } from 'phosphor-react-native';
+import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
 
 interface Props {
   item: BalanceItem;
+  chainInfoMap: Record<string, _ChainInfo>;
 }
 
-export const AccountTokenDetail = ({ item }: Props) => {
+export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
   const { address, free, locked, tokenSlug } = item;
   const theme = useSubWalletTheme().swThemes;
   const _style = createStylesheet(theme);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const tokenInfo = useMemo((): _ChainAsset | undefined => assetRegistry[tokenSlug], [assetRegistry, tokenSlug]);
+  const chainInfo = useMemo(() => {
+    if (tokenInfo?.originChain === undefined) {
+      return undefined;
+    }
+
+    return chainInfoMap[tokenInfo.originChain];
+  }, [chainInfoMap, tokenInfo?.originChain]);
   const account = useGetAccountByAddress(address);
   const decimals = tokenInfo?.decimals || 0;
   const symbol = tokenInfo?.symbol || '';
@@ -31,6 +41,7 @@ export const AccountTokenDetail = ({ item }: Props) => {
   const addressPrefix = useGetChainPrefixBySlug(tokenInfo?.originChain);
 
   const reformatedAddress = useMemo(() => reformatAddress(address, addressPrefix), [address, addressPrefix]);
+  const link = chainInfo !== undefined && getExplorerLink(chainInfo, reformatedAddress, 'account');
 
   const name = useMemo(() => {
     return account?.name;
@@ -83,6 +94,16 @@ export const AccountTokenDetail = ({ item }: Props) => {
             label={i18n.common.locked}
             valueColorSchema={'gray'}
           />
+          {!!link && (
+            <Button
+              style={{ marginBottom: -4, marginTop: theme.marginXXS }}
+              size={'xs'}
+              type={'ghost'}
+              onPress={() => Linking.openURL(link)}
+              icon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextTertiary} />}>
+              View on explorer
+            </Button>
+          )}
         </MetaInfo>
       </View>
     </View>
