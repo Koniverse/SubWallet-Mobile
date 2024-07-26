@@ -7,7 +7,7 @@ import {
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
@@ -40,6 +40,8 @@ import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance
 import useYieldPositionDetail from '../../../hooks/earning/useYieldPositionDetail';
 import { yieldSubmitStakingWithdrawal } from 'messaging/index';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
+import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
+import { GlobalModalContext } from 'providers/GlobalModalContext';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -105,7 +107,16 @@ export const Withdraw = ({
   const inputAsset = useGetChainAssetInfo(poolInfo?.metadata.inputAsset);
   const decimals = inputAsset?.decimals || 0;
   const symbol = inputAsset?.symbol || '';
+  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('withdraw');
+  const globalAppModalContext = useContext(GlobalModalContext);
 
+  const currentConfirmations = useMemo(() => {
+    if (slug) {
+      return getCurrentConfirmation([slug]);
+    } else {
+      return undefined;
+    }
+  }, [getCurrentConfirmation, slug]);
   const accountSelectorRef = useRef<ModalRef>();
   const handleDataForInsufficientAlert = useCallback(
     (estimateFee: AmountData) => {
@@ -165,6 +176,23 @@ export const Withdraw = ({
         });
     }, 300);
   }, [unstakingInfo, fromValue, slug, onSuccess, onError]);
+
+  const onPressSubmit = useCallback(() => {
+    if (currentConfirmations && currentConfirmations.length) {
+      globalAppModalContext.setGlobalModal({
+        visible: true,
+        title: currentConfirmations[0].name,
+        message: currentConfirmations[0].content,
+        type: 'confirmation',
+        externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
+          onSubmit();
+          globalAppModalContext.hideGlobalModal();
+        }),
+      });
+    } else {
+      onSubmit();
+    }
+  }, [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons]);
 
   useEffect(() => {
     // Trick to trigger validate when case single account
@@ -268,7 +296,7 @@ export const Withdraw = ({
                     }
                   />
                 }
-                onPress={onPreCheck(onSubmit, exType)}>
+                onPress={onPreCheck(onPressSubmit, exType)}>
                 {i18n.buttonTitles.continue}
               </Button>
             </View>

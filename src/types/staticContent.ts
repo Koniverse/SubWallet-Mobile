@@ -15,6 +15,7 @@ export interface AppBasicInfoData {
   stop_time: string;
   platforms: string[];
   os: 'android' | 'ios';
+  is_changelog_popup?: boolean;
 }
 
 export interface AppContentButtonInstruction {
@@ -45,12 +46,14 @@ export interface AppContentButton {
 export type ConditionBalanceType = { comparison: string; value: number; chain_asset: string };
 export type ConditionEarningType = { comparison: string; value: number; pool_slug: string };
 export type ConditionNftType = { chain: string; collection_id: string };
+export type ConditionCrowdloanType = { chain: string };
 export type ConditionHasMoneyType = { has_money: string[] };
 
 export interface AppPopupCondition {
   'condition-balance': ConditionBalanceType[];
   'condition-earning': ConditionEarningType[];
   'condition-nft': ConditionNftType[];
+  'condition-crowdloan': ConditionCrowdloanType[];
   'condition-has-money': ConditionHasMoneyType[];
 }
 

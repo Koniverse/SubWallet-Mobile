@@ -88,6 +88,8 @@ import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMu
 import { CommonStepType } from '@subwallet/extension-base/types/service-base';
 import { getSnowBridgeGatewayContract } from '@subwallet/extension-base/koni/api/contract-handler/utils';
 import useFetchChainAssetInfo from 'hooks/screen/useFetchChainAssetInfo';
+import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
+import { GlobalModalContext } from 'providers/GlobalModalContext';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -381,6 +383,7 @@ export const SendFund = ({
   const assetRegistry = useChainAssets().chainAssetRegistry;
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const [maxTransfer, setMaxTransfer] = useState<string>('0');
+  const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('send-fund');
   const checkAction = usePreCheckAction(
     fromValue,
     true,
@@ -395,7 +398,16 @@ export const SendFund = ({
   const [forceTransferAll, setForceTransferAll] = useState<boolean>(false);
   const chainStatus = useMemo(() => chainStatusMap[chainValue]?.connectionStatus, [chainStatusMap, chainValue]);
   const appModalContext = useContext(AppModalContext);
+  const globalAppModalContext = useContext(GlobalModalContext);
   const assetInfo = useFetchChainAssetInfo(assetValue);
+
+  const currentConfirmations = useMemo(() => {
+    if (chainValue && destChainValue) {
+      return getCurrentConfirmation([chainValue, destChainValue]);
+    } else {
+      return undefined;
+    }
+  }, [chainValue, destChainValue, getCurrentConfirmation]);
 
   const [processState, dispatchProcessState] = useReducer(commonProcessReducer, DEFAULT_COMMON_PROCESS);
 
@@ -928,6 +940,26 @@ export const SendFund = ({
     [appModalContext, chainInfoMap, chainValue, destChainValue, doSubmit, isTransferAll, theme.colorWarning],
   );
 
+  const onPressSubmit = useCallback(
+    (values: TransferFormValues) => {
+      if (currentConfirmations && currentConfirmations.length) {
+        globalAppModalContext.setGlobalModal({
+          visible: true,
+          title: currentConfirmations[0].name,
+          message: currentConfirmations[0].content,
+          type: 'confirmation',
+          externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
+            onSubmit(values);
+            globalAppModalContext.hideGlobalModal();
+          }),
+        });
+      } else {
+        onSubmit(values);
+      }
+    },
+    [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons],
+  );
+
   const isNextButtonDisable = (() => {
     if (!isBalanceReady || !fromValue || !assetValue || !destChainValue || !toValue) {
       return true;
@@ -1159,7 +1191,6 @@ export const SendFund = ({
             onPress: () => {
               let currentValues = getValues();
               setForceTransferAll(false);
-              console.log('currentValues', currentValues);
               setLoading(true);
               doSubmit(currentValues);
             },
@@ -1372,7 +1403,7 @@ export const SendFund = ({
                         disabled={isSubmitButtonDisable}
                         loading={loading}
                         type={undefined}
-                        onPress={checkAction(handleSubmit(onSubmit), extrinsicType)}
+                        onPress={checkAction(handleSubmit(onPressSubmit), extrinsicType)}
                         icon={getButtonIcon(PaperPlaneTilt)}>
                         {i18n.buttonTitles.transfer}
                       </Button>

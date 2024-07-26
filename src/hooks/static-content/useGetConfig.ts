@@ -10,7 +10,6 @@ export function useGetConfig() {
     axios
       .get(`${STATIC_DATA_DOMAIN}/config/remind-backup/${dataByDevModeStatus}.json`)
       .then(res => {
-        console.log('res.data.backupTimeout', res.data.backupTimeout);
         mmkvStore.set('storedRemindBackupTimeout', res.data.backupTimeout);
       })
       .catch(() => {

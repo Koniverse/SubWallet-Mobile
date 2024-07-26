@@ -35,7 +35,6 @@ import { Warning } from 'phosphor-react-native';
 import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
-import { useGetEarningStaticData } from 'hooks/static-content/useGetEarningStaticData';
 import { useGetEarningPoolData } from 'hooks/static-content/useGetEarningPoolData';
 import { AppOnlineContentContextProvider } from 'providers/AppOnlineContentProvider';
 import { GlobalModalContextProvider } from 'providers/GlobalModalContext';
@@ -46,6 +45,7 @@ import { setIsShowRemindBackupModal } from 'screens/Home';
 import { useGetBrowserConfig } from 'hooks/static-content/useGetBrowserConfig';
 import RNRestart from 'react-native-restart';
 import { ImageLogosMap } from 'assets/logo';
+import { GlobalInstructionModalContextProvider } from 'providers/GlobalInstructionModalContext';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -175,7 +175,6 @@ export const App = () => {
   const { getPoolInfoMap } = useGetEarningPoolData();
   const { getConfig } = useGetConfig();
   const { getBrowserConfig } = useGetBrowserConfig();
-  const { getEarningStaticData } = useGetEarningStaticData(language);
   const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
   const { isUpdateComplete, setUpdateComplete } = useContext(WebRunnerContext);
@@ -219,7 +218,6 @@ export const App = () => {
     getDAppsData();
     getConfig();
     getBrowserConfig();
-    getEarningStaticData();
     getAppInstructionData();
 
     DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {
@@ -272,9 +270,11 @@ export const App = () => {
                           <PortalProvider>
                             <GlobalModalContextProvider>
                               <AppOnlineContentContextProvider>
-                                <AppModalContextProvider>
-                                  {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
-                                </AppModalContextProvider>
+                                <GlobalInstructionModalContextProvider>
+                                  <AppModalContextProvider>
+                                    {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
+                                  </AppModalContextProvider>
+                                </GlobalInstructionModalContextProvider>
                               </AppOnlineContentContextProvider>
                             </GlobalModalContextProvider>
                           </PortalProvider>

@@ -27,14 +27,17 @@ import { useToast } from 'react-native-toast-notifications';
 import { TokenSearchModal } from 'screens/Home/Crypto/TokenSearchModal';
 import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
 import { tokenItem } from 'constants/itemHeight';
+import { sortTokenByValue } from 'utils/sort/token';
+import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
-  paddingTop: 16,
-  paddingBottom: 12,
+  height: 40,
+  marginTop: 6,
+  marginBottom: 4,
 };
 
 export interface TokenSearchRef {
@@ -70,7 +73,7 @@ export const TokenGroups = () => {
   } = useReceiveQR();
 
   const toast = useToast();
-
+  const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('token');
   const onPressItem = useCallback(
     (item: TokenBalanceItemType) => {
       return () => {
@@ -93,18 +96,15 @@ export const TokenGroups = () => {
   );
 
   const tokenGroupBalanceItems = useMemo<TokenBalanceItemType[]>(() => {
-    const balanceItemData: TokenBalanceItemType[] = [];
+    const result: TokenBalanceItemType[] = [];
 
     sortedTokenGroups.forEach(tokenGroupSlug => {
       if (tokenGroupBalanceMap[tokenGroupSlug]) {
-        balanceItemData.push(tokenGroupBalanceMap[tokenGroupSlug]);
+        result.push(tokenGroupBalanceMap[tokenGroupSlug]);
       }
     });
-    const result = balanceItemData
-      // @ts-ignore
-      .sort((firstItem, secondItem) => secondItem.total.convertedValue - firstItem.total.convertedValue);
 
-    return result;
+    return result.sort(sortTokenByValue);
   }, [sortedTokenGroups, tokenGroupBalanceMap]);
 
   const renderItem = useCallback(
@@ -136,19 +136,21 @@ export const TokenGroups = () => {
           <Button
             type="ghost"
             size="xs"
-            icon={<Icon size="md" phosphorIcon={MagnifyingGlass} iconColor={theme.colorTextLight3} />}
+            icon={<Icon size="md" phosphorIcon={MagnifyingGlass} iconColor={theme.colorTextLight3} weight={'bold'} />}
             onPress={onOpenTokenSearchModal}
           />
           <Button
             type="ghost"
             size="xs"
-            icon={<Icon size="md" phosphorIcon={FadersHorizontal} iconColor={theme.colorTextLight3} />}
+            icon={<Icon size="md" phosphorIcon={FadersHorizontal} iconColor={theme.colorTextLight3} weight={'bold'} />}
             onPress={onOpenCustomizationModal}
           />
           <Button
             type="ghost"
             size="xs"
-            icon={<Icon size="md" phosphorIcon={ClockCounterClockwise} iconColor={theme.colorTextLight3} />}
+            icon={
+              <Icon size="md" phosphorIcon={ClockCounterClockwise} iconColor={theme.colorTextLight3} weight={'bold'} />
+            }
             onPress={onOpenHistoryScreen}
           />
         </View>
@@ -222,11 +224,11 @@ export const TokenGroups = () => {
     );
   }, [
     onOpenReceive,
-    _onOpenSendFund,
-    isTotalBalanceDecrease,
     totalBalanceInfo.change.percent,
     totalBalanceInfo.change.value,
     totalBalanceInfo.convertedValue,
+    isTotalBalanceDecrease,
+    _onOpenSendFund,
   ]);
 
   const listFooterNode = useMemo(() => {
@@ -254,6 +256,9 @@ export const TokenGroups = () => {
           listActions={actionsNode}
           renderItem={renderItem}
           layoutFooter={listFooterNode}
+          banners={banners}
+          onPressBanner={onPressBanner}
+          dismissBanner={dismissBanner}
         />
 
         <SelectAccAndTokenModal

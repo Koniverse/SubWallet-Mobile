@@ -20,7 +20,6 @@ import { AccountBalanceHookType } from 'types/hook';
 import { TokenBalanceItemType } from 'types/balance';
 import { AssetRegistryStore, BalanceStore, ChainStore, PriceStore } from 'stores/types';
 import { useEffect, useMemo, useState } from 'react';
-import { SubstrateBalance } from '@subwallet/extension-base/types';
 
 const BN_0 = new BigN(0);
 const BN_10 = new BigN(10);
@@ -137,19 +136,15 @@ function getAccountBalance(
         return;
       }
 
-      const balanceItem = balanceMap[address]?.[tokenSlug];
-
-      if (!balanceItem) {
-        return;
-      }
-
       const tokenBalance = getDefaultTokenBalance(tokenSlug, chainAsset, currency);
+
       tokenBalance.currency = currency;
       const originChain = _getAssetOriginChain(chainAsset);
+      const balanceItem = balanceMap[address]?.[tokenSlug];
       const decimals = _getAssetDecimals(chainAsset);
 
-      const isTokenBalanceReady = balanceItem.state !== APIItemState.PENDING;
-      const isTokenNotSupport = balanceItem.state === APIItemState.NOT_SUPPORT;
+      const isTokenBalanceReady = !!balanceItem && balanceItem.state !== APIItemState.PENDING;
+      const isTokenNotSupport = !!balanceItem && balanceItem.state === APIItemState.NOT_SUPPORT;
 
       tokenGroupNotSupport.push(isTokenNotSupport);
       tokenGroupBalanceReady.push(isTokenBalanceReady);
@@ -160,7 +155,6 @@ function getAccountBalance(
 
       tokenBalance.isReady = isTokenBalanceReady;
       tokenBalance.isNotSupport = isTokenNotSupport;
-
       tokenBalance.chain = originChain;
       tokenBalance.chainDisplayName = _getChainName(chainInfoMap[originChain]);
       tokenBalance.isTestnet = !_isAssetValuable(chainAsset);
@@ -176,22 +170,22 @@ function getAccountBalance(
 
         tokenBalance.total.value = tokenBalance.free.value.plus(tokenBalance.locked.value);
 
-        if (balanceItem?.substrateInfo) {
-          const mergeData = (key: keyof SubstrateBalance) => {
-            const newValue = balanceItem?.substrateInfo?.[key];
-
-            if (newValue) {
-              const value = getBalanceValue(newValue, decimals);
-
-              tokenBalance[key] = new BigN(tokenBalance[key] || '0').plus(value).toString();
-              tokenGroupBalance[key] = new BigN(tokenGroupBalance[key] || '0').plus(value).toString();
-            }
-          };
-
-          mergeData('reserved');
-          mergeData('miscFrozen');
-          mergeData('feeFrozen');
-        }
+        // if (balanceItem?.substrateInfo) {
+        //   const mergeData = (key: keyof SubstrateBalance) => {
+        //     const newValue = balanceItem?.substrateInfo?.[key];
+        //
+        //     if (newValue) {
+        //       const value = getBalanceValue(newValue, decimals);
+        //
+        //       tokenBalance[key] = new BigN(tokenBalance[key] || '0').plus(value).toString();
+        //       tokenGroupBalance[key] = new BigN(tokenGroupBalance[key] || '0').plus(value).toString();
+        //     }
+        //   };
+        //
+        //   mergeData('reserved');
+        //   mergeData('miscFrozen');
+        //   mergeData('feeFrozen');
+        // }
 
         if (!isShowZeroBalance && tokenBalance.total.value.eq(BN_0)) {
           return;

@@ -32,7 +32,7 @@ const GlobalModal: React.FC<Props> = ({
   const [instructionModalVisible, setInstructionModalVisible] = useState(false);
   const instructionDataList: StaticDataProps[] = useMemo(() => {
     try {
-      const result = JSON.parse(mmkvStore.getString('app-instruction-data') || '[]');
+      const result = JSON.parse(mmkvStore.getString('appInstructionData') || '[]');
       return result;
     } catch (e) {
       console.error(e);
@@ -50,10 +50,7 @@ const GlobalModal: React.FC<Props> = ({
 
   const currentInstructionData = useMemo(() => {
     if (instructionButton && instructionButton.instruction) {
-      return instructionDataList.find(
-        item =>
-          item.group === instructionButton.instruction?.group && item.slug === instructionButton.instruction?.slug,
-      );
+      return instructionDataList.find(item => item.slug === instructionButton.instruction?.slug);
     } else {
       return undefined;
     }
@@ -108,6 +105,7 @@ const GlobalModal: React.FC<Props> = ({
           data={currentInstructionData.instructions}
           onPressCancelBtn={() => onAccept()}
           onPressConfirmBtn={() => onAccept(instructionButton.action?.url)}
+          faq_url={currentInstructionData.faq_url}
         />
       )}
     </>
