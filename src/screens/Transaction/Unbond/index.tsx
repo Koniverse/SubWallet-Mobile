@@ -13,7 +13,7 @@ import { AmountData, ExtrinsicType, NominationInfo } from '@subwallet/extension-
 import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
-import { ScrollView, View } from 'react-native';
+import { Keyboard, ScrollView, View } from 'react-native';
 import { MinusCircle } from 'phosphor-react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
@@ -277,20 +277,23 @@ export const Unbond = ({
   }, [positionInfo, getValues, slug, poolInfo, mustChooseValidator, currentValidator, onSuccess, onError]);
 
   const onPressSubmit = useCallback(() => {
-    if (currentConfirmations && currentConfirmations.length) {
-      globalAppModalContext.setGlobalModal({
-        visible: true,
-        title: currentConfirmations[0].name,
-        message: currentConfirmations[0].content,
-        type: 'confirmation',
-        externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
-          onSubmit();
-          globalAppModalContext.hideGlobalModal();
-        }),
-      });
-    } else {
-      onSubmit();
-    }
+    Keyboard.dismiss();
+    setTimeout(() => {
+      if (currentConfirmations && currentConfirmations.length) {
+        globalAppModalContext.setGlobalModal({
+          visible: true,
+          title: currentConfirmations[0].name,
+          message: currentConfirmations[0].content,
+          type: 'confirmation',
+          externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
+            onSubmit();
+            globalAppModalContext.hideGlobalModal();
+          }),
+        });
+      } else {
+        onSubmit();
+      }
+    }, 100);
   }, [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons]);
 
   const nominators = useMemo(() => {

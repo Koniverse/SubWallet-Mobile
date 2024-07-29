@@ -143,6 +143,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const isReadyToShowAlertRef = useRef<boolean>(true);
   const fromRef = useRef<string>(currentFrom);
   const isPressInfoBtnRef = useRef<boolean>(false);
+  const isShowNoPoolInfoPopupRef = useRef<boolean>(false);
   const nativeTokenSlug = useGetNativeTokenSlug(chain);
 
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
@@ -473,7 +474,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   );
 
   const renderMetaInfo = useCallback(() => {
-    if (!poolInfo) {
+    if (!poolInfo && !isShowNoPoolInfoPopupRef.current) {
+      isShowNoPoolInfoPopupRef.current = true;
       Alert.alert('Unable to get earning data', 'Please, go back and try again later');
     }
     const value = currentAmount ? parseFloat(currentAmount) / 10 ** assetDecimals : 0;
@@ -481,7 +483,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
     const assetEarnings =
       poolInfo?.statistic && 'assetEarning' in poolInfo?.statistic ? poolInfo?.statistic.assetEarning : [];
-    const derivativeAssets = 'derivativeAssets' in poolInfo?.metadata ? poolInfo?.metadata.derivativeAssets : [];
+    const derivativeAssets =
+      poolInfo?.metadata && 'derivativeAssets' in poolInfo?.metadata ? poolInfo?.metadata.derivativeAssets : [];
     const showFee = [YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(poolInfo?.type);
 
     let minJoinPool: string | undefined;
@@ -703,20 +706,23 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   ]);
 
   const onPressSubmit = useCallback(() => {
-    if (currentConfirmations && currentConfirmations.length) {
-      globalAppModalContext.setGlobalModal({
-        visible: true,
-        title: currentConfirmations[0].name,
-        message: currentConfirmations[0].content,
-        type: 'confirmation',
-        externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
-          onSubmit();
-          globalAppModalContext.hideGlobalModal();
-        }),
-      });
-    } else {
-      onSubmit();
-    }
+    Keyboard.dismiss();
+    setTimeout(() => {
+      if (currentConfirmations && currentConfirmations.length) {
+        globalAppModalContext.setGlobalModal({
+          visible: true,
+          title: currentConfirmations[0].name,
+          message: currentConfirmations[0].content,
+          type: 'confirmation',
+          externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
+            onSubmit();
+            globalAppModalContext.hideGlobalModal();
+          }),
+        });
+      } else {
+        onSubmit();
+      }
+    }, 100);
   }, [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons]);
 
   const onBack = useCallback(() => {

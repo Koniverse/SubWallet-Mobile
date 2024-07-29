@@ -942,20 +942,23 @@ export const SendFund = ({
 
   const onPressSubmit = useCallback(
     (values: TransferFormValues) => {
-      if (currentConfirmations && currentConfirmations.length) {
-        globalAppModalContext.setGlobalModal({
-          visible: true,
-          title: currentConfirmations[0].name,
-          message: currentConfirmations[0].content,
-          type: 'confirmation',
-          externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
-            onSubmit(values);
-            globalAppModalContext.hideGlobalModal();
-          }),
-        });
-      } else {
-        onSubmit(values);
-      }
+      Keyboard.dismiss();
+      setTimeout(() => {
+        if (currentConfirmations && currentConfirmations.length) {
+          globalAppModalContext.setGlobalModal({
+            visible: true,
+            title: currentConfirmations[0].name,
+            message: currentConfirmations[0].content,
+            type: 'confirmation',
+            externalButtons: renderConfirmationButtons(globalAppModalContext.hideGlobalModal, () => {
+              onSubmit(values);
+              globalAppModalContext.hideGlobalModal();
+            }),
+          });
+        } else {
+          onSubmit(values);
+        }
+      }, 100);
     },
     [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons],
   );
