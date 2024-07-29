@@ -35,9 +35,8 @@ const InfoStyle: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
   width: '100%',
-  marginTop: 5,
-  paddingBottom: 16,
   paddingHorizontal: 12,
+  flex: 1,
 };
 
 const NameStyle: StyleProp<any> = {

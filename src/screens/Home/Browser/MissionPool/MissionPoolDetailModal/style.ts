@@ -24,7 +24,7 @@ const Styles = () => {
       borderRadius: theme.borderRadiusLG,
     },
     linerGradientStyle: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, flex: 1 },
-    contentContainer: { flex: 1, paddingTop: theme.paddingXXL, paddingHorizontal: theme.padding },
+    contentContainer: { flex: 1, paddingTop: 40, paddingHorizontal: theme.padding },
     logoWrapper: { flex: 1, alignItems: 'center', paddingBottom: theme.paddingXXL },
   });
 };

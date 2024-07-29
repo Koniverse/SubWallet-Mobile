@@ -14,8 +14,8 @@ interface SeedPhraseAreaProps extends ViewProps {
   currentWords: SelectedWordType[];
 }
 
-export function getWordKey(word: string, index: number) {
-  return `${index}-${word}`;
+export function getWordKey(word: string, index: number, rowIndex: number) {
+  return `${index}-${word}-${rowIndex}`;
 }
 
 function getWrapperStyle(style: StyleProp<any> = {}): StyleProp<any> {

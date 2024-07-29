@@ -111,8 +111,8 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
     setSelectedWords(newSelectedWord);
   };
 
-  const renderSeedWord = (word: string, index: number) => {
-    const wordKey = getWordKey(word, index);
+  const renderSeedWord = (word: string, index: number, rowIndex: number) => {
+    const wordKey = getWordKey(word, index, rowIndex);
 
     return (
       <SeedWord
@@ -145,10 +145,10 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
         />
         <View style={phraseBlockStyle}>
           {shuffleWordRows &&
-            shuffleWordRows.map((arr, index) => {
+            shuffleWordRows.map((arr, rowIndex) => {
               return (
                 <View
-                  key={index}
+                  key={rowIndex}
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -156,7 +156,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
                     alignItems: 'center',
                     gap: theme.sizeXS,
                   }}>
-                  {arr.map(renderSeedWord)}
+                  {arr.map((i, index) => renderSeedWord(i, index, rowIndex))}
                 </View>
               );
             })}

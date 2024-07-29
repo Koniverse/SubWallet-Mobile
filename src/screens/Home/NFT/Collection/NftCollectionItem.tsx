@@ -32,11 +32,10 @@ const LogoStyle: StyleProp<ViewStyle> = {
 const InfoStyle: StyleProp<ViewStyle> = {
   justifyContent: 'space-between',
   flexDirection: 'row',
-  alignItems: 'flex-end',
+  alignItems: 'center',
   width: '100%',
-  marginTop: 5,
-  paddingBottom: 16,
   paddingHorizontal: 12,
+  flex: 1,
 };
 
 const NameStyle: StyleProp<TextStyle> = {
