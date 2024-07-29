@@ -14,7 +14,7 @@ const Styles = () => {
       justifyContent: 'space-between',
       alignSelf: 'flex-end',
       position: 'absolute',
-      bottom: 0,
+      top: 0,
       right: 24,
     },
     justifyCenter: { justifyContent: 'center' },

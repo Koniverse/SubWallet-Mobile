@@ -3,6 +3,9 @@ import GlobalModal from 'components/common/Modal/GlobalModal';
 import { AppContentButton } from 'types/staticContent';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { Linking, Platform } from 'react-native';
+import { AppInstaller } from '../NativeModules';
+import { APPSTORE_URL, PLAYSTORE_URL } from 'constants/index';
 
 interface GlobalModalContextProviderProps {
   children?: React.ReactElement;
@@ -16,6 +19,7 @@ export type GlobalModalInfo = {
   externalButtons?: React.ReactNode;
   type?: 'popup' | 'banner' | 'confirmation';
   onPressBtn?: (url?: string) => void;
+  isChangeLogPopup?: boolean;
 };
 
 export interface GlobalModalType {
@@ -27,11 +31,41 @@ export const GlobalModalContext = React.createContext({} as GlobalModalType);
 
 export const GlobalModalContextProvider = ({ children }: GlobalModalContextProviderProps) => {
   const [globalModal, setGlobalModal] = useState<GlobalModalInfo>({});
+  const [installType, setInstallType] = useState<'store' | 'apk' | undefined>(undefined);
   const isDisplayMktCampaign = useSelector((state: RootState) => state.appState.isDisplayMktCampaign);
   const isShowedPopupModalRef = useRef<boolean>(isDisplayMktCampaign);
   useEffect(() => {
     isShowedPopupModalRef.current = isDisplayMktCampaign;
   }, [isDisplayMktCampaign]);
+
+  useEffect(() => {
+    if (globalModal.isChangeLogPopup) {
+      if (Platform.OS === 'android') {
+        AppInstaller.verifyInstallerId((installer: string | null) => {
+          if (installer?.includes('packageinstaller')) {
+            setInstallType('apk');
+          } else {
+            setInstallType('store');
+          }
+        });
+      }
+    }
+  }, [globalModal.isChangeLogPopup]);
+
+  const onPressUpdate = useCallback(
+    (url?: string) => {
+      if (Platform.OS === 'ios') {
+        Linking.openURL(APPSTORE_URL);
+      } else {
+        if (installType === 'apk') {
+          globalModal.onPressBtn && globalModal.onPressBtn(url);
+        } else if (installType === 'store') {
+          Linking.openURL(PLAYSTORE_URL);
+        }
+      }
+    },
+    [globalModal, installType],
+  );
 
   const hideGlobalModal = useCallback(() => {
     setGlobalModal(prevState => ({ ...prevState, visible: false }));
@@ -57,6 +91,17 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
     }
   }, [globalModal?.type, globalModal.visible, isDisplayMktCampaign]);
 
+  const onPressButton = useCallback(
+    (url?: string) => {
+      if (globalModal.isChangeLogPopup && globalModal.onPressBtn && url) {
+        onPressUpdate(url);
+      } else {
+        globalModal.onPressBtn && globalModal.onPressBtn(url);
+      }
+    },
+    [globalModal, onPressUpdate],
+  );
+
   return (
     <GlobalModalContext.Provider value={{ setGlobalModal, hideGlobalModal }}>
       {children}
@@ -66,7 +111,7 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
         message={globalModal.message || ''}
         onCloseModal={hideGlobalModal}
         buttons={globalModal.buttons || []}
-        onPressButton={globalModal.onPressBtn}
+        onPressButton={onPressButton}
         externalButtons={globalModal.externalButtons}
       />
     </GlobalModalContext.Provider>

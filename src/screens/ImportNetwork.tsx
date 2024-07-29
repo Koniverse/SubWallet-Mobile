@@ -17,22 +17,29 @@ import { ActivityIndicator, Button, Icon } from 'components/design-system-ui';
 import { ValidateStatus } from '@subwallet/react-ui/es/form/FormItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { ImportNetworkProps, RootNavigationProps } from 'routes/index';
 import { isUrl } from 'utils/index';
-import { upsertChain, validateCustomChain } from '../messaging';
+import { rejectWalletConnectSession, upsertChain, validateCustomChain } from '../messaging';
 import { _CHAIN_VALIDATION_ERROR } from '@subwallet/extension-base/services/chain-service/handler/types';
 import { _generateCustomProviderKey } from '@subwallet/extension-base/services/chain-service/utils';
 import { _NetworkUpsertParams } from '@subwallet/extension-base/services/chain-service/types';
 import { useToast } from 'react-native-toast-notifications';
 import { HIDE_MODAL_DURATION } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
+import { fetchChainInfo } from 'utils/fetchNetworkByChainId';
 
 export interface ValidationInfo {
   status: ValidateStatus;
   message?: string[];
 }
 
-export const ImportNetwork = () => {
+async function handleWCCancel(id: string) {
+  return await rejectWalletConnectSession({
+    id,
+  });
+}
+
+export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkProps) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const [loading, setLoading] = useState(false);
@@ -187,13 +194,6 @@ export const ImportNetwork = () => {
     onSubmitForm: onSubmit,
   });
 
-  useEffect(() => {
-    setTimeout(() => {
-      focus('provider')();
-    }, HIDE_MODAL_DURATION);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const isSubmitDisabled = useCallback(() => {
     return providerValidation.status !== 'success';
   }, [providerValidation.status]);
@@ -268,6 +268,30 @@ export const ImportNetwork = () => {
     [handleErrorMessage, onChangeValue, onUpdateErrors],
   );
 
+  useEffect(() => {
+    if (routeParams?.chainIds) {
+      fetchChainInfo(routeParams.chainIds)
+        .then(chainInfo => {
+          if (chainInfo.length > 0) {
+            const { rpcUrls } = chainInfo[0];
+
+            if (rpcUrls.length > 0) {
+              onChangeValue('provider')(rpcUrls[0]);
+              setTimeout(() => {
+                providerValidateFunc(rpcUrls[0]);
+                formState.refs.provider.current?.blur();
+              }, 300);
+            }
+          }
+        })
+        .catch(console.error);
+    } else {
+      setTimeout(() => {
+        focus('provider')();
+      }, HIDE_MODAL_DURATION);
+    }
+  }, [focus, formState.refs.provider, onChangeValue, providerValidateFunc, routeParams?.chainIds]);
+
   const providerSuffix = useCallback(() => {
     if (!isShowConnectionStatus) {
       return <></>;
@@ -290,8 +314,18 @@ export const ImportNetwork = () => {
     return <></>;
   }, [isShowConnectionStatus, isValidating, providerValidation.status, theme]);
 
+  const onBack = useCallback(() => {
+    if (routeParams?.id) {
+      handleWCCancel(routeParams.id).finally(() => {
+        navigation.goBack();
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, routeParams?.id]);
+
   return (
-    <ContainerWithSubHeader onPressBack={() => navigation.goBack()} title={i18n.header.importNetwork}>
+    <ContainerWithSubHeader onPressBack={onBack} title={i18n.header.importNetwork}>
       <View style={{ ...ContainerHorizontalPadding, paddingTop: 16, flex: 1 }}>
         <InputText
           leftIcon={ShareNetwork}

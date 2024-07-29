@@ -1,21 +1,33 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { ScrollView, View } from 'react-native';
-import { Button, SwFullSizeModal, Typography } from 'components/design-system-ui';
+import {
+  Linking,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { Button, Icon, SwFullSizeModal, Typography } from 'components/design-system-ui';
 import { noop } from 'utils/function';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FontSemiBold } from 'styles/sharedStyles';
-import AlertBoxBase from 'components/design-system-ui/alert-box/base';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { BoxProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { AppContentButtonInstruction } from 'types/staticContent';
 import FastImage from 'react-native-fast-image';
+import AlertBoxMarkdown from 'components/design-system-ui/alert-box/markdown';
+import { ThemeTypes } from 'styles/themes';
+import { CaretDown, X } from 'phosphor-react-native';
 
 interface Props {
   visible: boolean;
   title: string;
   media?: string;
+  faq_url?: string;
   data: BoxProps[];
   instruction: AppContentButtonInstruction;
   onPressCancelBtn: () => void;
@@ -28,25 +40,45 @@ export const GlobalInstructionModal = ({
   title,
   data,
   media,
+  faq_url,
   onPressCancelBtn,
   onPressConfirmBtn,
 }: Props) => {
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
+  const styles = useMemo(() => createStyle(theme), [theme]);
+  const [showScrollEnd, setShowScrollEnd] = useState(false);
+  const [isScrollEnd, setIsScrollEnd] = useState(false);
+  const [scrollHeight, setScrollHeight] = useState<number>(0);
+  const [contentHeight, setContentHeight] = useState<number>(0);
+  const scrollRef = useRef<ScrollView>(null);
 
-  const footer = useMemo(
-    () => (
-      <View style={{ flexDirection: 'row', gap: theme.sizeSM }}>
-        <Button block type={'secondary'} onPress={onPressCancelBtn}>
-          {instruction.cancel_label}
-        </Button>
-        <Button block type={'primary'} onPress={onPressConfirmBtn}>
-          {instruction.confirm_label}
-        </Button>
-      </View>
-    ),
-    [instruction.cancel_label, instruction.confirm_label, onPressCancelBtn, onPressConfirmBtn, theme.sizeSM],
+  useEffect(() => {
+    setShowScrollEnd(contentHeight > scrollHeight);
+    setIsScrollEnd(contentHeight < scrollHeight);
+  }, [contentHeight, scrollHeight]);
+
+  const isCloseToBottom = useCallback(({ layoutMeasurement, contentOffset, contentSize }: NativeScrollEvent) => {
+    const paddingToBottom = 20;
+    return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+  }, []);
+
+  const onScroll = useCallback(
+    ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (isCloseToBottom(nativeEvent)) {
+        setIsScrollEnd(true);
+      }
+    },
+    [isCloseToBottom],
   );
+
+  const scrollBottom = useCallback(() => {
+    scrollRef.current?.scrollToEnd();
+  }, []);
+
+  const onPressFaq = useCallback(() => {
+    Linking.openURL(faq_url || 'https://docs.subwallet.app/main/web-dashboard-user-guide/earning/faqs');
+  }, [faq_url]);
 
   return (
     <SwFullSizeModal
@@ -70,17 +102,17 @@ export const GlobalInstructionModal = ({
             paddingHorizontal: theme.padding,
             flex: 1,
           }}>
-          <Typography.Text
-            style={{
-              ...FontSemiBold,
-              textAlign: 'center',
-              marginHorizontal: theme.paddingLG + theme.paddingXXS,
-              color: theme.colorTextBase,
-              fontSize: theme.fontSizeHeading4,
-              lineHeight: theme.fontSizeHeading4 * theme.lineHeightHeading4,
-            }}>
-            {title}
-          </Typography.Text>
+          <View>
+            <View style={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+              <Button
+                type={'ghost'}
+                size={'xs'}
+                icon={<Icon phosphorIcon={X} weight={'bold'} size={'md'} iconColor={theme.colorWhite} />}
+                onPress={onPressCancelBtn}
+              />
+            </View>
+            <Typography.Text style={styles.headerText}>{title}</Typography.Text>
+          </View>
           {media && (
             <FastImage
               style={{ height: 120, borderRadius: theme.borderRadiusLG }}
@@ -90,23 +122,94 @@ export const GlobalInstructionModal = ({
           )}
           <ScrollView
             style={{ flex: 1 }}
+            ref={scrollRef}
             contentContainerStyle={{ gap: theme.sizeSM }}
+            onLayout={event => {
+              let { height: _scrollHeight } = event.nativeEvent.layout;
+              const currentScrollHeight = _scrollHeight + (Platform.OS === 'ios' ? 16 : -16);
+              setScrollHeight(currentScrollHeight);
+            }}
+            onScroll={onScroll}
+            scrollEventThrottle={400}
+            alwaysBounceVertical={false}
             showsVerticalScrollIndicator={false}>
-            {data.map((_props, index) => {
-              return (
-                <AlertBoxBase
-                  key={index}
-                  title={_props.title}
-                  description={_props.description}
-                  iconColor={_props.icon_color}
-                  icon={getBannerButtonIcon(_props.icon) as PhosphorIcon}
-                />
-              );
-            })}
+            <View
+              style={{ gap: theme.sizeSM }}
+              onLayout={event => {
+                let { height } = event.nativeEvent.layout;
+                const _contentHeight = height + (Platform.OS === 'ios' ? 16 : -16);
+                setContentHeight(_contentHeight);
+              }}>
+              {data.map((_props, index) => {
+                return (
+                  <AlertBoxMarkdown
+                    key={index}
+                    title={_props.title}
+                    description={_props.description}
+                    iconColor={_props.icon_color}
+                    icon={getBannerButtonIcon(_props.icon) as PhosphorIcon}
+                  />
+                );
+              })}
+            </View>
           </ScrollView>
-          {footer}
+          <View>
+            {showScrollEnd && !isScrollEnd && (
+              <Button
+                size="xs"
+                icon={<Icon phosphorIcon={CaretDown} />}
+                style={styles.scrollButton}
+                type="primary"
+                shape="circle"
+                onPress={scrollBottom}
+              />
+            )}
+            <Typography.Text style={styles.faqText}>
+              Scroll down to continue. For more information and staking instructions, read&nbsp;
+              <Text onPress={onPressFaq} style={styles.highlightText}>
+                this FAQ
+              </Text>
+            </Typography.Text>
+
+            <View style={{ flexDirection: 'row' }}>
+              <Button disabled={!isScrollEnd && showScrollEnd} block type={'primary'} onPress={onPressConfirmBtn}>
+                {instruction.confirm_label}
+              </Button>
+            </View>
+          </View>
         </View>
       </SafeAreaView>
     </SwFullSizeModal>
   );
 };
+
+function createStyle(theme: ThemeTypes) {
+  return StyleSheet.create({
+    faqText: {
+      ...FontMedium,
+      color: theme.colorTextSecondary,
+      fontSize: theme.fontSizeHeading6,
+      lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
+      textAlign: 'center',
+      marginHorizontal: theme.marginLG,
+      marginBottom: theme.marginSM,
+    },
+    highlightText: {
+      color: theme.colorPrimary,
+      textDecorationLine: 'underline',
+    },
+    scrollButton: {
+      position: 'absolute',
+      top: -(theme.sizeXXL + theme.sizeSM),
+      right: 0,
+    },
+    headerText: {
+      ...FontSemiBold,
+      textAlign: 'center',
+      marginHorizontal: theme.paddingLG + theme.paddingXXS,
+      color: theme.colorTextBase,
+      fontSize: theme.fontSizeHeading4,
+      lineHeight: theme.fontSizeHeading4 * theme.lineHeightHeading4,
+    },
+  });
+}

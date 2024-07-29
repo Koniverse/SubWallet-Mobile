@@ -535,7 +535,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
     if (hasConfirmations && currentRoute && amount) {
       if (currentRoute.name !== 'Confirmations' && amount) {
         if (
-          !['CreateAccount', 'CreatePassword', 'Login', 'UnlockModal'].includes(currentRoute.name) &&
+          !['CreateAccount', 'CreatePassword', 'Login', 'UnlockModal', 'ImportNetwork'].includes(currentRoute.name) &&
           !isLogin &&
           amount
         ) {

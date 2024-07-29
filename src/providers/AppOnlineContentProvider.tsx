@@ -45,7 +45,11 @@ interface AppOnlineContentContextType {
   ) => boolean;
   handleButtonPress: (id: string) => (type: OnlineContentDataType, url?: string) => void;
   checkBannerVisible: (showTimes: number) => boolean;
-  checkPositionParam: (screen: string, positionParams: { property: string; value: string }[], value: string) => boolean;
+  checkPositionParam: (
+    screen: string,
+    positionParams: { property: string; value: string }[],
+    value: string[],
+  ) => boolean;
   showAppPopup: (currentRoute: RootRouteProps | undefined) => void;
 }
 
@@ -88,6 +92,12 @@ const getAppTransformRouteName = (currentRoute?: string) => {
       return 'earning';
     case 'Crowdloans':
       return 'crowdloan';
+    case 'Browser':
+      return 'dapp';
+    case 'MissionPools':
+      return 'mission_pool';
+    case 'History':
+      return 'history';
   }
 };
 
@@ -155,22 +165,37 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
   }, []);
 
   const checkPositionParam = useCallback(
-    (screen: string, positionParams: { property: string; value: string }[], value: string) => {
+    (screen: string, positionParams: { property: string; value: string }[], value: string[]) => {
       if (positionParams && positionParams.length) {
         switch (screen) {
           case 'token_detail':
             const allowTokenSlugs = positionParams
               .filter(item => item.property === 'tokenSlug')
               .map(param => param.value);
-            return allowTokenSlugs.some(slug => value.toLowerCase().includes(slug.toLowerCase()));
+            return allowTokenSlugs.some(slug => value[0].toLowerCase().includes(slug.toLowerCase()));
           case 'earning':
             const allowPoolSlugs = positionParams
               .filter(item => item.property === 'poolSlug')
               .map(param => param.value);
-            return allowPoolSlugs.some(slug => value.toLowerCase().includes(slug.toLowerCase()));
+            return allowPoolSlugs.some(slug => value[0].toLowerCase().includes(slug.toLowerCase()));
           case 'missionPools':
             const selectedIds = positionParams.filter(item => item.property === 'id').map(param => param.value);
-            return selectedIds.some(id => value.toLowerCase().includes(id.toLowerCase()));
+            return selectedIds.some(id => value[0].toLowerCase().includes(id.toLowerCase()));
+          case 'send-fund':
+            const currentChain = value[0];
+            const currentDestChain = value[1];
+            let isValidChain = true;
+            let isValidDestChain = true;
+            positionParams.forEach(item => {
+              if (item.property === 'chainValue') {
+                isValidChain = item.value === currentChain;
+              }
+
+              if (item.property === 'destChainValue') {
+                isValidDestChain = item.value === currentDestChain;
+              }
+            });
+            return isValidChain && isValidDestChain;
           default:
             return true;
         }
@@ -266,6 +291,7 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
             onPressBtn: url => {
               handleButtonPress(`${filteredPopupList[0].position}-${filteredPopupList[0].id}`)('popup', url);
             },
+            isChangeLogPopup: filteredPopupList[0].info.is_changelog_popup,
           });
       }
     },

@@ -35,7 +35,7 @@ export const MissionPoolSearchByType: React.FC<NativeStackScreenProps<RootStackP
 
   const currentConfirmation = useMemo(() => {
     if (selectedMissionPool) {
-      return getCurrentConfirmation(selectedMissionPool.id.toString());
+      return getCurrentConfirmation([selectedMissionPool.id.toString()]);
     } else {
       return undefined;
     }

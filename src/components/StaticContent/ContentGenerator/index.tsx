@@ -1,7 +1,9 @@
-import Markdown from 'react-native-markdown-display';
+import Markdown, { MarkdownIt } from 'react-native-markdown-display';
 import React from 'react';
 import { StyleProp } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import RenderHtml from 'react-native-render-html';
+import { deviceWidth } from 'constants/index';
 
 interface Props {
   content: string;
@@ -15,9 +17,36 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
     return !!url;
   };
 
+  const markdownItInstance = MarkdownIt({ typographer: true, html: true });
+
+  const rules = {
+    // eslint-disable-next-line react/no-unstable-nested-components
+    html_block: (node: { content: any; key: React.Key | null | undefined }) => {
+      return (
+        <RenderHtml
+          key={node.key}
+          contentWidth={deviceWidth}
+          systemFonts={['PlusJakartaSans-Medium']}
+          source={{ html: `${node.content}` }}
+        />
+      );
+    },
+    // eslint-disable-next-line react/no-unstable-nested-components
+    html_inline: (node: { content: any; key: React.Key | null | undefined }) => (
+      <RenderHtml
+        key={node.key}
+        contentWidth={deviceWidth}
+        systemFonts={['PlusJakartaSans-Medium']}
+        source={{ html: `${node.content}` }}
+      />
+    ),
+  };
+
   return (
     <Markdown
+      markdownit={markdownItInstance}
       onLinkPress={onLinkPress}
+      rules={rules}
       style={{
         body: {
           color: theme.colorWhite,
@@ -26,9 +55,24 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
           fontFamily: 'PlusJakartaSans-Medium',
         },
         link: { color: theme.colorPrimary },
-        heading4: { color: theme.colorWhite },
-        heading5: { color: theme.colorWhite },
-        heading6: { color: theme.colorWhite },
+        heading4: {
+          color: theme.colorWhite,
+          fontSize: theme.fontSizeLG,
+          lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+          paddingVertical: theme.marginXXS,
+        },
+        heading5: {
+          color: theme.colorWhite,
+          fontSize: theme.fontSize,
+          lineHeight: theme.fontSize * theme.lineHeight,
+          paddingVertical: theme.marginXXS,
+        },
+        heading6: {
+          color: theme.colorWhite,
+          fontSize: theme.fontSizeSM,
+          lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+          paddingVertical: theme.marginXXS,
+        },
         hr: {
           backgroundColor: theme.colorBgBorder,
           height: 2,
@@ -43,8 +87,8 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
           fontFamily: 'PlusJakartaSans-Medium',
         },
         image: {
-          marginTop: 4,
-          marginBottom: 4,
+          marginTop: 8,
+          marginBottom: 8,
         },
         blockquote: {
           backgroundColor: theme.colorBgSecondary,
@@ -53,8 +97,9 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
           marginLeft: 0,
           paddingHorizontal: 12,
           borderRadius: theme.borderRadiusLG,
-          paddingVertical: 4,
-          marginVertical: 4,
+          paddingVertical: 8,
+          marginVertical: 6,
+          color: theme.colorTextLight3,
         },
         paragraph: {
           marginTop: 0,
@@ -67,6 +112,14 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
         },
         list_item: {
           paddingVertical: 4,
+        },
+        bullet_list_icon: {
+          marginLeft: 8,
+          marginRight: 8,
+        },
+        code_inline: {
+          backgroundColor: 'transparent',
+          color: theme.colorTextTertiary,
         },
         ...markdownStyle,
       }}>

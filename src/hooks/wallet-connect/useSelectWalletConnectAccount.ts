@@ -119,9 +119,20 @@ const useSelectWalletConnectAccount = (params: ProposalTypes.Struct) => {
         .some(chain => !isSupportWalletConnectChain(chain, chainInfoMap)),
     [chainInfoMap, params.requiredNamespaces],
   );
-
+  const isExitedAnotherUnsupportedNamespace = useMemo(
+    () =>
+      params.requiredNamespaces &&
+      Object.keys(params.requiredNamespaces).some(namespace => !isSupportWalletConnectNamespace(namespace)),
+    [params.requiredNamespaces],
+  );
   const supportOneChain = useMemo(() => supportedChains.length === 1, [supportedChains]);
   const supportOneNamespace = useMemo(() => Object.keys(namespaces).length === 1, [namespaces]);
+  const noNetwork = useMemo((): boolean => {
+    return (
+      (!params.requiredNamespaces || !Object.keys(params.requiredNamespaces).length) &&
+      (!params.optionalNamespaces || !Object.keys(params.optionalNamespaces).length)
+    );
+  }, [params.optionalNamespaces, params.requiredNamespaces]);
 
   const [isExpiredState, setIsExpiredState] = useState(isProposalExpired(params));
   const isExpired = useMemo(
@@ -243,7 +254,9 @@ const useSelectWalletConnectAccount = (params: ProposalTypes.Struct) => {
     onApplyAccounts,
     onCancelSelectAccounts,
     onSelectAccount,
+    isExitedAnotherUnsupportedNamespace,
     supportOneChain,
+    noNetwork,
     supportOneNamespace,
     supportedChains,
   };

@@ -188,7 +188,7 @@ export const TokenGroupsDetailUpperBlock = ({
 function createStyleSheet(theme: ThemeTypes) {
   return StyleSheet.create({
     actionButtonWrapper: {
-      paddingTop: 24,
+      paddingTop: 16,
       flexDirection: 'row',
       width: '100%',
       justifyContent: 'center',
@@ -205,7 +205,7 @@ function createStyleSheet(theme: ThemeTypes) {
       flexDirection: 'row',
       alignItems: 'center',
       paddingTop: 16,
-      paddingBottom: 16,
+      paddingBottom: 24,
     },
     tokenDisplay: {
       flex: 1,
