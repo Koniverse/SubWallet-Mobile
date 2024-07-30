@@ -338,6 +338,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
         )}
       </ConfirmationFooter>
       <AddNetworkWCModal
+        navigation={navigation}
         networkToAdd={networkNeedToImport}
         setVisible={setAddNetworkModalVisible}
         visible={addNetworkModalVisible}

@@ -4,8 +4,8 @@ import { PlugsConnected } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
 import { View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { RootStackParamList } from 'routes/index';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 interface Props {
   cancelRequest: () => void;
@@ -13,10 +13,17 @@ interface Props {
   requestId: string;
   visible: boolean;
   setVisible: (value: boolean) => void;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
-export const AddNetworkWCModal = ({ visible, setVisible, networkToAdd, cancelRequest, requestId }: Props) => {
-  const navigation = useNavigation<RootNavigationProps>();
+export const AddNetworkWCModal = ({
+  visible,
+  setVisible,
+  networkToAdd,
+  cancelRequest,
+  requestId,
+  navigation,
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   const onCancel = useCallback(() => {
