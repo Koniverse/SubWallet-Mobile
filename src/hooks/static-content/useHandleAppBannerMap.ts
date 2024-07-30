@@ -11,6 +11,8 @@ import { BN_ZERO } from 'utils/chainBalances';
 import useFetchAllNftCollection from 'hooks/screen/Home/Nft/useFetchAllNftCollection';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
 import { _CrowdloanItemType } from 'types/index';
+import { Platform } from 'react-native';
+import { getCountry } from 'react-native-localize';
 
 export const useHandleAppBannerMap = (
   yieldPositionList: YieldPositionInfo[],
@@ -57,7 +59,18 @@ export const useHandleAppBannerMap = (
       const activeList = data.filter(({ info }) => checkPopupExistTime(info));
       const filteredData = activeList
         .filter(({ info }) => {
-          return info.platforms.includes('mobile');
+          let isValid = info.platforms.includes('mobile');
+
+          if (info.os) {
+            isValid = isValid && info.os.toLowerCase() === Platform.OS;
+          }
+
+          if (info.locations && info.locations.length) {
+            const countryId = getCountry();
+            isValid = isValid && info.locations.includes(countryId);
+          }
+
+          return isValid;
         })
         .sort((a, b) => a.priority - b.priority);
       dispatch(updateAppBannerData(filteredData));

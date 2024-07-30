@@ -534,6 +534,8 @@ PODS:
     - React-Core
   - RNKeychain (8.1.2):
     - React-Core
+  - RNLocalize (3.2.0):
+    - React-Core
   - RNPermissions (3.10.1):
     - React-Core
   - RNQrGenerator (1.4.0):
@@ -638,6 +640,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNInAppBrowser (from `../node_modules/react-native-inappbrowser-reborn`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
+  - RNLocalize (from `../node_modules/react-native-localize`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNQrGenerator (from `../node_modules/rn-qr-generator`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -805,6 +808,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-inappbrowser-reborn"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
+  RNLocalize:
+    :path: "../node_modules/react-native-localize"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
   RNQrGenerator:
@@ -900,6 +905,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 7909c50383a18f0cb10ce1db7262b9a6da504c03
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
   RNKeychain: a65256b6ca6ba6976132cc4124b238a5b13b3d9c
+  RNLocalize: b77875884750cb6a58cd6865863fe2ba2729b72b
   RNPermissions: 565ddbb2b37e62f0e35376d1d7c455789ca5b0f8
   RNQrGenerator: 1676221c08bfabec978242989c733810dad20959
   RNReanimated: ce6bef77caeee09d7f022532cee0c8d9bad09c9a

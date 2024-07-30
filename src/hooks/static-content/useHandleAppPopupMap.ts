@@ -9,6 +9,7 @@ import BigN from 'bignumber.js';
 import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
 import { getOutputValuesFromString } from 'components/Input/InputAmount';
 import { BN_ZERO } from 'utils/chainBalances';
+import { getCountry } from 'react-native-localize';
 
 export const useHandleAppPopupMap = (
   yieldPositionList: YieldPositionInfo[],
@@ -50,16 +51,23 @@ export const useHandleAppPopupMap = (
     return result;
   }, [balanceMap, nftCollections, yieldPositionList]);
 
-  const getFilteredAppPopupByTimeAndPlatform = useCallback(
+  const getFilteredAppPopups = useCallback(
     (data: AppPopupData[]) => {
       const activeList = data.filter(({ info }) => checkPopupExistTime(info));
       const filteredData = activeList
         .filter(({ info }) => {
+          let isValid = info.platforms.includes('mobile');
+
           if (info.os) {
-            return info.platforms.includes('mobile') && info.os.toLowerCase() === Platform.OS;
-          } else {
-            return info.platforms.includes('mobile');
+            isValid = isValid && info.os.toLowerCase() === Platform.OS;
           }
+
+          if (info.locations && info.locations.length) {
+            const countryId = getCountry();
+            isValid = isValid && info.locations.includes(countryId);
+          }
+
+          return isValid;
         })
         .sort((a, b) => a.priority - b.priority);
 
@@ -86,10 +94,10 @@ export const useHandleAppPopupMap = (
 
   const setAppPopupData = useCallback(
     (data: AppPopupData[]) => {
-      getFilteredAppPopupByTimeAndPlatform(data);
+      getFilteredAppPopups(data);
       initPopupHistoryMap(data);
     },
-    [getFilteredAppPopupByTimeAndPlatform, initPopupHistoryMap],
+    [getFilteredAppPopups, initPopupHistoryMap],
   );
 
   const updatePopupHistoryMap = useCallback(

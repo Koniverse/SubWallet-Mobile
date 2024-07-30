@@ -38,6 +38,7 @@ import { updateMktCampaignStatus } from 'stores/AppState';
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { computeStatus } from 'utils/missionPools';
 import { MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
+import { getCountry } from 'react-native-localize';
 
 interface tabbarIconColor {
   color: string;
@@ -267,6 +268,7 @@ export const Home = ({ navigation }: Props) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
+  console.log(getCountry());
   const needMigrate = useMemo(
     () =>
       !!accounts

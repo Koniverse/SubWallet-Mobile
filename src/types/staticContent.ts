@@ -16,6 +16,7 @@ export interface AppBasicInfoData {
   platforms: string[];
   os: 'android' | 'ios';
   is_changelog_popup?: boolean;
+  locations?: string[];
 }
 
 export interface AppContentButtonInstruction {
