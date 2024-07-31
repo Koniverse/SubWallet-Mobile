@@ -3,13 +3,14 @@ import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import { Button, Icon } from 'components/design-system-ui';
 import { CheckCircle, XCircle } from 'phosphor-react-native';
-import React, { useCallback, useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Alert, Text, View } from 'react-native';
 import { approveMetaRequest, rejectMetaRequest } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 import createStyle from './styles';
+import { WebRunnerContext } from 'providers/contexts';
 interface Props {
   request: MetadataRequest;
 }
@@ -21,7 +22,7 @@ const handleCancel = async ({ id }: MetadataRequest) => await rejectMetaRequest(
 const MetadataConfirmation: React.FC<Props> = (props: Props) => {
   const { request } = props;
   const { specVersion, tokenDecimals, tokenSymbol, chain } = request.request;
-
+  const { isNetConnected } = useContext(WebRunnerContext);
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -42,6 +43,15 @@ const MetadataConfirmation: React.FC<Props> = (props: Props) => {
       setLoading(false);
     });
   }, [request]);
+
+  useEffect(() => {
+    if (!isNetConnected) {
+      Alert.alert(i18n.warningTitle.noInternetTitle, i18n.warningMessage.reCheckInternetConnection, [
+        { text: i18n.buttonTitles.iUnderstand },
+      ]);
+      onCancel();
+    }
+  }, [isNetConnected, onCancel]);
 
   return (
     <React.Fragment>

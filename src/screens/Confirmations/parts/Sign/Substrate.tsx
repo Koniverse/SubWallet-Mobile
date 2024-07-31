@@ -15,7 +15,7 @@ import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-reac
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
-import { DeviceEventEmitter, Linking, Platform, Text, View } from 'react-native';
+import { Alert, DeviceEventEmitter, Linking, Platform, Text, View } from 'react-native';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import { useToast } from 'react-native-toast-notifications';
@@ -371,6 +371,9 @@ export const SubstrateSignArea = (props: Props) => {
 
   useEffect(() => {
     if (!isNetConnected) {
+      Alert.alert(i18n.warningTitle.noInternetTitle, i18n.warningMessage.reCheckInternetConnection, [
+        { text: i18n.buttonTitles.iUnderstand },
+      ]);
       onCancel();
     }
   }, [isNetConnected, onCancel]);

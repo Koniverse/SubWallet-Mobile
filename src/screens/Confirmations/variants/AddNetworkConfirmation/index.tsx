@@ -5,8 +5,8 @@ import { ActivityIndicator, Button, Icon } from 'components/design-system-ui';
 import { FieldBase } from 'components/Field/Base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CheckCircle, Globe, ShareNetwork, WifiHigh, WifiSlash, XCircle } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Alert, Text, View } from 'react-native';
 import { completeConfirmation, validateCustomChain } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
 
@@ -15,6 +15,7 @@ import { ValidationInfo } from 'screens/ImportNetwork';
 import { isUrl } from 'utils/index';
 import { _CHAIN_VALIDATION_ERROR } from '@subwallet/extension-base/services/chain-service/handler/types';
 import { Warning } from 'components/Warning';
+import { WebRunnerContext } from 'providers/contexts';
 
 interface Props {
   request: ConfirmationDefinitions['addNetworkRequest'][0];
@@ -37,7 +38,7 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
   const [isValidating, setIsValidating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const theme = useSubWalletTheme().swThemes;
-
+  const { isNetConnected } = useContext(WebRunnerContext);
   const styles = useMemo(() => createStyle(theme), [theme]);
 
   const [loading, setLoading] = useState(false);
@@ -112,6 +113,15 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     providerValidateFunc(chainEditInfo.providers[chainEditInfo.currentProvider]);
   }, [chainEditInfo.currentProvider, chainEditInfo.providers, providerValidateFunc]);
+
+  useEffect(() => {
+    if (!isNetConnected) {
+      Alert.alert(i18n.warningTitle.noInternetTitle, i18n.warningMessage.reCheckInternetConnection, [
+        { text: i18n.buttonTitles.iUnderstand },
+      ]);
+      onCancel();
+    }
+  }, [isNetConnected, onCancel]);
 
   const providerSuffix = useCallback(() => {
     if (!isShowConnectionStatus) {
