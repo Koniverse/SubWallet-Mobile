@@ -123,11 +123,7 @@ export interface FeeItem {
 
 const numberMetadata = { maxNumberFormat: 8 };
 
-export const Swap = ({
-  route: {
-    params: { slug: tokenGroupSlug },
-  },
-}: SendFundProps) => {
+export const Swap = ({ route: { params } }: SendFundProps) => {
   const { show, hideAll } = useToast();
   const theme = useSubWalletTheme().swThemes;
   const { assetRegistry: assetRegistryMap, multiChainAssetMap } = useSelector(
@@ -142,6 +138,7 @@ export const Swap = ({
   const [termModalVisible, setTermModalVisible] = useState<boolean>(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
+  const tokenGroupSlug = params?.slug;
 
   const {
     title,
@@ -247,7 +244,9 @@ export const Swap = ({
 
     const filteredAssets = fromTokenItems
       .map(item => assetRegistryMap[item.slug])
-      .filter(chainAsset => chainAsset.slug === tokenGroupSlug || chainAsset.multiChainAsset === tokenGroupSlug);
+      .filter(chainAsset =>
+        tokenGroupSlug ? chainAsset.slug === tokenGroupSlug || chainAsset.multiChainAsset === tokenGroupSlug : true,
+      );
 
     return filteredAssets;
   }, [assetRegistryMap, fromTokenItems, tokenGroupSlug]);

@@ -158,9 +158,9 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
                 },
               },
             },
-            Crowdloans: {
-              path: 'crowdloans',
-            },
+            // Crowdloans: {
+            //   path: 'crowdloans',
+            // },
             Earning: {
               path: 'earning',
               screens: {
@@ -207,6 +207,12 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
                 redirectFromPreview: (redirectFromPreview: boolean) => redirectFromPreview,
               },
             },
+            Swap: {
+              path: 'swap',
+              stringify: {
+                slug: (slug?: string) => slug,
+              },
+            },
           },
         },
       },
@@ -225,6 +231,9 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
         group: (group: string) => group,
         symbol: (symbol: string) => symbol,
       },
+    },
+    Crowdloans: {
+      path: 'crowdloans',
     },
   },
 };
