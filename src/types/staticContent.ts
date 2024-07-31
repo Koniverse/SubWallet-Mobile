@@ -16,7 +16,6 @@ export interface AppBasicInfoData {
   platforms: string[];
   os: 'android' | 'ios';
   is_changelog_popup?: boolean;
-  locations?: string[];
 }
 
 export interface AppContentButtonInstruction {
@@ -78,6 +77,7 @@ export interface AppPopupData extends AppCommonData {
   info: AppBasicInfoData;
   buttons: AppContentButton[];
   repeat_every_x_days: number | null;
+  locations?: string[];
 }
 
 export interface AppBannerData extends AppCommonData {
@@ -86,6 +86,7 @@ export interface AppBannerData extends AppCommonData {
   info: AppBasicInfoData;
   action: AppContentButtonAction;
   instruction: AppContentButtonInstruction | null;
+  locations?: string[];
 }
 
 export interface AppConfirmationData extends AppCommonData {

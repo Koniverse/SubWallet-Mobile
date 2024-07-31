@@ -55,16 +55,17 @@ export const useHandleAppPopupMap = (
     (data: AppPopupData[]) => {
       const activeList = data.filter(({ info }) => checkPopupExistTime(info));
       const filteredData = activeList
-        .filter(({ info }) => {
+        .filter(({ info, locations }) => {
           let isValid = info.platforms.includes('mobile');
 
           if (info.os) {
             isValid = isValid && info.os.toLowerCase() === Platform.OS;
           }
 
-          if (info.locations && info.locations.length) {
+          if (locations && locations.length) {
             const countryId = getCountry();
-            isValid = isValid && info.locations.includes(countryId);
+            const locationIds = locations.map(item => item.split('_')[1]);
+            isValid = isValid && locationIds.includes(countryId);
           }
 
           return isValid;
