@@ -129,7 +129,7 @@ const SubstrateTransactionDetail: React.FC<Props> = (props: Props) => {
           decimals={chainInfo?.substrateInfo?.decimals || 0}
           label={i18n.common.tip}
           suffix={chainInfo?.substrateInfo?.symbol}
-          value={tip.toNumber()}
+          value={tip.toPrimitive() as string | number}
         />
       )}
       {renderMethod(method, decoded)}
