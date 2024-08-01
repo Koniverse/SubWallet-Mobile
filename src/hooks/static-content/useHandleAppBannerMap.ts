@@ -11,8 +11,7 @@ import { BN_ZERO } from 'utils/chainBalances';
 import useFetchAllNftCollection from 'hooks/screen/Home/Nft/useFetchAllNftCollection';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
 import { _CrowdloanItemType } from 'types/index';
-import { Platform } from 'react-native';
-import { getCountry } from 'react-native-localize';
+import { checkComparison, filterCampaignDataFunc } from 'utils/campaign';
 
 export const useHandleAppBannerMap = (
   yieldPositionList: YieldPositionInfo[],
@@ -58,21 +57,7 @@ export const useHandleAppBannerMap = (
     (data: AppBannerData[]) => {
       const activeList = data.filter(({ info }) => checkPopupExistTime(info));
       const filteredData = activeList
-        .filter(({ info, locations }) => {
-          let isValid = info.platforms.includes('mobile');
-
-          if (info.os) {
-            isValid = isValid && info.os.toLowerCase() === Platform.OS;
-          }
-
-          if (locations && locations.length) {
-            const countryId = getCountry();
-            const locationIds = locations.map(item => item.split('_')[1]);
-            isValid = isValid && locationIds.includes(countryId);
-          }
-
-          return isValid;
-        })
+        .filter(({ info, locations }) => filterCampaignDataFunc(info, locations))
         .sort((a, b) => a.priority - b.priority);
       dispatch(updateAppBannerData(filteredData));
     },
@@ -118,23 +103,6 @@ export const useHandleAppBannerMap = (
     },
     [bannerHistoryMap, dispatch],
   );
-
-  const checkComparison = useCallback((comparison: string, value: string, comparisonValue: string) => {
-    switch (comparison) {
-      case 'eq':
-        return new BigN(value).eq(comparisonValue);
-      case 'gt':
-        return new BigN(value).gt(comparisonValue);
-      case 'gte':
-        return new BigN(value).gte(comparisonValue);
-      case 'lt':
-        return new BigN(value).lt(comparisonValue);
-      case 'lte':
-        return new BigN(value).lte(comparisonValue);
-      default:
-        return true;
-    }
-  }, []);
 
   const filteredAppBannerMap = useMemo(() => {
     return appBannerData?.filter(item => {
@@ -219,7 +187,6 @@ export const useHandleAppBannerMap = (
     assetRegistry,
     balanceMap,
     chainInfoMap,
-    checkComparison,
     crowdloanList,
     hasMoneyArr,
     nftCollections,

@@ -3,13 +3,12 @@ import { AppBasicInfoData, AppPopupData, PopupHistoryData } from 'types/staticCo
 import { updateAppPopupData, updatePopupHistoryData } from 'stores/base/StaticContent';
 import { useDispatch, useSelector } from 'react-redux';
 import { YieldPositionInfo } from '@subwallet/extension-base/types';
-import { Platform } from 'react-native';
 import { RootState } from 'stores/index';
 import BigN from 'bignumber.js';
 import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
 import { getOutputValuesFromString } from 'components/Input/InputAmount';
 import { BN_ZERO } from 'utils/chainBalances';
-import { getCountry } from 'react-native-localize';
+import { checkComparison, filterCampaignDataFunc } from 'utils/campaign';
 
 export const useHandleAppPopupMap = (
   yieldPositionList: YieldPositionInfo[],
@@ -55,21 +54,7 @@ export const useHandleAppPopupMap = (
     (data: AppPopupData[]) => {
       const activeList = data.filter(({ info }) => checkPopupExistTime(info));
       const filteredData = activeList
-        .filter(({ info, locations }) => {
-          let isValid = info.platforms.includes('mobile');
-
-          if (info.os) {
-            isValid = isValid && info.os.toLowerCase() === Platform.OS;
-          }
-
-          if (locations && locations.length) {
-            const countryId = getCountry();
-            const locationIds = locations.map(item => item.split('_')[1]);
-            isValid = isValid && locationIds.includes(countryId);
-          }
-
-          return isValid;
-        })
+        .filter(({ info, locations }) => filterCampaignDataFunc(info, locations))
         .sort((a, b) => a.priority - b.priority);
 
       dispatch(updateAppPopupData(filteredData));
@@ -112,23 +97,6 @@ export const useHandleAppPopupMap = (
     },
     [dispatch, popupHistoryMap],
   );
-
-  const checkComparison = useCallback((comparison: string, value: string, comparisonValue: string) => {
-    switch (comparison) {
-      case 'eq':
-        return new BigN(value).eq(comparisonValue);
-      case 'gt':
-        return new BigN(value).gt(comparisonValue);
-      case 'gte':
-        return new BigN(value).gte(comparisonValue);
-      case 'lt':
-        return new BigN(value).lt(comparisonValue);
-      case 'lte':
-        return new BigN(value).lte(comparisonValue);
-      default:
-        return true;
-    }
-  }, []);
 
   const filteredAppPopupMap = useMemo(() => {
     return appPopupData?.filter(item => {
@@ -200,16 +168,7 @@ export const useHandleAppPopupMap = (
         return true;
       }
     });
-  }, [
-    appPopupData,
-    assetRegistry,
-    balanceMap,
-    chainInfoMap,
-    checkComparison,
-    hasMoneyArr,
-    nftCollections,
-    yieldPositionList,
-  ]);
+  }, [appPopupData, assetRegistry, balanceMap, chainInfoMap, hasMoneyArr, nftCollections, yieldPositionList]);
 
   const appPopupMap = useMemo(() => {
     if (filteredAppPopupMap) {
