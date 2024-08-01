@@ -1,7 +1,7 @@
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccountJson, RequestSign } from '@subwallet/extension-base/background/types';
 import { approveSignPasswordV2, approveSignSignature, cancelSignRequest } from 'messaging/index';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,7 +15,7 @@ import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-reac
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
-import { Alert, DeviceEventEmitter, Linking, Platform, Text, View } from 'react-native';
+import { DeviceEventEmitter, Linking, Platform, Text, View } from 'react-native';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import { useToast } from 'react-native-toast-notifications';
@@ -32,7 +32,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { FontMedium } from 'styles/sharedStyles';
-import { WebRunnerContext } from 'providers/contexts';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 
 interface Props {
   account: AccountJson;
@@ -67,7 +67,6 @@ const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMo
 export const SubstrateSignArea = (props: Props) => {
   const { account, id, request, txExpirationTime, navigation } = props;
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const { isNetConnected } = useContext(WebRunnerContext);
   const genesisHash = useMemo(() => {
     const _payload = request.payload;
 
@@ -369,14 +368,7 @@ export const SubstrateSignArea = (props: Props) => {
     };
   }, [txExpirationTime]);
 
-  useEffect(() => {
-    if (!isNetConnected) {
-      Alert.alert(i18n.warningTitle.noInternetTitle, i18n.warningMessage.reCheckInternetConnection, [
-        { text: i18n.buttonTitles.iUnderstand },
-      ]);
-      onCancel();
-    }
-  }, [isNetConnected, onCancel]);
+  useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
     <>

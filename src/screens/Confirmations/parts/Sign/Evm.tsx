@@ -1,7 +1,7 @@
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from 'components/design-system-ui';
 import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
 import { DisplayPayloadModal, EvmQr } from 'screens/Confirmations/parts/Qr/DisplayPayload';
@@ -20,10 +20,10 @@ import { Minimizer } from '../../../../NativeModules';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Alert, DeviceEventEmitter, Platform } from 'react-native';
+import { DeviceEventEmitter, Platform } from 'react-native';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { useToast } from 'react-native-toast-notifications';
-import { WebRunnerContext } from 'providers/contexts';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 
 interface Props {
   id: string;
@@ -69,7 +69,6 @@ export const EvmSignArea = (props: Props) => {
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
-  const { isNetConnected } = useContext(WebRunnerContext);
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
       case AccountSignMode.QR:
@@ -179,14 +178,7 @@ export const EvmSignArea = (props: Props) => {
     };
   }, [txExpirationTime]);
 
-  useEffect(() => {
-    if (!isNetConnected) {
-      Alert.alert(i18n.warningTitle.noInternetTitle, i18n.warningMessage.reCheckInternetConnection, [
-        { text: i18n.buttonTitles.iUnderstand },
-      ]);
-      onCancel();
-    }
-  }, [isNetConnected, onCancel]);
+  useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
     <ConfirmationFooter>

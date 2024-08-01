@@ -10,8 +10,8 @@ import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { PlusCircle, ShieldSlash, XCircle } from 'phosphor-react-native';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Alert, DeviceEventEmitter, Platform, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { DeviceEventEmitter, Platform, Text, View } from 'react-native';
 import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from 'messaging/index';
 import { useSelector } from 'react-redux';
 import { RootStackParamList } from 'routes/index';
@@ -24,7 +24,7 @@ import createStyle from './styles';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { WebRunnerContext } from 'providers/contexts';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 
 interface Props {
   request: AuthorizeRequest;
@@ -71,7 +71,6 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   const { accounts } = useSelector((state: RootState) => state.accountState);
   const styles = useMemo(() => createStyle(theme), [theme]);
   const [loading, setLoading] = useState(false);
-  const { isNetConnected } = useContext(WebRunnerContext);
   const visibleAccounts = useMemo(
     () => filterAuthorizeAccounts(accounts, accountAuthType || 'both'),
     [accountAuthType, accounts],
@@ -184,14 +183,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     return Object.values(filteredSelectMap).every(value => !value);
   }, [accountAuthType, selectedMap]);
 
-  useEffect(() => {
-    if (!isNetConnected) {
-      Alert.alert(i18n.warningTitle.noInternetTitle, i18n.warningMessage.reCheckInternetConnection, [
-        { text: i18n.buttonTitles.iUnderstand },
-      ]);
-      onCancel();
-    }
-  }, [isNetConnected, onCancel]);
+  useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
     <React.Fragment>

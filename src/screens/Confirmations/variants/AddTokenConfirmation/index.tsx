@@ -6,8 +6,8 @@ import { FieldBase } from 'components/Field/Base';
 import { TextField } from 'components/Field/Text';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CheckCircle, CopySimple, XCircle } from 'phosphor-react-native';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Text, View } from 'react-native';
 import { completeConfirmation } from 'messaging/index';
 import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
@@ -16,7 +16,7 @@ import Logo from '../../../../components/design-system-ui/logo';
 import createStyle from './styles';
 import { useSelector } from 'react-redux';
 import { toShort } from 'utils/index';
-import { WebRunnerContext } from 'providers/contexts';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 
 interface Props {
   request: ConfirmationDefinitions['addTokenRequest'][0];
@@ -34,7 +34,6 @@ const AddTokenConfirmation: React.FC<Props> = (props: Props) => {
   const {
     payload: { contractAddress, decimals, originChain, slug, symbol, type },
   } = request;
-  const { isNetConnected } = useContext(WebRunnerContext);
   const theme = useSubWalletTheme().swThemes;
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
@@ -61,14 +60,7 @@ const AddTokenConfirmation: React.FC<Props> = (props: Props) => {
     }, 300);
   }, [request]);
 
-  useEffect(() => {
-    if (!isNetConnected) {
-      Alert.alert(i18n.warningTitle.noInternetTitle, i18n.warningMessage.reCheckInternetConnection, [
-        { text: i18n.buttonTitles.iUnderstand },
-      ]);
-      onCancel();
-    }
-  }, [isNetConnected, onCancel]);
+  useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
     <React.Fragment>

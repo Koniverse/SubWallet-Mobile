@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { approveWalletConnectSession, rejectWalletConnectSession } from 'messaging/index';
 import { isAccountAll } from 'utils/accountAll';
@@ -14,7 +14,7 @@ import { RootStackParamList } from 'routes/index';
 import ConfirmationContent from '../../../../components/common/Confirmation/ConfirmationContent';
 import ConfirmationGeneralInfo from '../../../../components/common/Confirmation/ConfirmationGeneralInfo';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { ConfirmationFooter } from 'components/common/Confirmation';
 import { CheckCircle, PlusCircle, XCircle } from 'phosphor-react-native';
@@ -31,7 +31,7 @@ import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AddNetworkWCModal } from 'components/WalletConnect/Network/AddNetworkWCModal';
 import { detectChanInfo } from 'utils/fetchNetworkByChainId';
-import { WebRunnerContext } from 'providers/contexts';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 
 interface Props {
   request: WalletConnectSessionRequest;
@@ -54,7 +54,6 @@ const handleCancel = async ({ id }: WalletConnectSessionRequest) => {
 export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props) => {
   const { params } = request.request;
   const toast = useToast();
-  const { isNetConnected } = useContext(WebRunnerContext);
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const nameSpaceNameMap = useMemo(
@@ -214,14 +213,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
     }
   }, [blockAddNetwork, checkNetworksConnected, isExitedAnotherUnsupportedNamespace]);
 
-  useEffect(() => {
-    if (!isNetConnected) {
-      Alert.alert(i18n.warningTitle.noInternetTitle, i18n.warningMessage.reCheckInternetConnection, [
-        { text: i18n.buttonTitles.iUnderstand },
-      ]);
-      onCancel();
-    }
-  }, [isNetConnected, onCancel]);
+  useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
     <React.Fragment>
