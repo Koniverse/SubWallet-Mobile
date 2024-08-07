@@ -54,6 +54,11 @@ import { getStaticContentByDevMode, mmkvStore } from 'utils/storage';
 import { RootRouteProps } from 'routes/index';
 import { SwapPair } from '@subwallet/extension-base/types/swap';
 import { fetchStaticData } from 'utils/fetchStaticData';
+import {
+  AppBannerData,
+  AppConfirmationData,
+  AppPopupData,
+} from '@subwallet/extension-base/services/mkt-campaign-service/types';
 // Setup redux stores
 
 function voidFn() {
@@ -721,6 +726,39 @@ export const subscribeSwapPairs = lazySubscribeMessage(
   null,
   updateSwapPairs,
   updateSwapPairs,
+);
+
+export const updateCampaignPopupData = (data: AppPopupData[]) => {
+  store.dispatch({ type: 'staticContent/updateAppPopupData', payload: data });
+};
+
+export const updateCampaignBannerData = (data: AppBannerData[]) => {
+  store.dispatch({ type: 'staticContent/updateAppBannerData', payload: data });
+};
+
+export const updateCampaignConfirmationData = (data: AppConfirmationData[]) => {
+  store.dispatch({ type: 'staticContent/updateAppConfirmationData', payload: data });
+};
+
+export const subscribeCampaignPopupData = lazySubscribeMessage(
+  'pri(campaign.popups.subscribe)',
+  null,
+  updateCampaignPopupData,
+  updateCampaignPopupData,
+);
+
+export const subscribeCampaignBannerData = lazySubscribeMessage(
+  'pri(campaign.banners.subscribe)',
+  null,
+  updateCampaignBannerData,
+  updateCampaignBannerData,
+);
+
+export const subscribeCampaignConfirmationData = lazySubscribeMessage(
+  'pri(campaign.confirmations.subscribe)',
+  null,
+  updateCampaignConfirmationData,
+  updateCampaignConfirmationData,
 );
 /* Swap */
 

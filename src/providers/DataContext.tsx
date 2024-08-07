@@ -46,6 +46,9 @@ import {
   subscribeSwapPairs,
   subscribeMantaPayConfig,
   subscribeMantaPaySyncingState,
+  subscribeCampaignPopupData,
+  subscribeCampaignBannerData,
+  subscribeCampaignConfirmationData,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -390,7 +393,6 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeCrowdloan,
           name: 'subscribeCrowdloan',
           relatedStores: ['crowdloan'],
-          isStartImmediately: true,
         });
         _DataContext.addHandler({
           ...subscribeNftItems,
@@ -401,7 +403,6 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeNftCollections,
           name: 'subscribeNftCollections',
           relatedStores: ['nft'],
-          isStartImmediately: true,
         });
 
         /* Staking */
@@ -472,7 +473,6 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeYieldPositionInfo,
           name: 'subscribeYieldPositionInfo',
           relatedStores: ['earning'],
-          isStartImmediately: true,
         });
 
         _DataContext.addHandler({
@@ -500,6 +500,25 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeSwapPairs,
           name: 'subscribeSwapPairs',
           relatedStores: ['swap'],
+          isStartImmediately: true,
+        });
+
+        _DataContext.addHandler({
+          ...subscribeCampaignPopupData,
+          name: 'subscribeCampaignPopup',
+          relatedStores: ['staticContent'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeCampaignBannerData,
+          name: 'subscribeCampaignBanner',
+          relatedStores: ['staticContent'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeCampaignConfirmationData,
+          name: 'subscribeCampaignConfirmation',
+          relatedStores: ['staticContent'],
           isStartImmediately: true,
         });
 

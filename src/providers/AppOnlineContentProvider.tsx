@@ -1,10 +1,8 @@
-import React, { useCallback, useContext, useEffect } from 'react';
-import axios from 'axios';
+import React, { useCallback, useContext } from 'react';
 import { deeplinks } from 'utils/browser';
 import { Linking } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useGroupYieldPosition } from 'hooks/earning';
 import {
   AppBannerData,
   AppBasicInfoData,
@@ -16,8 +14,6 @@ import {
 } from 'types/staticContent';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
 import { RootRouteProps } from 'routes/index';
-import { STATIC_DATA_DOMAIN } from 'constants/index';
-import { getStaticContentByDevMode } from 'utils/storage';
 import { useHandleAppPopupMap } from 'hooks/static-content/useHandleAppPopupMap';
 import { useHandleAppBannerMap } from 'hooks/static-content/useHandleAppBannerMap';
 import { useHandleAppConfirmationMap } from 'hooks/static-content/useHandleAppConfirmationMap';
@@ -101,19 +97,12 @@ const getAppTransformRouteName = (currentRoute?: string) => {
   }
 };
 
-const dataByDevModeStatus = getStaticContentByDevMode();
-
 export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentContextProviderProps) => {
   const globalAppModalContext = useContext(GlobalModalContext);
-  const yieldPositionList = useGroupYieldPosition();
 
   const { popupHistoryMap, bannerHistoryMap, confirmationHistoryMap } = useSelector(
     (state: RootState) => state.staticContent,
   );
-
-  const getAppContentData = useCallback(async (dataType: OnlineContentDataType) => {
-    return await axios.get(`${STATIC_DATA_DOMAIN}/app-${dataType}s/${dataByDevModeStatus}.json`);
-  }, []);
 
   //check popup exist time
   const checkPopupExistTime = useCallback((info: AppBasicInfoData) => {
@@ -206,34 +195,9 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
     [],
   );
 
-  const { setAppPopupData, updatePopupHistoryMap, appPopupMap } = useHandleAppPopupMap(
-    yieldPositionList,
-    checkPopupExistTime,
-  );
-
-  const { appBannerMap, setAppBannerData, updateBannerHistoryMap } = useHandleAppBannerMap(
-    yieldPositionList,
-    checkPopupExistTime,
-  );
-  const { appConfirmationMap, setAppConfirmationData, updateConfirmationHistoryMap } =
-    useHandleAppConfirmationMap(yieldPositionList);
-
-  useEffect(() => {
-    const popupPromise = getAppContentData('popup');
-    const bannerPromise = getAppContentData('banner');
-    const confirmationPromise = getAppContentData('confirmation');
-
-    Promise.all([popupPromise, bannerPromise, confirmationPromise])
-      .then(values => {
-        setAppPopupData(values[0].data);
-        setAppBannerData(values[1].data);
-        setAppConfirmationData(values[2].data);
-      })
-      .catch(e => {
-        console.error(e);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { updatePopupHistoryMap, appPopupMap } = useHandleAppPopupMap();
+  const { appBannerMap, updateBannerHistoryMap } = useHandleAppBannerMap();
+  const { appConfirmationMap, updateConfirmationHistoryMap } = useHandleAppConfirmationMap();
 
   const handleButtonPress = useCallback(
     (id: string) => {
