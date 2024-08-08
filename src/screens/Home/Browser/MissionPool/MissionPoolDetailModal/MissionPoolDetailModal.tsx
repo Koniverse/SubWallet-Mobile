@@ -14,8 +14,8 @@ import { useMissionPools } from 'hooks/useMissionPools';
 import { MissionPoolFooter } from 'components/MissionPoolHorizontalItem/MissionPoolFooter';
 import i18n from 'utils/i18n/i18n';
 import LogoGroup from 'components/common/LogoGroup';
-import { AppConfirmationData } from 'types/staticContent';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
+import { AppConfirmationData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 
 interface Props {
   modalVisible: boolean;

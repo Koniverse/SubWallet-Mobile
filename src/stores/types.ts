@@ -48,8 +48,13 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { MissionInfo } from 'types/missionPool';
 import { DAPPCategory, DAppInfo } from 'types/browser';
 import { RootRouteProps } from 'routes/index';
-import { AppBannerData, AppConfirmationData, AppPopupData, PopupHistoryData } from 'types/staticContent';
+import { MktCampaignHistoryData } from 'types/staticContent';
 import { SwapPair } from '@subwallet/extension-base/types/swap';
+import {
+  AppBannerData,
+  AppConfirmationData,
+  AppPopupData,
+} from '@subwallet/extension-base/services/mkt-campaign-service/types';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -170,9 +175,9 @@ export interface AppOnlineContent {
   appPopupData: AppPopupData[];
   appBannerData: AppBannerData[];
   appConfirmationData: AppConfirmationData[];
-  popupHistoryMap: Record<string, PopupHistoryData>;
-  bannerHistoryMap: Record<string, PopupHistoryData>;
-  confirmationHistoryMap: Record<string, PopupHistoryData>;
+  popupHistoryMap: Record<string, MktCampaignHistoryData>;
+  bannerHistoryMap: Record<string, MktCampaignHistoryData>;
+  confirmationHistoryMap: Record<string, MktCampaignHistoryData>;
 }
 
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {

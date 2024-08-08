@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { AppConfirmationData, PopupHistoryData } from 'types/staticContent';
+import { MktCampaignHistoryData } from 'types/staticContent';
 import { updateConfirmationHistoryData } from 'stores/base/StaticContent';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { AppConfirmationData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 
 export const useHandleAppConfirmationMap = () => {
   const dispatch = useDispatch();
   const { appConfirmationData, confirmationHistoryMap } = useSelector((state: RootState) => state.staticContent);
-  const bannerHistoryMapRef = useRef<Record<string, PopupHistoryData>>(confirmationHistoryMap);
+  const bannerHistoryMapRef = useRef<Record<string, MktCampaignHistoryData>>(confirmationHistoryMap);
 
   useEffect(() => {
     bannerHistoryMapRef.current = confirmationHistoryMap;
   }, [confirmationHistoryMap]);
 
   useEffect(() => {
-    const newData: Record<string, PopupHistoryData> =
+    const newData: Record<string, MktCampaignHistoryData> =
       appConfirmationData && appConfirmationData.length
         ? appConfirmationData.reduce(
             (o, key) =>
@@ -27,16 +28,7 @@ export const useHandleAppConfirmationMap = () => {
             {},
           )
         : {};
-    const result: Record<string, PopupHistoryData> = {};
-
-    Object.keys(newData).forEach(key => {
-      if (!bannerHistoryMapRef.current[key]) {
-        result[key] = newData[key];
-      } else {
-        result[key] = bannerHistoryMapRef.current[key];
-      }
-    });
-
+    const result: Record<string, MktCampaignHistoryData> = { ...newData, ...bannerHistoryMapRef.current };
     dispatch(updateConfirmationHistoryData(result));
   }, [appConfirmationData, dispatch]);
 

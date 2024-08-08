@@ -5,11 +5,11 @@ import { X } from 'phosphor-react-native';
 import React, { useCallback, useContext, useMemo } from 'react';
 import FastImage from 'react-native-fast-image';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { AppBannerData } from 'types/staticContent';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { mmkvStore } from 'utils/storage';
 import BannerSlider, { BannerSliderItem } from 'components/common/BannerSlider';
 import { GlobalInstructionModalContext } from 'providers/GlobalInstructionModalContext';
+import { AppBannerData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 
 interface Props {
   banners: AppBannerData[];

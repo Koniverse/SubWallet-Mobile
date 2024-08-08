@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { AppBannerData, PopupHistoryData } from 'types/staticContent';
+import { MktCampaignHistoryData } from 'types/staticContent';
 import { updateBannerHistoryData } from 'stores/base/StaticContent';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { AppBannerData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 
 export const useHandleAppBannerMap = () => {
   const dispatch = useDispatch();
   const { appBannerData, bannerHistoryMap } = useSelector((state: RootState) => state.staticContent);
-  const bannerHistoryMapRef = useRef<Record<string, PopupHistoryData>>(bannerHistoryMap);
+  const bannerHistoryMapRef = useRef<Record<string, MktCampaignHistoryData>>(bannerHistoryMap);
 
   useEffect(() => {
     bannerHistoryMapRef.current = bannerHistoryMap;
   }, [bannerHistoryMap]);
 
   useEffect(() => {
-    const newData: Record<string, PopupHistoryData> =
+    const newData: Record<string, MktCampaignHistoryData> =
       appBannerData && appBannerData.length
         ? appBannerData.reduce(
             (o, key) =>
@@ -27,22 +28,13 @@ export const useHandleAppBannerMap = () => {
             {},
           )
         : {};
-    const result: Record<string, PopupHistoryData> = {};
-
-    Object.keys(newData).forEach(key => {
-      if (!bannerHistoryMapRef.current[key]) {
-        result[key] = newData[key];
-      } else {
-        result[key] = bannerHistoryMapRef.current[key];
-      }
-    });
-
+    const result: Record<string, MktCampaignHistoryData> = { ...newData, ...bannerHistoryMapRef.current };
     dispatch(updateBannerHistoryData(result));
   }, [appBannerData, dispatch]);
 
   const updateBannerHistoryMap = useCallback(
     (ids: string[]) => {
-      const result: Record<string, PopupHistoryData> = {};
+      const result: Record<string, MktCampaignHistoryData> = {};
       for (const key of ids) {
         result[key] = { lastShowTime: Date.now(), showTimes: bannerHistoryMap[key].showTimes + 1 };
       }

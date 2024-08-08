@@ -32,7 +32,7 @@ import { RootState } from 'stores/index';
 import { tokenItem, tokenItemMarginBottom } from 'constants/itemHeight';
 import { reloadCron } from 'messaging/index';
 import { BannerGenerator } from 'components/common/BannerGenerator';
-import { AppBannerData } from 'types/staticContent';
+import { AppBannerData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 
 interface Props {
   layoutHeader: React.ReactElement;

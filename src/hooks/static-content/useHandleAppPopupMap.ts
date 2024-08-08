@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { AppPopupData, PopupHistoryData } from 'types/staticContent';
+import { MktCampaignHistoryData } from 'types/staticContent';
 import { updatePopupHistoryData } from 'stores/base/StaticContent';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { AppPopupData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 
 export const useHandleAppPopupMap = () => {
   const { appPopupData, popupHistoryMap } = useSelector((state: RootState) => state.staticContent);
-  const popupHistoryMapRef = useRef<Record<string, PopupHistoryData>>(popupHistoryMap);
+  const popupHistoryMapRef = useRef<Record<string, MktCampaignHistoryData>>(popupHistoryMap);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -14,7 +15,7 @@ export const useHandleAppPopupMap = () => {
   }, [popupHistoryMap]);
 
   useEffect(() => {
-    const newData: Record<string, PopupHistoryData> = appPopupData.reduce(
+    const newData: Record<string, MktCampaignHistoryData> = appPopupData.reduce(
       (o, key) =>
         Object.assign(o, {
           [`${key.position}-${key.id}`]: {
@@ -24,15 +25,7 @@ export const useHandleAppPopupMap = () => {
         }),
       {},
     );
-    const result: Record<string, PopupHistoryData> = {};
-
-    Object.keys(newData).forEach(key => {
-      if (!popupHistoryMapRef.current[key]) {
-        result[key] = newData[key];
-      } else {
-        result[key] = popupHistoryMapRef.current[key];
-      }
-    });
+    const result: Record<string, MktCampaignHistoryData> = { ...newData, ...popupHistoryMapRef.current };
     dispatch(updatePopupHistoryData(result));
   }, [appPopupData, dispatch]);
 

@@ -3,20 +3,17 @@ import { deeplinks } from 'utils/browser';
 import { Linking } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import {
-  AppBannerData,
-  AppBasicInfoData,
-  AppConfirmationData,
-  AppPopupData,
-  OnlineContentDataType,
-  PopupFrequency,
-  PopupHistoryData,
-} from 'types/staticContent';
+import { AppBasicInfoData, OnlineContentDataType, PopupFrequency, MktCampaignHistoryData } from 'types/staticContent';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
 import { RootRouteProps } from 'routes/index';
 import { useHandleAppPopupMap } from 'hooks/static-content/useHandleAppPopupMap';
 import { useHandleAppBannerMap } from 'hooks/static-content/useHandleAppBannerMap';
 import { useHandleAppConfirmationMap } from 'hooks/static-content/useHandleAppConfirmationMap';
+import {
+  AppConfirmationData,
+  AppPopupData,
+  AppBannerData,
+} from '@subwallet/extension-base/services/mkt-campaign-service/types';
 
 interface AppOnlineContentContextProviderProps {
   children?: React.ReactElement;
@@ -26,9 +23,9 @@ interface AppOnlineContentContextType {
   appPopupMap: Record<string, AppPopupData[]>;
   appBannerMap: Record<string, AppBannerData[]>;
   appConfirmationMap: Record<string, AppConfirmationData[]>;
-  popupHistoryMap: Record<string, PopupHistoryData>;
-  bannerHistoryMap: Record<string, PopupHistoryData>;
-  confirmationHistoryMap: Record<string, PopupHistoryData>;
+  popupHistoryMap: Record<string, MktCampaignHistoryData>;
+  bannerHistoryMap: Record<string, MktCampaignHistoryData>;
+  confirmationHistoryMap: Record<string, MktCampaignHistoryData>;
   updatePopupHistoryMap: (id: string) => void;
   updateBannerHistoryMap: (ids: string[]) => void;
   updateConfirmationHistoryMap: (id: string) => void;
@@ -249,13 +246,13 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
           globalAppModalContext.setGlobalModal({
             type: 'popup',
             visible: true,
-            title: filteredPopupList[0].info.name,
+            title: filteredPopupList[0].info?.name,
             message: filteredPopupList[0].content || '',
             buttons: filteredPopupList[0].buttons,
             onPressBtn: url => {
               handleButtonPress(`${filteredPopupList[0].position}-${filteredPopupList[0].id}`)('popup', url);
             },
-            isChangeLogPopup: filteredPopupList[0].info.is_changelog_popup,
+            isChangeLogPopup: filteredPopupList[0].info?.is_changelog_popup,
           });
       }
     },
