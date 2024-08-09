@@ -11,7 +11,7 @@ import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import { backupStorageData, mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
+import { backupStorageData, getDevMode, mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
 import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
 
 const WEB_SERVER_PORT = 9135;
@@ -308,7 +308,8 @@ class WebRunnerHandler {
         this.server = new StaticServer(WEB_SERVER_PORT, ANDROID_BUNDLE_PATH, { localOnly: true });
       }
     } else {
-      let target = '/Web.bundle';
+      const isDevMode = getDevMode();
+      let target = isDevMode ? '/DevModeWeb.bundle' : '/Web.bundle';
       if (iosVersion < 16.4 || needFallBack) {
         target = '/OldWeb.bundle';
       }
