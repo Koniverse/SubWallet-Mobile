@@ -17,14 +17,13 @@ import { QrSignerContext } from 'providers/QrSignerContext';
 import { SigningContext } from 'providers/SigningContext';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { RESULTS } from 'react-native-permissions';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { BaseSignProps, SigData } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
-import { requestCameraPermission } from 'utils/permission/camera';
 import { resolveExternalRequest } from 'messaging/index';
 import { IGNORE_QR_SIGNER } from '@subwallet/extension-base/constants';
+import useCheckCamera from 'hooks/common/useCheckCamera';
 
 interface Props extends BaseSignProps {
   network: NetworkJson;
@@ -107,7 +106,7 @@ const QrRequest = ({
 
   const { errors, isVisible, isSubmitting, isLoading } = signingState;
   const { isEthereum, isQrHashed, qrAddress, qrId, qrPayload } = qrState;
-
+  const checkCamera = useCheckCamera();
   const cancelRequest = useCallback(async () => {
     setIsVisible(false);
     setIsCanceling(true);
@@ -119,17 +118,16 @@ const QrRequest = ({
     setIsCanceling(false);
   }, [handlerReject, qrId, setIsVisible]);
 
-  const openScanner = useCallback(async () => {
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
+  const onPressSubmit = useCallback(async () => {
+    const openScannerScreen = () => {
       clearError();
       setIsVisible(false);
       setTimeout(() => {
         setIsScanning(true);
       }, HIDE_MODAL_DURATION);
-    }
-  }, [clearError, setIsVisible]);
+    };
+    checkCamera(undefined, openScannerScreen)();
+  }, [checkCamera, clearError, setIsVisible]);
 
   const closeScanner = useCallback(() => {
     setIsScanning(false);
@@ -228,7 +226,7 @@ const QrRequest = ({
             <SubmitButton
               title={i18n.common.scanQr}
               style={getButtonStyle(true)}
-              onPress={openScanner}
+              onPress={onPressSubmit}
               disabled={isCanceling}
             />
           </View>

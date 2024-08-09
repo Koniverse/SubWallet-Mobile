@@ -25,7 +25,17 @@ const showPermissionAlert = (onPressCancel?: () => void) => {
   ]);
 };
 
-export const requestCameraPermission = async (onPressCancel?: () => void) => {
+const recheckCameraPermissionInIos = (onPressCancel?: () => void, onPressAllow?: () => void) => {
+  request(getCameraPermission()).then(_result => {
+    if (_result === RESULTS.BLOCKED) {
+      onPressCancel && onPressCancel();
+    } else if (_result === RESULTS.GRANTED) {
+      onPressAllow && onPressAllow();
+    }
+  });
+};
+
+export const requestCameraPermission = async (onPressCancel?: () => void, onPressAllow?: () => void) => {
   try {
     AutoLockState.isPreventAutoLock = true;
     const result =
@@ -38,7 +48,7 @@ export const requestCameraPermission = async (onPressCancel?: () => void) => {
         break;
       case RESULTS.DENIED:
         Platform.OS === 'ios'
-          ? request(getCameraPermission()).then(() => onPressCancel && onPressCancel())
+          ? recheckCameraPermissionInIos(onPressCancel, onPressAllow)
           : onPressCancel && onPressCancel();
         // Images: The permission has not been requested / is denied but requestable
         break;

@@ -7,8 +7,6 @@ import { Scan } from 'phosphor-react-native';
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressScanner';
-import { requestCameraPermission } from 'utils/permission/camera';
-import { RESULTS } from 'react-native-permissions';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import { addConnection } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
@@ -16,6 +14,7 @@ import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { useToast } from 'react-native-toast-notifications';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import useCheckCamera from 'hooks/common/useCheckCamera';
 
 interface Props extends InputProps {
   isValidValue?: boolean;
@@ -46,16 +45,14 @@ const Component = (
   const [error, setError] = useState<string | undefined>(undefined);
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
+  const checkCamera = useCheckCamera();
 
   useEffect(() => setAdjustResize(), []);
 
   const onPressQrButton = useCallback(async () => {
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
-      setQrModalVisible(true);
-    }
-  }, [setQrModalVisible]);
+    const openScannerScreen = () => setQrModalVisible(true);
+    checkCamera(undefined, openScannerScreen)();
+  }, [checkCamera, setQrModalVisible]);
 
   const RightPart = useMemo(() => {
     return (

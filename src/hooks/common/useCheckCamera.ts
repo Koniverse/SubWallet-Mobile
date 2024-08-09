@@ -4,12 +4,12 @@ import { requestCameraPermission } from 'utils/permission/camera';
 
 type VoidFunction = () => void;
 
-const useCheckCamera = (): ((onClick: VoidFunction) => VoidFunction) => {
-  return useCallback((onClick: VoidFunction) => {
+const useCheckCamera = (): ((onPressCancel?: VoidFunction, onPressAllow?: VoidFunction) => VoidFunction) => {
+  return useCallback((onPressCancel?: VoidFunction, onPressAllow?: VoidFunction) => {
     return () => {
-      requestCameraPermission().then(result => {
+      requestCameraPermission(onPressCancel, onPressAllow).then(result => {
         if (result === RESULTS.GRANTED) {
-          onClick();
+          onPressAllow && onPressAllow();
         }
       });
     };

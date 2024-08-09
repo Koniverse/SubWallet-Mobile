@@ -1,9 +1,7 @@
 import { QrCode } from 'phosphor-react-native';
 import React, { useCallback, useState } from 'react';
 import { Keyboard, Platform, StyleProp, View } from 'react-native';
-import { RESULTS } from 'react-native-permissions';
 import { SpaceStyle } from 'styles/space';
-import { requestCameraPermission } from 'utils/permission/camera';
 import { Button, Icon } from 'components/design-system-ui';
 import AccountSelectField from 'components/common/Account/AccountSelectField';
 import { useNavigation } from '@react-navigation/native';
@@ -17,6 +15,7 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { DisabledStyle } from 'styles/sharedStyles';
 import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
+import useCheckCamera from 'hooks/common/useCheckCamera';
 
 export interface HeaderProps {
   rightComponent?: JSX.Element;
@@ -39,13 +38,14 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
   const drawerNavigation = useNavigation<DrawerNavigationProp<RootStackParamList>>();
   const navigationRoutes = navigation.getState().routes;
   const nearestPathName = navigationRoutes[navigationRoutes.length - 1].name;
+  const checkCamera = useCheckCamera();
   const onPressQrButton = useCallback(async () => {
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
+    const openScannerScreen = () => {
       setIsScanning(true);
-    }
-  }, []);
+    };
+
+    checkCamera(undefined, openScannerScreen)();
+  }, [checkCamera]);
 
   const onScanAddress = useCallback(
     (data: string) => {

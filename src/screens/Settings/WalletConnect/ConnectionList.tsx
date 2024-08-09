@@ -19,6 +19,7 @@ import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
+import useCheckCamera from 'hooks/common/useCheckCamera';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
 
 const searchFunc = (items: SessionTypes.Struct[], searchString: string) => {
@@ -51,6 +52,7 @@ export const ConnectionList = ({
   const navigation = useNavigation<RootNavigationProps>();
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const checkCamera = useCheckCamera();
   const { numberOfConfirmations } = useConfirmationsInfo();
 
   useEffect(() => {
@@ -129,6 +131,11 @@ export const ConnectionList = ({
     }
   };
 
+  const onPressNewConnection = useCallback(() => {
+    const openScannerScreen = () => setIsScanning(true);
+    checkCamera(undefined, openScannerScreen)();
+  }, [checkCamera]);
+
   return (
     <>
       {(items?.length || isDelete) && (
@@ -144,13 +151,7 @@ export const ConnectionList = ({
           afterListItem={
             <Button
               style={{ marginHorizontal: 16, marginBottom: 16 }}
-              onPress={async () => {
-                const result = await requestCameraPermission();
-
-                if (result === RESULTS.GRANTED) {
-                  setIsScanning(true);
-                }
-              }}
+              onPress={onPressNewConnection}
               icon={<SVGImages.WalletConnect width={24} height={24} color={theme.colorWhite} />}>
               {i18n.buttonTitles.newConnection}
             </Button>
