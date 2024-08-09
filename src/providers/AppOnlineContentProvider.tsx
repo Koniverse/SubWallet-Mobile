@@ -227,19 +227,21 @@ export const AppOnlineContentContextProvider = ({ children }: AppOnlineContentCo
       const currentTransformRoute = getAppTransformRouteName(currentDetailRoute?.name) || '';
       const currentPopupList = appPopupMap[currentTransformRoute];
       if (currentPopupList && currentPopupList.length) {
-        const filteredPopupList = currentPopupList.filter(item => {
-          const popupHistory = popupHistoryMap[`${item.position}-${item.id}`];
-          if (popupHistory) {
-            return checkPopupVisibleByFrequency(
-              item.repeat,
-              popupHistory.lastShowTime,
-              popupHistory.showTimes,
-              item.repeat_every_x_days,
-            );
-          } else {
-            return false;
-          }
-        });
+        const filteredPopupList = currentPopupList
+          .filter(item => {
+            const popupHistory = popupHistoryMap[`${item.position}-${item.id}`];
+            if (popupHistory) {
+              return checkPopupVisibleByFrequency(
+                item.repeat,
+                popupHistory.lastShowTime,
+                popupHistory.showTimes,
+                item.repeat_every_x_days,
+              );
+            } else {
+              return false;
+            }
+          })
+          .sort((a, b) => a.priority - b.priority);
 
         filteredPopupList &&
           filteredPopupList.length &&
