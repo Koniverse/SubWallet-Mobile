@@ -280,10 +280,11 @@ class WebRunnerHandler {
   }
 
   constructor() {
+    const isDevMode = getDevMode();
     if (Platform.OS === 'android') {
       if (completeBackUpData) {
         const DOCUMENT_DIRECTORY_PATH = RNFS.DocumentDirectoryPath;
-        const BUNDLE_PATH = 'Web.bundle';
+        const BUNDLE_PATH = isDevMode ? 'DevModeWeb.bundle' : 'Web.bundle';
         const ANDROID_BUNDLE_PATH = `${DOCUMENT_DIRECTORY_PATH}/${BUNDLE_PATH}`;
         (async () => {
           const hasCopiedAssets = await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`);
@@ -308,7 +309,6 @@ class WebRunnerHandler {
         this.server = new StaticServer(WEB_SERVER_PORT, ANDROID_BUNDLE_PATH, { localOnly: true });
       }
     } else {
-      const isDevMode = getDevMode();
       let target = isDevMode ? '/DevModeWeb.bundle' : '/Web.bundle';
       if (iosVersion < 16.4 || needFallBack) {
         target = '/OldWeb.bundle';
