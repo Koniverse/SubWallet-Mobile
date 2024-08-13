@@ -1,5 +1,5 @@
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { StyleProp, View } from 'react-native';
 import { PhosphorIcon } from 'utils/campaign';
 import { convertHexColorToRGBA } from 'utils/color';
@@ -44,6 +44,24 @@ const tagStyles: StyleProp<any> = {
 const AlertBoxBase: React.FC<Props> = (props: Props) => {
   const { description, title, iconColor, icon, titleColor } = props;
 
+  const getTitleClassesStyle = useCallback((): StyleProp<any> => {
+    return {
+      title: {
+        color: titleColor,
+        fontSize: 16,
+        lineHeight: 24,
+        fontWeight: '500',
+      },
+
+      description: {
+        color: 'rgba(255, 255, 255, 0.45)',
+        fontSize: 14,
+        lineHeight: 22,
+        fontWeight: '500',
+      },
+    };
+  }, [titleColor]);
+
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -64,7 +82,7 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
         <RenderHtml
           contentWidth={deviceWidth}
           systemFonts={['PlusJakartaSans-Medium']}
-          classesStyles={classesStyles}
+          classesStyles={getTitleClassesStyle()}
           tagsStyles={tagStyles}
           source={{ html: `<span style="color: ${titleColor || 'white'}" class="title">${title}</span>` }}
           defaultTextProps={{ allowFontScaling: false }}

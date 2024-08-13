@@ -47,15 +47,15 @@ const phraseAreaStyle: StyleProp<any> = {
 };
 
 const phraseBlockStyle: StyleProp<any> = {
-  paddingLeft: 14,
-  paddingRight: 14,
-  flexDirection: 'row',
-  justifyContent: 'center',
-  flexWrap: 'wrap',
   marginBottom: 24,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: 8,
 };
 
 const seedWordStyle = {
+  flex: 1,
   margin: 2,
 };
 
@@ -63,16 +63,36 @@ const isCorrectWord = (selectedWords: SelectedWordType[], seed: string) => {
   return selectedWords.map(item => item.word).join(' ') === seed;
 };
 
+const convertToWordRows = (seedPhrase: string[]): Array<string[]> => {
+  const result: Array<string[]> = [];
+  let count = 0;
+  let temp: Array<string> = [];
+
+  seedPhrase.forEach((item, index) => {
+    temp.push(item);
+    count++;
+
+    if (count === 3 || index === seedPhrase.length - 1) {
+      result.push(temp);
+      count = 0;
+      temp = [];
+    }
+  });
+
+  return result;
+};
+
 export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: Props) => {
   const [selectedWords, setSelectedWords] = useState<SelectedWordType[]>([]);
-  const [shuffleWords, setShuffleWords] = useState<string[] | null>(null);
+  const [shuffleWordRows, setShuffleWordRows] = useState<string[][] | null>(null);
   const seedWords: string[] = seed.split(' ');
   const theme = useSubWalletTheme().swThemes;
 
   useEffect((): void => {
     const words = seed.split(' ');
     shuffleArray(words);
-    setShuffleWords(words);
+    const _shuffleWordRows = convertToWordRows(words);
+    setShuffleWordRows(_shuffleWordRows);
   }, [seed]);
 
   const onSelectWord = (word: string, wordKey: string) => {
@@ -91,8 +111,8 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
     setSelectedWords(newSelectedWord);
   };
 
-  const renderSeedWord = (word: string, index: number) => {
-    const wordKey = getWordKey(word, index);
+  const renderSeedWord = (word: string, index: number, rowIndex: number) => {
+    const wordKey = getWordKey(word, index, rowIndex);
 
     return (
       <SeedWord
@@ -123,7 +143,24 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
           originWords={seedWords}
           style={phraseAreaStyle}
         />
-        <View style={phraseBlockStyle}>{shuffleWords && shuffleWords.map(renderSeedWord)}</View>
+        <View style={phraseBlockStyle}>
+          {shuffleWordRows &&
+            shuffleWordRows.map((arr, rowIndex) => {
+              return (
+                <View
+                  key={rowIndex}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: theme.sizeXS,
+                  }}>
+                  {arr.map((i, index) => renderSeedWord(i, index, rowIndex))}
+                </View>
+              );
+            })}
+        </View>
       </ScrollView>
       <View style={footerAreaStyle}>
         <Button

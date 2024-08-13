@@ -40,7 +40,7 @@ const ContainerStyle: StyleProp<ViewStyle> = {
 const ImageStyle: StyleProp<any> = {
   width: '100%',
   height: '100%',
-  resizeMode: 'contain',
+  resizeMode: 'cover',
 };
 
 const VideoStyle: StyleProp<any> = {

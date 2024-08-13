@@ -12,7 +12,7 @@ import i18n from 'utils/i18n/i18n';
 export default function useChainChecker(isShowToast = true) {
   const { chainInfoMap, chainStateMap, chainStatusMap } = useSelector((root: RootState) => root.chainStore);
   const connectingChain = useRef<string | null>(null);
-  const { show } = useToast();
+  const { show, hideAll } = useToast();
 
   useEffect(() => {
     if (
@@ -20,10 +20,13 @@ export default function useChainChecker(isShowToast = true) {
       chainStatusMap[connectingChain.current]?.connectionStatus === _ChainConnectionStatus.CONNECTED
     ) {
       const chainName = chainInfoMap[connectingChain.current].name;
-      isShowToast && show(i18n.formatString(i18n.common.chainConnected, chainName) as string, { type: 'success' });
+      if (isShowToast) {
+        hideAll();
+        show(i18n.formatString(i18n.common.chainConnected, chainName) as string, { type: 'success' });
+      }
       connectingChain.current = null;
     }
-  }, [chainInfoMap, chainStateMap, chainStatusMap, isShowToast, show]);
+  }, [chainInfoMap, chainStateMap, chainStatusMap, hideAll, isShowToast, show]);
 
   const checkChainConnected = useCallback(
     (chain: string) => {

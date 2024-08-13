@@ -82,8 +82,8 @@ export const MissionPoolDetailModal = ({
         <ScrollView style={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
           <ImageBackground style={styles.backdropImgBlurView} source={{ uri: data.backdrop_image }} blurRadius={30} />
           <LinearGradient
-            locations={[0, 0.02, 0.09]}
-            colors={['#0C0C0C', 'transparent', '#0C0C0C']}
+            locations={[0, 0.01, 0.04, 0.07]}
+            colors={['#0C0C0C', 'transparent', 'rgba(12, 12, 12, 0.7)', '#0C0C0C']}
             style={styles.linerGradientStyle}
           />
           <View style={styles.contentContainer}>

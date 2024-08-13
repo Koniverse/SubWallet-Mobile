@@ -1,9 +1,10 @@
-import { StyleProp, TouchableOpacity, TouchableOpacityProps } from 'react-native';
-import React from 'react';
+import { StyleProp, TextStyle, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import React, { useMemo } from 'react';
 import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium } from 'styles/sharedStyles';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface SeedWordProps extends TouchableOpacityProps {
   title: string;
@@ -13,10 +14,11 @@ interface SeedWordProps extends TouchableOpacityProps {
   prefixText?: string;
   isActivated?: boolean;
   isError?: boolean;
+  isHidden?: boolean;
 }
 
 function getWrapperStyle(seedWordProps: SeedWordProps): StyleProp<any> {
-  const { prefixText, backgroundColor, style, isActivated, isError } = seedWordProps;
+  const { prefixText, backgroundColor, style, isActivated, isError, isHidden } = seedWordProps;
   const styleMap: StyleProp<any> = {
     position: 'relative',
     height: 40,
@@ -40,6 +42,12 @@ function getWrapperStyle(seedWordProps: SeedWordProps): StyleProp<any> {
     styleMap.borderColor = ColorMap.danger;
   }
 
+  if (isHidden) {
+    styleMap.backgroundColor = 'transparent';
+    styleMap.borderStyle = 'none';
+    styleMap.borderColor = 'transparent';
+  }
+
   if (!prefixText) {
     styleMap.justifyContent = 'center';
   }
@@ -51,14 +59,8 @@ function getWrapperStyle(seedWordProps: SeedWordProps): StyleProp<any> {
   return styleMap;
 }
 
-const textStyle = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-};
-
 function getPrefixTextStyle(isActivated?: boolean): StyleProp<any> {
   return {
-    ...textStyle,
     color: ColorMap.disabled,
     marginRight: 8,
     opacity: isActivated ? 0 : 1,
@@ -67,7 +69,6 @@ function getPrefixTextStyle(isActivated?: boolean): StyleProp<any> {
 
 function getTitleStyle(color: string = ColorMap.light, isActivated?: boolean) {
   return {
-    ...textStyle,
     color,
     opacity: isActivated ? 0 : 1,
   };
@@ -75,6 +76,15 @@ function getTitleStyle(color: string = ColorMap.light, isActivated?: boolean) {
 
 export const SeedWord = (seedWordProps: SeedWordProps) => {
   const { color, prefixText, title, isActivated } = seedWordProps;
+  const theme = useSubWalletTheme().swThemes;
+  const textStyle = useMemo(
+    (): TextStyle => ({
+      fontSize: theme.fontSizeSM,
+      lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+      ...FontMedium,
+    }),
+    [theme.fontSizeSM, theme.lineHeightSM],
+  );
 
   return (
     <TouchableOpacity
@@ -82,8 +92,8 @@ export const SeedWord = (seedWordProps: SeedWordProps) => {
       activeOpacity={BUTTON_ACTIVE_OPACITY}
       {...seedWordProps}
       style={getWrapperStyle(seedWordProps)}>
-      {!!prefixText && <Text style={getPrefixTextStyle(isActivated)}>{prefixText}</Text>}
-      <Text style={getTitleStyle(color, isActivated)}>{title}</Text>
+      {!!prefixText && <Text style={[textStyle, getPrefixTextStyle(isActivated)]}>{prefixText}</Text>}
+      <Text style={[textStyle, getTitleStyle(color, isActivated)]}>{title}</Text>
     </TouchableOpacity>
   );
 };

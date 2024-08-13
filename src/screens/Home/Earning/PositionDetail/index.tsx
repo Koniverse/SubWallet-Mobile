@@ -262,6 +262,7 @@ const Component: React.FC<Props> = (props: Props) => {
               disabled={isChainUnsupported}
               block={true}
               type="secondary"
+              externalTextStyle={{ flex: 1 }}
               icon={
                 <Icon
                   phosphorIcon={PlusCircle}

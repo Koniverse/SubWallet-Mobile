@@ -4,6 +4,7 @@ import { StyleProp, Text, TouchableOpacity, View, ViewStyle } from 'react-native
 import ImagePreview from 'components/ImagePreview';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { deviceWidth } from 'constants/index';
 
 interface Props {
   nftItem: _NftItem;
@@ -13,7 +14,7 @@ interface Props {
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   width: '50%',
-  height: 220,
+  height: (deviceWidth - 32) / 2 + 32,
   paddingHorizontal: 8,
 };
 
@@ -34,9 +35,8 @@ const InfoStyle: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
   width: '100%',
-  marginTop: 5,
-  paddingBottom: 16,
   paddingHorizontal: 12,
+  flex: 1,
 };
 
 const NameStyle: StyleProp<any> = {
