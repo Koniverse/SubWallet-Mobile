@@ -15,6 +15,7 @@ import { ValidationInfo } from 'screens/ImportNetwork';
 import { isUrl } from 'utils/index';
 import { _CHAIN_VALIDATION_ERROR } from '@subwallet/extension-base/services/chain-service/handler/types';
 import { Warning } from 'components/Warning';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 
 interface Props {
   request: ConfirmationDefinitions['addNetworkRequest'][0];
@@ -37,7 +38,6 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
   const [isValidating, setIsValidating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const theme = useSubWalletTheme().swThemes;
-
   const styles = useMemo(() => createStyle(theme), [theme]);
 
   const [loading, setLoading] = useState(false);
@@ -112,6 +112,8 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     providerValidateFunc(chainEditInfo.providers[chainEditInfo.currentProvider]);
   }, [chainEditInfo.currentProvider, chainEditInfo.providers, providerValidateFunc]);
+
+  useHandleInternetConnectionForConfirmation(onCancel);
 
   const providerSuffix = useCallback(() => {
     if (!isShowConnectionStatus) {

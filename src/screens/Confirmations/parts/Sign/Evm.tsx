@@ -23,6 +23,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { DeviceEventEmitter, Platform } from 'react-native';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { useToast } from 'react-native-toast-notifications';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 
 interface Props {
   id: string;
@@ -176,6 +177,8 @@ export const EvmSignArea = (props: Props) => {
       clearInterval(timer);
     };
   }, [txExpirationTime]);
+
+  useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
     <ConfirmationFooter>

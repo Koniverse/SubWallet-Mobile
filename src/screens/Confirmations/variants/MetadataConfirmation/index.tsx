@@ -10,6 +10,7 @@ import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 import createStyle from './styles';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 interface Props {
   request: MetadataRequest;
 }
@@ -21,7 +22,6 @@ const handleCancel = async ({ id }: MetadataRequest) => await rejectMetaRequest(
 const MetadataConfirmation: React.FC<Props> = (props: Props) => {
   const { request } = props;
   const { specVersion, tokenDecimals, tokenSymbol, chain } = request.request;
-
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -43,6 +43,7 @@ const MetadataConfirmation: React.FC<Props> = (props: Props) => {
     });
   }, [request]);
 
+  useHandleInternetConnectionForConfirmation(onCancel);
   return (
     <React.Fragment>
       <ConfirmationContent>

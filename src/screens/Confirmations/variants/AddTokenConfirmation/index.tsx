@@ -16,6 +16,7 @@ import Logo from '../../../../components/design-system-ui/logo';
 import createStyle from './styles';
 import { useSelector } from 'react-redux';
 import { toShort } from 'utils/index';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 
 interface Props {
   request: ConfirmationDefinitions['addTokenRequest'][0];
@@ -33,7 +34,6 @@ const AddTokenConfirmation: React.FC<Props> = (props: Props) => {
   const {
     payload: { contractAddress, decimals, originChain, slug, symbol, type },
   } = request;
-
   const theme = useSubWalletTheme().swThemes;
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
@@ -59,6 +59,8 @@ const AddTokenConfirmation: React.FC<Props> = (props: Props) => {
       });
     }, 300);
   }, [request]);
+
+  useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
     <React.Fragment>

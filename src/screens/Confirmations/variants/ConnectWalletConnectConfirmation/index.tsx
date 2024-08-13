@@ -31,6 +31,7 @@ import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AddNetworkWCModal } from 'components/WalletConnect/Network/AddNetworkWCModal';
 import { detectChanInfo } from 'utils/fetchNetworkByChainId';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 
 interface Props {
   request: WalletConnectSessionRequest;
@@ -211,6 +212,8 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
         });
     }
   }, [blockAddNetwork, checkNetworksConnected, isExitedAnotherUnsupportedNamespace]);
+
+  useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
     <React.Fragment>

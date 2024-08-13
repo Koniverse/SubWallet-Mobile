@@ -24,6 +24,7 @@ import createStyle from './styles';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 
 interface Props {
   request: AuthorizeRequest;
@@ -181,6 +182,8 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
 
     return Object.values(filteredSelectMap).every(value => !value);
   }, [accountAuthType, selectedMap]);
+
+  useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
     <React.Fragment>
