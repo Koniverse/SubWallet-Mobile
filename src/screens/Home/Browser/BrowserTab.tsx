@@ -596,7 +596,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
             type={'ghost'}
             size={'xs'}
             style={stylesheet.reloadButton}
-            icon={<Icon phosphorIcon={ArrowClockwise} weight={'bold'} iconColor={theme.colorTextLight3} size={'sm'} />}
+            icon={<Icon phosphorIcon={ArrowClockwise} weight={'bold'} iconColor={theme['gray-5']} size={'sm'} />}
             onPress={() => {
               const { current } = webviewRef;
               current && current.reload && current.reload();

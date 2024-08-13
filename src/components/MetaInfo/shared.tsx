@@ -25,6 +25,10 @@ export function getSchemaColor(schema: SchemeColor, theme: ThemeTypes) {
     return theme.colorWarning;
   }
 
+  if (schema === 'primary') {
+    return theme.colorPrimary;
+  }
+
   return theme.colorTextLight1;
 }
 

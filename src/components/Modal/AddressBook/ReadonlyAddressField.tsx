@@ -42,7 +42,7 @@ export const ReadonlyAddressField = ({ address, label, showAvatar = true, toastR
           size={'xs'}
           type={'ghost'}
           onPress={copyToClipboard}
-          icon={<Icon phosphorIcon={Copy} size={'sm'} iconColor={theme.colorTextLight3} />}
+          icon={<Icon phosphorIcon={Copy} size={'sm'} iconColor={theme['gray-5']} />}
         />
       </View>
     </Field>

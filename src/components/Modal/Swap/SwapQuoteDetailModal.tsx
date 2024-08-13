@@ -129,7 +129,7 @@ export const SwapQuoteDetailModal = ({
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXS }}>
                   <Typography.Text style={{ color: theme.colorTextLight4 }}>{'View quote'}</Typography.Text>
-                  <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'sm'} />
+                  <Icon phosphorIcon={CaretRight} iconColor={theme['gray-5']} size={'sm'} />
                 </View>
               </TouchableOpacity>
 
@@ -187,7 +187,7 @@ export const SwapQuoteDetailModal = ({
                           <Icon
                             phosphorIcon={isViewFeeDetails ? CaretUp : CaretDown}
                             size={'sm'}
-                            iconColor={theme.colorTextLight3}
+                            iconColor={theme['gray-5']}
                           />
                         }
                       />
@@ -224,7 +224,7 @@ export const SwapQuoteDetailModal = ({
                           }}>
                           {_getAssetSymbol(feeAssetInfo)}
                         </Typography.Text>
-                        <Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme.colorTextLight3} />
+                        <Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />
                       </TouchableOpacity>
                     </View>
                   </MetaInfo>

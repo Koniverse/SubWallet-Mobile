@@ -109,7 +109,7 @@ export const SelectLanguageModal = ({ showLanguageModal, setShowLanguageModal }:
         <Typography.Text size={'sm'} style={{ color: theme.colorTextLight3 }}>
           {currentLanguageOpt ? currentLanguageOpt.text : ''}
         </Typography.Text>
-        <Icon phosphorIcon={CaretDown} size={'xxs'} weight={'bold'} iconColor={theme.colorTextLight3} />
+        <Icon phosphorIcon={CaretDown} size={'xxs'} weight={'bold'} iconColor={theme['gray-5']} />
       </TouchableOpacity>
 
       <SwModal

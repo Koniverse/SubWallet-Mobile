@@ -69,12 +69,7 @@ export const TokenGroupsUpperBlock = ({
 
         <View style={{ flexDirection: 'row', alignItems: 'center', height: 40 }}>
           <View style={{ marginRight: 8 }}>
-            <Icon
-              size="md"
-              phosphorIcon={isShowBalance ? Eye : EyeSlash}
-              iconColor={theme.colorTextLight3}
-              weight={'bold'}
-            />
+            <Icon size="md" phosphorIcon={isShowBalance ? Eye : EyeSlash} iconColor={theme['gray-5']} weight={'bold'} />
           </View>
           {isShowBalance && (
             <Number

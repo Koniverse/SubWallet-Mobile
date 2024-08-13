@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useMemo, useRef } from 'react';
 import { Divider, Image, SwFullSizeModal, Tag, Typography } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -60,6 +60,22 @@ export const MissionPoolDetailModal = ({
     }
   };
 
+  const missionPoolStatus = useMemo(() => {
+    if (tagData && tagData.name) {
+      switch (tagData?.name) {
+        case 'Archived':
+          return 'primary';
+        case 'Live':
+          return 'success';
+        case 'Upcoming':
+        default:
+          return 'gray';
+      }
+    } else {
+      return 'gray';
+    }
+  }, [tagData]);
+
   return (
     <SwFullSizeModal isUseModalV2 modalVisible={modalVisible} setVisible={setVisible} modalBaseV2Ref={modalBaseV2Ref}>
       <ContainerWithSubHeader title={data.name as string} style={{ flex: 1 }} onPressBack={() => setVisible(false)}>
@@ -94,7 +110,7 @@ export const MissionPoolDetailModal = ({
               {tagData && (
                 <MetaInfo.Text
                   label={i18n.inputLabel.status}
-                  valueColorSchema={'success'}
+                  valueColorSchema={missionPoolStatus}
                   valueFontWeight={'semibold'}
                   value={tagData?.name || ''}
                 />

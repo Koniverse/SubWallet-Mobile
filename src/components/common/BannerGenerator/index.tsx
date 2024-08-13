@@ -86,7 +86,7 @@ const Banner = ({
   return (
     <>
       <TouchableOpacity
-        style={{ marginTop: isMultipleBanner ? theme.marginSM : 0 }}
+        style={{ marginTop: isMultipleBanner ? theme.marginXS + 2 : 0 }}
         onPress={_onPressBanner}
         activeOpacity={BUTTON_ACTIVE_OPACITY}>
         <FastImage

@@ -22,7 +22,7 @@ export const BrowserSearchItem = ({ title, style, onPress, subtitle }: Props) =>
         <View style={stylesheet.logoWrapper}>
           <Squircle customSize={44} backgroundColor={theme.colorBgSecondary} containerStyle={stylesheet.squircleStyle}>
             <View style={stylesheet.logo}>
-              <Icon phosphorIcon={GlobeHemisphereWest} weight={'fill'} iconColor={theme.colorTextLight3} size={'md'} />
+              <Icon phosphorIcon={GlobeHemisphereWest} weight={'fill'} iconColor={theme['gray-5']} size={'md'} />
             </View>
           </Squircle>
         </View>

@@ -132,7 +132,7 @@ export const Security = () => {
             backgroundColor={theme['gold-6']}
             label={i18n.settings.changePassword}
             onPress={() => navigation.navigate('ChangePassword')}
-            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
+            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
           />
 
           {/*<SelectItem*/}
@@ -147,7 +147,7 @@ export const Security = () => {
             backgroundColor={theme['green-6']}
             label={i18n.settings.appLock}
             onPress={() => setIsShowAutoLockModal(true)}
-            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
+            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
           />
         </View>
 

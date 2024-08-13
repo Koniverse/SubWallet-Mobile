@@ -156,7 +156,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
             View on dApp
           </Typography.Text>
         )}
-        <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'sm'} />
+        <Icon phosphorIcon={CaretRight} iconColor={theme['gray-5']} size={'sm'} />
       </View>
     </TouchableOpacity>
   );

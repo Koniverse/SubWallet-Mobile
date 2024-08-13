@@ -131,9 +131,13 @@ export const CrowdloansScreen = () => {
       placeholder={i18n.placeholder.searchProject}
       refreshControl={<RefreshControl tintColor={theme.colorWhite} refreshing={isRefresh} onRefresh={onRefresh} />}
       beforeListItem={
-        <View style={{ paddingHorizontal: theme.padding }}>
-          <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
-        </View>
+        !!(banners && banners.length) ? (
+          <View style={{ paddingHorizontal: theme.padding, paddingTop: 4 }}>
+            <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
+          </View>
+        ) : (
+          <></>
+        )
       }
     />
   );

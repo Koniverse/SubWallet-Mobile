@@ -44,7 +44,7 @@ export const TokenToggleItem = ({ item, onPress, isEnabled, onValueChange, isDis
           />
           <Button
             onPress={onPress}
-            icon={<Icon phosphorIcon={PencilSimpleLine} iconColor={theme.colorTextLight3} size={'sm'} />}
+            icon={<Icon phosphorIcon={PencilSimpleLine} iconColor={theme['gray-5']} size={'sm'} />}
             size={'xs'}
             type={'ghost'}
           />

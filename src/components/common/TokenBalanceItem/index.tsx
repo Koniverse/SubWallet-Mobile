@@ -92,13 +92,7 @@ export const TokenBalanceItem = ({
             )}
           </View>
           <View style={_style.iconWrapper}>
-            <Icon
-              type="phosphor"
-              weight={'bold'}
-              phosphorIcon={DotsThree}
-              size={'sm'}
-              iconColor={theme.colorTextLight3}
-            />
+            <Icon type="phosphor" weight={'bold'} phosphorIcon={DotsThree} size={'sm'} iconColor={theme['gray-5']} />
           </View>
         </View>
       </View>

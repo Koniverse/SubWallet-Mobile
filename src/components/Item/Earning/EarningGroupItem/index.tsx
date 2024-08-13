@@ -120,20 +120,15 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
         </View>
       </View>
 
-      <View
-        style={[
-          styleSheet.iconWrapper,
-          isTempEarningCondition && {
-            flexDirection: 'row',
-            width: '38%',
-          },
-        ]}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {isTempEarningCondition && (
-          <Typography.Text style={{ color: 'rgba(255,255,255, 0.45)', marginRight: 12, fontSize: 12, lineHeight: 20 }}>
+          <Typography.Text style={{ color: 'rgba(255,255,255, 0.45)', fontSize: 12, lineHeight: 20 }}>
             View on dApp
           </Typography.Text>
         )}
-        <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'sm'} />
+        <View style={styleSheet.iconWrapper}>
+          <Icon phosphorIcon={CaretRight} iconColor={theme['gray-5']} size={'sm'} />
+        </View>
       </View>
     </TouchableOpacity>
   );

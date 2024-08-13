@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextStyle } from 'react-native';
 
-export type SchemeColor = 'light' | 'gray' | 'success' | 'gold' | 'danger' | 'warning';
+export type SchemeColor = 'light' | 'gray' | 'success' | 'gold' | 'danger' | 'warning' | 'primary';
 
 export interface InfoItemBase {
   label?: string | ((labelStyle: TextStyle) => React.ReactNode);

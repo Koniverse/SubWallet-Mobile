@@ -100,7 +100,7 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress, isShowBalance }: P
       </View>
 
       <View style={styleSheet.iconWrapper}>
-        <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'sm'} />
+        <Icon phosphorIcon={CaretRight} iconColor={theme['gray-5']} size={'sm'} />
       </View>
     </TouchableOpacity>
   );

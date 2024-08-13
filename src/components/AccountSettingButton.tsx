@@ -42,7 +42,7 @@ export const AccountSettingButton = ({ navigation, style }: Props) => {
         </View>
       )}
 
-      <Icon phosphorIcon={CaretDown} weight={'bold'} iconColor={theme.colorTextLight3} size={'xxs'} />
+      <Icon phosphorIcon={CaretDown} weight={'bold'} iconColor={theme['gray-5']} size={'xxs'} />
     </TouchableOpacity>
   );
 };

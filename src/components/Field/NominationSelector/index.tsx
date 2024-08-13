@@ -68,7 +68,7 @@ export const NominationSelectorField = ({
         {loading ? (
           <ActivityIndicator size={20} indicatorColor={theme.colorWhite} />
         ) : (
-          <Icon phosphorIcon={CaretDown} size={'sm'} iconColor={theme.colorTextLight3} />
+          <Icon phosphorIcon={CaretDown} size={'sm'} iconColor={theme['gray-5']} />
         )}
       </View>
     </FieldBase>

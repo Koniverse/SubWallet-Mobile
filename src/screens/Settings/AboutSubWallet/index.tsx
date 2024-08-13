@@ -84,14 +84,14 @@ export const AboutSubWallet = () => {
             backgroundColor={theme['purple-7']}
             label={i18n.settings.website}
             onPress={() => Linking.openURL(WEBSITE_URL)}
-            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />}
           />
           <SelectItem
             icon={BookBookmark}
             backgroundColor={theme['volcano-7']}
             label={i18n.settings.termOfUse}
             onPress={() => Linking.openURL(TERMS_OF_USE_URL)}
-            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />}
           />
           <SelectItem
             leftItemIcon={
@@ -105,7 +105,7 @@ export const AboutSubWallet = () => {
             backgroundColor={theme['volcano-7']}
             label={i18n.settings.xTwitter}
             onPress={() => Linking.openURL(TWITTER_URL)}
-            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />}
           />
           <SelectItem
             icon={Star}
@@ -118,7 +118,7 @@ export const AboutSubWallet = () => {
                   : 'https://play.google.com/store/apps/details?id=app.subwallet.mobile',
               );
             }}
-            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />}
           />
         </View>
 

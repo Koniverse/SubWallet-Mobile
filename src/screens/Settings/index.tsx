@@ -85,28 +85,28 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         {
           icon: GlobeHemisphereWest,
           title: i18n.settings.generalSettings,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('GeneralSettings'),
           backgroundColor: '#D92079',
         },
         {
           icon: ShieldCheck,
           title: i18n.settings.securitySettings,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('Security'),
           backgroundColor: '#2DA73F',
         },
         {
           icon: Clock,
           title: i18n.title.history,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('History', {}),
           backgroundColor: '#2595E6',
         },
         {
           icon: Rocket,
           title: i18n.tabName.crowdloans,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('Crowdloans'),
           backgroundColor: '#15B776',
         },
@@ -115,7 +115,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         {
           icon: Globe,
           title: i18n.settings.manageWebsiteAccess,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => {
             navigation.navigate('DAppAccess');
           },
@@ -124,7 +124,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         {
           icon: Clock,
           title: i18n.header.walletConnect,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => {
             DeviceEventEmitter.emit('isDeleteWc', false);
             navigation.navigate('ConnectList', { isDelete: false });
@@ -136,21 +136,21 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         {
           icon: ShareNetwork,
           title: i18n.settings.manageNetworks,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('NetworksSetting', {}),
           backgroundColor: '#9224E1',
         },
         {
           icon: Coin,
           title: i18n.settings.manageTokens,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('CustomTokenSetting'),
           backgroundColor: '#D9A33E',
         },
         {
           icon: BookBookmark,
           title: i18n.settings.manageAddressBook,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('ManageAddressBook'),
           backgroundColor: '#0078D9',
         },
@@ -159,34 +159,34 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         {
           icon: EnvelopeSimple,
           title: i18n.settings.contactSupport,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: onPressContactSupport,
           backgroundColor: '#004BFF',
         },
         {
           icon: Book,
           title: i18n.settings.userGuide,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => Linking.openURL(WIKI_URL),
           backgroundColor: '#2DA73F',
         },
         {
           icon: ChatCircleText,
           title: i18n.settings.requestAFeature,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => Linking.openURL('mailto:agent@subwallet.app?subject=%5BSubWallet%20In-app%20Feedback%5D'),
           backgroundColor: '#E6478E',
         },
         {
           icon: Clock,
           title: i18n.settings.aboutSubwallet,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('AboutSubWallet'),
           backgroundColor: '#E6478E',
         },
       ],
     ],
-    [navigation, onPressContactSupport, theme.colorTextLight3],
+    [navigation, onPressContactSupport, theme],
   );
 
   const onPressVersionNumber = () => {

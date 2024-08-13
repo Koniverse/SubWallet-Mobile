@@ -136,21 +136,19 @@ export const TokenGroups = () => {
           <Button
             type="ghost"
             size="xs"
-            icon={<Icon size="md" phosphorIcon={MagnifyingGlass} iconColor={theme.colorTextLight3} weight={'bold'} />}
+            icon={<Icon size="md" phosphorIcon={MagnifyingGlass} iconColor={theme['gray-5']} weight={'bold'} />}
             onPress={onOpenTokenSearchModal}
           />
           <Button
             type="ghost"
             size="xs"
-            icon={<Icon size="md" phosphorIcon={FadersHorizontal} iconColor={theme.colorTextLight3} weight={'bold'} />}
+            icon={<Icon size="md" phosphorIcon={FadersHorizontal} iconColor={theme['gray-5']} weight={'bold'} />}
             onPress={onOpenCustomizationModal}
           />
           <Button
             type="ghost"
             size="xs"
-            icon={
-              <Icon size="md" phosphorIcon={ClockCounterClockwise} iconColor={theme.colorTextLight3} weight={'bold'} />
-            }
+            icon={<Icon size="md" phosphorIcon={ClockCounterClockwise} iconColor={theme['gray-5']} weight={'bold'} />}
             onPress={onOpenHistoryScreen}
           />
         </View>

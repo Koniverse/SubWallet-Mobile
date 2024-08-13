@@ -88,7 +88,7 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
                   onPress={() => setShowPassword(false)}
                   size={'xs'}
                   type={'ghost'}
-                  icon={<Icon phosphorIcon={EyeSlash} weight={'bold'} size={'sm'} iconColor={theme.colorTextLight3} />}
+                  icon={<Icon phosphorIcon={EyeSlash} weight={'bold'} size={'sm'} iconColor={theme['gray-5']} />}
                 />
               ) : (
                 <Button
@@ -96,7 +96,7 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
                   onPress={() => setShowPassword(true)}
                   size={'xs'}
                   type={'ghost'}
-                  icon={<Icon phosphorIcon={Eye} weight={'bold'} size={'sm'} iconColor={theme.colorTextLight3} />}
+                  icon={<Icon phosphorIcon={Eye} weight={'bold'} size={'sm'} iconColor={theme['gray-5']} />}
                 />
               )}
             </>

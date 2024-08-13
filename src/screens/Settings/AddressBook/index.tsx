@@ -167,10 +167,10 @@ export const ManageAddressBook = () => {
   const ItemRightIcon = useMemo(
     () => (
       <View style={stylesheet.itemRightIconWrapper}>
-        <Icon iconColor={theme.colorTextLight3} phosphorIcon={PencilSimpleLine} size="sm" type="phosphor" />
+        <Icon iconColor={theme['gray-5']} phosphorIcon={PencilSimpleLine} size="sm" />
       </View>
     ),
-    [stylesheet.itemRightIconWrapper, theme.colorTextLight3],
+    [stylesheet.itemRightIconWrapper, theme],
   );
 
   const BeforeListItem = useMemo(() => <View style={stylesheet.beforeListBlock} />, [stylesheet.beforeListBlock]);

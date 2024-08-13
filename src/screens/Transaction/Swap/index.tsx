@@ -1231,7 +1231,7 @@ export const Swap = ({
                   activeStyle={{ backgroundColor: theme['gray-2'] }}
                   style={{ position: 'absolute', backgroundColor: theme['gray-2'] }}
                   size={'xs'}
-                  icon={<Icon phosphorIcon={ArrowsDownUp} size={'sm'} iconColor={theme.colorTextLight3} />}
+                  icon={<Icon phosphorIcon={ArrowsDownUp} size={'sm'} iconColor={theme['gray-5']} />}
                   shape={'circle'}
                 />
               </View>

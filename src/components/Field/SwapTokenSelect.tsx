@@ -58,7 +58,7 @@ export const SwapTokenSelectField = ({
           </Typography.Text>
         )}
 
-        {!!showIcon && <Icon phosphorIcon={CaretDown} size={'xs'} iconColor={theme.colorTextLight3} weight={'bold'} />}
+        {!!showIcon && <Icon phosphorIcon={CaretDown} size={'xs'} iconColor={theme['gray-5']} weight={'bold'} />}
       </View>
     </FieldBase>
   );

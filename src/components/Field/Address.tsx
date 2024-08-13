@@ -73,7 +73,7 @@ export const AddressField = ({
             size={'xs'}
             style={styles.button}
             type={'ghost'}
-            icon={<Icon size={'sm'} iconColor={theme.colorTextLight3} phosphorIcon={RightIcon || Info} />}
+            icon={<Icon size={'sm'} iconColor={theme['gray-5']} phosphorIcon={RightIcon || Info} />}
             onPress={onPressRightIcon}
             disabled={disableRightIcon}
           />

@@ -124,7 +124,7 @@ export const GeneralSettings = () => {
           backgroundColor={theme['geekblue-6']}
           label={i18n.settings.walletTheme}
           onPress={showComingSoon}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
+          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
         />
 
         <SelectItem
@@ -133,7 +133,7 @@ export const GeneralSettings = () => {
           label={i18n.settings.currency}
           onPress={() => setIsShowCurrencyModal(true)}
           rightItem={<Typography.Text style={{ color: theme.colorTextLight4 }}>{currency}</Typography.Text>}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
+          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
         />
 
         <SelectItem
@@ -141,7 +141,7 @@ export const GeneralSettings = () => {
           backgroundColor={theme['green-6']}
           label={i18n.settings.language}
           onPress={openLanguageModal}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
+          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
         />
 
         <SelectItem
@@ -149,7 +149,7 @@ export const GeneralSettings = () => {
           backgroundColor={theme['volcano-6']}
           label={i18n.settings.notifications}
           onPress={showComingSoon}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />}
+          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
         />
       </View>
 

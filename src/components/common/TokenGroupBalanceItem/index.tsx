@@ -78,7 +78,7 @@ export const TokenGroupBalanceItem = ({
             {!isShowBalance && <HideBalanceItem />}
           </View>
           <View style={_style.iconWrapper}>
-            <Icon type="phosphor" phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />
+            <Icon type="phosphor" phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />
           </View>
         </View>
       </View>
