@@ -4,6 +4,7 @@ import { updateBannerHistoryData } from 'stores/base/StaticContent';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AppBannerData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
+import { getCountry } from 'react-native-localize';
 
 export const useHandleAppBannerMap = () => {
   const dispatch = useDispatch();
@@ -49,9 +50,21 @@ export const useHandleAppBannerMap = () => {
     [bannerHistoryMap, dispatch],
   );
 
+  const filteredDataByLocation = useMemo(() => {
+    return appBannerData.filter(({ locations }) => {
+      if (locations && locations.length) {
+        const countryId = getCountry();
+        const locationIds = locations.map(item => item.split('_')[1]);
+        return locationIds.includes(countryId);
+      } else {
+        return true;
+      }
+    });
+  }, [appBannerData]);
+
   const appBannerMap = useMemo(() => {
-    if (appBannerData) {
-      const result: Record<string, AppBannerData[]> = appBannerData.reduce((r, a) => {
+    if (filteredDataByLocation) {
+      const result: Record<string, AppBannerData[]> = filteredDataByLocation.reduce((r, a) => {
         r[a.position] = r[a.position] || [];
         r[a.position].push(a);
         return r;
@@ -61,7 +74,7 @@ export const useHandleAppBannerMap = () => {
     } else {
       return {};
     }
-  }, [appBannerData]);
+  }, [filteredDataByLocation]);
 
   return {
     updateBannerHistoryMap,

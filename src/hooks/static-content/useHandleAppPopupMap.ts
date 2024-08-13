@@ -4,6 +4,7 @@ import { updatePopupHistoryData } from 'stores/base/StaticContent';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AppPopupData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
+import { getCountry } from 'react-native-localize';
 
 export const useHandleAppPopupMap = () => {
   const { appPopupData, popupHistoryMap } = useSelector((state: RootState) => state.staticContent);
@@ -41,9 +42,22 @@ export const useHandleAppPopupMap = () => {
     [dispatch, popupHistoryMap],
   );
 
+  const filteredDataByLocation = useMemo(() => {
+    return appPopupData.filter(({ locations }) => {
+      console.log('locations', locations);
+      if (locations && locations.length) {
+        const countryId = getCountry();
+        const locationIds = locations.map(item => item.split('_')[1]);
+        return locationIds.includes(countryId);
+      } else {
+        return true;
+      }
+    });
+  }, [appPopupData]);
+
   const appPopupMap = useMemo(() => {
-    if (appPopupData) {
-      const result: Record<string, AppPopupData[]> = appPopupData.reduce((r, a) => {
+    if (filteredDataByLocation) {
+      const result: Record<string, AppPopupData[]> = filteredDataByLocation.reduce((r, a) => {
         r[a.position] = r[a.position] || [];
         r[a.position].push(a);
         return r;
@@ -53,7 +67,7 @@ export const useHandleAppPopupMap = () => {
     } else {
       return {};
     }
-  }, [appPopupData]);
+  }, [filteredDataByLocation]);
 
   return {
     updatePopupHistoryMap,
