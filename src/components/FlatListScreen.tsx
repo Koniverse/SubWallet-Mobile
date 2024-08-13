@@ -134,7 +134,7 @@ export function FlatListScreen<T>({
           onClearSearchString={() => setSearchString('')}
           onSearch={setSearchString}
           searchText={searchString}
-          style={{ marginBottom: searchMarginBottom, marginTop: 10, marginHorizontal: 16 }}
+          style={{ marginBottom: searchMarginBottom, marginTop: 8, marginHorizontal: 16 }}
           searchRef={searchRef}
           isShowFilterBtn={isShowFilterBtn}
           onPressFilterBtn={openFilterModal}
