@@ -111,7 +111,7 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
         showLeftBtn={false}
         titleTextAlign={'left'}>
         {banners && banners.length ? (
-          <View style={{ marginHorizontal: theme.margin }}>
+          <View style={{ marginHorizontal: theme.margin, paddingTop: theme.paddingXS, paddingBottom: theme.marginXXS }}>
             <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
           </View>
         ) : (

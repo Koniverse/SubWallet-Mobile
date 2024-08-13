@@ -132,7 +132,8 @@ export const CrowdloansScreen = () => {
       refreshControl={<RefreshControl tintColor={theme.colorWhite} refreshing={isRefresh} onRefresh={onRefresh} />}
       beforeListItem={
         !!(banners && banners.length) ? (
-          <View style={{ paddingHorizontal: theme.padding, paddingTop: 4 }}>
+          <View
+            style={{ paddingHorizontal: theme.padding, paddingTop: theme.paddingXS, paddingBottom: theme.marginXXS }}>
             <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
           </View>
         ) : (

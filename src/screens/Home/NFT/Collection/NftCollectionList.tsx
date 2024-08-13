@@ -110,9 +110,14 @@ const NftCollectionList = () => {
         isShowMainHeader
         getItemLayout={getItemLayout}
         beforeListItem={
-          <View style={{ paddingHorizontal: theme.padding }}>
-            <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
-          </View>
+          banners && banners.length ? (
+            <View
+              style={{ paddingHorizontal: theme.padding, paddingTop: theme.paddingXS, paddingBottom: theme.marginXXS }}>
+              <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
+            </View>
+          ) : (
+            <></>
+          )
         }
       />
     </>

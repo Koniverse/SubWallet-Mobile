@@ -163,7 +163,9 @@ export const TokensLayout = ({
           {!!listActions && <Animated.View style={stickyHeaderStyles}>{listActions}</Animated.View>}
 
           {!!(banners && banners.length) && (
-            <BannerGenerator banners={banners} dismissBanner={dismissBanner} onPressBanner={onPressBanner} />
+            <View style={{ paddingTop: theme.paddingXS, paddingBottom: theme.marginXXS }}>
+              <BannerGenerator banners={banners} dismissBanner={dismissBanner} onPressBanner={onPressBanner} />
+            </View>
           )}
         </View>
       );
