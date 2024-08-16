@@ -850,10 +850,8 @@ export const Swap = ({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log('!!currentQuote', !!currentQuote && !isScrollEnd);
       if (!!currentQuote && !isScrollEnd) {
         setIsScrollEnd(true);
-        console.log('scrollRef');
         scrollRef.current?.scrollToEnd();
       }
     }, 1000);

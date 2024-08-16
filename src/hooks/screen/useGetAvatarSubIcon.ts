@@ -8,7 +8,6 @@ import { getSignMode } from 'utils/account';
 const useGetAvatarSubIcon = (account: AccountJson | null | undefined, size: number): AvatarSubIcon | undefined => {
   return useMemo((): AvatarSubIcon | undefined => {
     const signMode = getSignMode(account);
-    console.log('signMode', signMode);
     switch (signMode) {
       case AccountSignMode.QR:
         return {
