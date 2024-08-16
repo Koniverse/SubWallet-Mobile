@@ -201,7 +201,7 @@ const Component = (
   const onPressQrButton = useCallback(async () => {
     // use setTimeout for smooth animation of keyboard and scanner screen
     const openScannerScreen = () => {
-      setTimeout(() => openScannerScreen(), 500);
+      setTimeout(() => setIsShowQrModalVisible(true), 500);
     };
 
     Keyboard.dismiss();
