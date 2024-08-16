@@ -64,3 +64,4 @@ export const isDevMode = !!env.DEBUG;
 export const regex: RegexType = {
   httpProtocol: /^http:\/\//,
 };
+export const WEBVIEW_ANDROID_SYSTEM_MIN_VERSION = 113;
