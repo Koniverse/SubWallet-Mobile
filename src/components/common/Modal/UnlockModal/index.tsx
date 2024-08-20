@@ -88,7 +88,7 @@ export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
   }, []);
   useEffect(() => {
     if (authMethod === 'master-password') {
-      focus('password')();
+      setTimeout(() => focus('password')(), 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authMethod]);
@@ -185,7 +185,6 @@ export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
             onChangeText={onChangePassword}
             errorMessages={formState.errors.password}
             onSubmitField={onSubmitField('password')}
-            autoFocus
           />
           <View style={styles.footer}>
             <Button
