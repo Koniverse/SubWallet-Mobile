@@ -49,7 +49,7 @@ const DisplayPayloadModal: React.FC<Props> = (props: Props) => {
           <View style={styles.body}>{children}</View>
           <Button
             style={styles.footer}
-            onPress={checkCamera(onOpenScan)}
+            onPress={checkCamera(undefined, onOpenScan)}
             icon={<Icon phosphorIcon={QrCode} weight="fill" />}>
             {i18n.common.scanQr}
           </Button>

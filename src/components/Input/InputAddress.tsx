@@ -12,14 +12,13 @@ import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextI
 import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressScanner';
 import { CHAINS_SUPPORTED_DOMAIN, isAzeroDomain } from '@subwallet/extension-base/koni/api/dotsama/domain';
 import { saveRecentAccountId, resolveAddressToDomain, resolveDomainToAddress } from 'messaging/index';
-import { requestCameraPermission } from 'utils/permission/camera';
-import { RESULTS } from 'react-native-permissions';
 import createStylesheet from './style/InputAddress';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { findContactByAddress } from 'utils/account';
 import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
+import useCheckCamera from 'hooks/common/useCheckCamera';
 
 interface Props extends InputProps {
   chain?: string;
@@ -68,6 +67,7 @@ const Component = (
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
   const [error, setError] = useState<string | undefined>(undefined);
   const inputRef = useRef<TextInput | null>(null);
+  const checkCamera = useCheckCamera();
 
   const hasLabel = !!inputProps.label;
   const isInputVisible = !isAddressValid || !value || !isInputBlur;
@@ -199,13 +199,14 @@ const Component = (
   ]);
 
   const onPressQrButton = useCallback(async () => {
-    Keyboard.dismiss();
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
+    // use setTimeout for smooth animation of keyboard and scanner screen
+    const openScannerScreen = () => {
       setTimeout(() => setIsShowQrModalVisible(true), 500);
-    }
-  }, []);
+    };
+
+    Keyboard.dismiss();
+    checkCamera(undefined, openScannerScreen)();
+  }, [checkCamera]);
 
   useEffect(() => {
     if (value) {
