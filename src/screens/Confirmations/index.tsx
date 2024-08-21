@@ -30,6 +30,7 @@ import {
   NotSupportConfirmation,
   TransactionConfirmation,
   SignConfirmation,
+  NetworkConnectionErrorConfirmation,
 } from './variants';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -82,6 +83,7 @@ export const Confirmations = () => {
       signingRequest: i18n.header.signatureRequest,
       switchNetworkRequest: i18n.header.addNetworkRequest,
       connectWCRequest: i18n.header.walletConnect,
+      errorConnectNetwork: i18n.header.transactionRequest,
     }),
     [],
   ) as Record<ConfirmationType, string>;
@@ -165,6 +167,7 @@ export const Confirmations = () => {
           return i18n.header.tokenApprove;
         case ExtrinsicType.SWAP:
           return 'Swap confirmation';
+
         default:
           return i18n.header.transactionConfirmation;
       }
@@ -261,6 +264,13 @@ export const Confirmations = () => {
           <ConnectWalletConnectConfirmation
             request={confirmation.item as WalletConnectSessionRequest}
             navigation={navigation}
+          />
+        );
+      case 'errorConnectNetwork':
+        return (
+          <NetworkConnectionErrorConfirmation
+            request={confirmation.item as ConfirmationDefinitions['errorConnectNetwork'][0]}
+            type={confirmation.type}
           />
         );
     }

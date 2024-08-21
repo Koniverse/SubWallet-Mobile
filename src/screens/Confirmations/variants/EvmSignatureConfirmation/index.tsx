@@ -20,7 +20,7 @@ interface Props {
 const EvmSignatureConfirmation: React.FC<Props> = (props: Props) => {
   const { request, type, navigation } = props;
   const { id, payload } = request;
-  const { account } = payload;
+  const { account, errors } = payload;
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -32,9 +32,11 @@ const EvmSignatureConfirmation: React.FC<Props> = (props: Props) => {
         <Text style={styles.title}>{i18n.confirmation.signatureRequest}</Text>
         <Text style={styles.description}>{i18n.confirmation.requestWithAccount}</Text>
         <AccountItemWithName accountName={account.name} address={account.address} avatarSize={24} isSelected={true} />
-        <BaseDetailModal title={i18n.confirmation.messageDetail}>
-          <EvmMessageDetail payload={payload} />
-        </BaseDetailModal>
+        {(!errors || errors.length === 0) && (
+          <BaseDetailModal title={i18n.confirmation.messageDetail}>
+            <EvmMessageDetail payload={payload} />
+          </BaseDetailModal>
+        )}
       </ConfirmationContent>
       <EvmSignArea id={id} type={type} payload={request} navigation={navigation} />
     </React.Fragment>

@@ -6,5 +6,5 @@ export { default as EvmTransactionConfirmation } from './EvmTransactionConfirmat
 export { default as MetadataConfirmation } from './MetadataConfirmation';
 export { default as NotSupportConfirmation } from './NotSupportConfirmation';
 export { default as SignConfirmation } from './SignConfirmation';
-
+export * from './Error';
 export * from './Transaction';

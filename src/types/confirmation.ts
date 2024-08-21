@@ -4,3 +4,5 @@ export type EvmSignatureSupportType = keyof Pick<
   ConfirmationDefinitions,
   'evmSignatureRequest' | 'evmSendTransactionRequest'
 >;
+
+export type EvmErrorSupportType = keyof Pick<ConfirmationDefinitions, 'errorConnectNetwork'>;
