@@ -63,7 +63,7 @@ import i18n from 'utils/i18n/i18n';
 import { parseNominations } from 'utils/transaction/stake';
 import { accountFilterFunc, getJoinYieldParams } from '../helper/earning';
 import createStyle from './style';
-import { useYieldPositionDetail } from 'hooks/earning';
+import { useGroupYieldPosition, useYieldPositionDetail } from 'hooks/earning';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
@@ -91,6 +91,13 @@ const loadingStepPromiseKey = 'earning.step.loading';
 // Not enough balance to xcm;
 export const insufficientXCMMessages = ['You can only enter a maximum'];
 
+const SHOW_WARNING_CASES = [
+  'DOT___nomination_pool___polkadot',
+  'DOT___native_staking___polkadot',
+  'KSM___nomination_pool___kusama',
+  'KSM___native_staking___kusama',
+];
+
 const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const {
     route: {
@@ -110,7 +117,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const defaultTarget = useRef<string | undefined>(target);
   const redirectFromPreviewRef = useRef(!!redirectFromPreview);
   const autoCheckCompoundRef = useRef<boolean>(true);
-
+  const yieldPositionsData = useGroupYieldPosition();
   const {
     title,
     form: {
@@ -159,6 +166,33 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo?.type || '';
   const poolChain = poolInfo?.chain || '';
+
+  // hotfix for mkt campaign
+  const warningConfirmationData = useMemo(() => {
+    if (SHOW_WARNING_CASES.includes(slug)) {
+      const getWarningConfirmationData = (currentSlug: string, prevSlug: string) => {
+        const splitPrevSlug = prevSlug.split('___');
+        const prevType = splitPrevSlug[1] === 'native_staking' ? 'direct nomination' : 'nomination pool';
+        const splitCurrentSlug = currentSlug.split('___');
+        const currentType = splitCurrentSlug[1] === 'native_staking' ? 'direct nomination' : 'nomination pool';
+        const isShowWarningConfirmation = !!yieldPositionsData.find(y => y.slug === 'DOT___native_staking___polkadot');
+
+        return { isShowWarningConfirmation, symbol: splitCurrentSlug[0], currentType, prevType };
+      };
+      switch (slug) {
+        case 'DOT___nomination_pool___polkadot':
+          return getWarningConfirmationData('DOT___nomination_pool___polkadot', 'DOT___native_staking___polkadot');
+        case 'DOT___native_staking___polkadot':
+          return getWarningConfirmationData('DOT___native_staking___polkadot', 'DOT___nomination_pool___polkadot');
+        case 'KSM___nomination_pool___kusama':
+          return getWarningConfirmationData('KSM___nomination_pool___kusama', 'KSM___native_staking___kusama');
+        case 'KSM___native_staking___kusama':
+          return getWarningConfirmationData('KSM___native_staking___kusama', 'KSM___nomination_pool___kusama');
+      }
+    } else {
+      return { isShowWarningConfirmation: false, symbol: '', currentType: '', prevType: '' };
+    }
+  }, [slug, yieldPositionsData]);
 
   const styles = useMemo(() => createStyle(theme), [theme]);
 
@@ -719,11 +753,35 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             globalAppModalContext.hideGlobalModal();
           }),
         });
+      } else if (warningConfirmationData && warningConfirmationData.isShowWarningConfirmation) {
+        // hotfix for mkt campaign
+        globalAppModalContext.setGlobalModal({
+          visible: true,
+          title: 'Continue with this action?',
+          message: `You are currently staking ${warningConfirmationData.symbol} via ${warningConfirmationData.prevType}. Continuing to stake via ${warningConfirmationData.currentType} may result in being unable to vote and perform any transaction related to pool-staked funds (e.g., unstake, claim rewards, withdraw) due to the [upcoming changes](https://support.polkadot.network/support/solutions/articles/65000188140-changes-for-nomination-pool-members-and-opengov-participation) in Polkadot OpenGov voting. \n Do you want to continue staking?`,
+          type: 'confirmation',
+          externalButtons: (
+            <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
+              <Button block type={'secondary'} onPress={() => globalAppModalContext.hideGlobalModal()}>
+                {i18n.buttonTitles.cancel}
+              </Button>
+              <Button
+                block
+                type={'primary'}
+                onPress={() => {
+                  onSubmit();
+                  globalAppModalContext.hideGlobalModal();
+                }}>
+                {i18n.buttonTitles.continue}
+              </Button>
+            </View>
+          ),
+        });
       } else {
         onSubmit();
       }
     }, 100);
-  }, [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons]);
+  }, [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons, warningConfirmationData]);
 
   const onBack = useCallback(() => {
     if (firstStep) {
