@@ -224,7 +224,7 @@ export const TokenGroupsDetail = ({
   // delay hide loading screen 300ms for smooth experience
   useEffect(() => {
     if (!isTokenGroupComputing && !isAccountBalanceComputing) {
-      setTimeout(() => setLoadingData(false), 300);
+      setTimeout(() => setLoadingData(false), 200);
     }
   }, [isAccountBalanceComputing, isTokenGroupComputing]);
 
