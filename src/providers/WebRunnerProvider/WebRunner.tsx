@@ -13,6 +13,7 @@ import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { backupStorageData, getDevMode, mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
 import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
+import { WEBVIEW_ANDROID_SYSTEM_MIN_VERSION } from 'constants/index';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 360000; //6*60*1000
@@ -247,7 +248,10 @@ class WebRunnerHandler {
         this.runnerState.userAgent = info.userAgent;
         if (Platform.OS === 'android') {
           const needUpdateChrome = parseInt(info.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)?.[2] || '0', 10);
-          setTimeout(() => DeviceEventEmitter.emit(NEED_UPDATE_CHROME, needUpdateChrome <= 90), 500);
+          setTimeout(
+            () => DeviceEventEmitter.emit(NEED_UPDATE_CHROME, needUpdateChrome <= WEBVIEW_ANDROID_SYSTEM_MIN_VERSION),
+            500,
+          );
         }
 
         return true;
