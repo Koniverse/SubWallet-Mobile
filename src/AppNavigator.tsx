@@ -158,9 +158,9 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
                 },
               },
             },
-            Crowdloans: {
-              path: 'crowdloans',
-            },
+            // Crowdloans: {
+            //   path: 'crowdloans',
+            // },
             Earning: {
               path: 'earning',
               screens: {
@@ -207,6 +207,13 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
                 redirectFromPreview: (redirectFromPreview: boolean) => redirectFromPreview,
               },
             },
+            Swap: {
+              path: 'swap',
+              stringify: {
+                slug: (slug: string) => slug,
+                chain: (chain: string) => chain,
+              },
+            },
           },
         },
       },
@@ -225,6 +232,9 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
         group: (group: string) => group,
         symbol: (symbol: string) => symbol,
       },
+    },
+    Crowdloans: {
+      path: 'crowdloans',
     },
   },
 };
@@ -406,6 +416,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
           const splitItem = item.split('=');
           urlQueryMap[splitItem[0]] = splitItem[1];
         });
+        console.log('urlQueryMap', urlQueryMap);
 
         if (urlQuery.startsWith('wc')) {
           const accountByAddress = findAccountByAddress(accounts, urlQueryMap.address);
@@ -459,7 +470,30 @@ const AppNavigator = ({ isAppReady }: Props) => {
           return;
         }
 
-        if (parseUrl.pathname.startsWith('/transaction-action/earning')) {
+        //enable Network (if deeplink is not for earning)
+        if (!parseUrl.pathname.startsWith('/transaction-action/earning')) {
+          let originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+          if (urlQueryMap.chain) {
+            originChain = urlQueryMap.chain;
+          }
+          const isChainConnected = checkChainConnected(originChain);
+
+          if (!isChainConnected && originChain) {
+            await enableChain(originChain);
+            await updateAssetSetting({
+              tokenSlug: urlQueryMap.slug,
+              assetSetting: {
+                visible: true,
+              },
+              autoEnableNativeToken: true,
+            });
+          }
+        }
+
+        if (
+          parseUrl.pathname.startsWith('/transaction-action/earning') ||
+          parseUrl.pathname.startsWith('/transaction-action/swap')
+        ) {
           if (isEmptyAccounts) {
             navigationRef.current?.navigate('Home');
           } else {
@@ -472,24 +506,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
           }
 
           return;
-        }
-
-        //enable Network
-        let originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
-        if (urlQueryMap.chain) {
-          originChain = urlQueryMap.chain;
-        }
-        const isChainConnected = checkChainConnected(originChain);
-
-        if (!isChainConnected && originChain) {
-          await enableChain(originChain);
-          await updateAssetSetting({
-            tokenSlug: urlQueryMap.slug,
-            assetSetting: {
-              visible: true,
-            },
-            autoEnableNativeToken: true,
-          });
         }
 
         if (parseUrl.hostname === 'earning-preview') {
