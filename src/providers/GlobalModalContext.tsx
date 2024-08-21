@@ -55,11 +55,13 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
   const onPressUpdate = useCallback(
     (url?: string) => {
       if (Platform.OS === 'ios') {
+        globalModal.onPressBtn && globalModal.onPressBtn();
         Linking.openURL(APPSTORE_URL);
       } else {
         if (installType === 'apk') {
           globalModal.onPressBtn && globalModal.onPressBtn(url);
         } else if (installType === 'store') {
+          globalModal.onPressBtn && globalModal.onPressBtn();
           Linking.openURL(PLAYSTORE_URL);
         }
       }

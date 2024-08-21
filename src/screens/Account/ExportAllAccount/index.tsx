@@ -61,8 +61,6 @@ const filterFunction = (items: AccountJson[], filters: string[]) => {
 
   return items.filter(item => {
     const signMode = getSignMode(item);
-    console.log('signMode', signMode);
-    console.log('filters', filters);
     for (const filter of filters) {
       switch (filter) {
         case AccountSignMode.PASSWORD:

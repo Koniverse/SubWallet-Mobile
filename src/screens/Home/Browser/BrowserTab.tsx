@@ -296,7 +296,6 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
       if (getHostName(nativeEvent.url) !== searchDomain) {
         const isNotDuplicated =
           historyItems.length === 0 || (historyItems.length > 0 && historyItems[0].url !== nativeEvent.url);
-        console.log('isNotDuplicated', isNotDuplicated, historyItems[0], nativeEvent.url);
         if (isNotDuplicated) {
           addToHistory({
             url: nativeEvent.url,
