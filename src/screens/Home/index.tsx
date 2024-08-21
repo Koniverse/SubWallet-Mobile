@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EarningScreen from 'screens/Home/Earning';
 
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Linking, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, Globe, Parachute, Vault, Wallet } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
@@ -38,6 +38,9 @@ import { updateMktCampaignStatus } from 'stores/AppState';
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { computeStatus } from 'utils/missionPools';
 import { MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
+import { useGroupYieldPosition } from 'hooks/earning';
+import { GlobalModalContext } from 'providers/GlobalModalContext';
+import { deeplinks } from 'utils/browser';
 
 interface tabbarIconColor {
   color: string;
@@ -252,14 +255,20 @@ export function setIsShowRemindBackupModal(value: boolean) {
   isShowRemindBackupModal.current = value;
 }
 
+const DOT_NOMINATION_AND_DIRECT_SLUGS = ['DOT___nomination_pool___polkadot', 'DOT___native_staking___polkadot'];
+const KSM_NOMINATION_AND_DIRECT_SLUGS = ['KSM___nomination_pool___kusama', 'KSM___native_staking___kusama'];
+
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
-  const { hasMasterPassword, isReady, isLocked, accounts } = useSelector((state: RootState) => state.accountState);
+  const { hasMasterPassword, isReady, isLocked, accounts, isAllAccount } = useSelector(
+    (state: RootState) => state.accountState,
+  );
   const { currentRoute } = useSelector((state: RootState) => state.settings);
   const [isLoading, setLoading] = useState(true);
   const [generalTermVisible, setGeneralTermVisible] = useState<boolean>(false);
   const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
+  const isOpenedWarningPopup = mmkvStore.getBoolean('isOpenedWarningPopup');
   const language = useSelector((state: RootState) => state.settings.language);
   mmkvStore.set('generalTermContent', TermAndCondition[language as 'en' | 'vi' | 'zh' | 'ru' | 'ja']);
   const storedRemindBackupTimeout = mmkvStore.getNumber('storedRemindBackupTimeout');
@@ -267,6 +276,8 @@ export const Home = ({ navigation }: Props) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
+  const yieldPositionData = useGroupYieldPosition();
+  const globalAppModalContext = useContext(GlobalModalContext);
   const needMigrate = useMemo(
     () =>
       !!accounts
@@ -316,6 +327,67 @@ export const Home = ({ navigation }: Props) => {
       }
     }
   }, [dispatch, isLocked, lastTimeLogin, storedRemindBackupTimeout]);
+
+  // TODO: Remove this later because this is a hot fix for mkt campaign
+  useEffect(() => {
+    const yieldPositionSlugs = yieldPositionData.map(y => y.slug);
+    const isHaveBothDotNominationAndDotDirect = DOT_NOMINATION_AND_DIRECT_SLUGS.every(i =>
+      yieldPositionSlugs.includes(i),
+    );
+    const isHaveBothKsmNominationAndKsmDirect = KSM_NOMINATION_AND_DIRECT_SLUGS.every(i =>
+      yieldPositionSlugs.includes(i),
+    );
+    const isShowWarningPopup = isHaveBothDotNominationAndDotDirect || isHaveBothKsmNominationAndKsmDirect;
+    if (
+      !isLocked &&
+      !isEmptyAccounts &&
+      !isAllAccount &&
+      lastTimeLogin &&
+      storedRemindBackupTimeout &&
+      Date.now() - lastTimeLogin < storedRemindBackupTimeout &&
+      !isOpenedWarningPopup &&
+      isShowWarningPopup
+    ) {
+      globalAppModalContext.setGlobalModal({
+        visible: true,
+        title: 'Unstake your DOT now!',
+        message:
+          '- Nomination pool members will soon be allowed to vote on Polkadot OpenGov. Following this update, accounts that are **dual staking via direct nomination (solo staking) and nomination pool** will not be able to use pool-staked funds for voting.\n' +
+          '- To avoid future complications, [unstake your DOT](https://docs.subwallet.app/main/mobile-app-user-guide/manage-staking/unstake) from one of these staking methods.',
+        buttons: [
+          { action: null, color: 'secondary', id: 115, instruction: null, label: 'Cancel' },
+          {
+            action: {
+              id: 141,
+              is_cancel: false,
+              params: null,
+              screen: '',
+              url: 'https://support.polkadot.network/support/solutions/articles/65000188140-changes-for-nomination-pool-members-and-opengov-participation',
+            },
+            color: 'primary',
+            id: 116,
+            instruction: null,
+            label: 'Read update',
+          },
+        ],
+        onPressBtn: url => {
+          if (url) {
+            const isDeeplink = deeplinks.some(deeplink => url.startsWith(deeplink));
+            if (isDeeplink) {
+              Linking.openURL(url);
+              return;
+            }
+
+            Linking.openURL(url);
+          }
+          mmkvStore.set('isOpenedWarningPopup', true);
+          globalAppModalContext.hideGlobalModal();
+        },
+      });
+    }
+    // use eslint disable because add globalAppModalContext to dependencies make app crash
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLocked, isAllAccount, isEmptyAccounts, yieldPositionData, lastTimeLogin, storedRemindBackupTimeout]);
 
   const onPressAcceptBtn = () => {
     mmkvStore.set('isOpenGeneralTermFirstTime', true);

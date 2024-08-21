@@ -136,6 +136,7 @@ export const WebViewDebugger = () => {
             style={{ marginBottom: 5 }}
             onPress={() => {
               mmkvStore.set('storedLiveMissionPools', '[]');
+              mmkvStore.set('isOpenedWarningPopup', false);
               dispatch(updatePopupHistoryData({}));
               dispatch(updateBannerHistoryData({}));
               dispatch(updateConfirmationHistoryData({}));
