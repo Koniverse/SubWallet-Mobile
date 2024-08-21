@@ -221,11 +221,12 @@ export const TokenGroupsDetail = ({
     [isShowBalance, onClickItem, theme.colorBgSecondary],
   );
 
+  // delay hide loading screen 300ms for smooth experience
   useEffect(() => {
     if (!isTokenGroupComputing && !isAccountBalanceComputing) {
       setTimeout(() => setLoadingData(false), 300);
     }
-  }, [isAccountBalanceComputing, isTokenGroupComputing, tokenBalanceItems.length]);
+  }, [isAccountBalanceComputing, isTokenGroupComputing]);
 
   return (
     <ScreenContainer gradientBackground={GradientBackgroundColorSet[2]}>
@@ -233,7 +234,7 @@ export const TokenGroupsDetail = ({
         <Header />
 
         <TokensLayout
-          loading={isTokenGroupComputing || isAccountBalanceComputing || isLoadingData}
+          loading={isLoadingData}
           items={tokenBalanceItems}
           layoutHeader={listHeaderNode}
           renderItem={renderItem}
