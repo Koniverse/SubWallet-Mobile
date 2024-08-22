@@ -174,32 +174,12 @@ export const TokensLayout = ({
     return renderItem(data);
   };
 
-  if (!tokenBalanceItems.length) {
+  if (loading) {
     return (
       <View style={[style, { flex: 1, marginTop: 0 }]}>
-        {loading ? (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size={40} indicatorColor={theme.colorWhite} />
-          </View>
-        ) : (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={flatListContentContainerStyle}
-            refreshControl={refreshControlNode}>
-            <>
-              <View style={{ paddingHorizontal: 16 }}>
-                {layoutHeader}
-                {listActions}
-              </View>
-              <EmptyList
-                icon={Coins}
-                title={i18n.emptyScreen.tokenEmptyTitle}
-                message={i18n.emptyScreen.tokenEmptyMessageV2}
-              />
-              {layoutFooter}
-            </>
-          </ScrollView>
-        )}
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size={40} indicatorColor={theme.colorWhite} />
+        </View>
       </View>
     );
   }
@@ -256,25 +236,47 @@ export const TokensLayout = ({
         </Animated.View>
       )}
 
-      <Animated.FlatList
-        onScroll={onScrollHandler}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps={'handled'}
-        ListHeaderComponent={renderHeaderComponent}
-        contentContainerStyle={listContainerStyle}
-        data={handledTokenListData}
-        renderItem={customRenderItem}
-        ListFooterComponent={layoutFooter}
-        maxToRenderPerBatch={12}
-        initialNumToRender={12}
-        removeClippedSubviews
-        windowSize={12}
-        getItemLayout={getItemLayout}
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.7}
-        refreshControl={refreshControlNode}
-        refreshing
-      />
+      {handledTokenListData.length ? (
+        <Animated.FlatList
+          onScroll={onScrollHandler}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps={'handled'}
+          ListHeaderComponent={renderHeaderComponent}
+          contentContainerStyle={listContainerStyle}
+          data={handledTokenListData}
+          renderItem={customRenderItem}
+          ListFooterComponent={layoutFooter}
+          maxToRenderPerBatch={12}
+          initialNumToRender={12}
+          removeClippedSubviews
+          windowSize={12}
+          getItemLayout={getItemLayout}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.7}
+          refreshControl={refreshControlNode}
+          refreshing
+        />
+      ) : (
+        <View style={[style, { flex: 1, marginTop: 0 }]}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={flatListContentContainerStyle}
+            refreshControl={refreshControlNode}>
+            <>
+              <View style={{ paddingHorizontal: 16 }}>
+                {layoutHeader}
+                {listActions}
+              </View>
+              <EmptyList
+                icon={Coins}
+                title={i18n.emptyScreen.tokenEmptyTitle}
+                message={i18n.emptyScreen.tokenEmptyMessageV2}
+              />
+              {layoutFooter}
+            </>
+          </ScrollView>
+        </View>
+      )}
     </View>
   );
 };

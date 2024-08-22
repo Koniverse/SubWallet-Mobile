@@ -71,6 +71,7 @@ export const SelectAccountItem = ({
 
   return (
     <TouchableOpacity
+      activeOpacity={1}
       style={{
         flexDirection: 'row',
         justifyContent: 'space-between',

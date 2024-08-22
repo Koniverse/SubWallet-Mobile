@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ListRenderItemInfo, Platform, View } from 'react-native';
 import { CryptoNavigationProps, TokenGroupsDetailProps } from 'routes/home';
 import { SwNumberProps } from 'components/design-system-ui/number';
@@ -84,6 +84,7 @@ export const TokenGroupsDetail = ({
     tokenGroupBalanceMap,
     isComputing: isAccountBalanceComputing,
   } = useAccountBalance(tokenGroupMap, true);
+  const [isLoadingData, setLoadingData] = useState(true);
   const tokenBalanceValue = useMemo<SwNumberProps['value']>(() => {
     if (tokenGroupSlug) {
       if (tokenGroupBalanceMap[tokenGroupSlug]) {
@@ -220,13 +221,20 @@ export const TokenGroupsDetail = ({
     [isShowBalance, onClickItem, theme.colorBgSecondary],
   );
 
+  // delay hide loading screen 300ms for smooth experience
+  useEffect(() => {
+    if (!isTokenGroupComputing && !isAccountBalanceComputing) {
+      setTimeout(() => setLoadingData(false), 200);
+    }
+  }, [isAccountBalanceComputing, isTokenGroupComputing]);
+
   return (
     <ScreenContainer gradientBackground={GradientBackgroundColorSet[2]}>
       <>
         <Header />
 
         <TokensLayout
-          loading={isTokenGroupComputing || isAccountBalanceComputing}
+          loading={isLoadingData}
           items={tokenBalanceItems}
           layoutHeader={listHeaderNode}
           renderItem={renderItem}
