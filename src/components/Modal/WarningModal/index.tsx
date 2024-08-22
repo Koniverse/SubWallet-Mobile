@@ -2,11 +2,9 @@ import React from 'react';
 import { Button, Icon, PageIcon, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ModalStyle from './style';
-import { Linking, Text, View } from 'react-native';
-import { CheckCircle, Warning, XCircle } from 'phosphor-react-native';
+import { Linking, View } from 'react-native';
+import { ArrowCircleRight, Warning, XCircle } from 'phosphor-react-native';
 import { FontMedium } from 'styles/sharedStyles';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
 
 interface Props {
   visible: boolean;
@@ -17,7 +15,6 @@ interface Props {
 const WarningModal = ({ visible, setVisible, onPressBtn }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = ModalStyle(theme);
-  const navigation = useNavigation<RootNavigationProps>();
 
   return (
     <SwModal
@@ -25,7 +22,7 @@ const WarningModal = ({ visible, setVisible, onPressBtn }: Props) => {
       setVisible={setVisible}
       modalVisible={visible}
       disabledOnPressBackDrop
-      modalTitle={'Claim ASTR staking rewards'}
+      modalTitle={'Unstake your DOT now!'}
       titleTextAlign={'center'}
       isAllowSwipeDown={false}>
       <View style={{ width: '100%' }}>
@@ -38,16 +35,17 @@ const WarningModal = ({ visible, setVisible, onPressBtn }: Props) => {
               paddingHorizontal: theme.padding,
               textAlign: 'center',
             }}>
-            <Text
+            You’re dual staking via both direct nomination and nomination pool, which{' '}
+            <Typography.Text style={{ fontWeight: '700' }}>{'will not be supported'}</Typography.Text> in the upcoming
+            Polkadot runtime upgrade. Read more to learn about the upgrade, and{' '}
+            <Typography.Text
               style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
               onPress={() =>
-                Linking.openURL(
-                  'https://docs.astar.network/docs/learn/dapp-staking/dapp-staking-faq/#q-what-about-unclaimed-rewards',
-                )
+                Linking.openURL('https://docs.subwallet.app/main/mobile-app-user-guide/manage-staking/unstake')
               }>
-              Astar dApp staking V3
-            </Text>{' '}
-            is launching in early February. Make sure to claim any ASTR rewards before the launch or they will be lost.
+              unstake your DOT
+            </Typography.Text>{' '}
+            from one of the methods to avoid issues
           </Typography.Text>
         </View>
 
@@ -64,10 +62,12 @@ const WarningModal = ({ visible, setVisible, onPressBtn }: Props) => {
             style={{ flex: 1 }}
             onPress={() => {
               onPressBtn();
-              navigation.navigate('BrowserTabsManager', { url: 'https://portal.astar.network/', name: 'Astar Portal' });
+              Linking.openURL(
+                'https://support.polkadot.network/support/solutions/articles/65000188140-changes-for-nomination-pool-members-and-opengov-participation',
+              );
             }}
-            icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}>
-            {'Claim now'}
+            icon={<Icon phosphorIcon={ArrowCircleRight} size={'lg'} weight={'fill'} />}>
+            {'Read more'}
           </Button>
         </View>
       </View>
