@@ -24,6 +24,7 @@ const WarningModal = ({ visible, setVisible, onPressBtn }: Props) => {
       disabledOnPressBackDrop
       modalTitle={'Unstake your DOT now!'}
       titleTextAlign={'center'}
+      hideWhenCloseApp={false}
       isAllowSwipeDown={false}>
       <View style={{ width: '100%' }}>
         <View style={{ paddingVertical: theme.padding, alignItems: 'center', gap: theme.padding }}>

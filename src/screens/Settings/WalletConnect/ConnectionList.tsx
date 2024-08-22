@@ -62,7 +62,10 @@ export const ConnectionList = ({
   useEffect(() => {
     function checkPermission() {
       if (!itemsRef.current?.length) {
-        requestCameraPermission(() => navigation.goBack()).then(result => {
+        requestCameraPermission(
+          () => navigation.goBack(),
+          () => setIsScanning(true),
+        ).then(result => {
           if (result === RESULTS.GRANTED) {
             setIsScanning(true);
           } else {
