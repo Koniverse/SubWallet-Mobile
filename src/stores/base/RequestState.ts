@@ -26,7 +26,8 @@ const initialState: RequestState = {
   switchNetworkRequest: {},
   evmSignatureRequest: {},
   evmSendTransactionRequest: {},
-
+  evmWatchTransactionRequest: {},
+  errorConnectNetwork: {},
   // Summary Info
   reduxStatus: ReduxStatus.INIT,
   hasConfirmations: false,
@@ -43,6 +44,7 @@ export const CONFIRMATIONS_FIELDS: Array<keyof RequestState> = [
   'switchNetworkRequest',
   'evmSignatureRequest',
   'evmSendTransactionRequest',
+  'errorConnectNetwork',
   'connectWCRequest',
 ];
 

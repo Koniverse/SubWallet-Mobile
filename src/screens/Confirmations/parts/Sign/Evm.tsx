@@ -20,10 +20,12 @@ import { Minimizer } from '../../../../NativeModules';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { DeviceEventEmitter, Platform } from 'react-native';
+import { DeviceEventEmitter, Platform, View } from 'react-native';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { useToast } from 'react-native-toast-notifications';
 import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   id: string;
@@ -59,7 +61,7 @@ const handleSignature = async (type: EvmSignatureSupportType, id: string, signat
 export const EvmSignArea = (props: Props) => {
   const { id, payload, type, navigation, txExpirationTime } = props;
   const {
-    payload: { account, canSign, hashPayload },
+    payload: { account, canSign, hashPayload, errors },
   } = payload;
   const { hideAll, show } = useToast();
   const signMode = useMemo(() => getSignMode(account), [account]);
@@ -69,6 +71,8 @@ export const EvmSignArea = (props: Props) => {
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
+  const isErrorTransaction = useMemo(() => errors && errors.length > 0, [errors]);
+  const theme = useSubWalletTheme().swThemes;
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
       case AccountSignMode.QR:
@@ -181,28 +185,42 @@ export const EvmSignArea = (props: Props) => {
   useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
-    <ConfirmationFooter>
-      <Button block={true} disabled={loading} icon={getButtonIcon(XCircle)} type={'secondary'} onPress={onCancel}>
-        {i18n.common.cancel}
-      </Button>
-      <Button
-        block={true}
-        disabled={showQuoteExpired || !canSign || loading}
-        icon={getButtonIcon(approveIcon)}
-        loading={loading}
-        onPress={onConfirm}>
-        {i18n.buttonTitles.approve}
-      </Button>
-      {signMode === AccountSignMode.QR && (
-        <>
-          <DisplayPayloadModal visible={isShowQr} setVisible={setIsShowQr} onOpenScan={openScanning}>
-            <>
-              <EvmQr address={account.address} hashPayload={hashPayload} isMessage={isEvmMessage(payload)} />
-              <SignatureScanner visible={isScanning} setVisible={setIsScanning} onSuccess={onSuccess} />
-            </>
-          </DisplayPayloadModal>
-        </>
+    <>
+      {isErrorTransaction && errors && (
+        <View style={{ paddingHorizontal: theme.padding, width: '100%', paddingTop: theme.padding }}>
+          <AlertBox description={errors[0].message} title={errors[0].name} type={'error'} />
+        </View>
       )}
-    </ConfirmationFooter>
+      <ConfirmationFooter>
+        <Button
+          block={true}
+          disabled={loading}
+          icon={isErrorTransaction && getButtonIcon(XCircle)}
+          type={isErrorTransaction ? 'primary' : 'secondary'}
+          onPress={onCancel}>
+          {isErrorTransaction ? i18n.common.backToHome : i18n.common.cancel}
+        </Button>
+        {!isErrorTransaction && (
+          <Button
+            block={true}
+            disabled={showQuoteExpired || !canSign || loading}
+            icon={getButtonIcon(approveIcon)}
+            loading={loading}
+            onPress={onConfirm}>
+            {i18n.buttonTitles.approve}
+          </Button>
+        )}
+        {!isErrorTransaction && signMode === AccountSignMode.QR && (
+          <>
+            <DisplayPayloadModal visible={isShowQr} setVisible={setIsShowQr} onOpenScan={openScanning}>
+              <>
+                <EvmQr address={account.address} hashPayload={hashPayload} isMessage={isEvmMessage(payload)} />
+                <SignatureScanner visible={isScanning} setVisible={setIsScanning} onSuccess={onSuccess} />
+              </>
+            </DisplayPayloadModal>
+          </>
+        )}
+      </ConfirmationFooter>
+    </>
   );
 };

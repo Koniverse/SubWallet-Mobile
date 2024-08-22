@@ -35,7 +35,7 @@ const EvmTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const { request, type, navigation } = props;
   const {
     id,
-    payload: { account, chainId, to },
+    payload: { account, chainId, errors, to },
   } = request;
   const chainInfo = useGetChainInfoByChainId(chainId);
   const recipientAddress = to;
@@ -80,7 +80,7 @@ const EvmTransactionConfirmation: React.FC<Props> = (props: Props) => {
             />
           )}
         </MetaInfo>
-        {!!transaction.estimateFee?.tooHigh && (
+        {!!transaction?.estimateFee?.tooHigh && (
           <AlertBox
             description={'Gas fees on {{networkName}} are high due to high demands, so gas estimates are less accurate.'.replace(
               '{{networkName}}',
@@ -90,9 +90,11 @@ const EvmTransactionConfirmation: React.FC<Props> = (props: Props) => {
             type="warning"
           />
         )}
-        <BaseDetailModal title={i18n.confirmation.messageDetail}>
-          <EvmTransactionDetail account={account} request={request.payload} />
-        </BaseDetailModal>
+        {(!errors || errors.length === 0) && (
+          <BaseDetailModal title={i18n.confirmation.messageDetail}>
+            <EvmTransactionDetail account={account} request={request.payload} />
+          </BaseDetailModal>
+        )}
       </ConfirmationContent>
       <EvmSignArea id={id} type={type} payload={request} navigation={navigation} />
     </React.Fragment>
