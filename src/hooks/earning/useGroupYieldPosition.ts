@@ -19,7 +19,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
-const useGroupYieldPosition = (): YieldPositionInfo[] => {
+const useGroupYieldPosition = (selectedAddress?: string): YieldPositionInfo[] => {
   const { poolInfoMap, yieldPositions } = useSelector((state: RootState) => state.earning);
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const chainsByAccountType = useGetChainSlugs();
@@ -28,7 +28,7 @@ const useGroupYieldPosition = (): YieldPositionInfo[] => {
     const raw: Record<string, YieldPositionInfo[]> = {};
     const result: YieldPositionInfo[] = [];
 
-    const address = currentAccount?.address || '';
+    const address = selectedAddress ? selectedAddress : currentAccount?.address || '';
     const isAll = isAccountAll(address);
 
     const checkAddress = (item: YieldPositionInfo) => {
@@ -119,7 +119,7 @@ const useGroupYieldPosition = (): YieldPositionInfo[] => {
     }
 
     return result;
-  }, [chainsByAccountType, currentAccount?.address, poolInfoMap, yieldPositions]);
+  }, [chainsByAccountType, currentAccount?.address, poolInfoMap, selectedAddress, yieldPositions]);
 };
 
 export default useGroupYieldPosition;

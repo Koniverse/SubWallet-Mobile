@@ -8,7 +8,7 @@ interface AppModalContextProviderProps {
 export type ConfirmModalInfo = {
   visible?: boolean;
   title?: string;
-  message?: string;
+  message?: string | React.ReactNode;
   messageIcon?: string;
   customIcon?: React.ReactNode;
   completeBtnTitle?: string;
