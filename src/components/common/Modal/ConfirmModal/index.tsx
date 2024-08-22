@@ -9,7 +9,7 @@ import createStyle from './styles';
 import { noop } from 'utils/function';
 
 interface Props {
-  message: string;
+  message: string | React.ReactNode;
   messageIcon?: string;
   customIcon?: React.ReactNode;
   title: string;

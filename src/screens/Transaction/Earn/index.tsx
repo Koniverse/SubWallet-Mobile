@@ -22,7 +22,7 @@ import {
 import { addLazy } from '@subwallet/extension-base/utils/lazy';
 import BigN from 'bignumber.js';
 import { FormItem } from 'components/common/FormItem';
-import { ActivityIndicator, Button, Divider, Icon, Number } from 'components/design-system-ui';
+import { ActivityIndicator, Button, Divider, Icon, Number, PageIcon, Typography } from 'components/design-system-ui';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import { getInputValuesFromString, InputAmount } from 'components/Input/InputAmount';
 import EarningProcessItem from 'components/Item/Earning/EarningProcessItem';
@@ -44,10 +44,10 @@ import {
   unlockDotCheckCanMint,
   validateYieldProcess,
 } from 'messaging/index';
-import { PlusCircle } from 'phosphor-react-native';
+import { PlusCircle, Warning } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
-import { Alert, Keyboard, ScrollView, View } from 'react-native';
+import { Alert, Keyboard, Linking, ScrollView, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { DEFAULT_YIELD_PROCESS, EarningActionType, earningReducer } from 'reducers/earning';
@@ -80,6 +80,7 @@ import {
 } from '@subwallet/extension-base/core/logic-validation/earning';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
+import { AppModalContext } from 'providers/AppModalContext';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -252,6 +253,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [useParamValidator, setUseParamValidator] = useState<boolean>(redirectFromPreviewRef.current);
   const [checkValidAccountLoading, setCheckValidAccountLoading] = useState<boolean>(redirectFromPreviewRef.current);
   const globalAppModalContext = useContext(GlobalModalContext);
+  const appModalContext = useContext(AppModalContext);
   const isDisabledButton = useMemo(
     () =>
       checkMintLoading ||
@@ -755,33 +757,46 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         });
       } else if (warningConfirmationData && warningConfirmationData.isShowWarningConfirmation) {
         // hotfix for mkt campaign
-        globalAppModalContext.setGlobalModal({
+        appModalContext.setConfirmModal({
           visible: true,
-          title: 'Continue with this action?',
-          message: `You are currently staking ${warningConfirmationData.symbol} via ${warningConfirmationData.prevType}. Continuing to stake via ${warningConfirmationData.currentType} may result in being unable to vote and perform any transaction related to pool-staked funds (e.g., unstake, claim rewards, withdraw) due to the [upcoming changes](https://support.polkadot.network/support/solutions/articles/65000188140-changes-for-nomination-pool-members-and-opengov-participation) in Polkadot OpenGov voting. \n Do you want to continue staking?`,
-          type: 'confirmation',
-          externalButtons: (
-            <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
-              <Button block type={'secondary'} onPress={() => globalAppModalContext.hideGlobalModal()}>
-                {i18n.buttonTitles.cancel}
-              </Button>
-              <Button
-                block
-                type={'primary'}
-                onPress={() => {
-                  onSubmit();
-                  globalAppModalContext.hideGlobalModal();
-                }}>
-                {i18n.buttonTitles.continue}
-              </Button>
-            </View>
+          completeBtnTitle: i18n.buttonTitles.continue,
+          customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+          title: 'Continue staking?',
+          message: (
+            <Typography.Text>
+              <Typography.Text>{`You are currently staking ${warningConfirmationData.symbol} via ${warningConfirmationData.prevType}. Continuing to stake via ${warningConfirmationData.currentType} may result in being unable to vote and perform any transaction related to pool-staked funds (e.g., unstake, claim rewards, withdraw) due to the `}</Typography.Text>
+              <Typography.Text
+                style={{ color: theme.colorPrimary, textDecorationLine: 'underline' }}
+                onPress={() =>
+                  Linking.openURL(
+                    'https://support.polkadot.network/support/solutions/articles/65000188140-changes-for-nomination-pool-members-and-opengov-participation',
+                  )
+                }>
+                {'upcoming changes'}
+              </Typography.Text>
+              <Typography.Text>{' in Polkadot OpenGov voting.'}</Typography.Text>
+            </Typography.Text>
           ),
+          onCancelModal: appModalContext.hideConfirmModal,
+          onCompleteModal: () => {
+            appModalContext.hideConfirmModal();
+            onSubmit();
+          },
         });
       } else {
         onSubmit();
       }
     }, 100);
-  }, [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons, warningConfirmationData]);
+  }, [
+    appModalContext,
+    currentConfirmations,
+    globalAppModalContext,
+    onSubmit,
+    renderConfirmationButtons,
+    theme.colorPrimary,
+    theme.colorWarning,
+    warningConfirmationData,
+  ]);
 
   const onBack = useCallback(() => {
     if (firstStep) {
