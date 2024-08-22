@@ -118,7 +118,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const defaultTarget = useRef<string | undefined>(target);
   const redirectFromPreviewRef = useRef(!!redirectFromPreview);
   const autoCheckCompoundRef = useRef<boolean>(true);
-  const yieldPositionsData = useGroupYieldPosition();
   const {
     title,
     form: {
@@ -167,7 +166,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo?.type || '';
   const poolChain = poolInfo?.chain || '';
-
+  const yieldPositionsData = useGroupYieldPosition(currentFrom);
   // hotfix for mkt campaign
   const warningConfirmationData = useMemo(() => {
     if (SHOW_WARNING_CASES.includes(slug)) {
@@ -176,7 +175,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         const prevType = splitPrevSlug[1] === 'native_staking' ? 'direct nomination' : 'nomination pool';
         const splitCurrentSlug = currentSlug.split('___');
         const currentType = splitCurrentSlug[1] === 'native_staking' ? 'direct nomination' : 'nomination pool';
-        const isShowWarningConfirmation = !!yieldPositionsData.find(y => y.slug === 'DOT___native_staking___polkadot');
+        const isShowWarningConfirmation = !!yieldPositionsData.find(y => y.slug === prevSlug);
 
         return { isShowWarningConfirmation, symbol: splitCurrentSlug[0], currentType, prevType };
       };
@@ -764,7 +763,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           title: 'Continue staking?',
           message: (
             <Typography.Text>
-              <Typography.Text>{`You are currently staking ${warningConfirmationData.symbol} via ${warningConfirmationData.prevType}. Continuing to stake via ${warningConfirmationData.currentType} may result in being unable to vote and perform any transaction related to pool-staked funds (e.g., unstake, claim rewards, withdraw) due to the `}</Typography.Text>
+              <Typography.Text>{`You're currently staking ${warningConfirmationData.symbol} via ${warningConfirmationData.prevType}. Due to Polkadot's `}</Typography.Text>
               <Typography.Text
                 style={{ color: theme.colorPrimary, textDecorationLine: 'underline' }}
                 onPress={() =>
@@ -774,7 +773,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                 }>
                 {'upcoming changes'}
               </Typography.Text>
-              <Typography.Text>{' in Polkadot OpenGov voting.'}</Typography.Text>
+              <Typography.Text>
+                {`, continuing to stake via ${warningConfirmationData.currentType} will lead to pool-staked funds being frozen (e.g., can't unstake, claim rewards)`}
+              </Typography.Text>
             </Typography.Text>
           ),
           onCancelModal: appModalContext.hideConfirmModal,
