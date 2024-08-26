@@ -15,7 +15,6 @@ export type EarningScreenStackParamList = {
 
 export type NavigationProps = NativeStackScreenProps<EarningScreenStackParamList>;
 export type EarningScreenNavigationProps = NavigationProps['navigation'];
-// export type StakeScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'Stake'>;
 // export type UnbondScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'Unbond'>;
 // export type ClaimRewardScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'ClaimReward'>;
 // export type WithDrawScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'Withdraw'>;

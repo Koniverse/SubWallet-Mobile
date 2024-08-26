@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
-import { FlatList, ListRenderItemInfo, RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
-import { ScrollViewStyle } from 'styles/sharedStyles';
+import { RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
 import { useLazyList } from 'hooks/common/useLazyList';
 import { defaultSortFunc } from 'utils/function';
 import { SortFunctionInterface } from 'types/ui-types';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ContentStyle, FlashList, ListRenderItemInfo } from '@shopify/flash-list';
 
 interface Props<T> {
   items: T[];
@@ -16,7 +16,7 @@ interface Props<T> {
   filterFunction?: (items: T[], filters: string[]) => T[];
   selectedFilters?: string[];
   numberColumns?: number;
-  flatListStyle?: StyleProp<ViewStyle>;
+  flatListStyle?: ContentStyle;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   sortFunction?: SortFunctionInterface<T>;
@@ -30,14 +30,11 @@ interface Props<T> {
   initialNumToRender?: number;
   removeClippedSubviews?: boolean;
   keyExtractor?: (item: T, index: number) => string;
+  estimatedItemSize?: number;
 }
 
 const ItemSeparatorStyle: StyleProp<ViewStyle> = {
   height: 16,
-};
-
-const ColumnWrapperStyle: StyleProp<ViewStyle> = {
-  justifyContent: 'space-between',
 };
 
 export function LazyFlatList<T>({
@@ -54,14 +51,12 @@ export function LazyFlatList<T>({
   loading,
   sortFunction = defaultSortFunc,
   isShowListWrapper,
-  getItemLayout,
-  maxToRenderPerBatch = 12,
-  initialNumToRender = 12,
   removeClippedSubviews,
   keyExtractor,
+  estimatedItemSize,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
-  const flatListRef = useRef<FlatList>(null);
+  const flatListRef = useRef<FlashList<T>>(null);
   const filteredItems = useMemo(() => {
     let searchItem = searchFunction ? searchFunction(items, searchString) : items;
 
@@ -69,6 +64,21 @@ export function LazyFlatList<T>({
   }, [searchFunction, items, searchString, filterFunction, selectedFilters]);
   const sortedItems = useMemo(() => filteredItems.sort(sortFunction), [filteredItems, sortFunction]);
   const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(sortedItems);
+  const styleWrapper = [
+    isShowListWrapper
+      ? {
+          backgroundColor: '#1A1A1A',
+          marginHorizontal: 16,
+          borderRadius: 8,
+          // marginBottom: 94,
+          paddingVertical: 8,
+          flex: 1,
+        }
+      : {},
+    {
+      flex: 1,
+    },
+  ];
 
   useEffect(() => {
     let unmount = false;
@@ -107,42 +117,31 @@ export function LazyFlatList<T>({
   return (
     <>
       {lazyList.length ? (
-        <View
-          style={[
-            isShowListWrapper
-              ? {
-                  backgroundColor: '#1A1A1A',
-                  marginHorizontal: 16,
-                  borderRadius: 8,
-                  // marginBottom: 94,
-                  paddingVertical: 8,
-                  flex: 1,
-                }
-              : {},
-            {
-              flex: 1,
-            },
-          ]}>
-          <FlatList
+        <View style={styleWrapper}>
+          <FlashList
             ref={flatListRef}
-            style={{ ...ScrollViewStyle }}
             keyboardShouldPersistTaps={'handled'}
             data={lazyList}
             onEndReached={onLoadMore}
             renderItem={renderItem}
             numColumns={numberColumns}
             refreshControl={refreshControl}
-            columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
+            // columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
             ListFooterComponent={renderLoadingAnimation}
             ItemSeparatorComponent={renderSeparatorComponent}
             contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
-            getItemLayout={getItemLayout}
+            // getItemLayout={getItemLayout}
             onEndReachedThreshold={0.5}
-            maxToRenderPerBatch={maxToRenderPerBatch}
-            initialNumToRender={initialNumToRender}
+            // maxToRenderPerBatch={maxToRenderPerBatch}
+            // initialNumToRender={initialNumToRender}
             removeClippedSubviews={removeClippedSubviews}
             showsVerticalScrollIndicator={false}
             keyExtractor={keyExtractor}
+            onBlankArea={() => {
+              return null;
+            }}
+            disableAutoLayout={true}
+            estimatedItemSize={estimatedItemSize}
           />
         </View>
       ) : (

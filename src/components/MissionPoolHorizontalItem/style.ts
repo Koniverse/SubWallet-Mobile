@@ -10,6 +10,7 @@ export default (theme: ThemeTypes) =>
       backgroundColor: theme.colorBgSecondary,
       overflow: 'hidden',
       flexDirection: 'row',
+      marginBottom: theme.marginXS,
       flex: 1,
     },
     backdropImgStyle: {

@@ -7,7 +7,7 @@ import { SectionItem } from 'components/LazySectionList';
 import { AbstractAddressJson, AccountJson } from '@subwallet/extension-base/background/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
-import { ListRenderItemInfo, View } from 'react-native';
+import { View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
@@ -21,6 +21,7 @@ import createStylesheet from './style/AddressBookModal';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 interface Props {
   modalVisible: boolean;

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
-import { Keyboard, ListRenderItemInfo, RefreshControlProps, StyleProp, TextInput, View, ViewStyle } from 'react-native';
+import { Keyboard, RefreshControlProps, StyleProp, TextInput, View, ViewStyle } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { SortFunctionInterface } from 'types/ui-types';
@@ -12,6 +12,7 @@ import FilterModal, { OptionType } from 'components/common/FilterModal';
 import { useFilterModal } from 'hooks/useFilterModal';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { LazySectionList, SectionItem } from 'components/LazySectionList';
+import { ContentStyle, ListRenderItemInfo } from '@shopify/flash-list';
 
 export interface RightIconOpt {
   icon?: (iconProps: IconProps) => JSX.Element;
@@ -42,7 +43,7 @@ interface Props<T> {
   placeholder?: string;
   numberColumns?: number;
   loading?: boolean;
-  flatListStyle?: StyleProp<ViewStyle>;
+  flatListStyle?: ContentStyle;
   leftButtonDisabled?: boolean;
   headerContent?: () => JSX.Element;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
@@ -65,6 +66,7 @@ interface Props<T> {
     data: readonly T[] | SectionListData<T, SectionListData<T>>[] | null | undefined,
     index: number,
   ) => { length: number; offset: number; index: number };
+  estimatedItemSize?: number;
 }
 
 export function FlatListScreen<T>({
@@ -104,6 +106,7 @@ export function FlatListScreen<T>({
   androidKeyboardVerticalOffset,
   titleTextAlign,
   getItemLayout,
+  estimatedItemSize,
 }: Props<T>) {
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
   const searchRef = useRef<TextInput>(null);
@@ -176,7 +179,8 @@ export function FlatListScreen<T>({
             loading={loading}
             numberColumns={numberColumns}
             isShowListWrapper={isShowListWrapper}
-            getItemLayout={getItemLayout}
+            // getItemLayout={getItemLayout}
+            estimatedItemSize={estimatedItemSize}
           />
         ))
       ) : (

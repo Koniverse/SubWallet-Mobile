@@ -37,6 +37,7 @@ export const ChainSelector = ({
       ref={chainSelectorRef}
       onBackButtonPress={() => chainSelectorRef?.current?.onCloseModal()}
       title={i18n.header.selectNetwork}
+      estimatedItemSize={60}
     />
   );
 };

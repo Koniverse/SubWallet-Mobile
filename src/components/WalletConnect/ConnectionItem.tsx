@@ -48,7 +48,10 @@ export const ConnectionItem = ({ session, onPress }: Props) => {
   }
 
   return (
-    <TouchableOpacity onPress={() => onPress(topic)} activeOpacity={BUTTON_ACTIVE_OPACITY}>
+    <TouchableOpacity
+      style={{ marginBottom: theme.marginXS }}
+      onPress={() => onPress(topic)}
+      activeOpacity={BUTTON_ACTIVE_OPACITY}>
       <Web3Block
         customStyle={{
           container: {
