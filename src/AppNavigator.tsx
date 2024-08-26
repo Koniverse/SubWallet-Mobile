@@ -258,7 +258,7 @@ const DrawerScreen = () => {
         swipeEnabled: false,
       }}>
       <Drawer.Screen name="TransactionAction" component={TransactionScreen} />
-      <Drawer.Screen name="BuyToken" component={BuyToken} />
+      <Drawer.Screen name="BuyToken" component={withPageWrapper(BuyToken, ['buyService'])} />
     </Drawer.Navigator>
   );
 };

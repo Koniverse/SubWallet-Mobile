@@ -61,11 +61,9 @@ function isMantaPayEnabled(account: AccountJson | null, configs: MantaPayConfig[
 }
 
 export default function useReceiveQR(tokenGroupSlug?: string) {
-  const accounts = useSelector((state: RootState) => state.accountState.accounts);
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const { accounts, currentAccount, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const assetRegistryMap = useChainAssets().chainAssetRegistry;
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const isAllAccount = useSelector((state: RootState) => state.accountState.isAllAccount);
   const mantaPayConfigs = useSelector((state: RootState) => state.mantaPay.configs);
   const [tokenSelectorItems, setTokenSelectorItems] = useState<TokenItemType[]>([]);
   const [isQrModalVisible, setQrModalVisible] = useState<boolean>(false);

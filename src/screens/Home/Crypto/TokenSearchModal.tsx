@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ListRenderItemInfo, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
@@ -11,10 +11,13 @@ import { EmptyList } from 'components/EmptyList';
 import { Coins } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { AccountBalanceHookType, TokenGroupHookType } from 'types/hook';
+import { sortTokenByValue } from 'utils/sort/token';
 
 interface Props {
   onSelectItem: (item: TokenBalanceItemType) => void;
-  items: TokenBalanceItemType[];
+  tokenBalanceMap: AccountBalanceHookType['tokenBalanceMap'];
+  sortedTokenSlugs: TokenGroupHookType['sortedTokenSlugs'];
   isShowBalance: boolean;
   tokenSearchRef: React.MutableRefObject<ModalRef | undefined>;
 }
@@ -24,9 +27,34 @@ const searchFunction = (items: TokenBalanceItemType[], searchString: string) => 
   return items.filter(({ symbol }) => symbol.toLowerCase().includes(lowerCaseSearchString));
 };
 
-export const TokenSearchModal = ({ onSelectItem, items, isShowBalance, tokenSearchRef }: Props) => {
+function getTokenBalances(
+  tokenBalanceMap: AccountBalanceHookType['tokenBalanceMap'],
+  sortedTokenSlugs: TokenGroupHookType['sortedTokenSlugs'],
+): TokenBalanceItemType[] {
+  const result: TokenBalanceItemType[] = [];
+
+  sortedTokenSlugs.forEach(tokenSlug => {
+    if (tokenBalanceMap[tokenSlug]) {
+      result.push(tokenBalanceMap[tokenSlug]);
+    }
+  });
+
+  return result;
+}
+
+export const TokenSearchModal = ({
+  onSelectItem,
+  sortedTokenSlugs,
+  tokenBalanceMap,
+  isShowBalance,
+  tokenSearchRef,
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
+
+  const tokenBalances = useMemo<TokenBalanceItemType[]>(() => {
+    return getTokenBalances(tokenBalanceMap, sortedTokenSlugs).sort(sortTokenByValue);
+  }, [tokenBalanceMap, sortedTokenSlugs]);
 
   const _onPressItem = useCallback(
     (item: TokenBalanceItemType) => {
@@ -56,7 +84,7 @@ export const TokenSearchModal = ({ onSelectItem, items, isShowBalance, tokenSear
   return (
     <FullSizeSelectModal
       ref={tokenSearchRef}
-      items={items}
+      items={tokenBalances}
       selectedValueMap={{}}
       selectModalType={'single'}
       renderCustomItem={renderItem}

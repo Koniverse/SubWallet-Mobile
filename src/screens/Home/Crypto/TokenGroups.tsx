@@ -71,7 +71,6 @@ export const TokenGroups = () => {
     tokenRef,
     selectedAccountMap,
   } = useReceiveQR();
-
   const toast = useToast();
   const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('token');
   const onPressItem = useCallback(
@@ -192,23 +191,6 @@ export const TokenGroups = () => {
     onSuccess();
   }, [currentAccount, navigation, showNoti]);
 
-  const tokenSearchItems = useMemo<TokenBalanceItemType[]>(() => {
-    const items: TokenBalanceItemType[] = [];
-
-    sortedTokenSlugs.forEach(t => {
-      if (tokenBalanceMap[t]) {
-        items.push(tokenBalanceMap[t]);
-      }
-    });
-
-    const result = items
-      // @ts-ignore
-      .sort((firstItem, secondItem) => firstItem.total.convertedValue - secondItem.total.convertedValue)
-      .reverse();
-
-    return result;
-  }, [sortedTokenSlugs, tokenBalanceMap]);
-
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsUpperBlock
@@ -280,10 +262,13 @@ export const TokenGroups = () => {
           tokenSearchRef={tokenSearchRef}
           onSelectItem={onPressSearchItem}
           isShowBalance={isShowBalance}
-          items={tokenSearchItems}
+          sortedTokenSlugs={sortedTokenSlugs}
+          tokenBalanceMap={tokenBalanceMap}
         />
 
-        <CustomizationModal modalVisible={isCustomizationModalVisible} setVisible={setCustomizationModalVisible} />
+        {isCustomizationModalVisible && (
+          <CustomizationModal modalVisible={isCustomizationModalVisible} setVisible={setCustomizationModalVisible} />
+        )}
       </>
     </ScreenContainer>
   );

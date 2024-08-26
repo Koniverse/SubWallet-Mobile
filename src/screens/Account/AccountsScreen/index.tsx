@@ -1,7 +1,15 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Keyboard, ListRenderItemInfo, Share, StyleProp, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  InteractionManager,
+  Keyboard,
+  ListRenderItemInfo,
+  SectionListData,
+  Share,
+  StyleProp,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -61,6 +69,15 @@ const receiveModalContentWrapper: StyleProp<any> = {
   width: '100%',
 };
 
+type GetItemLayoutType =
+  | readonly AccountJson[]
+  | SectionListData<AccountJson, SectionListData<AccountJson>>[]
+  | null
+  | undefined;
+const ITEM_HEIGHT = 60;
+const ITEM_SEPARATOR = 8;
+const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
+
 export const AccountsScreen = ({
   route: {
     params: { pathName },
@@ -70,6 +87,7 @@ export const AccountsScreen = ({
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
   const navigation = useNavigation<RootNavigationProps>();
+  const [isReady, setIsReady] = useState<boolean>(false);
   const fullAccounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
   let svg: { toDataURL: (arg0: (data: any) => void) => void };
@@ -96,6 +114,12 @@ export const AccountsScreen = ({
 
     return fullAccounts.filter(a => !isAccountAll(a.address));
   }, [fullAccounts, currentAccountAddress]);
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      setIsReady(true);
+    });
+  }, []);
 
   const createAccountRef = useRef<ModalRef>();
   const importAccountRef = useRef<ModalRef>();
@@ -282,6 +306,12 @@ export const AccountsScreen = ({
     [currentAccountAddress, navigation, rightSwipeActions, selectAccount],
   );
 
+  const getItemLayout = (data: GetItemLayoutType, index: number) => ({
+    index,
+    length: TOTAL_ITEM_HEIGHT,
+    offset: TOTAL_ITEM_HEIGHT * index,
+  });
+
   const onPressFooterBtn = (action: () => void) => {
     Keyboard.dismiss();
     setTimeout(action, 200);
@@ -332,6 +362,8 @@ export const AccountsScreen = ({
         renderListEmptyComponent={renderListEmptyComponent}
         searchFunction={searchFunction}
         autoFocus={false}
+        loading={!isReady}
+        getItemLayout={getItemLayout}
         afterListItem={renderFooterComponent()}
         placeholder={i18n.placeholder.accountName}
         rightIconOption={{
