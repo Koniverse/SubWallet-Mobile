@@ -10,7 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
 import { Vault } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
+import { Keyboard, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { EarningPoolListProps } from 'routes/earning';
@@ -27,6 +27,7 @@ import useAccountBalance, { getBalanceValue } from 'hooks/screen/useAccountBalan
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { useGroupYieldPosition } from 'hooks/earning';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
   if (!filters.length) {
@@ -297,6 +298,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onBack}
+        estimatedItemSize={113}
         // rightIconOption={rightIconOption}
         isShowFilterBtn
         isShowMainHeader

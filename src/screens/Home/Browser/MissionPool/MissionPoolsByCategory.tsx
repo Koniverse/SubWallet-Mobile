@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
-import { Keyboard, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { EmptyList } from 'components/EmptyList';
 import { GlobeHemisphereWest } from 'phosphor-react-native';
 import { useRefresh } from 'hooks/useRefresh';
@@ -18,6 +18,7 @@ import { MissionPoolDetailModal } from 'screens/Home/Browser/MissionPool/Mission
 import { computeStatus } from 'utils/missionPools';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { MissionPoolsContext } from 'screens/Home/Browser/MissionPool/context';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 const ITEM_HEIGHT = missionPoolItemHeight;
 const ITEM_SEPARATOR = missionPoolSeparator;
@@ -172,10 +173,10 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
         renderItem={renderItem}
         getItemLayout={getItemLayout}
         renderListEmptyComponent={renderEmpty}
-        flatListStyle={{ gap: theme.paddingXS }}
         searchString={searchString}
         filterFunction={filterFunction}
         selectedFilters={selectedFilters}
+        estimatedItemSize={122}
       />
 
       {selectedMissionPool && (

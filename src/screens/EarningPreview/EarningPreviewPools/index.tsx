@@ -9,7 +9,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron, saveCurrentAccountAddress } from 'messaging/index';
 import { Trophy } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Keyboard, Linking, ListRenderItemInfo, RefreshControl } from 'react-native';
+import { Keyboard, Linking, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { EarningPreviewPoolsProps, RootNavigationProps } from 'routes/index';
@@ -31,6 +31,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { getStartEarningUrl } from '..';
 import { analysisAccounts } from 'hooks/screen/Home/Crypto/useGetChainSlugsByAccountType';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
   if (!filters.length) {
@@ -308,6 +309,7 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
         filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onBack}
+        estimatedItemSize={113}
         // rightIconOption={rightIconOption}
         isShowFilterBtn
         refreshControl={

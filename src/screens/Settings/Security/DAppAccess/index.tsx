@@ -5,7 +5,6 @@ import { DotsThree, GlobeSimple, Plugs, PlugsConnected, X } from 'phosphor-react
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ListRenderItemInfo } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { changeAuthorizationAll, forgetAllSite } from 'messaging/index';
@@ -14,6 +13,7 @@ import i18n from 'utils/i18n/i18n';
 import { EmptyList } from 'components/EmptyList';
 import DappAccessItem from 'components/design-system-ui/web3-block/DappAccessItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 function searchFunction(items: AuthUrlInfo[], searchString: string) {
   return items.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -125,6 +125,7 @@ export const DAppAccessScreen = () => {
     ({ item }: ListRenderItemInfo<AuthUrlInfo>) => {
       return (
         <DappAccessItem
+          containerStyle={{ marginBottom: theme.marginXS }}
           item={item}
           onPress={() => {
             navigation.navigate('DAppAccessDetail', {
@@ -135,7 +136,7 @@ export const DAppAccessScreen = () => {
         />
       );
     },
-    [navigation],
+    [navigation, theme.marginXS],
   );
 
   return (
@@ -145,7 +146,6 @@ export const DAppAccessScreen = () => {
       items={dAppItems}
       onPressBack={() => navigation.goBack()}
       searchFunction={searchFunction}
-      flatListStyle={{ gap: 8 }}
       placeholder={i18n.placeholder.searchOrEnterWebsite}
       renderListEmptyComponent={() => (
         <EmptyList
@@ -159,6 +159,7 @@ export const DAppAccessScreen = () => {
       isShowFilterBtn
       filterFunction={filterFunction}
       filterOptions={FILTER_OPTIONS}
+      estimatedItemSize={60}
       afterListItem={
         <MoreOptionModal
           modalVisible={modalVisible}

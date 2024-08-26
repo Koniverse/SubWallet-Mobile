@@ -1,7 +1,7 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Keyboard, ListRenderItemInfo, Share, StyleProp, View } from 'react-native';
+import { Keyboard, Share, StyleProp, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -37,6 +37,8 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import useGoHome from 'hooks/screen/useGoHome';
+import { ListRenderItemInfo } from '@shopify/flash-list';
+import Svg from 'react-native-svg';
 
 const renderListEmptyComponent = () => {
   return (
@@ -72,7 +74,7 @@ export const AccountsScreen = ({
   const navigation = useNavigation<RootNavigationProps>();
   const fullAccounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
-  let svg: { toDataURL: (arg0: (data: any) => void) => void };
+  let svg: Svg | null;
   const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
   const [selectedAddress, setSelectedAddress] = useState<string>('');
   const [deleting, setDeleting] = useState(false);
@@ -186,7 +188,7 @@ export const AccountsScreen = ({
   );
 
   const onShareImg = () => {
-    svg.toDataURL(data => {
+    svg?.toDataURL(data => {
       const shareImageBase64 = {
         title: 'QR',
         message: `My Public Address to Receive ${selectedAddress}`,
@@ -327,13 +329,13 @@ export const AccountsScreen = ({
         onPressBack={() => navigation.goBack()}
         title={i18n.header.selectAccount}
         items={accounts}
-        flatListStyle={{ gap: theme.paddingXS }}
         renderItem={renderItem}
         renderListEmptyComponent={renderListEmptyComponent}
         searchFunction={searchFunction}
         autoFocus={false}
         afterListItem={renderFooterComponent()}
         placeholder={i18n.placeholder.accountName}
+        estimatedItemSize={80}
         rightIconOption={{
           icon: ({ color }) => <Icon phosphorIcon={Export} weight={'fill'} iconColor={color} size={'md'} />,
           onPress: () => navigation.navigate('ExportAllAccount'),

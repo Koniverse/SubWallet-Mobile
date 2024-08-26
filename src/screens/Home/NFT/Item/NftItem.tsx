@@ -13,7 +13,7 @@ interface Props {
 }
 
 const WrapperStyle: StyleProp<ViewStyle> = {
-  width: '50%',
+  width: '100%',
   height: (deviceWidth - 32) / 2 + 32,
   paddingHorizontal: 8,
 };

@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ListRenderItemInfo } from 'react-native';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -19,6 +18,7 @@ import { RootNavigationProps } from 'routes/index';
 import useChainInfoWithStateAndStatus, {
   ChainInfoWithStateAnhStatus,
 } from 'hooks/chain/useChainInfoWithStateAndStatus';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 interface Props {
   modalVisible: boolean;
@@ -57,7 +57,7 @@ const processChainMap = (
       });
   }
 
-  return !!chainKeys ? chainKeys.map(key => chainInfoMap[key]) : [];
+  return chainKeys ? chainKeys.map(key => chainInfoMap[key]) : [];
 };
 
 export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
@@ -220,6 +220,7 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
         renderListEmptyComponent={renderListEmptyComponent}
         isLoadingData={isLoadingData}
         isShowListWrapper
+        estimatedItemSize={57}
         placeholder={i18n.placeholder.networkName}
       />
     </SwFullSizeModal>

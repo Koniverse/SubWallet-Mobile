@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ListRenderItemInfo, StyleSheet, Switch, View } from 'react-native';
+import { StyleSheet, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { DotsThree, Plugs, PlugsConnected, Shield, ShieldSlash, Users, X } from 'phosphor-react-native';
 import { MoreOptionItemType, MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
@@ -22,6 +22,7 @@ import { DisabledStyle, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import DappAccessItem, { getSiteTitle } from 'components/design-system-ui/web3-block/DappAccessItem';
 import { getHostName } from 'utils/browser';
 import { ThemeTypes } from 'styles/themes';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 type Props = {
   origin: string;
@@ -196,7 +197,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       };
 
       return (
-        <>
+        <View style={{ marginBottom: theme.marginXS }}>
           <AccountItemWithName
             customStyle={{ container: [{ marginHorizontal: theme.margin }, !authInfo.isAllowed && DisabledStyle] }}
             address={item.address}
@@ -210,16 +211,15 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
               />
             )}
           />
-        </>
+        </View>
       );
     },
-    [authInfo.isAllowedMap, authInfo.isAllowed, theme.margin, origin, pendingMap],
+    [authInfo.isAllowedMap, authInfo.isAllowed, theme.marginXS, theme.margin, origin, pendingMap],
   );
 
   return (
     <FlatListScreen
       title={origin}
-      flatListStyle={{ gap: theme.paddingXS }}
       autoFocus={false}
       onPressBack={() => navigation.goBack()}
       beforeListItem={renderBeforeListItem()}
@@ -233,6 +233,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
           message={i18n.emptyScreen.manageDAppDetailEmptyMessage}
         />
       )}
+      estimatedItemSize={60}
       rightIconOption={rightIconOption}
       renderItem={renderItem}
       afterListItem={

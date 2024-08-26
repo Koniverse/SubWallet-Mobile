@@ -144,6 +144,7 @@ function createStyleSheet(theme: ThemeTypes) {
       paddingHorizontal: theme.paddingSM,
       backgroundColor: theme.colorBgSecondary,
       borderRadius: theme.borderRadiusLG,
+      marginBottom: theme.marginXS,
     },
 
     subText: {

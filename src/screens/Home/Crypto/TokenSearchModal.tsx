@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ListRenderItemInfo, View } from 'react-native';
+import { View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 import { TokenBalanceItem } from 'components/common/TokenBalanceItem';
@@ -11,6 +11,7 @@ import { EmptyList } from 'components/EmptyList';
 import { Coins } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 interface Props {
   onSelectItem: (item: TokenBalanceItemType) => void;
@@ -65,6 +66,7 @@ export const TokenSearchModal = ({ onSelectItem, items, isShowBalance, tokenSear
       title={i18n.header.selectToken}
       placeholder={i18n.placeholder.searchToken}
       closeModalAfterSelect={true}
+      estimatedItemSize={76}
       renderListEmptyComponent={() => (
         <EmptyList
           icon={Coins}

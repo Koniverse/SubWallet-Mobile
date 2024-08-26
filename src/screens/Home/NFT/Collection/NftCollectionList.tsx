@@ -1,7 +1,7 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback, useEffect } from 'react';
-import { ListRenderItemInfo, RefreshControl, SectionListData, View } from 'react-native';
+import { RefreshControl, SectionListData, View } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import i18n from 'utils/i18n/i18n';
 import { Image, Plus } from 'phosphor-react-native';
@@ -16,6 +16,7 @@ import { EmptyList } from 'components/EmptyList';
 import { deviceWidth } from 'constants/index';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { BannerGenerator } from 'components/common/BannerGenerator';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 type GetItemLayoutType =
   | readonly NftCollection[]
@@ -89,7 +90,7 @@ const NftCollectionList = () => {
         searchFunction={filteredCollection}
         items={nftCollections}
         placeholder={i18n.placeholder.searchCollectionName}
-        flatListStyle={{ flex: 1 }}
+        estimatedItemSize={228.7}
         rightIconOption={{
           icon: Plus,
           onPress: () => {
