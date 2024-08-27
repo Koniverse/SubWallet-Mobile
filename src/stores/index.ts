@@ -1,5 +1,4 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { isDevMode } from 'constants/index';
 import mobileSettingsReducer from './MobileSettings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import appStateReducer from './AppState';
@@ -41,7 +40,7 @@ import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
 import SwapReducer from './feature/Swap';
 import LogoMap from 'stores/base/LogoMap';
-import { mmkvReduxStore } from 'utils/storage';
+import { getDevMode, mmkvReduxStore } from 'utils/storage';
 import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
 import { AppOnlineContent, AssetRegistryStore, BalanceStore, BrowserSlice, ChainStore } from './types';
 import { browserDAPPs, tokenConfig } from './API';
@@ -124,6 +123,7 @@ const rootReducer = combineReducers({
 });
 
 const persistedReducer = persistReducer(persistRootConfig, rootReducer);
+const isDevMode = getDevMode();
 
 export const store = configureStore({
   reducer: persistedReducer,
