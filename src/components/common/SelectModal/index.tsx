@@ -18,7 +18,6 @@ import { RootState } from 'stores/index';
 import { ChainInfo } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { SortFunctionInterface } from 'types/ui-types';
 import { SectionItem } from 'components/LazySectionList';
 import { ListRenderItemInfo } from '@shopify/flash-list';
@@ -68,7 +67,7 @@ interface Props<T> {
   rightIconOption?: RightIconOpt;
   level?: number;
   grouping?: {
-    renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
+    renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null;
     groupBy: (item: T) => string;
     sortSection?: SortFunctionInterface<SectionItem<T>>;
   };

@@ -6,7 +6,6 @@ import { EmptyList } from 'components/EmptyList';
 import { SectionItem } from 'components/LazySectionList';
 import { AbstractAddressJson, AccountJson } from '@subwallet/extension-base/background/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
@@ -151,7 +150,7 @@ export const AddressBookModal = ({
         priority = '0';
       }
 
-      return `${priority}|${AccountGroupNameMap[item.group]}`;
+      return `${priority}|${AccountGroupNameMap[item.group]}|${item.group}`;
     },
     [AccountGroupNameMap],
   );
@@ -227,35 +226,33 @@ export const AddressBookModal = ({
           fallbackName={false}
           onPress={onSelectItem(item)}
           isSelected={selected}
+          customStyle={{ container: { marginHorizontal: theme.margin, marginBottom: theme.marginXS } }}
         />
       );
     },
-    [formatAddress, onSelectItem, theme.sizeLG, value],
+    [formatAddress, onSelectItem, theme.margin, theme.marginXS, theme.sizeLG, value],
   );
 
-  const renderSectionHeader: (info: { section: SectionListData<AccountItem> }) => React.ReactElement | null =
-    useCallback(
-      (info: { section: SectionListData<AccountItem> }) => {
-        return (
-          <View style={stylesheet.sectionHeaderContainer}>
-            <Typography.Text size={'sm'} style={stylesheet.sectionHeaderTitle}>
-              {`${info.section.title.split('|')[1]} `}
+  const renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null = useCallback(
+    (item, itemLength = 0) => {
+      return (
+        <View style={stylesheet.sectionHeaderContainer}>
+          <Typography.Text size={'sm'} style={stylesheet.sectionHeaderTitle}>
+            {`${item.split('|')[1]} `}
 
-              <Typography.Text size={'sm'} style={stylesheet.sectionHeaderCounter}>
-                ({info.section.data.length.toString().padStart(2, '0')})
-              </Typography.Text>
+            <Typography.Text size={'sm'} style={stylesheet.sectionHeaderCounter}>
+              ({itemLength})
             </Typography.Text>
-          </View>
-        );
-      },
-      [stylesheet.sectionHeaderContainer, stylesheet.sectionHeaderCounter, stylesheet.sectionHeaderTitle],
-    );
+          </Typography.Text>
+        </View>
+      );
+    },
+    [stylesheet.sectionHeaderContainer, stylesheet.sectionHeaderCounter, stylesheet.sectionHeaderTitle],
+  );
 
   const grouping = useMemo(() => {
     return { groupBy, sortSection, renderSectionHeader };
   }, [groupBy, renderSectionHeader]);
-
-  const BeforeListItem = useMemo(() => <View style={stylesheet.beforeListBlock} />, [stylesheet.beforeListBlock]);
 
   return (
     <SwFullSizeModal
@@ -269,7 +266,6 @@ export const AddressBookModal = ({
         autoFocus
         showLeftBtn={true}
         items={items}
-        beforeListItem={BeforeListItem}
         onPressBack={onClose}
         title={i18n.header.addressBook}
         placeholder={i18n.placeholder.searchAddressBook}
@@ -284,6 +280,7 @@ export const AddressBookModal = ({
         isShowMainHeader={false}
         searchMarginBottom={theme.sizeXS}
         flatListStyle={stylesheet.flatListStyle}
+        estimatedItemSize={60}
       />
     </SwFullSizeModal>
   );

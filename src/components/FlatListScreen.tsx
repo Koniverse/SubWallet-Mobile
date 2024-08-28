@@ -53,7 +53,7 @@ interface Props<T> {
   filterOptions?: OptionType[];
   isShowListWrapper?: boolean;
   grouping?: {
-    renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
+    renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null;
     groupBy: (item: T) => string;
     sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
@@ -105,7 +105,6 @@ export function FlatListScreen<T>({
   defaultSelectionMap,
   androidKeyboardVerticalOffset,
   titleTextAlign,
-  getItemLayout,
   estimatedItemSize,
 }: Props<T>) {
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
@@ -162,7 +161,7 @@ export function FlatListScreen<T>({
             loading={loading}
             groupBy={grouping.groupBy}
             renderSectionHeader={grouping.renderSectionHeader}
-            getItemLayout={getItemLayout}
+            estimatedItemSize={estimatedItemSize}
           />
         ) : (
           <LazyFlatList

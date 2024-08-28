@@ -16,7 +16,6 @@ import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { EmptyValidator } from 'components/EmptyValidator';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { SectionItem } from 'components/LazySectionList';
-import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
@@ -204,7 +203,7 @@ export const EarningPoolSelector = forwardRef(
     }, [poolInfoMap, slug]);
 
     const renderSectionHeader = useCallback(
-      (info: { section: SectionListData<NominationPoolDataTypeItem> }) => {
+      (item: string) => {
         if (defaultPoolMap?.[chain] && defaultPoolMap?.[chain].length) {
           return (
             <View
@@ -225,9 +224,9 @@ export const EarningPoolSelector = forwardRef(
                   textTransform: 'uppercase',
                   ...FontSemiBold,
                 }}>
-                {`${info.section.title.split('|')[1]}`}
+                {`${item.split('|')[1]}`}
               </Typography.Text>
-              {info.section.title.includes('recommended') && (
+              {item.includes('recommended') && (
                 <Icon phosphorIcon={ThumbsUp} iconColor={theme['cyan-6']} size={'xs'} weight={'fill'} />
               )}
             </View>
