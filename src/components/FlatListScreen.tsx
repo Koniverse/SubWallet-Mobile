@@ -67,6 +67,8 @@ interface Props<T> {
     index: number,
   ) => { length: number; offset: number; index: number };
   estimatedItemSize?: number;
+  extraData?: any;
+  keyExtractor?: (item: T, index: number) => string;
 }
 
 export function FlatListScreen<T>({
@@ -106,6 +108,8 @@ export function FlatListScreen<T>({
   androidKeyboardVerticalOffset,
   titleTextAlign,
   estimatedItemSize,
+  extraData,
+  keyExtractor,
 }: Props<T>) {
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
   const searchRef = useRef<TextInput>(null);
@@ -180,6 +184,8 @@ export function FlatListScreen<T>({
             isShowListWrapper={isShowListWrapper}
             // getItemLayout={getItemLayout}
             estimatedItemSize={estimatedItemSize}
+            extraData={extraData}
+            keyExtractor={keyExtractor}
           />
         ))
       ) : (

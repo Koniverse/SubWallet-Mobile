@@ -251,7 +251,8 @@ export const PositionList = ({ setStep, loading }: Props) => {
       flatListStyle={styles.container}
       renderItem={renderItem}
       rightIconOption={rightIconOption}
-      estimatedItemSize={74}
+      estimatedItemSize={76}
+      keyExtractor={item => item.slug}
       isShowFilterBtn
       isShowMainHeader
       refreshControl={

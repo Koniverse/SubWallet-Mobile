@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
-import { RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
+import { InteractionManager, RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
 import { useLazyList } from 'hooks/common/useLazyList';
 import { defaultSortFunc } from 'utils/function';
 import { SortFunctionInterface } from 'types/ui-types';
@@ -31,6 +31,7 @@ interface Props<T> {
   removeClippedSubviews?: boolean;
   keyExtractor?: (item: T, index: number) => string;
   estimatedItemSize?: number;
+  extraData?: any;
 }
 
 const ItemSeparatorStyle: StyleProp<ViewStyle> = {
@@ -54,6 +55,7 @@ export function LazyFlatList<T>({
   removeClippedSubviews,
   keyExtractor,
   estimatedItemSize,
+  extraData,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
   const flatListRef = useRef<FlashList<T>>(null);
@@ -62,6 +64,7 @@ export function LazyFlatList<T>({
 
     return filterFunction && selectedFilters ? filterFunction(searchItem, selectedFilters) : searchItem;
   }, [searchFunction, items, searchString, filterFunction, selectedFilters]);
+  const [isReady, setIsReady] = useState(false);
   const sortedItems = useMemo(() => filteredItems.sort(sortFunction), [filteredItems, sortFunction]);
   const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(sortedItems);
   const styleWrapper = [
@@ -107,7 +110,13 @@ export function LazyFlatList<T>({
     return numberColumns > 1 ? <View style={ItemSeparatorStyle} /> : null;
   };
 
-  if (loading) {
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => setIsReady(true), 300);
+    });
+  }, []);
+
+  if (loading || !isReady) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size={40} indicatorColor={theme.colorWhite} />
@@ -140,6 +149,7 @@ export function LazyFlatList<T>({
             onBlankArea={() => {
               return null;
             }}
+            extraData={extraData}
             disableAutoLayout={true}
             estimatedItemSize={estimatedItemSize}
           />

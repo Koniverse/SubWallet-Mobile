@@ -73,6 +73,8 @@ interface Props<T> {
   };
   showAccountSignModeIcon?: boolean;
   estimatedItemSize?: number;
+  extraData?: any;
+  keyExtractor?: (item: T, index: number) => string;
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
@@ -114,6 +116,8 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     grouping,
     showAccountSignModeIcon,
     estimatedItemSize,
+    extraData,
+    keyExtractor,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -346,6 +350,9 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
                 selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
               }
               estimatedItemSize={estimatedItemSize || 80}
+              searchMarginBottom={grouping ? theme.sizeXS : undefined}
+              extraData={extraData}
+              keyExtractor={keyExtractor}
             />
           </>
 
