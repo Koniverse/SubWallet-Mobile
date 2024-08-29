@@ -375,7 +375,6 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeProcessingCampaign,
           name: 'subscribeProcessingCampaign',
           relatedStores: ['campaign'],
-          isStartImmediately: true,
         });
         _DataContext.addHandler({
           ...subscribePrice,
@@ -440,7 +439,6 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...getMissionPoolData,
           name: 'getMissionPoolData',
           relatedStores: ['missionPool'],
-          isStartImmediately: true,
         });
 
         /* Buy service */
@@ -449,13 +447,11 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeBuyTokens,
           name: 'subscribeBuyTokens',
           relatedStores: ['buyService'],
-          isStartImmediately: true,
         });
         _DataContext.addHandler({
           ...subscribeBuyServices,
           name: 'subscribeBuyServices',
           relatedStores: ['buyService'],
-          isStartImmediately: true,
         });
 
         /* Buy service */
@@ -466,7 +462,6 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeYieldPoolInfo,
           name: 'subscribeYieldPoolInfo',
           relatedStores: ['earning'],
-          isStartImmediately: true,
         });
 
         _DataContext.addHandler({
@@ -500,7 +495,6 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeSwapPairs,
           name: 'subscribeSwapPairs',
           relatedStores: ['swap'],
-          isStartImmediately: true,
         });
 
         _DataContext.addHandler({

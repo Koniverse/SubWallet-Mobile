@@ -88,7 +88,7 @@ const PasswordModal = ({
     } else {
       setTimeout(() => {
         focus('password')();
-      }, 500);
+      }, 50);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);

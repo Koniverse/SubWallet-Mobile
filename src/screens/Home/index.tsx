@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { ComponentType, useEffect, useMemo, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EarningScreen from 'screens/Home/Earning';
 
@@ -38,6 +38,7 @@ import { updateMktCampaignStatus } from 'stores/AppState';
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { computeStatus } from 'utils/missionPools';
 import { MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
+import withPageWrapper from 'components/pageWrapper';
 
 interface tabbarIconColor {
   color: string;
@@ -60,6 +61,11 @@ const browserTabbarIcon = ({ color }: tabbarIconColor) => {
 const getSettingsContent = (props: DrawerContentComponentProps) => {
   return <Settings {...props} />;
 };
+
+const MissionPoolScreen = (props: JSX.IntrinsicAttributes) => {
+  return withPageWrapper(MissionPoolsByTabview as ComponentType, ['missionPool'])(props);
+};
+
 const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
@@ -147,6 +153,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
         options={{
           tabBarLabel: i18n.tabName.tokens,
           tabBarIcon: tokenTabbarIcon,
+          freezeOnBlur: true,
         }}
       />
       <Tab.Screen
@@ -192,7 +199,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
             mmkvStore.set('storedLiveMissionPools', JSON.stringify(missionPoolActiveIds));
           },
         })}
-        component={MissionPoolsByTabview}
+        component={MissionPoolScreen}
         options={{
           tabBarLabel: 'Missions',
           tabBarHideOnKeyboard: Platform.OS === 'android',

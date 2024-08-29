@@ -1,6 +1,6 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import i18n from 'utils/i18n/i18n';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isAccountAll } from 'utils/accountAll';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { AddressBook, CheckCircle, DownloadSimple, Export, MagnifyingGlass } from 'phosphor-react-native';
@@ -14,7 +14,7 @@ import { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Share, View } from 'react-native';
+import { InteractionManager, Share, View } from 'react-native';
 import { toShort } from 'utils/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -99,7 +99,7 @@ export const ExportAllAccount = () => {
   const [jsonData, setJsonData] = useState<KeyringPairs$Json | undefined>(undefined);
   const [jsonFileName, setJsonFileName] = useState('');
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
-
+  const [isReady, setIsReady] = useState<boolean>(false);
   const items = useMemo(() => {
     if (fullAccounts.length > 2) {
       const foundAccountAll = fullAccounts.find(a => isAccountAll(a.address));
@@ -120,6 +120,12 @@ export const ExportAllAccount = () => {
 
     return fullAccounts.filter(a => !isAccountAll(a.address));
   }, [fullAccounts, currentAccountAddress]);
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      setIsReady(true);
+    });
+  }, []);
 
   const allAddress = useMemo(() => {
     const addresses: string[] = [];
@@ -251,6 +257,7 @@ export const ExportAllAccount = () => {
         title={i18n.header.exportAccount}
         onPressBack={() => navigation.goBack()}
         renderItem={renderItem}
+        loading={!isReady}
         filterOptions={filterOptions}
         filterFunction={filterFunction}
         isShowFilterBtn={true}

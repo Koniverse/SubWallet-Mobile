@@ -1,7 +1,7 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Keyboard, Share, StyleProp, View } from 'react-native';
+import React, { useCallback, useMemo, useEffect, useRef, useState } from 'react';
+import { Keyboard, Share, StyleProp, InteractionManager, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -72,6 +72,7 @@ export const AccountsScreen = ({
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
   const navigation = useNavigation<RootNavigationProps>();
+  const [isReady, setIsReady] = useState<boolean>(false);
   const fullAccounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
   let svg: Svg | null;
@@ -98,6 +99,12 @@ export const AccountsScreen = ({
 
     return fullAccounts.filter(a => !isAccountAll(a.address));
   }, [fullAccounts, currentAccountAddress]);
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      setIsReady(true);
+    });
+  }, []);
 
   const createAccountRef = useRef<ModalRef>();
   const importAccountRef = useRef<ModalRef>();
@@ -333,6 +340,7 @@ export const AccountsScreen = ({
         renderListEmptyComponent={renderListEmptyComponent}
         searchFunction={searchFunction}
         autoFocus={false}
+        loading={!isReady}
         afterListItem={renderFooterComponent()}
         placeholder={i18n.placeholder.accountName}
         estimatedItemSize={80}
