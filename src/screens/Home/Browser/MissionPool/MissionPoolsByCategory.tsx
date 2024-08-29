@@ -9,7 +9,6 @@ import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MissionInfo } from 'types/missionPool';
 import { MissionPoolHorizontalItem } from 'components/MissionPoolHorizontalItem';
-import { missionPoolItemHeight, missionPoolSeparator } from 'constants/itemHeight';
 import { LazyFlatList } from 'components/LazyFlatList';
 import { ThemeTypes } from 'styles/themes';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -19,10 +18,6 @@ import { computeStatus } from 'utils/missionPools';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { MissionPoolsContext } from 'screens/Home/Browser/MissionPool/context';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-
-const ITEM_HEIGHT = missionPoolItemHeight;
-const ITEM_SEPARATOR = missionPoolSeparator;
-const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 
 export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackParamList>> = ({ route }) => {
   const theme = useSubWalletTheme().swThemes;
@@ -136,12 +131,6 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
     );
   };
 
-  const getItemLayout = (data: ArrayLike<MissionInfo> | null | undefined, index: number) => ({
-    index,
-    length: TOTAL_ITEM_HEIGHT,
-    offset: TOTAL_ITEM_HEIGHT * index,
-  });
-
   const currentConfirmation = useMemo(() => {
     if (selectedMissionPool) {
       return getCurrentConfirmation([selectedMissionPool.id.toString()]);
@@ -165,13 +154,10 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
     <View style={styles.container}>
       <LazyFlatList<MissionInfo>
         searchFunction={searchFunction}
-        maxToRenderPerBatch={5}
-        initialNumToRender={5}
         removeClippedSubviews
         items={listByCategory}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        getItemLayout={getItemLayout}
         renderListEmptyComponent={renderEmpty}
         searchString={searchString}
         filterFunction={filterFunction}

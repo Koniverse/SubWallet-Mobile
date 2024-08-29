@@ -22,12 +22,6 @@ interface Props<T> {
   sortFunction?: SortFunctionInterface<T>;
   loading?: boolean;
   isShowListWrapper?: boolean;
-  getItemLayout?: (
-    data: ArrayLike<T> | null | undefined,
-    index: number,
-  ) => { length: number; offset: number; index: number };
-  maxToRenderPerBatch?: number;
-  initialNumToRender?: number;
   removeClippedSubviews?: boolean;
   keyExtractor?: (item: T, index: number) => string;
   estimatedItemSize?: number;
@@ -73,7 +67,6 @@ export function LazyFlatList<T>({
           backgroundColor: '#1A1A1A',
           marginHorizontal: 16,
           borderRadius: 8,
-          // marginBottom: 94,
           paddingVertical: 8,
           flex: 1,
         }
@@ -135,14 +128,10 @@ export function LazyFlatList<T>({
             renderItem={renderItem}
             numColumns={numberColumns}
             refreshControl={refreshControl}
-            // columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
             ListFooterComponent={renderLoadingAnimation}
             ItemSeparatorComponent={renderSeparatorComponent}
             contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
-            // getItemLayout={getItemLayout}
             onEndReachedThreshold={0.5}
-            // maxToRenderPerBatch={maxToRenderPerBatch}
-            // initialNumToRender={initialNumToRender}
             removeClippedSubviews={removeClippedSubviews}
             showsVerticalScrollIndicator={false}
             keyExtractor={keyExtractor}

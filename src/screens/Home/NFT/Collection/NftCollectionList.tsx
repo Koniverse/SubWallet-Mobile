@@ -1,7 +1,7 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback, useEffect } from 'react';
-import { RefreshControl, SectionListData, View } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import i18n from 'utils/i18n/i18n';
 import { Image, Plus } from 'phosphor-react-native';
@@ -13,24 +13,15 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useRefresh } from 'hooks/useRefresh';
 import { reloadCron } from 'messaging/index';
 import { EmptyList } from 'components/EmptyList';
-import { deviceWidth } from 'constants/index';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { BannerGenerator } from 'components/common/BannerGenerator';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 
-type GetItemLayoutType =
-  | readonly NftCollection[]
-  | SectionListData<NftCollection, SectionListData<NftCollection>>[]
-  | null
-  | undefined;
 const filteredCollection = (items: NftCollection[], searchString: string) => {
   return items.filter(collection => {
     return collection.collectionName && collection.collectionName.toLowerCase().includes(searchString.toLowerCase());
   });
 };
-const ITEM_HEIGHT = (deviceWidth - 32) / 2 + 32;
-const ITEM_SEPARATOR = 16;
-const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 
 const NftCollectionList = () => {
   const theme = useSubWalletTheme().swThemes;
@@ -57,12 +48,6 @@ const NftCollectionList = () => {
     },
     [navigation],
   );
-
-  const getItemLayout = (data: GetItemLayoutType, index: number) => ({
-    index,
-    length: TOTAL_ITEM_HEIGHT,
-    offset: TOTAL_ITEM_HEIGHT * index,
-  });
 
   const renderEmptyNFT = () => {
     return (
@@ -109,7 +94,6 @@ const NftCollectionList = () => {
         numberColumns={2}
         searchMarginBottom={16}
         isShowMainHeader
-        getItemLayout={getItemLayout}
         beforeListItem={
           banners && banners.length ? (
             <View

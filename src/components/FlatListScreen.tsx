@@ -10,7 +10,6 @@ import { LazyFlatList } from 'components/LazyFlatList';
 import { NoInternetScreen } from 'components/NoInternetScreen';
 import FilterModal, { OptionType } from 'components/common/FilterModal';
 import { useFilterModal } from 'hooks/useFilterModal';
-import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { LazySectionList, SectionItem } from 'components/LazySectionList';
 import { ContentStyle, ListRenderItemInfo } from '@shopify/flash-list';
 
@@ -62,10 +61,6 @@ interface Props<T> {
   defaultSelectionMap?: Record<string, boolean>;
   androidKeyboardVerticalOffset?: number;
   titleTextAlign?: 'left' | 'center';
-  getItemLayout?: (
-    data: readonly T[] | SectionListData<T, SectionListData<T>>[] | null | undefined,
-    index: number,
-  ) => { length: number; offset: number; index: number };
   estimatedItemSize?: number;
   extraData?: any;
   keyExtractor?: (item: T, index: number) => string;
@@ -182,7 +177,6 @@ export function FlatListScreen<T>({
             loading={loading}
             numberColumns={numberColumns}
             isShowListWrapper={isShowListWrapper}
-            // getItemLayout={getItemLayout}
             estimatedItemSize={estimatedItemSize}
             extraData={extraData}
             keyExtractor={keyExtractor}
