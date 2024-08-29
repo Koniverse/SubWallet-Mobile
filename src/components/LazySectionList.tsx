@@ -26,6 +26,7 @@ interface Props<T> {
   sortSectionFunction?: SortFunctionInterface<SectionItem<T>>;
   loading?: boolean;
   estimatedItemSize?: number;
+  stickyHeader?: boolean;
 }
 
 export function LazySectionList<T>({
@@ -44,6 +45,7 @@ export function LazySectionList<T>({
   sortItemFunction,
   sortSectionFunction,
   estimatedItemSize,
+  stickyHeader = true,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
   const sectionListRef = useRef<FlashList<string | T>>(null);
@@ -178,7 +180,7 @@ export function LazySectionList<T>({
             ListFooterComponent={renderLoadingAnimation}
             contentContainerStyle={listStyle}
             onEndReachedThreshold={0.5}
-            stickyHeaderIndices={stickyHeaderIndices}
+            stickyHeaderIndices={stickyHeader ? stickyHeaderIndices : undefined}
             getItemType={getItemType}
             estimatedItemSize={estimatedItemSize}
             data={sectionData}

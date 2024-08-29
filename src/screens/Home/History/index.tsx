@@ -33,7 +33,6 @@ import { TxTypeNameMap } from 'screens/Home/History/shared';
 import i18n from 'utils/i18n/i18n';
 import { FontMedium } from 'styles/sharedStyles';
 import { Keyboard, ListRenderItemInfo, View } from 'react-native';
-import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
@@ -508,19 +507,12 @@ function History({
     [language],
   );
 
-  const renderSectionHeader: (info: {
-    section: SectionListData<TransactionHistoryDisplayItem>;
-  }) => React.ReactElement | null = useCallback(
-    (info: { section: SectionListData<TransactionHistoryDisplayItem> }) => {
+  const renderSectionHeader: (item: string) => React.ReactElement | null = useCallback(
+    item => {
       return (
-        <View
-          style={{
-            paddingBottom: theme.sizeXS,
-            // marginTop: -theme.sizeXS,
-            paddingTop: theme.sizeXS,
-          }}>
+        <View style={{ paddingBottom: theme.sizeXS }}>
           <Typography.Text size={'sm'} style={{ color: theme.colorTextLight3, ...FontMedium }}>
-            {info.section.title.split('|')[1]}
+            {item.split('|')[1]}
           </Typography.Text>
         </View>
       );
@@ -769,6 +761,8 @@ function History({
             sortSectionFunction={grouping.sortSection}
             groupBy={grouping.groupBy}
             renderSectionHeader={grouping.renderSectionHeader}
+            estimatedItemSize={76}
+            stickyHeader={false}
           />
         </View>
       </ContainerWithSubHeader>
