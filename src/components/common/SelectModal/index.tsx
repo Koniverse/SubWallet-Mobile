@@ -346,6 +346,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
               isShowListWrapper={isShowListWrapper}
               rightIconOption={rightIconOption}
               grouping={grouping}
+              removeClippedSubviews={true}
               afterListItem={
                 selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
               }

@@ -131,7 +131,7 @@ export function LazyFlatList<T>({
             ListFooterComponent={renderLoadingAnimation}
             ItemSeparatorComponent={renderSeparatorComponent}
             contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
-            onEndReachedThreshold={0.5}
+            onEndReachedThreshold={0.4}
             removeClippedSubviews={removeClippedSubviews}
             showsVerticalScrollIndicator={false}
             keyExtractor={keyExtractor}
@@ -139,7 +139,6 @@ export function LazyFlatList<T>({
               return null;
             }}
             extraData={extraData}
-            disableAutoLayout={true}
             estimatedItemSize={estimatedItemSize}
           />
         </View>

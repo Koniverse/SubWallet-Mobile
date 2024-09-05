@@ -264,6 +264,8 @@ export const ExportAllAccount = () => {
         afterListItem={renderFooter()}
         searchFunction={searchFunc}
         autoFocus={false}
+        extraData={JSON.stringify(selectedValueMap)}
+        keyExtractor={item => item.address}
         estimatedItemSize={80}
       />
 

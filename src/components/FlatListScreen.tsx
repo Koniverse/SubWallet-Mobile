@@ -64,6 +64,7 @@ interface Props<T> {
   estimatedItemSize?: number;
   extraData?: any;
   keyExtractor?: (item: T, index: number) => string;
+  removeClippedSubviews?: boolean;
 }
 
 export function FlatListScreen<T>({
@@ -105,6 +106,7 @@ export function FlatListScreen<T>({
   estimatedItemSize,
   extraData,
   keyExtractor,
+  removeClippedSubviews,
 }: Props<T>) {
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
   const searchRef = useRef<TextInput>(null);
@@ -180,6 +182,7 @@ export function FlatListScreen<T>({
             estimatedItemSize={estimatedItemSize}
             extraData={extraData}
             keyExtractor={keyExtractor}
+            removeClippedSubviews={removeClippedSubviews}
           />
         ))
       ) : (

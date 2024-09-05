@@ -197,7 +197,7 @@ export const EarningPoolSelector = forwardRef(
               style={{
                 paddingBottom: theme.sizeXS,
                 paddingHorizontal: theme.size,
-                backgroundColor: 'red',
+                backgroundColor: theme.colorBgDefault,
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: theme.sizeXXS,
@@ -453,6 +453,14 @@ export const EarningPoolSelector = forwardRef(
           onCloseModal={() => setSortSelection(EarningPoolSelectorSortKey.DEFAULT)}
           rightIconOption={rightIconOption}
           grouping={grouping}
+          keyExtractor={item => {
+            if (typeof item === 'string') {
+              return item;
+            } else {
+              return item.address;
+            }
+          }}
+          estimatedItemSize={82}
           renderSelected={renderSelected}>
           <>
             {!!selectedItem && (
