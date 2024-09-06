@@ -135,6 +135,10 @@ jobs:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
 
+    - name: Remove unused web-runner for Android
+      run: |
+        rm -r ./html/OldWeb.bundle
+
     - name: Add APP ENV
       run: |
           cp .env.development.example .env.production
