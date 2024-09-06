@@ -137,7 +137,7 @@ jobs:
 
     - name: Remove unused web-runner for Android
       run: |
-        rm -r ./html/OldWeb.bundle
+        rm -rf ./html/OldWeb.bundle
 
     - name: Add APP ENV
       run: |
