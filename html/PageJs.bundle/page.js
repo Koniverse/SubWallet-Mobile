@@ -1,1 +1,6890 @@
-(()=>{var t={795:(t,e,i)=>{"use strict";const n=i(699);function r(t,e,i){try{Reflect.apply(t,e,i)}catch(t){setTimeout((()=>{throw t}))}}class o extends n.EventEmitter{emit(t,...e){let i="error"===t;const n=this._events;if(void 0!==n)i=i&&void 0===n.error;else if(!i)return!1;if(i){let t;if(e.length>0&&([t]=e),t instanceof Error)throw t;const i=new Error("Unhandled error."+(t?` (${t.message})`:""));throw i.context=t,i}const o=n[t];if(void 0===o)return!1;if("function"==typeof o)r(o,this,e);else{const t=o.length,i=function(t){const e=t.length,i=new Array(e);for(let n=0;n<e;n+=1)i[n]=t[n];return i}(o);for(let n=0;n<t;n+=1)r(i[n],this,e)}return!0}}e.Z=o},197:function(t,e,i){!function(t,e){"use strict";function n(t,e){if(!t)throw new Error(e||"Assertion failed")}function r(t,e){t.super_=e;var i=function(){};i.prototype=e.prototype,t.prototype=new i,t.prototype.constructor=t}function o(t,e,i){if(o.isBN(t))return t;this.negative=0,this.words=null,this.length=0,this.red=null,null!==t&&("le"!==e&&"be"!==e||(i=e,e=10),this._init(t||0,e||10,i||"be"))}var s;"object"==typeof t?t.exports=o:e.BN=o,o.BN=o,o.wordSize=26;try{s="undefined"!=typeof window&&void 0!==window.Buffer?window.Buffer:i(196).Buffer}catch(t){}function h(t,e){var i=t.charCodeAt(e);return i>=48&&i<=57?i-48:i>=65&&i<=70?i-55:i>=97&&i<=102?i-87:void n(!1,"Invalid character in "+t)}function u(t,e,i){var n=h(t,i);return i-1>=e&&(n|=h(t,i-1)<<4),n}function a(t,e,i,r){for(var o=0,s=0,h=Math.min(t.length,i),u=e;u<h;u++){var a=t.charCodeAt(u)-48;o*=r,s=a>=49?a-49+10:a>=17?a-17+10:a,n(a>=0&&s<r,"Invalid character"),o+=s}return o}function l(t,e){t.words=e.words,t.length=e.length,t.negative=e.negative,t.red=e.red}if(o.isBN=function(t){return t instanceof o||null!==t&&"object"==typeof t&&t.constructor.wordSize===o.wordSize&&Array.isArray(t.words)},o.max=function(t,e){return t.cmp(e)>0?t:e},o.min=function(t,e){return t.cmp(e)<0?t:e},o.prototype._init=function(t,e,i){if("number"==typeof t)return this._initNumber(t,e,i);if("object"==typeof t)return this._initArray(t,e,i);"hex"===e&&(e=16),n(e===(0|e)&&e>=2&&e<=36);var r=0;"-"===(t=t.toString().replace(/\s+/g,""))[0]&&(r++,this.negative=1),r<t.length&&(16===e?this._parseHex(t,r,i):(this._parseBase(t,e,r),"le"===i&&this._initArray(this.toArray(),e,i)))},o.prototype._initNumber=function(t,e,i){t<0&&(this.negative=1,t=-t),t<67108864?(this.words=[67108863&t],this.length=1):t<4503599627370496?(this.words=[67108863&t,t/67108864&67108863],this.length=2):(n(t<9007199254740992),this.words=[67108863&t,t/67108864&67108863,1],this.length=3),"le"===i&&this._initArray(this.toArray(),e,i)},o.prototype._initArray=function(t,e,i){if(n("number"==typeof t.length),t.length<=0)return this.words=[0],this.length=1,this;this.length=Math.ceil(t.length/3),this.words=new Array(this.length);for(var r=0;r<this.length;r++)this.words[r]=0;var o,s,h=0;if("be"===i)for(r=t.length-1,o=0;r>=0;r-=3)s=t[r]|t[r-1]<<8|t[r-2]<<16,this.words[o]|=s<<h&67108863,this.words[o+1]=s>>>26-h&67108863,(h+=24)>=26&&(h-=26,o++);else if("le"===i)for(r=0,o=0;r<t.length;r+=3)s=t[r]|t[r+1]<<8|t[r+2]<<16,this.words[o]|=s<<h&67108863,this.words[o+1]=s>>>26-h&67108863,(h+=24)>=26&&(h-=26,o++);return this._strip()},o.prototype._parseHex=function(t,e,i){this.length=Math.ceil((t.length-e)/6),this.words=new Array(this.length);for(var n=0;n<this.length;n++)this.words[n]=0;var r,o=0,s=0;if("be"===i)for(n=t.length-1;n>=e;n-=2)r=u(t,e,n)<<o,this.words[s]|=67108863&r,o>=18?(o-=18,s+=1,this.words[s]|=r>>>26):o+=8;else for(n=(t.length-e)%2==0?e+1:e;n<t.length;n+=2)r=u(t,e,n)<<o,this.words[s]|=67108863&r,o>=18?(o-=18,s+=1,this.words[s]|=r>>>26):o+=8;this._strip()},o.prototype._parseBase=function(t,e,i){this.words=[0],this.length=1;for(var n=0,r=1;r<=67108863;r*=e)n++;n--,r=r/e|0;for(var o=t.length-i,s=o%n,h=Math.min(o,o-s)+i,u=0,l=i;l<h;l+=n)u=a(t,l,l+n,e),this.imuln(r),this.words[0]+u<67108864?this.words[0]+=u:this._iaddn(u);if(0!==s){var f=1;for(u=a(t,l,t.length,e),l=0;l<s;l++)f*=e;this.imuln(f),this.words[0]+u<67108864?this.words[0]+=u:this._iaddn(u)}this._strip()},o.prototype.copy=function(t){t.words=new Array(this.length);for(var e=0;e<this.length;e++)t.words[e]=this.words[e];t.length=this.length,t.negative=this.negative,t.red=this.red},o.prototype._move=function(t){l(t,this)},o.prototype.clone=function(){var t=new o(null);return this.copy(t),t},o.prototype._expand=function(t){for(;this.length<t;)this.words[this.length++]=0;return this},o.prototype._strip=function(){for(;this.length>1&&0===this.words[this.length-1];)this.length--;return this._normSign()},o.prototype._normSign=function(){return 1===this.length&&0===this.words[0]&&(this.negative=0),this},"undefined"!=typeof Symbol&&"function"==typeof Symbol.for)try{o.prototype[Symbol.for("nodejs.util.inspect.custom")]=f}catch(t){o.prototype.inspect=f}else o.prototype.inspect=f;function f(){return(this.red?"<BN-R: ":"<BN: ")+this.toString(16)+">"}var c=["","0","00","000","0000","00000","000000","0000000","00000000","000000000","0000000000","00000000000","000000000000","0000000000000","00000000000000","000000000000000","0000000000000000","00000000000000000","000000000000000000","0000000000000000000","00000000000000000000","000000000000000000000","0000000000000000000000","00000000000000000000000","000000000000000000000000","0000000000000000000000000"],d=[0,0,25,16,12,11,10,9,8,8,7,7,7,7,6,6,6,6,6,6,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],m=[0,0,33554432,43046721,16777216,48828125,60466176,40353607,16777216,43046721,1e7,19487171,35831808,62748517,7529536,11390625,16777216,24137569,34012224,47045881,64e6,4084101,5153632,6436343,7962624,9765625,11881376,14348907,17210368,20511149,243e5,28629151,33554432,39135393,45435424,52521875,60466176];function p(t,e,i){i.negative=e.negative^t.negative;var n=t.length+e.length|0;i.length=n,n=n-1|0;var r=0|t.words[0],o=0|e.words[0],s=r*o,h=67108863&s,u=s/67108864|0;i.words[0]=h;for(var a=1;a<n;a++){for(var l=u>>>26,f=67108863&u,c=Math.min(a,e.length-1),d=Math.max(0,a-t.length+1);d<=c;d++){var m=a-d|0;l+=(s=(r=0|t.words[m])*(o=0|e.words[d])+f)/67108864|0,f=67108863&s}i.words[a]=0|f,u=0|l}return 0!==u?i.words[a]=0|u:i.length--,i._strip()}o.prototype.toString=function(t,e){var i;if(e=0|e||1,16===(t=t||10)||"hex"===t){i="";for(var r=0,o=0,s=0;s<this.length;s++){var h=this.words[s],u=(16777215&(h<<r|o)).toString(16);o=h>>>24-r&16777215,(r+=2)>=26&&(r-=26,s--),i=0!==o||s!==this.length-1?c[6-u.length]+u+i:u+i}for(0!==o&&(i=o.toString(16)+i);i.length%e!=0;)i="0"+i;return 0!==this.negative&&(i="-"+i),i}if(t===(0|t)&&t>=2&&t<=36){var a=d[t],l=m[t];i="";var f=this.clone();for(f.negative=0;!f.isZero();){var p=f.modrn(l).toString(t);i=(f=f.idivn(l)).isZero()?p+i:c[a-p.length]+p+i}for(this.isZero()&&(i="0"+i);i.length%e!=0;)i="0"+i;return 0!==this.negative&&(i="-"+i),i}n(!1,"Base should be between 2 and 36")},o.prototype.toNumber=function(){var t=this.words[0];return 2===this.length?t+=67108864*this.words[1]:3===this.length&&1===this.words[2]?t+=4503599627370496+67108864*this.words[1]:this.length>2&&n(!1,"Number can only safely store up to 53 bits"),0!==this.negative?-t:t},o.prototype.toJSON=function(){return this.toString(16,2)},s&&(o.prototype.toBuffer=function(t,e){return this.toArrayLike(s,t,e)}),o.prototype.toArray=function(t,e){return this.toArrayLike(Array,t,e)},o.prototype.toArrayLike=function(t,e,i){this._strip();var r=this.byteLength(),o=i||Math.max(1,r);n(r<=o,"byte array longer than desired length"),n(o>0,"Requested array length <= 0");var s=function(t,e){return t.allocUnsafe?t.allocUnsafe(e):new t(e)}(t,o);return this["_toArrayLike"+("le"===e?"LE":"BE")](s,r),s},o.prototype._toArrayLikeLE=function(t,e){for(var i=0,n=0,r=0,o=0;r<this.length;r++){var s=this.words[r]<<o|n;t[i++]=255&s,i<t.length&&(t[i++]=s>>8&255),i<t.length&&(t[i++]=s>>16&255),6===o?(i<t.length&&(t[i++]=s>>24&255),n=0,o=0):(n=s>>>24,o+=2)}if(i<t.length)for(t[i++]=n;i<t.length;)t[i++]=0},o.prototype._toArrayLikeBE=function(t,e){for(var i=t.length-1,n=0,r=0,o=0;r<this.length;r++){var s=this.words[r]<<o|n;t[i--]=255&s,i>=0&&(t[i--]=s>>8&255),i>=0&&(t[i--]=s>>16&255),6===o?(i>=0&&(t[i--]=s>>24&255),n=0,o=0):(n=s>>>24,o+=2)}if(i>=0)for(t[i--]=n;i>=0;)t[i--]=0},Math.clz32?o.prototype._countBits=function(t){return 32-Math.clz32(t)}:o.prototype._countBits=function(t){var e=t,i=0;return e>=4096&&(i+=13,e>>>=13),e>=64&&(i+=7,e>>>=7),e>=8&&(i+=4,e>>>=4),e>=2&&(i+=2,e>>>=2),i+e},o.prototype._zeroBits=function(t){if(0===t)return 26;var e=t,i=0;return 0==(8191&e)&&(i+=13,e>>>=13),0==(127&e)&&(i+=7,e>>>=7),0==(15&e)&&(i+=4,e>>>=4),0==(3&e)&&(i+=2,e>>>=2),0==(1&e)&&i++,i},o.prototype.bitLength=function(){var t=this.words[this.length-1],e=this._countBits(t);return 26*(this.length-1)+e},o.prototype.zeroBits=function(){if(this.isZero())return 0;for(var t=0,e=0;e<this.length;e++){var i=this._zeroBits(this.words[e]);if(t+=i,26!==i)break}return t},o.prototype.byteLength=function(){return Math.ceil(this.bitLength()/8)},o.prototype.toTwos=function(t){return 0!==this.negative?this.abs().inotn(t).iaddn(1):this.clone()},o.prototype.fromTwos=function(t){return this.testn(t-1)?this.notn(t).iaddn(1).ineg():this.clone()},o.prototype.isNeg=function(){return 0!==this.negative},o.prototype.neg=function(){return this.clone().ineg()},o.prototype.ineg=function(){return this.isZero()||(this.negative^=1),this},o.prototype.iuor=function(t){for(;this.length<t.length;)this.words[this.length++]=0;for(var e=0;e<t.length;e++)this.words[e]=this.words[e]|t.words[e];return this._strip()},o.prototype.ior=function(t){return n(0==(this.negative|t.negative)),this.iuor(t)},o.prototype.or=function(t){return this.length>t.length?this.clone().ior(t):t.clone().ior(this)},o.prototype.uor=function(t){return this.length>t.length?this.clone().iuor(t):t.clone().iuor(this)},o.prototype.iuand=function(t){var e;e=this.length>t.length?t:this;for(var i=0;i<e.length;i++)this.words[i]=this.words[i]&t.words[i];return this.length=e.length,this._strip()},o.prototype.iand=function(t){return n(0==(this.negative|t.negative)),this.iuand(t)},o.prototype.and=function(t){return this.length>t.length?this.clone().iand(t):t.clone().iand(this)},o.prototype.uand=function(t){return this.length>t.length?this.clone().iuand(t):t.clone().iuand(this)},o.prototype.iuxor=function(t){var e,i;this.length>t.length?(e=this,i=t):(e=t,i=this);for(var n=0;n<i.length;n++)this.words[n]=e.words[n]^i.words[n];if(this!==e)for(;n<e.length;n++)this.words[n]=e.words[n];return this.length=e.length,this._strip()},o.prototype.ixor=function(t){return n(0==(this.negative|t.negative)),this.iuxor(t)},o.prototype.xor=function(t){return this.length>t.length?this.clone().ixor(t):t.clone().ixor(this)},o.prototype.uxor=function(t){return this.length>t.length?this.clone().iuxor(t):t.clone().iuxor(this)},o.prototype.inotn=function(t){n("number"==typeof t&&t>=0);var e=0|Math.ceil(t/26),i=t%26;this._expand(e),i>0&&e--;for(var r=0;r<e;r++)this.words[r]=67108863&~this.words[r];return i>0&&(this.words[r]=~this.words[r]&67108863>>26-i),this._strip()},o.prototype.notn=function(t){return this.clone().inotn(t)},o.prototype.setn=function(t,e){n("number"==typeof t&&t>=0);var i=t/26|0,r=t%26;return this._expand(i+1),this.words[i]=e?this.words[i]|1<<r:this.words[i]&~(1<<r),this._strip()},o.prototype.iadd=function(t){var e,i,n;if(0!==this.negative&&0===t.negative)return this.negative=0,e=this.isub(t),this.negative^=1,this._normSign();if(0===this.negative&&0!==t.negative)return t.negative=0,e=this.isub(t),t.negative=1,e._normSign();this.length>t.length?(i=this,n=t):(i=t,n=this);for(var r=0,o=0;o<n.length;o++)e=(0|i.words[o])+(0|n.words[o])+r,this.words[o]=67108863&e,r=e>>>26;for(;0!==r&&o<i.length;o++)e=(0|i.words[o])+r,this.words[o]=67108863&e,r=e>>>26;if(this.length=i.length,0!==r)this.words[this.length]=r,this.length++;else if(i!==this)for(;o<i.length;o++)this.words[o]=i.words[o];return this},o.prototype.add=function(t){var e;return 0!==t.negative&&0===this.negative?(t.negative=0,e=this.sub(t),t.negative^=1,e):0===t.negative&&0!==this.negative?(this.negative=0,e=t.sub(this),this.negative=1,e):this.length>t.length?this.clone().iadd(t):t.clone().iadd(this)},o.prototype.isub=function(t){if(0!==t.negative){t.negative=0;var e=this.iadd(t);return t.negative=1,e._normSign()}if(0!==this.negative)return this.negative=0,this.iadd(t),this.negative=1,this._normSign();var i,n,r=this.cmp(t);if(0===r)return this.negative=0,this.length=1,this.words[0]=0,this;r>0?(i=this,n=t):(i=t,n=this);for(var o=0,s=0;s<n.length;s++)o=(e=(0|i.words[s])-(0|n.words[s])+o)>>26,this.words[s]=67108863&e;for(;0!==o&&s<i.length;s++)o=(e=(0|i.words[s])+o)>>26,this.words[s]=67108863&e;if(0===o&&s<i.length&&i!==this)for(;s<i.length;s++)this.words[s]=i.words[s];return this.length=Math.max(this.length,s),i!==this&&(this.negative=1),this._strip()},o.prototype.sub=function(t){return this.clone().isub(t)};var v=function(t,e,i){var n,r,o,s=t.words,h=e.words,u=i.words,a=0,l=0|s[0],f=8191&l,c=l>>>13,d=0|s[1],m=8191&d,p=d>>>13,v=0|s[2],g=8191&v,M=v>>>13,y=0|s[3],w=8191&y,_=y>>>13,E=0|s[4],N=8191&E,b=E>>>13,A=0|s[5],T=8191&A,I=A>>>13,O=0|s[6],R=8191&O,S=O>>>13,D=0|s[7],L=8191&D,C=D>>>13,U=0|s[8],x=8191&U,k=U>>>13,P=0|s[9],G=8191&P,j=P>>>13,B=0|h[0],W=8191&B,V=B>>>13,K=0|h[1],Z=8191&K,H=K>>>13,F=0|h[2],q=8191&F,z=F>>>13,X=0|h[3],Y=8191&X,$=X>>>13,Q=0|h[4],J=8191&Q,tt=Q>>>13,et=0|h[5],it=8191&et,nt=et>>>13,rt=0|h[6],ot=8191&rt,st=rt>>>13,ht=0|h[7],ut=8191&ht,at=ht>>>13,lt=0|h[8],ft=8191&lt,ct=lt>>>13,dt=0|h[9],mt=8191&dt,pt=dt>>>13;i.negative=t.negative^e.negative,i.length=19;var vt=(a+(n=Math.imul(f,W))|0)+((8191&(r=(r=Math.imul(f,V))+Math.imul(c,W)|0))<<13)|0;a=((o=Math.imul(c,V))+(r>>>13)|0)+(vt>>>26)|0,vt&=67108863,n=Math.imul(m,W),r=(r=Math.imul(m,V))+Math.imul(p,W)|0,o=Math.imul(p,V);var gt=(a+(n=n+Math.imul(f,Z)|0)|0)+((8191&(r=(r=r+Math.imul(f,H)|0)+Math.imul(c,Z)|0))<<13)|0;a=((o=o+Math.imul(c,H)|0)+(r>>>13)|0)+(gt>>>26)|0,gt&=67108863,n=Math.imul(g,W),r=(r=Math.imul(g,V))+Math.imul(M,W)|0,o=Math.imul(M,V),n=n+Math.imul(m,Z)|0,r=(r=r+Math.imul(m,H)|0)+Math.imul(p,Z)|0,o=o+Math.imul(p,H)|0;var Mt=(a+(n=n+Math.imul(f,q)|0)|0)+((8191&(r=(r=r+Math.imul(f,z)|0)+Math.imul(c,q)|0))<<13)|0;a=((o=o+Math.imul(c,z)|0)+(r>>>13)|0)+(Mt>>>26)|0,Mt&=67108863,n=Math.imul(w,W),r=(r=Math.imul(w,V))+Math.imul(_,W)|0,o=Math.imul(_,V),n=n+Math.imul(g,Z)|0,r=(r=r+Math.imul(g,H)|0)+Math.imul(M,Z)|0,o=o+Math.imul(M,H)|0,n=n+Math.imul(m,q)|0,r=(r=r+Math.imul(m,z)|0)+Math.imul(p,q)|0,o=o+Math.imul(p,z)|0;var yt=(a+(n=n+Math.imul(f,Y)|0)|0)+((8191&(r=(r=r+Math.imul(f,$)|0)+Math.imul(c,Y)|0))<<13)|0;a=((o=o+Math.imul(c,$)|0)+(r>>>13)|0)+(yt>>>26)|0,yt&=67108863,n=Math.imul(N,W),r=(r=Math.imul(N,V))+Math.imul(b,W)|0,o=Math.imul(b,V),n=n+Math.imul(w,Z)|0,r=(r=r+Math.imul(w,H)|0)+Math.imul(_,Z)|0,o=o+Math.imul(_,H)|0,n=n+Math.imul(g,q)|0,r=(r=r+Math.imul(g,z)|0)+Math.imul(M,q)|0,o=o+Math.imul(M,z)|0,n=n+Math.imul(m,Y)|0,r=(r=r+Math.imul(m,$)|0)+Math.imul(p,Y)|0,o=o+Math.imul(p,$)|0;var wt=(a+(n=n+Math.imul(f,J)|0)|0)+((8191&(r=(r=r+Math.imul(f,tt)|0)+Math.imul(c,J)|0))<<13)|0;a=((o=o+Math.imul(c,tt)|0)+(r>>>13)|0)+(wt>>>26)|0,wt&=67108863,n=Math.imul(T,W),r=(r=Math.imul(T,V))+Math.imul(I,W)|0,o=Math.imul(I,V),n=n+Math.imul(N,Z)|0,r=(r=r+Math.imul(N,H)|0)+Math.imul(b,Z)|0,o=o+Math.imul(b,H)|0,n=n+Math.imul(w,q)|0,r=(r=r+Math.imul(w,z)|0)+Math.imul(_,q)|0,o=o+Math.imul(_,z)|0,n=n+Math.imul(g,Y)|0,r=(r=r+Math.imul(g,$)|0)+Math.imul(M,Y)|0,o=o+Math.imul(M,$)|0,n=n+Math.imul(m,J)|0,r=(r=r+Math.imul(m,tt)|0)+Math.imul(p,J)|0,o=o+Math.imul(p,tt)|0;var _t=(a+(n=n+Math.imul(f,it)|0)|0)+((8191&(r=(r=r+Math.imul(f,nt)|0)+Math.imul(c,it)|0))<<13)|0;a=((o=o+Math.imul(c,nt)|0)+(r>>>13)|0)+(_t>>>26)|0,_t&=67108863,n=Math.imul(R,W),r=(r=Math.imul(R,V))+Math.imul(S,W)|0,o=Math.imul(S,V),n=n+Math.imul(T,Z)|0,r=(r=r+Math.imul(T,H)|0)+Math.imul(I,Z)|0,o=o+Math.imul(I,H)|0,n=n+Math.imul(N,q)|0,r=(r=r+Math.imul(N,z)|0)+Math.imul(b,q)|0,o=o+Math.imul(b,z)|0,n=n+Math.imul(w,Y)|0,r=(r=r+Math.imul(w,$)|0)+Math.imul(_,Y)|0,o=o+Math.imul(_,$)|0,n=n+Math.imul(g,J)|0,r=(r=r+Math.imul(g,tt)|0)+Math.imul(M,J)|0,o=o+Math.imul(M,tt)|0,n=n+Math.imul(m,it)|0,r=(r=r+Math.imul(m,nt)|0)+Math.imul(p,it)|0,o=o+Math.imul(p,nt)|0;var Et=(a+(n=n+Math.imul(f,ot)|0)|0)+((8191&(r=(r=r+Math.imul(f,st)|0)+Math.imul(c,ot)|0))<<13)|0;a=((o=o+Math.imul(c,st)|0)+(r>>>13)|0)+(Et>>>26)|0,Et&=67108863,n=Math.imul(L,W),r=(r=Math.imul(L,V))+Math.imul(C,W)|0,o=Math.imul(C,V),n=n+Math.imul(R,Z)|0,r=(r=r+Math.imul(R,H)|0)+Math.imul(S,Z)|0,o=o+Math.imul(S,H)|0,n=n+Math.imul(T,q)|0,r=(r=r+Math.imul(T,z)|0)+Math.imul(I,q)|0,o=o+Math.imul(I,z)|0,n=n+Math.imul(N,Y)|0,r=(r=r+Math.imul(N,$)|0)+Math.imul(b,Y)|0,o=o+Math.imul(b,$)|0,n=n+Math.imul(w,J)|0,r=(r=r+Math.imul(w,tt)|0)+Math.imul(_,J)|0,o=o+Math.imul(_,tt)|0,n=n+Math.imul(g,it)|0,r=(r=r+Math.imul(g,nt)|0)+Math.imul(M,it)|0,o=o+Math.imul(M,nt)|0,n=n+Math.imul(m,ot)|0,r=(r=r+Math.imul(m,st)|0)+Math.imul(p,ot)|0,o=o+Math.imul(p,st)|0;var Nt=(a+(n=n+Math.imul(f,ut)|0)|0)+((8191&(r=(r=r+Math.imul(f,at)|0)+Math.imul(c,ut)|0))<<13)|0;a=((o=o+Math.imul(c,at)|0)+(r>>>13)|0)+(Nt>>>26)|0,Nt&=67108863,n=Math.imul(x,W),r=(r=Math.imul(x,V))+Math.imul(k,W)|0,o=Math.imul(k,V),n=n+Math.imul(L,Z)|0,r=(r=r+Math.imul(L,H)|0)+Math.imul(C,Z)|0,o=o+Math.imul(C,H)|0,n=n+Math.imul(R,q)|0,r=(r=r+Math.imul(R,z)|0)+Math.imul(S,q)|0,o=o+Math.imul(S,z)|0,n=n+Math.imul(T,Y)|0,r=(r=r+Math.imul(T,$)|0)+Math.imul(I,Y)|0,o=o+Math.imul(I,$)|0,n=n+Math.imul(N,J)|0,r=(r=r+Math.imul(N,tt)|0)+Math.imul(b,J)|0,o=o+Math.imul(b,tt)|0,n=n+Math.imul(w,it)|0,r=(r=r+Math.imul(w,nt)|0)+Math.imul(_,it)|0,o=o+Math.imul(_,nt)|0,n=n+Math.imul(g,ot)|0,r=(r=r+Math.imul(g,st)|0)+Math.imul(M,ot)|0,o=o+Math.imul(M,st)|0,n=n+Math.imul(m,ut)|0,r=(r=r+Math.imul(m,at)|0)+Math.imul(p,ut)|0,o=o+Math.imul(p,at)|0;var bt=(a+(n=n+Math.imul(f,ft)|0)|0)+((8191&(r=(r=r+Math.imul(f,ct)|0)+Math.imul(c,ft)|0))<<13)|0;a=((o=o+Math.imul(c,ct)|0)+(r>>>13)|0)+(bt>>>26)|0,bt&=67108863,n=Math.imul(G,W),r=(r=Math.imul(G,V))+Math.imul(j,W)|0,o=Math.imul(j,V),n=n+Math.imul(x,Z)|0,r=(r=r+Math.imul(x,H)|0)+Math.imul(k,Z)|0,o=o+Math.imul(k,H)|0,n=n+Math.imul(L,q)|0,r=(r=r+Math.imul(L,z)|0)+Math.imul(C,q)|0,o=o+Math.imul(C,z)|0,n=n+Math.imul(R,Y)|0,r=(r=r+Math.imul(R,$)|0)+Math.imul(S,Y)|0,o=o+Math.imul(S,$)|0,n=n+Math.imul(T,J)|0,r=(r=r+Math.imul(T,tt)|0)+Math.imul(I,J)|0,o=o+Math.imul(I,tt)|0,n=n+Math.imul(N,it)|0,r=(r=r+Math.imul(N,nt)|0)+Math.imul(b,it)|0,o=o+Math.imul(b,nt)|0,n=n+Math.imul(w,ot)|0,r=(r=r+Math.imul(w,st)|0)+Math.imul(_,ot)|0,o=o+Math.imul(_,st)|0,n=n+Math.imul(g,ut)|0,r=(r=r+Math.imul(g,at)|0)+Math.imul(M,ut)|0,o=o+Math.imul(M,at)|0,n=n+Math.imul(m,ft)|0,r=(r=r+Math.imul(m,ct)|0)+Math.imul(p,ft)|0,o=o+Math.imul(p,ct)|0;var At=(a+(n=n+Math.imul(f,mt)|0)|0)+((8191&(r=(r=r+Math.imul(f,pt)|0)+Math.imul(c,mt)|0))<<13)|0;a=((o=o+Math.imul(c,pt)|0)+(r>>>13)|0)+(At>>>26)|0,At&=67108863,n=Math.imul(G,Z),r=(r=Math.imul(G,H))+Math.imul(j,Z)|0,o=Math.imul(j,H),n=n+Math.imul(x,q)|0,r=(r=r+Math.imul(x,z)|0)+Math.imul(k,q)|0,o=o+Math.imul(k,z)|0,n=n+Math.imul(L,Y)|0,r=(r=r+Math.imul(L,$)|0)+Math.imul(C,Y)|0,o=o+Math.imul(C,$)|0,n=n+Math.imul(R,J)|0,r=(r=r+Math.imul(R,tt)|0)+Math.imul(S,J)|0,o=o+Math.imul(S,tt)|0,n=n+Math.imul(T,it)|0,r=(r=r+Math.imul(T,nt)|0)+Math.imul(I,it)|0,o=o+Math.imul(I,nt)|0,n=n+Math.imul(N,ot)|0,r=(r=r+Math.imul(N,st)|0)+Math.imul(b,ot)|0,o=o+Math.imul(b,st)|0,n=n+Math.imul(w,ut)|0,r=(r=r+Math.imul(w,at)|0)+Math.imul(_,ut)|0,o=o+Math.imul(_,at)|0,n=n+Math.imul(g,ft)|0,r=(r=r+Math.imul(g,ct)|0)+Math.imul(M,ft)|0,o=o+Math.imul(M,ct)|0;var Tt=(a+(n=n+Math.imul(m,mt)|0)|0)+((8191&(r=(r=r+Math.imul(m,pt)|0)+Math.imul(p,mt)|0))<<13)|0;a=((o=o+Math.imul(p,pt)|0)+(r>>>13)|0)+(Tt>>>26)|0,Tt&=67108863,n=Math.imul(G,q),r=(r=Math.imul(G,z))+Math.imul(j,q)|0,o=Math.imul(j,z),n=n+Math.imul(x,Y)|0,r=(r=r+Math.imul(x,$)|0)+Math.imul(k,Y)|0,o=o+Math.imul(k,$)|0,n=n+Math.imul(L,J)|0,r=(r=r+Math.imul(L,tt)|0)+Math.imul(C,J)|0,o=o+Math.imul(C,tt)|0,n=n+Math.imul(R,it)|0,r=(r=r+Math.imul(R,nt)|0)+Math.imul(S,it)|0,o=o+Math.imul(S,nt)|0,n=n+Math.imul(T,ot)|0,r=(r=r+Math.imul(T,st)|0)+Math.imul(I,ot)|0,o=o+Math.imul(I,st)|0,n=n+Math.imul(N,ut)|0,r=(r=r+Math.imul(N,at)|0)+Math.imul(b,ut)|0,o=o+Math.imul(b,at)|0,n=n+Math.imul(w,ft)|0,r=(r=r+Math.imul(w,ct)|0)+Math.imul(_,ft)|0,o=o+Math.imul(_,ct)|0;var It=(a+(n=n+Math.imul(g,mt)|0)|0)+((8191&(r=(r=r+Math.imul(g,pt)|0)+Math.imul(M,mt)|0))<<13)|0;a=((o=o+Math.imul(M,pt)|0)+(r>>>13)|0)+(It>>>26)|0,It&=67108863,n=Math.imul(G,Y),r=(r=Math.imul(G,$))+Math.imul(j,Y)|0,o=Math.imul(j,$),n=n+Math.imul(x,J)|0,r=(r=r+Math.imul(x,tt)|0)+Math.imul(k,J)|0,o=o+Math.imul(k,tt)|0,n=n+Math.imul(L,it)|0,r=(r=r+Math.imul(L,nt)|0)+Math.imul(C,it)|0,o=o+Math.imul(C,nt)|0,n=n+Math.imul(R,ot)|0,r=(r=r+Math.imul(R,st)|0)+Math.imul(S,ot)|0,o=o+Math.imul(S,st)|0,n=n+Math.imul(T,ut)|0,r=(r=r+Math.imul(T,at)|0)+Math.imul(I,ut)|0,o=o+Math.imul(I,at)|0,n=n+Math.imul(N,ft)|0,r=(r=r+Math.imul(N,ct)|0)+Math.imul(b,ft)|0,o=o+Math.imul(b,ct)|0;var Ot=(a+(n=n+Math.imul(w,mt)|0)|0)+((8191&(r=(r=r+Math.imul(w,pt)|0)+Math.imul(_,mt)|0))<<13)|0;a=((o=o+Math.imul(_,pt)|0)+(r>>>13)|0)+(Ot>>>26)|0,Ot&=67108863,n=Math.imul(G,J),r=(r=Math.imul(G,tt))+Math.imul(j,J)|0,o=Math.imul(j,tt),n=n+Math.imul(x,it)|0,r=(r=r+Math.imul(x,nt)|0)+Math.imul(k,it)|0,o=o+Math.imul(k,nt)|0,n=n+Math.imul(L,ot)|0,r=(r=r+Math.imul(L,st)|0)+Math.imul(C,ot)|0,o=o+Math.imul(C,st)|0,n=n+Math.imul(R,ut)|0,r=(r=r+Math.imul(R,at)|0)+Math.imul(S,ut)|0,o=o+Math.imul(S,at)|0,n=n+Math.imul(T,ft)|0,r=(r=r+Math.imul(T,ct)|0)+Math.imul(I,ft)|0,o=o+Math.imul(I,ct)|0;var Rt=(a+(n=n+Math.imul(N,mt)|0)|0)+((8191&(r=(r=r+Math.imul(N,pt)|0)+Math.imul(b,mt)|0))<<13)|0;a=((o=o+Math.imul(b,pt)|0)+(r>>>13)|0)+(Rt>>>26)|0,Rt&=67108863,n=Math.imul(G,it),r=(r=Math.imul(G,nt))+Math.imul(j,it)|0,o=Math.imul(j,nt),n=n+Math.imul(x,ot)|0,r=(r=r+Math.imul(x,st)|0)+Math.imul(k,ot)|0,o=o+Math.imul(k,st)|0,n=n+Math.imul(L,ut)|0,r=(r=r+Math.imul(L,at)|0)+Math.imul(C,ut)|0,o=o+Math.imul(C,at)|0,n=n+Math.imul(R,ft)|0,r=(r=r+Math.imul(R,ct)|0)+Math.imul(S,ft)|0,o=o+Math.imul(S,ct)|0;var St=(a+(n=n+Math.imul(T,mt)|0)|0)+((8191&(r=(r=r+Math.imul(T,pt)|0)+Math.imul(I,mt)|0))<<13)|0;a=((o=o+Math.imul(I,pt)|0)+(r>>>13)|0)+(St>>>26)|0,St&=67108863,n=Math.imul(G,ot),r=(r=Math.imul(G,st))+Math.imul(j,ot)|0,o=Math.imul(j,st),n=n+Math.imul(x,ut)|0,r=(r=r+Math.imul(x,at)|0)+Math.imul(k,ut)|0,o=o+Math.imul(k,at)|0,n=n+Math.imul(L,ft)|0,r=(r=r+Math.imul(L,ct)|0)+Math.imul(C,ft)|0,o=o+Math.imul(C,ct)|0;var Dt=(a+(n=n+Math.imul(R,mt)|0)|0)+((8191&(r=(r=r+Math.imul(R,pt)|0)+Math.imul(S,mt)|0))<<13)|0;a=((o=o+Math.imul(S,pt)|0)+(r>>>13)|0)+(Dt>>>26)|0,Dt&=67108863,n=Math.imul(G,ut),r=(r=Math.imul(G,at))+Math.imul(j,ut)|0,o=Math.imul(j,at),n=n+Math.imul(x,ft)|0,r=(r=r+Math.imul(x,ct)|0)+Math.imul(k,ft)|0,o=o+Math.imul(k,ct)|0;var Lt=(a+(n=n+Math.imul(L,mt)|0)|0)+((8191&(r=(r=r+Math.imul(L,pt)|0)+Math.imul(C,mt)|0))<<13)|0;a=((o=o+Math.imul(C,pt)|0)+(r>>>13)|0)+(Lt>>>26)|0,Lt&=67108863,n=Math.imul(G,ft),r=(r=Math.imul(G,ct))+Math.imul(j,ft)|0,o=Math.imul(j,ct);var Ct=(a+(n=n+Math.imul(x,mt)|0)|0)+((8191&(r=(r=r+Math.imul(x,pt)|0)+Math.imul(k,mt)|0))<<13)|0;a=((o=o+Math.imul(k,pt)|0)+(r>>>13)|0)+(Ct>>>26)|0,Ct&=67108863;var Ut=(a+(n=Math.imul(G,mt))|0)+((8191&(r=(r=Math.imul(G,pt))+Math.imul(j,mt)|0))<<13)|0;return a=((o=Math.imul(j,pt))+(r>>>13)|0)+(Ut>>>26)|0,Ut&=67108863,u[0]=vt,u[1]=gt,u[2]=Mt,u[3]=yt,u[4]=wt,u[5]=_t,u[6]=Et,u[7]=Nt,u[8]=bt,u[9]=At,u[10]=Tt,u[11]=It,u[12]=Ot,u[13]=Rt,u[14]=St,u[15]=Dt,u[16]=Lt,u[17]=Ct,u[18]=Ut,0!==a&&(u[19]=a,i.length++),i};function g(t,e,i){i.negative=e.negative^t.negative,i.length=t.length+e.length;for(var n=0,r=0,o=0;o<i.length-1;o++){var s=r;r=0;for(var h=67108863&n,u=Math.min(o,e.length-1),a=Math.max(0,o-t.length+1);a<=u;a++){var l=o-a,f=(0|t.words[l])*(0|e.words[a]),c=67108863&f;h=67108863&(c=c+h|0),r+=(s=(s=s+(f/67108864|0)|0)+(c>>>26)|0)>>>26,s&=67108863}i.words[o]=h,n=s,s=r}return 0!==n?i.words[o]=n:i.length--,i._strip()}function M(t,e,i){return g(t,e,i)}function y(t,e){this.x=t,this.y=e}Math.imul||(v=p),o.prototype.mulTo=function(t,e){var i=this.length+t.length;return 10===this.length&&10===t.length?v(this,t,e):i<63?p(this,t,e):i<1024?g(this,t,e):M(this,t,e)},y.prototype.makeRBT=function(t){for(var e=new Array(t),i=o.prototype._countBits(t)-1,n=0;n<t;n++)e[n]=this.revBin(n,i,t);return e},y.prototype.revBin=function(t,e,i){if(0===t||t===i-1)return t;for(var n=0,r=0;r<e;r++)n|=(1&t)<<e-r-1,t>>=1;return n},y.prototype.permute=function(t,e,i,n,r,o){for(var s=0;s<o;s++)n[s]=e[t[s]],r[s]=i[t[s]]},y.prototype.transform=function(t,e,i,n,r,o){this.permute(o,t,e,i,n,r);for(var s=1;s<r;s<<=1)for(var h=s<<1,u=Math.cos(2*Math.PI/h),a=Math.sin(2*Math.PI/h),l=0;l<r;l+=h)for(var f=u,c=a,d=0;d<s;d++){var m=i[l+d],p=n[l+d],v=i[l+d+s],g=n[l+d+s],M=f*v-c*g;g=f*g+c*v,v=M,i[l+d]=m+v,n[l+d]=p+g,i[l+d+s]=m-v,n[l+d+s]=p-g,d!==h&&(M=u*f-a*c,c=u*c+a*f,f=M)}},y.prototype.guessLen13b=function(t,e){var i=1|Math.max(e,t),n=1&i,r=0;for(i=i/2|0;i;i>>>=1)r++;return 1<<r+1+n},y.prototype.conjugate=function(t,e,i){if(!(i<=1))for(var n=0;n<i/2;n++){var r=t[n];t[n]=t[i-n-1],t[i-n-1]=r,r=e[n],e[n]=-e[i-n-1],e[i-n-1]=-r}},y.prototype.normalize13b=function(t,e){for(var i=0,n=0;n<e/2;n++){var r=8192*Math.round(t[2*n+1]/e)+Math.round(t[2*n]/e)+i;t[n]=67108863&r,i=r<67108864?0:r/67108864|0}return t},y.prototype.convert13b=function(t,e,i,r){for(var o=0,s=0;s<e;s++)o+=0|t[s],i[2*s]=8191&o,o>>>=13,i[2*s+1]=8191&o,o>>>=13;for(s=2*e;s<r;++s)i[s]=0;n(0===o),n(0==(-8192&o))},y.prototype.stub=function(t){for(var e=new Array(t),i=0;i<t;i++)e[i]=0;return e},y.prototype.mulp=function(t,e,i){var n=2*this.guessLen13b(t.length,e.length),r=this.makeRBT(n),o=this.stub(n),s=new Array(n),h=new Array(n),u=new Array(n),a=new Array(n),l=new Array(n),f=new Array(n),c=i.words;c.length=n,this.convert13b(t.words,t.length,s,n),this.convert13b(e.words,e.length,a,n),this.transform(s,o,h,u,n,r),this.transform(a,o,l,f,n,r);for(var d=0;d<n;d++){var m=h[d]*l[d]-u[d]*f[d];u[d]=h[d]*f[d]+u[d]*l[d],h[d]=m}return this.conjugate(h,u,n),this.transform(h,u,c,o,n,r),this.conjugate(c,o,n),this.normalize13b(c,n),i.negative=t.negative^e.negative,i.length=t.length+e.length,i._strip()},o.prototype.mul=function(t){var e=new o(null);return e.words=new Array(this.length+t.length),this.mulTo(t,e)},o.prototype.mulf=function(t){var e=new o(null);return e.words=new Array(this.length+t.length),M(this,t,e)},o.prototype.imul=function(t){return this.clone().mulTo(t,this)},o.prototype.imuln=function(t){var e=t<0;e&&(t=-t),n("number"==typeof t),n(t<67108864);for(var i=0,r=0;r<this.length;r++){var o=(0|this.words[r])*t,s=(67108863&o)+(67108863&i);i>>=26,i+=o/67108864|0,i+=s>>>26,this.words[r]=67108863&s}return 0!==i&&(this.words[r]=i,this.length++),e?this.ineg():this},o.prototype.muln=function(t){return this.clone().imuln(t)},o.prototype.sqr=function(){return this.mul(this)},o.prototype.isqr=function(){return this.imul(this.clone())},o.prototype.pow=function(t){var e=function(t){for(var e=new Array(t.bitLength()),i=0;i<e.length;i++){var n=i/26|0,r=i%26;e[i]=t.words[n]>>>r&1}return e}(t);if(0===e.length)return new o(1);for(var i=this,n=0;n<e.length&&0===e[n];n++,i=i.sqr());if(++n<e.length)for(var r=i.sqr();n<e.length;n++,r=r.sqr())0!==e[n]&&(i=i.mul(r));return i},o.prototype.iushln=function(t){n("number"==typeof t&&t>=0);var e,i=t%26,r=(t-i)/26,o=67108863>>>26-i<<26-i;if(0!==i){var s=0;for(e=0;e<this.length;e++){var h=this.words[e]&o,u=(0|this.words[e])-h<<i;this.words[e]=u|s,s=h>>>26-i}s&&(this.words[e]=s,this.length++)}if(0!==r){for(e=this.length-1;e>=0;e--)this.words[e+r]=this.words[e];for(e=0;e<r;e++)this.words[e]=0;this.length+=r}return this._strip()},o.prototype.ishln=function(t){return n(0===this.negative),this.iushln(t)},o.prototype.iushrn=function(t,e,i){var r;n("number"==typeof t&&t>=0),r=e?(e-e%26)/26:0;var o=t%26,s=Math.min((t-o)/26,this.length),h=67108863^67108863>>>o<<o,u=i;if(r-=s,r=Math.max(0,r),u){for(var a=0;a<s;a++)u.words[a]=this.words[a];u.length=s}if(0===s);else if(this.length>s)for(this.length-=s,a=0;a<this.length;a++)this.words[a]=this.words[a+s];else this.words[0]=0,this.length=1;var l=0;for(a=this.length-1;a>=0&&(0!==l||a>=r);a--){var f=0|this.words[a];this.words[a]=l<<26-o|f>>>o,l=f&h}return u&&0!==l&&(u.words[u.length++]=l),0===this.length&&(this.words[0]=0,this.length=1),this._strip()},o.prototype.ishrn=function(t,e,i){return n(0===this.negative),this.iushrn(t,e,i)},o.prototype.shln=function(t){return this.clone().ishln(t)},o.prototype.ushln=function(t){return this.clone().iushln(t)},o.prototype.shrn=function(t){return this.clone().ishrn(t)},o.prototype.ushrn=function(t){return this.clone().iushrn(t)},o.prototype.testn=function(t){n("number"==typeof t&&t>=0);var e=t%26,i=(t-e)/26,r=1<<e;return!(this.length<=i||!(this.words[i]&r))},o.prototype.imaskn=function(t){n("number"==typeof t&&t>=0);var e=t%26,i=(t-e)/26;if(n(0===this.negative,"imaskn works only with positive numbers"),this.length<=i)return this;if(0!==e&&i++,this.length=Math.min(i,this.length),0!==e){var r=67108863^67108863>>>e<<e;this.words[this.length-1]&=r}return this._strip()},o.prototype.maskn=function(t){return this.clone().imaskn(t)},o.prototype.iaddn=function(t){return n("number"==typeof t),n(t<67108864),t<0?this.isubn(-t):0!==this.negative?1===this.length&&(0|this.words[0])<=t?(this.words[0]=t-(0|this.words[0]),this.negative=0,this):(this.negative=0,this.isubn(t),this.negative=1,this):this._iaddn(t)},o.prototype._iaddn=function(t){this.words[0]+=t;for(var e=0;e<this.length&&this.words[e]>=67108864;e++)this.words[e]-=67108864,e===this.length-1?this.words[e+1]=1:this.words[e+1]++;return this.length=Math.max(this.length,e+1),this},o.prototype.isubn=function(t){if(n("number"==typeof t),n(t<67108864),t<0)return this.iaddn(-t);if(0!==this.negative)return this.negative=0,this.iaddn(t),this.negative=1,this;if(this.words[0]-=t,1===this.length&&this.words[0]<0)this.words[0]=-this.words[0],this.negative=1;else for(var e=0;e<this.length&&this.words[e]<0;e++)this.words[e]+=67108864,this.words[e+1]-=1;return this._strip()},o.prototype.addn=function(t){return this.clone().iaddn(t)},o.prototype.subn=function(t){return this.clone().isubn(t)},o.prototype.iabs=function(){return this.negative=0,this},o.prototype.abs=function(){return this.clone().iabs()},o.prototype._ishlnsubmul=function(t,e,i){var r,o,s=t.length+i;this._expand(s);var h=0;for(r=0;r<t.length;r++){o=(0|this.words[r+i])+h;var u=(0|t.words[r])*e;h=((o-=67108863&u)>>26)-(u/67108864|0),this.words[r+i]=67108863&o}for(;r<this.length-i;r++)h=(o=(0|this.words[r+i])+h)>>26,this.words[r+i]=67108863&o;if(0===h)return this._strip();for(n(-1===h),h=0,r=0;r<this.length;r++)h=(o=-(0|this.words[r])+h)>>26,this.words[r]=67108863&o;return this.negative=1,this._strip()},o.prototype._wordDiv=function(t,e){var i=(this.length,t.length),n=this.clone(),r=t,s=0|r.words[r.length-1];0!=(i=26-this._countBits(s))&&(r=r.ushln(i),n.iushln(i),s=0|r.words[r.length-1]);var h,u=n.length-r.length;if("mod"!==e){(h=new o(null)).length=u+1,h.words=new Array(h.length);for(var a=0;a<h.length;a++)h.words[a]=0}var l=n.clone()._ishlnsubmul(r,1,u);0===l.negative&&(n=l,h&&(h.words[u]=1));for(var f=u-1;f>=0;f--){var c=67108864*(0|n.words[r.length+f])+(0|n.words[r.length+f-1]);for(c=Math.min(c/s|0,67108863),n._ishlnsubmul(r,c,f);0!==n.negative;)c--,n.negative=0,n._ishlnsubmul(r,1,f),n.isZero()||(n.negative^=1);h&&(h.words[f]=c)}return h&&h._strip(),n._strip(),"div"!==e&&0!==i&&n.iushrn(i),{div:h||null,mod:n}},o.prototype.divmod=function(t,e,i){return n(!t.isZero()),this.isZero()?{div:new o(0),mod:new o(0)}:0!==this.negative&&0===t.negative?(h=this.neg().divmod(t,e),"mod"!==e&&(r=h.div.neg()),"div"!==e&&(s=h.mod.neg(),i&&0!==s.negative&&s.iadd(t)),{div:r,mod:s}):0===this.negative&&0!==t.negative?(h=this.divmod(t.neg(),e),"mod"!==e&&(r=h.div.neg()),{div:r,mod:h.mod}):0!=(this.negative&t.negative)?(h=this.neg().divmod(t.neg(),e),"div"!==e&&(s=h.mod.neg(),i&&0!==s.negative&&s.isub(t)),{div:h.div,mod:s}):t.length>this.length||this.cmp(t)<0?{div:new o(0),mod:this}:1===t.length?"div"===e?{div:this.divn(t.words[0]),mod:null}:"mod"===e?{div:null,mod:new o(this.modrn(t.words[0]))}:{div:this.divn(t.words[0]),mod:new o(this.modrn(t.words[0]))}:this._wordDiv(t,e);var r,s,h},o.prototype.div=function(t){return this.divmod(t,"div",!1).div},o.prototype.mod=function(t){return this.divmod(t,"mod",!1).mod},o.prototype.umod=function(t){return this.divmod(t,"mod",!0).mod},o.prototype.divRound=function(t){var e=this.divmod(t);if(e.mod.isZero())return e.div;var i=0!==e.div.negative?e.mod.isub(t):e.mod,n=t.ushrn(1),r=t.andln(1),o=i.cmp(n);return o<0||1===r&&0===o?e.div:0!==e.div.negative?e.div.isubn(1):e.div.iaddn(1)},o.prototype.modrn=function(t){var e=t<0;e&&(t=-t),n(t<=67108863);for(var i=(1<<26)%t,r=0,o=this.length-1;o>=0;o--)r=(i*r+(0|this.words[o]))%t;return e?-r:r},o.prototype.modn=function(t){return this.modrn(t)},o.prototype.idivn=function(t){var e=t<0;e&&(t=-t),n(t<=67108863);for(var i=0,r=this.length-1;r>=0;r--){var o=(0|this.words[r])+67108864*i;this.words[r]=o/t|0,i=o%t}return this._strip(),e?this.ineg():this},o.prototype.divn=function(t){return this.clone().idivn(t)},o.prototype.egcd=function(t){n(0===t.negative),n(!t.isZero());var e=this,i=t.clone();e=0!==e.negative?e.umod(t):e.clone();for(var r=new o(1),s=new o(0),h=new o(0),u=new o(1),a=0;e.isEven()&&i.isEven();)e.iushrn(1),i.iushrn(1),++a;for(var l=i.clone(),f=e.clone();!e.isZero();){for(var c=0,d=1;0==(e.words[0]&d)&&c<26;++c,d<<=1);if(c>0)for(e.iushrn(c);c-- >0;)(r.isOdd()||s.isOdd())&&(r.iadd(l),s.isub(f)),r.iushrn(1),s.iushrn(1);for(var m=0,p=1;0==(i.words[0]&p)&&m<26;++m,p<<=1);if(m>0)for(i.iushrn(m);m-- >0;)(h.isOdd()||u.isOdd())&&(h.iadd(l),u.isub(f)),h.iushrn(1),u.iushrn(1);e.cmp(i)>=0?(e.isub(i),r.isub(h),s.isub(u)):(i.isub(e),h.isub(r),u.isub(s))}return{a:h,b:u,gcd:i.iushln(a)}},o.prototype._invmp=function(t){n(0===t.negative),n(!t.isZero());var e=this,i=t.clone();e=0!==e.negative?e.umod(t):e.clone();for(var r,s=new o(1),h=new o(0),u=i.clone();e.cmpn(1)>0&&i.cmpn(1)>0;){for(var a=0,l=1;0==(e.words[0]&l)&&a<26;++a,l<<=1);if(a>0)for(e.iushrn(a);a-- >0;)s.isOdd()&&s.iadd(u),s.iushrn(1);for(var f=0,c=1;0==(i.words[0]&c)&&f<26;++f,c<<=1);if(f>0)for(i.iushrn(f);f-- >0;)h.isOdd()&&h.iadd(u),h.iushrn(1);e.cmp(i)>=0?(e.isub(i),s.isub(h)):(i.isub(e),h.isub(s))}return(r=0===e.cmpn(1)?s:h).cmpn(0)<0&&r.iadd(t),r},o.prototype.gcd=function(t){if(this.isZero())return t.abs();if(t.isZero())return this.abs();var e=this.clone(),i=t.clone();e.negative=0,i.negative=0;for(var n=0;e.isEven()&&i.isEven();n++)e.iushrn(1),i.iushrn(1);for(;;){for(;e.isEven();)e.iushrn(1);for(;i.isEven();)i.iushrn(1);var r=e.cmp(i);if(r<0){var o=e;e=i,i=o}else if(0===r||0===i.cmpn(1))break;e.isub(i)}return i.iushln(n)},o.prototype.invm=function(t){return this.egcd(t).a.umod(t)},o.prototype.isEven=function(){return 0==(1&this.words[0])},o.prototype.isOdd=function(){return 1==(1&this.words[0])},o.prototype.andln=function(t){return this.words[0]&t},o.prototype.bincn=function(t){n("number"==typeof t);var e=t%26,i=(t-e)/26,r=1<<e;if(this.length<=i)return this._expand(i+1),this.words[i]|=r,this;for(var o=r,s=i;0!==o&&s<this.length;s++){var h=0|this.words[s];o=(h+=o)>>>26,h&=67108863,this.words[s]=h}return 0!==o&&(this.words[s]=o,this.length++),this},o.prototype.isZero=function(){return 1===this.length&&0===this.words[0]},o.prototype.cmpn=function(t){var e,i=t<0;if(0!==this.negative&&!i)return-1;if(0===this.negative&&i)return 1;if(this._strip(),this.length>1)e=1;else{i&&(t=-t),n(t<=67108863,"Number is too big");var r=0|this.words[0];e=r===t?0:r<t?-1:1}return 0!==this.negative?0|-e:e},o.prototype.cmp=function(t){if(0!==this.negative&&0===t.negative)return-1;if(0===this.negative&&0!==t.negative)return 1;var e=this.ucmp(t);return 0!==this.negative?0|-e:e},o.prototype.ucmp=function(t){if(this.length>t.length)return 1;if(this.length<t.length)return-1;for(var e=0,i=this.length-1;i>=0;i--){var n=0|this.words[i],r=0|t.words[i];if(n!==r){n<r?e=-1:n>r&&(e=1);break}}return e},o.prototype.gtn=function(t){return 1===this.cmpn(t)},o.prototype.gt=function(t){return 1===this.cmp(t)},o.prototype.gten=function(t){return this.cmpn(t)>=0},o.prototype.gte=function(t){return this.cmp(t)>=0},o.prototype.ltn=function(t){return-1===this.cmpn(t)},o.prototype.lt=function(t){return-1===this.cmp(t)},o.prototype.lten=function(t){return this.cmpn(t)<=0},o.prototype.lte=function(t){return this.cmp(t)<=0},o.prototype.eqn=function(t){return 0===this.cmpn(t)},o.prototype.eq=function(t){return 0===this.cmp(t)},o.red=function(t){return new T(t)},o.prototype.toRed=function(t){return n(!this.red,"Already a number in reduction context"),n(0===this.negative,"red works only with positives"),t.convertTo(this)._forceRed(t)},o.prototype.fromRed=function(){return n(this.red,"fromRed works only with numbers in reduction context"),this.red.convertFrom(this)},o.prototype._forceRed=function(t){return this.red=t,this},o.prototype.forceRed=function(t){return n(!this.red,"Already a number in reduction context"),this._forceRed(t)},o.prototype.redAdd=function(t){return n(this.red,"redAdd works only with red numbers"),this.red.add(this,t)},o.prototype.redIAdd=function(t){return n(this.red,"redIAdd works only with red numbers"),this.red.iadd(this,t)},o.prototype.redSub=function(t){return n(this.red,"redSub works only with red numbers"),this.red.sub(this,t)},o.prototype.redISub=function(t){return n(this.red,"redISub works only with red numbers"),this.red.isub(this,t)},o.prototype.redShl=function(t){return n(this.red,"redShl works only with red numbers"),this.red.shl(this,t)},o.prototype.redMul=function(t){return n(this.red,"redMul works only with red numbers"),this.red._verify2(this,t),this.red.mul(this,t)},o.prototype.redIMul=function(t){return n(this.red,"redMul works only with red numbers"),this.red._verify2(this,t),this.red.imul(this,t)},o.prototype.redSqr=function(){return n(this.red,"redSqr works only with red numbers"),this.red._verify1(this),this.red.sqr(this)},o.prototype.redISqr=function(){return n(this.red,"redISqr works only with red numbers"),this.red._verify1(this),this.red.isqr(this)},o.prototype.redSqrt=function(){return n(this.red,"redSqrt works only with red numbers"),this.red._verify1(this),this.red.sqrt(this)},o.prototype.redInvm=function(){return n(this.red,"redInvm works only with red numbers"),this.red._verify1(this),this.red.invm(this)},o.prototype.redNeg=function(){return n(this.red,"redNeg works only with red numbers"),this.red._verify1(this),this.red.neg(this)},o.prototype.redPow=function(t){return n(this.red&&!t.red,"redPow(normalNum)"),this.red._verify1(this),this.red.pow(this,t)};var w={k256:null,p224:null,p192:null,p25519:null};function _(t,e){this.name=t,this.p=new o(e,16),this.n=this.p.bitLength(),this.k=new o(1).iushln(this.n).isub(this.p),this.tmp=this._tmp()}function E(){_.call(this,"k256","ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff fffffffe fffffc2f")}function N(){_.call(this,"p224","ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000001")}function b(){_.call(this,"p192","ffffffff ffffffff ffffffff fffffffe ffffffff ffffffff")}function A(){_.call(this,"25519","7fffffffffffffff ffffffffffffffff ffffffffffffffff ffffffffffffffed")}function T(t){if("string"==typeof t){var e=o._prime(t);this.m=e.p,this.prime=e}else n(t.gtn(1),"modulus must be greater than 1"),this.m=t,this.prime=null}function I(t){T.call(this,t),this.shift=this.m.bitLength(),this.shift%26!=0&&(this.shift+=26-this.shift%26),this.r=new o(1).iushln(this.shift),this.r2=this.imod(this.r.sqr()),this.rinv=this.r._invmp(this.m),this.minv=this.rinv.mul(this.r).isubn(1).div(this.m),this.minv=this.minv.umod(this.r),this.minv=this.r.sub(this.minv)}_.prototype._tmp=function(){var t=new o(null);return t.words=new Array(Math.ceil(this.n/13)),t},_.prototype.ireduce=function(t){var e,i=t;do{this.split(i,this.tmp),e=(i=(i=this.imulK(i)).iadd(this.tmp)).bitLength()}while(e>this.n);var n=e<this.n?-1:i.ucmp(this.p);return 0===n?(i.words[0]=0,i.length=1):n>0?i.isub(this.p):void 0!==i.strip?i.strip():i._strip(),i},_.prototype.split=function(t,e){t.iushrn(this.n,0,e)},_.prototype.imulK=function(t){return t.imul(this.k)},r(E,_),E.prototype.split=function(t,e){for(var i=4194303,n=Math.min(t.length,9),r=0;r<n;r++)e.words[r]=t.words[r];if(e.length=n,t.length<=9)return t.words[0]=0,void(t.length=1);var o=t.words[9];for(e.words[e.length++]=o&i,r=10;r<t.length;r++){var s=0|t.words[r];t.words[r-10]=(s&i)<<4|o>>>22,o=s}o>>>=22,t.words[r-10]=o,0===o&&t.length>10?t.length-=10:t.length-=9},E.prototype.imulK=function(t){t.words[t.length]=0,t.words[t.length+1]=0,t.length+=2;for(var e=0,i=0;i<t.length;i++){var n=0|t.words[i];e+=977*n,t.words[i]=67108863&e,e=64*n+(e/67108864|0)}return 0===t.words[t.length-1]&&(t.length--,0===t.words[t.length-1]&&t.length--),t},r(N,_),r(b,_),r(A,_),A.prototype.imulK=function(t){for(var e=0,i=0;i<t.length;i++){var n=19*(0|t.words[i])+e,r=67108863&n;n>>>=26,t.words[i]=r,e=n}return 0!==e&&(t.words[t.length++]=e),t},o._prime=function(t){if(w[t])return w[t];var e;if("k256"===t)e=new E;else if("p224"===t)e=new N;else if("p192"===t)e=new b;else{if("p25519"!==t)throw new Error("Unknown prime "+t);e=new A}return w[t]=e,e},T.prototype._verify1=function(t){n(0===t.negative,"red works only with positives"),n(t.red,"red works only with red numbers")},T.prototype._verify2=function(t,e){n(0==(t.negative|e.negative),"red works only with positives"),n(t.red&&t.red===e.red,"red works only with red numbers")},T.prototype.imod=function(t){return this.prime?this.prime.ireduce(t)._forceRed(this):(l(t,t.umod(this.m)._forceRed(this)),t)},T.prototype.neg=function(t){return t.isZero()?t.clone():this.m.sub(t)._forceRed(this)},T.prototype.add=function(t,e){this._verify2(t,e);var i=t.add(e);return i.cmp(this.m)>=0&&i.isub(this.m),i._forceRed(this)},T.prototype.iadd=function(t,e){this._verify2(t,e);var i=t.iadd(e);return i.cmp(this.m)>=0&&i.isub(this.m),i},T.prototype.sub=function(t,e){this._verify2(t,e);var i=t.sub(e);return i.cmpn(0)<0&&i.iadd(this.m),i._forceRed(this)},T.prototype.isub=function(t,e){this._verify2(t,e);var i=t.isub(e);return i.cmpn(0)<0&&i.iadd(this.m),i},T.prototype.shl=function(t,e){return this._verify1(t),this.imod(t.ushln(e))},T.prototype.imul=function(t,e){return this._verify2(t,e),this.imod(t.imul(e))},T.prototype.mul=function(t,e){return this._verify2(t,e),this.imod(t.mul(e))},T.prototype.isqr=function(t){return this.imul(t,t.clone())},T.prototype.sqr=function(t){return this.mul(t,t)},T.prototype.sqrt=function(t){if(t.isZero())return t.clone();var e=this.m.andln(3);if(n(e%2==1),3===e){var i=this.m.add(new o(1)).iushrn(2);return this.pow(t,i)}for(var r=this.m.subn(1),s=0;!r.isZero()&&0===r.andln(1);)s++,r.iushrn(1);n(!r.isZero());var h=new o(1).toRed(this),u=h.redNeg(),a=this.m.subn(1).iushrn(1),l=this.m.bitLength();for(l=new o(2*l*l).toRed(this);0!==this.pow(l,a).cmp(u);)l.redIAdd(u);for(var f=this.pow(l,r),c=this.pow(t,r.addn(1).iushrn(1)),d=this.pow(t,r),m=s;0!==d.cmp(h);){for(var p=d,v=0;0!==p.cmp(h);v++)p=p.redSqr();n(v<m);var g=this.pow(f,new o(1).iushln(m-v-1));c=c.redMul(g),f=g.redSqr(),d=d.redMul(f),m=v}return c},T.prototype.invm=function(t){var e=t._invmp(this.m);return 0!==e.negative?(e.negative=0,this.imod(e).redNeg()):this.imod(e)},T.prototype.pow=function(t,e){if(e.isZero())return new o(1).toRed(this);if(0===e.cmpn(1))return t.clone();var i=new Array(16);i[0]=new o(1).toRed(this),i[1]=t;for(var n=2;n<i.length;n++)i[n]=this.mul(i[n-1],t);var r=i[0],s=0,h=0,u=e.bitLength()%26;for(0===u&&(u=26),n=e.length-1;n>=0;n--){for(var a=e.words[n],l=u-1;l>=0;l--){var f=a>>l&1;r!==i[0]&&(r=this.sqr(r)),0!==f||0!==s?(s<<=1,s|=f,(4==++h||0===n&&0===l)&&(r=this.mul(r,i[s]),h=0,s=0)):h=0}u=26}return r},T.prototype.convertTo=function(t){var e=t.umod(this.m);return e===t?e.clone():e},T.prototype.convertFrom=function(t){var e=t.clone();return e.red=null,e},o.mont=function(t){return new I(t)},r(I,T),I.prototype.convertTo=function(t){return this.imod(t.ushln(this.shift))},I.prototype.convertFrom=function(t){var e=this.imod(t.mul(this.rinv));return e.red=null,e},I.prototype.imul=function(t,e){if(t.isZero()||e.isZero())return t.words[0]=0,t.length=1,t;var i=t.imul(e),n=i.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m),r=i.isub(n).iushrn(this.shift),o=r;return r.cmp(this.m)>=0?o=r.isub(this.m):r.cmpn(0)<0&&(o=r.iadd(this.m)),o._forceRed(this)},I.prototype.mul=function(t,e){if(t.isZero()||e.isZero())return new o(0)._forceRed(this);var i=t.mul(e),n=i.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m),r=i.isub(n).iushrn(this.shift),s=r;return r.cmp(this.m)>=0?s=r.isub(this.m):r.cmpn(0)<0&&(s=r.iadd(this.m)),s._forceRed(this)},I.prototype.invm=function(t){return this.imod(t._invmp(this.m).mul(this.r2))._forceRed(this)}}(t=i.nmd(t),this)},161:t=>{"use strict";var e=Object.prototype.hasOwnProperty,i="~";function n(){}function r(t,e,i){this.fn=t,this.context=e,this.once=i||!1}function o(t,e,n,o,s){if("function"!=typeof n)throw new TypeError("The listener must be a function");var h=new r(n,o||t,s),u=i?i+e:e;return t._events[u]?t._events[u].fn?t._events[u]=[t._events[u],h]:t._events[u].push(h):(t._events[u]=h,t._eventsCount++),t}function s(t,e){0==--t._eventsCount?t._events=new n:delete t._events[e]}function h(){this._events=new n,this._eventsCount=0}Object.create&&(n.prototype=Object.create(null),(new n).__proto__||(i=!1)),h.prototype.eventNames=function(){var t,n,r=[];if(0===this._eventsCount)return r;for(n in t=this._events)e.call(t,n)&&r.push(i?n.slice(1):n);return Object.getOwnPropertySymbols?r.concat(Object.getOwnPropertySymbols(t)):r},h.prototype.listeners=function(t){var e=i?i+t:t,n=this._events[e];if(!n)return[];if(n.fn)return[n.fn];for(var r=0,o=n.length,s=new Array(o);r<o;r++)s[r]=n[r].fn;return s},h.prototype.listenerCount=function(t){var e=i?i+t:t,n=this._events[e];return n?n.fn?1:n.length:0},h.prototype.emit=function(t,e,n,r,o,s){var h=i?i+t:t;if(!this._events[h])return!1;var u,a,l=this._events[h],f=arguments.length;if(l.fn){switch(l.once&&this.removeListener(t,l.fn,void 0,!0),f){case 1:return l.fn.call(l.context),!0;case 2:return l.fn.call(l.context,e),!0;case 3:return l.fn.call(l.context,e,n),!0;case 4:return l.fn.call(l.context,e,n,r),!0;case 5:return l.fn.call(l.context,e,n,r,o),!0;case 6:return l.fn.call(l.context,e,n,r,o,s),!0}for(a=1,u=new Array(f-1);a<f;a++)u[a-1]=arguments[a];l.fn.apply(l.context,u)}else{var c,d=l.length;for(a=0;a<d;a++)switch(l[a].once&&this.removeListener(t,l[a].fn,void 0,!0),f){case 1:l[a].fn.call(l[a].context);break;case 2:l[a].fn.call(l[a].context,e);break;case 3:l[a].fn.call(l[a].context,e,n);break;case 4:l[a].fn.call(l[a].context,e,n,r);break;default:if(!u)for(c=1,u=new Array(f-1);c<f;c++)u[c-1]=arguments[c];l[a].fn.apply(l[a].context,u)}}return!0},h.prototype.on=function(t,e,i){return o(this,t,e,i,!1)},h.prototype.once=function(t,e,i){return o(this,t,e,i,!0)},h.prototype.removeListener=function(t,e,n,r){var o=i?i+t:t;if(!this._events[o])return this;if(!e)return s(this,o),this;var h=this._events[o];if(h.fn)h.fn!==e||r&&!h.once||n&&h.context!==n||s(this,o);else{for(var u=0,a=[],l=h.length;u<l;u++)(h[u].fn!==e||r&&!h[u].once||n&&h[u].context!==n)&&a.push(h[u]);a.length?this._events[o]=1===a.length?a[0]:a:s(this,o)}return this},h.prototype.removeAllListeners=function(t){var e;return t?(e=i?i+t:t,this._events[e]&&s(this,e)):(this._events=new n,this._eventsCount=0),this},h.prototype.off=h.prototype.removeListener,h.prototype.addListener=h.prototype.on,h.prefixed=i,h.EventEmitter=h,t.exports=h},699:t=>{"use strict";var e,i="object"==typeof Reflect?Reflect:null,n=i&&"function"==typeof i.apply?i.apply:function(t,e,i){return Function.prototype.apply.call(t,e,i)};e=i&&"function"==typeof i.ownKeys?i.ownKeys:Object.getOwnPropertySymbols?function(t){return Object.getOwnPropertyNames(t).concat(Object.getOwnPropertySymbols(t))}:function(t){return Object.getOwnPropertyNames(t)};var r=Number.isNaN||function(t){return t!=t};function o(){o.init.call(this)}t.exports=o,t.exports.once=function(t,e){return new Promise((function(i,n){function r(i){t.removeListener(e,o),n(i)}function o(){"function"==typeof t.removeListener&&t.removeListener("error",r),i([].slice.call(arguments))}p(t,e,o,{once:!0}),"error"!==e&&function(t,e,i){"function"==typeof t.on&&p(t,"error",e,{once:!0})}(t,r)}))},o.EventEmitter=o,o.prototype._events=void 0,o.prototype._eventsCount=0,o.prototype._maxListeners=void 0;var s=10;function h(t){if("function"!=typeof t)throw new TypeError('The "listener" argument must be of type Function. Received type '+typeof t)}function u(t){return void 0===t._maxListeners?o.defaultMaxListeners:t._maxListeners}function a(t,e,i,n){var r,o,s,a;if(h(i),void 0===(o=t._events)?(o=t._events=Object.create(null),t._eventsCount=0):(void 0!==o.newListener&&(t.emit("newListener",e,i.listener?i.listener:i),o=t._events),s=o[e]),void 0===s)s=o[e]=i,++t._eventsCount;else if("function"==typeof s?s=o[e]=n?[i,s]:[s,i]:n?s.unshift(i):s.push(i),(r=u(t))>0&&s.length>r&&!s.warned){s.warned=!0;var l=new Error("Possible EventEmitter memory leak detected. "+s.length+" "+String(e)+" listeners added. Use emitter.setMaxListeners() to increase limit");l.name="MaxListenersExceededWarning",l.emitter=t,l.type=e,l.count=s.length,a=l,console&&console.warn&&console.warn(a)}return t}function l(){if(!this.fired)return this.target.removeListener(this.type,this.wrapFn),this.fired=!0,0===arguments.length?this.listener.call(this.target):this.listener.apply(this.target,arguments)}function f(t,e,i){var n={fired:!1,wrapFn:void 0,target:t,type:e,listener:i},r=l.bind(n);return r.listener=i,n.wrapFn=r,r}function c(t,e,i){var n=t._events;if(void 0===n)return[];var r=n[e];return void 0===r?[]:"function"==typeof r?i?[r.listener||r]:[r]:i?function(t){for(var e=new Array(t.length),i=0;i<e.length;++i)e[i]=t[i].listener||t[i];return e}(r):m(r,r.length)}function d(t){var e=this._events;if(void 0!==e){var i=e[t];if("function"==typeof i)return 1;if(void 0!==i)return i.length}return 0}function m(t,e){for(var i=new Array(e),n=0;n<e;++n)i[n]=t[n];return i}function p(t,e,i,n){if("function"==typeof t.on)n.once?t.once(e,i):t.on(e,i);else{if("function"!=typeof t.addEventListener)throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type '+typeof t);t.addEventListener(e,(function r(o){n.once&&t.removeEventListener(e,r),i(o)}))}}Object.defineProperty(o,"defaultMaxListeners",{enumerable:!0,get:function(){return s},set:function(t){if("number"!=typeof t||t<0||r(t))throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received '+t+".");s=t}}),o.init=function(){void 0!==this._events&&this._events!==Object.getPrototypeOf(this)._events||(this._events=Object.create(null),this._eventsCount=0),this._maxListeners=this._maxListeners||void 0},o.prototype.setMaxListeners=function(t){if("number"!=typeof t||t<0||r(t))throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received '+t+".");return this._maxListeners=t,this},o.prototype.getMaxListeners=function(){return u(this)},o.prototype.emit=function(t){for(var e=[],i=1;i<arguments.length;i++)e.push(arguments[i]);var r="error"===t,o=this._events;if(void 0!==o)r=r&&void 0===o.error;else if(!r)return!1;if(r){var s;if(e.length>0&&(s=e[0]),s instanceof Error)throw s;var h=new Error("Unhandled error."+(s?" ("+s.message+")":""));throw h.context=s,h}var u=o[t];if(void 0===u)return!1;if("function"==typeof u)n(u,this,e);else{var a=u.length,l=m(u,a);for(i=0;i<a;++i)n(l[i],this,e)}return!0},o.prototype.addListener=function(t,e){return a(this,t,e,!1)},o.prototype.on=o.prototype.addListener,o.prototype.prependListener=function(t,e){return a(this,t,e,!0)},o.prototype.once=function(t,e){return h(e),this.on(t,f(this,t,e)),this},o.prototype.prependOnceListener=function(t,e){return h(e),this.prependListener(t,f(this,t,e)),this},o.prototype.removeListener=function(t,e){var i,n,r,o,s;if(h(e),void 0===(n=this._events))return this;if(void 0===(i=n[t]))return this;if(i===e||i.listener===e)0==--this._eventsCount?this._events=Object.create(null):(delete n[t],n.removeListener&&this.emit("removeListener",t,i.listener||e));else if("function"!=typeof i){for(r=-1,o=i.length-1;o>=0;o--)if(i[o]===e||i[o].listener===e){s=i[o].listener,r=o;break}if(r<0)return this;0===r?i.shift():function(t,e){for(;e+1<t.length;e++)t[e]=t[e+1];t.pop()}(i,r),1===i.length&&(n[t]=i[0]),void 0!==n.removeListener&&this.emit("removeListener",t,s||e)}return this},o.prototype.off=o.prototype.removeListener,o.prototype.removeAllListeners=function(t){var e,i,n;if(void 0===(i=this._events))return this;if(void 0===i.removeListener)return 0===arguments.length?(this._events=Object.create(null),this._eventsCount=0):void 0!==i[t]&&(0==--this._eventsCount?this._events=Object.create(null):delete i[t]),this;if(0===arguments.length){var r,o=Object.keys(i);for(n=0;n<o.length;++n)"removeListener"!==(r=o[n])&&this.removeAllListeners(r);return this.removeAllListeners("removeListener"),this._events=Object.create(null),this._eventsCount=0,this}if("function"==typeof(e=i[t]))this.removeListener(t,e);else if(void 0!==e)for(n=e.length-1;n>=0;n--)this.removeListener(t,e[n]);return this},o.prototype.listeners=function(t){return c(this,t,!0)},o.prototype.rawListeners=function(t){return c(this,t,!1)},o.listenerCount=function(t,e){return"function"==typeof t.listenerCount?t.listenerCount(e):d.call(t,e)},o.prototype.listenerCount=d,o.prototype.eventNames=function(){return this._eventsCount>0?e(this._events):[]}},196:()=>{}},e={};function i(n){var r=e[n];if(void 0!==r)return r.exports;var o=e[n]={id:n,loaded:!1,exports:{}};return t[n].call(o.exports,o,o.exports,i),o.loaded=!0,o.exports}i.nmd=t=>(t.paths=[],t.children||(t.children=[]),t),(()=>{"use strict";const t={NODE_ENV:"production",PKG_NAME:"@subwallet/extension-koni",PKG_VERSION:"1.1.36-0",TARGET_ENV:"extension",BRANCH_NAME:void 0,ID_PREDIX:"sw-ext-"}.EXTENSION_PREFIX||"",e={NODE_ENV:"production",PKG_NAME:"@subwallet/extension-koni",PKG_VERSION:"1.1.36-0",TARGET_ENV:"extension",BRANCH_NAME:void 0,ID_PREDIX:"sw-ext-"}.ID_PREFIX||t||"",n=`${t}koni-page`,r=`${t}koni-content`;class o extends Error{constructor(t,e,i,n){super(e),this.errorType=t,this.code=i,this.data=n}toJSON(){return{name:this.name,message:this.message,code:this.code}}}const s={CHAIN_DISCONNECTED:{message:"Network is disconnected",code:void 0},INVALID_PARAMS:{message:"Undefined error. Please contact SubWallet support",code:void 0},INTERNAL_ERROR:{message:"Undefined error. Please contact SubWallet support",code:void 0},USER_REJECT:{message:"Rejected by user",code:void 0}};class h extends o{constructor(t,e,i){const{code:n,message:r}=s[t];super(t,e||r,n,i),this.errorType=t}}let u,a,l,f,c,d,m,p,v,g,M,y,w,_,E,N,b,A,T,I,O,R,S,D,L,C,U;!function(t){t.Web="Web",t.Node="Node",t.ExtensionChrome="Extension (Chrome)",t.ExtensionFirefox="Extension (Firefox)",t.WebWorker="Web Worker",t.ServiceWorker="Service Worker",t.Unknown="Unknown"}(u||(u={})),function(t){t.NOMINATED="nominated",t.POOLED="pooled",t.LIQUID_STAKING="liquid_staking"}(a||(a={})),function(t){t.PENDING="pending",t.READY="ready",t.CACHED="cached",t.ERROR="error",t.NOT_SUPPORT="not_support"}(l||(l={})),function(t){t.VER_1="1.0.0",t.VER_2="2.0.0"}(f||(f={})),function(t){t.ONGOING="ongoing",t.COMPLETED="completed",t.FAILED="failed"}(c||(c={})),function(t){t.wasm="wasm",t.evm="evm"}(d||(d={})),function(t){t.ALWAYS_REQUIRED="always_required",t.WHEN_NEEDED="when_needed"}(m||(m={})),function(t){t.SEND="send",t.RECEIVED="received"}(p||(p={})),function(t){t.EVM="evm",t.SUBSTRATE="substrate"}(v||(v={})),function(t){t.TRANSFER_BALANCE="transfer.balance",t.TRANSFER_TOKEN="transfer.token",t.TRANSFER_XCM="transfer.xcm",t.SEND_NFT="send_nft",t.CROWDLOAN="crowdloan",t.STAKING_JOIN_POOL="staking.join_pool",t.STAKING_LEAVE_POOL="staking.leave_pool",t.STAKING_POOL_WITHDRAW="staking.pool_withdraw",t.STAKING_BOND="staking.bond",t.STAKING_UNBOND="staking.unbond",t.STAKING_CLAIM_REWARD="staking.claim_reward",t.STAKING_WITHDRAW="staking.withdraw",t.STAKING_COMPOUNDING="staking.compounding",t.STAKING_CANCEL_COMPOUNDING="staking.cancel_compounding",t.STAKING_CANCEL_UNSTAKE="staking.cancel_unstake",t.JOIN_YIELD_POOL="earn.join_pool",t.MINT_VDOT="earn.mint_vdot",t.MINT_LDOT="earn.mint_ldot",t.MINT_SDOT="earn.mint_sdot",t.MINT_QDOT="earn.mint_qdot",t.MINT_STDOT="earn.mint_stdot",t.MINT_VMANTA="earn.mint_vmanta",t.REDEEM_QDOT="earn.redeem_qdot",t.REDEEM_VDOT="earn.redeem_vdot",t.REDEEM_LDOT="earn.redeem_ldot",t.REDEEM_SDOT="earn.redeem_sdot",t.REDEEM_STDOT="earn.redeem_stdot",t.REDEEM_VMANTA="earn.redeem_vmanta",t.UNSTAKE_QDOT="earn.unstake_qdot",t.UNSTAKE_VDOT="earn.unstake_vdot",t.UNSTAKE_LDOT="earn.unstake_ldot",t.UNSTAKE_SDOT="earn.unstake_sdot",t.UNSTAKE_STDOT="earn.unstake_stdot",t.UNSTAKE_VMANTA="earn.unstake_vmanta",t.TOKEN_APPROVE="evm.token_approve",t.EVM_EXECUTE="evm.execute",t.UNKNOWN="unknown"}(g||(g={})),function(t){t.QUEUED="queued",t.SUBMITTING="submitting",t.PROCESSING="processing",t.SUCCESS="success",t.FAIL="fail",t.CANCELLED="cancelled",t.TIMEOUT="timeout",t.UNKNOWN="unknown"}(M||(M={})),function(t){t.NOT_ENOUGH_BALANCE="NOT_ENOUGH_BALANCE",t.CHAIN_DISCONNECTED="CHAIN_DISCONNECTED",t.INVALID_PARAMS="INVALID_PARAMS",t.DUPLICATE_TRANSACTION="DUPLICATE_TRANSACTION",t.UNABLE_TO_SIGN="UNABLE_TO_SIGN",t.USER_REJECT_REQUEST="USER_REJECT_REQUEST",t.UNABLE_TO_SEND="UNABLE_TO_SEND",t.SEND_TRANSACTION_FAILED="SEND_TRANSACTION_FAILED",t.INTERNAL_ERROR="INTERNAL_ERROR",t.UNSUPPORTED="UNSUPPORTED",t.TIMEOUT="TIMEOUT",t.NOT_ENOUGH_EXISTENTIAL_DEPOSIT="NOT_ENOUGH_EXISTENTIAL_DEPOSIT"}(y||(y={})),function(t){t.NOT_ENOUGH_MIN_STAKE="NOT_ENOUGH_MIN_STAKE",t.EXCEED_MAX_NOMINATIONS="EXCEED_MAX_NOMINATIONS",t.EXIST_UNSTAKING_REQUEST="EXIST_UNSTAKING_REQUEST",t.INVALID_ACTIVE_STAKE="INVALID_ACTIVE_STAKE",t.EXCEED_MAX_UNSTAKING="EXCEED_MAX_UNSTAKING",t.INACTIVE_NOMINATION_POOL="INACTIVE_NOMINATION_POOL",t.CAN_NOT_GET_METADATA="CAN_NOT_GET_METADATA",t.NOT_ENOUGH_MIN_UNSTAKE="NOT_ENOUGH_MIN_UNSTAKE"}(w||(w={})),function(t){t.NOT_ENOUGH_VALUE="NOT_ENOUGH_VALUE",t.NOT_ENOUGH_FEE="NOT_ENOUGH_FEE",t.INVALID_TOKEN="INVALID_TOKEN",t.TRANSFER_ERROR="TRANSFER_ERROR",t.RECEIVER_NOT_ENOUGH_EXISTENTIAL_DEPOSIT="RECEIVER_NOT_ENOUGH_EXISTENTIAL_DEPOSIT"}(_||(_={})),function(t){t.NOT_ENOUGH_EXISTENTIAL_DEPOSIT="notEnoughExistentialDeposit"}(E||(E={})),function(t){t.NETWORK_ERROR="NETWORK_ERROR",t.TOKEN_ERROR="TOKEN_ERROR",t.TIMEOUT="TIMEOUT",t.GET_BALANCE_ERROR="GET_BALANCE_ERROR"}(N||(N={})),function(t){t.CHAIN_DISCONNECTED="CHAIN_DISCONNECTED",t.INVALID_PARAMS="INVALID_PARAMS",t.INTERNAL_ERROR="INTERNAL_ERROR",t.USER_REJECT="USER_REJECT"}(b||(b={})),function(t){t.INVALID_ADDRESS="invalidToAccount",t.KEYRING_ERROR="keyringError",t.UNKNOWN_ERROR="unknownError"}(A||(A={})),function(t){t[t.PENDING=0]="PENDING",t[t.REJECTED=1]="REJECTED",t[t.FAILED=2]="FAILED",t[t.COMPLETED=3]="COMPLETED"}(T||(T={})),function(t){t.LIGHT="light",t.DARK="dark",t.SUBSPACE="subspace"}(I||(I={})),function(t){t.INVALID_INFO_TYPE="invalidInfoType",t.INJECT_SCRIPT_DETECTED="injectScriptDetected",t.EXISTED_NETWORK="existedNetwork",t.EXISTED_PROVIDER="existedProvider",t.INVALID_PROVIDER="invalidProvider",t.NONE="none",t.CONNECTION_FAILURE="connectionFailure",t.PROVIDER_NOT_SAME_NETWORK="providerNotSameNetwork"}(O||(O={})),function(t){t.CONNECTED="connected",t.CONNECTING="connecting",t.DISCONNECTED="disconnected",t.PENDING="pending"}(R||(R={})),function(t){t.USER_REJECTED_REQUEST="USER_REJECTED_REQUEST",t.UNAUTHORIZED="UNAUTHORIZED",t.UNSUPPORTED_METHOD="UNSUPPORTED_METHOD",t.DISCONNECTED="DISCONNECTED",t.CHAIN_DISCONNECTED="CHAIN_DISCONNECTED",t.INVALID_PARAMS="INVALID_PARAMS",t.INTERNAL_ERROR="INTERNAL_ERROR"}(S||(S={})),function(t){t.EVM="EVM",t.SUBSTRATE="SUBSTRATE",t.UNKNOWN="UNKNOWN",t.MIXED="MIXED"}(D||(D={})),function(t){t.INFO="info",t.SUCCESS="success",t.WARNING="warning",t.ERROR="error"}(L||(L={})),function(t){t.WRONG_PASSWORD="WRONG_PASSWORD",t.CHAIN_DISCONNECTED="CHAIN_DISCONNECTED",t.UNKNOWN_ERROR="UNKNOWN_ERROR",t.SUCCESS="SUCCESS"}(C||(C={})),function(t){t.NOTIFICATION="notification",t.BANNER="banner"}(U||(U={}));var x=i(795);let k=!1;class P extends x.Z{isSubWallet=!0;isMetaMask=!1;_connected=!1;constructor(t,e){super(),this.version=e,this.sendMessage=t,this._connected=!0}get connected(){return this._connected}isConnected(){return this._connected}subscribeExtensionEvents(){k||(this.sendMessage("evm(events.subscribe)",null,(({payload:t,type:e})=>{if(["connect","disconnect","accountsChanged","chainChanged","message","data","reconnect","error"].includes(e)){"connect"===e?this._connected=!0:"disconnect"===e&&(this._connected=!1);const i="data"===e?"message":e;this.emit(i,t)}else console.warn("Can not handle event",e,t)})).then((t=>{k=!0})).catch((()=>{k=!1})),k=!0)}async enable(){return this.request({method:"eth_requestAccounts"})}on(t,e){return this.subscribeExtensionEvents(),super.on(t,e),this}once(t,e){return this.subscribeExtensionEvents(),super.once(t,e),this}request({method:t,params:e}){return new Promise("eth_requestAccounts"===t?(t,e)=>{const i=""!==document.title?document.title:window.location.hostname;this.sendMessage("pub(authorize.tabV2)",{origin:i,accountAuthType:"evm"}).then((()=>{this.request({method:"eth_accounts"}).then((e=>{t(e)})).catch((t=>{e(t)}))})).catch((t=>{e(t)}))}:(i,n)=>{this.sendMessage("evm(request)",{params:e,method:t}).then((t=>{i(t)})).catch((t=>{n(t)}))})}_sendSync(t){let e;if("net_version"!==t.method)throw new Error(`Not support ${t.method}`);return e=this.version?`SubWallet v${this.version}`:null,{id:t.id,jsonrpc:t.jsonrpc,result:e}}send(t,e){return"string"!=typeof t||e&&!Array.isArray(e)?t&&"object"==typeof t&&"function"==typeof e?this.request(t).then((t=>{e(t)})):this._sendSync(t):this.request({method:t,params:e})}sendAsync(t,e){this.request(t).then((t=>{e(null,{result:t})})).catch((t=>{e(t)}))}}let G,j,B=0;class W{constructor(t){G=t}get(t){return G("pub(accounts.listV2)",{anyType:t,accountAuthType:"substrate"})}subscribe(t){let e=null;return G("pub(accounts.subscribeV2)",{accountAuthType:"substrate"},t).then((t=>{e=t})).catch(console.error),()=>{e&&G("pub(accounts.unsubscribe)",{id:e}).catch(console.error)}}}class V{constructor(t){j=t}get(){return j("pub(metadata.list)")}provide(t){return j("pub(metadata.provide)",t)}addToken(t){return j("pub(token.add)",t)}}const K=i(161),Z="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:Function("return this");function H(t){return t.toString().padStart(2,"0")}var F=i(197);const q="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:Function("return this");function z(t,e){return void 0===q[t]?e:q[t]}function X(){return Number.NaN}const Y=z("BigInt",X),$=("function"==typeof Y&&Y.asIntN,"function"==typeof Z.Buffer&&"function"==typeof Z.Buffer.isBuffer),Q="object"==typeof Z.process;function J(t){return"function"==typeof t}function tt(t){return $&&!!t&&J(t.readDoubleLE)&&Z.Buffer.isBuffer(t)}function et(t){return(t&&t.constructor)===Uint8Array||t instanceof Uint8Array}const it=new Array(256),nt=new Array(65536);for(let t=0;t<256;t++)it[t]=t.toString(16).padStart(2,"0");for(let t=0;t<256;t++){const e=t<<8;for(let i=0;i<256;i++)nt[e|i]=it[t]+it[i]}function rt(t,e){const i=t.length%2|0,n=t.length-i|0;for(let i=0;i<n;i+=2)e+=nt[t[i]<<8|t[i+1]];return i&&(e+=it[0|t[n]]),e}const ot="0123456789abcdef",st=new Uint8Array(256),ht=new Uint8Array(65536);for(let t=0,e=16;t<e;t++)st[0|ot[t].charCodeAt(0)]=0|t,t>9&&(st[0|ot[t].toUpperCase().charCodeAt(0)]=0|t);for(let t=0;t<256;t++){const e=t<<8;for(let i=0;i<256;i++)ht[e|i]=st[t]<<4|st[i]}const ut=/^0x[\da-fA-F]+$/,at="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:Function("return this");function lt(t,e){return void 0===at[t]?e:at[t]}class ft{encode(t){const e=t.length,i=new Uint8Array(e);for(let n=0;n<e;n++)i[n]=t.charCodeAt(n);return i}}const ct=new(lt("TextEncoder",ft));function dt(){}const mt={debug:"log",error:"error",log:"log",warn:"warn"};function pt(t){return Array.isArray(t)?t.map(pt):function(t){return F.isBN(t)}(t)?t.toString():et(t)||tt(t)?function(t,e=-1,i=!0){const n=i?"0x":"";if(!t||!t.length)return n;if(e>0){const i=Math.ceil(e/8);if(t.length>i)return`${rt(t.subarray(0,i/2),n)}…${rt(t.subarray(t.length-i/2),"")}`}return rt(t,n)}(function(t){return et(t)?tt(t)?new Uint8Array(t):t:function(t,e=-1,i){return"string"==typeof t&&("0x"===t||ut.test(t))&&(-1===e?i||t.length%2==0:t.length===2+Math.ceil(e/4))}(t)?function(t,e=-1){if(!t)return new Uint8Array;let i=t.startsWith("0x")?2:0;const n=Math.ceil((t.length-i)/2),r=Math.ceil(-1===e?n:e/8),o=new Uint8Array(r);for(let e=r>n?r-n:0;e<r;e++,i+=2)o[e]=ht[t.charCodeAt(i)<<8|t.charCodeAt(i+1)];return o}(t):Array.isArray(t)?new Uint8Array(t):function(t){return t?ct.encode(t.toString()):new Uint8Array}(t)}(t)):function(t){if(t&&function(t){return!!t&&"object"==typeof t}(t)&&t.constructor===Object){const e={};for(const[i,n]of Object.entries(t))e[i]=pt(n);return e}return t}(t)}function vt(t,e,i,n=-1){if(1===i.length&&J(i[0])){const r=i[0]();return vt(t,e,Array.isArray(r)?r:[r],n)}var r,o;console[mt[t]](`${(o=new Date).getFullYear().toString()}-${H(o.getMonth()+1)}-${H(o.getDate())} ${H(o.getHours())}:${H(o.getMinutes())}:${H(o.getSeconds())}`,e,...i.map(pt).map((r=n,t=>{if(r<=0)return t;const e=`${t}`;return e.length<r?t:`${e.substring(0,r)} ...`})))}function gt(t,e){return!!t&&("*"===t||e===t||t.endsWith("*")&&e.startsWith(t.slice(0,-1)))}function Mt(t,e){return!!t&&t.startsWith("-")&&(e===t.slice(1)||t.endsWith("*")&&e.startsWith(t.slice(1,-1)))}function yt(t,e){let i=!1;for(const n of t)gt(n,e)?i=!0:Mt(n,e)&&(i=!1);return i}const wt=function(t){const e=`${t.toUpperCase()}:`.padStart(16),[i,n]=function(t){const e=(Q?Z.process:{}).env||{},i=parseInt(e.DEBUG_MAX||"-1",10);return[yt((e.DEBUG||"").toLowerCase().split(","),t),isNaN(i)?-1:i]}(t.toLowerCase());return{debug:i?(...t)=>vt("debug",e,t,n):dt,error:(...t)=>vt("error",e,t),log:(...t)=>vt("log",e,t),noop:dt,warn:(...t)=>vt("warn",e,t)}}("PostMessageProvider");let _t,Et;class Nt{#t;isClonable=!0;#e=!1;#i={};constructor(t){this.#t=new K,_t=t}clone(){return new Nt(_t)}async connect(){console.error("PostMessageProvider.disconnect() is not implemented.")}async disconnect(){console.error("PostMessageProvider.disconnect() is not implemented.")}get hasSubscriptions(){return!0}get isConnected(){return this.#e}listProviders(){return _t("pub(rpc.listProviders)",void 0)}on(t,e){return this.#t.on(t,e),()=>{this.#t.removeListener(t,e)}}async send(t,e,i,n){if(n){const{callback:i,type:r}=n,o=await _t("pub(rpc.subscribe)",{method:t,params:e,type:r},(t=>{n.callback(null,t)}));return this.#i[`${r}::${o}`]=i,o}return _t("pub(rpc.send)",{method:t,params:e})}async startProvider(t){this.#e=!1,this.#t.emit("disconnected");const e=await _t("pub(rpc.startProvider)",t);return _t("pub(rpc.subscribeConnected)",null,(t=>(this.#e=t,t?this.#t.emit("connected"):this.#t.emit("disconnected"),!0))),e}subscribe(t,e,i,n){return this.send(e,i,!1,{callback:n,type:t})}async unsubscribe(t,e,i){const n=`${t}::${i}`;return void 0===this.#i[n]?(wt.debug((()=>`Unable to find active subscription=${n}`)),!1):(delete this.#i[n],this.send(e,[i]))}}let bt=0;class At{constructor(t){Et=t}async signPayload(t){const e=++bt;return{...await Et("pub(extrinsic.sign)",t),id:e}}async signRaw(t){const e=++bt;return{...await Et("pub(bytes.sign)",t),id:e}}}const Tt=class{constructor(t){this.accounts=new W(t),this.metadata=new V(t),this.provider=new Nt(t),this.signer=new At(t),setInterval((()=>{t("pub(ping)",null).catch((()=>{console.error("Extension unavailable, ping failed")}))}),5e3+Math.floor(5e3*Math.random()))}},It={};function Ot(t,i,r){return new Promise(((o,s)=>{const h=`${e}.${Date.now()}.${++B}`;It[h]={reject:s,resolve:o,subscriber:r};const u={id:h,message:t,origin:n,request:i||null};window.postMessage(u,"*")}))}const Rt="1.1.36-0";window.addEventListener("message",(({data:t,source:e})=>{e===window&&t.origin===r&&(t.id?function(t){const e=It[t.id];e?(e.subscriber||delete It[t.id],t.subscription?e.subscriber(t.subscription):t.error?e.reject(new h(b.INTERNAL_ERROR,t.error,t.errorCode)):e.resolve(t.response)):console.error(`Unknown response: ${JSON.stringify(t)}`)}(t):console.error("Missing id for response."))})),function(t,{name:e,version:i}){const n=window;n.injectedWeb3=n.injectedWeb3||{},n.injectedWeb3[e]={enable:e=>t(e),version:i}}((async function(t){return await Ot("pub(authorize.tabV2)",{origin:t}),new Tt(Ot)}),{name:"subwallet-js",version:Rt}),function(t){const e=window;e.SubWallet?e.SubWallet.provider=t:e.SubWallet=t,e.dispatchEvent(new Event("subwallet#initialized")),e.addEventListener("load",(()=>{e.ethereum||(e.ethereum=t,e.dispatchEvent(new Event("ethereum#initialized"))),(t=>{const e={uuid:"10c67337-9211-48d9-aab0-cecdc4224acc",name:"SubWallet",icon:"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNODAgNGM1Ny42MyAwIDc2IDE4LjM3IDc2IDc2IDAgNTcuNjMtMTguMzcgNzYtNzYgNzYtNTcuNjMgMC03Ni0xOC4zNy03Ni03NkM0IDIyLjM3IDIyLjM3IDQgODAgNFoiIGZpbGw9InVybCgjYSkiLz48ZyBjbGlwLXBhdGg9InVybCgjYikiPjxwYXRoIGQ9Ik0xMTIuNjE1IDY2LjcyVjUzLjM5OEw1OC43NiAzMiA0OCAzNy40MTJsLjA1NyA0MS40NjQgNDAuMjkyIDE2LjA3LTIxLjUyIDkuMDc1di03LjAxOEw1Ni45NSA5My4wM2wtOC44OTMgNC4xNjN2MjUuMzk1TDU4Ljc2OSAxMjhsNTMuODQ2LTI0LjA2MlY4Ni44NjlMNjQuMTU0IDY3LjY1N1Y1NmwzOC40NDkgMTUuMjE2IDEwLjAxMi00LjQ5NloiIGZpbGw9IiNmZmYiLz48L2c+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJhIiB4MT0iODAiIHkxPSI0IiB4Mj0iODAiIHkyPSIxNTYiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjMDA0QkZGIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNENFQUFDIi8+PC9saW5lYXJHcmFkaWVudD48Y2xpcFBhdGggaWQ9ImIiPjxwYXRoIGZpbGw9IiNmZmYiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ4IDMyKSIgZD0iTTAgMGg2NC42MTV2OTZIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48L3N2Zz4=",rdns:"app.subwallet.wallet"},i=new Proxy(t,{get(t,e){if("then"===e)return Promise.resolve(t);const i=Reflect.get(t,e);return"function"==typeof(null==i?void 0:i.bind)?i.bind(t):i},deleteProperty:()=>!0}),n=()=>{const t=Object.freeze({info:e,provider:i}),n=new CustomEvent("eip6963:announceProvider",{detail:t});window.dispatchEvent(n)};window.addEventListener("eip6963:requestProvider",n),n()})(t)}))}(function(t){return new P(Ot,t)}(Rt))})()})();
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "../../node_modules/@metamask/safe-event-emitter/index.js":
+/*!****************************************************************!*\
+  !*** ../../node_modules/@metamask/safe-event-emitter/index.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const events_1 = __webpack_require__(/*! events */ "../../node_modules/events/events.js");
+function safeApply(handler, context, args) {
+    try {
+        Reflect.apply(handler, context, args);
+    }
+    catch (err) {
+        // Throw error after timeout so as not to interrupt the stack
+        setTimeout(() => {
+            throw err;
+        });
+    }
+}
+function arrayClone(arr) {
+    const n = arr.length;
+    const copy = new Array(n);
+    for (let i = 0; i < n; i += 1) {
+        copy[i] = arr[i];
+    }
+    return copy;
+}
+class SafeEventEmitter extends events_1.EventEmitter {
+    emit(type, ...args) {
+        let doError = type === 'error';
+        const events = this._events;
+        if (events !== undefined) {
+            doError = doError && events.error === undefined;
+        }
+        else if (!doError) {
+            return false;
+        }
+        // If there is no 'error' event listener then throw.
+        if (doError) {
+            let er;
+            if (args.length > 0) {
+                [er] = args;
+            }
+            if (er instanceof Error) {
+                // Note: The comments on the `throw` lines are intentional, they show
+                // up in Node's output if this results in an unhandled exception.
+                throw er; // Unhandled 'error' event
+            }
+            // At least give some kind of context to the user
+            const err = new Error(`Unhandled error.${er ? ` (${er.message})` : ''}`);
+            err.context = er;
+            throw err; // Unhandled 'error' event
+        }
+        const handler = events[type];
+        if (handler === undefined) {
+            return false;
+        }
+        if (typeof handler === 'function') {
+            safeApply(handler, this, args);
+        }
+        else {
+            const len = handler.length;
+            const listeners = arrayClone(handler);
+            for (let i = 0; i < len; i += 1) {
+                safeApply(listeners[i], this, args);
+            }
+        }
+        return true;
+    }
+}
+exports["default"] = SafeEventEmitter;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ "../extension-base/src/background/KoniTypes.ts":
+/*!*****************************************************!*\
+  !*** ../extension-base/src/background/KoniTypes.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   APIItemState: () => (/* binding */ APIItemState),
+/* harmony export */   AccountExternalErrorCode: () => (/* binding */ AccountExternalErrorCode),
+/* harmony export */   AssetHubNftType: () => (/* binding */ AssetHubNftType),
+/* harmony export */   BalanceErrorType: () => (/* binding */ BalanceErrorType),
+/* harmony export */   BasicTxErrorType: () => (/* binding */ BasicTxErrorType),
+/* harmony export */   BasicTxWarningCode: () => (/* binding */ BasicTxWarningCode),
+/* harmony export */   CampaignDataType: () => (/* binding */ CampaignDataType),
+/* harmony export */   ChainType: () => (/* binding */ ChainType),
+/* harmony export */   ContractType: () => (/* binding */ ContractType),
+/* harmony export */   CrowdloanParaState: () => (/* binding */ CrowdloanParaState),
+/* harmony export */   EvmProviderErrorType: () => (/* binding */ EvmProviderErrorType),
+/* harmony export */   ExternalRequestPromiseStatus: () => (/* binding */ ExternalRequestPromiseStatus),
+/* harmony export */   ExtrinsicStatus: () => (/* binding */ ExtrinsicStatus),
+/* harmony export */   ExtrinsicType: () => (/* binding */ ExtrinsicType),
+/* harmony export */   MantaPayEnableMessage: () => (/* binding */ MantaPayEnableMessage),
+/* harmony export */   MobileOS: () => (/* binding */ MobileOS),
+/* harmony export */   NETWORK_STATUS: () => (/* binding */ NETWORK_STATUS),
+/* harmony export */   NotificationType: () => (/* binding */ NotificationType),
+/* harmony export */   ProviderErrorType: () => (/* binding */ ProviderErrorType),
+/* harmony export */   RMRK_VER: () => (/* binding */ RMRK_VER),
+/* harmony export */   RuntimeEnvironment: () => (/* binding */ RuntimeEnvironment),
+/* harmony export */   StakingTxErrorType: () => (/* binding */ StakingTxErrorType),
+/* harmony export */   StakingType: () => (/* binding */ StakingType),
+/* harmony export */   ThemeNames: () => (/* binding */ ThemeNames),
+/* harmony export */   TransactionDirection: () => (/* binding */ TransactionDirection),
+/* harmony export */   TransferTxErrorType: () => (/* binding */ TransferTxErrorType),
+/* harmony export */   WalletUnlockType: () => (/* binding */ WalletUnlockType)
+/* harmony export */ });
+// Copyright 2019-2022 @polkadot/extension-koni authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+let RuntimeEnvironment;
+(function (RuntimeEnvironment) {
+  RuntimeEnvironment["Web"] = "Web";
+  RuntimeEnvironment["Node"] = "Node";
+  RuntimeEnvironment["ExtensionChrome"] = "Extension (Chrome)";
+  RuntimeEnvironment["ExtensionFirefox"] = "Extension (Firefox)";
+  RuntimeEnvironment["WebWorker"] = "Web Worker";
+  RuntimeEnvironment["ServiceWorker"] = "Service Worker";
+  RuntimeEnvironment["Unknown"] = "Unknown";
+})(RuntimeEnvironment || (RuntimeEnvironment = {}));
+/// Staking subscribe
+
+let StakingType;
+(function (StakingType) {
+  StakingType["NOMINATED"] = "nominated";
+  StakingType["POOLED"] = "pooled";
+  StakingType["LIQUID_STAKING"] = "liquid_staking";
+})(StakingType || (StakingType = {}));
+let APIItemState;
+(function (APIItemState) {
+  APIItemState["PENDING"] = "pending";
+  APIItemState["READY"] = "ready";
+  APIItemState["CACHED"] = "cached";
+  APIItemState["ERROR"] = "error";
+  APIItemState["NOT_SUPPORT"] = "not_support";
+})(APIItemState || (APIItemState = {}));
+let RMRK_VER;
+(function (RMRK_VER) {
+  RMRK_VER["VER_1"] = "1.0.0";
+  RMRK_VER["VER_2"] = "2.0.0";
+})(RMRK_VER || (RMRK_VER = {}));
+let CrowdloanParaState;
+(function (CrowdloanParaState) {
+  CrowdloanParaState["ONGOING"] = "ongoing";
+  CrowdloanParaState["COMPLETED"] = "completed";
+  CrowdloanParaState["FAILED"] = "failed";
+})(CrowdloanParaState || (CrowdloanParaState = {}));
+let AssetHubNftType;
+(function (AssetHubNftType) {
+  AssetHubNftType["NFTS"] = "nfts";
+  AssetHubNftType["UNIQUES"] = "uniques";
+})(AssetHubNftType || (AssetHubNftType = {}));
+let ContractType;
+(function (ContractType) {
+  ContractType["wasm"] = "wasm";
+  ContractType["evm"] = "evm";
+})(ContractType || (ContractType = {}));
+let WalletUnlockType;
+(function (WalletUnlockType) {
+  WalletUnlockType["ALWAYS_REQUIRED"] = "always_required";
+  WalletUnlockType["WHEN_NEEDED"] = "when_needed";
+})(WalletUnlockType || (WalletUnlockType = {}));
+let TransactionDirection;
+(function (TransactionDirection) {
+  TransactionDirection["SEND"] = "send";
+  TransactionDirection["RECEIVED"] = "received";
+})(TransactionDirection || (TransactionDirection = {}));
+let ChainType;
+(function (ChainType) {
+  ChainType["EVM"] = "evm";
+  ChainType["SUBSTRATE"] = "substrate";
+})(ChainType || (ChainType = {}));
+let ExtrinsicType;
+(function (ExtrinsicType) {
+  ExtrinsicType["TRANSFER_BALANCE"] = "transfer.balance";
+  ExtrinsicType["TRANSFER_TOKEN"] = "transfer.token";
+  ExtrinsicType["TRANSFER_XCM"] = "transfer.xcm";
+  ExtrinsicType["SEND_NFT"] = "send_nft";
+  ExtrinsicType["CROWDLOAN"] = "crowdloan";
+  ExtrinsicType["STAKING_JOIN_POOL"] = "staking.join_pool";
+  ExtrinsicType["STAKING_LEAVE_POOL"] = "staking.leave_pool";
+  ExtrinsicType["STAKING_POOL_WITHDRAW"] = "staking.pool_withdraw";
+  ExtrinsicType["STAKING_BOND"] = "staking.bond";
+  ExtrinsicType["STAKING_UNBOND"] = "staking.unbond";
+  ExtrinsicType["STAKING_CLAIM_REWARD"] = "staking.claim_reward";
+  ExtrinsicType["STAKING_WITHDRAW"] = "staking.withdraw";
+  ExtrinsicType["STAKING_COMPOUNDING"] = "staking.compounding";
+  ExtrinsicType["STAKING_CANCEL_COMPOUNDING"] = "staking.cancel_compounding";
+  ExtrinsicType["STAKING_CANCEL_UNSTAKE"] = "staking.cancel_unstake";
+  ExtrinsicType["JOIN_YIELD_POOL"] = "earn.join_pool";
+  ExtrinsicType["MINT_VDOT"] = "earn.mint_vdot";
+  ExtrinsicType["MINT_LDOT"] = "earn.mint_ldot";
+  ExtrinsicType["MINT_SDOT"] = "earn.mint_sdot";
+  ExtrinsicType["MINT_QDOT"] = "earn.mint_qdot";
+  ExtrinsicType["MINT_STDOT"] = "earn.mint_stdot";
+  ExtrinsicType["MINT_VMANTA"] = "earn.mint_vmanta";
+  ExtrinsicType["REDEEM_QDOT"] = "earn.redeem_qdot";
+  ExtrinsicType["REDEEM_VDOT"] = "earn.redeem_vdot";
+  ExtrinsicType["REDEEM_LDOT"] = "earn.redeem_ldot";
+  ExtrinsicType["REDEEM_SDOT"] = "earn.redeem_sdot";
+  ExtrinsicType["REDEEM_STDOT"] = "earn.redeem_stdot";
+  ExtrinsicType["REDEEM_VMANTA"] = "earn.redeem_vmanta";
+  ExtrinsicType["UNSTAKE_QDOT"] = "earn.unstake_qdot";
+  ExtrinsicType["UNSTAKE_VDOT"] = "earn.unstake_vdot";
+  ExtrinsicType["UNSTAKE_LDOT"] = "earn.unstake_ldot";
+  ExtrinsicType["UNSTAKE_SDOT"] = "earn.unstake_sdot";
+  ExtrinsicType["UNSTAKE_STDOT"] = "earn.unstake_stdot";
+  ExtrinsicType["UNSTAKE_VMANTA"] = "earn.unstake_vmanta";
+  ExtrinsicType["TOKEN_SPENDING_APPROVAL"] = "token.spending_approval";
+  ExtrinsicType["SWAP"] = "swap";
+  ExtrinsicType["EVM_EXECUTE"] = "evm.execute";
+  ExtrinsicType["UNKNOWN"] = "unknown";
+})(ExtrinsicType || (ExtrinsicType = {}));
+let ExtrinsicStatus;
+(function (ExtrinsicStatus) {
+  ExtrinsicStatus["QUEUED"] = "queued";
+  ExtrinsicStatus["SUBMITTING"] = "submitting";
+  ExtrinsicStatus["PROCESSING"] = "processing";
+  ExtrinsicStatus["SUCCESS"] = "success";
+  ExtrinsicStatus["FAIL"] = "fail";
+  ExtrinsicStatus["CANCELLED"] = "cancelled";
+  ExtrinsicStatus["TIMEOUT"] = "timeout";
+  ExtrinsicStatus["UNKNOWN"] = "unknown";
+})(ExtrinsicStatus || (ExtrinsicStatus = {}));
+let BasicTxErrorType;
+(function (BasicTxErrorType) {
+  BasicTxErrorType["NOT_ENOUGH_BALANCE"] = "NOT_ENOUGH_BALANCE";
+  BasicTxErrorType["CHAIN_DISCONNECTED"] = "CHAIN_DISCONNECTED";
+  BasicTxErrorType["INVALID_PARAMS"] = "INVALID_PARAMS";
+  BasicTxErrorType["DUPLICATE_TRANSACTION"] = "DUPLICATE_TRANSACTION";
+  BasicTxErrorType["UNABLE_TO_SIGN"] = "UNABLE_TO_SIGN";
+  BasicTxErrorType["USER_REJECT_REQUEST"] = "USER_REJECT_REQUEST";
+  BasicTxErrorType["UNABLE_TO_SEND"] = "UNABLE_TO_SEND";
+  BasicTxErrorType["SEND_TRANSACTION_FAILED"] = "SEND_TRANSACTION_FAILED";
+  BasicTxErrorType["INTERNAL_ERROR"] = "INTERNAL_ERROR";
+  BasicTxErrorType["UNSUPPORTED"] = "UNSUPPORTED";
+  BasicTxErrorType["TIMEOUT"] = "TIMEOUT";
+  BasicTxErrorType["NOT_ENOUGH_EXISTENTIAL_DEPOSIT"] = "NOT_ENOUGH_EXISTENTIAL_DEPOSIT";
+})(BasicTxErrorType || (BasicTxErrorType = {}));
+let StakingTxErrorType;
+(function (StakingTxErrorType) {
+  StakingTxErrorType["NOT_ENOUGH_MIN_STAKE"] = "NOT_ENOUGH_MIN_STAKE";
+  StakingTxErrorType["EXCEED_MAX_NOMINATIONS"] = "EXCEED_MAX_NOMINATIONS";
+  StakingTxErrorType["EXIST_UNSTAKING_REQUEST"] = "EXIST_UNSTAKING_REQUEST";
+  StakingTxErrorType["INVALID_ACTIVE_STAKE"] = "INVALID_ACTIVE_STAKE";
+  StakingTxErrorType["EXCEED_MAX_UNSTAKING"] = "EXCEED_MAX_UNSTAKING";
+  StakingTxErrorType["INACTIVE_NOMINATION_POOL"] = "INACTIVE_NOMINATION_POOL";
+  StakingTxErrorType["CAN_NOT_GET_METADATA"] = "CAN_NOT_GET_METADATA";
+  StakingTxErrorType["NOT_ENOUGH_MIN_UNSTAKE"] = "NOT_ENOUGH_MIN_UNSTAKE";
+})(StakingTxErrorType || (StakingTxErrorType = {}));
+let TransferTxErrorType;
+(function (TransferTxErrorType) {
+  TransferTxErrorType["NOT_ENOUGH_VALUE"] = "NOT_ENOUGH_VALUE";
+  TransferTxErrorType["NOT_ENOUGH_FEE"] = "NOT_ENOUGH_FEE";
+  TransferTxErrorType["INVALID_TOKEN"] = "INVALID_TOKEN";
+  TransferTxErrorType["TRANSFER_ERROR"] = "TRANSFER_ERROR";
+  TransferTxErrorType["RECEIVER_NOT_ENOUGH_EXISTENTIAL_DEPOSIT"] = "RECEIVER_NOT_ENOUGH_EXISTENTIAL_DEPOSIT";
+})(TransferTxErrorType || (TransferTxErrorType = {}));
+let BasicTxWarningCode;
+(function (BasicTxWarningCode) {
+  BasicTxWarningCode["NOT_ENOUGH_EXISTENTIAL_DEPOSIT"] = "notEnoughExistentialDeposit";
+})(BasicTxWarningCode || (BasicTxWarningCode = {}));
+let BalanceErrorType;
+(function (BalanceErrorType) {
+  BalanceErrorType["NETWORK_ERROR"] = "NETWORK_ERROR";
+  BalanceErrorType["TOKEN_ERROR"] = "TOKEN_ERROR";
+  BalanceErrorType["TIMEOUT"] = "TIMEOUT";
+  BalanceErrorType["GET_BALANCE_ERROR"] = "GET_BALANCE_ERROR";
+})(BalanceErrorType || (BalanceErrorType = {}));
+let ProviderErrorType;
+
+/// Manage account
+// Export private key
+(function (ProviderErrorType) {
+  ProviderErrorType["CHAIN_DISCONNECTED"] = "CHAIN_DISCONNECTED";
+  ProviderErrorType["INVALID_PARAMS"] = "INVALID_PARAMS";
+  ProviderErrorType["INTERNAL_ERROR"] = "INTERNAL_ERROR";
+  ProviderErrorType["USER_REJECT"] = "USER_REJECT";
+})(ProviderErrorType || (ProviderErrorType = {}));
+// External account
+
+let AccountExternalErrorCode;
+(function (AccountExternalErrorCode) {
+  AccountExternalErrorCode["INVALID_ADDRESS"] = "invalidToAccount";
+  AccountExternalErrorCode["KEYRING_ERROR"] = "keyringError";
+  AccountExternalErrorCode["UNKNOWN_ERROR"] = "unknownError";
+})(AccountExternalErrorCode || (AccountExternalErrorCode = {}));
+/// Sign Transaction
+
+/// Sign External Request
+
+// Status
+
+let ExternalRequestPromiseStatus;
+
+// Structure
+(function (ExternalRequestPromiseStatus) {
+  ExternalRequestPromiseStatus[ExternalRequestPromiseStatus["PENDING"] = 0] = "PENDING";
+  ExternalRequestPromiseStatus[ExternalRequestPromiseStatus["REJECTED"] = 1] = "REJECTED";
+  ExternalRequestPromiseStatus[ExternalRequestPromiseStatus["FAILED"] = 2] = "FAILED";
+  ExternalRequestPromiseStatus[ExternalRequestPromiseStatus["COMPLETED"] = 3] = "COMPLETED";
+})(ExternalRequestPromiseStatus || (ExternalRequestPromiseStatus = {}));
+let ThemeNames;
+(function (ThemeNames) {
+  ThemeNames["LIGHT"] = "light";
+  ThemeNames["DARK"] = "dark";
+  ThemeNames["SUBSPACE"] = "subspace";
+})(ThemeNames || (ThemeNames = {}));
+let NETWORK_STATUS;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+(function (NETWORK_STATUS) {
+  NETWORK_STATUS["CONNECTED"] = "connected";
+  NETWORK_STATUS["CONNECTING"] = "connecting";
+  NETWORK_STATUS["DISCONNECTED"] = "disconnected";
+  NETWORK_STATUS["PENDING"] = "pending";
+})(NETWORK_STATUS || (NETWORK_STATUS = {}));
+let EvmProviderErrorType;
+(function (EvmProviderErrorType) {
+  EvmProviderErrorType["USER_REJECTED_REQUEST"] = "USER_REJECTED_REQUEST";
+  EvmProviderErrorType["UNAUTHORIZED"] = "UNAUTHORIZED";
+  EvmProviderErrorType["UNSUPPORTED_METHOD"] = "UNSUPPORTED_METHOD";
+  EvmProviderErrorType["DISCONNECTED"] = "DISCONNECTED";
+  EvmProviderErrorType["CHAIN_DISCONNECTED"] = "CHAIN_DISCONNECTED";
+  EvmProviderErrorType["INVALID_PARAMS"] = "INVALID_PARAMS";
+  EvmProviderErrorType["INTERNAL_ERROR"] = "INTERNAL_ERROR";
+})(EvmProviderErrorType || (EvmProviderErrorType = {}));
+let NotificationType;
+(function (NotificationType) {
+  NotificationType["INFO"] = "info";
+  NotificationType["SUCCESS"] = "success";
+  NotificationType["WARNING"] = "warning";
+  NotificationType["ERROR"] = "error";
+})(NotificationType || (NotificationType = {}));
+let MantaPayEnableMessage;
+(function (MantaPayEnableMessage) {
+  MantaPayEnableMessage["WRONG_PASSWORD"] = "WRONG_PASSWORD";
+  MantaPayEnableMessage["CHAIN_DISCONNECTED"] = "CHAIN_DISCONNECTED";
+  MantaPayEnableMessage["UNKNOWN_ERROR"] = "UNKNOWN_ERROR";
+  MantaPayEnableMessage["SUCCESS"] = "SUCCESS";
+})(MantaPayEnableMessage || (MantaPayEnableMessage = {}));
+let CampaignDataType;
+(function (CampaignDataType) {
+  CampaignDataType["NOTIFICATION"] = "notification";
+  CampaignDataType["BANNER"] = "banner";
+})(CampaignDataType || (CampaignDataType = {}));
+const MobileOS = ['iOS', 'Android'];
+
+/***/ }),
+
+/***/ "../extension-base/src/background/errors/ProviderError.ts":
+/*!****************************************************************!*\
+  !*** ../extension-base/src/background/errors/ProviderError.ts ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ProviderError: () => (/* binding */ ProviderError)
+/* harmony export */ });
+/* harmony import */ var _subwallet_extension_base_background_errors_SWError__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @subwallet/extension-base/background/errors/SWError */ "../extension-base/src/background/errors/SWError.ts");
+/* harmony import */ var _subwallet_extension_base_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @subwallet/extension-base/utils */ "../extension-base/src/utils/translate.ts");
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+
+
+const defaultErrorMap = {
+  CHAIN_DISCONNECTED: {
+    message: (0,_subwallet_extension_base_utils__WEBPACK_IMPORTED_MODULE_0__.detectTranslate)('Network is disconnected'),
+    code: undefined
+  },
+  INVALID_PARAMS: {
+    message: (0,_subwallet_extension_base_utils__WEBPACK_IMPORTED_MODULE_0__.detectTranslate)('Undefined error. Please contact SubWallet support'),
+    code: undefined
+  },
+  INTERNAL_ERROR: {
+    message: (0,_subwallet_extension_base_utils__WEBPACK_IMPORTED_MODULE_0__.detectTranslate)('Undefined error. Please contact SubWallet support'),
+    code: undefined
+  },
+  USER_REJECT: {
+    message: (0,_subwallet_extension_base_utils__WEBPACK_IMPORTED_MODULE_0__.detectTranslate)('Rejected by user'),
+    code: undefined
+  }
+};
+class ProviderError extends _subwallet_extension_base_background_errors_SWError__WEBPACK_IMPORTED_MODULE_1__.SWError {
+  constructor(errorType, errMessage, data) {
+    const {
+      code,
+      message
+    } = defaultErrorMap[errorType];
+    super(errorType, errMessage || message, code, data);
+    this.errorType = errorType;
+  }
+}
+
+/***/ }),
+
+/***/ "../extension-base/src/background/errors/SWError.ts":
+/*!**********************************************************!*\
+  !*** ../extension-base/src/background/errors/SWError.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SWError: () => (/* binding */ SWError)
+/* harmony export */ });
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+class SWError extends Error {
+  constructor(errorType, message, code, data, name) {
+    super(message);
+    this.errorType = errorType;
+    this.code = code;
+    this.data = data;
+    if (name) {
+      this.name = name;
+    }
+  }
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      code: this.code
+    };
+  }
+}
+
+/***/ }),
+
+/***/ "../extension-base/src/defaults.ts":
+/*!*****************************************!*\
+  !*** ../extension-base/src/defaults.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ALLOWED_PATH: () => (/* binding */ ALLOWED_PATH),
+/* harmony export */   EXTENSION_PREFIX: () => (/* binding */ EXTENSION_PREFIX),
+/* harmony export */   ID_PREFIX: () => (/* binding */ ID_PREFIX),
+/* harmony export */   MESSAGE_ORIGIN_CONTENT: () => (/* binding */ MESSAGE_ORIGIN_CONTENT),
+/* harmony export */   MESSAGE_ORIGIN_PAGE: () => (/* binding */ MESSAGE_ORIGIN_PAGE),
+/* harmony export */   PASSWORD_EXPIRY_MIN: () => (/* binding */ PASSWORD_EXPIRY_MIN),
+/* harmony export */   PASSWORD_EXPIRY_MS: () => (/* binding */ PASSWORD_EXPIRY_MS),
+/* harmony export */   PHISHING_PAGE_REDIRECT: () => (/* binding */ PHISHING_PAGE_REDIRECT),
+/* harmony export */   PORT_CONTENT: () => (/* binding */ PORT_CONTENT),
+/* harmony export */   PORT_EXTENSION: () => (/* binding */ PORT_EXTENSION),
+/* harmony export */   PORT_MOBILE: () => (/* binding */ PORT_MOBILE)
+/* harmony export */ });
+// Copyright 2019-2022 @polkadot/extension-base authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+const ALLOWED_PATH = ['/', '/settings/security', '/accounts/connect-ledger', '/accounts/restore-json', '/accounts/detail', '/accounts/new-seed-phrase'];
+const PHISHING_PAGE_REDIRECT = '/phishing-page-detected';
+const EXTENSION_PREFIX = ({"NODE_ENV":"development","PKG_NAME":"@subwallet/extension-koni","PKG_VERSION":"1.2.28-0","TARGET_ENV":"extension","BRANCH_NAME":undefined,"ID_PREDIX":"sw-ext-","TRANSAK_API_KEY":undefined,"COINBASE_PAY_ID":undefined,"NFT_MINTING_HOST":undefined,"TRANSAK_TEST_MODE":false,"BANXA_TEST_MODE":false,"INFURA_API_KEY":undefined,"INFURA_API_KEY_SECRET":undefined}).EXTENSION_PREFIX || '';
+const ID_PREFIX = ({"NODE_ENV":"development","PKG_NAME":"@subwallet/extension-koni","PKG_VERSION":"1.2.28-0","TARGET_ENV":"extension","BRANCH_NAME":undefined,"ID_PREDIX":"sw-ext-","TRANSAK_API_KEY":undefined,"COINBASE_PAY_ID":undefined,"NFT_MINTING_HOST":undefined,"TRANSAK_TEST_MODE":false,"BANXA_TEST_MODE":false,"INFURA_API_KEY":undefined,"INFURA_API_KEY_SECRET":undefined}).ID_PREFIX || EXTENSION_PREFIX || '';
+const PORT_MOBILE = `${EXTENSION_PREFIX}mobile`;
+const PORT_CONTENT = `${EXTENSION_PREFIX}koni-content`;
+const PORT_EXTENSION = `${EXTENSION_PREFIX}koni-extension`;
+const MESSAGE_ORIGIN_PAGE = `${EXTENSION_PREFIX}koni-page`;
+const MESSAGE_ORIGIN_CONTENT = `${EXTENSION_PREFIX}koni-content`;
+const PASSWORD_EXPIRY_MIN = 15;
+const PASSWORD_EXPIRY_MS = PASSWORD_EXPIRY_MIN * 60 * 1000;
+
+
+/***/ }),
+
+/***/ "../extension-base/src/page/Accounts.ts":
+/*!**********************************************!*\
+  !*** ../extension-base/src/page/Accounts.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Accounts)
+/* harmony export */ });
+// Copyright 2019-2022 @polkadot/extension authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// External to class, this.# is not private enough (yet)
+let sendRequest;
+class Accounts {
+  constructor(_sendRequest) {
+    sendRequest = _sendRequest;
+  }
+  get(anyType) {
+    return sendRequest('pub(accounts.listV2)', {
+      anyType,
+      accountAuthType: 'substrate'
+    });
+  }
+  subscribe(cb) {
+    let id = null;
+    sendRequest('pub(accounts.subscribeV2)', {
+      accountAuthType: 'substrate'
+    }, cb).then(subId => {
+      id = subId;
+    }).catch(console.error);
+    return () => {
+      id && sendRequest('pub(accounts.unsubscribe)', {
+        id
+      }).catch(console.error);
+    };
+  }
+}
+
+/***/ }),
+
+/***/ "../extension-base/src/page/Injected.ts":
+/*!**********************************************!*\
+  !*** ../extension-base/src/page/Injected.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Accounts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Accounts */ "../extension-base/src/page/Accounts.ts");
+/* harmony import */ var _Metadata__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Metadata */ "../extension-base/src/page/Metadata.ts");
+/* harmony import */ var _PostMessageProvider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PostMessageProvider */ "../extension-base/src/page/PostMessageProvider.ts");
+/* harmony import */ var _Signer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Signer */ "../extension-base/src/page/Signer.ts");
+// Copyright 2019-2022 @polkadot/extension authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (class {
+  constructor(sendRequest) {
+    this.accounts = new _Accounts__WEBPACK_IMPORTED_MODULE_0__["default"](sendRequest);
+    this.metadata = new _Metadata__WEBPACK_IMPORTED_MODULE_1__["default"](sendRequest);
+    this.provider = new _PostMessageProvider__WEBPACK_IMPORTED_MODULE_2__["default"](sendRequest);
+    this.signer = new _Signer__WEBPACK_IMPORTED_MODULE_3__["default"](sendRequest);
+    setInterval(() => {
+      sendRequest('pub(ping)', null).catch(() => {
+        console.error('Extension unavailable, ping failed');
+      });
+    }, 5000 + Math.floor(Math.random() * 5000));
+  }
+});
+
+/***/ }),
+
+/***/ "../extension-base/src/page/Metadata.ts":
+/*!**********************************************!*\
+  !*** ../extension-base/src/page/Metadata.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Metadata)
+/* harmony export */ });
+// Copyright 2019-2022 @polkadot/extension authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// External to class, this.# is not private enough (yet)
+let sendRequest;
+class Metadata {
+  constructor(_sendRequest) {
+    sendRequest = _sendRequest;
+  }
+  get() {
+    return sendRequest('pub(metadata.list)');
+  }
+  provide(definition) {
+    return sendRequest('pub(metadata.provide)', definition);
+  }
+  addToken(request) {
+    return sendRequest('pub(token.add)', request);
+  }
+}
+
+/***/ }),
+
+/***/ "../extension-base/src/page/PostMessageProvider.ts":
+/*!*********************************************************!*\
+  !*** ../extension-base/src/page/PostMessageProvider.ts ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ PostMessageProvider)
+/* harmony export */ });
+/* harmony import */ var eventemitter3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! eventemitter3 */ "../../node_modules/eventemitter3/index.mjs");
+/* harmony import */ var _polkadot_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @polkadot/util */ "../../node_modules/@polkadot/util/logger.js");
+/* harmony import */ var _polkadot_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @polkadot/util */ "../../node_modules/@polkadot/util/is/undefined.js");
+// Copyright 2019-2022 @polkadot/extension-base authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+
+
+const l = (0,_polkadot_util__WEBPACK_IMPORTED_MODULE_1__.logger)('PostMessageProvider');
+// External to class, this.# is not private enough (yet)
+let sendRequest;
+
+/**
+ * @name PostMessageProvider
+ *
+ * @description Extension provider to be used by dapps
+ */
+class PostMessageProvider {
+  #eventemitter;
+  isClonable = true;
+
+  // Whether or not the actual extension background provider is connected
+  #isConnected = false;
+
+  // Subscription IDs are (historically) not guaranteed to be globally unique;
+  // only unique for a given subscription method; which is why we identify
+  // the subscriptions based on subscription id + type
+  #subscriptions = {}; // {[(type,subscriptionId)]: callback}
+
+  /**
+   * @param {function}  sendRequest  The function to be called to send requests to the node
+   * @param {function}  subscriptionNotificationHandler  Channel for receiving subscription messages
+   */
+  constructor(_sendRequest) {
+    this.#eventemitter = new eventemitter3__WEBPACK_IMPORTED_MODULE_0__["default"]();
+    sendRequest = _sendRequest;
+  }
+
+  /**
+   * @description Returns a clone of the object
+   */
+  clone() {
+    return new PostMessageProvider(sendRequest);
+  }
+
+  /**
+   * @description Manually disconnect from the connection, clearing autoconnect logic
+   */
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async connect() {
+    // FIXME This should see if the extension's state's provider can disconnect
+    console.error('PostMessageProvider.disconnect() is not implemented.');
+  }
+
+  /**
+   * @description Manually disconnect from the connection, clearing autoconnect logic
+   */
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async disconnect() {
+    // FIXME This should see if the extension's state's provider can disconnect
+    console.error('PostMessageProvider.disconnect() is not implemented.');
+  }
+
+  /**
+   * @summary `true` when this provider supports subscriptions
+   */
+  get hasSubscriptions() {
+    // FIXME This should see if the extension's state's provider has subscriptions
+    return true;
+  }
+
+  /**
+   * @summary Whether the node is connected or not.
+   * @return {boolean} true if connected
+   */
+  get isConnected() {
+    return this.#isConnected;
+  }
+  listProviders() {
+    return sendRequest('pub(rpc.listProviders)', undefined);
+  }
+
+  /**
+   * @summary Listens on events after having subscribed using the [[subscribe]] function.
+   * @param  {ProviderInterfaceEmitted} type Event
+   * @param  {ProviderInterfaceEmitCb}  sub  Callback
+   * @return unsubscribe function
+   */
+  on(type, sub) {
+    this.#eventemitter.on(type, sub);
+    return () => {
+      this.#eventemitter.removeListener(type, sub);
+    };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async send(method, params, _, subscription) {
+    if (subscription) {
+      const {
+        callback,
+        type
+      } = subscription;
+      const id = await sendRequest('pub(rpc.subscribe)', {
+        method,
+        params,
+        type
+      }, res => {
+        subscription.callback(null, res);
+      });
+      this.#subscriptions[`${type}::${id}`] = callback;
+      return id;
+    }
+    return sendRequest('pub(rpc.send)', {
+      method,
+      params
+    });
+  }
+
+  /**
+   * @summary Spawn a provider on the extension background.
+   */
+  async startProvider(key) {
+    // Disconnect from the previous provider
+    this.#isConnected = false;
+    this.#eventemitter.emit('disconnected');
+    const meta = await sendRequest('pub(rpc.startProvider)', key);
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    sendRequest('pub(rpc.subscribeConnected)', null, connected => {
+      this.#isConnected = connected;
+      if (connected) {
+        this.#eventemitter.emit('connected');
+      } else {
+        this.#eventemitter.emit('disconnected');
+      }
+      return true;
+    });
+    return meta;
+  }
+  subscribe(type, method, params, callback) {
+    return this.send(method, params, false, {
+      callback,
+      type
+    });
+  }
+
+  /**
+   * @summary Allows unsubscribing to subscriptions made with [[subscribe]].
+   */
+  async unsubscribe(type, method, id) {
+    const subscription = `${type}::${id}`;
+
+    // FIXME This now could happen with re-subscriptions. The issue is that with a re-sub
+    // the assigned id now does not match what the API user originally received. It has
+    // a slight complication in solving - since we cannot rely on the send id, but rather
+    // need to find the actual subscription id to map it
+    if ((0,_polkadot_util__WEBPACK_IMPORTED_MODULE_2__.isUndefined)(this.#subscriptions[subscription])) {
+      l.debug(() => `Unable to find active subscription=${subscription}`);
+      return false;
+    }
+    delete this.#subscriptions[subscription];
+    return this.send(method, [id]);
+  }
+}
+
+/***/ }),
+
+/***/ "../extension-base/src/page/Signer.ts":
+/*!********************************************!*\
+  !*** ../extension-base/src/page/Signer.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Signer)
+/* harmony export */ });
+// Copyright 2019-2022 @polkadot/extension-base authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// External to class, this.# is not private enough (yet)
+let sendRequest;
+let nextId = 0;
+class Signer {
+  constructor(_sendRequest) {
+    sendRequest = _sendRequest;
+  }
+  async signPayload(payload) {
+    const id = ++nextId;
+    const result = await sendRequest('pub(extrinsic.sign)', payload);
+
+    // we add an internal id (number) - should have a mapping from the
+    // extension id (string) -> internal id (number) if we wish to provide
+    // updated via the update functionality (noop at this point)
+    return {
+      ...result,
+      id
+    };
+  }
+  async signRaw(payload) {
+    const id = ++nextId;
+    const result = await sendRequest('pub(bytes.sign)', payload);
+    return {
+      ...result,
+      id
+    };
+  }
+
+  // NOTE We don't listen to updates at all, if we do we can interpret the
+  // resuklt as provided by the API here
+  // public update (id: number, status: Hash | SubmittableResult): void {
+  //   // ignore
+  // }
+}
+
+/***/ }),
+
+/***/ "../extension-base/src/page/SubWalleEvmProvider.ts":
+/*!*********************************************************!*\
+  !*** ../extension-base/src/page/SubWalleEvmProvider.ts ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SubWalletEvmProvider: () => (/* binding */ SubWalletEvmProvider)
+/* harmony export */ });
+/* harmony import */ var _metamask_safe_event_emitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @metamask/safe-event-emitter */ "../../node_modules/@metamask/safe-event-emitter/index.js");
+// Copyright 2019-2022 @subwallet/extension-koni authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+
+let subscribeFlag = false;
+class SubWalletEvmProvider extends _metamask_safe_event_emitter__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  isSubWallet = true;
+  isMetaMask = false;
+  _connected = false;
+  constructor(sendMessage, version) {
+    super();
+    this.version = version;
+    this.sendMessage = sendMessage;
+    this._connected = true;
+  }
+  get connected() {
+    return this._connected;
+  }
+  isConnected() {
+    return this._connected;
+  }
+  subscribeExtensionEvents() {
+    if (subscribeFlag) {
+      return;
+    }
+    this.sendMessage('evm(events.subscribe)', null, ({
+      payload,
+      type
+    }) => {
+      if (['connect', 'disconnect', 'accountsChanged', 'chainChanged', 'message', 'data', 'reconnect', 'error'].includes(type)) {
+        if (type === 'connect') {
+          this._connected = true;
+        } else if (type === 'disconnect') {
+          this._connected = false;
+        }
+        const finalType = type === 'data' ? 'message' : type;
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        this.emit(finalType, payload);
+      } else {
+        console.warn('Can not handle event', type, payload);
+      }
+    }).then(done => {
+      subscribeFlag = true;
+    }).catch(() => {
+      subscribeFlag = false;
+    });
+    subscribeFlag = true;
+  }
+  async enable() {
+    return this.request({
+      method: 'eth_requestAccounts'
+    });
+  }
+  on(eventName, listener) {
+    this.subscribeExtensionEvents();
+    super.on(eventName, listener);
+    return this;
+  }
+  once(eventName, listener) {
+    this.subscribeExtensionEvents();
+    super.once(eventName, listener);
+    return this;
+  }
+  request({
+    method,
+    params
+  }) {
+    // if (!this._isEnable) {
+    //   if (method === 'eth_accounts') {
+    //     return this.request<T>({ method: 'eth_requestAccounts' });
+    //   }
+    // }
+
+    // Subscribe events
+    switch (method) {
+      case 'eth_requestAccounts':
+        return new Promise((resolve, reject) => {
+          const origin = document.title !== '' ? document.title : window.location.hostname;
+          this.sendMessage('pub(authorize.tabV2)', {
+            origin,
+            accountAuthType: 'evm'
+          }).then(() => {
+            // Return account list
+            this.request({
+              method: 'eth_accounts'
+            }).then(accounts => {
+              // @ts-ignore
+              resolve(accounts);
+            }).catch(e => {
+              reject(e);
+            });
+          }).catch(e => {
+            reject(e);
+          });
+        });
+      default:
+        return new Promise((resolve, reject) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          this.sendMessage('evm(request)', {
+            params,
+            method
+          }).then(result => {
+            resolve(result);
+          }).catch(e => {
+            reject(e);
+          });
+        });
+    }
+  }
+  _sendSync(payload) {
+    let result;
+    switch (payload.method) {
+      case 'net_version':
+        result = this.version ? `SubWallet v${this.version}` : null;
+        break;
+      default:
+        throw new Error(`Not support ${payload.method}`);
+    }
+    return {
+      id: payload.id,
+      jsonrpc: payload.jsonrpc,
+      result
+    };
+  }
+  send(methodOrPayload, callbackOrArgs) {
+    if (typeof methodOrPayload === 'string' && (!callbackOrArgs || Array.isArray(callbackOrArgs))) {
+      return this.request({
+        method: methodOrPayload,
+        params: callbackOrArgs
+      });
+    } else if (methodOrPayload && typeof methodOrPayload === 'object' && typeof callbackOrArgs === 'function') {
+      return this.request(methodOrPayload).then(rs => {
+        callbackOrArgs(rs);
+      });
+    }
+    return this._sendSync(methodOrPayload);
+  }
+  sendAsync(payload, callback) {
+    this.request(payload).then(result => {
+      // @ts-ignore
+      callback(null, {
+        result
+      });
+    }).catch(e => {
+      callback(e);
+    });
+  }
+}
+
+/***/ }),
+
+/***/ "../extension-base/src/page/index.ts":
+/*!*******************************************!*\
+  !*** ../extension-base/src/page/index.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   enable: () => (/* binding */ enable),
+/* harmony export */   handleResponse: () => (/* binding */ handleResponse),
+/* harmony export */   initEvmProvider: () => (/* binding */ initEvmProvider),
+/* harmony export */   sendMessage: () => (/* binding */ sendMessage)
+/* harmony export */ });
+/* harmony import */ var _subwallet_extension_base_background_errors_ProviderError__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @subwallet/extension-base/background/errors/ProviderError */ "../extension-base/src/background/errors/ProviderError.ts");
+/* harmony import */ var _subwallet_extension_base_background_KoniTypes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @subwallet/extension-base/background/KoniTypes */ "../extension-base/src/background/KoniTypes.ts");
+/* harmony import */ var _subwallet_extension_base_page_SubWalleEvmProvider__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @subwallet/extension-base/page/SubWalleEvmProvider */ "../extension-base/src/page/SubWalleEvmProvider.ts");
+/* harmony import */ var _defaults__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../defaults */ "../extension-base/src/defaults.ts");
+/* harmony import */ var _utils_getId__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/getId */ "../extension-base/src/utils/getId.ts");
+/* harmony import */ var _Injected__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Injected */ "../extension-base/src/page/Injected.ts");
+// Copyright 2019-2022 @polkadot/extension authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+
+
+
+
+
+
+// when sending a message from the injector to the extension, we
+//  - create an event - this we send to the loader
+//  - the loader takes this event and uses port.postMessage to background
+//  - on response, the loader creates a reponse event
+//  - this injector, listens on the events, maps it to the original
+//  - resolves/rejects the promise with the result (or sub data)
+
+const handlers = {};
+
+// a generic message sender that creates an event, returning a promise that will
+// resolve once the event is resolved (by the response listener just below this)
+
+function sendMessage(message, request, subscriber) {
+  return new Promise((resolve, reject) => {
+    const id = (0,_utils_getId__WEBPACK_IMPORTED_MODULE_0__.getId)();
+    handlers[id] = {
+      reject,
+      resolve,
+      subscriber
+    };
+    const transportRequestMessage = {
+      id,
+      message,
+      origin: _defaults__WEBPACK_IMPORTED_MODULE_1__.MESSAGE_ORIGIN_PAGE,
+      request: request || null
+    };
+    window.postMessage(transportRequestMessage, '*');
+  });
+}
+
+// the enable function, called by the dapp to allow access
+
+async function enable(origin, opt) {
+  console.debug('run to enable function-----', opt);
+  await sendMessage('pub(authorize.tabV2)', {
+    origin,
+    accountAuthType: (opt === null || opt === void 0 ? void 0 : opt.accountAuthType) || 'substrate'
+  });
+  return new _Injected__WEBPACK_IMPORTED_MODULE_2__["default"](sendMessage);
+}
+function handleResponse(data) {
+  const handler = handlers[data.id];
+  if (!handler) {
+    // console.error(`Unknown response: ${JSON.stringify(data)}`);
+
+    return;
+  }
+  if (!handler.subscriber) {
+    delete handlers[data.id];
+  }
+  if (data.subscription) {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    handler.subscriber(data.subscription);
+  } else if (data.error) {
+    handler.reject(new _subwallet_extension_base_background_errors_ProviderError__WEBPACK_IMPORTED_MODULE_3__.ProviderError(_subwallet_extension_base_background_KoniTypes__WEBPACK_IMPORTED_MODULE_4__.ProviderErrorType.INTERNAL_ERROR, data.error, data.errorCode));
+  } else {
+    handler.resolve(data.response);
+  }
+}
+function initEvmProvider(version) {
+  return new _subwallet_extension_base_page_SubWalleEvmProvider__WEBPACK_IMPORTED_MODULE_5__.SubWalletEvmProvider(sendMessage, version);
+}
+
+/***/ }),
+
+/***/ "../extension-base/src/utils/getId.ts":
+/*!********************************************!*\
+  !*** ../extension-base/src/utils/getId.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getId: () => (/* binding */ getId)
+/* harmony export */ });
+/* harmony import */ var _defaults__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../defaults */ "../extension-base/src/defaults.ts");
+// Copyright 2019-2022 @polkadot/extension authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+
+let counter = 0;
+function getId() {
+  return `${_defaults__WEBPACK_IMPORTED_MODULE_0__.ID_PREFIX}.${Date.now()}.${++counter}`;
+}
+
+/***/ }),
+
+/***/ "../extension-base/src/utils/translate.ts":
+/*!************************************************!*\
+  !*** ../extension-base/src/utils/translate.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   detectTranslate: () => (/* binding */ detectTranslate)
+/* harmony export */ });
+// Copyright 2019-2022 @subwallet/extension-base
+// SPDX-License-Identifier: Apache-2.0
+
+const detectTranslate = message => message;
+
+/***/ }),
+
+/***/ "../extension-inject/src/bundle.ts":
+/*!*****************************************!*\
+  !*** ../extension-inject/src/bundle.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   eip6963ProviderInfo: () => (/* binding */ eip6963ProviderInfo),
+/* harmony export */   inject6963EIP: () => (/* binding */ inject6963EIP),
+/* harmony export */   injectEvmExtension: () => (/* binding */ injectEvmExtension),
+/* harmony export */   injectExtension: () => (/* binding */ injectExtension),
+/* harmony export */   packageInfo: () => (/* reexport safe */ _packageInfo__WEBPACK_IMPORTED_MODULE_0__.packageInfo)
+/* harmony export */ });
+/* harmony import */ var _packageInfo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./packageInfo */ "../extension-inject/src/packageInfo.ts");
+// Copyright 2019-2022 @polkadot/extension-inject authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+
+
+// It is recommended to always use the function below to shield the extension and dapp from
+// any future changes. The exposed interface will manage access between the 2 environments,
+// be it via window (current), postMessage (under consideration) or any other mechanism
+function injectExtension(enable, {
+  name,
+  version
+}) {
+  // small helper with the typescript types, just cast window
+  const windowInject = window;
+
+  // don't clobber the existing object, we will add it (or create as needed)
+  windowInject.injectedWeb3 = windowInject.injectedWeb3 || {};
+
+  // add our enable function
+  windowInject.injectedWeb3[name] = {
+    enable: (origin, opt) => enable(origin, opt),
+    version
+  };
+}
+
+// Inject EVM Provider
+function injectEvmExtension(evmProvider) {
+  // small helper with the typescript types, just cast window
+  const windowInject = window;
+
+  // add our enable function
+  if (windowInject.SubWallet) {
+    // Provider has been initialized in proxy mode
+    windowInject.SubWallet.provider = evmProvider;
+  } else {
+    // Provider has been initialized in direct mode
+    windowInject.SubWallet = evmProvider;
+  }
+  if (!windowInject.ethereum) {
+    windowInject.ethereum = evmProvider;
+    windowInject.dispatchEvent(new Event('ethereum#initialized'));
+  }
+  windowInject.dispatchEvent(new Event('subwallet#initialized'));
+
+  // // Publish to global if window.ethereum is not available
+  // windowInject.addEventListener('load', () => {
+  //   if (!windowInject.ethereum) {
+  //     windowInject.ethereum = evmProvider;
+  //     windowInject.dispatchEvent(new Event('ethereum#initialized'));
+  //   }
+  // });
+
+  inject6963EIP(evmProvider);
+}
+const eip6963ProviderInfo = {
+  uuid: '10c67337-9211-48d9-aab0-cecdc4224acc',
+  name: 'SubWallet',
+  icon: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNODAgNGM1Ny42MyAwIDc2IDE4LjM3IDc2IDc2IDAgNTcuNjMtMTguMzcgNzYtNzYgNzYtNTcuNjMgMC03Ni0xOC4zNy03Ni03NkM0IDIyLjM3IDIyLjM3IDQgODAgNFoiIGZpbGw9InVybCgjYSkiLz48ZyBjbGlwLXBhdGg9InVybCgjYikiPjxwYXRoIGQ9Ik0xMTIuNjE1IDY2LjcyVjUzLjM5OEw1OC43NiAzMiA0OCAzNy40MTJsLjA1NyA0MS40NjQgNDAuMjkyIDE2LjA3LTIxLjUyIDkuMDc1di03LjAxOEw1Ni45NSA5My4wM2wtOC44OTMgNC4xNjN2MjUuMzk1TDU4Ljc2OSAxMjhsNTMuODQ2LTI0LjA2MlY4Ni44NjlMNjQuMTU0IDY3LjY1N1Y1NmwzOC40NDkgMTUuMjE2IDEwLjAxMi00LjQ5NloiIGZpbGw9IiNmZmYiLz48L2c+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJhIiB4MT0iODAiIHkxPSI0IiB4Mj0iODAiIHkyPSIxNTYiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjMDA0QkZGIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNENFQUFDIi8+PC9saW5lYXJHcmFkaWVudD48Y2xpcFBhdGggaWQ9ImIiPjxwYXRoIGZpbGw9IiNmZmYiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ4IDMyKSIgZD0iTTAgMGg2NC42MTV2OTZIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48L3N2Zz4=',
+  rdns: 'app.subwallet'
+};
+const inject6963EIP = provider => {
+  const _provider = new Proxy(provider, {
+    get(target, key) {
+      if (key === 'then') {
+        return Promise.resolve(target);
+      }
+      const proxyTarget = Reflect.get(target, key);
+      if (typeof (proxyTarget === null || proxyTarget === void 0 ? void 0 : proxyTarget.bind) === 'function') {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+        return proxyTarget.bind(target);
+      }
+      return proxyTarget;
+    },
+    deleteProperty() {
+      return true;
+    }
+  });
+  const announceProvider = () => {
+    const detail = Object.freeze({
+      info: eip6963ProviderInfo,
+      provider: _provider
+    });
+    const event = new CustomEvent('eip6963:announceProvider', {
+      detail
+    });
+    window.dispatchEvent(event);
+  };
+  window.addEventListener('eip6963:requestProvider', announceProvider);
+  announceProvider();
+};
+
+/***/ }),
+
+/***/ "../extension-inject/src/index.ts":
+/*!****************************************!*\
+  !*** ../extension-inject/src/index.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   eip6963ProviderInfo: () => (/* reexport safe */ _bundle__WEBPACK_IMPORTED_MODULE_0__.eip6963ProviderInfo),
+/* harmony export */   inject6963EIP: () => (/* reexport safe */ _bundle__WEBPACK_IMPORTED_MODULE_0__.inject6963EIP),
+/* harmony export */   injectEvmExtension: () => (/* reexport safe */ _bundle__WEBPACK_IMPORTED_MODULE_0__.injectEvmExtension),
+/* harmony export */   injectExtension: () => (/* reexport safe */ _bundle__WEBPACK_IMPORTED_MODULE_0__.injectExtension),
+/* harmony export */   packageInfo: () => (/* reexport safe */ _bundle__WEBPACK_IMPORTED_MODULE_0__.packageInfo)
+/* harmony export */ });
+/* harmony import */ var _bundle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bundle */ "../extension-inject/src/bundle.ts");
+// Copyright 2019-2022 @polkadot/extension-inject authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// Since we inject into pages, we skip this
+// import './detectPackage';
+
+
+
+/***/ }),
+
+/***/ "../extension-inject/src/packageInfo.ts":
+/*!**********************************************!*\
+  !*** ../extension-inject/src/packageInfo.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   packageInfo: () => (/* binding */ packageInfo)
+/* harmony export */ });
+// Copyright 2017-2022 @subwallet/extension-inject authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// Do not edit, auto-generated by @polkadot/dev
+
+const packageInfo = {
+  name: '@subwallet/extension-inject',
+  path: 'auto',
+  type: 'auto',
+  version: '1.2.28-0'
+};
+
+/***/ }),
+
+/***/ "../../node_modules/bn.js/lib/bn.js":
+/*!******************************************!*\
+  !*** ../../node_modules/bn.js/lib/bn.js ***!
+  \******************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+(function (module, exports) {
+  'use strict';
+
+  // Utils
+  function assert (val, msg) {
+    if (!val) throw new Error(msg || 'Assertion failed');
+  }
+
+  // Could use `inherits` module, but don't want to move from single file
+  // architecture yet.
+  function inherits (ctor, superCtor) {
+    ctor.super_ = superCtor;
+    var TempCtor = function () {};
+    TempCtor.prototype = superCtor.prototype;
+    ctor.prototype = new TempCtor();
+    ctor.prototype.constructor = ctor;
+  }
+
+  // BN
+
+  function BN (number, base, endian) {
+    if (BN.isBN(number)) {
+      return number;
+    }
+
+    this.negative = 0;
+    this.words = null;
+    this.length = 0;
+
+    // Reduction context
+    this.red = null;
+
+    if (number !== null) {
+      if (base === 'le' || base === 'be') {
+        endian = base;
+        base = 10;
+      }
+
+      this._init(number || 0, base || 10, endian || 'be');
+    }
+  }
+  if (typeof module === 'object') {
+    module.exports = BN;
+  } else {
+    exports.BN = BN;
+  }
+
+  BN.BN = BN;
+  BN.wordSize = 26;
+
+  var Buffer;
+  try {
+    if (typeof window !== 'undefined' && typeof window.Buffer !== 'undefined') {
+      Buffer = window.Buffer;
+    } else {
+      Buffer = (__webpack_require__(/*! buffer */ "?2e65").Buffer);
+    }
+  } catch (e) {
+  }
+
+  BN.isBN = function isBN (num) {
+    if (num instanceof BN) {
+      return true;
+    }
+
+    return num !== null && typeof num === 'object' &&
+      num.constructor.wordSize === BN.wordSize && Array.isArray(num.words);
+  };
+
+  BN.max = function max (left, right) {
+    if (left.cmp(right) > 0) return left;
+    return right;
+  };
+
+  BN.min = function min (left, right) {
+    if (left.cmp(right) < 0) return left;
+    return right;
+  };
+
+  BN.prototype._init = function init (number, base, endian) {
+    if (typeof number === 'number') {
+      return this._initNumber(number, base, endian);
+    }
+
+    if (typeof number === 'object') {
+      return this._initArray(number, base, endian);
+    }
+
+    if (base === 'hex') {
+      base = 16;
+    }
+    assert(base === (base | 0) && base >= 2 && base <= 36);
+
+    number = number.toString().replace(/\s+/g, '');
+    var start = 0;
+    if (number[0] === '-') {
+      start++;
+      this.negative = 1;
+    }
+
+    if (start < number.length) {
+      if (base === 16) {
+        this._parseHex(number, start, endian);
+      } else {
+        this._parseBase(number, base, start);
+        if (endian === 'le') {
+          this._initArray(this.toArray(), base, endian);
+        }
+      }
+    }
+  };
+
+  BN.prototype._initNumber = function _initNumber (number, base, endian) {
+    if (number < 0) {
+      this.negative = 1;
+      number = -number;
+    }
+    if (number < 0x4000000) {
+      this.words = [number & 0x3ffffff];
+      this.length = 1;
+    } else if (number < 0x10000000000000) {
+      this.words = [
+        number & 0x3ffffff,
+        (number / 0x4000000) & 0x3ffffff
+      ];
+      this.length = 2;
+    } else {
+      assert(number < 0x20000000000000); // 2 ^ 53 (unsafe)
+      this.words = [
+        number & 0x3ffffff,
+        (number / 0x4000000) & 0x3ffffff,
+        1
+      ];
+      this.length = 3;
+    }
+
+    if (endian !== 'le') return;
+
+    // Reverse the bytes
+    this._initArray(this.toArray(), base, endian);
+  };
+
+  BN.prototype._initArray = function _initArray (number, base, endian) {
+    // Perhaps a Uint8Array
+    assert(typeof number.length === 'number');
+    if (number.length <= 0) {
+      this.words = [0];
+      this.length = 1;
+      return this;
+    }
+
+    this.length = Math.ceil(number.length / 3);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      this.words[i] = 0;
+    }
+
+    var j, w;
+    var off = 0;
+    if (endian === 'be') {
+      for (i = number.length - 1, j = 0; i >= 0; i -= 3) {
+        w = number[i] | (number[i - 1] << 8) | (number[i - 2] << 16);
+        this.words[j] |= (w << off) & 0x3ffffff;
+        this.words[j + 1] = (w >>> (26 - off)) & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    } else if (endian === 'le') {
+      for (i = 0, j = 0; i < number.length; i += 3) {
+        w = number[i] | (number[i + 1] << 8) | (number[i + 2] << 16);
+        this.words[j] |= (w << off) & 0x3ffffff;
+        this.words[j + 1] = (w >>> (26 - off)) & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    }
+    return this._strip();
+  };
+
+  function parseHex4Bits (string, index) {
+    var c = string.charCodeAt(index);
+    // '0' - '9'
+    if (c >= 48 && c <= 57) {
+      return c - 48;
+    // 'A' - 'F'
+    } else if (c >= 65 && c <= 70) {
+      return c - 55;
+    // 'a' - 'f'
+    } else if (c >= 97 && c <= 102) {
+      return c - 87;
+    } else {
+      assert(false, 'Invalid character in ' + string);
+    }
+  }
+
+  function parseHexByte (string, lowerBound, index) {
+    var r = parseHex4Bits(string, index);
+    if (index - 1 >= lowerBound) {
+      r |= parseHex4Bits(string, index - 1) << 4;
+    }
+    return r;
+  }
+
+  BN.prototype._parseHex = function _parseHex (number, start, endian) {
+    // Create possibly bigger array to ensure that it fits the number
+    this.length = Math.ceil((number.length - start) / 6);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      this.words[i] = 0;
+    }
+
+    // 24-bits chunks
+    var off = 0;
+    var j = 0;
+
+    var w;
+    if (endian === 'be') {
+      for (i = number.length - 1; i >= start; i -= 2) {
+        w = parseHexByte(number, start, i) << off;
+        this.words[j] |= w & 0x3ffffff;
+        if (off >= 18) {
+          off -= 18;
+          j += 1;
+          this.words[j] |= w >>> 26;
+        } else {
+          off += 8;
+        }
+      }
+    } else {
+      var parseLength = number.length - start;
+      for (i = parseLength % 2 === 0 ? start + 1 : start; i < number.length; i += 2) {
+        w = parseHexByte(number, start, i) << off;
+        this.words[j] |= w & 0x3ffffff;
+        if (off >= 18) {
+          off -= 18;
+          j += 1;
+          this.words[j] |= w >>> 26;
+        } else {
+          off += 8;
+        }
+      }
+    }
+
+    this._strip();
+  };
+
+  function parseBase (str, start, end, mul) {
+    var r = 0;
+    var b = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r *= mul;
+
+      // 'a'
+      if (c >= 49) {
+        b = c - 49 + 0xa;
+
+      // 'A'
+      } else if (c >= 17) {
+        b = c - 17 + 0xa;
+
+      // '0' - '9'
+      } else {
+        b = c;
+      }
+      assert(c >= 0 && b < mul, 'Invalid character');
+      r += b;
+    }
+    return r;
+  }
+
+  BN.prototype._parseBase = function _parseBase (number, base, start) {
+    // Initialize as zero
+    this.words = [0];
+    this.length = 1;
+
+    // Find length of limb in base
+    for (var limbLen = 0, limbPow = 1; limbPow <= 0x3ffffff; limbPow *= base) {
+      limbLen++;
+    }
+    limbLen--;
+    limbPow = (limbPow / base) | 0;
+
+    var total = number.length - start;
+    var mod = total % limbLen;
+    var end = Math.min(total, total - mod) + start;
+
+    var word = 0;
+    for (var i = start; i < end; i += limbLen) {
+      word = parseBase(number, i, i + limbLen, base);
+
+      this.imuln(limbPow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+
+    if (mod !== 0) {
+      var pow = 1;
+      word = parseBase(number, i, number.length, base);
+
+      for (i = 0; i < mod; i++) {
+        pow *= base;
+      }
+
+      this.imuln(pow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+
+    this._strip();
+  };
+
+  BN.prototype.copy = function copy (dest) {
+    dest.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      dest.words[i] = this.words[i];
+    }
+    dest.length = this.length;
+    dest.negative = this.negative;
+    dest.red = this.red;
+  };
+
+  function move (dest, src) {
+    dest.words = src.words;
+    dest.length = src.length;
+    dest.negative = src.negative;
+    dest.red = src.red;
+  }
+
+  BN.prototype._move = function _move (dest) {
+    move(dest, this);
+  };
+
+  BN.prototype.clone = function clone () {
+    var r = new BN(null);
+    this.copy(r);
+    return r;
+  };
+
+  BN.prototype._expand = function _expand (size) {
+    while (this.length < size) {
+      this.words[this.length++] = 0;
+    }
+    return this;
+  };
+
+  // Remove leading `0` from `this`
+  BN.prototype._strip = function strip () {
+    while (this.length > 1 && this.words[this.length - 1] === 0) {
+      this.length--;
+    }
+    return this._normSign();
+  };
+
+  BN.prototype._normSign = function _normSign () {
+    // -0 = 0
+    if (this.length === 1 && this.words[0] === 0) {
+      this.negative = 0;
+    }
+    return this;
+  };
+
+  // Check Symbol.for because not everywhere where Symbol defined
+  // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#Browser_compatibility
+  if (typeof Symbol !== 'undefined' && typeof Symbol.for === 'function') {
+    try {
+      BN.prototype[Symbol.for('nodejs.util.inspect.custom')] = inspect;
+    } catch (e) {
+      BN.prototype.inspect = inspect;
+    }
+  } else {
+    BN.prototype.inspect = inspect;
+  }
+
+  function inspect () {
+    return (this.red ? '<BN-R: ' : '<BN: ') + this.toString(16) + '>';
+  }
+
+  /*
+
+  var zeros = [];
+  var groupSizes = [];
+  var groupBases = [];
+
+  var s = '';
+  var i = -1;
+  while (++i < BN.wordSize) {
+    zeros[i] = s;
+    s += '0';
+  }
+  groupSizes[0] = 0;
+  groupSizes[1] = 0;
+  groupBases[0] = 0;
+  groupBases[1] = 0;
+  var base = 2 - 1;
+  while (++base < 36 + 1) {
+    var groupSize = 0;
+    var groupBase = 1;
+    while (groupBase < (1 << BN.wordSize) / base) {
+      groupBase *= base;
+      groupSize += 1;
+    }
+    groupSizes[base] = groupSize;
+    groupBases[base] = groupBase;
+  }
+
+  */
+
+  var zeros = [
+    '',
+    '0',
+    '00',
+    '000',
+    '0000',
+    '00000',
+    '000000',
+    '0000000',
+    '00000000',
+    '000000000',
+    '0000000000',
+    '00000000000',
+    '000000000000',
+    '0000000000000',
+    '00000000000000',
+    '000000000000000',
+    '0000000000000000',
+    '00000000000000000',
+    '000000000000000000',
+    '0000000000000000000',
+    '00000000000000000000',
+    '000000000000000000000',
+    '0000000000000000000000',
+    '00000000000000000000000',
+    '000000000000000000000000',
+    '0000000000000000000000000'
+  ];
+
+  var groupSizes = [
+    0, 0,
+    25, 16, 12, 11, 10, 9, 8,
+    8, 7, 7, 7, 7, 6, 6,
+    6, 6, 6, 6, 6, 5, 5,
+    5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5
+  ];
+
+  var groupBases = [
+    0, 0,
+    33554432, 43046721, 16777216, 48828125, 60466176, 40353607, 16777216,
+    43046721, 10000000, 19487171, 35831808, 62748517, 7529536, 11390625,
+    16777216, 24137569, 34012224, 47045881, 64000000, 4084101, 5153632,
+    6436343, 7962624, 9765625, 11881376, 14348907, 17210368, 20511149,
+    24300000, 28629151, 33554432, 39135393, 45435424, 52521875, 60466176
+  ];
+
+  BN.prototype.toString = function toString (base, padding) {
+    base = base || 10;
+    padding = padding | 0 || 1;
+
+    var out;
+    if (base === 16 || base === 'hex') {
+      out = '';
+      var off = 0;
+      var carry = 0;
+      for (var i = 0; i < this.length; i++) {
+        var w = this.words[i];
+        var word = (((w << off) | carry) & 0xffffff).toString(16);
+        carry = (w >>> (24 - off)) & 0xffffff;
+        off += 2;
+        if (off >= 26) {
+          off -= 26;
+          i--;
+        }
+        if (carry !== 0 || i !== this.length - 1) {
+          out = zeros[6 - word.length] + word + out;
+        } else {
+          out = word + out;
+        }
+      }
+      if (carry !== 0) {
+        out = carry.toString(16) + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    if (base === (base | 0) && base >= 2 && base <= 36) {
+      // var groupSize = Math.floor(BN.wordSize * Math.LN2 / Math.log(base));
+      var groupSize = groupSizes[base];
+      // var groupBase = Math.pow(base, groupSize);
+      var groupBase = groupBases[base];
+      out = '';
+      var c = this.clone();
+      c.negative = 0;
+      while (!c.isZero()) {
+        var r = c.modrn(groupBase).toString(base);
+        c = c.idivn(groupBase);
+
+        if (!c.isZero()) {
+          out = zeros[groupSize - r.length] + r + out;
+        } else {
+          out = r + out;
+        }
+      }
+      if (this.isZero()) {
+        out = '0' + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    assert(false, 'Base should be between 2 and 36');
+  };
+
+  BN.prototype.toNumber = function toNumber () {
+    var ret = this.words[0];
+    if (this.length === 2) {
+      ret += this.words[1] * 0x4000000;
+    } else if (this.length === 3 && this.words[2] === 0x01) {
+      // NOTE: at this stage it is known that the top bit is set
+      ret += 0x10000000000000 + (this.words[1] * 0x4000000);
+    } else if (this.length > 2) {
+      assert(false, 'Number can only safely store up to 53 bits');
+    }
+    return (this.negative !== 0) ? -ret : ret;
+  };
+
+  BN.prototype.toJSON = function toJSON () {
+    return this.toString(16, 2);
+  };
+
+  if (Buffer) {
+    BN.prototype.toBuffer = function toBuffer (endian, length) {
+      return this.toArrayLike(Buffer, endian, length);
+    };
+  }
+
+  BN.prototype.toArray = function toArray (endian, length) {
+    return this.toArrayLike(Array, endian, length);
+  };
+
+  var allocate = function allocate (ArrayType, size) {
+    if (ArrayType.allocUnsafe) {
+      return ArrayType.allocUnsafe(size);
+    }
+    return new ArrayType(size);
+  };
+
+  BN.prototype.toArrayLike = function toArrayLike (ArrayType, endian, length) {
+    this._strip();
+
+    var byteLength = this.byteLength();
+    var reqLength = length || Math.max(1, byteLength);
+    assert(byteLength <= reqLength, 'byte array longer than desired length');
+    assert(reqLength > 0, 'Requested array length <= 0');
+
+    var res = allocate(ArrayType, reqLength);
+    var postfix = endian === 'le' ? 'LE' : 'BE';
+    this['_toArrayLike' + postfix](res, byteLength);
+    return res;
+  };
+
+  BN.prototype._toArrayLikeLE = function _toArrayLikeLE (res, byteLength) {
+    var position = 0;
+    var carry = 0;
+
+    for (var i = 0, shift = 0; i < this.length; i++) {
+      var word = (this.words[i] << shift) | carry;
+
+      res[position++] = word & 0xff;
+      if (position < res.length) {
+        res[position++] = (word >> 8) & 0xff;
+      }
+      if (position < res.length) {
+        res[position++] = (word >> 16) & 0xff;
+      }
+
+      if (shift === 6) {
+        if (position < res.length) {
+          res[position++] = (word >> 24) & 0xff;
+        }
+        carry = 0;
+        shift = 0;
+      } else {
+        carry = word >>> 24;
+        shift += 2;
+      }
+    }
+
+    if (position < res.length) {
+      res[position++] = carry;
+
+      while (position < res.length) {
+        res[position++] = 0;
+      }
+    }
+  };
+
+  BN.prototype._toArrayLikeBE = function _toArrayLikeBE (res, byteLength) {
+    var position = res.length - 1;
+    var carry = 0;
+
+    for (var i = 0, shift = 0; i < this.length; i++) {
+      var word = (this.words[i] << shift) | carry;
+
+      res[position--] = word & 0xff;
+      if (position >= 0) {
+        res[position--] = (word >> 8) & 0xff;
+      }
+      if (position >= 0) {
+        res[position--] = (word >> 16) & 0xff;
+      }
+
+      if (shift === 6) {
+        if (position >= 0) {
+          res[position--] = (word >> 24) & 0xff;
+        }
+        carry = 0;
+        shift = 0;
+      } else {
+        carry = word >>> 24;
+        shift += 2;
+      }
+    }
+
+    if (position >= 0) {
+      res[position--] = carry;
+
+      while (position >= 0) {
+        res[position--] = 0;
+      }
+    }
+  };
+
+  if (Math.clz32) {
+    BN.prototype._countBits = function _countBits (w) {
+      return 32 - Math.clz32(w);
+    };
+  } else {
+    BN.prototype._countBits = function _countBits (w) {
+      var t = w;
+      var r = 0;
+      if (t >= 0x1000) {
+        r += 13;
+        t >>>= 13;
+      }
+      if (t >= 0x40) {
+        r += 7;
+        t >>>= 7;
+      }
+      if (t >= 0x8) {
+        r += 4;
+        t >>>= 4;
+      }
+      if (t >= 0x02) {
+        r += 2;
+        t >>>= 2;
+      }
+      return r + t;
+    };
+  }
+
+  BN.prototype._zeroBits = function _zeroBits (w) {
+    // Short-cut
+    if (w === 0) return 26;
+
+    var t = w;
+    var r = 0;
+    if ((t & 0x1fff) === 0) {
+      r += 13;
+      t >>>= 13;
+    }
+    if ((t & 0x7f) === 0) {
+      r += 7;
+      t >>>= 7;
+    }
+    if ((t & 0xf) === 0) {
+      r += 4;
+      t >>>= 4;
+    }
+    if ((t & 0x3) === 0) {
+      r += 2;
+      t >>>= 2;
+    }
+    if ((t & 0x1) === 0) {
+      r++;
+    }
+    return r;
+  };
+
+  // Return number of used bits in a BN
+  BN.prototype.bitLength = function bitLength () {
+    var w = this.words[this.length - 1];
+    var hi = this._countBits(w);
+    return (this.length - 1) * 26 + hi;
+  };
+
+  function toBitArray (num) {
+    var w = new Array(num.bitLength());
+
+    for (var bit = 0; bit < w.length; bit++) {
+      var off = (bit / 26) | 0;
+      var wbit = bit % 26;
+
+      w[bit] = (num.words[off] >>> wbit) & 0x01;
+    }
+
+    return w;
+  }
+
+  // Number of trailing zero bits
+  BN.prototype.zeroBits = function zeroBits () {
+    if (this.isZero()) return 0;
+
+    var r = 0;
+    for (var i = 0; i < this.length; i++) {
+      var b = this._zeroBits(this.words[i]);
+      r += b;
+      if (b !== 26) break;
+    }
+    return r;
+  };
+
+  BN.prototype.byteLength = function byteLength () {
+    return Math.ceil(this.bitLength() / 8);
+  };
+
+  BN.prototype.toTwos = function toTwos (width) {
+    if (this.negative !== 0) {
+      return this.abs().inotn(width).iaddn(1);
+    }
+    return this.clone();
+  };
+
+  BN.prototype.fromTwos = function fromTwos (width) {
+    if (this.testn(width - 1)) {
+      return this.notn(width).iaddn(1).ineg();
+    }
+    return this.clone();
+  };
+
+  BN.prototype.isNeg = function isNeg () {
+    return this.negative !== 0;
+  };
+
+  // Return negative clone of `this`
+  BN.prototype.neg = function neg () {
+    return this.clone().ineg();
+  };
+
+  BN.prototype.ineg = function ineg () {
+    if (!this.isZero()) {
+      this.negative ^= 1;
+    }
+
+    return this;
+  };
+
+  // Or `num` with `this` in-place
+  BN.prototype.iuor = function iuor (num) {
+    while (this.length < num.length) {
+      this.words[this.length++] = 0;
+    }
+
+    for (var i = 0; i < num.length; i++) {
+      this.words[i] = this.words[i] | num.words[i];
+    }
+
+    return this._strip();
+  };
+
+  BN.prototype.ior = function ior (num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuor(num);
+  };
+
+  // Or `num` with `this`
+  BN.prototype.or = function or (num) {
+    if (this.length > num.length) return this.clone().ior(num);
+    return num.clone().ior(this);
+  };
+
+  BN.prototype.uor = function uor (num) {
+    if (this.length > num.length) return this.clone().iuor(num);
+    return num.clone().iuor(this);
+  };
+
+  // And `num` with `this` in-place
+  BN.prototype.iuand = function iuand (num) {
+    // b = min-length(num, this)
+    var b;
+    if (this.length > num.length) {
+      b = num;
+    } else {
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = this.words[i] & num.words[i];
+    }
+
+    this.length = b.length;
+
+    return this._strip();
+  };
+
+  BN.prototype.iand = function iand (num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuand(num);
+  };
+
+  // And `num` with `this`
+  BN.prototype.and = function and (num) {
+    if (this.length > num.length) return this.clone().iand(num);
+    return num.clone().iand(this);
+  };
+
+  BN.prototype.uand = function uand (num) {
+    if (this.length > num.length) return this.clone().iuand(num);
+    return num.clone().iuand(this);
+  };
+
+  // Xor `num` with `this` in-place
+  BN.prototype.iuxor = function iuxor (num) {
+    // a.length > b.length
+    var a;
+    var b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = a.words[i] ^ b.words[i];
+    }
+
+    if (this !== a) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = a.length;
+
+    return this._strip();
+  };
+
+  BN.prototype.ixor = function ixor (num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuxor(num);
+  };
+
+  // Xor `num` with `this`
+  BN.prototype.xor = function xor (num) {
+    if (this.length > num.length) return this.clone().ixor(num);
+    return num.clone().ixor(this);
+  };
+
+  BN.prototype.uxor = function uxor (num) {
+    if (this.length > num.length) return this.clone().iuxor(num);
+    return num.clone().iuxor(this);
+  };
+
+  // Not ``this`` with ``width`` bitwidth
+  BN.prototype.inotn = function inotn (width) {
+    assert(typeof width === 'number' && width >= 0);
+
+    var bytesNeeded = Math.ceil(width / 26) | 0;
+    var bitsLeft = width % 26;
+
+    // Extend the buffer with leading zeroes
+    this._expand(bytesNeeded);
+
+    if (bitsLeft > 0) {
+      bytesNeeded--;
+    }
+
+    // Handle complete words
+    for (var i = 0; i < bytesNeeded; i++) {
+      this.words[i] = ~this.words[i] & 0x3ffffff;
+    }
+
+    // Handle the residue
+    if (bitsLeft > 0) {
+      this.words[i] = ~this.words[i] & (0x3ffffff >> (26 - bitsLeft));
+    }
+
+    // And remove leading zeroes
+    return this._strip();
+  };
+
+  BN.prototype.notn = function notn (width) {
+    return this.clone().inotn(width);
+  };
+
+  // Set `bit` of `this`
+  BN.prototype.setn = function setn (bit, val) {
+    assert(typeof bit === 'number' && bit >= 0);
+
+    var off = (bit / 26) | 0;
+    var wbit = bit % 26;
+
+    this._expand(off + 1);
+
+    if (val) {
+      this.words[off] = this.words[off] | (1 << wbit);
+    } else {
+      this.words[off] = this.words[off] & ~(1 << wbit);
+    }
+
+    return this._strip();
+  };
+
+  // Add `num` to `this` in-place
+  BN.prototype.iadd = function iadd (num) {
+    var r;
+
+    // negative + positive
+    if (this.negative !== 0 && num.negative === 0) {
+      this.negative = 0;
+      r = this.isub(num);
+      this.negative ^= 1;
+      return this._normSign();
+
+    // positive + negative
+    } else if (this.negative === 0 && num.negative !== 0) {
+      num.negative = 0;
+      r = this.isub(num);
+      num.negative = 1;
+      return r._normSign();
+    }
+
+    // a.length > b.length
+    var a, b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) + (b.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+
+    this.length = a.length;
+    if (carry !== 0) {
+      this.words[this.length] = carry;
+      this.length++;
+    // Copy the rest of the words
+    } else if (a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    return this;
+  };
+
+  // Add `num` to `this`
+  BN.prototype.add = function add (num) {
+    var res;
+    if (num.negative !== 0 && this.negative === 0) {
+      num.negative = 0;
+      res = this.sub(num);
+      num.negative ^= 1;
+      return res;
+    } else if (num.negative === 0 && this.negative !== 0) {
+      this.negative = 0;
+      res = num.sub(this);
+      this.negative = 1;
+      return res;
+    }
+
+    if (this.length > num.length) return this.clone().iadd(num);
+
+    return num.clone().iadd(this);
+  };
+
+  // Subtract `num` from `this` in-place
+  BN.prototype.isub = function isub (num) {
+    // this - (-num) = this + num
+    if (num.negative !== 0) {
+      num.negative = 0;
+      var r = this.iadd(num);
+      num.negative = 1;
+      return r._normSign();
+
+    // -this - num = -(this + num)
+    } else if (this.negative !== 0) {
+      this.negative = 0;
+      this.iadd(num);
+      this.negative = 1;
+      return this._normSign();
+    }
+
+    // At this point both numbers are positive
+    var cmp = this.cmp(num);
+
+    // Optimization - zeroify
+    if (cmp === 0) {
+      this.negative = 0;
+      this.length = 1;
+      this.words[0] = 0;
+      return this;
+    }
+
+    // a > b
+    var a, b;
+    if (cmp > 0) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) - (b.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+
+    // Copy rest of the words
+    if (carry === 0 && i < a.length && a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = Math.max(this.length, i);
+
+    if (a !== this) {
+      this.negative = 1;
+    }
+
+    return this._strip();
+  };
+
+  // Subtract `num` from `this`
+  BN.prototype.sub = function sub (num) {
+    return this.clone().isub(num);
+  };
+
+  function smallMulTo (self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    var len = (self.length + num.length) | 0;
+    out.length = len;
+    len = (len - 1) | 0;
+
+    // Peel one iteration (compiler can't do it, because of code complexity)
+    var a = self.words[0] | 0;
+    var b = num.words[0] | 0;
+    var r = a * b;
+
+    var lo = r & 0x3ffffff;
+    var carry = (r / 0x4000000) | 0;
+    out.words[0] = lo;
+
+    for (var k = 1; k < len; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = carry >>> 26;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = (k - j) | 0;
+        a = self.words[i] | 0;
+        b = num.words[j] | 0;
+        r = a * b + rword;
+        ncarry += (r / 0x4000000) | 0;
+        rword = r & 0x3ffffff;
+      }
+      out.words[k] = rword | 0;
+      carry = ncarry | 0;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry | 0;
+    } else {
+      out.length--;
+    }
+
+    return out._strip();
+  }
+
+  // TODO(indutny): it may be reasonable to omit it for users who don't need
+  // to work with 256-bit numbers, otherwise it gives 20% improvement for 256-bit
+  // multiplication (like elliptic secp256k1).
+  var comb10MulTo = function comb10MulTo (self, num, out) {
+    var a = self.words;
+    var b = num.words;
+    var o = out.words;
+    var c = 0;
+    var lo;
+    var mid;
+    var hi;
+    var a0 = a[0] | 0;
+    var al0 = a0 & 0x1fff;
+    var ah0 = a0 >>> 13;
+    var a1 = a[1] | 0;
+    var al1 = a1 & 0x1fff;
+    var ah1 = a1 >>> 13;
+    var a2 = a[2] | 0;
+    var al2 = a2 & 0x1fff;
+    var ah2 = a2 >>> 13;
+    var a3 = a[3] | 0;
+    var al3 = a3 & 0x1fff;
+    var ah3 = a3 >>> 13;
+    var a4 = a[4] | 0;
+    var al4 = a4 & 0x1fff;
+    var ah4 = a4 >>> 13;
+    var a5 = a[5] | 0;
+    var al5 = a5 & 0x1fff;
+    var ah5 = a5 >>> 13;
+    var a6 = a[6] | 0;
+    var al6 = a6 & 0x1fff;
+    var ah6 = a6 >>> 13;
+    var a7 = a[7] | 0;
+    var al7 = a7 & 0x1fff;
+    var ah7 = a7 >>> 13;
+    var a8 = a[8] | 0;
+    var al8 = a8 & 0x1fff;
+    var ah8 = a8 >>> 13;
+    var a9 = a[9] | 0;
+    var al9 = a9 & 0x1fff;
+    var ah9 = a9 >>> 13;
+    var b0 = b[0] | 0;
+    var bl0 = b0 & 0x1fff;
+    var bh0 = b0 >>> 13;
+    var b1 = b[1] | 0;
+    var bl1 = b1 & 0x1fff;
+    var bh1 = b1 >>> 13;
+    var b2 = b[2] | 0;
+    var bl2 = b2 & 0x1fff;
+    var bh2 = b2 >>> 13;
+    var b3 = b[3] | 0;
+    var bl3 = b3 & 0x1fff;
+    var bh3 = b3 >>> 13;
+    var b4 = b[4] | 0;
+    var bl4 = b4 & 0x1fff;
+    var bh4 = b4 >>> 13;
+    var b5 = b[5] | 0;
+    var bl5 = b5 & 0x1fff;
+    var bh5 = b5 >>> 13;
+    var b6 = b[6] | 0;
+    var bl6 = b6 & 0x1fff;
+    var bh6 = b6 >>> 13;
+    var b7 = b[7] | 0;
+    var bl7 = b7 & 0x1fff;
+    var bh7 = b7 >>> 13;
+    var b8 = b[8] | 0;
+    var bl8 = b8 & 0x1fff;
+    var bh8 = b8 >>> 13;
+    var b9 = b[9] | 0;
+    var bl9 = b9 & 0x1fff;
+    var bh9 = b9 >>> 13;
+
+    out.negative = self.negative ^ num.negative;
+    out.length = 19;
+    /* k = 0 */
+    lo = Math.imul(al0, bl0);
+    mid = Math.imul(al0, bh0);
+    mid = (mid + Math.imul(ah0, bl0)) | 0;
+    hi = Math.imul(ah0, bh0);
+    var w0 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w0 >>> 26)) | 0;
+    w0 &= 0x3ffffff;
+    /* k = 1 */
+    lo = Math.imul(al1, bl0);
+    mid = Math.imul(al1, bh0);
+    mid = (mid + Math.imul(ah1, bl0)) | 0;
+    hi = Math.imul(ah1, bh0);
+    lo = (lo + Math.imul(al0, bl1)) | 0;
+    mid = (mid + Math.imul(al0, bh1)) | 0;
+    mid = (mid + Math.imul(ah0, bl1)) | 0;
+    hi = (hi + Math.imul(ah0, bh1)) | 0;
+    var w1 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w1 >>> 26)) | 0;
+    w1 &= 0x3ffffff;
+    /* k = 2 */
+    lo = Math.imul(al2, bl0);
+    mid = Math.imul(al2, bh0);
+    mid = (mid + Math.imul(ah2, bl0)) | 0;
+    hi = Math.imul(ah2, bh0);
+    lo = (lo + Math.imul(al1, bl1)) | 0;
+    mid = (mid + Math.imul(al1, bh1)) | 0;
+    mid = (mid + Math.imul(ah1, bl1)) | 0;
+    hi = (hi + Math.imul(ah1, bh1)) | 0;
+    lo = (lo + Math.imul(al0, bl2)) | 0;
+    mid = (mid + Math.imul(al0, bh2)) | 0;
+    mid = (mid + Math.imul(ah0, bl2)) | 0;
+    hi = (hi + Math.imul(ah0, bh2)) | 0;
+    var w2 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w2 >>> 26)) | 0;
+    w2 &= 0x3ffffff;
+    /* k = 3 */
+    lo = Math.imul(al3, bl0);
+    mid = Math.imul(al3, bh0);
+    mid = (mid + Math.imul(ah3, bl0)) | 0;
+    hi = Math.imul(ah3, bh0);
+    lo = (lo + Math.imul(al2, bl1)) | 0;
+    mid = (mid + Math.imul(al2, bh1)) | 0;
+    mid = (mid + Math.imul(ah2, bl1)) | 0;
+    hi = (hi + Math.imul(ah2, bh1)) | 0;
+    lo = (lo + Math.imul(al1, bl2)) | 0;
+    mid = (mid + Math.imul(al1, bh2)) | 0;
+    mid = (mid + Math.imul(ah1, bl2)) | 0;
+    hi = (hi + Math.imul(ah1, bh2)) | 0;
+    lo = (lo + Math.imul(al0, bl3)) | 0;
+    mid = (mid + Math.imul(al0, bh3)) | 0;
+    mid = (mid + Math.imul(ah0, bl3)) | 0;
+    hi = (hi + Math.imul(ah0, bh3)) | 0;
+    var w3 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w3 >>> 26)) | 0;
+    w3 &= 0x3ffffff;
+    /* k = 4 */
+    lo = Math.imul(al4, bl0);
+    mid = Math.imul(al4, bh0);
+    mid = (mid + Math.imul(ah4, bl0)) | 0;
+    hi = Math.imul(ah4, bh0);
+    lo = (lo + Math.imul(al3, bl1)) | 0;
+    mid = (mid + Math.imul(al3, bh1)) | 0;
+    mid = (mid + Math.imul(ah3, bl1)) | 0;
+    hi = (hi + Math.imul(ah3, bh1)) | 0;
+    lo = (lo + Math.imul(al2, bl2)) | 0;
+    mid = (mid + Math.imul(al2, bh2)) | 0;
+    mid = (mid + Math.imul(ah2, bl2)) | 0;
+    hi = (hi + Math.imul(ah2, bh2)) | 0;
+    lo = (lo + Math.imul(al1, bl3)) | 0;
+    mid = (mid + Math.imul(al1, bh3)) | 0;
+    mid = (mid + Math.imul(ah1, bl3)) | 0;
+    hi = (hi + Math.imul(ah1, bh3)) | 0;
+    lo = (lo + Math.imul(al0, bl4)) | 0;
+    mid = (mid + Math.imul(al0, bh4)) | 0;
+    mid = (mid + Math.imul(ah0, bl4)) | 0;
+    hi = (hi + Math.imul(ah0, bh4)) | 0;
+    var w4 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w4 >>> 26)) | 0;
+    w4 &= 0x3ffffff;
+    /* k = 5 */
+    lo = Math.imul(al5, bl0);
+    mid = Math.imul(al5, bh0);
+    mid = (mid + Math.imul(ah5, bl0)) | 0;
+    hi = Math.imul(ah5, bh0);
+    lo = (lo + Math.imul(al4, bl1)) | 0;
+    mid = (mid + Math.imul(al4, bh1)) | 0;
+    mid = (mid + Math.imul(ah4, bl1)) | 0;
+    hi = (hi + Math.imul(ah4, bh1)) | 0;
+    lo = (lo + Math.imul(al3, bl2)) | 0;
+    mid = (mid + Math.imul(al3, bh2)) | 0;
+    mid = (mid + Math.imul(ah3, bl2)) | 0;
+    hi = (hi + Math.imul(ah3, bh2)) | 0;
+    lo = (lo + Math.imul(al2, bl3)) | 0;
+    mid = (mid + Math.imul(al2, bh3)) | 0;
+    mid = (mid + Math.imul(ah2, bl3)) | 0;
+    hi = (hi + Math.imul(ah2, bh3)) | 0;
+    lo = (lo + Math.imul(al1, bl4)) | 0;
+    mid = (mid + Math.imul(al1, bh4)) | 0;
+    mid = (mid + Math.imul(ah1, bl4)) | 0;
+    hi = (hi + Math.imul(ah1, bh4)) | 0;
+    lo = (lo + Math.imul(al0, bl5)) | 0;
+    mid = (mid + Math.imul(al0, bh5)) | 0;
+    mid = (mid + Math.imul(ah0, bl5)) | 0;
+    hi = (hi + Math.imul(ah0, bh5)) | 0;
+    var w5 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w5 >>> 26)) | 0;
+    w5 &= 0x3ffffff;
+    /* k = 6 */
+    lo = Math.imul(al6, bl0);
+    mid = Math.imul(al6, bh0);
+    mid = (mid + Math.imul(ah6, bl0)) | 0;
+    hi = Math.imul(ah6, bh0);
+    lo = (lo + Math.imul(al5, bl1)) | 0;
+    mid = (mid + Math.imul(al5, bh1)) | 0;
+    mid = (mid + Math.imul(ah5, bl1)) | 0;
+    hi = (hi + Math.imul(ah5, bh1)) | 0;
+    lo = (lo + Math.imul(al4, bl2)) | 0;
+    mid = (mid + Math.imul(al4, bh2)) | 0;
+    mid = (mid + Math.imul(ah4, bl2)) | 0;
+    hi = (hi + Math.imul(ah4, bh2)) | 0;
+    lo = (lo + Math.imul(al3, bl3)) | 0;
+    mid = (mid + Math.imul(al3, bh3)) | 0;
+    mid = (mid + Math.imul(ah3, bl3)) | 0;
+    hi = (hi + Math.imul(ah3, bh3)) | 0;
+    lo = (lo + Math.imul(al2, bl4)) | 0;
+    mid = (mid + Math.imul(al2, bh4)) | 0;
+    mid = (mid + Math.imul(ah2, bl4)) | 0;
+    hi = (hi + Math.imul(ah2, bh4)) | 0;
+    lo = (lo + Math.imul(al1, bl5)) | 0;
+    mid = (mid + Math.imul(al1, bh5)) | 0;
+    mid = (mid + Math.imul(ah1, bl5)) | 0;
+    hi = (hi + Math.imul(ah1, bh5)) | 0;
+    lo = (lo + Math.imul(al0, bl6)) | 0;
+    mid = (mid + Math.imul(al0, bh6)) | 0;
+    mid = (mid + Math.imul(ah0, bl6)) | 0;
+    hi = (hi + Math.imul(ah0, bh6)) | 0;
+    var w6 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w6 >>> 26)) | 0;
+    w6 &= 0x3ffffff;
+    /* k = 7 */
+    lo = Math.imul(al7, bl0);
+    mid = Math.imul(al7, bh0);
+    mid = (mid + Math.imul(ah7, bl0)) | 0;
+    hi = Math.imul(ah7, bh0);
+    lo = (lo + Math.imul(al6, bl1)) | 0;
+    mid = (mid + Math.imul(al6, bh1)) | 0;
+    mid = (mid + Math.imul(ah6, bl1)) | 0;
+    hi = (hi + Math.imul(ah6, bh1)) | 0;
+    lo = (lo + Math.imul(al5, bl2)) | 0;
+    mid = (mid + Math.imul(al5, bh2)) | 0;
+    mid = (mid + Math.imul(ah5, bl2)) | 0;
+    hi = (hi + Math.imul(ah5, bh2)) | 0;
+    lo = (lo + Math.imul(al4, bl3)) | 0;
+    mid = (mid + Math.imul(al4, bh3)) | 0;
+    mid = (mid + Math.imul(ah4, bl3)) | 0;
+    hi = (hi + Math.imul(ah4, bh3)) | 0;
+    lo = (lo + Math.imul(al3, bl4)) | 0;
+    mid = (mid + Math.imul(al3, bh4)) | 0;
+    mid = (mid + Math.imul(ah3, bl4)) | 0;
+    hi = (hi + Math.imul(ah3, bh4)) | 0;
+    lo = (lo + Math.imul(al2, bl5)) | 0;
+    mid = (mid + Math.imul(al2, bh5)) | 0;
+    mid = (mid + Math.imul(ah2, bl5)) | 0;
+    hi = (hi + Math.imul(ah2, bh5)) | 0;
+    lo = (lo + Math.imul(al1, bl6)) | 0;
+    mid = (mid + Math.imul(al1, bh6)) | 0;
+    mid = (mid + Math.imul(ah1, bl6)) | 0;
+    hi = (hi + Math.imul(ah1, bh6)) | 0;
+    lo = (lo + Math.imul(al0, bl7)) | 0;
+    mid = (mid + Math.imul(al0, bh7)) | 0;
+    mid = (mid + Math.imul(ah0, bl7)) | 0;
+    hi = (hi + Math.imul(ah0, bh7)) | 0;
+    var w7 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w7 >>> 26)) | 0;
+    w7 &= 0x3ffffff;
+    /* k = 8 */
+    lo = Math.imul(al8, bl0);
+    mid = Math.imul(al8, bh0);
+    mid = (mid + Math.imul(ah8, bl0)) | 0;
+    hi = Math.imul(ah8, bh0);
+    lo = (lo + Math.imul(al7, bl1)) | 0;
+    mid = (mid + Math.imul(al7, bh1)) | 0;
+    mid = (mid + Math.imul(ah7, bl1)) | 0;
+    hi = (hi + Math.imul(ah7, bh1)) | 0;
+    lo = (lo + Math.imul(al6, bl2)) | 0;
+    mid = (mid + Math.imul(al6, bh2)) | 0;
+    mid = (mid + Math.imul(ah6, bl2)) | 0;
+    hi = (hi + Math.imul(ah6, bh2)) | 0;
+    lo = (lo + Math.imul(al5, bl3)) | 0;
+    mid = (mid + Math.imul(al5, bh3)) | 0;
+    mid = (mid + Math.imul(ah5, bl3)) | 0;
+    hi = (hi + Math.imul(ah5, bh3)) | 0;
+    lo = (lo + Math.imul(al4, bl4)) | 0;
+    mid = (mid + Math.imul(al4, bh4)) | 0;
+    mid = (mid + Math.imul(ah4, bl4)) | 0;
+    hi = (hi + Math.imul(ah4, bh4)) | 0;
+    lo = (lo + Math.imul(al3, bl5)) | 0;
+    mid = (mid + Math.imul(al3, bh5)) | 0;
+    mid = (mid + Math.imul(ah3, bl5)) | 0;
+    hi = (hi + Math.imul(ah3, bh5)) | 0;
+    lo = (lo + Math.imul(al2, bl6)) | 0;
+    mid = (mid + Math.imul(al2, bh6)) | 0;
+    mid = (mid + Math.imul(ah2, bl6)) | 0;
+    hi = (hi + Math.imul(ah2, bh6)) | 0;
+    lo = (lo + Math.imul(al1, bl7)) | 0;
+    mid = (mid + Math.imul(al1, bh7)) | 0;
+    mid = (mid + Math.imul(ah1, bl7)) | 0;
+    hi = (hi + Math.imul(ah1, bh7)) | 0;
+    lo = (lo + Math.imul(al0, bl8)) | 0;
+    mid = (mid + Math.imul(al0, bh8)) | 0;
+    mid = (mid + Math.imul(ah0, bl8)) | 0;
+    hi = (hi + Math.imul(ah0, bh8)) | 0;
+    var w8 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w8 >>> 26)) | 0;
+    w8 &= 0x3ffffff;
+    /* k = 9 */
+    lo = Math.imul(al9, bl0);
+    mid = Math.imul(al9, bh0);
+    mid = (mid + Math.imul(ah9, bl0)) | 0;
+    hi = Math.imul(ah9, bh0);
+    lo = (lo + Math.imul(al8, bl1)) | 0;
+    mid = (mid + Math.imul(al8, bh1)) | 0;
+    mid = (mid + Math.imul(ah8, bl1)) | 0;
+    hi = (hi + Math.imul(ah8, bh1)) | 0;
+    lo = (lo + Math.imul(al7, bl2)) | 0;
+    mid = (mid + Math.imul(al7, bh2)) | 0;
+    mid = (mid + Math.imul(ah7, bl2)) | 0;
+    hi = (hi + Math.imul(ah7, bh2)) | 0;
+    lo = (lo + Math.imul(al6, bl3)) | 0;
+    mid = (mid + Math.imul(al6, bh3)) | 0;
+    mid = (mid + Math.imul(ah6, bl3)) | 0;
+    hi = (hi + Math.imul(ah6, bh3)) | 0;
+    lo = (lo + Math.imul(al5, bl4)) | 0;
+    mid = (mid + Math.imul(al5, bh4)) | 0;
+    mid = (mid + Math.imul(ah5, bl4)) | 0;
+    hi = (hi + Math.imul(ah5, bh4)) | 0;
+    lo = (lo + Math.imul(al4, bl5)) | 0;
+    mid = (mid + Math.imul(al4, bh5)) | 0;
+    mid = (mid + Math.imul(ah4, bl5)) | 0;
+    hi = (hi + Math.imul(ah4, bh5)) | 0;
+    lo = (lo + Math.imul(al3, bl6)) | 0;
+    mid = (mid + Math.imul(al3, bh6)) | 0;
+    mid = (mid + Math.imul(ah3, bl6)) | 0;
+    hi = (hi + Math.imul(ah3, bh6)) | 0;
+    lo = (lo + Math.imul(al2, bl7)) | 0;
+    mid = (mid + Math.imul(al2, bh7)) | 0;
+    mid = (mid + Math.imul(ah2, bl7)) | 0;
+    hi = (hi + Math.imul(ah2, bh7)) | 0;
+    lo = (lo + Math.imul(al1, bl8)) | 0;
+    mid = (mid + Math.imul(al1, bh8)) | 0;
+    mid = (mid + Math.imul(ah1, bl8)) | 0;
+    hi = (hi + Math.imul(ah1, bh8)) | 0;
+    lo = (lo + Math.imul(al0, bl9)) | 0;
+    mid = (mid + Math.imul(al0, bh9)) | 0;
+    mid = (mid + Math.imul(ah0, bl9)) | 0;
+    hi = (hi + Math.imul(ah0, bh9)) | 0;
+    var w9 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w9 >>> 26)) | 0;
+    w9 &= 0x3ffffff;
+    /* k = 10 */
+    lo = Math.imul(al9, bl1);
+    mid = Math.imul(al9, bh1);
+    mid = (mid + Math.imul(ah9, bl1)) | 0;
+    hi = Math.imul(ah9, bh1);
+    lo = (lo + Math.imul(al8, bl2)) | 0;
+    mid = (mid + Math.imul(al8, bh2)) | 0;
+    mid = (mid + Math.imul(ah8, bl2)) | 0;
+    hi = (hi + Math.imul(ah8, bh2)) | 0;
+    lo = (lo + Math.imul(al7, bl3)) | 0;
+    mid = (mid + Math.imul(al7, bh3)) | 0;
+    mid = (mid + Math.imul(ah7, bl3)) | 0;
+    hi = (hi + Math.imul(ah7, bh3)) | 0;
+    lo = (lo + Math.imul(al6, bl4)) | 0;
+    mid = (mid + Math.imul(al6, bh4)) | 0;
+    mid = (mid + Math.imul(ah6, bl4)) | 0;
+    hi = (hi + Math.imul(ah6, bh4)) | 0;
+    lo = (lo + Math.imul(al5, bl5)) | 0;
+    mid = (mid + Math.imul(al5, bh5)) | 0;
+    mid = (mid + Math.imul(ah5, bl5)) | 0;
+    hi = (hi + Math.imul(ah5, bh5)) | 0;
+    lo = (lo + Math.imul(al4, bl6)) | 0;
+    mid = (mid + Math.imul(al4, bh6)) | 0;
+    mid = (mid + Math.imul(ah4, bl6)) | 0;
+    hi = (hi + Math.imul(ah4, bh6)) | 0;
+    lo = (lo + Math.imul(al3, bl7)) | 0;
+    mid = (mid + Math.imul(al3, bh7)) | 0;
+    mid = (mid + Math.imul(ah3, bl7)) | 0;
+    hi = (hi + Math.imul(ah3, bh7)) | 0;
+    lo = (lo + Math.imul(al2, bl8)) | 0;
+    mid = (mid + Math.imul(al2, bh8)) | 0;
+    mid = (mid + Math.imul(ah2, bl8)) | 0;
+    hi = (hi + Math.imul(ah2, bh8)) | 0;
+    lo = (lo + Math.imul(al1, bl9)) | 0;
+    mid = (mid + Math.imul(al1, bh9)) | 0;
+    mid = (mid + Math.imul(ah1, bl9)) | 0;
+    hi = (hi + Math.imul(ah1, bh9)) | 0;
+    var w10 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w10 >>> 26)) | 0;
+    w10 &= 0x3ffffff;
+    /* k = 11 */
+    lo = Math.imul(al9, bl2);
+    mid = Math.imul(al9, bh2);
+    mid = (mid + Math.imul(ah9, bl2)) | 0;
+    hi = Math.imul(ah9, bh2);
+    lo = (lo + Math.imul(al8, bl3)) | 0;
+    mid = (mid + Math.imul(al8, bh3)) | 0;
+    mid = (mid + Math.imul(ah8, bl3)) | 0;
+    hi = (hi + Math.imul(ah8, bh3)) | 0;
+    lo = (lo + Math.imul(al7, bl4)) | 0;
+    mid = (mid + Math.imul(al7, bh4)) | 0;
+    mid = (mid + Math.imul(ah7, bl4)) | 0;
+    hi = (hi + Math.imul(ah7, bh4)) | 0;
+    lo = (lo + Math.imul(al6, bl5)) | 0;
+    mid = (mid + Math.imul(al6, bh5)) | 0;
+    mid = (mid + Math.imul(ah6, bl5)) | 0;
+    hi = (hi + Math.imul(ah6, bh5)) | 0;
+    lo = (lo + Math.imul(al5, bl6)) | 0;
+    mid = (mid + Math.imul(al5, bh6)) | 0;
+    mid = (mid + Math.imul(ah5, bl6)) | 0;
+    hi = (hi + Math.imul(ah5, bh6)) | 0;
+    lo = (lo + Math.imul(al4, bl7)) | 0;
+    mid = (mid + Math.imul(al4, bh7)) | 0;
+    mid = (mid + Math.imul(ah4, bl7)) | 0;
+    hi = (hi + Math.imul(ah4, bh7)) | 0;
+    lo = (lo + Math.imul(al3, bl8)) | 0;
+    mid = (mid + Math.imul(al3, bh8)) | 0;
+    mid = (mid + Math.imul(ah3, bl8)) | 0;
+    hi = (hi + Math.imul(ah3, bh8)) | 0;
+    lo = (lo + Math.imul(al2, bl9)) | 0;
+    mid = (mid + Math.imul(al2, bh9)) | 0;
+    mid = (mid + Math.imul(ah2, bl9)) | 0;
+    hi = (hi + Math.imul(ah2, bh9)) | 0;
+    var w11 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w11 >>> 26)) | 0;
+    w11 &= 0x3ffffff;
+    /* k = 12 */
+    lo = Math.imul(al9, bl3);
+    mid = Math.imul(al9, bh3);
+    mid = (mid + Math.imul(ah9, bl3)) | 0;
+    hi = Math.imul(ah9, bh3);
+    lo = (lo + Math.imul(al8, bl4)) | 0;
+    mid = (mid + Math.imul(al8, bh4)) | 0;
+    mid = (mid + Math.imul(ah8, bl4)) | 0;
+    hi = (hi + Math.imul(ah8, bh4)) | 0;
+    lo = (lo + Math.imul(al7, bl5)) | 0;
+    mid = (mid + Math.imul(al7, bh5)) | 0;
+    mid = (mid + Math.imul(ah7, bl5)) | 0;
+    hi = (hi + Math.imul(ah7, bh5)) | 0;
+    lo = (lo + Math.imul(al6, bl6)) | 0;
+    mid = (mid + Math.imul(al6, bh6)) | 0;
+    mid = (mid + Math.imul(ah6, bl6)) | 0;
+    hi = (hi + Math.imul(ah6, bh6)) | 0;
+    lo = (lo + Math.imul(al5, bl7)) | 0;
+    mid = (mid + Math.imul(al5, bh7)) | 0;
+    mid = (mid + Math.imul(ah5, bl7)) | 0;
+    hi = (hi + Math.imul(ah5, bh7)) | 0;
+    lo = (lo + Math.imul(al4, bl8)) | 0;
+    mid = (mid + Math.imul(al4, bh8)) | 0;
+    mid = (mid + Math.imul(ah4, bl8)) | 0;
+    hi = (hi + Math.imul(ah4, bh8)) | 0;
+    lo = (lo + Math.imul(al3, bl9)) | 0;
+    mid = (mid + Math.imul(al3, bh9)) | 0;
+    mid = (mid + Math.imul(ah3, bl9)) | 0;
+    hi = (hi + Math.imul(ah3, bh9)) | 0;
+    var w12 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w12 >>> 26)) | 0;
+    w12 &= 0x3ffffff;
+    /* k = 13 */
+    lo = Math.imul(al9, bl4);
+    mid = Math.imul(al9, bh4);
+    mid = (mid + Math.imul(ah9, bl4)) | 0;
+    hi = Math.imul(ah9, bh4);
+    lo = (lo + Math.imul(al8, bl5)) | 0;
+    mid = (mid + Math.imul(al8, bh5)) | 0;
+    mid = (mid + Math.imul(ah8, bl5)) | 0;
+    hi = (hi + Math.imul(ah8, bh5)) | 0;
+    lo = (lo + Math.imul(al7, bl6)) | 0;
+    mid = (mid + Math.imul(al7, bh6)) | 0;
+    mid = (mid + Math.imul(ah7, bl6)) | 0;
+    hi = (hi + Math.imul(ah7, bh6)) | 0;
+    lo = (lo + Math.imul(al6, bl7)) | 0;
+    mid = (mid + Math.imul(al6, bh7)) | 0;
+    mid = (mid + Math.imul(ah6, bl7)) | 0;
+    hi = (hi + Math.imul(ah6, bh7)) | 0;
+    lo = (lo + Math.imul(al5, bl8)) | 0;
+    mid = (mid + Math.imul(al5, bh8)) | 0;
+    mid = (mid + Math.imul(ah5, bl8)) | 0;
+    hi = (hi + Math.imul(ah5, bh8)) | 0;
+    lo = (lo + Math.imul(al4, bl9)) | 0;
+    mid = (mid + Math.imul(al4, bh9)) | 0;
+    mid = (mid + Math.imul(ah4, bl9)) | 0;
+    hi = (hi + Math.imul(ah4, bh9)) | 0;
+    var w13 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w13 >>> 26)) | 0;
+    w13 &= 0x3ffffff;
+    /* k = 14 */
+    lo = Math.imul(al9, bl5);
+    mid = Math.imul(al9, bh5);
+    mid = (mid + Math.imul(ah9, bl5)) | 0;
+    hi = Math.imul(ah9, bh5);
+    lo = (lo + Math.imul(al8, bl6)) | 0;
+    mid = (mid + Math.imul(al8, bh6)) | 0;
+    mid = (mid + Math.imul(ah8, bl6)) | 0;
+    hi = (hi + Math.imul(ah8, bh6)) | 0;
+    lo = (lo + Math.imul(al7, bl7)) | 0;
+    mid = (mid + Math.imul(al7, bh7)) | 0;
+    mid = (mid + Math.imul(ah7, bl7)) | 0;
+    hi = (hi + Math.imul(ah7, bh7)) | 0;
+    lo = (lo + Math.imul(al6, bl8)) | 0;
+    mid = (mid + Math.imul(al6, bh8)) | 0;
+    mid = (mid + Math.imul(ah6, bl8)) | 0;
+    hi = (hi + Math.imul(ah6, bh8)) | 0;
+    lo = (lo + Math.imul(al5, bl9)) | 0;
+    mid = (mid + Math.imul(al5, bh9)) | 0;
+    mid = (mid + Math.imul(ah5, bl9)) | 0;
+    hi = (hi + Math.imul(ah5, bh9)) | 0;
+    var w14 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w14 >>> 26)) | 0;
+    w14 &= 0x3ffffff;
+    /* k = 15 */
+    lo = Math.imul(al9, bl6);
+    mid = Math.imul(al9, bh6);
+    mid = (mid + Math.imul(ah9, bl6)) | 0;
+    hi = Math.imul(ah9, bh6);
+    lo = (lo + Math.imul(al8, bl7)) | 0;
+    mid = (mid + Math.imul(al8, bh7)) | 0;
+    mid = (mid + Math.imul(ah8, bl7)) | 0;
+    hi = (hi + Math.imul(ah8, bh7)) | 0;
+    lo = (lo + Math.imul(al7, bl8)) | 0;
+    mid = (mid + Math.imul(al7, bh8)) | 0;
+    mid = (mid + Math.imul(ah7, bl8)) | 0;
+    hi = (hi + Math.imul(ah7, bh8)) | 0;
+    lo = (lo + Math.imul(al6, bl9)) | 0;
+    mid = (mid + Math.imul(al6, bh9)) | 0;
+    mid = (mid + Math.imul(ah6, bl9)) | 0;
+    hi = (hi + Math.imul(ah6, bh9)) | 0;
+    var w15 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w15 >>> 26)) | 0;
+    w15 &= 0x3ffffff;
+    /* k = 16 */
+    lo = Math.imul(al9, bl7);
+    mid = Math.imul(al9, bh7);
+    mid = (mid + Math.imul(ah9, bl7)) | 0;
+    hi = Math.imul(ah9, bh7);
+    lo = (lo + Math.imul(al8, bl8)) | 0;
+    mid = (mid + Math.imul(al8, bh8)) | 0;
+    mid = (mid + Math.imul(ah8, bl8)) | 0;
+    hi = (hi + Math.imul(ah8, bh8)) | 0;
+    lo = (lo + Math.imul(al7, bl9)) | 0;
+    mid = (mid + Math.imul(al7, bh9)) | 0;
+    mid = (mid + Math.imul(ah7, bl9)) | 0;
+    hi = (hi + Math.imul(ah7, bh9)) | 0;
+    var w16 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w16 >>> 26)) | 0;
+    w16 &= 0x3ffffff;
+    /* k = 17 */
+    lo = Math.imul(al9, bl8);
+    mid = Math.imul(al9, bh8);
+    mid = (mid + Math.imul(ah9, bl8)) | 0;
+    hi = Math.imul(ah9, bh8);
+    lo = (lo + Math.imul(al8, bl9)) | 0;
+    mid = (mid + Math.imul(al8, bh9)) | 0;
+    mid = (mid + Math.imul(ah8, bl9)) | 0;
+    hi = (hi + Math.imul(ah8, bh9)) | 0;
+    var w17 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w17 >>> 26)) | 0;
+    w17 &= 0x3ffffff;
+    /* k = 18 */
+    lo = Math.imul(al9, bl9);
+    mid = Math.imul(al9, bh9);
+    mid = (mid + Math.imul(ah9, bl9)) | 0;
+    hi = Math.imul(ah9, bh9);
+    var w18 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w18 >>> 26)) | 0;
+    w18 &= 0x3ffffff;
+    o[0] = w0;
+    o[1] = w1;
+    o[2] = w2;
+    o[3] = w3;
+    o[4] = w4;
+    o[5] = w5;
+    o[6] = w6;
+    o[7] = w7;
+    o[8] = w8;
+    o[9] = w9;
+    o[10] = w10;
+    o[11] = w11;
+    o[12] = w12;
+    o[13] = w13;
+    o[14] = w14;
+    o[15] = w15;
+    o[16] = w16;
+    o[17] = w17;
+    o[18] = w18;
+    if (c !== 0) {
+      o[19] = c;
+      out.length++;
+    }
+    return out;
+  };
+
+  // Polyfill comb
+  if (!Math.imul) {
+    comb10MulTo = smallMulTo;
+  }
+
+  function bigMulTo (self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    out.length = self.length + num.length;
+
+    var carry = 0;
+    var hncarry = 0;
+    for (var k = 0; k < out.length - 1; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = hncarry;
+      hncarry = 0;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = k - j;
+        var a = self.words[i] | 0;
+        var b = num.words[j] | 0;
+        var r = a * b;
+
+        var lo = r & 0x3ffffff;
+        ncarry = (ncarry + ((r / 0x4000000) | 0)) | 0;
+        lo = (lo + rword) | 0;
+        rword = lo & 0x3ffffff;
+        ncarry = (ncarry + (lo >>> 26)) | 0;
+
+        hncarry += ncarry >>> 26;
+        ncarry &= 0x3ffffff;
+      }
+      out.words[k] = rword;
+      carry = ncarry;
+      ncarry = hncarry;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry;
+    } else {
+      out.length--;
+    }
+
+    return out._strip();
+  }
+
+  function jumboMulTo (self, num, out) {
+    // Temporary disable, see https://github.com/indutny/bn.js/issues/211
+    // var fftm = new FFTM();
+    // return fftm.mulp(self, num, out);
+    return bigMulTo(self, num, out);
+  }
+
+  BN.prototype.mulTo = function mulTo (num, out) {
+    var res;
+    var len = this.length + num.length;
+    if (this.length === 10 && num.length === 10) {
+      res = comb10MulTo(this, num, out);
+    } else if (len < 63) {
+      res = smallMulTo(this, num, out);
+    } else if (len < 1024) {
+      res = bigMulTo(this, num, out);
+    } else {
+      res = jumboMulTo(this, num, out);
+    }
+
+    return res;
+  };
+
+  // Cooley-Tukey algorithm for FFT
+  // slightly revisited to rely on looping instead of recursion
+
+  function FFTM (x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  FFTM.prototype.makeRBT = function makeRBT (N) {
+    var t = new Array(N);
+    var l = BN.prototype._countBits(N) - 1;
+    for (var i = 0; i < N; i++) {
+      t[i] = this.revBin(i, l, N);
+    }
+
+    return t;
+  };
+
+  // Returns binary-reversed representation of `x`
+  FFTM.prototype.revBin = function revBin (x, l, N) {
+    if (x === 0 || x === N - 1) return x;
+
+    var rb = 0;
+    for (var i = 0; i < l; i++) {
+      rb |= (x & 1) << (l - i - 1);
+      x >>= 1;
+    }
+
+    return rb;
+  };
+
+  // Performs "tweedling" phase, therefore 'emulating'
+  // behaviour of the recursive algorithm
+  FFTM.prototype.permute = function permute (rbt, rws, iws, rtws, itws, N) {
+    for (var i = 0; i < N; i++) {
+      rtws[i] = rws[rbt[i]];
+      itws[i] = iws[rbt[i]];
+    }
+  };
+
+  FFTM.prototype.transform = function transform (rws, iws, rtws, itws, N, rbt) {
+    this.permute(rbt, rws, iws, rtws, itws, N);
+
+    for (var s = 1; s < N; s <<= 1) {
+      var l = s << 1;
+
+      var rtwdf = Math.cos(2 * Math.PI / l);
+      var itwdf = Math.sin(2 * Math.PI / l);
+
+      for (var p = 0; p < N; p += l) {
+        var rtwdf_ = rtwdf;
+        var itwdf_ = itwdf;
+
+        for (var j = 0; j < s; j++) {
+          var re = rtws[p + j];
+          var ie = itws[p + j];
+
+          var ro = rtws[p + j + s];
+          var io = itws[p + j + s];
+
+          var rx = rtwdf_ * ro - itwdf_ * io;
+
+          io = rtwdf_ * io + itwdf_ * ro;
+          ro = rx;
+
+          rtws[p + j] = re + ro;
+          itws[p + j] = ie + io;
+
+          rtws[p + j + s] = re - ro;
+          itws[p + j + s] = ie - io;
+
+          /* jshint maxdepth : false */
+          if (j !== l) {
+            rx = rtwdf * rtwdf_ - itwdf * itwdf_;
+
+            itwdf_ = rtwdf * itwdf_ + itwdf * rtwdf_;
+            rtwdf_ = rx;
+          }
+        }
+      }
+    }
+  };
+
+  FFTM.prototype.guessLen13b = function guessLen13b (n, m) {
+    var N = Math.max(m, n) | 1;
+    var odd = N & 1;
+    var i = 0;
+    for (N = N / 2 | 0; N; N = N >>> 1) {
+      i++;
+    }
+
+    return 1 << i + 1 + odd;
+  };
+
+  FFTM.prototype.conjugate = function conjugate (rws, iws, N) {
+    if (N <= 1) return;
+
+    for (var i = 0; i < N / 2; i++) {
+      var t = rws[i];
+
+      rws[i] = rws[N - i - 1];
+      rws[N - i - 1] = t;
+
+      t = iws[i];
+
+      iws[i] = -iws[N - i - 1];
+      iws[N - i - 1] = -t;
+    }
+  };
+
+  FFTM.prototype.normalize13b = function normalize13b (ws, N) {
+    var carry = 0;
+    for (var i = 0; i < N / 2; i++) {
+      var w = Math.round(ws[2 * i + 1] / N) * 0x2000 +
+        Math.round(ws[2 * i] / N) +
+        carry;
+
+      ws[i] = w & 0x3ffffff;
+
+      if (w < 0x4000000) {
+        carry = 0;
+      } else {
+        carry = w / 0x4000000 | 0;
+      }
+    }
+
+    return ws;
+  };
+
+  FFTM.prototype.convert13b = function convert13b (ws, len, rws, N) {
+    var carry = 0;
+    for (var i = 0; i < len; i++) {
+      carry = carry + (ws[i] | 0);
+
+      rws[2 * i] = carry & 0x1fff; carry = carry >>> 13;
+      rws[2 * i + 1] = carry & 0x1fff; carry = carry >>> 13;
+    }
+
+    // Pad with zeroes
+    for (i = 2 * len; i < N; ++i) {
+      rws[i] = 0;
+    }
+
+    assert(carry === 0);
+    assert((carry & ~0x1fff) === 0);
+  };
+
+  FFTM.prototype.stub = function stub (N) {
+    var ph = new Array(N);
+    for (var i = 0; i < N; i++) {
+      ph[i] = 0;
+    }
+
+    return ph;
+  };
+
+  FFTM.prototype.mulp = function mulp (x, y, out) {
+    var N = 2 * this.guessLen13b(x.length, y.length);
+
+    var rbt = this.makeRBT(N);
+
+    var _ = this.stub(N);
+
+    var rws = new Array(N);
+    var rwst = new Array(N);
+    var iwst = new Array(N);
+
+    var nrws = new Array(N);
+    var nrwst = new Array(N);
+    var niwst = new Array(N);
+
+    var rmws = out.words;
+    rmws.length = N;
+
+    this.convert13b(x.words, x.length, rws, N);
+    this.convert13b(y.words, y.length, nrws, N);
+
+    this.transform(rws, _, rwst, iwst, N, rbt);
+    this.transform(nrws, _, nrwst, niwst, N, rbt);
+
+    for (var i = 0; i < N; i++) {
+      var rx = rwst[i] * nrwst[i] - iwst[i] * niwst[i];
+      iwst[i] = rwst[i] * niwst[i] + iwst[i] * nrwst[i];
+      rwst[i] = rx;
+    }
+
+    this.conjugate(rwst, iwst, N);
+    this.transform(rwst, iwst, rmws, _, N, rbt);
+    this.conjugate(rmws, _, N);
+    this.normalize13b(rmws, N);
+
+    out.negative = x.negative ^ y.negative;
+    out.length = x.length + y.length;
+    return out._strip();
+  };
+
+  // Multiply `this` by `num`
+  BN.prototype.mul = function mul (num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return this.mulTo(num, out);
+  };
+
+  // Multiply employing FFT
+  BN.prototype.mulf = function mulf (num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return jumboMulTo(this, num, out);
+  };
+
+  // In-place Multiplication
+  BN.prototype.imul = function imul (num) {
+    return this.clone().mulTo(num, this);
+  };
+
+  BN.prototype.imuln = function imuln (num) {
+    var isNegNum = num < 0;
+    if (isNegNum) num = -num;
+
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+
+    // Carry
+    var carry = 0;
+    for (var i = 0; i < this.length; i++) {
+      var w = (this.words[i] | 0) * num;
+      var lo = (w & 0x3ffffff) + (carry & 0x3ffffff);
+      carry >>= 26;
+      carry += (w / 0x4000000) | 0;
+      // NOTE: lo is 27bit maximum
+      carry += lo >>> 26;
+      this.words[i] = lo & 0x3ffffff;
+    }
+
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+
+    return isNegNum ? this.ineg() : this;
+  };
+
+  BN.prototype.muln = function muln (num) {
+    return this.clone().imuln(num);
+  };
+
+  // `this` * `this`
+  BN.prototype.sqr = function sqr () {
+    return this.mul(this);
+  };
+
+  // `this` * `this` in-place
+  BN.prototype.isqr = function isqr () {
+    return this.imul(this.clone());
+  };
+
+  // Math.pow(`this`, `num`)
+  BN.prototype.pow = function pow (num) {
+    var w = toBitArray(num);
+    if (w.length === 0) return new BN(1);
+
+    // Skip leading zeroes
+    var res = this;
+    for (var i = 0; i < w.length; i++, res = res.sqr()) {
+      if (w[i] !== 0) break;
+    }
+
+    if (++i < w.length) {
+      for (var q = res.sqr(); i < w.length; i++, q = q.sqr()) {
+        if (w[i] === 0) continue;
+
+        res = res.mul(q);
+      }
+    }
+
+    return res;
+  };
+
+  // Shift-left in-place
+  BN.prototype.iushln = function iushln (bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+    var carryMask = (0x3ffffff >>> (26 - r)) << (26 - r);
+    var i;
+
+    if (r !== 0) {
+      var carry = 0;
+
+      for (i = 0; i < this.length; i++) {
+        var newCarry = this.words[i] & carryMask;
+        var c = ((this.words[i] | 0) - newCarry) << r;
+        this.words[i] = c | carry;
+        carry = newCarry >>> (26 - r);
+      }
+
+      if (carry) {
+        this.words[i] = carry;
+        this.length++;
+      }
+    }
+
+    if (s !== 0) {
+      for (i = this.length - 1; i >= 0; i--) {
+        this.words[i + s] = this.words[i];
+      }
+
+      for (i = 0; i < s; i++) {
+        this.words[i] = 0;
+      }
+
+      this.length += s;
+    }
+
+    return this._strip();
+  };
+
+  BN.prototype.ishln = function ishln (bits) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushln(bits);
+  };
+
+  // Shift-right in-place
+  // NOTE: `hint` is a lowest bit before trailing zeroes
+  // NOTE: if `extended` is present - it will be filled with destroyed bits
+  BN.prototype.iushrn = function iushrn (bits, hint, extended) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var h;
+    if (hint) {
+      h = (hint - (hint % 26)) / 26;
+    } else {
+      h = 0;
+    }
+
+    var r = bits % 26;
+    var s = Math.min((bits - r) / 26, this.length);
+    var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
+    var maskedWords = extended;
+
+    h -= s;
+    h = Math.max(0, h);
+
+    // Extended mode, copy masked part
+    if (maskedWords) {
+      for (var i = 0; i < s; i++) {
+        maskedWords.words[i] = this.words[i];
+      }
+      maskedWords.length = s;
+    }
+
+    if (s === 0) {
+      // No-op, we should not move anything at all
+    } else if (this.length > s) {
+      this.length -= s;
+      for (i = 0; i < this.length; i++) {
+        this.words[i] = this.words[i + s];
+      }
+    } else {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    var carry = 0;
+    for (i = this.length - 1; i >= 0 && (carry !== 0 || i >= h); i--) {
+      var word = this.words[i] | 0;
+      this.words[i] = (carry << (26 - r)) | (word >>> r);
+      carry = word & mask;
+    }
+
+    // Push carried bits as a mask
+    if (maskedWords && carry !== 0) {
+      maskedWords.words[maskedWords.length++] = carry;
+    }
+
+    if (this.length === 0) {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    return this._strip();
+  };
+
+  BN.prototype.ishrn = function ishrn (bits, hint, extended) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushrn(bits, hint, extended);
+  };
+
+  // Shift-left
+  BN.prototype.shln = function shln (bits) {
+    return this.clone().ishln(bits);
+  };
+
+  BN.prototype.ushln = function ushln (bits) {
+    return this.clone().iushln(bits);
+  };
+
+  // Shift-right
+  BN.prototype.shrn = function shrn (bits) {
+    return this.clone().ishrn(bits);
+  };
+
+  BN.prototype.ushrn = function ushrn (bits) {
+    return this.clone().iushrn(bits);
+  };
+
+  // Test if n bit is set
+  BN.prototype.testn = function testn (bit) {
+    assert(typeof bit === 'number' && bit >= 0);
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) return false;
+
+    // Check bit and return
+    var w = this.words[s];
+
+    return !!(w & q);
+  };
+
+  // Return only lowers bits of number (in-place)
+  BN.prototype.imaskn = function imaskn (bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+
+    assert(this.negative === 0, 'imaskn works only with positive numbers');
+
+    if (this.length <= s) {
+      return this;
+    }
+
+    if (r !== 0) {
+      s++;
+    }
+    this.length = Math.min(s, this.length);
+
+    if (r !== 0) {
+      var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
+      this.words[this.length - 1] &= mask;
+    }
+
+    return this._strip();
+  };
+
+  // Return only lowers bits of number
+  BN.prototype.maskn = function maskn (bits) {
+    return this.clone().imaskn(bits);
+  };
+
+  // Add plain number `num` to `this`
+  BN.prototype.iaddn = function iaddn (num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.isubn(-num);
+
+    // Possible sign change
+    if (this.negative !== 0) {
+      if (this.length === 1 && (this.words[0] | 0) <= num) {
+        this.words[0] = num - (this.words[0] | 0);
+        this.negative = 0;
+        return this;
+      }
+
+      this.negative = 0;
+      this.isubn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    // Add without checks
+    return this._iaddn(num);
+  };
+
+  BN.prototype._iaddn = function _iaddn (num) {
+    this.words[0] += num;
+
+    // Carry
+    for (var i = 0; i < this.length && this.words[i] >= 0x4000000; i++) {
+      this.words[i] -= 0x4000000;
+      if (i === this.length - 1) {
+        this.words[i + 1] = 1;
+      } else {
+        this.words[i + 1]++;
+      }
+    }
+    this.length = Math.max(this.length, i + 1);
+
+    return this;
+  };
+
+  // Subtract plain number `num` from `this`
+  BN.prototype.isubn = function isubn (num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.iaddn(-num);
+
+    if (this.negative !== 0) {
+      this.negative = 0;
+      this.iaddn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    this.words[0] -= num;
+
+    if (this.length === 1 && this.words[0] < 0) {
+      this.words[0] = -this.words[0];
+      this.negative = 1;
+    } else {
+      // Carry
+      for (var i = 0; i < this.length && this.words[i] < 0; i++) {
+        this.words[i] += 0x4000000;
+        this.words[i + 1] -= 1;
+      }
+    }
+
+    return this._strip();
+  };
+
+  BN.prototype.addn = function addn (num) {
+    return this.clone().iaddn(num);
+  };
+
+  BN.prototype.subn = function subn (num) {
+    return this.clone().isubn(num);
+  };
+
+  BN.prototype.iabs = function iabs () {
+    this.negative = 0;
+
+    return this;
+  };
+
+  BN.prototype.abs = function abs () {
+    return this.clone().iabs();
+  };
+
+  BN.prototype._ishlnsubmul = function _ishlnsubmul (num, mul, shift) {
+    var len = num.length + shift;
+    var i;
+
+    this._expand(len);
+
+    var w;
+    var carry = 0;
+    for (i = 0; i < num.length; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      var right = (num.words[i] | 0) * mul;
+      w -= right & 0x3ffffff;
+      carry = (w >> 26) - ((right / 0x4000000) | 0);
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+    for (; i < this.length - shift; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      carry = w >> 26;
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+
+    if (carry === 0) return this._strip();
+
+    // Subtraction overflow
+    assert(carry === -1);
+    carry = 0;
+    for (i = 0; i < this.length; i++) {
+      w = -(this.words[i] | 0) + carry;
+      carry = w >> 26;
+      this.words[i] = w & 0x3ffffff;
+    }
+    this.negative = 1;
+
+    return this._strip();
+  };
+
+  BN.prototype._wordDiv = function _wordDiv (num, mode) {
+    var shift = this.length - num.length;
+
+    var a = this.clone();
+    var b = num;
+
+    // Normalize
+    var bhi = b.words[b.length - 1] | 0;
+    var bhiBits = this._countBits(bhi);
+    shift = 26 - bhiBits;
+    if (shift !== 0) {
+      b = b.ushln(shift);
+      a.iushln(shift);
+      bhi = b.words[b.length - 1] | 0;
+    }
+
+    // Initialize quotient
+    var m = a.length - b.length;
+    var q;
+
+    if (mode !== 'mod') {
+      q = new BN(null);
+      q.length = m + 1;
+      q.words = new Array(q.length);
+      for (var i = 0; i < q.length; i++) {
+        q.words[i] = 0;
+      }
+    }
+
+    var diff = a.clone()._ishlnsubmul(b, 1, m);
+    if (diff.negative === 0) {
+      a = diff;
+      if (q) {
+        q.words[m] = 1;
+      }
+    }
+
+    for (var j = m - 1; j >= 0; j--) {
+      var qj = (a.words[b.length + j] | 0) * 0x4000000 +
+        (a.words[b.length + j - 1] | 0);
+
+      // NOTE: (qj / bhi) is (0x3ffffff * 0x4000000 + 0x3ffffff) / 0x2000000 max
+      // (0x7ffffff)
+      qj = Math.min((qj / bhi) | 0, 0x3ffffff);
+
+      a._ishlnsubmul(b, qj, j);
+      while (a.negative !== 0) {
+        qj--;
+        a.negative = 0;
+        a._ishlnsubmul(b, 1, j);
+        if (!a.isZero()) {
+          a.negative ^= 1;
+        }
+      }
+      if (q) {
+        q.words[j] = qj;
+      }
+    }
+    if (q) {
+      q._strip();
+    }
+    a._strip();
+
+    // Denormalize
+    if (mode !== 'div' && shift !== 0) {
+      a.iushrn(shift);
+    }
+
+    return {
+      div: q || null,
+      mod: a
+    };
+  };
+
+  // NOTE: 1) `mode` can be set to `mod` to request mod only,
+  //       to `div` to request div only, or be absent to
+  //       request both div & mod
+  //       2) `positive` is true if unsigned mod is requested
+  BN.prototype.divmod = function divmod (num, mode, positive) {
+    assert(!num.isZero());
+
+    if (this.isZero()) {
+      return {
+        div: new BN(0),
+        mod: new BN(0)
+      };
+    }
+
+    var div, mod, res;
+    if (this.negative !== 0 && num.negative === 0) {
+      res = this.neg().divmod(num, mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.iadd(num);
+        }
+      }
+
+      return {
+        div: div,
+        mod: mod
+      };
+    }
+
+    if (this.negative === 0 && num.negative !== 0) {
+      res = this.divmod(num.neg(), mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      return {
+        div: div,
+        mod: res.mod
+      };
+    }
+
+    if ((this.negative & num.negative) !== 0) {
+      res = this.neg().divmod(num.neg(), mode);
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.isub(num);
+        }
+      }
+
+      return {
+        div: res.div,
+        mod: mod
+      };
+    }
+
+    // Both numbers are positive at this point
+
+    // Strip both numbers to approximate shift value
+    if (num.length > this.length || this.cmp(num) < 0) {
+      return {
+        div: new BN(0),
+        mod: this
+      };
+    }
+
+    // Very short reduction
+    if (num.length === 1) {
+      if (mode === 'div') {
+        return {
+          div: this.divn(num.words[0]),
+          mod: null
+        };
+      }
+
+      if (mode === 'mod') {
+        return {
+          div: null,
+          mod: new BN(this.modrn(num.words[0]))
+        };
+      }
+
+      return {
+        div: this.divn(num.words[0]),
+        mod: new BN(this.modrn(num.words[0]))
+      };
+    }
+
+    return this._wordDiv(num, mode);
+  };
+
+  // Find `this` / `num`
+  BN.prototype.div = function div (num) {
+    return this.divmod(num, 'div', false).div;
+  };
+
+  // Find `this` % `num`
+  BN.prototype.mod = function mod (num) {
+    return this.divmod(num, 'mod', false).mod;
+  };
+
+  BN.prototype.umod = function umod (num) {
+    return this.divmod(num, 'mod', true).mod;
+  };
+
+  // Find Round(`this` / `num`)
+  BN.prototype.divRound = function divRound (num) {
+    var dm = this.divmod(num);
+
+    // Fast case - exact division
+    if (dm.mod.isZero()) return dm.div;
+
+    var mod = dm.div.negative !== 0 ? dm.mod.isub(num) : dm.mod;
+
+    var half = num.ushrn(1);
+    var r2 = num.andln(1);
+    var cmp = mod.cmp(half);
+
+    // Round down
+    if (cmp < 0 || (r2 === 1 && cmp === 0)) return dm.div;
+
+    // Round up
+    return dm.div.negative !== 0 ? dm.div.isubn(1) : dm.div.iaddn(1);
+  };
+
+  BN.prototype.modrn = function modrn (num) {
+    var isNegNum = num < 0;
+    if (isNegNum) num = -num;
+
+    assert(num <= 0x3ffffff);
+    var p = (1 << 26) % num;
+
+    var acc = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      acc = (p * acc + (this.words[i] | 0)) % num;
+    }
+
+    return isNegNum ? -acc : acc;
+  };
+
+  // WARNING: DEPRECATED
+  BN.prototype.modn = function modn (num) {
+    return this.modrn(num);
+  };
+
+  // In-place division by number
+  BN.prototype.idivn = function idivn (num) {
+    var isNegNum = num < 0;
+    if (isNegNum) num = -num;
+
+    assert(num <= 0x3ffffff);
+
+    var carry = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var w = (this.words[i] | 0) + carry * 0x4000000;
+      this.words[i] = (w / num) | 0;
+      carry = w % num;
+    }
+
+    this._strip();
+    return isNegNum ? this.ineg() : this;
+  };
+
+  BN.prototype.divn = function divn (num) {
+    return this.clone().idivn(num);
+  };
+
+  BN.prototype.egcd = function egcd (p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var x = this;
+    var y = p.clone();
+
+    if (x.negative !== 0) {
+      x = x.umod(p);
+    } else {
+      x = x.clone();
+    }
+
+    // A * x + B * y = x
+    var A = new BN(1);
+    var B = new BN(0);
+
+    // C * x + D * y = y
+    var C = new BN(0);
+    var D = new BN(1);
+
+    var g = 0;
+
+    while (x.isEven() && y.isEven()) {
+      x.iushrn(1);
+      y.iushrn(1);
+      ++g;
+    }
+
+    var yp = y.clone();
+    var xp = x.clone();
+
+    while (!x.isZero()) {
+      for (var i = 0, im = 1; (x.words[0] & im) === 0 && i < 26; ++i, im <<= 1);
+      if (i > 0) {
+        x.iushrn(i);
+        while (i-- > 0) {
+          if (A.isOdd() || B.isOdd()) {
+            A.iadd(yp);
+            B.isub(xp);
+          }
+
+          A.iushrn(1);
+          B.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (y.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1);
+      if (j > 0) {
+        y.iushrn(j);
+        while (j-- > 0) {
+          if (C.isOdd() || D.isOdd()) {
+            C.iadd(yp);
+            D.isub(xp);
+          }
+
+          C.iushrn(1);
+          D.iushrn(1);
+        }
+      }
+
+      if (x.cmp(y) >= 0) {
+        x.isub(y);
+        A.isub(C);
+        B.isub(D);
+      } else {
+        y.isub(x);
+        C.isub(A);
+        D.isub(B);
+      }
+    }
+
+    return {
+      a: C,
+      b: D,
+      gcd: y.iushln(g)
+    };
+  };
+
+  // This is reduced incarnation of the binary EEA
+  // above, designated to invert members of the
+  // _prime_ fields F(p) at a maximal speed
+  BN.prototype._invmp = function _invmp (p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var a = this;
+    var b = p.clone();
+
+    if (a.negative !== 0) {
+      a = a.umod(p);
+    } else {
+      a = a.clone();
+    }
+
+    var x1 = new BN(1);
+    var x2 = new BN(0);
+
+    var delta = b.clone();
+
+    while (a.cmpn(1) > 0 && b.cmpn(1) > 0) {
+      for (var i = 0, im = 1; (a.words[0] & im) === 0 && i < 26; ++i, im <<= 1);
+      if (i > 0) {
+        a.iushrn(i);
+        while (i-- > 0) {
+          if (x1.isOdd()) {
+            x1.iadd(delta);
+          }
+
+          x1.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (b.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1);
+      if (j > 0) {
+        b.iushrn(j);
+        while (j-- > 0) {
+          if (x2.isOdd()) {
+            x2.iadd(delta);
+          }
+
+          x2.iushrn(1);
+        }
+      }
+
+      if (a.cmp(b) >= 0) {
+        a.isub(b);
+        x1.isub(x2);
+      } else {
+        b.isub(a);
+        x2.isub(x1);
+      }
+    }
+
+    var res;
+    if (a.cmpn(1) === 0) {
+      res = x1;
+    } else {
+      res = x2;
+    }
+
+    if (res.cmpn(0) < 0) {
+      res.iadd(p);
+    }
+
+    return res;
+  };
+
+  BN.prototype.gcd = function gcd (num) {
+    if (this.isZero()) return num.abs();
+    if (num.isZero()) return this.abs();
+
+    var a = this.clone();
+    var b = num.clone();
+    a.negative = 0;
+    b.negative = 0;
+
+    // Remove common factor of two
+    for (var shift = 0; a.isEven() && b.isEven(); shift++) {
+      a.iushrn(1);
+      b.iushrn(1);
+    }
+
+    do {
+      while (a.isEven()) {
+        a.iushrn(1);
+      }
+      while (b.isEven()) {
+        b.iushrn(1);
+      }
+
+      var r = a.cmp(b);
+      if (r < 0) {
+        // Swap `a` and `b` to make `a` always bigger than `b`
+        var t = a;
+        a = b;
+        b = t;
+      } else if (r === 0 || b.cmpn(1) === 0) {
+        break;
+      }
+
+      a.isub(b);
+    } while (true);
+
+    return b.iushln(shift);
+  };
+
+  // Invert number in the field F(num)
+  BN.prototype.invm = function invm (num) {
+    return this.egcd(num).a.umod(num);
+  };
+
+  BN.prototype.isEven = function isEven () {
+    return (this.words[0] & 1) === 0;
+  };
+
+  BN.prototype.isOdd = function isOdd () {
+    return (this.words[0] & 1) === 1;
+  };
+
+  // And first word and num
+  BN.prototype.andln = function andln (num) {
+    return this.words[0] & num;
+  };
+
+  // Increment at the bit position in-line
+  BN.prototype.bincn = function bincn (bit) {
+    assert(typeof bit === 'number');
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) {
+      this._expand(s + 1);
+      this.words[s] |= q;
+      return this;
+    }
+
+    // Add bit and propagate, if needed
+    var carry = q;
+    for (var i = s; carry !== 0 && i < this.length; i++) {
+      var w = this.words[i] | 0;
+      w += carry;
+      carry = w >>> 26;
+      w &= 0x3ffffff;
+      this.words[i] = w;
+    }
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+    return this;
+  };
+
+  BN.prototype.isZero = function isZero () {
+    return this.length === 1 && this.words[0] === 0;
+  };
+
+  BN.prototype.cmpn = function cmpn (num) {
+    var negative = num < 0;
+
+    if (this.negative !== 0 && !negative) return -1;
+    if (this.negative === 0 && negative) return 1;
+
+    this._strip();
+
+    var res;
+    if (this.length > 1) {
+      res = 1;
+    } else {
+      if (negative) {
+        num = -num;
+      }
+
+      assert(num <= 0x3ffffff, 'Number is too big');
+
+      var w = this.words[0] | 0;
+      res = w === num ? 0 : w < num ? -1 : 1;
+    }
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Compare two numbers and return:
+  // 1 - if `this` > `num`
+  // 0 - if `this` == `num`
+  // -1 - if `this` < `num`
+  BN.prototype.cmp = function cmp (num) {
+    if (this.negative !== 0 && num.negative === 0) return -1;
+    if (this.negative === 0 && num.negative !== 0) return 1;
+
+    var res = this.ucmp(num);
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Unsigned comparison
+  BN.prototype.ucmp = function ucmp (num) {
+    // At this point both numbers have the same sign
+    if (this.length > num.length) return 1;
+    if (this.length < num.length) return -1;
+
+    var res = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var a = this.words[i] | 0;
+      var b = num.words[i] | 0;
+
+      if (a === b) continue;
+      if (a < b) {
+        res = -1;
+      } else if (a > b) {
+        res = 1;
+      }
+      break;
+    }
+    return res;
+  };
+
+  BN.prototype.gtn = function gtn (num) {
+    return this.cmpn(num) === 1;
+  };
+
+  BN.prototype.gt = function gt (num) {
+    return this.cmp(num) === 1;
+  };
+
+  BN.prototype.gten = function gten (num) {
+    return this.cmpn(num) >= 0;
+  };
+
+  BN.prototype.gte = function gte (num) {
+    return this.cmp(num) >= 0;
+  };
+
+  BN.prototype.ltn = function ltn (num) {
+    return this.cmpn(num) === -1;
+  };
+
+  BN.prototype.lt = function lt (num) {
+    return this.cmp(num) === -1;
+  };
+
+  BN.prototype.lten = function lten (num) {
+    return this.cmpn(num) <= 0;
+  };
+
+  BN.prototype.lte = function lte (num) {
+    return this.cmp(num) <= 0;
+  };
+
+  BN.prototype.eqn = function eqn (num) {
+    return this.cmpn(num) === 0;
+  };
+
+  BN.prototype.eq = function eq (num) {
+    return this.cmp(num) === 0;
+  };
+
+  //
+  // A reduce context, could be using montgomery or something better, depending
+  // on the `m` itself.
+  //
+  BN.red = function red (num) {
+    return new Red(num);
+  };
+
+  BN.prototype.toRed = function toRed (ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    assert(this.negative === 0, 'red works only with positives');
+    return ctx.convertTo(this)._forceRed(ctx);
+  };
+
+  BN.prototype.fromRed = function fromRed () {
+    assert(this.red, 'fromRed works only with numbers in reduction context');
+    return this.red.convertFrom(this);
+  };
+
+  BN.prototype._forceRed = function _forceRed (ctx) {
+    this.red = ctx;
+    return this;
+  };
+
+  BN.prototype.forceRed = function forceRed (ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    return this._forceRed(ctx);
+  };
+
+  BN.prototype.redAdd = function redAdd (num) {
+    assert(this.red, 'redAdd works only with red numbers');
+    return this.red.add(this, num);
+  };
+
+  BN.prototype.redIAdd = function redIAdd (num) {
+    assert(this.red, 'redIAdd works only with red numbers');
+    return this.red.iadd(this, num);
+  };
+
+  BN.prototype.redSub = function redSub (num) {
+    assert(this.red, 'redSub works only with red numbers');
+    return this.red.sub(this, num);
+  };
+
+  BN.prototype.redISub = function redISub (num) {
+    assert(this.red, 'redISub works only with red numbers');
+    return this.red.isub(this, num);
+  };
+
+  BN.prototype.redShl = function redShl (num) {
+    assert(this.red, 'redShl works only with red numbers');
+    return this.red.shl(this, num);
+  };
+
+  BN.prototype.redMul = function redMul (num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.mul(this, num);
+  };
+
+  BN.prototype.redIMul = function redIMul (num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.imul(this, num);
+  };
+
+  BN.prototype.redSqr = function redSqr () {
+    assert(this.red, 'redSqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqr(this);
+  };
+
+  BN.prototype.redISqr = function redISqr () {
+    assert(this.red, 'redISqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.isqr(this);
+  };
+
+  // Square root over p
+  BN.prototype.redSqrt = function redSqrt () {
+    assert(this.red, 'redSqrt works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqrt(this);
+  };
+
+  BN.prototype.redInvm = function redInvm () {
+    assert(this.red, 'redInvm works only with red numbers');
+    this.red._verify1(this);
+    return this.red.invm(this);
+  };
+
+  // Return negative clone of `this` % `red modulo`
+  BN.prototype.redNeg = function redNeg () {
+    assert(this.red, 'redNeg works only with red numbers');
+    this.red._verify1(this);
+    return this.red.neg(this);
+  };
+
+  BN.prototype.redPow = function redPow (num) {
+    assert(this.red && !num.red, 'redPow(normalNum)');
+    this.red._verify1(this);
+    return this.red.pow(this, num);
+  };
+
+  // Prime numbers with efficient reduction
+  var primes = {
+    k256: null,
+    p224: null,
+    p192: null,
+    p25519: null
+  };
+
+  // Pseudo-Mersenne prime
+  function MPrime (name, p) {
+    // P = 2 ^ N - K
+    this.name = name;
+    this.p = new BN(p, 16);
+    this.n = this.p.bitLength();
+    this.k = new BN(1).iushln(this.n).isub(this.p);
+
+    this.tmp = this._tmp();
+  }
+
+  MPrime.prototype._tmp = function _tmp () {
+    var tmp = new BN(null);
+    tmp.words = new Array(Math.ceil(this.n / 13));
+    return tmp;
+  };
+
+  MPrime.prototype.ireduce = function ireduce (num) {
+    // Assumes that `num` is less than `P^2`
+    // num = HI * (2 ^ N - K) + HI * K + LO = HI * K + LO (mod P)
+    var r = num;
+    var rlen;
+
+    do {
+      this.split(r, this.tmp);
+      r = this.imulK(r);
+      r = r.iadd(this.tmp);
+      rlen = r.bitLength();
+    } while (rlen > this.n);
+
+    var cmp = rlen < this.n ? -1 : r.ucmp(this.p);
+    if (cmp === 0) {
+      r.words[0] = 0;
+      r.length = 1;
+    } else if (cmp > 0) {
+      r.isub(this.p);
+    } else {
+      if (r.strip !== undefined) {
+        // r is a BN v4 instance
+        r.strip();
+      } else {
+        // r is a BN v5 instance
+        r._strip();
+      }
+    }
+
+    return r;
+  };
+
+  MPrime.prototype.split = function split (input, out) {
+    input.iushrn(this.n, 0, out);
+  };
+
+  MPrime.prototype.imulK = function imulK (num) {
+    return num.imul(this.k);
+  };
+
+  function K256 () {
+    MPrime.call(
+      this,
+      'k256',
+      'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff fffffffe fffffc2f');
+  }
+  inherits(K256, MPrime);
+
+  K256.prototype.split = function split (input, output) {
+    // 256 = 9 * 26 + 22
+    var mask = 0x3fffff;
+
+    var outLen = Math.min(input.length, 9);
+    for (var i = 0; i < outLen; i++) {
+      output.words[i] = input.words[i];
+    }
+    output.length = outLen;
+
+    if (input.length <= 9) {
+      input.words[0] = 0;
+      input.length = 1;
+      return;
+    }
+
+    // Shift by 9 limbs
+    var prev = input.words[9];
+    output.words[output.length++] = prev & mask;
+
+    for (i = 10; i < input.length; i++) {
+      var next = input.words[i] | 0;
+      input.words[i - 10] = ((next & mask) << 4) | (prev >>> 22);
+      prev = next;
+    }
+    prev >>>= 22;
+    input.words[i - 10] = prev;
+    if (prev === 0 && input.length > 10) {
+      input.length -= 10;
+    } else {
+      input.length -= 9;
+    }
+  };
+
+  K256.prototype.imulK = function imulK (num) {
+    // K = 0x1000003d1 = [ 0x40, 0x3d1 ]
+    num.words[num.length] = 0;
+    num.words[num.length + 1] = 0;
+    num.length += 2;
+
+    // bounded at: 0x40 * 0x3ffffff + 0x3d0 = 0x100000390
+    var lo = 0;
+    for (var i = 0; i < num.length; i++) {
+      var w = num.words[i] | 0;
+      lo += w * 0x3d1;
+      num.words[i] = lo & 0x3ffffff;
+      lo = w * 0x40 + ((lo / 0x4000000) | 0);
+    }
+
+    // Fast length reduction
+    if (num.words[num.length - 1] === 0) {
+      num.length--;
+      if (num.words[num.length - 1] === 0) {
+        num.length--;
+      }
+    }
+    return num;
+  };
+
+  function P224 () {
+    MPrime.call(
+      this,
+      'p224',
+      'ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000001');
+  }
+  inherits(P224, MPrime);
+
+  function P192 () {
+    MPrime.call(
+      this,
+      'p192',
+      'ffffffff ffffffff ffffffff fffffffe ffffffff ffffffff');
+  }
+  inherits(P192, MPrime);
+
+  function P25519 () {
+    // 2 ^ 255 - 19
+    MPrime.call(
+      this,
+      '25519',
+      '7fffffffffffffff ffffffffffffffff ffffffffffffffff ffffffffffffffed');
+  }
+  inherits(P25519, MPrime);
+
+  P25519.prototype.imulK = function imulK (num) {
+    // K = 0x13
+    var carry = 0;
+    for (var i = 0; i < num.length; i++) {
+      var hi = (num.words[i] | 0) * 0x13 + carry;
+      var lo = hi & 0x3ffffff;
+      hi >>>= 26;
+
+      num.words[i] = lo;
+      carry = hi;
+    }
+    if (carry !== 0) {
+      num.words[num.length++] = carry;
+    }
+    return num;
+  };
+
+  // Exported mostly for testing purposes, use plain name instead
+  BN._prime = function prime (name) {
+    // Cached version of prime
+    if (primes[name]) return primes[name];
+
+    var prime;
+    if (name === 'k256') {
+      prime = new K256();
+    } else if (name === 'p224') {
+      prime = new P224();
+    } else if (name === 'p192') {
+      prime = new P192();
+    } else if (name === 'p25519') {
+      prime = new P25519();
+    } else {
+      throw new Error('Unknown prime ' + name);
+    }
+    primes[name] = prime;
+
+    return prime;
+  };
+
+  //
+  // Base reduction engine
+  //
+  function Red (m) {
+    if (typeof m === 'string') {
+      var prime = BN._prime(m);
+      this.m = prime.p;
+      this.prime = prime;
+    } else {
+      assert(m.gtn(1), 'modulus must be greater than 1');
+      this.m = m;
+      this.prime = null;
+    }
+  }
+
+  Red.prototype._verify1 = function _verify1 (a) {
+    assert(a.negative === 0, 'red works only with positives');
+    assert(a.red, 'red works only with red numbers');
+  };
+
+  Red.prototype._verify2 = function _verify2 (a, b) {
+    assert((a.negative | b.negative) === 0, 'red works only with positives');
+    assert(a.red && a.red === b.red,
+      'red works only with red numbers');
+  };
+
+  Red.prototype.imod = function imod (a) {
+    if (this.prime) return this.prime.ireduce(a)._forceRed(this);
+
+    move(a, a.umod(this.m)._forceRed(this));
+    return a;
+  };
+
+  Red.prototype.neg = function neg (a) {
+    if (a.isZero()) {
+      return a.clone();
+    }
+
+    return this.m.sub(a)._forceRed(this);
+  };
+
+  Red.prototype.add = function add (a, b) {
+    this._verify2(a, b);
+
+    var res = a.add(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.iadd = function iadd (a, b) {
+    this._verify2(a, b);
+
+    var res = a.iadd(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.sub = function sub (a, b) {
+    this._verify2(a, b);
+
+    var res = a.sub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.isub = function isub (a, b) {
+    this._verify2(a, b);
+
+    var res = a.isub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.shl = function shl (a, num) {
+    this._verify1(a);
+    return this.imod(a.ushln(num));
+  };
+
+  Red.prototype.imul = function imul (a, b) {
+    this._verify2(a, b);
+    return this.imod(a.imul(b));
+  };
+
+  Red.prototype.mul = function mul (a, b) {
+    this._verify2(a, b);
+    return this.imod(a.mul(b));
+  };
+
+  Red.prototype.isqr = function isqr (a) {
+    return this.imul(a, a.clone());
+  };
+
+  Red.prototype.sqr = function sqr (a) {
+    return this.mul(a, a);
+  };
+
+  Red.prototype.sqrt = function sqrt (a) {
+    if (a.isZero()) return a.clone();
+
+    var mod3 = this.m.andln(3);
+    assert(mod3 % 2 === 1);
+
+    // Fast case
+    if (mod3 === 3) {
+      var pow = this.m.add(new BN(1)).iushrn(2);
+      return this.pow(a, pow);
+    }
+
+    // Tonelli-Shanks algorithm (Totally unoptimized and slow)
+    //
+    // Find Q and S, that Q * 2 ^ S = (P - 1)
+    var q = this.m.subn(1);
+    var s = 0;
+    while (!q.isZero() && q.andln(1) === 0) {
+      s++;
+      q.iushrn(1);
+    }
+    assert(!q.isZero());
+
+    var one = new BN(1).toRed(this);
+    var nOne = one.redNeg();
+
+    // Find quadratic non-residue
+    // NOTE: Max is such because of generalized Riemann hypothesis.
+    var lpow = this.m.subn(1).iushrn(1);
+    var z = this.m.bitLength();
+    z = new BN(2 * z * z).toRed(this);
+
+    while (this.pow(z, lpow).cmp(nOne) !== 0) {
+      z.redIAdd(nOne);
+    }
+
+    var c = this.pow(z, q);
+    var r = this.pow(a, q.addn(1).iushrn(1));
+    var t = this.pow(a, q);
+    var m = s;
+    while (t.cmp(one) !== 0) {
+      var tmp = t;
+      for (var i = 0; tmp.cmp(one) !== 0; i++) {
+        tmp = tmp.redSqr();
+      }
+      assert(i < m);
+      var b = this.pow(c, new BN(1).iushln(m - i - 1));
+
+      r = r.redMul(b);
+      c = b.redSqr();
+      t = t.redMul(c);
+      m = i;
+    }
+
+    return r;
+  };
+
+  Red.prototype.invm = function invm (a) {
+    var inv = a._invmp(this.m);
+    if (inv.negative !== 0) {
+      inv.negative = 0;
+      return this.imod(inv).redNeg();
+    } else {
+      return this.imod(inv);
+    }
+  };
+
+  Red.prototype.pow = function pow (a, num) {
+    if (num.isZero()) return new BN(1).toRed(this);
+    if (num.cmpn(1) === 0) return a.clone();
+
+    var windowSize = 4;
+    var wnd = new Array(1 << windowSize);
+    wnd[0] = new BN(1).toRed(this);
+    wnd[1] = a;
+    for (var i = 2; i < wnd.length; i++) {
+      wnd[i] = this.mul(wnd[i - 1], a);
+    }
+
+    var res = wnd[0];
+    var current = 0;
+    var currentLen = 0;
+    var start = num.bitLength() % 26;
+    if (start === 0) {
+      start = 26;
+    }
+
+    for (i = num.length - 1; i >= 0; i--) {
+      var word = num.words[i];
+      for (var j = start - 1; j >= 0; j--) {
+        var bit = (word >> j) & 1;
+        if (res !== wnd[0]) {
+          res = this.sqr(res);
+        }
+
+        if (bit === 0 && current === 0) {
+          currentLen = 0;
+          continue;
+        }
+
+        current <<= 1;
+        current |= bit;
+        currentLen++;
+        if (currentLen !== windowSize && (i !== 0 || j !== 0)) continue;
+
+        res = this.mul(res, wnd[current]);
+        currentLen = 0;
+        current = 0;
+      }
+      start = 26;
+    }
+
+    return res;
+  };
+
+  Red.prototype.convertTo = function convertTo (num) {
+    var r = num.umod(this.m);
+
+    return r === num ? r.clone() : r;
+  };
+
+  Red.prototype.convertFrom = function convertFrom (num) {
+    var res = num.clone();
+    res.red = null;
+    return res;
+  };
+
+  //
+  // Montgomery method engine
+  //
+
+  BN.mont = function mont (num) {
+    return new Mont(num);
+  };
+
+  function Mont (m) {
+    Red.call(this, m);
+
+    this.shift = this.m.bitLength();
+    if (this.shift % 26 !== 0) {
+      this.shift += 26 - (this.shift % 26);
+    }
+
+    this.r = new BN(1).iushln(this.shift);
+    this.r2 = this.imod(this.r.sqr());
+    this.rinv = this.r._invmp(this.m);
+
+    this.minv = this.rinv.mul(this.r).isubn(1).div(this.m);
+    this.minv = this.minv.umod(this.r);
+    this.minv = this.r.sub(this.minv);
+  }
+  inherits(Mont, Red);
+
+  Mont.prototype.convertTo = function convertTo (num) {
+    return this.imod(num.ushln(this.shift));
+  };
+
+  Mont.prototype.convertFrom = function convertFrom (num) {
+    var r = this.imod(num.mul(this.rinv));
+    r.red = null;
+    return r;
+  };
+
+  Mont.prototype.imul = function imul (a, b) {
+    if (a.isZero() || b.isZero()) {
+      a.words[0] = 0;
+      a.length = 1;
+      return a;
+    }
+
+    var t = a.imul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
+
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
+
+    return res._forceRed(this);
+  };
+
+  Mont.prototype.mul = function mul (a, b) {
+    if (a.isZero() || b.isZero()) return new BN(0)._forceRed(this);
+
+    var t = a.mul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
+
+    return res._forceRed(this);
+  };
+
+  Mont.prototype.invm = function invm (a) {
+    // (AR)^-1 * R^2 = (A^-1 * R^-1) * R^2 = A^-1 * R
+    var res = this.imod(a._invmp(this.m).mul(this.r2));
+    return res._forceRed(this);
+  };
+})( false || module, this);
+
+
+/***/ }),
+
+/***/ "../../node_modules/eventemitter3/index.js":
+/*!*************************************************!*\
+  !*** ../../node_modules/eventemitter3/index.js ***!
+  \*************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+var has = Object.prototype.hasOwnProperty
+  , prefix = '~';
+
+/**
+ * Constructor to create a storage for our `EE` objects.
+ * An `Events` instance is a plain object whose properties are event names.
+ *
+ * @constructor
+ * @private
+ */
+function Events() {}
+
+//
+// We try to not inherit from `Object.prototype`. In some engines creating an
+// instance in this way is faster than calling `Object.create(null)` directly.
+// If `Object.create(null)` is not supported we prefix the event names with a
+// character to make sure that the built-in object properties are not
+// overridden or used as an attack vector.
+//
+if (Object.create) {
+  Events.prototype = Object.create(null);
+
+  //
+  // This hack is needed because the `__proto__` property is still inherited in
+  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
+  //
+  if (!new Events().__proto__) prefix = false;
+}
+
+/**
+ * Representation of a single event listener.
+ *
+ * @param {Function} fn The listener function.
+ * @param {*} context The context to invoke the listener with.
+ * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
+ * @constructor
+ * @private
+ */
+function EE(fn, context, once) {
+  this.fn = fn;
+  this.context = context;
+  this.once = once || false;
+}
+
+/**
+ * Add a listener for a given event.
+ *
+ * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
+ * @param {(String|Symbol)} event The event name.
+ * @param {Function} fn The listener function.
+ * @param {*} context The context to invoke the listener with.
+ * @param {Boolean} once Specify if the listener is a one-time listener.
+ * @returns {EventEmitter}
+ * @private
+ */
+function addListener(emitter, event, fn, context, once) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('The listener must be a function');
+  }
+
+  var listener = new EE(fn, context || emitter, once)
+    , evt = prefix ? prefix + event : event;
+
+  if (!emitter._events[evt]) emitter._events[evt] = listener, emitter._eventsCount++;
+  else if (!emitter._events[evt].fn) emitter._events[evt].push(listener);
+  else emitter._events[evt] = [emitter._events[evt], listener];
+
+  return emitter;
+}
+
+/**
+ * Clear event by name.
+ *
+ * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
+ * @param {(String|Symbol)} evt The Event name.
+ * @private
+ */
+function clearEvent(emitter, evt) {
+  if (--emitter._eventsCount === 0) emitter._events = new Events();
+  else delete emitter._events[evt];
+}
+
+/**
+ * Minimal `EventEmitter` interface that is molded against the Node.js
+ * `EventEmitter` interface.
+ *
+ * @constructor
+ * @public
+ */
+function EventEmitter() {
+  this._events = new Events();
+  this._eventsCount = 0;
+}
+
+/**
+ * Return an array listing the events for which the emitter has registered
+ * listeners.
+ *
+ * @returns {Array}
+ * @public
+ */
+EventEmitter.prototype.eventNames = function eventNames() {
+  var names = []
+    , events
+    , name;
+
+  if (this._eventsCount === 0) return names;
+
+  for (name in (events = this._events)) {
+    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+  }
+
+  if (Object.getOwnPropertySymbols) {
+    return names.concat(Object.getOwnPropertySymbols(events));
+  }
+
+  return names;
+};
+
+/**
+ * Return the listeners registered for a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @returns {Array} The registered listeners.
+ * @public
+ */
+EventEmitter.prototype.listeners = function listeners(event) {
+  var evt = prefix ? prefix + event : event
+    , handlers = this._events[evt];
+
+  if (!handlers) return [];
+  if (handlers.fn) return [handlers.fn];
+
+  for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
+    ee[i] = handlers[i].fn;
+  }
+
+  return ee;
+};
+
+/**
+ * Return the number of listeners listening to a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @returns {Number} The number of listeners.
+ * @public
+ */
+EventEmitter.prototype.listenerCount = function listenerCount(event) {
+  var evt = prefix ? prefix + event : event
+    , listeners = this._events[evt];
+
+  if (!listeners) return 0;
+  if (listeners.fn) return 1;
+  return listeners.length;
+};
+
+/**
+ * Calls each of the listeners registered for a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @returns {Boolean} `true` if the event had listeners, else `false`.
+ * @public
+ */
+EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
+  var evt = prefix ? prefix + event : event;
+
+  if (!this._events[evt]) return false;
+
+  var listeners = this._events[evt]
+    , len = arguments.length
+    , args
+    , i;
+
+  if (listeners.fn) {
+    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+
+    switch (len) {
+      case 1: return listeners.fn.call(listeners.context), true;
+      case 2: return listeners.fn.call(listeners.context, a1), true;
+      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
+      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
+      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+    }
+
+    for (i = 1, args = new Array(len -1); i < len; i++) {
+      args[i - 1] = arguments[i];
+    }
+
+    listeners.fn.apply(listeners.context, args);
+  } else {
+    var length = listeners.length
+      , j;
+
+    for (i = 0; i < length; i++) {
+      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+
+      switch (len) {
+        case 1: listeners[i].fn.call(listeners[i].context); break;
+        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
+        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
+        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
+        default:
+          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
+            args[j - 1] = arguments[j];
+          }
+
+          listeners[i].fn.apply(listeners[i].context, args);
+      }
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Add a listener for a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @param {Function} fn The listener function.
+ * @param {*} [context=this] The context to invoke the listener with.
+ * @returns {EventEmitter} `this`.
+ * @public
+ */
+EventEmitter.prototype.on = function on(event, fn, context) {
+  return addListener(this, event, fn, context, false);
+};
+
+/**
+ * Add a one-time listener for a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @param {Function} fn The listener function.
+ * @param {*} [context=this] The context to invoke the listener with.
+ * @returns {EventEmitter} `this`.
+ * @public
+ */
+EventEmitter.prototype.once = function once(event, fn, context) {
+  return addListener(this, event, fn, context, true);
+};
+
+/**
+ * Remove the listeners of a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @param {Function} fn Only remove the listeners that match this function.
+ * @param {*} context Only remove the listeners that have this context.
+ * @param {Boolean} once Only remove one-time listeners.
+ * @returns {EventEmitter} `this`.
+ * @public
+ */
+EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
+  var evt = prefix ? prefix + event : event;
+
+  if (!this._events[evt]) return this;
+  if (!fn) {
+    clearEvent(this, evt);
+    return this;
+  }
+
+  var listeners = this._events[evt];
+
+  if (listeners.fn) {
+    if (
+      listeners.fn === fn &&
+      (!once || listeners.once) &&
+      (!context || listeners.context === context)
+    ) {
+      clearEvent(this, evt);
+    }
+  } else {
+    for (var i = 0, events = [], length = listeners.length; i < length; i++) {
+      if (
+        listeners[i].fn !== fn ||
+        (once && !listeners[i].once) ||
+        (context && listeners[i].context !== context)
+      ) {
+        events.push(listeners[i]);
+      }
+    }
+
+    //
+    // Reset the array, or remove it completely if we have no more listeners.
+    //
+    if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
+    else clearEvent(this, evt);
+  }
+
+  return this;
+};
+
+/**
+ * Remove all listeners, or those of the specified event.
+ *
+ * @param {(String|Symbol)} [event] The event name.
+ * @returns {EventEmitter} `this`.
+ * @public
+ */
+EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
+  var evt;
+
+  if (event) {
+    evt = prefix ? prefix + event : event;
+    if (this._events[evt]) clearEvent(this, evt);
+  } else {
+    this._events = new Events();
+    this._eventsCount = 0;
+  }
+
+  return this;
+};
+
+//
+// Alias methods names because people roll like that.
+//
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+//
+// Expose the prefix.
+//
+EventEmitter.prefixed = prefix;
+
+//
+// Allow `EventEmitter` to be imported as module namespace.
+//
+EventEmitter.EventEmitter = EventEmitter;
+
+//
+// Expose the module.
+//
+if (true) {
+  module.exports = EventEmitter;
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/events/events.js":
+/*!*******************************************!*\
+  !*** ../../node_modules/events/events.js ***!
+  \*******************************************/
+/***/ ((module) => {
+
+"use strict";
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+var R = typeof Reflect === 'object' ? Reflect : null
+var ReflectApply = R && typeof R.apply === 'function'
+  ? R.apply
+  : function ReflectApply(target, receiver, args) {
+    return Function.prototype.apply.call(target, receiver, args);
+  }
+
+var ReflectOwnKeys
+if (R && typeof R.ownKeys === 'function') {
+  ReflectOwnKeys = R.ownKeys
+} else if (Object.getOwnPropertySymbols) {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target)
+      .concat(Object.getOwnPropertySymbols(target));
+  };
+} else {
+  ReflectOwnKeys = function ReflectOwnKeys(target) {
+    return Object.getOwnPropertyNames(target);
+  };
+}
+
+function ProcessEmitWarning(warning) {
+  if (console && console.warn) console.warn(warning);
+}
+
+var NumberIsNaN = Number.isNaN || function NumberIsNaN(value) {
+  return value !== value;
+}
+
+function EventEmitter() {
+  EventEmitter.init.call(this);
+}
+module.exports = EventEmitter;
+module.exports.once = once;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._eventsCount = 0;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+var defaultMaxListeners = 10;
+
+function checkListener(listener) {
+  if (typeof listener !== 'function') {
+    throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
+  }
+}
+
+Object.defineProperty(EventEmitter, 'defaultMaxListeners', {
+  enumerable: true,
+  get: function() {
+    return defaultMaxListeners;
+  },
+  set: function(arg) {
+    if (typeof arg !== 'number' || arg < 0 || NumberIsNaN(arg)) {
+      throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + '.');
+    }
+    defaultMaxListeners = arg;
+  }
+});
+
+EventEmitter.init = function() {
+
+  if (this._events === undefined ||
+      this._events === Object.getPrototypeOf(this)._events) {
+    this._events = Object.create(null);
+    this._eventsCount = 0;
+  }
+
+  this._maxListeners = this._maxListeners || undefined;
+};
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
+  if (typeof n !== 'number' || n < 0 || NumberIsNaN(n)) {
+    throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n + '.');
+  }
+  this._maxListeners = n;
+  return this;
+};
+
+function _getMaxListeners(that) {
+  if (that._maxListeners === undefined)
+    return EventEmitter.defaultMaxListeners;
+  return that._maxListeners;
+}
+
+EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
+  return _getMaxListeners(this);
+};
+
+EventEmitter.prototype.emit = function emit(type) {
+  var args = [];
+  for (var i = 1; i < arguments.length; i++) args.push(arguments[i]);
+  var doError = (type === 'error');
+
+  var events = this._events;
+  if (events !== undefined)
+    doError = (doError && events.error === undefined);
+  else if (!doError)
+    return false;
+
+  // If there is no 'error' event listener then throw.
+  if (doError) {
+    var er;
+    if (args.length > 0)
+      er = args[0];
+    if (er instanceof Error) {
+      // Note: The comments on the `throw` lines are intentional, they show
+      // up in Node's output if this results in an unhandled exception.
+      throw er; // Unhandled 'error' event
+    }
+    // At least give some kind of context to the user
+    var err = new Error('Unhandled error.' + (er ? ' (' + er.message + ')' : ''));
+    err.context = er;
+    throw err; // Unhandled 'error' event
+  }
+
+  var handler = events[type];
+
+  if (handler === undefined)
+    return false;
+
+  if (typeof handler === 'function') {
+    ReflectApply(handler, this, args);
+  } else {
+    var len = handler.length;
+    var listeners = arrayClone(handler, len);
+    for (var i = 0; i < len; ++i)
+      ReflectApply(listeners[i], this, args);
+  }
+
+  return true;
+};
+
+function _addListener(target, type, listener, prepend) {
+  var m;
+  var events;
+  var existing;
+
+  checkListener(listener);
+
+  events = target._events;
+  if (events === undefined) {
+    events = target._events = Object.create(null);
+    target._eventsCount = 0;
+  } else {
+    // To avoid recursion in the case that type === "newListener"! Before
+    // adding it to the listeners, first emit "newListener".
+    if (events.newListener !== undefined) {
+      target.emit('newListener', type,
+                  listener.listener ? listener.listener : listener);
+
+      // Re-assign `events` because a newListener handler could have caused the
+      // this._events to be assigned to a new object
+      events = target._events;
+    }
+    existing = events[type];
+  }
+
+  if (existing === undefined) {
+    // Optimize the case of one listener. Don't need the extra array object.
+    existing = events[type] = listener;
+    ++target._eventsCount;
+  } else {
+    if (typeof existing === 'function') {
+      // Adding the second element, need to change to array.
+      existing = events[type] =
+        prepend ? [listener, existing] : [existing, listener];
+      // If we've already got an array, just append.
+    } else if (prepend) {
+      existing.unshift(listener);
+    } else {
+      existing.push(listener);
+    }
+
+    // Check for listener leak
+    m = _getMaxListeners(target);
+    if (m > 0 && existing.length > m && !existing.warned) {
+      existing.warned = true;
+      // No error code for this since it is a Warning
+      // eslint-disable-next-line no-restricted-syntax
+      var w = new Error('Possible EventEmitter memory leak detected. ' +
+                          existing.length + ' ' + String(type) + ' listeners ' +
+                          'added. Use emitter.setMaxListeners() to ' +
+                          'increase limit');
+      w.name = 'MaxListenersExceededWarning';
+      w.emitter = target;
+      w.type = type;
+      w.count = existing.length;
+      ProcessEmitWarning(w);
+    }
+  }
+
+  return target;
+}
+
+EventEmitter.prototype.addListener = function addListener(type, listener) {
+  return _addListener(this, type, listener, false);
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.prependListener =
+    function prependListener(type, listener) {
+      return _addListener(this, type, listener, true);
+    };
+
+function onceWrapper() {
+  if (!this.fired) {
+    this.target.removeListener(this.type, this.wrapFn);
+    this.fired = true;
+    if (arguments.length === 0)
+      return this.listener.call(this.target);
+    return this.listener.apply(this.target, arguments);
+  }
+}
+
+function _onceWrap(target, type, listener) {
+  var state = { fired: false, wrapFn: undefined, target: target, type: type, listener: listener };
+  var wrapped = onceWrapper.bind(state);
+  wrapped.listener = listener;
+  state.wrapFn = wrapped;
+  return wrapped;
+}
+
+EventEmitter.prototype.once = function once(type, listener) {
+  checkListener(listener);
+  this.on(type, _onceWrap(this, type, listener));
+  return this;
+};
+
+EventEmitter.prototype.prependOnceListener =
+    function prependOnceListener(type, listener) {
+      checkListener(listener);
+      this.prependListener(type, _onceWrap(this, type, listener));
+      return this;
+    };
+
+// Emits a 'removeListener' event if and only if the listener was removed.
+EventEmitter.prototype.removeListener =
+    function removeListener(type, listener) {
+      var list, events, position, i, originalListener;
+
+      checkListener(listener);
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      list = events[type];
+      if (list === undefined)
+        return this;
+
+      if (list === listener || list.listener === listener) {
+        if (--this._eventsCount === 0)
+          this._events = Object.create(null);
+        else {
+          delete events[type];
+          if (events.removeListener)
+            this.emit('removeListener', type, list.listener || listener);
+        }
+      } else if (typeof list !== 'function') {
+        position = -1;
+
+        for (i = list.length - 1; i >= 0; i--) {
+          if (list[i] === listener || list[i].listener === listener) {
+            originalListener = list[i].listener;
+            position = i;
+            break;
+          }
+        }
+
+        if (position < 0)
+          return this;
+
+        if (position === 0)
+          list.shift();
+        else {
+          spliceOne(list, position);
+        }
+
+        if (list.length === 1)
+          events[type] = list[0];
+
+        if (events.removeListener !== undefined)
+          this.emit('removeListener', type, originalListener || listener);
+      }
+
+      return this;
+    };
+
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+
+EventEmitter.prototype.removeAllListeners =
+    function removeAllListeners(type) {
+      var listeners, events, i;
+
+      events = this._events;
+      if (events === undefined)
+        return this;
+
+      // not listening for removeListener, no need to emit
+      if (events.removeListener === undefined) {
+        if (arguments.length === 0) {
+          this._events = Object.create(null);
+          this._eventsCount = 0;
+        } else if (events[type] !== undefined) {
+          if (--this._eventsCount === 0)
+            this._events = Object.create(null);
+          else
+            delete events[type];
+        }
+        return this;
+      }
+
+      // emit removeListener for all listeners on all events
+      if (arguments.length === 0) {
+        var keys = Object.keys(events);
+        var key;
+        for (i = 0; i < keys.length; ++i) {
+          key = keys[i];
+          if (key === 'removeListener') continue;
+          this.removeAllListeners(key);
+        }
+        this.removeAllListeners('removeListener');
+        this._events = Object.create(null);
+        this._eventsCount = 0;
+        return this;
+      }
+
+      listeners = events[type];
+
+      if (typeof listeners === 'function') {
+        this.removeListener(type, listeners);
+      } else if (listeners !== undefined) {
+        // LIFO order
+        for (i = listeners.length - 1; i >= 0; i--) {
+          this.removeListener(type, listeners[i]);
+        }
+      }
+
+      return this;
+    };
+
+function _listeners(target, type, unwrap) {
+  var events = target._events;
+
+  if (events === undefined)
+    return [];
+
+  var evlistener = events[type];
+  if (evlistener === undefined)
+    return [];
+
+  if (typeof evlistener === 'function')
+    return unwrap ? [evlistener.listener || evlistener] : [evlistener];
+
+  return unwrap ?
+    unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+}
+
+EventEmitter.prototype.listeners = function listeners(type) {
+  return _listeners(this, type, true);
+};
+
+EventEmitter.prototype.rawListeners = function rawListeners(type) {
+  return _listeners(this, type, false);
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  if (typeof emitter.listenerCount === 'function') {
+    return emitter.listenerCount(type);
+  } else {
+    return listenerCount.call(emitter, type);
+  }
+};
+
+EventEmitter.prototype.listenerCount = listenerCount;
+function listenerCount(type) {
+  var events = this._events;
+
+  if (events !== undefined) {
+    var evlistener = events[type];
+
+    if (typeof evlistener === 'function') {
+      return 1;
+    } else if (evlistener !== undefined) {
+      return evlistener.length;
+    }
+  }
+
+  return 0;
+}
+
+EventEmitter.prototype.eventNames = function eventNames() {
+  return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
+};
+
+function arrayClone(arr, n) {
+  var copy = new Array(n);
+  for (var i = 0; i < n; ++i)
+    copy[i] = arr[i];
+  return copy;
+}
+
+function spliceOne(list, index) {
+  for (; index + 1 < list.length; index++)
+    list[index] = list[index + 1];
+  list.pop();
+}
+
+function unwrapListeners(arr) {
+  var ret = new Array(arr.length);
+  for (var i = 0; i < ret.length; ++i) {
+    ret[i] = arr[i].listener || arr[i];
+  }
+  return ret;
+}
+
+function once(emitter, name) {
+  return new Promise(function (resolve, reject) {
+    function errorListener(err) {
+      emitter.removeListener(name, resolver);
+      reject(err);
+    }
+
+    function resolver() {
+      if (typeof emitter.removeListener === 'function') {
+        emitter.removeListener('error', errorListener);
+      }
+      resolve([].slice.call(arguments));
+    };
+
+    eventTargetAgnosticAddListener(emitter, name, resolver, { once: true });
+    if (name !== 'error') {
+      addErrorHandlerIfEventEmitter(emitter, errorListener, { once: true });
+    }
+  });
+}
+
+function addErrorHandlerIfEventEmitter(emitter, handler, flags) {
+  if (typeof emitter.on === 'function') {
+    eventTargetAgnosticAddListener(emitter, 'error', handler, flags);
+  }
+}
+
+function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
+  if (typeof emitter.on === 'function') {
+    if (flags.once) {
+      emitter.once(name, listener);
+    } else {
+      emitter.on(name, listener);
+    }
+  } else if (typeof emitter.addEventListener === 'function') {
+    // EventTarget does not have `error` event semantics like Node
+    // EventEmitters, we do not listen for `error` events here.
+    emitter.addEventListener(name, function wrapListener(arg) {
+      // IE does not have builtin `{ once: true }` support so we
+      // have to do it manually.
+      if (flags.once) {
+        emitter.removeEventListener(name, wrapListener);
+      }
+      listener(arg);
+    });
+  } else {
+    throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type ' + typeof emitter);
+  }
+}
+
+
+/***/ }),
+
+/***/ "?2e65":
+/*!************************!*\
+  !*** buffer (ignored) ***!
+  \************************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/format/formatDate.js":
+/*!**************************************************************!*\
+  !*** ../../node_modules/@polkadot/util/format/formatDate.js ***!
+  \**************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   formatDate: () => (/* binding */ formatDate)
+/* harmony export */ });
+/** @internal */
+function zeroPad(value) {
+    return value.toString().padStart(2, '0');
+}
+/**
+ * @name formatDate
+ * @description Formats a date in CCYY-MM-DD HH:MM:SS format
+ */
+function formatDate(date) {
+    const year = date.getFullYear().toString();
+    const month = zeroPad((date.getMonth() + 1));
+    const day = zeroPad(date.getDate());
+    const hour = zeroPad(date.getHours());
+    const minute = zeroPad(date.getMinutes());
+    const second = zeroPad(date.getSeconds());
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/has.js":
+/*!************************************************!*\
+  !*** ../../node_modules/@polkadot/util/has.js ***!
+  \************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   hasBigInt: () => (/* binding */ hasBigInt),
+/* harmony export */   hasBuffer: () => (/* binding */ hasBuffer),
+/* harmony export */   hasCjs: () => (/* binding */ hasCjs),
+/* harmony export */   hasDirname: () => (/* binding */ hasDirname),
+/* harmony export */   hasEsm: () => (/* binding */ hasEsm),
+/* harmony export */   hasProcess: () => (/* binding */ hasProcess),
+/* harmony export */   hasWasm: () => (/* binding */ hasWasm)
+/* harmony export */ });
+/* harmony import */ var _polkadot_x_bigint__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @polkadot/x-bigint */ "../../node_modules/@polkadot/x-bigint/index.js");
+/* harmony import */ var _polkadot_x_global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @polkadot/x-global */ "../../node_modules/@polkadot/util/node_modules/@polkadot/x-global/index.js");
+
+
+/** true if the environment has proper BigInt support */
+const hasBigInt = typeof _polkadot_x_bigint__WEBPACK_IMPORTED_MODULE_0__.BigInt === 'function' && typeof _polkadot_x_bigint__WEBPACK_IMPORTED_MODULE_0__.BigInt.asIntN === 'function';
+/** true if the environment is CJS */
+const hasCjs = typeof require === 'function' && typeof module !== 'undefined';
+/** true if the environment has __dirname available */
+const hasDirname = typeof __dirname !== 'undefined';
+/** true if the environment is ESM */
+const hasEsm = !hasCjs;
+/** true if the environment has WebAssembly available */
+const hasWasm = typeof WebAssembly !== 'undefined';
+/** true if the environment has support for Buffer (typically Node.js) */
+const hasBuffer = typeof _polkadot_x_global__WEBPACK_IMPORTED_MODULE_1__.xglobal.Buffer === 'function' && typeof _polkadot_x_global__WEBPACK_IMPORTED_MODULE_1__.xglobal.Buffer.isBuffer === 'function';
+/** true if the environment has process available (typically Node.js) */
+const hasProcess = typeof _polkadot_x_global__WEBPACK_IMPORTED_MODULE_1__.xglobal.process === 'object';
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/hex/toU8a.js":
+/*!******************************************************!*\
+  !*** ../../node_modules/@polkadot/util/hex/toU8a.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   hexToU8a: () => (/* binding */ hexToU8a)
+/* harmony export */ });
+const CHR = '0123456789abcdef';
+const U8 = new Uint8Array(256);
+const U16 = new Uint8Array(256 * 256);
+for (let i = 0, count = CHR.length; i < count; i++) {
+    U8[CHR[i].charCodeAt(0) | 0] = i | 0;
+    if (i > 9) {
+        U8[CHR[i].toUpperCase().charCodeAt(0) | 0] = i | 0;
+    }
+}
+for (let i = 0; i < 256; i++) {
+    const s = i << 8;
+    for (let j = 0; j < 256; j++) {
+        U16[s | j] = (U8[i] << 4) | U8[j];
+    }
+}
+/**
+ * @name hexToU8a
+ * @summary Creates a Uint8Array object from a hex string.
+ * @description
+ * `null` inputs returns an empty `Uint8Array` result. Hex input values return the actual bytes value converted to a Uint8Array. Anything that is not a hex string (including the `0x` prefix) throws an error.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { hexToU8a } from '@polkadot/util';
+ *
+ * hexToU8a('0x80001f'); // Uint8Array([0x80, 0x00, 0x1f])
+ * hexToU8a('0x80001f', 32); // Uint8Array([0x00, 0x80, 0x00, 0x1f])
+ * ```
+ */
+function hexToU8a(value, bitLength = -1) {
+    if (!value) {
+        return new Uint8Array();
+    }
+    let s = value.startsWith('0x')
+        ? 2
+        : 0;
+    const decLength = Math.ceil((value.length - s) / 2);
+    const endLength = Math.ceil(bitLength === -1
+        ? decLength
+        : bitLength / 8);
+    const result = new Uint8Array(endLength);
+    const offset = endLength > decLength
+        ? endLength - decLength
+        : 0;
+    for (let i = offset; i < endLength; i++, s += 2) {
+        // The big factor here is actually the string lookups. If we do
+        // HEX_TO_U16[value.substring()] we get an 10x slowdown. In the
+        // same vein using charCodeAt (as opposed to value[s] or value.charAt(s)) is
+        // also the faster operation by at least 2x with the character map above
+        result[i] = U16[(value.charCodeAt(s) << 8) | value.charCodeAt(s + 1)];
+    }
+    return result;
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/is/bn.js":
+/*!**************************************************!*\
+  !*** ../../node_modules/@polkadot/util/is/bn.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isBn: () => (/* binding */ isBn)
+/* harmony export */ });
+/* harmony import */ var _bn_bn_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../bn/bn.js */ "../../node_modules/bn.js/lib/bn.js");
+
+/**
+ * @name isBn
+ * @summary Tests for a `BN` object instance.
+ * @description
+ * Checks to see if the input object is an instance of `BN` (bn.js).
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import BN from 'bn.js';
+ * import { isBn } from '@polkadot/util';
+ *
+ * console.log('isBn', isBn(new BN(1))); // => true
+ * ```
+ */
+function isBn(value) {
+    return _bn_bn_js__WEBPACK_IMPORTED_MODULE_0__.isBN(value);
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/is/buffer.js":
+/*!******************************************************!*\
+  !*** ../../node_modules/@polkadot/util/is/buffer.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isBuffer: () => (/* binding */ isBuffer)
+/* harmony export */ });
+/* harmony import */ var _polkadot_x_global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @polkadot/x-global */ "../../node_modules/@polkadot/util/node_modules/@polkadot/x-global/index.js");
+/* harmony import */ var _has_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../has.js */ "../../node_modules/@polkadot/util/has.js");
+/* harmony import */ var _function_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./function.js */ "../../node_modules/@polkadot/util/is/function.js");
+
+
+
+/**
+ * @name isBuffer
+ * @summary Tests for a `Buffer` object instance.
+ * @description
+ * Checks to see if the input object is an instance of `Buffer`.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { isBuffer } from '@polkadot/util';
+ *
+ * console.log('isBuffer', isBuffer(Buffer.from([]))); // => true
+ * ```
+ */
+function isBuffer(value) {
+    // we do check a function first, since it is slightly faster than isBuffer itself
+    return _has_js__WEBPACK_IMPORTED_MODULE_0__.hasBuffer && !!value && (0,_function_js__WEBPACK_IMPORTED_MODULE_1__.isFunction)(value.readDoubleLE) && _polkadot_x_global__WEBPACK_IMPORTED_MODULE_2__.xglobal.Buffer.isBuffer(value);
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/is/function.js":
+/*!********************************************************!*\
+  !*** ../../node_modules/@polkadot/util/is/function.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isFunction: () => (/* binding */ isFunction)
+/* harmony export */ });
+/**
+ * @name isFunction
+ * @summary Tests for a `function`.
+ * @description
+ * Checks to see if the input value is a JavaScript function.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { isFunction } from '@polkadot/util';
+ *
+ * isFunction(() => false); // => true
+ * ```
+ */
+function isFunction(value) {
+    return typeof value === 'function';
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/is/hex.js":
+/*!***************************************************!*\
+  !*** ../../node_modules/@polkadot/util/is/hex.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   REGEX_HEX_NOPREFIX: () => (/* binding */ REGEX_HEX_NOPREFIX),
+/* harmony export */   REGEX_HEX_PREFIXED: () => (/* binding */ REGEX_HEX_PREFIXED),
+/* harmony export */   isHex: () => (/* binding */ isHex)
+/* harmony export */ });
+const REGEX_HEX_PREFIXED = /^0x[\da-fA-F]+$/;
+const REGEX_HEX_NOPREFIX = /^[\da-fA-F]+$/;
+/**
+ * @name isHex
+ * @summary Tests for a hex string.
+ * @description
+ * Checks to see if the input value is a `0x` prefixed hex string. Optionally (`bitLength` !== -1) checks to see if the bitLength is correct.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { isHex } from '@polkadot/util';
+ *
+ * isHex('0x1234'); // => true
+ * isHex('0x1234', 8); // => false
+ * ```
+ */
+function isHex(value, bitLength = -1, ignoreLength) {
+    return (typeof value === 'string' && (value === '0x' ||
+        REGEX_HEX_PREFIXED.test(value))) && (bitLength === -1
+        ? (ignoreLength || (value.length % 2 === 0))
+        : (value.length === (2 + Math.ceil(bitLength / 4))));
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/is/object.js":
+/*!******************************************************!*\
+  !*** ../../node_modules/@polkadot/util/is/object.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isObject: () => (/* binding */ isObject)
+/* harmony export */ });
+/**
+ * @name isObject
+ * @summary Tests for an `object`.
+ * @description
+ * Checks to see if the input value is a JavaScript object.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { isObject } from '@polkadot/util';
+ *
+ * isObject({}); // => true
+ * isObject('something'); // => false
+ * ```
+ */
+function isObject(value) {
+    return !!value && typeof value === 'object';
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/is/u8a.js":
+/*!***************************************************!*\
+  !*** ../../node_modules/@polkadot/util/is/u8a.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isU8a: () => (/* binding */ isU8a)
+/* harmony export */ });
+/**
+ * @name isU8a
+ * @summary Tests for a `Uint8Array` object instance.
+ * @description
+ * Checks to see if the input object is an instance of `Uint8Array`.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { isUint8Array } from '@polkadot/util';
+ *
+ * console.log('isU8a', isU8a([])); // => false
+ * ```
+ */
+function isU8a(value) {
+    // here we defer the instanceof check which is actually slightly
+    // slower than just checking the constrctor (direct instances)
+    return (((value && value.constructor) === Uint8Array) ||
+        value instanceof Uint8Array);
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/is/undefined.js":
+/*!*********************************************************!*\
+  !*** ../../node_modules/@polkadot/util/is/undefined.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   isUndefined: () => (/* binding */ isUndefined)
+/* harmony export */ });
+/**
+ * @name isUndefined
+ * @summary Tests for a `undefined` values.
+ * @description
+ * Checks to see if the input value is `undefined`.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { isUndefined } from '@polkadot/util';
+ *
+ * console.log('isUndefined', isUndefined(void(0))); // => true
+ * ```
+ */
+function isUndefined(value) {
+    return value === undefined;
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/logger.js":
+/*!***************************************************!*\
+  !*** ../../node_modules/@polkadot/util/logger.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   logger: () => (/* binding */ logger),
+/* harmony export */   loggerFormat: () => (/* binding */ loggerFormat)
+/* harmony export */ });
+/* harmony import */ var _polkadot_x_global__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @polkadot/x-global */ "../../node_modules/@polkadot/util/node_modules/@polkadot/x-global/index.js");
+/* harmony import */ var _format_formatDate_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./format/formatDate.js */ "../../node_modules/@polkadot/util/format/formatDate.js");
+/* harmony import */ var _is_bn_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./is/bn.js */ "../../node_modules/@polkadot/util/is/bn.js");
+/* harmony import */ var _is_buffer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./is/buffer.js */ "../../node_modules/@polkadot/util/is/buffer.js");
+/* harmony import */ var _is_function_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./is/function.js */ "../../node_modules/@polkadot/util/is/function.js");
+/* harmony import */ var _is_object_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./is/object.js */ "../../node_modules/@polkadot/util/is/object.js");
+/* harmony import */ var _is_u8a_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./is/u8a.js */ "../../node_modules/@polkadot/util/is/u8a.js");
+/* harmony import */ var _u8a_toHex_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./u8a/toHex.js */ "../../node_modules/@polkadot/util/u8a/toHex.js");
+/* harmony import */ var _u8a_toU8a_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./u8a/toU8a.js */ "../../node_modules/@polkadot/util/u8a/toU8a.js");
+/* harmony import */ var _noop_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./noop.js */ "../../node_modules/@polkadot/util/noop.js");
+
+
+
+
+
+
+
+
+
+
+const logTo = {
+    debug: 'log',
+    error: 'error',
+    log: 'log',
+    warn: 'warn'
+};
+function formatOther(value) {
+    if (value && (0,_is_object_js__WEBPACK_IMPORTED_MODULE_0__.isObject)(value) && value.constructor === Object) {
+        const result = {};
+        for (const [k, v] of Object.entries(value)) {
+            result[k] = loggerFormat(v);
+        }
+        return result;
+    }
+    return value;
+}
+function loggerFormat(value) {
+    if (Array.isArray(value)) {
+        return value.map(loggerFormat);
+    }
+    else if ((0,_is_bn_js__WEBPACK_IMPORTED_MODULE_1__.isBn)(value)) {
+        return value.toString();
+    }
+    else if ((0,_is_u8a_js__WEBPACK_IMPORTED_MODULE_2__.isU8a)(value) || (0,_is_buffer_js__WEBPACK_IMPORTED_MODULE_3__.isBuffer)(value)) {
+        return (0,_u8a_toHex_js__WEBPACK_IMPORTED_MODULE_4__.u8aToHex)((0,_u8a_toU8a_js__WEBPACK_IMPORTED_MODULE_5__.u8aToU8a)(value));
+    }
+    return formatOther(value);
+}
+function formatWithLength(maxLength) {
+    return (v) => {
+        if (maxLength <= 0) {
+            return v;
+        }
+        const r = `${v}`;
+        return r.length < maxLength
+            ? v
+            : `${r.substring(0, maxLength)} ...`;
+    };
+}
+function apply(log, type, values, maxSize = -1) {
+    if (values.length === 1 && (0,_is_function_js__WEBPACK_IMPORTED_MODULE_6__.isFunction)(values[0])) {
+        const fnResult = values[0]();
+        return apply(log, type, Array.isArray(fnResult) ? fnResult : [fnResult], maxSize);
+    }
+    console[logTo[log]]((0,_format_formatDate_js__WEBPACK_IMPORTED_MODULE_7__.formatDate)(new Date()), type, ...values
+        .map(loggerFormat)
+        .map(formatWithLength(maxSize)));
+}
+function isDebugOn(e, type) {
+    return !!e && (e === '*' ||
+        type === e ||
+        (e.endsWith('*') &&
+            type.startsWith(e.slice(0, -1))));
+}
+function isDebugOff(e, type) {
+    return !!e && (e.startsWith('-') &&
+        (type === e.slice(1) ||
+            (e.endsWith('*') &&
+                type.startsWith(e.slice(1, -1)))));
+}
+function getDebugFlag(env, type) {
+    let flag = false;
+    for (const e of env) {
+        if (isDebugOn(e, type)) {
+            flag = true;
+        }
+        else if (isDebugOff(e, type)) {
+            flag = false;
+        }
+    }
+    return flag;
+}
+function parseEnv(type) {
+    const maxSize = parseInt(_polkadot_x_global__WEBPACK_IMPORTED_MODULE_8__.xglobal.process?.env?.['DEBUG_MAX'] || '-1', 10);
+    return [
+        getDebugFlag((_polkadot_x_global__WEBPACK_IMPORTED_MODULE_8__.xglobal.process?.env?.['DEBUG'] || '').toLowerCase().split(','), type),
+        isNaN(maxSize)
+            ? -1
+            : maxSize
+    ];
+}
+/**
+ * @name Logger
+ * @summary Creates a consistent log interface for messages
+ * @description
+ * Returns a `Logger` that has `.log`, `.error`, `.warn` and `.debug` (controlled with environment `DEBUG=typeA,typeB`) methods. Logging is done with a consistent prefix (type of logger, date) followed by the actual message using the underlying console.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { logger } from '@polkadot/util';
+ *
+ * const l = logger('test');
+ * ```
+ */
+function logger(origin) {
+    const type = `${origin.toUpperCase()}:`.padStart(16);
+    const [isDebug, maxSize] = parseEnv(origin.toLowerCase());
+    return {
+        debug: isDebug
+            ? (...values) => apply('debug', type, values, maxSize)
+            : _noop_js__WEBPACK_IMPORTED_MODULE_9__.noop,
+        error: (...values) => apply('error', type, values),
+        log: (...values) => apply('log', type, values),
+        noop: _noop_js__WEBPACK_IMPORTED_MODULE_9__.noop,
+        warn: (...values) => apply('warn', type, values)
+    };
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/node_modules/@polkadot/x-global/index.js":
+/*!**********************************************************************************!*\
+  !*** ../../node_modules/@polkadot/util/node_modules/@polkadot/x-global/index.js ***!
+  \**********************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   exposeGlobal: () => (/* binding */ exposeGlobal),
+/* harmony export */   extractGlobal: () => (/* binding */ extractGlobal),
+/* harmony export */   packageInfo: () => (/* reexport safe */ _packageInfo_js__WEBPACK_IMPORTED_MODULE_0__.packageInfo),
+/* harmony export */   xglobal: () => (/* binding */ xglobal)
+/* harmony export */ });
+/* harmony import */ var _packageInfo_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./packageInfo.js */ "../../node_modules/@polkadot/util/node_modules/@polkadot/x-global/packageInfo.js");
+
+/** @internal Last-resort "this", if it gets here it probably would fail anyway */
+function evaluateThis(fn) {
+    return fn('return this');
+}
+/**
+ * A cross-environment implementation for globalThis
+ */
+const xglobal = /*#__PURE__*/ (typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof global !== 'undefined'
+        ? global
+        : typeof self !== 'undefined'
+            ? self
+            : typeof window !== 'undefined'
+                ? window
+                : evaluateThis(Function));
+/**
+ * Extracts a known global from the environment, applying a fallback if not found
+ */
+function extractGlobal(name, fallback) {
+    // Not quite sure why this is here - snuck in with TS 4.7.2 with no real idea
+    // (as of now) as to why this looks like an "any" when we do cast it to a T
+    //
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return typeof xglobal[name] === 'undefined'
+        ? fallback
+        : xglobal[name];
+}
+/**
+ * Expose a value as a known global, if not already defined
+ */
+function exposeGlobal(name, fallback) {
+    if (typeof xglobal[name] === 'undefined') {
+        xglobal[name] = fallback;
+    }
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/node_modules/@polkadot/x-global/packageInfo.js":
+/*!****************************************************************************************!*\
+  !*** ../../node_modules/@polkadot/util/node_modules/@polkadot/x-global/packageInfo.js ***!
+  \****************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   packageInfo: () => (/* binding */ packageInfo)
+/* harmony export */ });
+const packageInfo = { name: '@polkadot/x-global', path: ( true) ? new URL("file:///Users/dominhquang/WebstormProjects/SubWallet-Extension/node_modules/@polkadot/util/node_modules/@polkadot/x-global/packageInfo.js").pathname.substring(0, new URL("file:///Users/dominhquang/WebstormProjects/SubWallet-Extension/node_modules/@polkadot/util/node_modules/@polkadot/x-global/packageInfo.js").pathname.lastIndexOf('/') + 1) : 0, type: 'esm', version: '12.6.2' };
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/noop.js":
+/*!*************************************************!*\
+  !*** ../../node_modules/@polkadot/util/noop.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   identity: () => (/* binding */ identity),
+/* harmony export */   noop: () => (/* binding */ noop)
+/* harmony export */ });
+/**
+ * A sharable identity function. Returns the input as-is with no transformation applied.
+ */
+function identity(value) {
+    return value;
+}
+/**
+ * A sharable noop function. As the name suggests, does nothing
+ */
+function noop() {
+    // noop
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/string/toU8a.js":
+/*!*********************************************************!*\
+  !*** ../../node_modules/@polkadot/util/string/toU8a.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   stringToU8a: () => (/* binding */ stringToU8a)
+/* harmony export */ });
+/* harmony import */ var _polkadot_x_textencoder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @polkadot/x-textencoder */ "../../node_modules/@polkadot/x-textencoder/browser.js");
+
+const encoder = new _polkadot_x_textencoder__WEBPACK_IMPORTED_MODULE_0__.TextEncoder();
+/**
+ * @name stringToU8a
+ * @summary Creates a Uint8Array object from a utf-8 string.
+ * @description
+ * String input values return the actual encoded `UInt8Array`. `null` or `undefined` values returns an empty encoded array.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { stringToU8a } from '@polkadot/util';
+ *
+ * stringToU8a('hello'); // [0x68, 0x65, 0x6c, 0x6c, 0x6f]
+ * ```
+ */
+function stringToU8a(value) {
+    return value
+        ? encoder.encode(value.toString())
+        : new Uint8Array();
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/u8a/toHex.js":
+/*!******************************************************!*\
+  !*** ../../node_modules/@polkadot/util/u8a/toHex.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   u8aToHex: () => (/* binding */ u8aToHex)
+/* harmony export */ });
+const U8 = new Array(256);
+const U16 = new Array(256 * 256);
+for (let n = 0; n < 256; n++) {
+    U8[n] = n.toString(16).padStart(2, '0');
+}
+for (let i = 0; i < 256; i++) {
+    const s = i << 8;
+    for (let j = 0; j < 256; j++) {
+        U16[s | j] = U8[i] + U8[j];
+    }
+}
+/** @internal */
+function hex(value, result) {
+    const mod = (value.length % 2) | 0;
+    const length = (value.length - mod) | 0;
+    for (let i = 0; i < length; i += 2) {
+        result += U16[(value[i] << 8) | value[i + 1]];
+    }
+    if (mod) {
+        result += U8[value[length] | 0];
+    }
+    return result;
+}
+/**
+ * @name u8aToHex
+ * @summary Creates a hex string from a Uint8Array object.
+ * @description
+ * `UInt8Array` input values return the actual hex string. `null` or `undefined` values returns an `0x` string.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { u8aToHex } from '@polkadot/util';
+ *
+ * u8aToHex(new Uint8Array([0x68, 0x65, 0x6c, 0x6c, 0xf])); // 0x68656c0f
+ * ```
+ */
+function u8aToHex(value, bitLength = -1, isPrefixed = true) {
+    // this is not 100% correct sinmce we support isPrefixed = false....
+    const empty = isPrefixed
+        ? '0x'
+        : '';
+    if (!value?.length) {
+        return empty;
+    }
+    else if (bitLength > 0) {
+        const length = Math.ceil(bitLength / 8);
+        if (value.length > length) {
+            return `${hex(value.subarray(0, length / 2), empty)}…${hex(value.subarray(value.length - length / 2), '')}`;
+        }
+    }
+    return hex(value, empty);
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/util/u8a/toU8a.js":
+/*!******************************************************!*\
+  !*** ../../node_modules/@polkadot/util/u8a/toU8a.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   u8aToU8a: () => (/* binding */ u8aToU8a)
+/* harmony export */ });
+/* harmony import */ var _hex_toU8a_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../hex/toU8a.js */ "../../node_modules/@polkadot/util/hex/toU8a.js");
+/* harmony import */ var _is_buffer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../is/buffer.js */ "../../node_modules/@polkadot/util/is/buffer.js");
+/* harmony import */ var _is_hex_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../is/hex.js */ "../../node_modules/@polkadot/util/is/hex.js");
+/* harmony import */ var _is_u8a_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../is/u8a.js */ "../../node_modules/@polkadot/util/is/u8a.js");
+/* harmony import */ var _string_toU8a_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../string/toU8a.js */ "../../node_modules/@polkadot/util/string/toU8a.js");
+
+
+
+
+
+/**
+ * @name u8aToU8a
+ * @summary Creates a Uint8Array value from a Uint8Array, Buffer, string or hex input.
+ * @description
+ * `null` or `undefined` inputs returns a `[]` result, Uint8Array values returns the value, hex strings returns a Uint8Array representation.
+ * @example
+ * <BR>
+ *
+ * ```javascript
+ * import { u8aToU8a } from '@polkadot/util';
+ *
+ * u8aToU8a(new Uint8Array([0x12, 0x34]); // => Uint8Array([0x12, 0x34])
+ * u8aToU8a(0x1234); // => Uint8Array([0x12, 0x34])
+ * ```
+ */
+function u8aToU8a(value) {
+    return (0,_is_u8a_js__WEBPACK_IMPORTED_MODULE_0__.isU8a)(value)
+        // NOTE isBuffer needs to go here since it actually extends
+        // Uint8Array on Node.js environments, so all Buffer are Uint8Array,
+        // but Uint8Array is not Buffer
+        ? (0,_is_buffer_js__WEBPACK_IMPORTED_MODULE_1__.isBuffer)(value)
+            ? new Uint8Array(value)
+            : value
+        : (0,_is_hex_js__WEBPACK_IMPORTED_MODULE_2__.isHex)(value)
+            ? (0,_hex_toU8a_js__WEBPACK_IMPORTED_MODULE_3__.hexToU8a)(value)
+            : Array.isArray(value)
+                ? new Uint8Array(value)
+                : (0,_string_toU8a_js__WEBPACK_IMPORTED_MODULE_4__.stringToU8a)(value);
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/x-bigint/index.js":
+/*!******************************************************!*\
+  !*** ../../node_modules/@polkadot/x-bigint/index.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BigInt: () => (/* binding */ BigInt),
+/* harmony export */   packageInfo: () => (/* reexport safe */ _packageInfo_js__WEBPACK_IMPORTED_MODULE_0__.packageInfo)
+/* harmony export */ });
+/* harmony import */ var _polkadot_x_global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @polkadot/x-global */ "../../node_modules/@polkadot/x-bigint/node_modules/@polkadot/x-global/index.js");
+/* harmony import */ var _packageInfo_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./packageInfo.js */ "../../node_modules/@polkadot/x-bigint/packageInfo.js");
+
+
+/**
+ * @internal
+ *
+ * There are _still_ some older environments (specifically RN < 0.70), that does
+ * not have proper BigInt support - a non-working fallback is provided for those.
+ *
+ * We detect availability of BigInt upon usage, so this is purely to allow functional
+ * compilation & bundling. Since we have operators such as *+-/ top-level, a number-ish
+ * result is used here.
+ */
+function invalidFallback() {
+    return Number.NaN;
+}
+const BigInt = /*#__PURE__*/ (0,_polkadot_x_global__WEBPACK_IMPORTED_MODULE_1__.extractGlobal)('BigInt', invalidFallback);
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/x-bigint/node_modules/@polkadot/x-global/index.js":
+/*!**************************************************************************************!*\
+  !*** ../../node_modules/@polkadot/x-bigint/node_modules/@polkadot/x-global/index.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   exposeGlobal: () => (/* binding */ exposeGlobal),
+/* harmony export */   extractGlobal: () => (/* binding */ extractGlobal),
+/* harmony export */   packageInfo: () => (/* reexport safe */ _packageInfo_js__WEBPACK_IMPORTED_MODULE_0__.packageInfo),
+/* harmony export */   xglobal: () => (/* binding */ xglobal)
+/* harmony export */ });
+/* harmony import */ var _packageInfo_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./packageInfo.js */ "../../node_modules/@polkadot/x-bigint/node_modules/@polkadot/x-global/packageInfo.js");
+
+/** @internal Last-resort "this", if it gets here it probably would fail anyway */
+function evaluateThis(fn) {
+    return fn('return this');
+}
+/**
+ * A cross-environment implementation for globalThis
+ */
+const xglobal = /*#__PURE__*/ (typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof global !== 'undefined'
+        ? global
+        : typeof self !== 'undefined'
+            ? self
+            : typeof window !== 'undefined'
+                ? window
+                : evaluateThis(Function));
+/**
+ * Extracts a known global from the environment, applying a fallback if not found
+ */
+function extractGlobal(name, fallback) {
+    // Not quite sure why this is here - snuck in with TS 4.7.2 with no real idea
+    // (as of now) as to why this looks like an "any" when we do cast it to a T
+    //
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return typeof xglobal[name] === 'undefined'
+        ? fallback
+        : xglobal[name];
+}
+/**
+ * Expose a value as a known global, if not already defined
+ */
+function exposeGlobal(name, fallback) {
+    if (typeof xglobal[name] === 'undefined') {
+        xglobal[name] = fallback;
+    }
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/x-bigint/node_modules/@polkadot/x-global/packageInfo.js":
+/*!********************************************************************************************!*\
+  !*** ../../node_modules/@polkadot/x-bigint/node_modules/@polkadot/x-global/packageInfo.js ***!
+  \********************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   packageInfo: () => (/* binding */ packageInfo)
+/* harmony export */ });
+const packageInfo = { name: '@polkadot/x-global', path: ( true) ? new URL("file:///Users/dominhquang/WebstormProjects/SubWallet-Extension/node_modules/@polkadot/x-bigint/node_modules/@polkadot/x-global/packageInfo.js").pathname.substring(0, new URL("file:///Users/dominhquang/WebstormProjects/SubWallet-Extension/node_modules/@polkadot/x-bigint/node_modules/@polkadot/x-global/packageInfo.js").pathname.lastIndexOf('/') + 1) : 0, type: 'esm', version: '12.6.2' };
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/x-bigint/packageInfo.js":
+/*!************************************************************!*\
+  !*** ../../node_modules/@polkadot/x-bigint/packageInfo.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   packageInfo: () => (/* binding */ packageInfo)
+/* harmony export */ });
+const packageInfo = { name: '@polkadot/x-bigint', path: ( true) ? new URL("file:///Users/dominhquang/WebstormProjects/SubWallet-Extension/node_modules/@polkadot/x-bigint/packageInfo.js").pathname.substring(0, new URL("file:///Users/dominhquang/WebstormProjects/SubWallet-Extension/node_modules/@polkadot/x-bigint/packageInfo.js").pathname.lastIndexOf('/') + 1) : 0, type: 'esm', version: '12.6.2' };
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/x-textencoder/browser.js":
+/*!*************************************************************!*\
+  !*** ../../node_modules/@polkadot/x-textencoder/browser.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   TextEncoder: () => (/* binding */ TextEncoder),
+/* harmony export */   packageInfo: () => (/* reexport safe */ _packageInfo_js__WEBPACK_IMPORTED_MODULE_0__.packageInfo)
+/* harmony export */ });
+/* harmony import */ var _polkadot_x_global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @polkadot/x-global */ "../../node_modules/@polkadot/x-textencoder/node_modules/@polkadot/x-global/index.js");
+/* harmony import */ var _fallback_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./fallback.js */ "../../node_modules/@polkadot/x-textencoder/fallback.js");
+/* harmony import */ var _packageInfo_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./packageInfo.js */ "../../node_modules/@polkadot/x-textencoder/packageInfo.js");
+
+
+
+const TextEncoder = /*#__PURE__*/ (0,_polkadot_x_global__WEBPACK_IMPORTED_MODULE_1__.extractGlobal)('TextEncoder', _fallback_js__WEBPACK_IMPORTED_MODULE_2__.TextEncoder);
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/x-textencoder/fallback.js":
+/*!**************************************************************!*\
+  !*** ../../node_modules/@polkadot/x-textencoder/fallback.js ***!
+  \**************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   TextEncoder: () => (/* binding */ TextEncoder)
+/* harmony export */ });
+class TextEncoder {
+    encode(value) {
+        const count = value.length;
+        const u8a = new Uint8Array(count);
+        for (let i = 0; i < count; i++) {
+            u8a[i] = value.charCodeAt(i);
+        }
+        return u8a;
+    }
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/x-textencoder/node_modules/@polkadot/x-global/index.js":
+/*!*******************************************************************************************!*\
+  !*** ../../node_modules/@polkadot/x-textencoder/node_modules/@polkadot/x-global/index.js ***!
+  \*******************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   exposeGlobal: () => (/* binding */ exposeGlobal),
+/* harmony export */   extractGlobal: () => (/* binding */ extractGlobal),
+/* harmony export */   packageInfo: () => (/* reexport safe */ _packageInfo_js__WEBPACK_IMPORTED_MODULE_0__.packageInfo),
+/* harmony export */   xglobal: () => (/* binding */ xglobal)
+/* harmony export */ });
+/* harmony import */ var _packageInfo_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./packageInfo.js */ "../../node_modules/@polkadot/x-textencoder/node_modules/@polkadot/x-global/packageInfo.js");
+
+/** @internal Last-resort "this", if it gets here it probably would fail anyway */
+function evaluateThis(fn) {
+    return fn('return this');
+}
+/**
+ * A cross-environment implementation for globalThis
+ */
+const xglobal = /*#__PURE__*/ (typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof global !== 'undefined'
+        ? global
+        : typeof self !== 'undefined'
+            ? self
+            : typeof window !== 'undefined'
+                ? window
+                : evaluateThis(Function));
+/**
+ * Extracts a known global from the environment, applying a fallback if not found
+ */
+function extractGlobal(name, fallback) {
+    // Not quite sure why this is here - snuck in with TS 4.7.2 with no real idea
+    // (as of now) as to why this looks like an "any" when we do cast it to a T
+    //
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return typeof xglobal[name] === 'undefined'
+        ? fallback
+        : xglobal[name];
+}
+/**
+ * Expose a value as a known global, if not already defined
+ */
+function exposeGlobal(name, fallback) {
+    if (typeof xglobal[name] === 'undefined') {
+        xglobal[name] = fallback;
+    }
+}
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/x-textencoder/node_modules/@polkadot/x-global/packageInfo.js":
+/*!*************************************************************************************************!*\
+  !*** ../../node_modules/@polkadot/x-textencoder/node_modules/@polkadot/x-global/packageInfo.js ***!
+  \*************************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   packageInfo: () => (/* binding */ packageInfo)
+/* harmony export */ });
+const packageInfo = { name: '@polkadot/x-global', path: ( true) ? new URL("file:///Users/dominhquang/WebstormProjects/SubWallet-Extension/node_modules/@polkadot/x-textencoder/node_modules/@polkadot/x-global/packageInfo.js").pathname.substring(0, new URL("file:///Users/dominhquang/WebstormProjects/SubWallet-Extension/node_modules/@polkadot/x-textencoder/node_modules/@polkadot/x-global/packageInfo.js").pathname.lastIndexOf('/') + 1) : 0, type: 'esm', version: '12.6.2' };
+
+
+/***/ }),
+
+/***/ "../../node_modules/@polkadot/x-textencoder/packageInfo.js":
+/*!*****************************************************************!*\
+  !*** ../../node_modules/@polkadot/x-textencoder/packageInfo.js ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   packageInfo: () => (/* binding */ packageInfo)
+/* harmony export */ });
+const packageInfo = { name: '@polkadot/x-textencoder', path: ( true) ? new URL("file:///Users/dominhquang/WebstormProjects/SubWallet-Extension/node_modules/@polkadot/x-textencoder/packageInfo.js").pathname.substring(0, new URL("file:///Users/dominhquang/WebstormProjects/SubWallet-Extension/node_modules/@polkadot/x-textencoder/packageInfo.js").pathname.lastIndexOf('/') + 1) : 0, type: 'esm', version: '12.6.2' };
+
+
+/***/ }),
+
+/***/ "../../node_modules/eventemitter3/index.mjs":
+/*!**************************************************!*\
+  !*** ../../node_modules/eventemitter3/index.mjs ***!
+  \**************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   EventEmitter: () => (/* reexport default export from named module */ _index_js__WEBPACK_IMPORTED_MODULE_0__),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index.js */ "../../node_modules/eventemitter3/index.js");
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_index_js__WEBPACK_IMPORTED_MODULE_0__);
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nmd = (module) => {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!*********************!*\
+  !*** ./src/page.ts ***!
+  \*********************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _subwallet_extension_base_defaults__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @subwallet/extension-base/defaults */ "../extension-base/src/defaults.ts");
+/* harmony import */ var _subwallet_extension_base_page__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @subwallet/extension-base/page */ "../extension-base/src/page/index.ts");
+/* harmony import */ var _subwallet_extension_inject__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @subwallet/extension-inject */ "../extension-inject/src/index.ts");
+// Copyright 2019-2022 @polkadot/extension authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+
+
+
+const version = "1.2.28-0";
+function inject() {
+  (0,_subwallet_extension_inject__WEBPACK_IMPORTED_MODULE_0__.injectExtension)(_subwallet_extension_base_page__WEBPACK_IMPORTED_MODULE_1__.enable, {
+    name: 'subwallet-js',
+    version: version
+  });
+  (0,_subwallet_extension_inject__WEBPACK_IMPORTED_MODULE_0__.injectEvmExtension)((0,_subwallet_extension_base_page__WEBPACK_IMPORTED_MODULE_1__.initEvmProvider)(version));
+}
+
+// setup a response listener (events created by the loader for extension responses)
+window.addEventListener('message', ({
+  data,
+  source
+}) => {
+  // only allow messages from our window, by the loader
+  if (source !== window || data.origin !== _subwallet_extension_base_defaults__WEBPACK_IMPORTED_MODULE_2__.MESSAGE_ORIGIN_CONTENT) {
+    return;
+  }
+  if (data.id) {
+    (0,_subwallet_extension_base_page__WEBPACK_IMPORTED_MODULE_1__.handleResponse)(data);
+  } else {
+    console.error('Missing id for response.');
+  }
+});
+inject();
+})();
+
+/******/ })()
+;

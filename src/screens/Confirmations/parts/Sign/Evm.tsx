@@ -196,9 +196,9 @@ export const EvmSignArea = (props: Props) => {
           block={true}
           disabled={loading}
           icon={isErrorTransaction && getButtonIcon(XCircle)}
-          type={isErrorTransaction ? 'primary' : 'secondary'}
+          type={'secondary'}
           onPress={onCancel}>
-          {isErrorTransaction ? i18n.common.backToHome : i18n.common.cancel}
+          {isErrorTransaction ? i18n.buttonTitles.iUnderstand : i18n.common.cancel}
         </Button>
         {!isErrorTransaction && (
           <Button

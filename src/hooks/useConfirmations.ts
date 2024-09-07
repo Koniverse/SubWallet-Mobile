@@ -21,7 +21,6 @@ import { toggleConfirmationDisplayState } from 'stores/updater';
 const ConfirmationsQueueItems = [
   'addNetworkRequest',
   'addTokenRequest',
-  'switchNetworkRequest',
   'evmSignatureRequest',
   'evmSignatureRequestExternal',
   'evmSendTransactionRequest',

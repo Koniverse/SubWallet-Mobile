@@ -87,7 +87,7 @@ export const NetworkConnectionErrorConfirmation = ({ request, type }: Props) => 
           )}
 
           <Button disabled={loading} onPress={onCancel} type={'primary'}>
-            {i18n.buttonTitles.backToHome}
+            {i18n.buttonTitles.iUnderstand}
           </Button>
         </View>
       </ConfirmationFooter>

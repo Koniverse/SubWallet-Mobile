@@ -81,7 +81,6 @@ export const Confirmations = () => {
       evmSignatureRequest: i18n.header.signatureRequest,
       metadataRequest: i18n.header.updateMetadata,
       signingRequest: i18n.header.signatureRequest,
-      switchNetworkRequest: i18n.header.addNetworkRequest,
       connectWCRequest: i18n.header.walletConnect,
       errorConnectNetwork: i18n.header.transactionRequest,
     }),
