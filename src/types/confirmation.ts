@@ -2,7 +2,7 @@ import { ConfirmationDefinitions } from '@subwallet/extension-base/background/Ko
 
 export type EvmSignatureSupportType = keyof Pick<
   ConfirmationDefinitions,
-  'evmSignatureRequest' | 'evmSendTransactionRequest'
+  'evmSignatureRequest' | 'evmSendTransactionRequest' | 'evmWatchTransactionRequest'
 >;
 
 export type EvmErrorSupportType = keyof Pick<ConfirmationDefinitions, 'errorConnectNetwork'>;

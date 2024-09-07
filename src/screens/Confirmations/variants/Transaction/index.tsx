@@ -130,11 +130,11 @@ export const TransactionConfirmation = (props: Props) => {
           txExpirationTime={txExpirationTime}
         />
       )}
-      {type === 'evmSendTransactionRequest' && (
+      {(type === 'evmSendTransactionRequest' || type === 'evmWatchTransactionRequest') && (
         <EvmSignArea
           id={item.id}
-          payload={item as ConfirmationDefinitions['evmSendTransactionRequest'][0]}
-          type="evmSendTransactionRequest"
+          payload={item as ConfirmationDefinitions['evmSendTransactionRequest' | 'evmWatchTransactionRequest'][0]}
+          type={type}
           navigation={navigation}
           txExpirationTime={txExpirationTime}
         />
