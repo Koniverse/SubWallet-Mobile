@@ -53,6 +53,7 @@
     "@react-native-community/segmented-control": "^2.2.2",
     "@react-native-community/slider": "^4.4.2",
     "@react-native-masked-view/masked-view": "^0.2.9",
+    "@react-native/gradle-plugin": "^0.75.2",
     "@react-navigation/bottom-tabs": "^6.5.3",
     "@react-navigation/drawer": "^6.6.2",
     "@react-navigation/material-top-tabs": "^6.6.3",
@@ -147,7 +148,7 @@
     "@babel/preset-env": "^7.20.2",
     "@babel/runtime": "^7.20.6",
     "@polkadot/types": "12.0.1",
-    "@react-native/eslint-config": "^0.75.2",
+    "@react-native/eslint-config": "^0.72.2",
     "@react-native/metro-config": "^0.75.2",
     "@react-native/typescript-config": "0.75.2",
     "@subwallet/chain-list": "0.2.82",
@@ -174,7 +175,7 @@
     "babel-plugin-transform-remove-console": "^6.9.4",
     "crypto-browserify": "^3.12.0",
     "discord-webhook-node": "^1.1.8",
-    "eslint": "^8.29.0",
+    "eslint": "^8.57.0",
     "html-webpack-plugin": "^5.5.0",
     "https-browserify": "^1.0.0",
     "husky": "^8.0.3",
@@ -209,5 +210,5 @@
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "yarn@3.0.1"
+  "packageManager": "yarn@3.6.4"
 }
