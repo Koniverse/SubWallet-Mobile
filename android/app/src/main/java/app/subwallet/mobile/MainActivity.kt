@@ -9,8 +9,7 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 class MainActivity : ReactActivity() {
     // Add this method.
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+   override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme);
         SplashScreen.show(this);
         super.onCreate(null);
@@ -22,10 +21,10 @@ class MainActivity : ReactActivity() {
    */
   override fun getMainComponentName(): String = "SubWalletMobile"
 
+  /**
    * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
    * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate =
     DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
-  }
 }

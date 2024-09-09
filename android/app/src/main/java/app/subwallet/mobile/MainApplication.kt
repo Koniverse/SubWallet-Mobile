@@ -10,11 +10,10 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
-import com.facebook.soloader.SoLoader;
+import com.facebook.soloader.SoLoader
 
 import app.subwallet.mobile.nativeModules.RCTAppInstallerPackage
 import app.subwallet.mobile.nativeModules.RCTMinimizerPackage
-import java.util.List
 import com.microsoft.codepush.react.CodePush
 
 class MainApplication : Application(), ReactApplication {
@@ -23,10 +22,8 @@ class MainApplication : Application(), ReactApplication {
       object : DefaultReactNativeHost(this) {
         override fun getPackages(): List<ReactPackage> =
             PackageList(this).packages.apply {
-              // Packages that cannot be autolinked yet can be added manually here, for example:
-              // add(MyReactNativePackage())
-              add(new RCTMinimizerPackage());
-              add(new RCTAppInstallerPackage());
+              add(RCTMinimizerPackage())
+              add(RCTAppInstallerPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"
