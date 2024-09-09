@@ -1,6 +1,4 @@
-import { ExternalRequestContextProvider } from 'providers/ExternalRequestContext';
 import { QrSignerContextProvider } from 'providers/QrSignerContext';
-import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
 import React, { Suspense, useContext, useEffect, useState } from 'react';
 import { AppState, DeviceEventEmitter, ImageBackground, Linking, StatusBar, StyleProp, View } from 'react-native';
@@ -263,25 +261,21 @@ export const App = () => {
               dangerColor={theme.colors.notification_danger}>
               <ThemeContext.Provider value={theme}>
                 <SigningContextProvider>
-                  <ExternalRequestContextProvider>
-                    <QrSignerContextProvider>
-                      <ScannerContextProvider>
-                        <GestureHandlerRootView style={gestureRootStyle}>
-                          <PortalProvider>
-                            <GlobalModalContextProvider>
-                              <AppOnlineContentContextProvider>
-                                <GlobalInstructionModalContextProvider>
-                                  <AppModalContextProvider>
-                                    {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
-                                  </AppModalContextProvider>
-                                </GlobalInstructionModalContextProvider>
-                              </AppOnlineContentContextProvider>
-                            </GlobalModalContextProvider>
-                          </PortalProvider>
-                        </GestureHandlerRootView>
-                      </ScannerContextProvider>
-                    </QrSignerContextProvider>
-                  </ExternalRequestContextProvider>
+                  <QrSignerContextProvider>
+                    <GestureHandlerRootView style={gestureRootStyle}>
+                      <PortalProvider>
+                        <GlobalModalContextProvider>
+                          <AppOnlineContentContextProvider>
+                            <GlobalInstructionModalContextProvider>
+                              <AppModalContextProvider>
+                                {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
+                              </AppModalContextProvider>
+                            </GlobalInstructionModalContextProvider>
+                          </AppOnlineContentContextProvider>
+                        </GlobalModalContextProvider>
+                      </PortalProvider>
+                    </GestureHandlerRootView>
+                  </QrSignerContextProvider>
                 </SigningContextProvider>
               </ThemeContext.Provider>
             </ToastProvider>
