@@ -10,7 +10,7 @@ export default (theme: ThemeTypes) =>
     },
     sectionHeaderContainer: {
       paddingBottom: theme.sizeXS,
-      backgroundColor: 'red',
+      backgroundColor: theme.colorBgDefault,
       paddingHorizontal: theme.padding,
     },
     sectionHeaderTitle: {
