@@ -27,6 +27,8 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
+    - name: Enable Corepack
+      run: corepack enable
 
     - name: Add APP ENV
       run: |
