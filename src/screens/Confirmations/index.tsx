@@ -81,7 +81,6 @@ export const Confirmations = () => {
       evmSignatureRequest: i18n.header.signatureRequest,
       metadataRequest: i18n.header.updateMetadata,
       signingRequest: i18n.header.signatureRequest,
-      switchNetworkRequest: i18n.header.addNetworkRequest,
       connectWCRequest: i18n.header.walletConnect,
       errorConnectNetwork: i18n.header.transactionRequest,
     }),
@@ -193,10 +192,13 @@ export const Confirmations = () => {
         account = request.account;
         canSign = !_isMessage || !account.isHardware;
         isMessage = _isMessage;
-      } else if (confirmation.type === 'evmSignatureRequest' || confirmation.type === 'evmSendTransactionRequest') {
+      } else if (
+        ['evmSignatureRequest', 'evmSendTransactionRequest', 'evmWatchTransactionRequest'].includes(confirmation.type)
+      ) {
         const request = confirmation.item as ConfirmationDefinitions[
           | 'evmSignatureRequest'
-          | 'evmSendTransactionRequest'][0];
+          | 'evmSendTransactionRequest'
+          | 'evmWatchTransactionRequest'][0];
 
         account = request.payload.account;
         canSign = request.payload.canSign;
@@ -245,6 +247,7 @@ export const Confirmations = () => {
             navigation={navigation}
           />
         );
+      case 'evmWatchTransactionRequest':
       case 'evmSendTransactionRequest':
         return (
           <EvmTransactionConfirmation
