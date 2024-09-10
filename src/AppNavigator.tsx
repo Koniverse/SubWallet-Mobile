@@ -718,7 +718,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   component={Confirmations}
                   options={{ gestureEnabled: false, animationDuration: 100 }}
                 />
-                {!!accounts.length && <Stack.Screen name="Login" component={LoginScreen} />}
+                {!!accounts.length && (
+                  <Stack.Screen name="Login" component={LoginScreen} options={{ presentation: 'fullScreenModal' }} />
+                )}
                 <Stack.Screen name={'UnlockModal'} component={UnlockModal} />
               </Stack.Group>
             </>

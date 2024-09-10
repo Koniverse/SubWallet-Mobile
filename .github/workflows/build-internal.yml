@@ -136,7 +136,8 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
-
+    - name: Enable Corepack
+      run: corepack enable
     - name: Remove unused web-runner for Android
       run: |
         rm -r ./html/OldWeb.bundle
