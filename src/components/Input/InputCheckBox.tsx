@@ -1,6 +1,6 @@
 import React, { ReactElement, Suspense, useMemo } from 'react';
 import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
-import { CheckBox } from 'react-native-elements';
+import { CheckBox } from 'components/design-system-ui/check-box';
 import { ColorMap } from 'styles/color';
 import { FontMedium } from 'styles/sharedStyles';
 import { SVGImages } from 'assets/index';
