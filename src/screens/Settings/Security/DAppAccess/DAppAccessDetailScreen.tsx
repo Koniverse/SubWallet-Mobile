@@ -243,6 +243,8 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
           setModalVisible={setModalVisible}
         />
       }
+      extraData={JSON.stringify(authInfo).concat(JSON.stringify(pendingMap))}
+      keyExtractor={item => item.address}
     />
   );
 };
