@@ -206,12 +206,17 @@ jobs:
       run: |
         cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
 
+    - name: Compress apk file
+      uses: vimtor/action-zip@v1.2
+      with:
+        files: ./android/app/build/outputs/apk/release/app-release.apk
+        dest: app-release.apk.zip
     - name: Upload Android to Diawi
       id: upload-diawi-android
       uses: rnkdsh/action-upload-diawi@v1.5.4
       with:
         token: ${{ secrets.DIAWI_TOKEN }}
-        file: ./android/app/build/outputs/apk/release/app-release.apk
+        file: ${{ github.workspace }}/app-release.apk.zip
 
     # Notify to Discord
     - name: Notify to Discord
