@@ -217,7 +217,7 @@ jobs:
       uses: rnkdsh/action-upload-diawi@v1.5.4
       with:
         token: ${{ secrets.DIAWI_TOKEN }}
-        file: ${{ github.workspace }}/android/app/build/outputs/apk/release/app-release.apk.zip
+        file: ${{ github.workspace }}/app-release.apk.zip
 
     # Notify to Discord
     - name: Notify to Discord
