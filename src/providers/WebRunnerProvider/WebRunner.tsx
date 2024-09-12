@@ -66,8 +66,6 @@ export const getMajorVersionIOS = (): number => {
   return parseFloat(Platform.Version);
 };
 
-const iosVersion = getMajorVersionIOS();
-
 class WebRunnerHandler {
   eventEmitter?: EventEmitter;
   webRef?: React.RefObject<WebView<{}>>;
@@ -313,8 +311,8 @@ class WebRunnerHandler {
       }
     } else {
       let target = isDevMode ? '/DevModeWeb.bundle' : '/Web.bundle';
-      if (iosVersion < 16.4 || needFallBack) {
-        target = '/OldWeb.bundle';
+      if (needFallBack) {
+        target = '/Fallback.bundle';
       }
       this.server = new StaticServer(WEB_SERVER_PORT, RNFS.MainBundlePath + target, { localOnly: true });
     }

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ListRenderItemInfo, Platform, View } from 'react-native';
+import { ListRenderItemInfo, View } from 'react-native';
 import { CryptoNavigationProps, TokenGroupsDetailProps } from 'routes/home';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { TokenBalanceItemType } from 'types/balance';
@@ -158,17 +158,10 @@ export const TokenGroupsDetail = ({
       return;
     }
 
-    if (Platform.OS === 'ios' && parseFloat(Platform.Version) < 16.4) {
-      navigation.navigate('Drawer', {
-        screen: 'TransactionAction',
-        params: { screen: 'OldSendFund', params: { slug: tokenGroupSlug } },
-      });
-    } else {
-      navigation.navigate('Drawer', {
-        screen: 'TransactionAction',
-        params: { screen: 'SendFund', params: { slug: tokenGroupSlug } },
-      });
-    }
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: { screen: 'SendFund', params: { slug: tokenGroupSlug } },
+    });
   }, [currentAccount, navigation, showNoti, tokenGroupSlug]);
 
   const _onOpenSwap = useCallback(() => {

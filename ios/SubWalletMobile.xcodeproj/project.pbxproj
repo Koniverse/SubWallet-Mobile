@@ -12,7 +12,6 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */; };
-		355DBB332C2EBD3000028BB5 /* OldWeb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 355DBB322C2EBD3000028BB5 /* OldWeb.bundle */; };
 		356488AD2C64FC7B00437F84 /* DevModeWeb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 356488AC2C64FC7B00437F84 /* DevModeWeb.bundle */; };
 		4307831F29CEA0080043030D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4307831E29CEA0080043030D /* fonts */; };
 		430FCA172A72430100B43079 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 430FCA152A72430100B43079 /* RCTMinimizer.m */; };
@@ -45,7 +44,6 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SubWalletMobile/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile-SubWalletMobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		355DBB322C2EBD3000028BB5 /* OldWeb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = OldWeb.bundle; path = ../html/OldWeb.bundle; sourceTree = "<group>"; };
 		356488AC2C64FC7B00437F84 /* DevModeWeb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = DevModeWeb.bundle; path = ../html/DevModeWeb.bundle; sourceTree = "<group>"; };
 		3B4430A12AC88292D35C810B /* Pods-SubWalletMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.debug.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		4307831E29CEA0080043030D /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
@@ -147,7 +145,6 @@
 			isa = PBXGroup;
 			children = (
 				356488AC2C64FC7B00437F84 /* DevModeWeb.bundle */,
-				355DBB322C2EBD3000028BB5 /* OldWeb.bundle */,
 				4307831E29CEA0080043030D /* fonts */,
 				F1F1508628C6028D004B2C94 /* PageJs.bundle */,
 				F16BB9D8292A5C7B00F9E935 /* Web.bundle */,
@@ -293,7 +290,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 8;
 			files = (
-				355DBB332C2EBD3000028BB5 /* OldWeb.bundle in Resources */,
 				3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */,
 				81AB9BB82430601600AC10FF /* SplashScreen.storyboard in Resources */,
 				356488AD2C64FC7B00437F84 /* DevModeWeb.bundle in Resources */,
@@ -553,7 +549,7 @@
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SubWallet;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -585,7 +581,7 @@
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SubWallet;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

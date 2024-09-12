@@ -11,7 +11,6 @@ import { SendFund } from 'screens/Transaction/SendFund';
 import SendNFT from 'screens/Transaction/NFT';
 import withPageWrapper from 'components/pageWrapper';
 import { Swap } from 'screens/Transaction/Swap';
-import { OldSendFund } from 'screens/Transaction/SendFund/OldSendFund';
 
 const TransactionScreen = () => {
   const TransactionActionStack = createNativeStackNavigator<TransactionActionStackParamList>();
@@ -21,7 +20,6 @@ const TransactionScreen = () => {
       screenOptions={{ headerShown: false, animation: 'slide_from_right', gestureEnabled: false }}>
       <TransactionActionStack.Screen name="SendNFT" component={SendNFT} />
       <TransactionActionStack.Screen name="SendFund" component={SendFund} />
-      <TransactionActionStack.Screen name="OldSendFund" component={OldSendFund} />
       <TransactionActionStack.Screen name="Stake" component={Stake} />
       <TransactionActionStack.Screen name="Withdraw" component={Withdraw} />
       <TransactionActionStack.Screen name="Unbond" component={Unbond} />
