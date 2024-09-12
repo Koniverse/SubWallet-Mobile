@@ -17,6 +17,7 @@
       android:allowBackup="false"
       android:usesCleartextTraffic="true"
       android:theme="@style/AppTheme"
+      android:extractNativeLibs="true"
       android:supportsRtl="true">
       <activity
         android:name=".MainActivity"
