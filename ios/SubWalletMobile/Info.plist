@@ -61,15 +61,12 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
-	</dict>
+	<!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
+		    <key>NSAllowsArbitraryLoads</key>
+		    <false/>
+		    <key>NSAllowsLocalNetworking</key>
+			<true/>
+    </dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera is used to capture QR code</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -102,7 +99,7 @@
 	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>armv64</string>
 	</array>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
