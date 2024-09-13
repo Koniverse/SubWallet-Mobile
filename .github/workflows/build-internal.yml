@@ -5,26 +5,10 @@ on:
     branches: [ "koni-dev", "upgrade-ui" ]
 
 jobs:
-  check-runner:
-    runs-on: macos-13
-    outputs:
-      runner-label: ${{ steps.set-runner.outputs.runner-label }}
-
-    steps:
-      - name: Set runner
-        id: set-runner
-        run: |
-          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
-          available=$(echo "$runners" | select(.status == "online" and .busy == false and .labels[] .name == "self-hosted")')
-          if [ -n "$available" ]; then
-            echo "runner-label=self-hosted" >> $GITHUB_OUTPUT
-          else
-            echo "runner-label=macos-13" >> $GITHUB_OUTPUT
-          fi
   # iOS build workflow -------------------------------------------------
   build-ios:
     name: iOS builds
-    runs-on: ${{ needs.check-runner.outputs.runner-label }}
+    runs-on: macos-13
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
       GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
@@ -134,7 +118,7 @@ jobs:
   # Android build workflow -------------------------------------------------
   build-android:
     name: Android builds
-    runs-on: self-hosted
+    runs-on: macos-13
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
       GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
