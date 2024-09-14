@@ -81,7 +81,11 @@ import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
-import { _getXcmUnstableWarning, _isXcmTransferUnstable } from '@subwallet/extension-base/core/substrate/xcm-parser';
+import {
+  _getXcmUnstableWarning,
+  _isMythosFromHydrationToMythos,
+  _isXcmTransferUnstable,
+} from '@subwallet/extension-base/core/substrate/xcm-parser';
 import { AppModalContext } from 'providers/AppModalContext';
 import { CommonActionType, commonProcessReducer, DEFAULT_COMMON_PROCESS } from 'reducers/transaction-process';
 import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMultiTransaction';
@@ -911,11 +915,14 @@ export const SendFund = ({
       if (chainValue !== destChainValue) {
         const originChainInfo = chainInfoMap[chainValue];
         const destChainInfo = chainInfoMap[destChainValue];
-        if (_isXcmTransferUnstable(originChainInfo, destChainInfo)) {
+        const assetSlug = values.asset;
+        const isMythosFromHydrationToMythos = _isMythosFromHydrationToMythos(originChainInfo, destChainInfo, assetSlug);
+
+        if (_isXcmTransferUnstable(originChainInfo, destChainInfo, assetSlug)) {
           appModalContext.setConfirmModal({
             visible: true,
-            title: 'Pay attention!',
-            message: _getXcmUnstableWarning(originChainInfo, destChainInfo),
+            title: isMythosFromHydrationToMythos ? 'High fee alert!' : 'Pay attention!', // TODO: i18n
+            message: _getXcmUnstableWarning(originChainInfo, destChainInfo, assetSlug),
             completeBtnTitle: 'Continue',
             customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
             onCompleteModal: () => {
