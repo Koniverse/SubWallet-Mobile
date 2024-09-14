@@ -11,7 +11,6 @@ export interface ComponentStyle {
 export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
     wrapper: {
-      flex: 1,
       paddingBottom: theme.padding,
     },
     container: {

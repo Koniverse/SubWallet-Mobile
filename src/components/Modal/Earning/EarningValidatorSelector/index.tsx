@@ -371,6 +371,7 @@ export const EarningValidatorSelector = forwardRef(
         const key = getValidatorKey(item.address, item.identity);
         const selected = changeValidators.includes(key);
         const nominated = nominatorValueList.includes(key);
+        console.log(selected, selected);
 
         return (
           <StakingValidatorItem
@@ -421,6 +422,7 @@ export const EarningValidatorSelector = forwardRef(
         items={resultList}
         selectedValueMap={{}}
         selectModalType={'multi'}
+        extraData={JSON.stringify(changeValidators)}
         ref={validatorSelectModalRef}
         disabled={!chain || !from || disabled}
         // customBtn={customBtn}
@@ -440,6 +442,7 @@ export const EarningValidatorSelector = forwardRef(
           onPress: () => sortingModalRef?.current?.onOpenModal(),
         }}
         renderCustomItem={renderItem}
+        keyExtractor={item => getValidatorKey(item.address, item.identity)}
         searchFunc={searchFunction}
         placeholder={
           i18n.formatString(

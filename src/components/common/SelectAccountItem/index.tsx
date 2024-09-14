@@ -82,6 +82,7 @@ export const SelectAccountItem = ({
         backgroundColor: theme.colorBgSecondary,
         borderRadius: theme.borderRadiusLG,
         flex: 1,
+        marginBottom: theme.marginXS,
       }}
       onPress={() => onSelectAccount && onSelectAccount(address)}>
       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 2 }}>

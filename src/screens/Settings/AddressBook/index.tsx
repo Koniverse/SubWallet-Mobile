@@ -2,10 +2,8 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useMemo, useState } from 'react';
 import { AddressJson } from '@subwallet/extension-base/background/types';
-import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
-import { Keyboard, ListRenderItemInfo, View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import Typography from '../../../components/design-system-ui/typography';
-import { FontSemiBold } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SectionItem } from 'components/LazySectionList';
 import { EmptyList } from 'components/EmptyList';
@@ -22,6 +20,7 @@ import { Icon } from 'components/design-system-ui';
 import createStylesheet from './style';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 enum AccountGroup {
   CONTACT = 'contact',
@@ -90,9 +89,11 @@ const sortSection = (a: SectionItem<AccountItem>, b: SectionItem<AccountItem>) =
 const sortFunction = (a: AccountItem, b: AccountItem) => {
   if (b.name && a.name) {
     return b.name.localeCompare(a.name);
+  } else if (b.address && a.address) {
+    return b.address.localeCompare(a.address);
   }
 
-  return b.address.localeCompare(a.address);
+  return 0;
 };
 
 export const ManageAddressBook = () => {
@@ -110,11 +111,11 @@ export const ManageAddressBook = () => {
     }),
     [],
   );
-  const groupBy = useMemo(
-    () => (item: AccountItem) => {
-      const priority = item.group === AccountGroup.RECENT ? '1' : '0';
+  const groupBy = useCallback(
+    (item: AccountItem) => {
+      const priority = item.group === AccountGroup.RECENT ? '2' : '1';
 
-      return `${priority}|${AccountGroupNameMap[item.group]}`;
+      return `${priority}|${AccountGroupNameMap[item.group]}|${item.group}`;
     },
     [AccountGroupNameMap],
   );
@@ -142,23 +143,22 @@ export const ManageAddressBook = () => {
     return result;
   }, [contacts, recent]);
 
-  const renderSectionHeader: (info: { section: SectionListData<AccountItem> }) => React.ReactElement | null =
-    useCallback(
-      (info: { section: SectionListData<AccountItem> }) => {
-        return (
-          <View style={stylesheet.sectionHeaderContainer}>
-            <Typography.Text size={'sm'} style={stylesheet.sectionHeaderTitle}>
-              {`${info.section.title.split('|')[1]} `}
+  const renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null = useCallback(
+    (item: string, itemLength = 0) => {
+      return (
+        <View style={stylesheet.sectionHeaderContainer}>
+          <Typography.Text size={'sm'} style={stylesheet.sectionHeaderTitle}>
+            {`${item.split('|')[1]} `}
 
-              <Typography.Text size={'sm'} style={stylesheet.sectionHeaderCounter}>
-                ({info.section.data.length.toString().padStart(2, '0')})
-              </Typography.Text>
+            <Typography.Text size={'sm'} style={stylesheet.sectionHeaderCounter}>
+              ({itemLength.toString().padStart(2, '0')})
             </Typography.Text>
-          </View>
-        );
-      },
-      [stylesheet.sectionHeaderContainer, stylesheet.sectionHeaderCounter, stylesheet.sectionHeaderTitle],
-    );
+          </Typography.Text>
+        </View>
+      );
+    },
+    [stylesheet.sectionHeaderContainer, stylesheet.sectionHeaderCounter, stylesheet.sectionHeaderTitle],
+  );
 
   const grouping = useMemo(() => {
     return { groupBy, sortSection, renderSectionHeader };
@@ -172,8 +172,6 @@ export const ManageAddressBook = () => {
     ),
     [stylesheet.itemRightIconWrapper, theme],
   );
-
-  const BeforeListItem = useMemo(() => <View style={stylesheet.beforeListBlock} />, [stylesheet.beforeListBlock]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<AccountItem>) => {
@@ -190,7 +188,7 @@ export const ManageAddressBook = () => {
               setSelectedItem(item);
               setTimeout(() => setShowEditContactModal(true), 100);
             }}
-            customStyle={{ address: { ...FontSemiBold, color: theme.colorTextLight4 } }}
+            customStyle={{ address: stylesheet.itemAddressTextStyle, container: stylesheet.itemContainerStyle }}
             rightItem={ItemRightIcon}
           />
         );
@@ -198,6 +196,7 @@ export const ManageAddressBook = () => {
 
       return (
         <AccountItemWithName
+          customStyle={{ container: stylesheet.itemContainerStyle }}
           key={`${item.name}-${item.address}`}
           accountName={item.name}
           address={item.address}
@@ -211,7 +210,7 @@ export const ManageAddressBook = () => {
         />
       );
     },
-    [ItemRightIcon, theme.colorTextLight4, theme.sizeLG],
+    [ItemRightIcon, stylesheet.itemAddressTextStyle, stylesheet.itemContainerStyle, theme.sizeLG],
   );
 
   const listRightIconOption = useMemo(() => {
@@ -230,7 +229,6 @@ export const ManageAddressBook = () => {
         showLeftBtn={true}
         items={items}
         rightIconOption={listRightIconOption}
-        beforeListItem={BeforeListItem}
         title={i18n.header.manageAddressBook}
         placeholder={i18n.placeholder.searchAddressBook}
         searchFunction={searchFunction}

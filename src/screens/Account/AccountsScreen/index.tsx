@@ -1,15 +1,7 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  InteractionManager,
-  Keyboard,
-  ListRenderItemInfo,
-  SectionListData,
-  Share,
-  StyleProp,
-  View,
-} from 'react-native';
+import React, { useCallback, useMemo, useEffect, useRef, useState } from 'react';
+import { Keyboard, Share, StyleProp, InteractionManager, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -45,6 +37,8 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import useGoHome from 'hooks/screen/useGoHome';
+import { ListRenderItemInfo } from '@shopify/flash-list';
+import Svg from 'react-native-svg';
 
 const renderListEmptyComponent = () => {
   return (
@@ -69,15 +63,6 @@ const receiveModalContentWrapper: StyleProp<any> = {
   width: '100%',
 };
 
-type GetItemLayoutType =
-  | readonly AccountJson[]
-  | SectionListData<AccountJson, SectionListData<AccountJson>>[]
-  | null
-  | undefined;
-const ITEM_HEIGHT = 60;
-const ITEM_SEPARATOR = 8;
-const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
-
 export const AccountsScreen = ({
   route: {
     params: { pathName },
@@ -90,7 +75,7 @@ export const AccountsScreen = ({
   const [isReady, setIsReady] = useState<boolean>(false);
   const fullAccounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
-  let svg: { toDataURL: (arg0: (data: any) => void) => void };
+  let svg: Svg | null;
   const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
   const [selectedAddress, setSelectedAddress] = useState<string>('');
   const [deleting, setDeleting] = useState(false);
@@ -210,7 +195,7 @@ export const AccountsScreen = ({
   );
 
   const onShareImg = () => {
-    svg.toDataURL(data => {
+    svg?.toDataURL(data => {
       const shareImageBase64 = {
         title: 'QR',
         message: `My Public Address to Receive ${selectedAddress}`,
@@ -306,12 +291,6 @@ export const AccountsScreen = ({
     [currentAccountAddress, navigation, rightSwipeActions, selectAccount],
   );
 
-  const getItemLayout = (data: GetItemLayoutType, index: number) => ({
-    index,
-    length: TOTAL_ITEM_HEIGHT,
-    offset: TOTAL_ITEM_HEIGHT * index,
-  });
-
   const onPressFooterBtn = (action: () => void) => {
     Keyboard.dismiss();
     setTimeout(action, 200);
@@ -357,15 +336,14 @@ export const AccountsScreen = ({
         onPressBack={() => navigation.goBack()}
         title={i18n.header.selectAccount}
         items={accounts}
-        flatListStyle={{ gap: theme.paddingXS }}
         renderItem={renderItem}
         renderListEmptyComponent={renderListEmptyComponent}
         searchFunction={searchFunction}
         autoFocus={false}
         loading={!isReady}
-        getItemLayout={getItemLayout}
         afterListItem={renderFooterComponent()}
         placeholder={i18n.placeholder.accountName}
+        estimatedItemSize={80}
         rightIconOption={{
           icon: ({ color }) => <Icon phosphorIcon={Export} weight={'fill'} iconColor={color} size={'md'} />,
           onPress: () => navigation.navigate('ExportAllAccount'),

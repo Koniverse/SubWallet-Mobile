@@ -5,15 +5,13 @@ import { FontSemiBold } from 'styles/sharedStyles';
 export default (theme: ThemeTypes) =>
   StyleSheet.create({
     flatListStyle: {
-      paddingHorizontal: theme.padding,
+      // paddingHorizontal: theme.padding,
       paddingBottom: theme.padding,
-      gap: theme.sizeXS,
     },
     sectionHeaderContainer: {
-      paddingTop: theme.sizeXS,
       paddingBottom: theme.sizeXS,
-      marginBottom: -theme.sizeXS,
       backgroundColor: theme.colorBgDefault,
+      paddingHorizontal: theme.padding,
     },
     sectionHeaderTitle: {
       ...FontSemiBold,
@@ -23,14 +21,5 @@ export default (theme: ThemeTypes) =>
     sectionHeaderCounter: {
       ...FontSemiBold,
       color: theme.colorTextLight4,
-    },
-    beforeListBlock: {
-      height: theme.size,
-      backgroundColor: theme.colorBgDefault,
-      left: 0,
-      right: 0,
-      top: 58,
-      position: 'absolute',
-      zIndex: 10,
     },
   });

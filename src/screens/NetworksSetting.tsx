@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { ListRenderItemInfo } from 'react-native';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { ListChecks, Plus } from 'phosphor-react-native';
@@ -16,6 +15,7 @@ import i18n from 'utils/i18n/i18n';
 import useChainInfoWithStateAndStatus, {
   ChainInfoWithStateAnhStatus,
 } from 'hooks/chain/useChainInfoWithStateAndStatus';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 let chainKeys: Array<string> | undefined;
 
@@ -219,6 +219,7 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
       isShowFilterBtn
       filterFunction={filterFunction}
       isShowListWrapper={true}
+      estimatedItemSize={61}
     />
   );
 };

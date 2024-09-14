@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { FlatList, ListRenderItem, View } from 'react-native';
+import { View } from 'react-native';
 import { RootStackParamList } from 'routes/index';
 import browserHomeStyle from './styles/BrowserListByCategory';
 import { useSelector } from 'react-redux';
@@ -10,22 +10,18 @@ import { getHostName } from 'utils/browser';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CategoryEmptyList } from 'screens/Home/Browser/Shared/CategoryEmptyList';
-import { browserListItemHeight, browserListSeparator } from 'constants/itemHeight';
 import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
+import { FlashList, ListRenderItem } from '@shopify/flash-list';
 
 export interface BrowserListByCategoryProps {
   searchString: string;
   navigationType: 'BOOKMARK' | 'RECOMMENDED';
 }
 
-const styles = browserHomeStyle();
-const ITEM_HEIGHT = browserListItemHeight;
-const ITEM_SEPARATOR = browserListSeparator;
-const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
-
 const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>> = ({ route, navigation }) => {
   const { searchString, navigationType } = route.params as BrowserListByCategoryProps;
   const theme = useSubWalletTheme().swThemes;
+  const styles = browserHomeStyle(theme);
   const {
     browserDApps: { dApps },
   } = useGetDAppList();
@@ -82,11 +78,6 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dApps, searchString, bookmarkedItems]);
 
-  const getItemLayout = (data: DAppInfo[] | null | undefined, index: number) => ({
-    index,
-    length: TOTAL_ITEM_HEIGHT,
-    offset: TOTAL_ITEM_HEIGHT * index,
-  });
   const keyExtractor = (item: DAppInfo) => item.id + item.url;
   const onPressSectionItem = (item: DAppInfo) => {
     navigation.navigate('BrowserTabsManager', { url: item.url, name: item.title });
@@ -111,17 +102,14 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
   return (
     <View style={styles.container}>
       {listByCategory.length ? (
-        <FlatList
+        <FlashList
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
-          maxToRenderPerBatch={12}
-          initialNumToRender={12}
           removeClippedSubviews
           data={listByCategory}
           keyExtractor={keyExtractor}
-          style={{ padding: theme.padding, paddingTop: theme.paddingSM }}
           renderItem={renderBrowserItem}
-          getItemLayout={getItemLayout}
+          estimatedItemSize={70}
         />
       ) : (
         <CategoryEmptyList />

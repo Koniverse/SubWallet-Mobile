@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Alert, Linking, ListRenderItemInfo } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import usePreviewYieldGroupInfo from 'hooks/earning/usePreviewYieldGroupInfo';
 import { DataContext } from 'providers/DataContext';
@@ -31,6 +31,7 @@ import { _ChainInfo } from '@subwallet/chain-list/types';
 import i18n from 'utils/i18n/i18n';
 import { EmptyList } from 'components/EmptyList';
 import { Trophy } from 'phosphor-react-native';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 interface EarningPreviewScreen {
   poolInfoMap: Record<string, YieldPoolInfo>;
@@ -428,9 +429,9 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
             renderListEmptyComponent={renderEmpty}
             title={i18n.header.groupList}
             renderItem={renderItem}
+            estimatedItemSize={74}
             flatListStyle={{
               paddingHorizontal: theme.padding,
-              gap: theme.sizeXS,
               paddingBottom: theme.paddingXS,
             }}
             filterFunction={filterFunction}

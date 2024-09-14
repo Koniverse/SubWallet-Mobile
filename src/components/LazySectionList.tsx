@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
-import { ListRenderItemInfo, RefreshControlProps, SectionList, StyleProp, View, ViewStyle } from 'react-native';
+import { RefreshControlProps, View } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useLazyList } from 'hooks/common/useLazyList';
 import { SortFunctionInterface } from 'types/ui-types';
-import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ContentStyle, FlashList, ListRenderItemInfo } from '@shopify/flash-list';
 
 export type SectionItem<T> = { title: string; data: T[] };
 
@@ -14,23 +14,19 @@ interface Props<T> {
   items: T[];
   searchString?: string;
   renderListEmptyComponent: (searchString?: string) => JSX.Element;
-  renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
+  renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null;
   searchFunction?: (items: T[], searchString: string) => T[];
   filterFunction?: (items: T[], filters: string[]) => T[];
   groupBy: (item: T) => string;
   selectedFilters?: string[];
-  listStyle?: StyleProp<ViewStyle>;
+  listStyle?: ContentStyle;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   sortItemFunction?: SortFunctionInterface<T>;
   sortSectionFunction?: SortFunctionInterface<SectionItem<T>>;
   loading?: boolean;
-  getItemLayout?:
-    | ((
-        data: SectionListData<T, SectionListData<T>>[] | null,
-        index: number,
-      ) => { length: number; offset: number; index: number })
-    | undefined;
+  estimatedItemSize?: number;
+  stickyHeader?: boolean;
 }
 
 export function LazySectionList<T>({
@@ -48,11 +44,24 @@ export function LazySectionList<T>({
   loading,
   sortItemFunction,
   sortSectionFunction,
-  getItemLayout,
+  estimatedItemSize,
+  stickyHeader = true,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
-  const sectionListRef = useRef<SectionList>(null);
+  const sectionListRef = useRef<FlashList<string | T>>(null);
   const [sections, setSections] = useState<SectionItem<T>[]>([]);
+  const sectionData = useMemo(() => {
+    const result: (string | T)[] = [];
+
+    sections.forEach(({ data, title }) => {
+      if (data && data.length) {
+        result.push(title);
+        result.push(...data);
+      }
+    });
+
+    return result;
+  }, [sections]);
 
   const sortedItems = useMemo(() => {
     const result = [...items];
@@ -100,7 +109,7 @@ export function LazySectionList<T>({
     if (sectionListRef.current) {
       if (!unmount) {
         setPageNumber(1);
-        sectionListRef.current.scrollToLocation({ itemIndex: 0, sectionIndex: 0, animated: false });
+        sectionListRef.current.scrollToOffset({ animated: false, offset: 0 });
       }
     }
 
@@ -118,6 +127,37 @@ export function LazySectionList<T>({
     return isLoading ? <ActivityLoading /> : null;
   };
 
+  const renderSectionItem = useCallback(
+    ({ item, index, extraData, target }: ListRenderItemInfo<string | T>) => {
+      if (typeof item === 'string') {
+        const itemLength = sections.find(_item => _item.title === item)?.data.length;
+        return renderSectionHeader(item, itemLength);
+      } else {
+        if (renderItem) {
+          return renderItem({ item, index, extraData, target });
+        } else {
+          return <></>;
+        }
+      }
+    },
+    [renderItem, renderSectionHeader, sections],
+  );
+
+  const getItemType = (item: string | T) => {
+    // To achieve better performance, specify the type based on the item
+    return typeof item === 'string' ? 'sectionHeader' : 'row';
+  };
+
+  const stickyHeaderIndices = sectionData
+    .map((item, index) => {
+      if (typeof item === 'string') {
+        return index;
+      } else {
+        return null;
+      }
+    })
+    .filter(item => item !== null) as number[];
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -130,21 +170,20 @@ export function LazySectionList<T>({
     <>
       {sections.length ? (
         <View style={{ flex: 1 }}>
-          <SectionList
+          <FlashList<string | T>
             ref={sectionListRef}
             style={{ ...ScrollViewStyle }}
             keyboardShouldPersistTaps={'handled'}
             onEndReached={onLoadMore}
-            renderItem={renderItem}
-            renderSectionHeader={renderSectionHeader}
+            renderItem={renderSectionItem}
             refreshControl={refreshControl}
             ListFooterComponent={renderLoadingAnimation}
             contentContainerStyle={listStyle}
-            sections={sections}
-            getItemLayout={getItemLayout}
             onEndReachedThreshold={0.5}
-            maxToRenderPerBatch={12}
-            initialNumToRender={12}
+            stickyHeaderIndices={stickyHeader ? stickyHeaderIndices : undefined}
+            getItemType={getItemType}
+            estimatedItemSize={estimatedItemSize}
+            data={sectionData}
           />
         </View>
       ) : (

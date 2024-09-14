@@ -11,7 +11,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { _CrowdloanItemType } from 'types/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ListRenderItemInfo, RefreshControl, View } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { useRefresh } from 'hooks/useRefresh';
@@ -19,6 +19,7 @@ import { reloadCron } from 'messaging/index';
 import { BannerGenerator } from 'components/common/BannerGenerator';
 import { RootNavigationProps } from 'routes/index';
 import { _FundStatus } from '@subwallet/chain-list/types';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 enum FilterValue {
   POLKADOT_PARACHAIN = 'Polkadot parachain',
@@ -119,7 +120,7 @@ export const CrowdloansScreen = () => {
     <FlatListScreen
       isShowFilterBtn
       title={i18n.header.crowdloans}
-      flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
+      flatListStyle={{ paddingHorizontal: theme.padding, paddingBottom: 8 }}
       renderListEmptyComponent={renderListEmptyComponent}
       renderItem={renderItem}
       autoFocus={false}
@@ -130,6 +131,7 @@ export const CrowdloansScreen = () => {
       filterFunction={getListByFilterOpt}
       placeholder={i18n.placeholder.searchProject}
       refreshControl={<RefreshControl tintColor={theme.colorWhite} refreshing={isRefresh} onRefresh={onRefresh} />}
+      estimatedItemSize={76}
       beforeListItem={
         !!(banners && banners.length) ? (
           <View

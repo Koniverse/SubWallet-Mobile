@@ -16,7 +16,6 @@ export default (theme: ThemeTypes) => {
     },
     container: {
       paddingHorizontal: theme.padding,
-      gap: theme.sizeXS,
       paddingBottom: theme.paddingXS,
     },
     refreshIndicator: {

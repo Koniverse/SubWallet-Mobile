@@ -1,14 +1,13 @@
 import { useGetPoolTargetList, useYieldPositionDetail } from 'hooks/earning';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Button, Icon, SelectItem, Typography } from 'components/design-system-ui';
+import { Icon, Typography } from 'components/design-system-ui';
 import { NominationPoolDataType } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
 import { Keyboard, ListRenderItemInfo, View } from 'react-native';
 import { StakingPoolItem } from 'components/common/StakingPoolItem';
 import { PoolSelectorField } from 'components/Field/PoolSelector';
 import { PoolSelectorDetailModal } from 'components/Modal/common/PoolSelectorDetailModal';
-import { ArrowsClockwise, MagnifyingGlass, SortAscending, SortDescending, ThumbsUp } from 'phosphor-react-native';
-import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
+import { MagnifyingGlass, SortAscending, ThumbsUp } from 'phosphor-react-native';
 import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import BigN from 'bignumber.js';
@@ -16,7 +15,6 @@ import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { EmptyValidator } from 'components/EmptyValidator';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { SectionItem } from 'components/LazySectionList';
-import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
@@ -24,6 +22,7 @@ import { YieldPoolType } from '@subwallet/extension-base/types';
 import DotBadge from 'components/design-system-ui/badge/DotBadge';
 import { fetchStaticData } from 'utils/fetchStaticData';
 import { useToast } from 'react-native-toast-notifications';
+import { EarningPoolSortModal } from 'components/Modal/Earning/EarningPoolSelector/EarningPoolSortModal';
 
 enum EarningPoolGroup {
   RECOMMEND = 'recommend',
@@ -51,15 +50,15 @@ interface FilterOption {
   value: NominationPoolDataType['state'];
 }
 
-enum SortKey {
+export enum EarningPoolSelectorSortKey {
   MEMBER = 'member',
   TOTAL_POOLED = 'total-pooled',
   DEFAULT = 'default',
 }
 
-interface SortOption {
+export interface EarningPoolSelectorSortOption {
   label: string;
-  value: SortKey;
+  value: EarningPoolSelectorSortKey;
   desc: boolean;
 }
 
@@ -102,19 +101,6 @@ const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
     return false;
   });
 };
-
-const sortingOptions: SortOption[] = [
-  {
-    desc: false,
-    label: i18n.stakingScreen.lowestMember,
-    value: SortKey.MEMBER,
-  },
-  {
-    desc: true,
-    label: i18n.stakingScreen.highestBonded,
-    value: SortKey.TOTAL_POOLED,
-  },
-];
 
 const FILTER_OPTIONS: FilterOption[] = [
   {
@@ -169,7 +155,7 @@ export const EarningPoolSelector = forwardRef(
     const poolSelectorRef = useRef<ModalRef>();
     const sortingModalRef = useRef<ModalRef>();
 
-    const [sortSelection, setSortSelection] = useState<SortKey>(SortKey.DEFAULT);
+    const [sortSelection, setSortSelection] = useState<EarningPoolSelectorSortKey>(EarningPoolSelectorSortKey.DEFAULT);
     const nominationPoolValueList = useMemo((): string[] => {
       return compound?.nominations.map(item => item.validatorAddress) || [];
     }, [compound]);
@@ -204,13 +190,12 @@ export const EarningPoolSelector = forwardRef(
     }, [poolInfoMap, slug]);
 
     const renderSectionHeader = useCallback(
-      (info: { section: SectionListData<NominationPoolDataTypeItem> }) => {
+      (item: string) => {
         if (defaultPoolMap?.[chain] && defaultPoolMap?.[chain].length) {
           return (
             <View
               style={{
                 paddingBottom: theme.sizeXS,
-                marginBottom: -theme.sizeXS,
                 paddingHorizontal: theme.size,
                 backgroundColor: theme.colorBgDefault,
                 flexDirection: 'row',
@@ -225,9 +210,9 @@ export const EarningPoolSelector = forwardRef(
                   textTransform: 'uppercase',
                   ...FontSemiBold,
                 }}>
-                {`${info.section.title.split('|')[1]}`}
+                {`${item.split('|')[1]}`}
               </Typography.Text>
-              {info.section.title.includes('recommended') && (
+              {item.includes('recommended') && (
                 <Icon phosphorIcon={ThumbsUp} iconColor={theme['cyan-6']} size={'xs'} weight={'fill'} />
               )}
             </View>
@@ -270,7 +255,7 @@ export const EarningPoolSelector = forwardRef(
             const isRecommendedB = defaultPoolMap?.[chain].includes(b.id);
 
             switch (sortSelection) {
-              case SortKey.MEMBER:
+              case EarningPoolSelectorSortKey.MEMBER:
                 if (isRecommendedA && !isRecommendedB) {
                   return -1;
                 } else if (!isRecommendedA && isRecommendedB) {
@@ -278,7 +263,7 @@ export const EarningPoolSelector = forwardRef(
                 } else {
                   return a.memberCounter - b.memberCounter;
                 }
-              case SortKey.TOTAL_POOLED:
+              case EarningPoolSelectorSortKey.TOTAL_POOLED:
                 if (isRecommendedA && !isRecommendedB) {
                   return -1;
                 } else if (!isRecommendedA && isRecommendedB) {
@@ -286,7 +271,7 @@ export const EarningPoolSelector = forwardRef(
                 } else {
                   return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
                 }
-              case SortKey.DEFAULT:
+              case EarningPoolSelectorSortKey.DEFAULT:
               default:
                 if (isRecommendedA && !isRecommendedB) {
                   return -1;
@@ -304,11 +289,11 @@ export const EarningPoolSelector = forwardRef(
             }
           } else {
             switch (sortSelection) {
-              case SortKey.MEMBER:
+              case EarningPoolSelectorSortKey.MEMBER:
                 return a.memberCounter - b.memberCounter;
-              case SortKey.TOTAL_POOLED:
+              case EarningPoolSelectorSortKey.TOTAL_POOLED:
                 return new BigN(b.bondedAmount).minus(a.bondedAmount).toNumber();
-              case SortKey.DEFAULT:
+              case EarningPoolSelectorSortKey.DEFAULT:
               default:
                 if (a.disabled && !b.disabled) {
                   return 1;
@@ -346,24 +331,10 @@ export const EarningPoolSelector = forwardRef(
       );
     }, [chain, items.length, setForceFetchValidator]);
 
-    const renderSortingItem = useCallback(
-      (item: SortOption) => {
-        return (
-          <SelectItem
-            key={item.value}
-            label={item.label}
-            icon={item.desc ? SortDescending : SortAscending}
-            backgroundColor={theme.colorPrimary}
-            isSelected={sortSelection === item.value}
-            onPress={() => {
-              setSortSelection(item.value);
-              sortingModalRef?.current?.onCloseModal();
-            }}
-          />
-        );
-      },
-      [sortSelection, theme.colorPrimary],
-    );
+    const onPressSortingItem = useCallback((item: EarningPoolSelectorSortOption) => {
+      setSortSelection(item.value);
+      sortingModalRef?.current?.onCloseModal();
+    }, []);
 
     const onPressItem = useCallback(
       (item: NominationPoolDataTypeItem) => {
@@ -377,6 +348,18 @@ export const EarningPoolSelector = forwardRef(
       },
       [hideAll, onSelectItem, show],
     );
+    const onPressRightIconButton = useCallback((item: NominationPoolDataTypeItem) => {
+      Keyboard.dismiss();
+      setSelectedItem(item);
+      setTimeout(() => {
+        setDetailModalVisible(true);
+      }, 100);
+    }, []);
+
+    const onPressResetSortingItem = useCallback(() => {
+      setSortSelection(EarningPoolSelectorSortKey.DEFAULT);
+      sortingModalRef?.current?.onCloseModal();
+    }, []);
 
     const renderItem = useCallback(
       ({ item }: ListRenderItemInfo<NominationPoolDataTypeItem>) => {
@@ -395,17 +378,11 @@ export const EarningPoolSelector = forwardRef(
             symbol={symbol}
             key={id}
             onPress={() => onPressItem(item)}
-            onPressRightButton={() => {
-              Keyboard.dismiss();
-              setSelectedItem(item);
-              setTimeout(() => {
-                setDetailModalVisible(true);
-              }, 100);
-            }}
+            onPressRightButton={() => onPressRightIconButton(item)}
           />
         );
       },
-      [onPressItem],
+      [onPressItem, onPressRightIconButton],
     );
 
     useEffect(() => {
@@ -430,6 +407,34 @@ export const EarningPoolSelector = forwardRef(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nominationPoolValueList, items]);
 
+    const renderSelected = useCallback(
+      () => (
+        <PoolSelectorField
+          disabled={isDisabled}
+          onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
+          // onPressLightningBtn={onPressLightningBtn}
+          showLightingBtn={false}
+          item={selectedPool}
+          label={i18n.inputLabel.pool}
+          loading={poolLoading}
+          recommendIds={defaultPoolMap?.[chain]}
+        />
+      ),
+      [chain, defaultPoolMap, isDisabled, poolLoading, selectedPool],
+    );
+
+    const rightIconOption = useMemo(
+      () => ({
+        icon: () => (
+          <DotBadge dot={sortSelection !== EarningPoolSelectorSortKey.DEFAULT}>
+            <Icon phosphorIcon={SortAscending} size="md" />
+          </DotBadge>
+        ),
+        onPress: () => sortingModalRef?.current?.onOpenModal(),
+      }),
+      [sortSelection],
+    );
+
     return (
       <>
         <FullSizeSelectModal
@@ -445,28 +450,18 @@ export const EarningPoolSelector = forwardRef(
           isShowFilterBtn={true}
           filterOptions={FILTER_OPTIONS}
           filterFunction={filterFunction}
-          onCloseModal={() => setSortSelection(SortKey.DEFAULT)}
-          rightIconOption={{
-            icon: () => (
-              <DotBadge dot={sortSelection !== SortKey.DEFAULT}>
-                <Icon phosphorIcon={SortAscending} size="md" />
-              </DotBadge>
-            ),
-            onPress: () => sortingModalRef?.current?.onOpenModal(),
-          }}
+          onCloseModal={() => setSortSelection(EarningPoolSelectorSortKey.DEFAULT)}
+          rightIconOption={rightIconOption}
           grouping={grouping}
-          renderSelected={() => (
-            <PoolSelectorField
-              disabled={isDisabled}
-              onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
-              // onPressLightningBtn={onPressLightningBtn}
-              showLightingBtn={false}
-              item={selectedPool}
-              label={i18n.inputLabel.pool}
-              loading={poolLoading}
-              recommendIds={defaultPoolMap?.[chain]}
-            />
-          )}>
+          keyExtractor={item => {
+            if (typeof item === 'string') {
+              return item;
+            } else {
+              return item.address;
+            }
+          }}
+          estimatedItemSize={82}
+          renderSelected={renderSelected}>
           <>
             {!!selectedItem && (
               <PoolSelectorDetailModal
@@ -477,26 +472,12 @@ export const EarningPoolSelector = forwardRef(
               />
             )}
 
-            <BasicSelectModal
-              level={2}
-              ref={sortingModalRef}
-              title={i18n.header.sorting}
-              items={sortingOptions}
-              selectedValueMap={{ [sortSelection]: true }}
-              onBackButtonPress={() => sortingModalRef.current?.onCloseModal()}
-              renderCustomItem={renderSortingItem}>
-              {
-                <Button
-                  style={{ marginTop: 16 }}
-                  icon={<Icon phosphorIcon={ArrowsClockwise} size={'md'} />}
-                  onPress={() => {
-                    setSortSelection(SortKey.DEFAULT);
-                    sortingModalRef?.current?.onCloseModal();
-                  }}>
-                  {i18n.buttonTitles.resetSorting}
-                </Button>
-              }
-            </BasicSelectModal>
+            <EarningPoolSortModal
+              sortingModalRef={sortingModalRef}
+              sortSelection={sortSelection}
+              onPressResetSorting={onPressResetSortingItem}
+              onPressItem={onPressSortingItem}
+            />
           </>
         </FullSizeSelectModal>
       </>

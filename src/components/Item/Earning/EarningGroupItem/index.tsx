@@ -147,6 +147,7 @@ function createStyleSheet(theme: ThemeTypes) {
       backgroundColor: theme.colorBgSecondary,
       borderRadius: theme.borderRadiusLG,
       alignItems: 'center',
+      marginBottom: theme.marginXS,
     },
     containerRow: {
       flexDirection: 'row',

@@ -13,7 +13,7 @@ import { Button } from 'components/design-system-ui';
 import { SVGImages } from 'assets/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ConnectionItem } from 'components/WalletConnect/ConnectionItem';
-import { DeviceEventEmitter, ListRenderItemInfo } from 'react-native';
+import { DeviceEventEmitter } from 'react-native';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
@@ -21,6 +21,7 @@ import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import useCheckCamera from 'hooks/common/useCheckCamera';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 const searchFunc = (items: SessionTypes.Struct[], searchString: string) => {
   const searchTextLowerCase = searchString.toLowerCase();
@@ -146,11 +147,11 @@ export const ConnectionList = ({
           title={i18n.header.walletConnect}
           items={items}
           onPressBack={() => navigation.goBack()}
-          flatListStyle={{ gap: 8 }}
           renderItem={renderItem}
           autoFocus={false}
           renderListEmptyComponent={renderEmptyList}
           searchFunction={searchFunc}
+          estimatedItemSize={64}
           afterListItem={
             <Button
               style={{ marginHorizontal: 16, marginBottom: 16 }}

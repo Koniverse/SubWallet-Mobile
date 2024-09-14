@@ -95,7 +95,6 @@ import { EarningPreview } from 'screens/EarningPreview';
 import { EarningPreviewPools } from 'screens/EarningPreview/EarningPreviewPools';
 import { ExportAllAccount } from 'screens/Account/ExportAllAccount';
 import { CrowdloansScreen } from 'screens/Home/Crowdloans';
-import { MissionPoolSearchByTabView } from 'screens/Home/Browser/MissionPool/MissionPoolSearchByTabView';
 
 interface Props {
   isAppReady: boolean;
@@ -634,7 +633,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
-                <Stack.Screen name="MissionPoolSearchByTabView" component={MissionPoolSearchByTabView} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="EarningPreview" component={EarningPreview} options={{ gestureEnabled: false }} />

@@ -10,7 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
 import { Plus, Vault } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Alert, Keyboard, Linking, ListRenderItemInfo, RefreshControl, View } from 'react-native';
+import { Alert, Keyboard, Linking, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { EarningScreenNavigationProps } from 'routes/earning';
@@ -23,6 +23,7 @@ import { LeftIconButton } from 'components/LeftIconButton';
 import { isRelatedToAstar } from 'utils/earning';
 import { BannerGenerator } from 'components/common/BannerGenerator';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 let cacheData: Record<string, boolean> = {};
 
@@ -186,7 +187,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
           <EarningInfoItem key={item.slug} positionInfo={item} onPress={handleOnPress} isShowBalance={isShowBalance} />
 
           {index === items.length - 1 && (
-            <View style={{ alignItems: 'center', paddingTop: theme.paddingXS }}>
+            <View style={{ alignItems: 'center' }}>
               <LeftIconButton
                 icon={Plus}
                 title={i18n.buttonTitles.exploreEarningOptions}
@@ -197,7 +198,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
         </>
       );
     },
-    [handleOnPress, handlePressStartStaking, isShowBalance, items.length, theme.paddingXS],
+    [handleOnPress, handlePressStartStaking, isShowBalance, items.length],
   );
 
   const rightIconOption = useMemo(() => {
@@ -250,6 +251,8 @@ export const PositionList = ({ setStep, loading }: Props) => {
       flatListStyle={styles.container}
       renderItem={renderItem}
       rightIconOption={rightIconOption}
+      estimatedItemSize={76}
+      keyExtractor={item => item.slug}
       isShowFilterBtn
       isShowMainHeader
       refreshControl={

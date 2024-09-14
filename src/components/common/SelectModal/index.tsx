@@ -1,7 +1,7 @@
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Icon, SwFullSizeModal } from 'components/design-system-ui';
 import { FlatListScreen, RightIconOpt } from 'components/FlatListScreen';
-import { Keyboard, ListRenderItemInfo, Platform, View } from 'react-native';
+import { Keyboard, Platform, View } from 'react-native';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { OptionType } from 'components/common/FilterModal';
 import { AccountSelectItem } from 'components/common/SelectModal/parts/AccountSelectItem';
@@ -18,9 +18,9 @@ import { RootState } from 'stores/index';
 import { ChainInfo } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { SortFunctionInterface } from 'types/ui-types';
 import { SectionItem } from 'components/LazySectionList';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 interface Props<T> {
   items: T[];
@@ -67,11 +67,14 @@ interface Props<T> {
   rightIconOption?: RightIconOpt;
   level?: number;
   grouping?: {
-    renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
+    renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null;
     groupBy: (item: T) => string;
     sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
   showAccountSignModeIcon?: boolean;
+  estimatedItemSize?: number;
+  extraData?: any;
+  keyExtractor?: (item: T, index: number) => string;
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
@@ -112,6 +115,9 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     level,
     grouping,
     showAccountSignModeIcon,
+    estimatedItemSize,
+    extraData,
+    keyExtractor,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -186,27 +192,30 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     [isOpen, onCloseModal, onModalOpened],
   );
 
-  const _searchFunction = (_items: T[], searchString: string): T[] => {
-    if (selectModalItemType === 'account') {
-      return (_items as AccountJson[]).filter(
-        acc =>
-          (acc.name && acc.name.toLowerCase().includes(searchString.toLowerCase())) ||
-          acc.address.toLowerCase().includes(searchString.toLowerCase()),
-      ) as T[];
-    } else if (selectModalItemType === 'token') {
-      const lowerCaseSearchString = searchString.toLowerCase();
-      return (_items as TokenItemType[]).filter(
-        ({ symbol, originChain }) =>
-          symbol.toLowerCase().includes(lowerCaseSearchString) ||
-          chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
-      ) as T[];
-    } else if (selectModalItemType === 'chain') {
-      const lowerCaseSearchString = searchString.toLowerCase();
-      return (items as ChainInfo[]).filter(({ name }) => name.toLowerCase().includes(lowerCaseSearchString)) as T[];
-    } else {
-      return items;
-    }
-  };
+  const _searchFunction = useCallback(
+    (_items: T[], searchString: string): T[] => {
+      if (selectModalItemType === 'account') {
+        return (_items as AccountJson[]).filter(
+          acc =>
+            (acc.name && acc.name.toLowerCase().includes(searchString.toLowerCase())) ||
+            acc.address.toLowerCase().includes(searchString.toLowerCase()),
+        ) as T[];
+      } else if (selectModalItemType === 'token') {
+        const lowerCaseSearchString = searchString.toLowerCase();
+        return (_items as TokenItemType[]).filter(
+          ({ symbol, originChain }) =>
+            symbol.toLowerCase().includes(lowerCaseSearchString) ||
+            chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
+        ) as T[];
+      } else if (selectModalItemType === 'chain') {
+        const lowerCaseSearchString = searchString.toLowerCase();
+        return (items as ChainInfo[]).filter(({ name }) => name.toLowerCase().includes(lowerCaseSearchString)) as T[];
+      } else {
+        return items;
+      }
+    },
+    [chainInfoMap, items, selectModalItemType],
+  );
 
   const renderItem = ({ item }: ListRenderItemInfo<T>) => {
     if (selectModalItemType === 'account') {
@@ -337,9 +346,14 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
               isShowListWrapper={isShowListWrapper}
               rightIconOption={rightIconOption}
               grouping={grouping}
+              removeClippedSubviews={true}
               afterListItem={
                 selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
               }
+              estimatedItemSize={estimatedItemSize || 80}
+              searchMarginBottom={grouping ? theme.sizeXS : undefined}
+              extraData={extraData}
+              keyExtractor={keyExtractor}
             />
           </>
 

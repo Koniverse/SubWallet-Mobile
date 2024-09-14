@@ -158,6 +158,7 @@ function createStyleSheet(theme: ThemeTypes) {
       paddingBottom: theme.paddingSM - 1,
       backgroundColor: theme.colorBgSecondary,
       borderRadius: theme.borderRadiusLG,
+      marginBottom: theme.marginXS,
     },
 
     infoContainer: {

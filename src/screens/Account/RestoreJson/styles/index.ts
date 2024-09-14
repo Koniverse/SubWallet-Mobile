@@ -51,6 +51,7 @@ const createStyles = (theme: ThemeTypes) => {
     },
     accountList: {
       width: '100%',
+      minHeight: 2,
       maxHeight: deviceHeight * 0.5,
     },
     accountItem: {

@@ -52,6 +52,8 @@ export const AccountSelector = ({
       closeModalAfterSelect={closeModalAfterSelect}
       isShowContent={isShowContent}
       renderCustomItem={renderCustomItem}
+      keyExtractor={item => item.address}
+      estimatedItemSize={60}
       isShowInput={isShowInput}>
       {children}
     </FullSizeSelectModal>

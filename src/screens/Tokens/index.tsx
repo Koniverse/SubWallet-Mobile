@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { Coins, Plus } from 'phosphor-react-native';
-import { ListRenderItemInfo, SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { _isCustomAsset } from '@subwallet/extension-base/services/chain-service/utils';
 import useChainAssets from 'hooks/chain/useChainAssets';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 const searchFunction = (items: _ChainAsset[], searchString: string) => {
   return items.filter(item => item?.symbol.toLowerCase().includes(searchString.toLowerCase()));
@@ -145,6 +146,7 @@ export const CustomTokenSetting = () => {
         filterFunction={filterFunction}
         searchFunction={searchFunction}
         renderItem={renderItem}
+        estimatedItemSize={61}
         renderListEmptyComponent={() => (
           <EmptyList
             icon={Coins}

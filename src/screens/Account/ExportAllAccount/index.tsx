@@ -14,7 +14,7 @@ import { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { InteractionManager, ListRenderItemInfo, Share, View } from 'react-native';
+import { InteractionManager, Share, View } from 'react-native';
 import { toShort } from 'utils/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -24,6 +24,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 const filterOptions = [
   {
@@ -260,10 +261,12 @@ export const ExportAllAccount = () => {
         filterOptions={filterOptions}
         filterFunction={filterFunction}
         isShowFilterBtn={true}
-        flatListStyle={{ gap: theme.paddingXS }}
         afterListItem={renderFooter()}
         searchFunction={searchFunc}
         autoFocus={false}
+        extraData={JSON.stringify(selectedValueMap)}
+        keyExtractor={item => item.address}
+        estimatedItemSize={80}
       />
 
       <SwFullSizeModal
