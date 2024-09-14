@@ -371,7 +371,6 @@ export const EarningValidatorSelector = forwardRef(
         const key = getValidatorKey(item.address, item.identity);
         const selected = changeValidators.includes(key);
         const nominated = nominatorValueList.includes(key);
-        console.log(selected, selected);
 
         return (
           <StakingValidatorItem

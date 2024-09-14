@@ -415,7 +415,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
           const splitItem = item.split('=');
           urlQueryMap[splitItem[0]] = splitItem[1];
         });
-        console.log('urlQueryMap', urlQueryMap);
 
         if (urlQuery.startsWith('wc')) {
           const accountByAddress = findAccountByAddress(accounts, urlQueryMap.address);
