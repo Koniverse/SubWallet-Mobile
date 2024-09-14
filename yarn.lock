@@ -1829,35 +1829,41 @@
     "@polkadot/rpc-provider" "^10.9.1"
     "@polkadot/types" "^10.9.1"
 
-"@galacticcouncil/math-lbp@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@galacticcouncil/math-lbp/-/math-lbp-0.2.1.tgz#fee872ec6dabc4acde101a8e17846657b78e79cc"
-  integrity sha512-TquOt8OwHBr//I/HHVkEDZJNfY3cGhIjLYGFwHNwXQBwwgsRFykf4C0adS5WnkOgvyzHAykPazPO2UsqPA9MwQ==
+"@galacticcouncil/math-lbp@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@galacticcouncil/math-lbp/-/math-lbp-1.0.0.tgz#40b5ea3eced1aec4a37494294168bb39fa791c20"
+  integrity sha512-G5WsqJpQEkHcN8oFKxPOYqh7GSrt/6X6YQJWTNjxm9aKpXc/xQlTYXybML2J4wZ4VywEnqvX3CmpPfOg7wQkLg==
 
-"@galacticcouncil/math-omnipool@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@galacticcouncil/math-omnipool/-/math-omnipool-0.2.0.tgz#f7337dbb2e608a50970fb9c0c2d96124fa7c71f6"
-  integrity sha512-D8p1XzA4zrdMQjWY5Ldha/a+CjEAkjwO3yTM3JjtbHLb3ImXTNuWLSUdfCWYpmBzFc/NGXPvTWPfnWb9q3SS7Q==
+"@galacticcouncil/math-liquidity-mining@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@galacticcouncil/math-liquidity-mining/-/math-liquidity-mining-1.0.0.tgz#e54660ed9d01082c891da078876d273c1005226a"
+  integrity sha512-5B/ccr6VqT9v96qlSnClcC6/+7eLKUZwndFSfUr1WvIaVbej5GTx6EI1Pyvk+c4TVmudBK1eoIIVTv5uxWcfXQ==
 
-"@galacticcouncil/math-stableswap@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@galacticcouncil/math-stableswap/-/math-stableswap-0.2.2.tgz#f2e99e1a0f8ba1372946461d56509647cd39949c"
-  integrity sha512-seC2IPIctNpJ5l2qNTudLTTpp2oI5KqFuHTSaJKR6/1IeARFBRg+TVyw/wOTPa0uKKhCd3fGtaKO/bdIra41kg==
+"@galacticcouncil/math-omnipool@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@galacticcouncil/math-omnipool/-/math-omnipool-1.0.0.tgz#3aa6b8c9deb15ef168072b7f70b5d60b0f0ce21a"
+  integrity sha512-TWx9J7b8/2cLr7rpx7ASzQ8qLH9JRWEoxLrphULxqdymtbMGKFBx7ACBCJhfZ0nyJ95H6zCDPjweNmJfYZwM0Q==
 
-"@galacticcouncil/math-xyk@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@galacticcouncil/math-xyk/-/math-xyk-0.2.0.tgz#74feacdf94d4846f1a148835f25936b2ddc7bdfd"
-  integrity sha512-mznedOeA8d9BQ8kUQ/4O/P6trqTC4FGwvTDGCHJ0O/bgA9iFb+suctbFtyFT3qfNnngR7FSF2Pls1O/SvtNn8g==
+"@galacticcouncil/math-stableswap@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@galacticcouncil/math-stableswap/-/math-stableswap-1.0.0.tgz#3578ffe4789be20ff443960c625976452b68dcda"
+  integrity sha512-4LmaQbcDdUzUKZSAyL/GEmKDzQurEBbR08HuU7v8dXCz4Ds6Hxo9i1zqB0mPj+Bc4OUjcP0MwPIgdojRSfLN7Q==
 
-"@galacticcouncil/sdk@^2.1.0":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@galacticcouncil/sdk/-/sdk-2.2.1.tgz#ad6df6785c103125daab52a1d5b1bb9859b96bc2"
-  integrity sha512-jdrQ2qtEy2a51xG3qHJvDR4xjEh5JTl6KLtCz0FZgTE2ppRQqCnBXveG+gHduPA0VNGK1I5qIfVQWlHot8ucTw==
+"@galacticcouncil/math-xyk@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@galacticcouncil/math-xyk/-/math-xyk-1.0.0.tgz#eeb6f3693587c96131647a24af31536cab423d96"
+  integrity sha512-n44M7jKes5Rxr4RQZ5W7kscTfoO4xwhW3VL/VyaEP1KEHMavlICpDNOlCwO/k6RTr+UXU8cHLJZdBzGFa2soJA==
+
+"@galacticcouncil/sdk@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@galacticcouncil/sdk/-/sdk-4.2.0.tgz#20ab698004f0a56987e32d578e6e7f439c1e08fb"
+  integrity sha512-HU87S2IpykMXHcQX4b9zMOTsO3w80dsGDwa6PL6fI8W2fmMoMM1Ol4NH6mXu5tEru89LbtkJGQ17uCOfrysxVg==
   dependencies:
-    "@galacticcouncil/math-lbp" "^0.2.1"
-    "@galacticcouncil/math-omnipool" "^0.2.0"
-    "@galacticcouncil/math-stableswap" "^0.2.2"
-    "@galacticcouncil/math-xyk" "^0.2.0"
+    "@galacticcouncil/math-lbp" "^1.0.0"
+    "@galacticcouncil/math-liquidity-mining" "^1.0.0"
+    "@galacticcouncil/math-omnipool" "^1.0.0"
+    "@galacticcouncil/math-stableswap" "^1.0.0"
+    "@galacticcouncil/math-xyk" "^1.0.0"
     "@thi.ng/cache" "^2.1.35"
     bignumber.js "^9.1.0"
     lodash.clonedeep "^4.5.0"
@@ -5036,19 +5042,19 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.46.0.tgz#bfe3e6a30d39929f57ecc178acde4e74a773e2b6"
   integrity sha512-rBvWnlrBeFTd5LVG7oX3rOHzR16yqyffOFHKmUiVcblpXI3D89CXOvAljW9tWlA1H/2/FegaZnHPhdObPsvi+w==
 
-"@subwallet/chain-list@0.2.84":
-  version "0.2.84"
-  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.2.84.tgz#20209e00d04d12694fdb92ab18768ca7d8614367"
-  integrity sha512-0jK3TtZN6Wvd8PGxKapR/XBHBh6TQhGK098i6uhCqCxBhGozuRkgKuSmC3ro+uLLLp5+bhbXorK+pW48SYfdNg==
+"@subwallet/chain-list@0.2.86":
+  version "0.2.86"
+  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.2.86.tgz#a15084f449abb2b2a6d2f66dbff58ddfb6616850"
+  integrity sha512-m0INDyBA67YLB4CYG85nJFJIey0LlBJ5616+5S6RuslRUsxDHQ3JH9mo/NpOszlZB8YcTug2QihguU/BHafV+g==
   dependencies:
     "@polkadot/dev" "0.67.167"
     "@polkadot/util" "^12.5.1"
     eventemitter3 "^5.0.1"
 
-"@subwallet/extension-base@1.2.28-0", "@subwallet/extension-base@^1.2.28-0":
-  version "1.2.28-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.2.28-0.tgz#9610f36f52c3be332b2bcae3d0f94b054f5cb029"
-  integrity sha512-0/jYw4Q+IsY09JVchEu2AZVMuvlw5Xwk8Zm2vY9PfPc5BpbSgWM/0TF7uhdLpdC48ZAKFHuuqSdJoaQBwO9Azw==
+"@subwallet/extension-base@1.2.29-0", "@subwallet/extension-base@^1.2.29-0":
+  version "1.2.29-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.2.29-0.tgz#aa1191df2a47008761e6076fd4183f3cfda30fde"
+  integrity sha512-BGMeFCOsk9c+RgK0ghSZ258zTfOyNYrV9i4y/Lp4eOYnRGcDXSYzv/KacEdaOrutAOP0h902OrAShEjLFk5nVQ==
   dependencies:
     "@acala-network/api" "^5.0.2"
     "@apollo/client" "^3.7.14"
@@ -5058,7 +5064,7 @@
     "@ethereumjs/common" "^4.1.0"
     "@ethereumjs/tx" "^5.1.0"
     "@ethersproject/abi" "^5.7.0"
-    "@galacticcouncil/sdk" "^2.1.0"
+    "@galacticcouncil/sdk" "^4.2.0"
     "@gear-js/api" "^0.38.1"
     "@json-rpc-tools/utils" "^1.7.6"
     "@metamask/eth-sig-util" "^7.0.3"
@@ -5085,11 +5091,11 @@
     "@reduxjs/toolkit" "^1.9.1"
     "@sora-substrate/type-definitions" "^1.17.7"
     "@substrate/connect" "^0.8.9"
-    "@subwallet/chain-list" "0.2.84"
-    "@subwallet/extension-base" "^1.2.28-0"
-    "@subwallet/extension-chains" "^1.2.28-0"
-    "@subwallet/extension-dapp" "^1.2.28-0"
-    "@subwallet/extension-inject" "^1.2.28-0"
+    "@subwallet/chain-list" "0.2.86"
+    "@subwallet/extension-base" "^1.2.29-0"
+    "@subwallet/extension-chains" "^1.2.29-0"
+    "@subwallet/extension-dapp" "^1.2.29-0"
+    "@subwallet/extension-inject" "^1.2.29-0"
     "@subwallet/keyring" "^0.1.6"
     "@subwallet/ui-keyring" "^0.1.6"
     "@walletconnect/keyvaluestorage" "^1.1.1"
@@ -5129,31 +5135,31 @@
     web3-eth-contract "^1.10.0"
     web3-utils "^1.10.0"
 
-"@subwallet/extension-chains@1.2.28-0", "@subwallet/extension-chains@^1.2.28-0":
-  version "1.2.28-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.2.28-0.tgz#da97751903ae446a264a7b52383a822be7f4b9b7"
-  integrity sha512-HJex/dNaI72vEb87cAp3ouVfk/XxMJIefurWIMDHBMT+LMKFNjmSajiS5bwppk2n6xtIFk1nzKKG7wPCNI2HrQ==
+"@subwallet/extension-chains@1.2.29-0", "@subwallet/extension-chains@^1.2.29-0":
+  version "1.2.29-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.2.29-0.tgz#f091e5b9f11a1c9020d196524029f8040ceac391"
+  integrity sha512-Ut1l1xnPbSuqSnQWYahzXxcYuK9eV6MrMXcFlNEgiu5lVs9E3qjLrTWE0IwHceJrsDcfPjpX4PC8Jy/H/EP1og==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/networks" "^12.6.2"
     "@polkadot/util" "^12.6.2"
     "@polkadot/util-crypto" "^12.6.2"
-    "@subwallet/extension-inject" "^1.2.28-0"
+    "@subwallet/extension-inject" "^1.2.29-0"
 
-"@subwallet/extension-dapp@1.2.28-0", "@subwallet/extension-dapp@^1.2.28-0":
-  version "1.2.28-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.2.28-0.tgz#83e86c0423ff05024b2bb9357e752f4a10133a78"
-  integrity sha512-yipjDn+AQQNYS7FrFalwXZjG3bN8pboNhTGAeYanJirzE4N/klPdlB6BelKtMR+jHs+NT5KsXE0G2mXroL9LrQ==
+"@subwallet/extension-dapp@1.2.29-0", "@subwallet/extension-dapp@^1.2.29-0":
+  version "1.2.29-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.2.29-0.tgz#c6131a97b36401622a4c17490a9fa4f1b18bd520"
+  integrity sha512-zabyw2a3vCLHzkavXlKMvUZL5H18PS9UINR0RQof5fUCYFwclwQTU2gfSS6CzwOdqa0RqBCN2m5zn3iBqRXskA==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/util" "^12.6.2"
     "@polkadot/util-crypto" "^12.6.2"
-    "@subwallet/extension-inject" "^1.2.28-0"
+    "@subwallet/extension-inject" "^1.2.29-0"
 
-"@subwallet/extension-inject@1.2.28-0", "@subwallet/extension-inject@^1.2.28-0":
-  version "1.2.28-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.2.28-0.tgz#0449e3767ab5776ad4ae4fb1c0a0b573d7ac2668"
-  integrity sha512-AnTaJgZKnpsw0B7aI2ySUiYF/h3AX3kFO70qVvRjYfXeD7m0RUKcDBfi+aPiSyng717TXWmBUb3jR49sluwuHA==
+"@subwallet/extension-inject@1.2.29-0", "@subwallet/extension-inject@^1.2.29-0":
+  version "1.2.29-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.2.29-0.tgz#7408b11ca186b68931218c51c61960fbbdc594b0"
+  integrity sha512-z1ApPF0Js2jkK+IaAobxCe6llwbJyOuQ7/a144fjTGMM7MiXZRyVad21mTX9uYEzroeE86b1mspcD72+nmfIxA==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/rpc-provider" "^11.0.3"
