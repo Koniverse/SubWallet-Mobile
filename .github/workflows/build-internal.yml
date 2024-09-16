@@ -27,6 +27,7 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
+    - run: echo ${{runner.name}}
 
     - name: Add APP ENV
       run: |
