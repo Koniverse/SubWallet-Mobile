@@ -54,7 +54,7 @@ jobs:
 
     - name: Cache Yarn dependencies
       uses: actions/cache@v3
-      if:  runner.name != 'Mac-x86' || runner.name != 'Dos-Mac-mini'
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       id: yarn-cache # optional, but allows referencing the step
       with:
         path: |
@@ -69,6 +69,7 @@ jobs:
 
     - name: Restore Pods Cache
       uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       with:
         path: |
           ios/Pods
@@ -166,7 +167,7 @@ jobs:
 
     - name: Cache Yarn dependencies
       uses: actions/cache@v3
-      if: runner.name != 'Mac-x86' || runner.name != 'Dos-Mac-mini'
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       id: yarn-cache # optional, but allows referencing the step
       with:
         path: |
@@ -182,12 +183,14 @@ jobs:
 
     - name: Cache Gradle Wrapper
       uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       with:
         path: ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
 
     - name: Cache Gradle Dependencies
       uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
