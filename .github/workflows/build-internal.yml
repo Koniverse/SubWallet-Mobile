@@ -47,7 +47,7 @@ jobs:
 
     - name: Use Node.js 18
       uses: actions/setup-node@v4
-      if: ${{ runner.name }} != 'Dos-Mac-mini'
+      if: false
       with:
         node-version: 18
         cache: 'yarn'
@@ -158,8 +158,8 @@ jobs:
           fi
 
     - name: Use Node.js 18
-      if: ${{ runner.name }} != 'Dos-Mac-mini'
       uses: actions/setup-node@v4
+      if: false
       with:
         node-version: 18
         cache: 'yarn'
