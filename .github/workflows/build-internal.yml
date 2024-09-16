@@ -47,12 +47,14 @@ jobs:
 
     - name: Use Node.js 18
       uses: actions/setup-node@v4
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       with:
         node-version: 18
         cache: 'yarn'
 
     - name: Cache Yarn dependencies
       uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       id: yarn-cache # optional, but allows referencing the step
       with:
         path: |
@@ -67,6 +69,7 @@ jobs:
 
     - name: Restore Pods Cache
       uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       with:
         path: |
           ios/Pods
@@ -134,7 +137,6 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
-
     - name: Remove unused web-runner for Android
       run: |
         rm -r ./html/OldWeb.bundle
@@ -158,12 +160,14 @@ jobs:
 
     - name: Use Node.js 18
       uses: actions/setup-node@v4
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       with:
         node-version: 18
         cache: 'yarn'
 
     - name: Cache Yarn dependencies
       uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       id: yarn-cache # optional, but allows referencing the step
       with:
         path: |
@@ -179,12 +183,14 @@ jobs:
 
     - name: Cache Gradle Wrapper
       uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       with:
         path: ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
 
     - name: Cache Gradle Dependencies
       uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}

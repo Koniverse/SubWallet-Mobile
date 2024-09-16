@@ -44,7 +44,6 @@ export const useHandleAppPopupMap = () => {
 
   const filteredDataByLocation = useMemo(() => {
     return appPopupData.filter(({ locations }) => {
-      console.log('locations', locations);
       if (locations && locations.length) {
         const countryId = getCountry();
         const locationIds = locations.map(item => item.split('_')[1]);

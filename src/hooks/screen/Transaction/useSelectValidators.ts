@@ -20,11 +20,9 @@ export function useSelectValidators(
   const [selected, setSelected] = useState<string[]>([]);
   // Current chosen in modal
   const [changeValidators, setChangeValidators] = useState<string[]>([]);
-  console.log('changeValidators', changeValidators);
 
   const onChangeSelectedValidator = useCallback(
     (changeVal: string) => {
-      console.log('changeVal', changeVal);
       setChangeValidators(currentChangeValidators => {
         let result: string[];
 
@@ -72,7 +70,6 @@ export function useSelectValidators(
           }
         }
 
-        console.log('result', result);
         return result;
       });
     },
