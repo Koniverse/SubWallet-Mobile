@@ -27,7 +27,6 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
-    - run: echo ${{runner.name}}
 
     - name: Add APP ENV
       run: |
@@ -54,6 +53,7 @@ jobs:
 
     - name: Cache Yarn dependencies
       uses: actions/cache@v3
+      if: "runner.name != 'Mac-x86' || runner.name != 'Dos-Mac-mini'"
       id: yarn-cache # optional, but allows referencing the step
       with:
         path: |
@@ -135,7 +135,6 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
-    - run: echo ${{runner.name}}
     - name: Remove unused web-runner for Android
       run: |
         rm -r ./html/OldWeb.bundle
@@ -165,6 +164,7 @@ jobs:
 
     - name: Cache Yarn dependencies
       uses: actions/cache@v3
+      if: "runner.name != 'Mac-x86' || runner.name != 'Dos-Mac-mini'"
       id: yarn-cache # optional, but allows referencing the step
       with:
         path: |
