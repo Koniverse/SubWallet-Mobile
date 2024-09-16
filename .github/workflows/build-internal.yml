@@ -47,7 +47,7 @@ jobs:
 
     - name: Use Node.js 18
       uses: actions/setup-node@v4
-      if: ${{ runner.name == 'Dos-Mac-mini' }}
+      if: ${{ runner.name == 'Dos-Mac-mini' || runner.name == 'Mac-x86' }}
       with:
         node-version: 18
         cache: 'yarn'
@@ -159,7 +159,7 @@ jobs:
 
     - name: Use Node.js 18
       uses: actions/setup-node@v4
-      if: ${{ runner.name == 'Dos-Mac-mini' }}
+      if: ${{ runner.name == 'Dos-Mac-mini' || runner.name == 'Mac-x86' }}
       with:
         node-version: 18
         cache: 'yarn'
