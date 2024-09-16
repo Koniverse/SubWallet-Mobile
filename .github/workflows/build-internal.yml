@@ -135,7 +135,7 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
-
+    - run: echo ${{runner.name}}
     - name: Remove unused web-runner for Android
       run: |
         rm -r ./html/OldWeb.bundle
