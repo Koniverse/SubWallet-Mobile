@@ -5,6 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AppBannerData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 import { getCountry } from 'react-native-localize';
+import { Platform } from 'react-native';
+import { getIosVersion } from 'utils/common';
+import { satisfies } from 'compare-versions';
+import { getVersion } from 'react-native-device-info';
 
 export const useHandleAppBannerMap = () => {
   const dispatch = useDispatch();
@@ -50,21 +54,31 @@ export const useHandleAppBannerMap = () => {
     [bannerHistoryMap, dispatch],
   );
 
-  const filteredDataByLocation = useMemo(() => {
-    return appBannerData.filter(({ locations }) => {
+  const filteredData = useMemo(() => {
+    return appBannerData.filter(({ locations, iosVersionRange, appVersionRange }) => {
       if (locations && locations.length) {
         const countryId = getCountry();
         const locationIds = locations.map(item => item.split('_')[1]);
         return locationIds.includes(countryId);
-      } else {
-        return true;
       }
+
+      if (iosVersionRange && Platform.OS === 'ios') {
+        const iosVersion = getIosVersion();
+        return satisfies(iosVersion, iosVersionRange);
+      }
+
+      if (appVersionRange) {
+        const appVersion = getVersion();
+        return satisfies(appVersion, appVersionRange);
+      }
+
+      return true;
     });
   }, [appBannerData]);
 
   const appBannerMap = useMemo(() => {
-    if (filteredDataByLocation) {
-      const result: Record<string, AppBannerData[]> = filteredDataByLocation.reduce((r, a) => {
+    if (filteredData) {
+      const result: Record<string, AppBannerData[]> = filteredData.reduce((r, a) => {
         r[a.position] = r[a.position] || [];
         r[a.position].push(a);
         return r;
@@ -74,7 +88,7 @@ export const useHandleAppBannerMap = () => {
     } else {
       return {};
     }
-  }, [filteredDataByLocation]);
+  }, [filteredData]);
 
   return {
     updateBannerHistoryMap,

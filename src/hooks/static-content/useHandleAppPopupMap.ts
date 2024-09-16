@@ -5,6 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AppPopupData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 import { getCountry } from 'react-native-localize';
+import { satisfies } from 'compare-versions';
+import { getIosVersion } from 'utils/common';
+import { Platform } from 'react-native';
+import { getVersion } from 'react-native-device-info';
 
 export const useHandleAppPopupMap = () => {
   const { appPopupData, popupHistoryMap } = useSelector((state: RootState) => state.staticContent);
@@ -42,21 +46,31 @@ export const useHandleAppPopupMap = () => {
     [dispatch, popupHistoryMap],
   );
 
-  const filteredDataByLocation = useMemo(() => {
-    return appPopupData.filter(({ locations }) => {
+  const filteredData = useMemo(() => {
+    return appPopupData.filter(({ locations, ios_version_range, app_version_range }) => {
       if (locations && locations.length) {
         const countryId = getCountry();
         const locationIds = locations.map(item => item.split('_')[1]);
         return locationIds.includes(countryId);
-      } else {
-        return true;
       }
+
+      if (ios_version_range && Platform.OS === 'ios') {
+        const iosVersion = getIosVersion();
+        return satisfies(iosVersion, ios_version_range);
+      }
+
+      if (app_version_range) {
+        const appVersion = getVersion();
+        return satisfies(appVersion, app_version_range);
+      }
+
+      return true;
     });
   }, [appPopupData]);
 
   const appPopupMap = useMemo(() => {
-    if (filteredDataByLocation) {
-      const result: Record<string, AppPopupData[]> = filteredDataByLocation.reduce((r, a) => {
+    if (filteredData) {
+      const result: Record<string, AppPopupData[]> = filteredData.reduce((r, a) => {
         r[a.position] = r[a.position] || [];
         r[a.position].push(a);
         return r;
@@ -66,7 +80,7 @@ export const useHandleAppPopupMap = () => {
     } else {
       return {};
     }
-  }, [filteredDataByLocation]);
+  }, [filteredData]);
 
   return {
     updatePopupHistoryMap,

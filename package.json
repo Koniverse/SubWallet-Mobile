@@ -67,6 +67,7 @@
     "@subwallet/react-ui": "^5.1.2-b77",
     "@subwallet/ui-keyring": "0.1.6",
     "@walletconnect/utils": "2.8.4",
+    "compare-versions": "^6.1.1",
     "deprecated-react-native-prop-types": "^4.0.0",
     "eventemitter3": "^5.0.0",
     "humanize-duration": "^3.31.0",
