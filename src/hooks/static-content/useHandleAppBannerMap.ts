@@ -55,24 +55,31 @@ export const useHandleAppBannerMap = () => {
   );
 
   const filteredData = useMemo(() => {
-    return appBannerData.filter(({ locations, ios_version_range, app_version_range }) => {
+    return appBannerData.filter(({ locations, comparison_operator, ios_version_range, app_version_range }) => {
+      let isValidLocation = true;
+      let isValidIosVersion = true;
+      let isValidAppVersion = true;
       if (locations && locations.length) {
         const countryId = getCountry();
         const locationIds = locations.map(item => item.split('_')[1]);
-        return locationIds.includes(countryId);
+        isValidLocation = locationIds.includes(countryId);
       }
 
       if (ios_version_range && Platform.OS === 'ios') {
         const iosVersion = getIosVersion();
-        return satisfies(iosVersion, ios_version_range);
+        isValidIosVersion = satisfies(iosVersion, ios_version_range);
       }
 
       if (app_version_range) {
         const appVersion = getVersion();
-        return satisfies(appVersion, app_version_range);
+        isValidAppVersion = satisfies(appVersion, app_version_range);
       }
 
-      return true;
+      if (comparison_operator === 'AND') {
+        return isValidLocation && isValidIosVersion && isValidAppVersion;
+      } else {
+        return isValidLocation || isValidIosVersion || isValidAppVersion;
+      }
     });
   }, [appBannerData]);
 
