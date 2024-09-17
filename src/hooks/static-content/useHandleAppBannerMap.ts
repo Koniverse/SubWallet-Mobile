@@ -55,21 +55,21 @@ export const useHandleAppBannerMap = () => {
   );
 
   const filteredData = useMemo(() => {
-    return appBannerData.filter(({ locations, iosVersionRange, appVersionRange }) => {
+    return appBannerData.filter(({ locations, ios_version_range, app_version_range }) => {
       if (locations && locations.length) {
         const countryId = getCountry();
         const locationIds = locations.map(item => item.split('_')[1]);
         return locationIds.includes(countryId);
       }
 
-      if (iosVersionRange && Platform.OS === 'ios') {
+      if (ios_version_range && Platform.OS === 'ios') {
         const iosVersion = getIosVersion();
-        return satisfies(iosVersion, iosVersionRange);
+        return satisfies(iosVersion, ios_version_range);
       }
 
-      if (appVersionRange) {
+      if (app_version_range) {
         const appVersion = getVersion();
-        return satisfies(appVersion, appVersionRange);
+        return satisfies(appVersion, app_version_range);
       }
 
       return true;
