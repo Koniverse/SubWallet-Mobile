@@ -23,7 +23,7 @@ export const NoticeModal = ({ modalVisible, setVisible }: Props) => {
   const onPressConfirm = () => {
     mmkvStore.set('isOpenedNoticeModal', true);
     setVisible(false);
-    Linking.openSettings();
+    Linking.openURL('App-Prefs:General&path=SOFTWARE_UPDATE_LINK');
   };
 
   return (
