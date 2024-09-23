@@ -48,29 +48,27 @@ export const useHandleAppPopupMap = () => {
 
   const filteredData = useMemo(() => {
     return appPopupData.filter(({ locations, comparison_operator, ios_version_range, app_version_range }) => {
-      let isValidLocation = true;
-      let isValidIosVersion = true;
-      let isValidAppVersion = true;
+      const validConditionArr = [];
       if (locations && locations.length) {
         const countryId = getCountry();
         const locationIds = locations.map(item => item.split('_')[1]);
-        isValidLocation = locationIds.includes(countryId);
+        validConditionArr.push(locationIds.includes(countryId));
       }
 
       if (ios_version_range && Platform.OS === 'ios') {
         const iosVersion = getIosVersion();
-        isValidIosVersion = satisfies(iosVersion, ios_version_range);
+        validConditionArr.push(satisfies(iosVersion, ios_version_range));
       }
 
       if (app_version_range) {
         const appVersion = getVersion();
-        isValidAppVersion = satisfies(appVersion, app_version_range);
+        validConditionArr.push(satisfies(appVersion, app_version_range));
       }
 
       if (comparison_operator === 'AND') {
-        return isValidLocation && isValidIosVersion && isValidAppVersion;
+        return validConditionArr.every(c => c);
       } else {
-        return isValidLocation || isValidIosVersion || isValidAppVersion;
+        return validConditionArr.some(c => c);
       }
     });
   }, [appPopupData]);
