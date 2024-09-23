@@ -1335,7 +1335,7 @@
   resolved "https://registry.yarnpkg.com/@bifrost-finance/type-definitions/-/type-definitions-1.11.3.tgz#6a08c191d37fd4655c6a601af4d3791241dd8eae"
   integrity sha512-mNW+FfvKZqa1axChEd1ReRpw3P8siiW28YQ8BBJpR2syZqb5cJWOG4Sr/dj3lBcBNQqcqnAUkZPnBxQj8+Ftvg==
 
-"@chainflip/rpc@^1.5.6":
+"@chainflip/rpc@^1.5.6", "@chainflip/rpc@^1.6.6":
   version "1.6.6"
   resolved "https://registry.yarnpkg.com/@chainflip/rpc/-/rpc-1.6.6.tgz#651074e5f9b366d3f200d28435af968a198a6906"
   integrity sha512-JUhwo7AhsIH85s59AX4P38/VSt0Aj899s85Ey1QWBl3/PuHmt6EO1qSzV0ZhOOgRdV4Z+ZKrJCxOPKUFFPOYFw==
@@ -1351,6 +1351,16 @@
     "@chainflip/rpc" "^1.5.6"
     "@chainflip/utils" "^0.4.0"
     axios "^1.6.8"
+    ethers "^6.13.2"
+
+"@chainflip/sdk@1.6.0-beta.2":
+  version "1.6.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@chainflip/sdk/-/sdk-1.6.0-beta.2.tgz#d30229109c31218a3accecc24354e7c8d1121d41"
+  integrity sha512-1KdM66Y3f7TX4tDQ34QhxeDbe19bmJXU0678UnQsjVpZVQ06AQqgy7GWM3HvPmUjOcS83V7lqgRb3vp5OSnVnw==
+  dependencies:
+    "@chainflip/rpc" "^1.6.6"
+    "@chainflip/utils" "^0.4.0"
+    axios "^1.7.7"
     ethers "^6.13.2"
 
 "@chainflip/utils@^0.3.0":
@@ -7223,6 +7233,15 @@ axios@^1.6.8:
   version "1.6.8"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.8.tgz#66d294951f5d988a00e87a0ffb955316a619ea66"
   integrity sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
+axios@^1.7.7:
+  version "1.7.7"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.7.tgz#2f554296f9892a72ac8d8e4c5b79c14a91d0a47f"
+  integrity sha512-S4kL7XrjgBmvdGut0sN3yJxqYzrDOnivkBiN0OFs6hLiUam3UPvswUo0kqGyhqUZGEOytHyumEdXsAkgCOUf3Q==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
