@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import Icon from '../icon';
 import { IconProps } from 'phosphor-react-native';
+import { IconWeight } from 'phosphor-react-native/lib/typescript';
 
 interface Props {
   icon?: React.ElementType<IconProps>;
@@ -9,9 +10,10 @@ interface Props {
   backgroundColor?: string;
   customIcon?: React.ReactNode;
   customSize?: number;
+  weight?: IconWeight;
 }
 
-const PageIcon = ({ icon, color, backgroundColor, customIcon, customSize }: Props) => {
+const PageIcon = ({ icon, color, backgroundColor, customIcon, customSize, weight = 'fill' }: Props) => {
   return (
     <View
       style={{
@@ -25,7 +27,7 @@ const PageIcon = ({ icon, color, backgroundColor, customIcon, customSize }: Prop
       {customIcon ? (
         customIcon
       ) : (
-        <Icon phosphorIcon={icon} iconColor={color} weight={'fill'} customSize={customSize ? customSize / 2 : 64} />
+        <Icon phosphorIcon={icon} iconColor={color} weight={weight} customSize={customSize ? customSize / 2 : 64} />
       )}
     </View>
   );

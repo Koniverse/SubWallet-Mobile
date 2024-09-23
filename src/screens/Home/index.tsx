@@ -39,6 +39,7 @@ import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { computeStatus } from 'utils/missionPools';
 import { MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
 import withPageWrapper from 'components/pageWrapper';
+import { NoticeModal } from 'components/Modal/NoticeModal';
 
 interface tabbarIconColor {
   color: string;
@@ -272,6 +273,8 @@ export const Home = ({ navigation }: Props) => {
   const storedRemindBackupTimeout = mmkvStore.getNumber('storedRemindBackupTimeout');
   const lastTimeLogin = mmkvStore.getNumber('lastTimeLogin');
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [noticeModalVisible, setNoticeModalVisible] = useState<boolean>(false);
+  const isOpenedNoticeModal = mmkvStore.getBoolean('isOpenedNoticeModal');
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const needMigrate = useMemo(
@@ -314,9 +317,13 @@ export const Home = ({ navigation }: Props) => {
   }, []);
 
   useEffect(() => {
+    const isNeedShowNoticeModal = Platform.OS === 'ios' && parseFloat(Platform.Version) < 16.4;
     if (!isLocked && lastTimeLogin && storedRemindBackupTimeout) {
       if (Date.now() - lastTimeLogin > storedRemindBackupTimeout) {
         setModalVisible(true);
+        dispatch(updateMktCampaignStatus(false));
+      } else if (isNeedShowNoticeModal) {
+        setNoticeModalVisible(true);
         dispatch(updateMktCampaignStatus(false));
       } else {
         dispatch(updateMktCampaignStatus(true));
@@ -352,6 +359,10 @@ export const Home = ({ navigation }: Props) => {
       )}
       {!isEmptyAccounts && !needMigrate && isFocused && (
         <RemindBackupModal modalVisible={modalVisible} setVisible={setModalVisible} />
+      )}
+
+      {!isEmptyAccounts && !isOpenedNoticeModal && !needMigrate && isFocused && !isShowRemindBackupModal.current && (
+        <NoticeModal modalVisible={noticeModalVisible} setVisible={setNoticeModalVisible} />
       )}
     </>
   );
