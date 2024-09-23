@@ -54,32 +54,46 @@ export const useHandleAppBannerMap = () => {
     [bannerHistoryMap, dispatch],
   );
 
-  const filteredData = useMemo(() => {
-    return appBannerData.filter(({ locations, comparison_operator, ios_version_range, app_version_range }) => {
-      const validConditionArr = [];
-      if (locations && locations.length) {
-        const countryId = getCountry();
-        const locationIds = locations.map(item => item.split('_')[1]);
-        validConditionArr.push(locationIds.includes(countryId));
-      }
-
-      if (ios_version_range && Platform.OS === 'ios') {
-        const iosVersion = getIosVersion();
-        validConditionArr.push(satisfies(iosVersion, ios_version_range));
-      }
-
-      if (app_version_range) {
-        const appVersion = getVersion();
-        validConditionArr.push(satisfies(appVersion, app_version_range));
-      }
-
-      if (comparison_operator === 'AND') {
-        return validConditionArr.every(c => c);
-      } else {
-        return validConditionArr.some(c => c);
+  const filteredAppBannerByTimeAndPlatform = useMemo(() => {
+    return appBannerData.filter(({ info }) => {
+      if (info) {
+        if (info.os) {
+          return info.platforms.includes('mobile') && info.os.toLowerCase() === Platform.OS;
+        } else {
+          return info.platforms.includes('mobile');
+        }
       }
     });
   }, [appBannerData]);
+
+  const filteredData = useMemo(() => {
+    return filteredAppBannerByTimeAndPlatform.filter(
+      ({ locations, comparison_operator, ios_version_range, app_version_range }) => {
+        const validConditionArr = [];
+        if (locations && locations.length) {
+          const countryId = getCountry();
+          const locationIds = locations.map(item => item.split('_')[1]);
+          validConditionArr.push(locationIds.includes(countryId));
+        }
+
+        if (ios_version_range && Platform.OS === 'ios') {
+          const iosVersion = getIosVersion();
+          validConditionArr.push(satisfies(iosVersion, ios_version_range));
+        }
+
+        if (app_version_range) {
+          const appVersion = getVersion();
+          validConditionArr.push(satisfies(appVersion, app_version_range));
+        }
+
+        if (comparison_operator === 'AND') {
+          return validConditionArr.every(c => c);
+        } else {
+          return validConditionArr.some(c => c);
+        }
+      },
+    );
+  }, [filteredAppBannerByTimeAndPlatform]);
 
   const appBannerMap = useMemo(() => {
     if (filteredData) {
