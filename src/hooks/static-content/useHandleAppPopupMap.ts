@@ -6,7 +6,7 @@ import { RootState } from 'stores/index';
 import { AppPopupData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 import { getCountry } from 'react-native-localize';
 import { satisfies } from 'compare-versions';
-import { getIosVersion } from 'utils/common';
+import { getOsVersion } from 'utils/common';
 import { Platform } from 'react-native';
 import { getVersion } from 'react-native-device-info';
 
@@ -60,7 +60,7 @@ export const useHandleAppPopupMap = () => {
 
   const filteredData = useMemo(() => {
     return filteredAppPopupByTimeAndPlatform.filter(
-      ({ locations, comparison_operator, ios_version_range, app_version_range }) => {
+      ({ locations, comparison_operator, os_version_range, app_version_range }) => {
         const validConditionArr = [];
         if (locations && locations.length) {
           const countryId = getCountry();
@@ -68,9 +68,9 @@ export const useHandleAppPopupMap = () => {
           validConditionArr.push(locationIds.includes(countryId));
         }
 
-        if (ios_version_range && Platform.OS === 'ios') {
-          const iosVersion = getIosVersion();
-          validConditionArr.push(satisfies(iosVersion, ios_version_range));
+        if (os_version_range) {
+          const osVersion = getOsVersion();
+          validConditionArr.push(satisfies(osVersion.toString(), os_version_range));
         }
 
         if (app_version_range) {

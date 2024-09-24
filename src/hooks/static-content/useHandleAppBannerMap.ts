@@ -6,7 +6,7 @@ import { RootState } from 'stores/index';
 import { AppBannerData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 import { getCountry } from 'react-native-localize';
 import { Platform } from 'react-native';
-import { getIosVersion } from 'utils/common';
+import { getOsVersion } from 'utils/common';
 import { satisfies } from 'compare-versions';
 import { getVersion } from 'react-native-device-info';
 
@@ -68,7 +68,7 @@ export const useHandleAppBannerMap = () => {
 
   const filteredData = useMemo(() => {
     return filteredAppBannerByTimeAndPlatform.filter(
-      ({ locations, comparison_operator, ios_version_range, app_version_range }) => {
+      ({ locations, comparison_operator, os_version_range, app_version_range }) => {
         const validConditionArr = [];
         if (locations && locations.length) {
           const countryId = getCountry();
@@ -76,9 +76,9 @@ export const useHandleAppBannerMap = () => {
           validConditionArr.push(locationIds.includes(countryId));
         }
 
-        if (ios_version_range && Platform.OS === 'ios') {
-          const iosVersion = getIosVersion();
-          validConditionArr.push(satisfies(iosVersion, ios_version_range));
+        if (os_version_range) {
+          const osVersion = getOsVersion();
+          validConditionArr.push(satisfies(osVersion.toString(), os_version_range));
         }
 
         if (app_version_range) {
