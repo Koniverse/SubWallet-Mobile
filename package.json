@@ -30,7 +30,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@chainflip/sdk": "1.5.2",
+    "@chainflip/sdk": "1.6.0-beta.2",
     "@coinbase/cbpay-js": "^1.7.0",
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
     "@fortawesome/free-brands-svg-icons": "^6.2.1",
@@ -167,7 +167,6 @@
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
     "assert": "^2.0.0",
-    "axios": "^1.4.0",
     "babel-jest": "^29.3.1",
     "babel-loader": "^9.1.0",
     "babel-plugin-module-resolver": "^4.1.0",
@@ -207,7 +206,7 @@
     "@subwallet/extension-base": "1.2.30-0",
     "react-native-svg": "^13.6.0",
     "sails-js": "0.1.6",
-    "@chainflip/sdk": "1.5.2"
+    "@chainflip/sdk": "1.6.0-beta.2"
   },
   "engines": {
     "node": ">=16"

@@ -8,7 +8,6 @@ import { House, Share } from 'phosphor-react-native';
 import ErrorStyles from './style';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Images } from 'assets/index';
-import axios from 'axios';
 import { FallbackComponentProps } from 'react-native-error-boundary';
 import { Toast } from 'react-native-toast-notifications';
 import { getBrand, getBuildNumber, getSystemVersion, getVersion } from 'react-native-device-info';
@@ -44,8 +43,7 @@ const ErrorFallbackScreen: React.FC<FallbackComponentProps> = ({ error, resetErr
       app_version: `${getVersion()}-(${getBuildNumber()}) b-${bundleVersion}`,
       current_routes: JSON.stringify(currentRoutes.current),
     };
-    axios
-      .post('https://mobile-feedback.subwallet.app/gelf', body)
+    fetch('https://mobile-feedback.subwallet.app/gelf', { method: 'POST', body: JSON.stringify(body) })
       .then(() => {
         resetError();
       })

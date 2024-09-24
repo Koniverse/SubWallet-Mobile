@@ -1,11 +1,20 @@
-import axios from 'axios';
 import { getStaticContentByDevMode } from './storage';
-import { STATIC_DATA_DOMAIN } from 'constants/index';
+import { fetchJson, fetchText } from '@subwallet/extension-base/utils';
+import { staticData, StaticKey } from '@subwallet/extension-base/utils/staticData';
 
-export async function fetchStaticData<T>(slug: string, targetFile?: string) {
+export async function fetchStaticData<T>(slug: string, targetFile?: string, isJson = true) {
   const dataByDevModeStatus = getStaticContentByDevMode();
   const fetchFile = targetFile || dataByDevModeStatus;
-  const rs = await axios.get(`${STATIC_DATA_DOMAIN}/${slug}/${fetchFile}.json`);
 
-  return rs.data as T;
+  try {
+    if (isJson) {
+      return await fetchJson<T>(`https://static-data.subwallet.app/${slug}/${fetchFile}`);
+    } else {
+      return await fetchText<T>(`https://static-data.subwallet.app/${slug}/${fetchFile}`);
+    }
+  } catch (e) {
+    console.log('error fetching static data', e);
+
+    return staticData[slug as StaticKey] as T;
+  }
 }

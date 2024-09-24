@@ -1335,7 +1335,7 @@
   resolved "https://registry.yarnpkg.com/@bifrost-finance/type-definitions/-/type-definitions-1.11.3.tgz#6a08c191d37fd4655c6a601af4d3791241dd8eae"
   integrity sha512-mNW+FfvKZqa1axChEd1ReRpw3P8siiW28YQ8BBJpR2syZqb5cJWOG4Sr/dj3lBcBNQqcqnAUkZPnBxQj8+Ftvg==
 
-"@chainflip/rpc@^1.5.6":
+"@chainflip/rpc@^1.6.6":
   version "1.6.6"
   resolved "https://registry.yarnpkg.com/@chainflip/rpc/-/rpc-1.6.6.tgz#651074e5f9b366d3f200d28435af968a198a6906"
   integrity sha512-JUhwo7AhsIH85s59AX4P38/VSt0Aj899s85Ey1QWBl3/PuHmt6EO1qSzV0ZhOOgRdV4Z+ZKrJCxOPKUFFPOYFw==
@@ -1343,14 +1343,14 @@
     "@chainflip/utils" "^0.3.0"
     zod "^3.22.8"
 
-"@chainflip/sdk@1.5.2", "@chainflip/sdk@^1.5.2":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@chainflip/sdk/-/sdk-1.5.2.tgz#d89b93699b2b5a811eac923657ecd3134956f4d3"
-  integrity sha512-WLghhO4c3t8k151wckI6o0jqwHaK5jTg5bjISHuoi8NX6d7cLVWL/OLYBpy37LLUwHawzKbyj3nn4zC4X72fhA==
+"@chainflip/sdk@1.6.0-beta.2", "@chainflip/sdk@^1.5.2":
+  version "1.6.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@chainflip/sdk/-/sdk-1.6.0-beta.2.tgz#d30229109c31218a3accecc24354e7c8d1121d41"
+  integrity sha512-1KdM66Y3f7TX4tDQ34QhxeDbe19bmJXU0678UnQsjVpZVQ06AQqgy7GWM3HvPmUjOcS83V7lqgRb3vp5OSnVnw==
   dependencies:
-    "@chainflip/rpc" "^1.5.6"
+    "@chainflip/rpc" "^1.6.6"
     "@chainflip/utils" "^0.4.0"
-    axios "^1.6.8"
+    axios "^1.7.7"
     ethers "^6.13.2"
 
 "@chainflip/utils@^0.3.0":
@@ -7210,7 +7210,7 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
-axios@^1.4.0, axios@^1.6.2:
+axios@^1.6.2:
   version "1.6.7"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.7.tgz#7b48c2e27c96f9c68a2f8f31e2ab19f59b06b0a7"
   integrity sha512-/hDJGff6/c7u0hDkvkGxR/oy6CbCs8ziCsC7SqmhjfozqiJGc8Z11wrv9z9lYfY4K8l+H9TpjcMDX0xOZmx+RA==
@@ -7219,10 +7219,10 @@ axios@^1.4.0, axios@^1.6.2:
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
-axios@^1.6.8:
-  version "1.6.8"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.8.tgz#66d294951f5d988a00e87a0ffb955316a619ea66"
-  integrity sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==
+axios@^1.7.7:
+  version "1.7.7"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.7.tgz#2f554296f9892a72ac8d8e4c5b79c14a91d0a47f"
+  integrity sha512-S4kL7XrjgBmvdGut0sN3yJxqYzrDOnivkBiN0OFs6hLiUam3UPvswUo0kqGyhqUZGEOytHyumEdXsAkgCOUf3Q==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
