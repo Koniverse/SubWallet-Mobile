@@ -109,7 +109,6 @@ const imageBackgroundStyle: StyleProp<any> = {
 let lockWhenActive = false;
 AppState.addEventListener('change', (state: string) => {
   const { isUseBiometric, timeAutoLock, lock, isMasterPasswordLocked } = autoLockParams;
-  const lastTimeLogin = mmkvStore.getNumber('lastTimeLogin');
   if (timeAutoLock === undefined) {
     return;
   }
@@ -140,15 +139,6 @@ AppState.addEventListener('change', (state: string) => {
         lock();
       }
       lockWhenActive = false;
-    }
-
-    if (lastTimeLogin) {
-      // check if timeToLockApp greater than timeAutoLock, lock app
-      const timeToLockApp = Date.now() - lastTimeLogin;
-      if (timeToLockApp > timeAutoLock * 60 * 1000) {
-        setIsShowRemindBackupModal(false);
-        lock();
-      }
     }
   }
 });
