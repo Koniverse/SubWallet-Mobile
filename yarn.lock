@@ -5768,7 +5768,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/metro-config@npm:^0.75.2":
+"@react-native/metro-config@npm:^0.75.3":
   version: 0.75.3
   resolution: "@react-native/metro-config@npm:0.75.3"
   dependencies:
@@ -5801,10 +5801,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/typescript-config@npm:0.75.2":
-  version: 0.75.2
-  resolution: "@react-native/typescript-config@npm:0.75.2"
-  checksum: 51970739c26a1a44523d1bc8e917db2bd8f8236976261be6d3fb09ad112ccb1263a9ea77f6f5d9d01ab3cbf65737d8bb9a810006d25caed45f385a457d1bf00e
+"@react-native/typescript-config@npm:0.75.3":
+  version: 0.75.3
+  resolution: "@react-native/typescript-config@npm:0.75.3"
+  checksum: ed3164fde0147bb0ae180d8a64b3bf999be5f4879566bcae87e13179b6cbc3bd64fd52109f5c574b72d72860ead0124a4d6524e9bfe377b33e3bf39a882596d3
   languageName: node
   linkType: hard
 
@@ -8661,8 +8661,8 @@ __metadata:
     "@react-native-masked-view/masked-view": ^0.2.9
     "@react-native/eslint-config": ^0.72.2
     "@react-native/gradle-plugin": ^0.75.2
-    "@react-native/metro-config": ^0.75.2
-    "@react-native/typescript-config": 0.75.2
+    "@react-native/metro-config": ^0.75.3
+    "@react-native/typescript-config": 0.75.3
     "@react-navigation/bottom-tabs": ^6.5.3
     "@react-navigation/drawer": ^6.6.2
     "@react-navigation/material-top-tabs": ^6.6.3
@@ -8722,7 +8722,7 @@ __metadata:
     react-dom: ^18.2.0
     react-hook-form: ^7.44.3
     react-i18next: ^12.1.4
-    react-native: ^0.75.2
+    react-native: ^0.75.3
     react-native-animatable: ^1.3.3
     react-native-camera: ^4.2.1
     react-native-code-push: ^8.1.1
@@ -22114,7 +22114,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native@npm:*, react-native@npm:^0.75.2":
+"react-native@npm:*, react-native@npm:^0.75.3":
   version: 0.75.3
   resolution: "react-native@npm:0.75.3"
   dependencies:
