@@ -1,6 +1,6 @@
-import { Button, Image, Typography } from 'components/design-system-ui';
+import { Button, Icon, Image, Typography } from 'components/design-system-ui';
 import useFormControl from 'hooks/screen/useFormControl';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   DeviceEventEmitter,
   ImageBackground,
@@ -39,6 +39,8 @@ import { backupStorageData, mmkvStore } from 'utils/storage';
 import { setBuildNumber } from 'stores/AppVersion';
 import { LockTimeout } from 'stores/types';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
+import { FingerprintSimple } from 'phosphor-react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface LoginProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -75,6 +77,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(isUseBiometric);
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
+  const theme = useSubWalletTheme().swThemes;
 
   const toast = useToast();
   const [authMethod, setAuthMethod] = useState<AuthMethod>(isUseBiometric ? 'biometric' : 'master-password');
@@ -261,7 +264,9 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
           <SafeAreaView style={styles.container}>
             <Image src={Images.SubWalletLogoGradient} style={{ width: 66, height: 100 }} />
             <View style={styles.subLogo}>
-              <SVGImages.SubwalletStyled width={139} height={23} />
+              <Suspense fallback={<Image src={Images.swLogoLogin} style={{ width: 139, height: 23 }} />}>
+                <SVGImages.SubwalletStyled width={139} height={23} />
+              </Suspense>
             </View>
             <Typography.Text size="sm" style={styles.subTitle}>
               Polkadot, Substrate & Ethereum wallet
@@ -289,7 +294,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
                 </Button>
                 {isUseBiometric && isBiometricEnabled && (
                   <Button
-                    icon={<SVGImages.Fingerprint />}
+                    icon={<Icon phosphorIcon={FingerprintSimple} size={'md'} iconColor={theme.colorPrimary} />}
                     size="xs"
                     type="ghost"
                     onPress={() => {

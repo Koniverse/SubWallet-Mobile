@@ -27,6 +27,8 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
+    - name: Enable Corepack
+      run: corepack enable
 
     - name: Add APP ENV
       run: |
@@ -134,6 +136,8 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
+    - name: Enable Corepack
+      run: corepack enable
 
     - name: Add APP ENV
       run: |
@@ -172,7 +176,7 @@ jobs:
 
     - uses: actions/setup-java@v1
       with:
-        java-version: '11'
+        java-version: '17'
 
     - name: Cache Gradle Wrapper
       uses: actions/cache@v3

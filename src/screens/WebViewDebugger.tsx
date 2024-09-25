@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, TextInput, View } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -7,7 +7,6 @@ import i18n from 'utils/i18n/i18n';
 import { sharedStyles } from 'styles/sharedStyles';
 import { WebRunnerContext } from 'providers/contexts';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Input } from 'react-native-elements';
 import { devMode, getDevMode, mmkvStore } from 'utils/storage';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { Button } from 'components/design-system-ui';
@@ -110,7 +109,11 @@ export const WebViewDebugger = () => {
           <Button onPress={onPressReload}>{i18n.common.reloadBackground}</Button>
         </View>
         <View style={containerStyle}>
-          <Input value={input} onChangeText={setInput} style={textStyle} />
+          <TextInput
+            value={input}
+            onChangeText={setInput}
+            style={[textStyle, { backgroundColor: '#252525', height: 40, borderRadius: 8, paddingLeft: 12 }]}
+          />
           <AddressScanner
             qrModalVisible={showQr}
             onPressCancel={() => setShowQr(false)}
