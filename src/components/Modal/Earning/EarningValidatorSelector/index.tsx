@@ -28,7 +28,7 @@ import { EmptyValidator } from 'components/EmptyValidator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ValidatorDataType } from 'types/earning';
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
-import { YieldPoolType } from '@subwallet/extension-base/types';
+import { NominationInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import DotBadge from 'components/design-system-ui/badge/DotBadge';
 import { autoSelectValidatorOptimally } from 'utils/earning';
 import { fetchStaticData } from 'utils/fetchStaticData';
@@ -111,7 +111,8 @@ export const EarningValidatorSelector = forwardRef(
     const chainInfo = chainInfoMap[chain];
     const networkPrefix = _getChainSubstrateAddressPrefix(chainInfo);
 
-    const nominations = useMemo(() => compound?.nominations || [], [compound]);
+    // const cachedNominations = useMemo(() => compound?.nominations || [], [compound]);
+    const [nominations] = useState<NominationInfo[]>(compound?.nominations || []);
     const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(chain), [chain]);
     const isSingleSelect = useMemo(() => _isSingleSelect || !isRelayChain, [_isSingleSelect, isRelayChain]);
     const hasReturn = useMemo(() => items[0]?.expectedReturn !== undefined, [items]);
@@ -288,6 +289,35 @@ export const EarningValidatorSelector = forwardRef(
 
       return defaultSelectedList;
     }, [defaultValidatorAddress, resultList]);
+    //
+    // useEffect(() => {
+    //   setNominations(old => {
+    //     const sortNomination = (a: NominationInfo, b: NominationInfo) => {
+    //       if (a.validatorAddress > b.validatorAddress) {
+    //         return 1;
+    //       } else if (a.validatorAddress < b.validatorAddress) {
+    //         return -1;
+    //       }
+    //
+    //       return 0;
+    //     };
+    //
+    //     const oldSorted = old
+    //       .sort(sortNomination)
+    //       .map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity))
+    //       .join('---');
+    //     const newSorted = cachedNominations
+    //       .sort(sortNomination)
+    //       .map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity))
+    //       .join('---');
+    //
+    //     if (oldSorted !== newSorted) {
+    //       return cachedNominations;
+    //     }
+    //
+    //     return old;
+    //   });
+    // }, [cachedNominations]);
 
     useEffect(() => {
       fetchStaticData<Record<string, ChainRecommendValidator>>('direct-nomination-validator')

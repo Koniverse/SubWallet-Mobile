@@ -21,6 +21,7 @@ import {
   StakingJson,
   StakingRewardJson,
   ThemeNames,
+  TokenPriorityDetails,
   TransactionHistoryItem,
   UiSettings,
 } from '@subwallet/extension-base/background/KoniTypes';
@@ -814,3 +815,16 @@ export const subscribeUnreadNotificationCount = lazySubscribeMessage(
   updateUnreadNotificationCountMap,
 );
 /* Notification service */
+
+/* Priority tokens */
+export const updatePriorityTokens = (data: TokenPriorityDetails) => {
+  store.dispatch({ type: 'chainStore/updatePriorityTokens', payload: data });
+};
+
+export const subscribePriorityTokens = lazySubscribeMessage(
+  'pri(tokens.subscribePriority)',
+  null,
+  updatePriorityTokens,
+  updatePriorityTokens,
+);
+/* Priority tokens */

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { TokenSelector } from 'components/Modal/common/TokenSelector';
@@ -6,6 +6,7 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { ModalRef } from 'types/modalRef';
 import { AccountAddressItemType } from 'types/account';
 import { _ChainAsset } from '@subwallet/chain-list/types';
+import { sortTokensByStandard } from 'utils/sort/token';
 
 interface Props {
   accountRef: React.MutableRefObject<ModalRef | undefined>;
@@ -25,10 +26,17 @@ export const SelectAccAndTokenModal = ({
   openSelectToken,
 }: Props) => {
   const isAllAccount = useSelector((state: RootState) => state.accountState.isAllAccount);
+  const priorityTokens = useSelector((state: RootState) => state.chainStore.priorityTokens);
+
+  const sortedItems = useMemo(() => {
+    sortTokensByStandard(tokenItems, priorityTokens);
+
+    return tokenItems;
+  }, [priorityTokens, tokenItems]);
   return (
     <>
       <TokenSelector
-        items={tokenItems}
+        items={sortedItems}
         onSelectItem={openSelectToken}
         selectedValueMap={{}}
         tokenSelectorRef={tokenRef}

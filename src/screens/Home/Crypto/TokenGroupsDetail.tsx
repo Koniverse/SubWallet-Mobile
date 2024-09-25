@@ -33,7 +33,7 @@ import { AccountAddressItemType } from 'types/account';
 import { KeypairType } from '@subwallet/keyring/types';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { isTonAddress } from '@subwallet/keyring';
-import { sortTokenByValue } from 'utils/sort/token';
+import { sortTokensByStandard } from 'utils/sort/token';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 
 type CurrentSelectToken = {
@@ -49,6 +49,7 @@ export const TokenGroupsDetail = ({
   const tonAccountRef = useRef<ModalRef>();
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<CryptoNavigationProps>();
+  const priorityTokens = useSelector((root: RootState) => root.chainStore.priorityTokens);
   const [currentTokenInfo, setCurrentTokenInfo] = useState<CurrentSelectToken | undefined>(undefined);
   const [tokenDetailVisible, setTokenDetailVisible] = useState<boolean>(false);
   const assetRegistryMap = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
@@ -143,7 +144,9 @@ export const TokenGroupsDetail = ({
           }
         });
 
-        return items.sort(sortTokenByValue);
+        sortTokensByStandard(items, priorityTokens);
+
+        return items;
       }
 
       if (tokenBalanceMap[tokenGroupSlug]) {
@@ -152,7 +155,7 @@ export const TokenGroupsDetail = ({
     }
 
     return [] as TokenBalanceItemType[];
-  }, [tokenGroupSlug, tokenGroupMap, tokenBalanceMap]);
+  }, [tokenGroupSlug, tokenGroupMap, tokenBalanceMap, priorityTokens]);
 
   const onClickItem = useCallback((item: TokenBalanceItemType) => {
     return () => {

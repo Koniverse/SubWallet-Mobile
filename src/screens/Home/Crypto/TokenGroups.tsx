@@ -25,7 +25,6 @@ import { useToast } from 'react-native-toast-notifications';
 import { TokenSearchModal } from 'screens/Home/Crypto/TokenSearchModal';
 import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
 import { tokenItem } from 'constants/itemHeight';
-import { sortTokenByValue } from 'utils/sort/token';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { AccountChainType, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { IS_SHOW_TON_CONTRACT_VERSION_WARNING } from 'constants/localStorage';
@@ -38,6 +37,8 @@ import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { useMMKVBoolean } from 'react-native-mmkv';
 import { isTonAddress } from '@subwallet/keyring';
 import { isAccountAll } from '@subwallet/extension-base/utils';
+import { sortTokensByStandard } from 'utils/sort/token';
+import useDebouncedValue from 'hooks/common/useDebouncedValue';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -64,6 +65,7 @@ export const TokenGroups = () => {
   const { sortedTokenGroups, tokenGroupMap, sortedTokenSlugs } = useTokenGroup(chainsByAccountType);
   const { tokenGroupBalanceMap, totalBalanceInfo, tokenBalanceMap } = useAccountBalance(tokenGroupMap);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const priorityTokens = useSelector((state: RootState) => state.chainStore.priorityTokens);
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
   const [isCustomizationModalVisible, setCustomizationModalVisible] = useState<boolean>(false);
   const [isTonVersionSelectorVisible, setTonVersionSelectorVisible] = useState<boolean>(false);
@@ -166,17 +168,24 @@ export const TokenGroups = () => {
     [onPressItem],
   );
 
+  const debouncedTokenGroupBalanceMap = useDebouncedValue<Record<string, TokenBalanceItemType>>(
+    tokenGroupBalanceMap,
+    300,
+  );
+
   const tokenGroupBalanceItems = useMemo<TokenBalanceItemType[]>(() => {
     const result: TokenBalanceItemType[] = [];
 
     sortedTokenGroups.forEach(tokenGroupSlug => {
-      if (tokenGroupBalanceMap[tokenGroupSlug]) {
-        result.push(tokenGroupBalanceMap[tokenGroupSlug]);
+      if (debouncedTokenGroupBalanceMap[tokenGroupSlug]) {
+        result.push(debouncedTokenGroupBalanceMap[tokenGroupSlug]);
       }
     });
 
-    return result.sort(sortTokenByValue);
-  }, [sortedTokenGroups, tokenGroupBalanceMap]);
+    sortTokensByStandard(result, priorityTokens, true);
+
+    return result;
+  }, [debouncedTokenGroupBalanceMap, priorityTokens, sortedTokenGroups]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (

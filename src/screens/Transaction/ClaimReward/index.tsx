@@ -94,7 +94,7 @@ const filterAccount = (
 
 const ClaimReward = ({
   route: {
-    params: { slug },
+    params: { slug, from },
   },
 }: ClaimRewardProps) => {
   const accountSelectorRef = useRef<ModalRef>();
@@ -120,6 +120,7 @@ const ClaimReward = ({
     reValidateMode: 'onChange',
     defaultValues: {
       bondReward: '',
+      from: from || '',
     },
   });
 

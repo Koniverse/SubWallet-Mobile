@@ -17,6 +17,7 @@ import {
   PriceJson,
   StakingItem,
   StakingRewardItem,
+  TokenPriorityDetails,
   TransactionHistoryItem,
   UiSettings,
   ValidatorInfo,
@@ -222,6 +223,7 @@ export interface ChainStore extends BaseReduxStore {
   chainStateMap: Record<string, _ChainState>;
   chainStatusMap: Record<string, _ChainApiStatus>;
   ledgerGenericAllowNetworks: string[];
+  priorityTokens: TokenPriorityDetails;
 }
 
 export interface BalanceStore extends BaseReduxStore {
