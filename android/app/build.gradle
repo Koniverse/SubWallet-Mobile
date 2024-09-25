@@ -136,12 +136,14 @@ dependencies {
   // Fix duplicate Kotlin JDK 7 & JDK 8
   implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
 
-    // The version of react-native is set by the React Native Gradle Plugin
-    implementation("com.facebook.react:react-android")
+  // The version of react-native is set by the React Native Gradle Plugin
+  implementation("com.facebook.react:react-android")
 
-    if (hermesEnabled.toBoolean()) {
-        implementation("com.facebook.react:hermes-android")
-    } else {
-        implementation jscFlavor
-    }
+  if (hermesEnabled.toBoolean()) {
+    implementation("com.facebook.react:hermes-android")
+  } else {
+    implementation jscFlavor
+  }
+
+  implementation 'org.jetbrains:annotations:16.0.2'
 }
