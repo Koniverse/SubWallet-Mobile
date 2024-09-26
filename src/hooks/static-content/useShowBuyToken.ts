@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { getVersion } from 'react-native-device-info';
+import axios from 'axios';
 import { TOKEN_CONFIG_URL } from 'constants/index';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateIsShowByToken } from 'stores/base/Settings';
@@ -15,8 +16,10 @@ export function useShowBuyToken() {
       return;
     }
     const currentAppVersion = getVersion();
-    fetch(TOKEN_CONFIG_URL).then(res => {
-      if (res?.buy?.includes(currentAppVersion)) {
+    axios.get(TOKEN_CONFIG_URL).then(res => {
+      const tokenConfig = res.data;
+
+      if (tokenConfig?.buy?.includes(currentAppVersion)) {
         dispatch(updateIsShowByToken(true));
         return;
       }

@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import axios from 'axios';
 import { STATIC_DATA_DOMAIN } from 'constants/index';
 import { mmkvStore } from 'utils/storage';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
@@ -8,13 +9,14 @@ import { EARNING_POOL_DETAIL_DATA, UNSTAKE_ALERT_DATA } from 'constants/earning/
 
 export const useGetAppInstructionData = (language: string) => {
   const getAppInstructionData = useCallback(async () => {
-    fetch(`${STATIC_DATA_DOMAIN}/instructions/preview-${language}.json`)
-      .then(data => {
+    axios
+      .get(`${STATIC_DATA_DOMAIN}/instructions/preview-${language}.json`)
+      .then(({ data }) => {
         const earningDetailData: StaticDataProps[] = [];
         const unstakeStaticData: StaticDataProps[] = [];
         const mktCampaignStaticData: StaticDataProps[] = [];
 
-        (data as unknown as StaticDataProps[]).forEach(item => {
+        (data as StaticDataProps[]).forEach(item => {
           if (item.group && item.group === 'earning') {
             if (item.slug === 'UNSTAKE_INFO') {
               unstakeStaticData.push(item);
