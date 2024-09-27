@@ -13,5 +13,10 @@ export function shuffle<T = any>(array: T[]) {
 }
 
 export const getOsVersion = (): string | number => {
-  return Platform.Version;
+  if (Platform.OS === 'ios') {
+    return Platform.Version;
+  } else {
+    // @ts-ignore
+    return Platform.constants['Release'];
+  }
 };
