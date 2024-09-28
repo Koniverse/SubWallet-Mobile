@@ -1,6 +1,6 @@
 import { TagPropsType } from 'components/design-system-ui/tag/PropsType';
 
-export type DAPPCategory = {
+export type DAppCategory = {
   slug: string;
   name: string;
   id: string;
@@ -24,6 +24,6 @@ export type DAppInfo = {
 };
 
 export type PredefinedDApps = {
-  categories: () => DAPPCategory[];
+  categories: () => DAppCategory[];
   dapps: DAppInfo[];
 };

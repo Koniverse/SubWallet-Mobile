@@ -72,7 +72,3 @@ export function useGetDAppList() {
 
   return { browserDApps, getDAppsData };
 }
-
-export async function getTermAndCondition(): Promise<string> {
-  return await axios.get(`${STATIC_DATA_DOMAIN}/term-and-condition/index.md`);
-}

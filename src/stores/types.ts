@@ -46,7 +46,7 @@ import {
 import { SessionTypes } from '@walletconnect/types';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { MissionInfo } from 'types/missionPool';
-import { DAPPCategory, DAppInfo } from 'types/browser';
+import { DAppCategory, DAppInfo } from 'types/browser';
 import { RootRouteProps } from 'routes/index';
 import { MktCampaignHistoryData } from 'types/staticContent';
 import { SwapPair } from '@subwallet/extension-base/types/swap';
@@ -166,7 +166,7 @@ export interface AppSettings extends UiSettings, Omit<SettingsStruct, 'camera' |
   isShowBuyToken: boolean;
   browserDApps: {
     dApps: DAppInfo[] | undefined;
-    dAppCategories: DAPPCategory[] | undefined;
+    dAppCategories: DAppCategory[] | undefined;
   };
   currentRoute: RootRouteProps | undefined;
 }
