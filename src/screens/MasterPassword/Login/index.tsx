@@ -35,7 +35,7 @@ import {
 import { updateFaceIdEnable, updateUseBiometric } from 'stores/MobileSettings';
 import { FORCE_HIDDEN_EVENT } from 'components/design-system-ui/modal/ModalBaseV2';
 import MigrateToKeychainPasswordModal from '../MigrateToKeychainPasswordModal';
-import { backupStorageData, mmkvStore } from 'utils/storage';
+import { clearBackupData, mmkvStore } from 'utils/storage';
 import { setBuildNumber } from 'stores/AppVersion';
 import { LockTimeout } from 'stores/types';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
@@ -216,7 +216,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
         const _setLoading = resetAll ? setEraseAllLoading : setAccLoading;
         _setLoading(true);
         setTimeout(() => {
-          _setLoading(false);
           resetWallet({
             resetAll: resetAll,
           })
@@ -227,9 +226,9 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
             })
             .catch((e: Error) => {
               toast.show(e.message, { type: 'danger' });
+              _setLoading(false);
             })
             .finally(() => {
-              _setLoading(false);
               setModalVisible(false);
               if (resetAll) {
                 resetPinCode();
@@ -237,8 +236,8 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
                 dispatch(updateUseBiometric(false));
                 resetKeychainPassword();
               }
-              // BACKUP-003: Back up local storage after reset account
-              backupStorageData(true, false);
+              // Clear backed up data after reset account
+              clearBackupData();
             });
         }, 300);
       };

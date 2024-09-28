@@ -158,13 +158,6 @@ export const triggerBackupOnInit = () => {
 };
 
 export const restoreStorageData = () => {
-  // Todo: Consider to remove this condition
-  // if (!isIOS17) {
-  //   // Restore empty storage
-  //   mobileRestore({}).catch(console.error);
-  //   return;
-  // }
-
   const indexedDB = mmkvStore.getString('backup-indexedDB');
   const localstorage = mmkvStore.getString('backup-localstorage');
   mobileRestore({ indexedDB, storage: localstorage })
@@ -173,6 +166,13 @@ export const restoreStorageData = () => {
       mmkvStore.set('webRunnerLastRestoreTime', new Date().toString());
     })
     .catch(e => console.debug('** Restore storage data error:', e));
+};
+export const clearBackupData = () => {
+  mmkvStore.set('backup-indexedDB', '');
+  mmkvStore.set('backup-localstorage', '');
+  mmkvStore.set('webRunnerLastBackupTime', '');
+  mmkvStore.set('webRunnerLastBackupTimestamp', '');
+  mmkvStore.set('app-is-setup', '');
 };
 
 // MKT Campaign flags for iOS 17 when reset data happen
@@ -209,6 +209,8 @@ export const getHideBanner = (key: string) => {
 
   return campaignId as string[] | undefined;
 };
+
+// Dev mode flag
 export const devMode = (isDevMode: boolean) => {
   mmkvStore.set('DEV_MODE', isDevMode);
 };
