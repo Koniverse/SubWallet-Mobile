@@ -11,8 +11,8 @@ import { AccountSignMode } from 'types/signer';
 import { SigData } from 'types/signer';
 import { getSignMode } from 'utils/account';
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';
-import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
-import { Button } from 'components/design-system-ui';
+import { CheckCircle, IconProps, QrCode, Swatches, Warning, XCircle } from 'phosphor-react-native';
+import { Button, Icon, PageIcon, SwModal } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
 import { DeviceEventEmitter, Linking, Platform, Text, View } from 'react-native';
@@ -65,7 +65,7 @@ const migrationFAQUrl =
 const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMode.PASSWORD];
 
 export const SubstrateSignArea = (props: Props) => {
-  const { account, id, request, txExpirationTime, navigation } = props;
+  const { account, id, request, txExpirationTime, navigation, isInternal } = props;
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const genesisHash = useMemo(() => {
     const _payload = request.payload;
@@ -93,6 +93,7 @@ export const SubstrateSignArea = (props: Props) => {
     isLedger,
   );
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
+  const [isShowWarningModal, setIsShowWarningModal] = useState<boolean>(false);
   const isMessage = isSubstrateMessage(payload);
   const dispatch = useDispatch();
   const networkName = useMemo(
@@ -108,15 +109,14 @@ export const SubstrateSignArea = (props: Props) => {
       return _isRuntimeUpdated(_payload.signedExtensions);
     }
   }, [request.payload]);
-  // const requireMetadata = useMemo(
-  //   () =>
-  //     signMode === AccountSignMode.GENERIC_LEDGER || (signMode === AccountSignMode.LEGACY_LEDGER && isRuntimeUpdated),
-  //   [isRuntimeUpdated, signMode],
-  // );
+  const requireMetadata = useMemo(
+    () =>
+      signMode === AccountSignMode.GENERIC_LEDGER || (signMode === AccountSignMode.LEGACY_LEDGER && isRuntimeUpdated),
+    [isRuntimeUpdated, signMode],
+  );
 
   const isMetadataOutdated = useMemo(() => {
     const _payload = request.payload;
-
     if (isRawPayload(_payload)) {
       return false;
     } else {
@@ -127,12 +127,12 @@ export const SubstrateSignArea = (props: Props) => {
     }
   }, [request.payload, chain?.specVersion]);
 
-  // const isOpenAlert =
-  //   !isMessage &&
-  //   !loadingChain &&
-  //   !requireMetadata &&
-  //   !isInternal &&
-  //   (!chain || !chain.hasMetadata || isMetadataOutdated);
+  const isOpenAlert =
+    !isMessage &&
+    !loadingChain &&
+    !requireMetadata &&
+    !isInternal &&
+    (!chain || !chain.hasMetadata || isMetadataOutdated);
 
   const alertData = useMemo((): AlertData | undefined => {
     const _requireMetadata =
@@ -368,6 +368,12 @@ export const SubstrateSignArea = (props: Props) => {
     };
   }, [txExpirationTime]);
 
+  useEffect(() => {
+    if (isOpenAlert) {
+      setIsShowWarningModal(true);
+    }
+  }, [isOpenAlert]);
+
   useHandleInternetConnectionForConfirmation(onCancel);
 
   return (
@@ -378,44 +384,44 @@ export const SubstrateSignArea = (props: Props) => {
         </View>
       )}
 
-      {/*<SwModal*/}
-      {/*  modalVisible={isShowWarningModal}*/}
-      {/*  isUseForceHidden={false}*/}
-      {/*  setVisible={setIsShowWarningModal}*/}
-      {/*  titleTextAlign={'center'}*/}
-      {/*  modalTitle={'Pay attention!'}>*/}
-      {/*  <>*/}
-      {/*    <View style={{ paddingTop: theme.paddingSM, paddingBottom: theme.paddingMD }}>*/}
-      {/*      <PageIcon icon={Warning} color={theme.colorWarning} />*/}
-      {/*    </View>*/}
-      {/*    <Text*/}
-      {/*      style={{*/}
-      {/*        paddingHorizontal: theme.padding,*/}
-      {/*        fontSize: theme.fontSize,*/}
-      {/*        lineHeight: theme.fontSize * theme.lineHeight,*/}
-      {/*        color: theme.colorTextDescription,*/}
-      {/*        textAlign: 'center',*/}
-      {/*        ...FontMedium,*/}
-      {/*      }}>*/}
-      {/*      <Text>{`${networkName} network's metadata is out of date, which may cause the transaction to fail. Update metadata using `}</Text>*/}
-      {/*      <Text*/}
-      {/*        style={{ color: theme.colorLink, textDecorationLine: 'underline' }}*/}
-      {/*        onPress={() => Linking.openURL(metadataFAQUrl)}>*/}
-      {/*        {i18n.attachAccount.readThisInstructionForMoreDetailsP2}*/}
-      {/*      </Text>*/}
-      {/*      <Text>{' or approve transaction at your own risk'}</Text>*/}
-      {/*    </Text>*/}
-      {/*    <View style={{ width: '100%', flexDirection: 'row', paddingTop: theme.padding }}>*/}
-      {/*      <Button*/}
-      {/*        style={{ flex: 1 }}*/}
-      {/*        icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}*/}
-      {/*        type="primary"*/}
-      {/*        onPress={() => setIsShowWarningModal(false)}>*/}
-      {/*        {'I understand'}*/}
-      {/*      </Button>*/}
-      {/*    </View>*/}
-      {/*  </>*/}
-      {/*</SwModal>*/}
+      <SwModal
+        modalVisible={isShowWarningModal}
+        isUseForceHidden={false}
+        setVisible={setIsShowWarningModal}
+        titleTextAlign={'center'}
+        modalTitle={'Pay attention!'}>
+        <>
+          <View style={{ paddingTop: theme.paddingSM, paddingBottom: theme.paddingMD }}>
+            <PageIcon icon={Warning} color={theme.colorWarning} />
+          </View>
+          <Text
+            style={{
+              paddingHorizontal: theme.padding,
+              fontSize: theme.fontSize,
+              lineHeight: theme.fontSize * theme.lineHeight,
+              color: theme.colorTextDescription,
+              textAlign: 'center',
+              ...FontMedium,
+            }}>
+            <Text>{`${networkName} network's metadata is out of date, which may cause the transaction to fail. Update metadata using `}</Text>
+            <Text
+              style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
+              onPress={() => Linking.openURL(metadataFAQUrl)}>
+              {i18n.attachAccount.readThisInstructionForMoreDetailsP2}
+            </Text>
+            <Text>{' or approve transaction at your own risk'}</Text>
+          </Text>
+          <View style={{ width: '100%', flexDirection: 'row', paddingTop: theme.padding }}>
+            <Button
+              style={{ flex: 1 }}
+              icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}
+              type="primary"
+              onPress={() => setIsShowWarningModal(false)}>
+              {'I understand'}
+            </Button>
+          </View>
+        </>
+      </SwModal>
 
       <ConfirmationFooter>
         <Button disabled={loading} block icon={getButtonIcon(XCircle)} type={'secondary'} onPress={onCancel}>
