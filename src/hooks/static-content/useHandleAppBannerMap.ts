@@ -5,6 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AppBannerData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 import { getCountry } from 'react-native-localize';
+import { Platform } from 'react-native';
+import { getOsVersion } from 'utils/common';
+import { satisfies } from 'compare-versions';
+import { getVersion } from 'react-native-device-info';
 
 export const useHandleAppBannerMap = () => {
   const dispatch = useDispatch();
@@ -50,21 +54,50 @@ export const useHandleAppBannerMap = () => {
     [bannerHistoryMap, dispatch],
   );
 
-  const filteredDataByLocation = useMemo(() => {
-    return appBannerData.filter(({ locations }) => {
-      if (locations && locations.length) {
-        const countryId = getCountry();
-        const locationIds = locations.map(item => item.split('_')[1]);
-        return locationIds.includes(countryId);
-      } else {
-        return true;
+  const filteredAppBannerByTimeAndPlatform = useMemo(() => {
+    return appBannerData.filter(({ info }) => {
+      if (info) {
+        if (info.os) {
+          return info.platforms.includes('mobile') && info.os.toLowerCase() === Platform.OS;
+        } else {
+          return info.platforms.includes('mobile');
+        }
       }
     });
   }, [appBannerData]);
 
+  const filteredData = useMemo(() => {
+    return filteredAppBannerByTimeAndPlatform.filter(
+      ({ locations, comparison_operator, os_version_range, app_version_range }) => {
+        const validConditionArr = [];
+        if (locations && locations.length) {
+          const countryId = getCountry();
+          const locationIds = locations.map(item => item.split('_')[1]);
+          validConditionArr.push(locationIds.includes(countryId));
+        }
+
+        if (os_version_range) {
+          const osVersion = getOsVersion();
+          validConditionArr.push(satisfies(osVersion.toString(), os_version_range));
+        }
+
+        if (app_version_range) {
+          const appVersion = getVersion();
+          validConditionArr.push(satisfies(appVersion, app_version_range));
+        }
+
+        if (comparison_operator === 'AND') {
+          return validConditionArr.every(c => c);
+        } else {
+          return validConditionArr.some(c => c);
+        }
+      },
+    );
+  }, [filteredAppBannerByTimeAndPlatform]);
+
   const appBannerMap = useMemo(() => {
-    if (filteredDataByLocation) {
-      const result: Record<string, AppBannerData[]> = filteredDataByLocation.reduce((r, a) => {
+    if (filteredData) {
+      const result: Record<string, AppBannerData[]> = filteredData.reduce((r, a) => {
         r[a.position] = r[a.position] || [];
         r[a.position].push(a);
         return r;
@@ -74,7 +107,7 @@ export const useHandleAppBannerMap = () => {
     } else {
       return {};
     }
-  }, [filteredDataByLocation]);
+  }, [filteredData]);
 
   return {
     updateBannerHistoryMap,

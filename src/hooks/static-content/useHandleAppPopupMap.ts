@@ -5,6 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AppPopupData } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 import { getCountry } from 'react-native-localize';
+import { satisfies } from 'compare-versions';
+import { getOsVersion } from 'utils/common';
+import { Platform } from 'react-native';
+import { getVersion } from 'react-native-device-info';
 
 export const useHandleAppPopupMap = () => {
   const { appPopupData, popupHistoryMap } = useSelector((state: RootState) => state.staticContent);
@@ -42,21 +46,50 @@ export const useHandleAppPopupMap = () => {
     [dispatch, popupHistoryMap],
   );
 
-  const filteredDataByLocation = useMemo(() => {
-    return appPopupData.filter(({ locations }) => {
-      if (locations && locations.length) {
-        const countryId = getCountry();
-        const locationIds = locations.map(item => item.split('_')[1]);
-        return locationIds.includes(countryId);
-      } else {
-        return true;
+  const filteredAppPopupByTimeAndPlatform = useMemo(() => {
+    return appPopupData.filter(({ info }) => {
+      if (info) {
+        if (info.os) {
+          return info.platforms.includes('mobile') && info.os.toLowerCase() === Platform.OS;
+        } else {
+          return info.platforms.includes('mobile');
+        }
       }
     });
   }, [appPopupData]);
 
+  const filteredData = useMemo(() => {
+    return filteredAppPopupByTimeAndPlatform.filter(
+      ({ locations, comparison_operator, os_version_range, app_version_range }) => {
+        const validConditionArr = [];
+        if (locations && locations.length) {
+          const countryId = getCountry();
+          const locationIds = locations.map(item => item.split('_')[1]);
+          validConditionArr.push(locationIds.includes(countryId));
+        }
+
+        if (os_version_range) {
+          const osVersion = getOsVersion();
+          validConditionArr.push(satisfies(osVersion.toString(), os_version_range));
+        }
+
+        if (app_version_range) {
+          const appVersion = getVersion();
+          validConditionArr.push(satisfies(appVersion, app_version_range));
+        }
+
+        if (comparison_operator === 'AND') {
+          return validConditionArr.every(c => c);
+        } else {
+          return validConditionArr.some(c => c);
+        }
+      },
+    );
+  }, [filteredAppPopupByTimeAndPlatform]);
+
   const appPopupMap = useMemo(() => {
-    if (filteredDataByLocation) {
-      const result: Record<string, AppPopupData[]> = filteredDataByLocation.reduce((r, a) => {
+    if (filteredData) {
+      const result: Record<string, AppPopupData[]> = filteredData.reduce((r, a) => {
         r[a.position] = r[a.position] || [];
         r[a.position].push(a);
         return r;
@@ -66,7 +99,7 @@ export const useHandleAppPopupMap = () => {
     } else {
       return {};
     }
-  }, [filteredDataByLocation]);
+  }, [filteredData]);
 
   return {
     updatePopupHistoryMap,
