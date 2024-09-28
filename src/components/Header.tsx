@@ -1,6 +1,6 @@
 import { QrCode } from 'phosphor-react-native';
 import React, { useCallback, useState } from 'react';
-import { Keyboard, Platform, StyleProp, View } from 'react-native';
+import { Keyboard, StyleProp, View } from 'react-native';
 import { SpaceStyle } from 'styles/space';
 import { Button, Icon } from 'components/design-system-ui';
 import AccountSelectField from 'components/common/Account/AccountSelectField';
@@ -52,17 +52,10 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
       if (isAddress(data)) {
         setError(undefined);
         setIsScanning(false);
-        if (Platform.OS === 'ios' && parseFloat(Platform.Version) < 16.4) {
-          navigation.navigate('Drawer', {
-            screen: 'TransactionAction',
-            params: { screen: 'OldSendFund', params: { recipient: data } },
-          });
-        } else {
-          navigation.navigate('Drawer', {
-            screen: 'TransactionAction',
-            params: { screen: 'SendFund', params: { recipient: data } },
-          });
-        }
+        navigation.navigate('Drawer', {
+          screen: 'TransactionAction',
+          params: { screen: 'SendFund', params: { recipient: data } },
+        });
       } else if (!validWalletConnectUri(data)) {
         addConnection({ uri: data })
           .then(() => {
