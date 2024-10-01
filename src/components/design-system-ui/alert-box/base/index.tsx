@@ -1,6 +1,6 @@
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleProp, View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { PhosphorIcon } from 'utils/campaign';
 import { convertHexColorToRGBA } from 'utils/color';
 import BackgroundIcon from '../../background-icon';
@@ -14,6 +14,7 @@ interface Props {
   description: React.ReactNode | string;
   iconColor: string;
   titleColor?: string;
+  wrapperStyle?: ViewStyle;
   icon: PhosphorIcon;
 }
 
@@ -42,7 +43,7 @@ const tagStyles: StyleProp<any> = {
 };
 
 const AlertBoxBase: React.FC<Props> = (props: Props) => {
-  const { description, title, iconColor, icon, titleColor } = props;
+  const { description, title, iconColor, icon, titleColor, wrapperStyle } = props;
 
   const getTitleClassesStyle = useCallback((): StyleProp<any> => {
     return {
@@ -67,7 +68,7 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, wrapperStyle]}>
       <View>
         <BackgroundIcon
           backgroundColor={convertHexColorToRGBA(iconColor, 0.1)}
