@@ -46,6 +46,7 @@ import { useGetBrowserConfig } from 'hooks/static-content/useGetBrowserConfig';
 import RNRestart from 'react-native-restart';
 import { ImageLogosMap } from 'assets/logo';
 import { GlobalInstructionModalContextProvider } from 'providers/GlobalInstructionModalContext';
+import BackgroundTimer from 'react-native-background-timer';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -120,10 +121,17 @@ AppState.addEventListener('change', (state: string) => {
 
   if (state === 'background') {
     mmkvStore.set('lastTimeLogin', Date.now());
+    console.log('timeAutoLock', timeAutoLock);
     if (timeAutoLock === LockTimeout.ALWAYS) {
       // Lock master password incase always require
       setIsShowRemindBackupModal(false);
       keyringLock().catch((e: Error) => console.log(e));
+    } else {
+      BackgroundTimer.start();
+      setTimeout(() => {
+        setIsShowRemindBackupModal(false);
+        lock();
+      }, timeAutoLock * 60 * 1000);
     }
     if (isUseBiometric) {
       lockWhenActive = true;
@@ -135,6 +143,7 @@ AppState.addEventListener('change', (state: string) => {
       }
     }
   } else if (state === 'active') {
+    BackgroundTimer.stop();
     if (lockWhenActive) {
       if (isMasterPasswordLocked) {
         setIsShowRemindBackupModal(false);
