@@ -246,10 +246,12 @@ class WebRunnerHandler {
         this.runnerState.userAgent = info.userAgent;
         if (Platform.OS === 'android') {
           const needUpdateChrome = parseInt(info.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./)?.[2] || '0', 10);
-          setTimeout(
-            () => DeviceEventEmitter.emit(NEED_UPDATE_CHROME, needUpdateChrome <= WEBVIEW_ANDROID_SYSTEM_MIN_VERSION),
-            500,
-          );
+          if (needUpdateChrome !== 0) {
+            setTimeout(
+              () => DeviceEventEmitter.emit(NEED_UPDATE_CHROME, needUpdateChrome <= WEBVIEW_ANDROID_SYSTEM_MIN_VERSION),
+              500,
+            );
+          }
         }
 
         return true;
