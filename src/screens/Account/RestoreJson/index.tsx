@@ -371,7 +371,7 @@ export const RestoreJson = () => {
           )}
           {accountsInfo.length > 0 ? (
             <View style={styles.accountPreview}>
-              {accountsInfo.length > 1 ? (
+              {accountsInfo.length > 1 || (accountsInfo.length === 1 && countAccountInvalid > 0) ? (
                 <SelectItem
                   leftItemIcon={<AvatarGroup addresses={addresses} />}
                   label={nameImportAccountItem}
