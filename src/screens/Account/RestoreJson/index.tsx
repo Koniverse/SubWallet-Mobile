@@ -1,7 +1,7 @@
 import AvatarGroup from 'components/common/AvatarGroup';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { DotsThree, Eye, FileArrowDown, QrCode, Swatches, Warning, X } from 'phosphor-react-native';
+import { DotsThree, Eye, FileArrowDown, Info, QrCode, Swatches, Warning, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, ListRenderItemInfo, Platform, ScrollView, View } from 'react-native';
 import { InputFile } from 'components/common/Field/InputFile';
@@ -34,6 +34,8 @@ import { ethereumEncode, keccakAsU8a, secp256k1Expand } from '@polkadot/util-cry
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { FontMedium } from 'styles/sharedStyles';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
+import { useToast } from 'react-native-toast-notifications';
 
 export interface ExtendResponseJsonGetAccountInfo extends ResponseJsonGetAccountInfo {
   hardwareType?: 'ledger';
@@ -99,9 +101,21 @@ export const RestoreJson = () => {
   const [accountsInfo, setAccountsInfo] = useState<ExtendResponseJsonGetAccountInfo[]>([]);
   const [visible, setVisible] = useState(false);
   const [warningModalVisible, setWarningModalVisible] = useState(false);
+  const [countAccountInvalid, setCountAccountInvalid] = useState(0);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+  const { show, hideAll } = useToast();
 
   const addresses = useMemo(() => accountsInfo.map(acc => acc.address), [accountsInfo]);
+
+  const descriptionAlertWarningBox = useMemo(() => {
+    const countAccount = String(accountsInfo.length).padStart(2, '0');
+
+    if (accountsInfo.length === 1) {
+      return `One or more accounts found in this file are invalid. Only ${countAccount} account can be imported as listed below`;
+    }
+
+    return `One or more accounts found in this file are invalid. Only ${countAccount} accounts can be imported as listed below`;
+  }, [accountsInfo.length]);
 
   useHandlerHardwareBackPress(isBusy);
   const _onRestore = (formState: FormState) => {
@@ -133,7 +147,14 @@ export const RestoreJson = () => {
           withMasterPassword: true,
         })
     )
-      .then(() => {
+      .then(addressList => {
+        if (addressList.length === 1) {
+          hideAll();
+          show('1 account imported', { type: 'success' });
+        } else if (addressList.length > 1) {
+          hideAll();
+          show(`${addressList.length} accounts imported`, { type: 'success' });
+        }
         setFileError(false);
         setIsBusy(false);
         onUpdateErrors('password')([]);
@@ -155,8 +176,11 @@ export const RestoreJson = () => {
   });
 
   const _onReadFile = (fileContent: KeyringPair$Json | KeyringPairs$Json) => {
+    setCountAccountInvalid(0);
     try {
       if (isKeyringPairs$Json(fileContent)) {
+        const accounts: ExtendResponseJsonGetAccountInfo[] = [];
+
         fileContent.accounts.forEach(account => {
           const genesisHash: string = account.meta.originGenesisHash as string;
 
@@ -173,21 +197,26 @@ export const RestoreJson = () => {
           }
 
           if (isHex(account.address) && hexToU8a(account.address).length !== 20) {
-            address = ethereumEncode(keccakAsU8a(secp256k1Expand(hexToU8a(account.address))));
+            try {
+              address = ethereumEncode(keccakAsU8a(secp256k1Expand(hexToU8a(account.address))));
+            } catch (e) {
+              setCountAccountInvalid(pre => pre + 1);
+
+              return;
+            }
           }
-          setAccountsInfo(old => [
-            ...old,
-            {
-              address: address,
-              genesisHash: account.meta.genesisHash,
-              name: account.meta.name,
-              hardwareType: account.meta.hardwareType,
-              isExternal: account.meta.isExternal,
-              isHardware: account.meta.isHardware,
-              isReadonly: account.meta.isReadOnly,
-            } as ExtendResponseJsonGetAccountInfo,
-          ]);
+
+          accounts.push({
+            address: address,
+            genesisHash: account.meta.genesisHash,
+            name: account.meta.name,
+            hardwareType: account.meta.hardwareType,
+            isExternal: account.meta.isExternal,
+            isHardware: account.meta.isHardware,
+            isReadonly: account.meta.isReadOnly,
+          } as ExtendResponseJsonGetAccountInfo);
         });
+        setAccountsInfo(accounts);
       } else {
         jsonGetAccountInfo(fileContent)
           .then(accountInfo => {
@@ -196,6 +225,7 @@ export const RestoreJson = () => {
           })
           .catch(() => {
             setFileError(true);
+            setCountAccountInvalid(pre => pre + 1);
           });
       }
       onChangeValue('password')('');
@@ -288,6 +318,16 @@ export const RestoreJson = () => {
 
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
+  const nameImportAccountItem = useMemo(() => {
+    const countAccount = String(accountsInfo.length).padStart(2, '0');
+
+    if (countAccountInvalid > 0) {
+      return `${countAccount} accounts found`;
+    }
+
+    return `Import ${countAccount} accounts`;
+  }, [accountsInfo.length, countAccountInvalid]);
+
   useEffect(() => {
     let amount = true;
     if (isShowPasswordField && !warningModalVisible) {
@@ -329,26 +369,39 @@ export const RestoreJson = () => {
               isDanger
             />
           )}
-          {!!accountsInfo.length && (
+          {accountsInfo.length > 0 ? (
             <View style={styles.accountPreview}>
               {accountsInfo.length > 1 ? (
                 <SelectItem
                   leftItemIcon={<AvatarGroup addresses={addresses} />}
-                  label={
-                    i18n.formatString(
-                      i18n.importAccount.importAccounts,
-                      String(accountsInfo.length).padStart(2, '0'),
-                    ) as string
-                  }
+                  label={nameImportAccountItem}
                   onPress={openModal}
-                  rightIcon={<Icon phosphorIcon={DotsThree} size="sm" />}
+                  rightIcon={
+                    <View style={{ flexDirection: 'row' }}>
+                      {!!countAccountInvalid && (
+                        <View style={{ width: 40, alignItems: 'center' }}>
+                          <Icon phosphorIcon={Info} size="sm" iconColor={theme.colorWarning} weight={'fill'} />
+                        </View>
+                      )}
+                      <Icon phosphorIcon={DotsThree} size="sm" />
+                    </View>
+                  }
                 />
               ) : (
                 <SelectItem leftItemIcon={<AvatarGroup addresses={addresses} />} label={accountsInfo[0].name} />
               )}
             </View>
+          ) : countAccountInvalid ? (
+            <AlertBox
+              wrapperStyle={{ marginTop: theme.marginXS }}
+              title={'Unable to import'}
+              description={'All accounts found in this file are invalid. Import another JSON file and try again'}
+              type={'error'}
+            />
+          ) : (
+            <></>
           )}
-          {isShowPasswordField && (
+          {isShowPasswordField && accountsInfo.length > 0 && (
             <>
               <Typography.Text style={styles.description}>{i18n.importAccount.importJsonMessage}</Typography.Text>
               <View style={styles.passwordContainer}>
@@ -378,21 +431,33 @@ export const RestoreJson = () => {
           </Button>
         </View>
       </View>
-      <SwModal
-        isUseModalV2
-        modalBaseV2Ref={modalBaseV2Ref}
-        setVisible={setVisible}
-        modalVisible={visible}
-        modalTitle={i18n.header.accounts}
-        isAllowSwipeDown={Platform.OS === 'ios'}
-        onBackButtonPress={hideModal}>
-        <FlatList
-          data={accountsInfo}
-          renderItem={renderAccount}
-          style={styles.accountList}
-          showsVerticalScrollIndicator={false}
-        />
-      </SwModal>
+      {accountsInfo.length > 0 ? (
+        <SwModal
+          isUseModalV2
+          modalBaseV2Ref={modalBaseV2Ref}
+          setVisible={setVisible}
+          modalVisible={visible}
+          modalTitle={i18n.header.accounts}
+          isAllowSwipeDown={Platform.OS === 'ios'}
+          onBackButtonPress={hideModal}>
+          {countAccountInvalid > 0 && (
+            <AlertBox
+              title={'Some accounts can’t be imported'}
+              description={descriptionAlertWarningBox}
+              type={'warning'}
+              wrapperStyle={{ marginBottom: theme.marginXS }}
+            />
+          )}
+          <FlatList
+            data={accountsInfo}
+            renderItem={renderAccount}
+            style={styles.accountList}
+            showsVerticalScrollIndicator={false}
+          />
+        </SwModal>
+      ) : (
+        <></>
+      )}
 
       <SwModal
         isUseModalV2

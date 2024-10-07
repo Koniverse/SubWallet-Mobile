@@ -2,11 +2,13 @@ import { Info } from 'phosphor-react-native';
 import AlertBoxBase from '../base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
+import { ViewStyle } from 'react-native';
 
 interface Props {
   type?: 'info' | 'warning' | 'error';
   title: string;
   description: React.ReactNode;
+  wrapperStyle?: ViewStyle;
 }
 
 interface ColorText {
@@ -15,7 +17,7 @@ interface ColorText {
 }
 
 const AlertBox: React.FC<Props> = (props: Props) => {
-  const { description, type = 'info', title } = props;
+  const { description, type = 'info', title, wrapperStyle } = props;
 
   const theme = useSubWalletTheme().swThemes;
 
@@ -47,6 +49,7 @@ const AlertBox: React.FC<Props> = (props: Props) => {
       title={title}
       description={description}
       icon={Info}
+      wrapperStyle={wrapperStyle}
     />
   );
 };
