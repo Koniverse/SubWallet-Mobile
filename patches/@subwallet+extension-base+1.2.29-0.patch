@@ -1,5 +1,32 @@
+diff --git a/node_modules/@subwallet/extension-base/koni/api/staking/bonding/utils.js b/node_modules/@subwallet/extension-base/koni/api/staking/bonding/utils.js
+index 39c314e..d60bd02 100644
+--- a/node_modules/@subwallet/extension-base/koni/api/staking/bonding/utils.js
++++ b/node_modules/@subwallet/extension-base/koni/api/staking/bonding/utils.js
+@@ -326,7 +326,7 @@ export function getEarningStatusByNominations(bnTotalActiveStake, nominationList
+ export function getValidatorLabel(chain) {
+   if (_STAKING_CHAIN_GROUP.astar.includes(chain)) {
+     return 'dApp';
+-  } else if (_STAKING_CHAIN_GROUP.relay.includes(chain)) {
++  } else if (_STAKING_CHAIN_GROUP.relay.includes(chain) || _STAKING_CHAIN_GROUP.bittensor.includes(chain)) {
+     return 'Validator';
+   }
+   return 'Collator';
+diff --git a/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js b/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
+index 0706b51..755fa60 100644
+--- a/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
++++ b/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
+@@ -16,7 +16,8 @@ export const _STAKING_CHAIN_GROUP = {
+   liquidStaking: ['bifrost_dot', 'acala', 'parallel', 'moonbeam'],
+   lending: ['interlay'],
+   krest_network: ['krest_network'],
+-  manta: ['manta_network']
++  manta: ['manta_network'],
++  bittensor: ['bittensor', 'bittensor_devnet']
+ };
+ export const MaxEraRewardPointsEras = 14;
+ 
 diff --git a/node_modules/@subwallet/extension-base/services/swap-service/utils.js b/node_modules/@subwallet/extension-base/services/swap-service/utils.js
-index 1b57d06..ee7c93f 100644
+index 1b57d06..e4132af 100644
 --- a/node_modules/@subwallet/extension-base/services/swap-service/utils.js
 +++ b/node_modules/@subwallet/extension-base/services/swap-service/utils.js
 @@ -1,7 +1,6 @@
