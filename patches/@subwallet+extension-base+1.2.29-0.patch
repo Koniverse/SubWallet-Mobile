@@ -1,5 +1,5 @@
 diff --git a/node_modules/@subwallet/extension-base/koni/api/staking/bonding/utils.js b/node_modules/@subwallet/extension-base/koni/api/staking/bonding/utils.js
-index 39c314e..d60bd02 100644
+index 39c314e..d225f4d 100644
 --- a/node_modules/@subwallet/extension-base/koni/api/staking/bonding/utils.js
 +++ b/node_modules/@subwallet/extension-base/koni/api/staking/bonding/utils.js
 @@ -326,7 +326,7 @@ export function getEarningStatusByNominations(bnTotalActiveStake, nominationList
@@ -12,7 +12,7 @@ index 39c314e..d60bd02 100644
    }
    return 'Collator';
 diff --git a/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js b/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
-index 0706b51..755fa60 100644
+index 0706b51..2ec3b17 100644
 --- a/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
 +++ b/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
 @@ -16,7 +16,8 @@ export const _STAKING_CHAIN_GROUP = {
@@ -25,6 +25,19 @@ index 0706b51..755fa60 100644
  };
  export const MaxEraRewardPointsEras = 14;
  
+diff --git a/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js b/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
+index ecd2e34..8a4e973 100644
+--- a/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
++++ b/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
+@@ -103,6 +103,8 @@ export function isActionFromValidator(stakingType, chain) {
+     return true;
+   } else if (_STAKING_CHAIN_GROUP.para.includes(chain)) {
+     return true;
++  } else if (_STAKING_CHAIN_GROUP.bittensor.includes(chain)) {
++    return true;
+   }
+   return false;
+ }
 diff --git a/node_modules/@subwallet/extension-base/services/swap-service/utils.js b/node_modules/@subwallet/extension-base/services/swap-service/utils.js
 index 1b57d06..e4132af 100644
 --- a/node_modules/@subwallet/extension-base/services/swap-service/utils.js

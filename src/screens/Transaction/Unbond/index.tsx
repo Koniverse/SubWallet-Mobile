@@ -44,6 +44,7 @@ import { UNSTAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
+import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -403,6 +404,14 @@ export const Unbond = ({
                     onSelectItem={onChangeNominator}
                     nominators={nominators}
                     disabled={!fromValue || loading}
+                    label={
+                      i18n.formatString(
+                        i18n.common.selectStakingValidator,
+                        getValidatorLabel(chainValue) === 'dApp'
+                          ? getValidatorLabel(chainValue)
+                          : getValidatorLabel(chainValue).toLowerCase(),
+                      ) as string
+                    }
                   />
                   {renderBounded()}
                 </>

@@ -12,6 +12,7 @@ interface Props {
   selectedValue: string;
   onSelectItem: (value: string) => void;
   disabled?: boolean;
+  label: string;
 }
 
 const searchFunction = (items: NominationInfo[], searchString: string) => {
@@ -25,7 +26,7 @@ const searchFunction = (items: NominationInfo[], searchString: string) => {
   });
 };
 
-export const NominationSelector = ({ nominators, selectedValue, onSelectItem, disabled }: Props) => {
+export const NominationSelector = ({ nominators, selectedValue, onSelectItem, disabled, label }: Props) => {
   const collatorRef = useRef<ModalRef>();
   const selectedCollator = useMemo(() => {
     return nominators.find(item => item.validatorAddress === selectedValue);
@@ -55,9 +56,7 @@ export const NominationSelector = ({ nominators, selectedValue, onSelectItem, di
         selectModalType={'single'}
         title={i18n.header.selectCollator}
         disabled={disabled}
-        renderSelected={() => (
-          <NominationSelectorField label={i18n.inputLabel.selectCollator} item={selectedCollator} />
-        )}
+        renderSelected={() => <NominationSelectorField label={label} item={selectedCollator} placeholder={label} />}
         ref={collatorRef}
         renderCustomItem={renderItem}
         searchFunc={searchFunction}
