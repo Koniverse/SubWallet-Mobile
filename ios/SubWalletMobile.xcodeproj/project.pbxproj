@@ -12,6 +12,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */; };
+		354382E42CBE8391002D4A91 /* Web.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 354382E32CBE8391002D4A91 /* Web.bundle */; };
 		356488AD2C64FC7B00437F84 /* DevModeWeb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 356488AC2C64FC7B00437F84 /* DevModeWeb.bundle */; };
 		4357831F29CEA0080043530D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4357831E29CEA0080043530D /* fonts */; };
 		435FCA172A72435100B43579 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 435FCA152A72435100B43579 /* RCTMinimizer.m */; };
@@ -19,7 +20,6 @@
 		81AB9BB82435601600AC10FF /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72435601600AC10FF /* SplashScreen.storyboard */; };
 		F1554EF9292D4F5B00302F08 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8292D4F5B00302F08 /* Images-2.xcassets */; };
 		F1554EFC292D590F00302F08 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8292D4F5B00302F08 /* Images-2.xcassets */; };
-		F16BB9D9292A5C7B00F9E935 /* Web.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F16BB9D8292A5C7B00F9E935 /* Web.bundle */; };
 		F1F1508728C6028D004B2C94 /* PageJs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F1F1508628C6028D004B2C94 /* PageJs.bundle */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +44,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SubWalletMobile/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile-SubWalletMobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		354382E32CBE8391002D4A91 /* Web.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Web.bundle; path = ../html/Web.bundle; sourceTree = "<group>"; };
 		356488AC2C64FC7B00437F84 /* DevModeWeb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = DevModeWeb.bundle; path = ../html/DevModeWeb.bundle; sourceTree = "<group>"; };
 		3B4435A12AC88292D35C810B /* Pods-SubWalletMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.debug.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		4357831E29CEA0080043530D /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
@@ -57,7 +58,6 @@
 		990CC4AB2A43543500AB6D8B /* SubWalletMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SubWalletMobile.entitlements; path = SubWalletMobile/SubWalletMobile.entitlements; sourceTree = "<group>"; };
 		ED302162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F1554EF8292D4F5B00302F08 /* Images-2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Images-2.xcassets"; path = "SubWalletMobile/Images-2.xcassets"; sourceTree = "<group>"; };
-		F16BB9D8292A5C7B00F9E935 /* Web.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Web.bundle; path = ../html/Web.bundle; sourceTree = "<group>"; };
 		F1F1508628C6028D004B2C94 /* PageJs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = PageJs.bundle; path = ../html/PageJs.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -124,6 +124,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		354382E22CBE82D1002D4A91 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				4357831E29CEA0080043530D /* fonts */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		435FCA132A7236F000B43579 /* NativeModules */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,9 +152,9 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				354382E32CBE8391002D4A91 /* Web.bundle */,
 				356488AC2C64FC7B00437F84 /* DevModeWeb.bundle */,
 				F1F1508628C6028D004B2C94 /* PageJs.bundle */,
-				F16BB9D8292A5C7B00F9E935 /* Web.bundle */,
 				13B07FAE1A68108700A75B9A /* SubWalletMobile */,
 				843561AE1AAA6A7D00B99B32 /* Libraries */,
 				00E435EF1AD99517003FC87E /* SubWalletMobileTests */,
@@ -154,6 +162,7 @@
 				2D16E6871FA4F8E435B85C8A /* Frameworks */,
 				BBD78D7AC51CEA435F1C20DB /* Pods */,
 				F898C800E8954435815C0C41 /* Resources */,
+				354382E22CBE82D1002D4A91 /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -290,11 +299,11 @@
 			buildActionMask = 8;
 			files = (
 				3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */,
+				354382E42CBE8391002D4A91 /* Web.bundle in Resources */,
 				81AB9BB82435601600AC10FF /* SplashScreen.storyboard in Resources */,
 				356488AD2C64FC7B00437F84 /* DevModeWeb.bundle in Resources */,
 				4357831F29CEA0080043530D /* fonts in Resources */,
 				F1F1508728C6028D004B2C94 /* PageJs.bundle in Resources */,
-				F16BB9D9292A5C7B00F9E935 /* Web.bundle in Resources */,
 				F1554EF9292D4F5B00302F08 /* Images-2.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
