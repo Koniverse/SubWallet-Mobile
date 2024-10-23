@@ -66,7 +66,6 @@ target 'SubWalletMobile' do
         target.build_configurations.each do |config|
             if dev_team.empty? and !config.build_settings['DEVELOPMENT_TEAM'].nil?
                 dev_team = config.build_settings['DEVELOPMENT_TEAM']
-                config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
             end
         end
     end
