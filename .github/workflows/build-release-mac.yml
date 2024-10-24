@@ -81,7 +81,7 @@ jobs:
 
     # Build IPA file
     - name: iOS Build Action
-      uses: yukiarrr/ios-build-action@v1.11.0
+      uses: yukiarrr/ios-build-action@v1.12.0
       with:
         project-path: ios/SubWalletMobile.xcodeproj
         export-method: 'app-store'
