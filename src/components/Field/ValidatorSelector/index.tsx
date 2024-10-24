@@ -35,6 +35,7 @@ const textStyle: StyleProp<any> = {
   lineHeight: 22,
   ...FontSemiBold,
   color: 'rgba(255, 255, 255, 0.85)',
+  flex: 1,
 };
 
 export const ValidatorSelectorField = ({
@@ -76,7 +77,11 @@ export const ValidatorSelectorField = ({
       return <Text style={textStyle}>{i18n.formatString(i18n.message.selectedXValidator, valueList.length)}</Text>;
     }
 
-    return <Text style={textStyle}>{valueList[0].split('___')[1] || toShort(valueList[0].split('___')[0])}</Text>;
+    return (
+      <Text numberOfLines={1} style={textStyle}>
+        {valueList[0].split('___')[1] || toShort(valueList[0].split('___')[0])}
+      </Text>
+    );
   };
 
   return (

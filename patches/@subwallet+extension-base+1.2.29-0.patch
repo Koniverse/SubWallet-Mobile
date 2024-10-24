@@ -26,7 +26,7 @@ index 0706b51..2ec3b17 100644
  export const MaxEraRewardPointsEras = 14;
  
 diff --git a/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js b/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
-index ecd2e34..8a4e973 100644
+index ecd2e34..c97682f 100644
 --- a/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
 +++ b/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
 @@ -103,6 +103,8 @@ export function isActionFromValidator(stakingType, chain) {
@@ -83,3 +83,18 @@ index 1b57d06..e4132af 100644
  };
  export const SWAP_QUOTE_TIMEOUT_MAP = {
    // in milliseconds
+diff --git a/node_modules/@subwallet/extension-base/services/transaction-service/utils.js b/node_modules/@subwallet/extension-base/services/transaction-service/utils.js
+index 10b1267..c1e9eba 100644
+--- a/node_modules/@subwallet/extension-base/services/transaction-service/utils.js
++++ b/node_modules/@subwallet/extension-base/services/transaction-service/utils.js
+@@ -45,6 +45,10 @@ function getBlockExplorerTxRoute(chainInfo) {
+ export function getExplorerLink(chainInfo, value, type) {
+   const explorerLink = _getBlockExplorerFromChain(chainInfo);
+   if (explorerLink && type === 'account') {
++    if (chainInfo.slug === 'bittensor') {
++      return undefined;
++    }
++
+     const route = getBlockExplorerAccountRoute(explorerLink);
+     return `${explorerLink}${explorerLink.endsWith('/') ? '' : '/'}${route}/${value}`;
+   }

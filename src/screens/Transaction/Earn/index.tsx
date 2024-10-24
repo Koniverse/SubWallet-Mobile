@@ -99,6 +99,11 @@ const SHOW_WARNING_CASES = [
   'KSM___native_staking___kusama',
 ];
 
+const DO_NOT_SHOW_VALIDATOR_ALERT_CASES = [
+  'TAO___native_staking___bittensor',
+  'TAO___native_staking___bittensor_devnet',
+];
+
 const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const {
     route: {
@@ -118,6 +123,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const defaultTarget = useRef<string | undefined>(target);
   const redirectFromPreviewRef = useRef(!!redirectFromPreview);
   const autoCheckCompoundRef = useRef<boolean>(true);
+  console.log('slug', slug);
   const {
     title,
     form: {
@@ -692,7 +698,11 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     const maxCount = poolInfo?.statistic?.maxCandidatePerFarmer ?? 1;
     const userSelectedPoolCount = poolTarget.split(',').length ?? 1;
     const label = getValidatorLabel(chain);
-    if (userSelectedPoolCount < maxCount && label === 'Validator') {
+    if (
+      userSelectedPoolCount < maxCount &&
+      label === 'Validator' &&
+      !DO_NOT_SHOW_VALIDATOR_ALERT_CASES.includes(slug)
+    ) {
       return Alert.alert(
         'Pay attention!',
         `You are recommended to choose ${maxCount} validators to optimize your earnings. Do you wish to continue with ${userSelectedPoolCount} validator${
