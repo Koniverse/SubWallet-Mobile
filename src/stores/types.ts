@@ -33,6 +33,7 @@ import { SWTransactionResult } from '@subwallet/extension-base/services/transact
 import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { _ChainApiStatus, _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import {
+  AccountProxy,
   BalanceMap,
   BuyServiceInfo,
   BuyTokenInfo,
@@ -182,6 +183,8 @@ export interface AppOnlineContent {
 
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {
   currentAccount: AccountJson | null;
+  currentAccountProxy: AccountProxy | null;
+  accountProxies: AccountProxy[];
   isNoAccount: boolean;
   isAllAccount: boolean;
 }

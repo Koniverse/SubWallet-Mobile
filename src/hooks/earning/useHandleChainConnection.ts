@@ -11,7 +11,7 @@ export const useHandleChainConnection = (
   onConnectSuccess?: VoidFunction,
   altChainData?: { chain: string; name: string },
 ) => {
-  const { setConfirmModal, hideConfirmModal } = useContext(AppModalContext);
+  const { confirmModal } = useContext(AppModalContext);
   const { checkChainConnected, turnOnChain } = useChainChecker(false);
   const [isLoading, setLoading] = useState<boolean>(false);
   const loadingRef = useRef(isLoading);
@@ -19,13 +19,13 @@ export const useHandleChainConnection = (
   const onConnectChain = useCallback(
     (currentChainSlug: string, altChain?: string) => {
       setTimeout(() => {
-        setConfirmModal({
+        confirmModal.setConfirmModal({
           visible: true,
           completeBtnTitle: i18n.buttonTitles.enable,
           message: i18n.common.enableChainMessage,
           title: i18n.common.enableChain,
           onCancelModal: () => {
-            hideConfirmModal();
+            confirmModal.hideConfirmModal();
           },
           onCompleteModal: () => {
             turnOnChain(currentChainSlug);
@@ -33,13 +33,13 @@ export const useHandleChainConnection = (
               turnOnChain(altChain);
             }
             setLoading(true);
-            setTimeout(() => hideConfirmModal(), 0);
+            setTimeout(() => confirmModal.hideConfirmModal(), 0);
           },
           messageIcon: currentChainSlug,
         });
       }, 300);
     },
-    [hideConfirmModal, setConfirmModal, turnOnChain],
+    [confirmModal, turnOnChain],
   );
 
   useEffect(() => {

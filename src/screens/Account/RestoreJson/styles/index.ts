@@ -1,5 +1,5 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { deviceHeight } from 'constants/index';
 
@@ -15,6 +15,8 @@ export interface ComponentStyle {
   accountList: ViewStyle;
   accountItem: ViewStyle;
   footer: ViewStyle;
+  sectionHeaderContainer: ViewStyle;
+  sectionHeaderTitle: ViewStyle;
 }
 
 const createStyles = (theme: ThemeTypes) => {
@@ -69,6 +71,16 @@ const createStyles = (theme: ThemeTypes) => {
     footer: {
       marginTop: theme.margin,
       ...MarginBottomForSubmitButton,
+    },
+    sectionHeaderContainer: {
+      paddingBottom: theme.sizeXS,
+      backgroundColor: theme.colorBgDefault,
+      paddingHorizontal: theme.padding,
+    },
+    sectionHeaderTitle: {
+      ...FontSemiBold,
+      color: theme.colorTextLight1,
+      textTransform: 'uppercase',
     },
   });
 };

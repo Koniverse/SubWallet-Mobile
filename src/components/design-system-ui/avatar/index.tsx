@@ -22,9 +22,11 @@ export interface SWLogoProps {
   size?: number;
   value: string | null;
   identPrefix?: number;
+  isShowSubIcon?: boolean;
+  subIcon?: React.ReactNode;
 }
 
-const Avatar: React.FC<SWLogoProps> = ({ theme, size = 40, value }) => {
+const Avatar: React.FC<SWLogoProps> = ({ theme, size = 40, value, isShowSubIcon, subIcon }) => {
   const themes = useSubWalletTheme().swThemes;
   const _style = AvatarStyles(themes);
 
@@ -52,12 +54,14 @@ const Avatar: React.FC<SWLogoProps> = ({ theme, size = 40, value }) => {
     return (
       <View style={[_style.container, { width: size, height: size, borderWidth: size / 20 }]}>
         <Image source={{ uri: toDataUrl(formattedAddress) }} style={getEthereumIdenticonStyle(size - 8)} />
+        {isShowSubIcon && subIcon}
       </View>
     );
   }
   return (
     <View style={[_style.container, { width: size, height: size, borderWidth: size / 20 }]}>
       <Identicon value={formattedAddress} size={size - 8} theme="polkadot" />
+      {isShowSubIcon && subIcon}
     </View>
   );
 };

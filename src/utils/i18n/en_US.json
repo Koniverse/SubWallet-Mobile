@@ -737,7 +737,7 @@
     "selectAccType": "Select account type",
     "importAcc": "Import account",
     "importFromSeedPhrase": "Import from seed phrase",
-    "importFromJson": "Import from Polkadot.{js}",
+    "importFromJson": "Import from Json",
     "accounts": "Accounts",
     "importByPrivateKey": "Import by private key",
     "importByQRCode": "Import by QR code",

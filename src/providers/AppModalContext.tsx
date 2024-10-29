@@ -1,5 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import ConfirmModal from 'components/common/Modal/ConfirmModal';
+import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
+import { noop } from 'utils/function';
+import { VoidFunction } from 'types/index';
 
 interface AppModalContextProviderProps {
   children?: React.ReactElement;
@@ -16,15 +19,30 @@ export type ConfirmModalInfo = {
   onCompleteModal?: () => void | undefined;
 };
 
+export type AddressQrModalInfo = {
+  visible?: boolean;
+  address?: string;
+  selectNetwork?: string;
+  onBack?: VoidFunction;
+};
+
 export interface AppModal {
-  setConfirmModal: React.Dispatch<React.SetStateAction<ConfirmModalInfo>>;
-  hideConfirmModal: () => void;
+  confirmModal: {
+    setConfirmModal: React.Dispatch<React.SetStateAction<ConfirmModalInfo>>;
+    hideConfirmModal: () => void;
+  };
+  addressQrModal: {
+    addressModalState: AddressQrModalInfo;
+    setAddressQrModal: React.Dispatch<React.SetStateAction<AddressQrModalInfo>>;
+    hideAddressQrModal: () => void;
+  };
 }
 
 export const AppModalContext = React.createContext({} as AppModal);
 
 export const AppModalContextProvider = ({ children }: AppModalContextProviderProps) => {
   const [confirmModal, setConfirmModal] = useState<ConfirmModalInfo>({});
+  const [addressQrModalState, setAddressQrModal] = useState<AddressQrModalInfo>({});
 
   const hideConfirmModal = useCallback(() => {
     setConfirmModal(prevState => ({ ...prevState, visible: false }));
@@ -43,8 +61,37 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
     );
   }, []);
 
+  const hideAddressQrModal = useCallback(() => {
+    setAddressQrModal(prevState => ({ ...prevState, visible: false }));
+    setTimeout(
+      () =>
+        setAddressQrModal(prevState => ({
+          ...prevState,
+          address: '',
+          selectNetwork: '',
+          onBack: undefined,
+        })),
+      300,
+    );
+  }, []);
+
+  const contextValue: AppModal = useMemo(
+    () => ({
+      confirmModal: {
+        setConfirmModal,
+        hideConfirmModal,
+      },
+      addressQrModal: {
+        addressModalState: addressQrModalState,
+        setAddressQrModal,
+        hideAddressQrModal,
+      },
+    }),
+    [addressQrModalState, hideAddressQrModal, hideConfirmModal],
+  );
+  // TODO: Add back and cancel
   return (
-    <AppModalContext.Provider value={{ setConfirmModal, hideConfirmModal }}>
+    <AppModalContext.Provider value={contextValue}>
       {children}
       <ConfirmModal
         visible={confirmModal.visible || false}
@@ -56,6 +103,17 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         onCompleteModal={confirmModal.onCompleteModal}
         completeBtnTitle={confirmModal.completeBtnTitle}
       />
+
+      {addressQrModalState.visible && (
+        <ReceiveModal
+          modalVisible={addressQrModalState.visible}
+          setModalVisible={noop}
+          address={addressQrModalState.address}
+          selectedNetwork={addressQrModalState.selectNetwork}
+          onBack={addressQrModalState.onBack}
+          isUseModalV2={false}
+        />
+      )}
     </AppModalContext.Provider>
   );
 };

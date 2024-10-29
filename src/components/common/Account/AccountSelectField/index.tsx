@@ -1,17 +1,15 @@
 import React, { useMemo } from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
-import { Avatar, Icon, Typography } from 'components/design-system-ui';
+import { View, TouchableOpacity } from 'react-native';
+import { Icon, Typography } from 'components/design-system-ui';
 import { isAccountAll } from '@subwallet/extension-base/utils';
-import AvatarGroup from '../../AvatarGroup';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AccountSelectFieldStyles from './style';
 import { CaretDown } from 'phosphor-react-native';
 import { DisabledStyle } from 'styles/sharedStyles';
-import i18n from 'utils/i18n/i18n';
-import { formatAccountAddress } from 'utils/account';
-import useChainInfo from 'hooks/chain/useChainInfo';
+import { AccountProxyAvatarGroup } from 'components/design-system-ui/avatar/account-proxy-avatar-group';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props {
   onPress: () => void;
@@ -21,31 +19,16 @@ interface Props {
 const AccountSelectField = ({ disabled, onPress }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = AccountSelectFieldStyles(theme);
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
-  const isAll = useMemo((): boolean => !!currentAccount && isAccountAll(currentAccount.address), [currentAccount]);
-  const networkInfo = useChainInfo(undefined, currentAccount?.originGenesisHash ?? currentAccount?.genesisHash);
-  const address = useMemo(
-    (): string => (currentAccount ? formatAccountAddress(currentAccount, networkInfo) : ''),
-    [currentAccount, networkInfo],
-  );
+  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
+  const isAll = useMemo((): boolean => isAccountAll(currentAccountProxy?.id), [currentAccountProxy?.id]);
 
   return (
     <TouchableOpacity activeOpacity={1} onPress={onPress} disabled={disabled} style={disabled && DisabledStyle}>
       <View style={_style.container}>
-        {isAll ? (
-          <AvatarGroup />
-        ) : (
-          <Avatar
-            value={currentAccount?.address || ''}
-            size={20}
-            identPrefix={42}
-            theme={currentAccount?.type === 'ethereum' ? 'ethereum' : 'polkadot'}
-          />
-        )}
+        {isAll ? <AccountProxyAvatarGroup /> : <AccountProxyAvatar size={20} value={currentAccountProxy?.id} />}
         <Typography.Text style={_style.accountNameStyle} ellipsis={true}>
-          {isAll ? i18n.common.allAccounts : currentAccount?.name}
+          {isAll ? 'All accounts' : currentAccountProxy?.name}
         </Typography.Text>
-        {!isAll && <Text style={_style.accountAddressStyle}>{`(...${address.slice(-3)})`}</Text>}
         <Icon phosphorIcon={CaretDown} size={'xxs'} />
       </View>
     </TouchableOpacity>

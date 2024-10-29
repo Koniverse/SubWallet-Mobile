@@ -737,7 +737,7 @@
     "selectAccType": "Выбрать тип аккаунта",
     "importAcc": "Импортировать аккаунт",
     "importFromSeedPhrase": "Импорт из сид-фразы",
-    "importFromJson": "Импорт из Polkadot.{js}",
+    "importFromJson": "Импорт из Json",
     "accounts": "Аккаунты ",
     "importByPrivateKey": "Импорт с помощью приватного ключа",
     "importByQRCode": "Импорт по QR-коду",

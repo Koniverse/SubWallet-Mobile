@@ -5,7 +5,7 @@ import { _ChainAsset, _ChainStatus } from '@subwallet/chain-list/types';
 import {
   _isAssetFungibleToken,
   _isChainEvmCompatible,
-  _isSubstrateChain,
+  _isPureSubstrateChain,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -46,7 +46,7 @@ export default function useChainAssets({
   }, [availableChains, chainInfoMap]);
 
   const substrateChains = useMemo(() => {
-    return availableChains.filter(slug => _isSubstrateChain(chainInfoMap[slug]));
+    return availableChains.filter(slug => _isPureSubstrateChain(chainInfoMap[slug]));
   }, [availableChains, chainInfoMap]);
 
   const activeAssets = useMemo(() => {

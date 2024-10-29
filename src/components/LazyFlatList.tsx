@@ -23,8 +23,8 @@ interface Props<T> {
   loading?: boolean;
   isShowListWrapper?: boolean;
   removeClippedSubviews?: boolean;
-  keyExtractor?: (item: T, index: number) => string;
   estimatedItemSize?: number;
+  keyExtractor?: (item: T, index: number) => string;
   extraData?: any;
 }
 

@@ -737,7 +737,7 @@
     "selectAccType": "アカウントタイプを選択",
     "importAcc": "アカウントをインポート",
     "importFromSeedPhrase": "シードフレーズからのインポート",
-    "importFromJson": "Polkadot.js からのインポート",
+    "importFromJson": "Json からのインポート",
     "accounts": "アカウント",
     "importByPrivateKey": "秘密鍵によるインポート",
     "importByQRCode": "QRコードでインポート",

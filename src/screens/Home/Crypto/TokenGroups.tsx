@@ -15,7 +15,6 @@ import { GradientBackgroundColorSet, ScreenContainer } from 'components/ScreenCo
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -62,14 +61,9 @@ export const TokenGroups = () => {
     onOpenReceive,
     openSelectAccount,
     openSelectToken,
-    selectedAccount,
-    selectedNetwork,
-    setQrModalVisible,
-    isQrModalVisible,
     tokenSelectorItems,
     accountRef,
     tokenRef,
-    selectedAccountMap,
   } = useReceiveQR();
   const toast = useToast();
   const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('token');
@@ -241,14 +235,6 @@ export const TokenGroups = () => {
           tokenItems={tokenSelectorItems}
           openSelectAccount={openSelectAccount}
           openSelectToken={openSelectToken}
-          selectedValueMap={selectedAccountMap}
-        />
-
-        <ReceiveModal
-          modalVisible={isQrModalVisible}
-          address={selectedAccount}
-          selectedNetwork={selectedNetwork}
-          setModalVisible={setQrModalVisible}
         />
 
         <TokenSearchModal

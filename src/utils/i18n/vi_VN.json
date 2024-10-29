@@ -737,7 +737,7 @@
     "selectAccType": "Chọn loại tài khoản",
     "importAcc": "Nhập tài khoản",
     "importFromSeedPhrase": "Nhập từ seed phrase",
-    "importFromJson": "Nhập từ Polkadot.{js}",
+    "importFromJson": "Nhập từ Json",
     "accounts": "Tài khoản",
     "importByPrivateKey": "Nhập bằng private key   ",
     "importByQRCode": "Nhập bằng mã QR",

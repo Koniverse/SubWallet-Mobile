@@ -1,7 +1,7 @@
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Icon, SwFullSizeModal } from 'components/design-system-ui';
 import { FlatListScreen, RightIconOpt } from 'components/FlatListScreen';
-import { Keyboard, Platform, View } from 'react-native';
+import { Keyboard, Platform, View, ViewStyle } from 'react-native';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { OptionType } from 'components/common/FilterModal';
 import { AccountSelectItem } from 'components/common/SelectModal/parts/AccountSelectItem';
@@ -11,7 +11,6 @@ import { IconProps, MagnifyingGlass } from 'phosphor-react-native';
 import { SelectModalField } from 'components/common/SelectModal/parts/SelectModalField';
 import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -21,6 +20,7 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { SortFunctionInterface } from 'types/ui-types';
 import { SectionItem } from 'components/LazySectionList';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 interface Props<T> {
   items: T[];
@@ -37,7 +37,7 @@ interface Props<T> {
   isShowListWrapper?: boolean;
   renderSelectModalBtn?: (onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => JSX.Element;
   renderSelected?: () => JSX.Element;
-  selectModalItemType?: 'account' | 'token' | 'chain';
+  selectModalItemType?: 'account' | 'token' | 'chain' | 'account-chain-address';
   selectModalType?: 'single' | 'multi';
   selectedValueMap: Record<string, boolean>;
   onSelectItem?: (item: T) => void;
@@ -75,6 +75,7 @@ interface Props<T> {
   estimatedItemSize?: number;
   extraData?: any;
   keyExtractor?: (item: T, index: number) => string;
+  flatListStyle?: ViewStyle;
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
@@ -118,6 +119,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     estimatedItemSize,
     extraData,
     keyExtractor,
+    flatListStyle,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -194,21 +196,21 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
 
   const _searchFunction = useCallback(
     (_items: T[], searchString: string): T[] => {
+      const lowerCaseSearchString = searchString.toLowerCase();
+
       if (selectModalItemType === 'account') {
         return (_items as AccountJson[]).filter(
           acc =>
-            (acc.name && acc.name.toLowerCase().includes(searchString.toLowerCase())) ||
-            acc.address.toLowerCase().includes(searchString.toLowerCase()),
+            (acc.name && acc.name.toLowerCase().includes(lowerCaseSearchString)) ||
+            acc.address.toLowerCase().includes(lowerCaseSearchString),
         ) as T[];
       } else if (selectModalItemType === 'token') {
-        const lowerCaseSearchString = searchString.toLowerCase();
         return (_items as TokenItemType[]).filter(
           ({ symbol, originChain }) =>
             symbol.toLowerCase().includes(lowerCaseSearchString) ||
             chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
         ) as T[];
       } else if (selectModalItemType === 'chain') {
-        const lowerCaseSearchString = searchString.toLowerCase();
         return (items as ChainInfo[]).filter(({ name }) => name.toLowerCase().includes(lowerCaseSearchString)) as T[];
       } else {
         return items;
@@ -331,6 +333,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
               autoFocus={true}
               items={items}
               style={{ flex: 1 }}
+              flatListStyle={flatListStyle}
               renderItem={renderCustomItem || renderItem}
               searchFunction={searchFunc || _searchFunction}
               renderListEmptyComponent={renderListEmptyComponent || _renderListEmptyComponent}

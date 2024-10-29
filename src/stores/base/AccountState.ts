@@ -3,15 +3,20 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AddressBookInfo, KeyringState } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson, AccountsContext } from '@subwallet/extension-base/background/types';
+import { AccountsContext } from '@subwallet/extension-base/background/types';
 import { AccountState, ReduxStatus } from 'stores/types';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { isNoAccount } from 'utils/account';
+import { AccountJson, AccountProxy } from '@subwallet/extension-base/types';
 
 const initialState: AccountState = {
   // CurrentAccount
   currentAccount: null,
   isAllAccount: false,
+
+  currentAccountProxy: null,
+  accountProxies: [],
+
   isNoAccount: true,
   // KeyringState
   isReady: false,
@@ -58,6 +63,26 @@ const accountStateSlice = createSlice({
         ...state,
         currentAccount: payload,
         isAllAccount: isAccountAll(payload?.address),
+        reduxStatus: ReduxStatus.READY,
+      };
+    },
+    updateCurrentAccountProxy(state, action: PayloadAction<AccountProxy>) {
+      const payload = action.payload;
+
+      return {
+        ...state,
+        currentAccountProxy: payload,
+        isAllAccount: isAccountAll(payload?.id),
+        reduxStatus: ReduxStatus.READY,
+      };
+    },
+    updateAccountProxies(state, action: PayloadAction<AccountProxy[]>) {
+      const payload = action.payload;
+
+      return {
+        ...state,
+        accounts: payload.reduce((accounts, ap) => [...accounts, ...ap.accounts], [] as AccountJson[]),
+        accountProxies: payload,
         reduxStatus: ReduxStatus.READY,
       };
     },

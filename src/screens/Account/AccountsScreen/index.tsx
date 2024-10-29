@@ -1,30 +1,26 @@
-import { AccountJson } from '@subwallet/extension-base/background/types';
+import { CurrentAccountInfo } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
-import React, { useCallback, useMemo, useEffect, useRef, useState } from 'react';
-import { Keyboard, Share, StyleProp, InteractionManager, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { InteractionManager, Keyboard, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import {
-  Copy,
-  CopySimple,
   Export,
   FileArrowDown,
+  GitMerge,
   MagnifyingGlass,
   PlusCircle,
   QrCode,
-  Share as ShareIcon,
   Swatches,
   Trash,
 } from 'phosphor-react-native';
 import { AccountsScreenProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { FontMedium, FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { forgetAccount, saveCurrentAccountAddress } from 'messaging/index';
 import { isAccountAll } from '@subwallet/extension-base/utils';
-import { findAccountByAddress, toShort } from 'utils/index';
-import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
-import { Avatar, Button, Icon, QRCode, SwModal, Typography } from 'components/design-system-ui';
+import { Button, Icon, Typography } from 'components/design-system-ui';
 import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
@@ -33,12 +29,48 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import useGoHome from 'hooks/screen/useGoHome';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import Svg from 'react-native-svg';
+import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
+import createStylesheet from 'screens/Settings/AddressBook/style';
+import { SelectAccountAllItem } from 'components/common/SelectAccountAllItem';
+import { AccountChainAddressesSelector } from 'components/Modal/common/AccountChainAddressesSelector';
+
+enum AccountGroupType {
+  ALL_ACCOUNT = 'all',
+  MASTER_ACCOUNT = 'master_account',
+  QR = 'qr',
+  LEDGER = 'ledger',
+  READ_ONLY = 'readonly',
+  INJECTED = 'injected',
+  UNKNOWN = 'unknown',
+}
+
+const AccountGroupLabel: Record<AccountGroupType, string> = {
+  [AccountGroupType.ALL_ACCOUNT]: 'All account',
+  [AccountGroupType.MASTER_ACCOUNT]: 'Master account',
+  [AccountGroupType.QR]: 'QR signer account',
+  [AccountProxyType.LEDGER]: 'Ledger account',
+  [AccountProxyType.READ_ONLY]: 'Watch-only account',
+  [AccountProxyType.INJECTED]: 'Injected account',
+  [AccountProxyType.UNKNOWN]: 'Unknown account',
+};
+
+const EARNING_SCREEN_LIST = [
+  'EarningList',
+  'EarningPoolList',
+  'Earning',
+  'Unbond',
+  'ClaimReward',
+  'CancelUnstake',
+  'Withdraw',
+];
+
+interface AccountProxyItem extends AccountProxy {
+  group: AccountGroupType;
+}
 
 const renderListEmptyComponent = () => {
   return (
@@ -50,55 +82,172 @@ const renderListEmptyComponent = () => {
   );
 };
 
-const searchFunction = (items: AccountJson[], searchString: string) => {
+const searchFunction = (items: AccountProxyItem[], searchString: string) => {
   return items.filter(
     account =>
       account.name?.toLowerCase().includes(searchString.toLowerCase()) ||
-      account.address.toLowerCase().includes(searchString.toLowerCase()),
+      account.id.toLowerCase().includes(searchString.toLowerCase()),
   );
 };
 
-const receiveModalContentWrapper: StyleProp<any> = {
-  alignItems: 'center',
-  width: '100%',
-};
+function reorderAccounts(items: AccountProxyItem[]): AccountProxyItem[] {
+  const accountMap: Record<string, AccountProxyItem> = {};
+  const allChildren = new Set<string>();
+  const result: AccountProxyItem[] = [];
+
+  items.forEach(item => {
+    accountMap[item.id] = item;
+
+    if (item.children) {
+      item.children.forEach(childId => allChildren.add(childId));
+    }
+  });
+
+  items.forEach(item => {
+    if (!allChildren.has(item.id)) {
+      addWithChildren(item);
+    }
+  });
+
+  function addWithChildren(item: AccountProxyItem) {
+    result.push(item);
+
+    if (item.children) {
+      item.children.forEach(childId => {
+        const child = accountMap[childId];
+
+        if (child) {
+          addWithChildren(child);
+        }
+      });
+    }
+  }
+
+  return result;
+}
 
 export const AccountsScreen = ({
   route: {
     params: { pathName },
   },
 }: AccountsScreenProps) => {
+  const { accountProxies, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
+
+  const createAccountRef = useRef<ModalRef>();
+  const importAccountRef = useRef<ModalRef>();
+  const attachAccountRef = useRef<ModalRef>();
+  const accountChainAddressSelectorRef = useRef<ModalRef>();
+  let row = useRef<(Swipeable | null)[]>([]);
+  let prevOpenedRow = useRef<Swipeable>(null);
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
+  const stylesheet = createStylesheet(theme);
   const goHome = useGoHome();
   const navigation = useNavigation<RootNavigationProps>();
+
   const [isReady, setIsReady] = useState<boolean>(false);
-  const fullAccounts = useSelector((state: RootState) => state.accountState.accounts);
-  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
-  let svg: Svg | null;
-  const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
   const [selectedAddress, setSelectedAddress] = useState<string>('');
+  const [selectedAccountProxy, setSelectedAccountProxy] = useState<{ name?: string; proxyId?: string } | undefined>();
   const [deleting, setDeleting] = useState(false);
-  const accounts = useMemo(() => {
-    if (fullAccounts.length > 2) {
-      const foundAccountAll = fullAccounts.find(a => isAccountAll(a.address));
-      const foundCurrentAccount = fullAccounts.find(a => a.address === currentAccountAddress);
 
-      const result = fullAccounts.filter(a => !(isAccountAll(a.address) || a.address === currentAccountAddress));
-
-      if (foundCurrentAccount && !isAccountAll(currentAccountAddress)) {
-        result.unshift(foundCurrentAccount);
-      }
-
-      if (foundAccountAll) {
-        result.unshift(foundAccountAll);
-      }
-
-      return result;
+  const accountProxyToGetAddresses = useMemo(() => {
+    if (!selectedAccountProxy) {
+      return undefined;
     }
 
-    return fullAccounts.filter(a => !isAccountAll(a.address));
-  }, [fullAccounts, currentAccountAddress]);
+    return accountProxies.find(ap => ap.id === selectedAccountProxy.proxyId);
+  }, [accountProxies, selectedAccountProxy]);
+
+  const listItems = useMemo<AccountProxyItem[]>(() => {
+    let accountAll: AccountProxyItem | undefined;
+    const result: AccountProxyItem[] = [];
+    const masterAccounts: AccountProxyItem[] = [];
+    const qrSignerAccounts: AccountProxyItem[] = [];
+    const watchOnlyAccounts: AccountProxyItem[] = [];
+    const ledgerAccounts: AccountProxyItem[] = [];
+    const injectedAccounts: AccountProxyItem[] = [];
+    const unknownAccounts: AccountProxyItem[] = [];
+
+    accountProxies.forEach(ap => {
+      if (isAccountAll(ap.id) || ap.accountType === AccountProxyType.ALL_ACCOUNT) {
+        accountAll = { ...ap, group: AccountGroupType.ALL_ACCOUNT };
+
+        return;
+      }
+
+      if (ap.accountType === AccountProxyType.SOLO || ap.accountType === AccountProxyType.UNIFIED) {
+        masterAccounts.push({ ...ap, group: AccountGroupType.MASTER_ACCOUNT });
+      } else if (ap.accountType === AccountProxyType.QR) {
+        qrSignerAccounts.push({ ...ap, group: AccountGroupType.QR });
+      } else if (ap.accountType === AccountProxyType.READ_ONLY) {
+        watchOnlyAccounts.push({ ...ap, group: AccountGroupType.READ_ONLY });
+      } else if (ap.accountType === AccountProxyType.LEDGER) {
+        ledgerAccounts.push({ ...ap, group: AccountGroupType.LEDGER });
+      } else if (ap.accountType === AccountProxyType.INJECTED) {
+        injectedAccounts.push({ ...ap, group: AccountGroupType.INJECTED });
+      } else if (ap.accountType === AccountProxyType.UNKNOWN) {
+        unknownAccounts.push({ ...ap, group: AccountGroupType.UNKNOWN });
+      }
+    });
+
+    if (masterAccounts.length) {
+      result.push(...reorderAccounts(masterAccounts));
+    }
+
+    if (qrSignerAccounts.length) {
+      result.push(...qrSignerAccounts);
+    }
+
+    if (watchOnlyAccounts.length) {
+      result.push(...watchOnlyAccounts);
+    }
+
+    if (ledgerAccounts.length) {
+      result.push(...ledgerAccounts);
+    }
+
+    if (injectedAccounts.length) {
+      result.push(...ledgerAccounts);
+    }
+
+    if (unknownAccounts.length) {
+      result.push(...unknownAccounts);
+    }
+
+    if (result.length && accountAll) {
+      result.unshift(accountAll);
+    }
+
+    return result;
+  }, [accountProxies]);
+
+  const groupBy = useCallback((item: AccountProxyItem) => {
+    return `${AccountGroupLabel[item.group]}`;
+  }, []);
+
+  const renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null = useCallback(
+    (item: string) => {
+      if (
+        item.split('|')[0] === AccountGroupLabel[AccountGroupType.ALL_ACCOUNT] ||
+        item.split('|')[0] === AccountGroupLabel[AccountGroupType.MASTER_ACCOUNT]
+      ) {
+        return <></>;
+      }
+
+      return (
+        <View key={item} style={stylesheet.sectionHeaderContainer}>
+          <Typography.Text size={'sm'} style={stylesheet.sectionHeaderTitle}>
+            {`${item.split('|')[0]} `}
+          </Typography.Text>
+        </View>
+      );
+    },
+    [stylesheet.sectionHeaderContainer, stylesheet.sectionHeaderTitle],
+  );
+
+  const grouping = useMemo(() => {
+    return { groupBy, sortSection: undefined, renderSectionHeader };
+  }, [groupBy, renderSectionHeader]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -106,11 +255,6 @@ export const AccountsScreen = ({
     });
   }, []);
 
-  const createAccountRef = useRef<ModalRef>();
-  const importAccountRef = useRef<ModalRef>();
-  const attachAccountRef = useRef<ModalRef>();
-  let row = useRef<(Swipeable | null)[]>([]);
-  let prevOpenedRow = useRef<Swipeable>(null);
   const onDelete = useCallback(() => {
     if (selectedAddress) {
       setDeleting(true);
@@ -152,93 +296,67 @@ export const AccountsScreen = ({
   );
 
   const selectAccount = useCallback(
-    (accAddress: string) => {
-      if (currentAccountAddress !== accAddress) {
-        const accountByAddress = findAccountByAddress(accounts, accAddress);
-
-        if (accountByAddress) {
+    (accountProxy: AccountProxy) => {
+      return () => {
+        const targetAccountProxy = accountProxies.find(ap => ap.id === accountProxy.id);
+        if (targetAccountProxy) {
           const accountInfo = {
-            address: accAddress,
+            address: targetAccountProxy.id,
           } as CurrentAccountInfo;
 
           saveCurrentAccountAddress(accountInfo).catch(e => {
             console.error('There is a problem when set Current Account', e);
           });
         }
-      }
 
-      if (pathName === 'TokenGroupsDetail') {
-        // need 2x goBack() for going back to TokenGroups because of specific reason
-        navigation.goBack();
-        navigation.goBack();
-      } else if (pathName === 'SendFund' || pathName === 'BuyToken') {
-        navigation.navigate('Home', {
-          screen: 'Main',
-          params: { screen: 'Tokens', params: { screen: 'TokenGroups' } },
-        });
-        navigation.goBack();
-      } else if (
-        pathName &&
-        ['EarningList', 'EarningPoolList', 'Earning', 'Unbond', 'ClaimReward', 'CancelUnstake', 'Withdraw'].includes(
-          pathName,
-        )
-      ) {
-        navigation.navigate('Home', {
-          screen: 'Main',
-          params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 1 } } },
-        });
-      } else {
-        navigation.navigate('Home');
-      }
+        if (pathName === 'TokenGroupsDetail') {
+          // need 2x goBack() for going back to TokenGroups because of specific reason
+          navigation.goBack();
+          navigation.goBack();
+        } else if (pathName === 'SendFund' || pathName === 'BuyToken') {
+          navigation.navigate('Home', {
+            screen: 'Main',
+            params: { screen: 'Tokens', params: { screen: 'TokenGroups' } },
+          });
+          navigation.goBack();
+        } else if (pathName && EARNING_SCREEN_LIST.includes(pathName)) {
+          navigation.navigate('Home', {
+            screen: 'Main',
+            params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 1 } } },
+          });
+        } else {
+          navigation.navigate('Home');
+        }
+      };
     },
-    [currentAccountAddress, pathName, accounts, navigation],
+    [pathName, accountProxies, navigation],
   );
 
-  const onShareImg = () => {
-    svg?.toDataURL(data => {
-      const shareImageBase64 = {
-        title: 'QR',
-        message: `My Public Address to Receive ${selectedAddress}`,
-        url: `data:image/png;base64,${data}`,
-      };
-      Share.share(shareImageBase64);
-    });
-  };
-
-  const rightSwipeActions = useCallback(
-    (address: string, index: number) => {
+  const renderRightSwipeActions = useCallback(
+    (ap: AccountProxy, index: number) => {
+      const showDeriveButton = !!ap?.children?.length;
       return () => (
-        <View
-          style={{
-            flexDirection: 'row',
-            height: '100%',
-            alignItems: 'center',
-            paddingRight: theme.padding,
-            gap: theme.paddingXS,
-          }}>
-          <Button
-            shape={'circle'}
-            style={{ backgroundColor: 'rgba(217, 163, 62, 0.1)' }}
-            type={'ghost'}
-            icon={<Icon phosphorIcon={Copy} size={'sm'} iconColor={theme['gold-6']} />}
-            size={'xs'}
-            onPress={() => {
-              copyToClipboard(address);
-              row.current?.[index]?.close();
-            }}
-          />
+        <View style={stylesheet.rightSwipeActionsStyle}>
+          {showDeriveButton && (
+            <Button
+              shape={'circle'}
+              style={{ backgroundColor: 'rgba(217, 163, 62, 0.1)' }}
+              type={'ghost'}
+              icon={<Icon phosphorIcon={GitMerge} size={'sm'} iconColor={theme['gold-6']} />}
+              size={'xs'}
+              onPress={() => {
+                copyToClipboard(ap.id);
+                row.current?.[index]?.close();
+              }}
+            />
+          )}
           <Button
             shape={'circle'}
             style={{ backgroundColor: 'rgba(0, 75, 255, 0.1)' }}
             type={'ghost'}
             icon={<Icon phosphorIcon={QrCode} size={'sm'} iconColor={theme.colorPrimary} />}
             size={'xs'}
-            onPress={() => {
-              Keyboard.dismiss();
-              row.current?.[index]?.close();
-              setSelectedAddress(address);
-              setQrModalVisible(true);
-            }}
+            onPress={() => {}}
           />
           <Button
             shape={'circle'}
@@ -249,7 +367,7 @@ export const AccountsScreen = ({
             onPress={() => {
               Keyboard.dismiss();
               row.current?.[index]?.close();
-              setSelectedAddress(address);
+              setSelectedAddress(ap.id);
               onPressDelete();
             }}
             loading={deleting}
@@ -257,38 +375,52 @@ export const AccountsScreen = ({
         </View>
       );
     },
-    [copyToClipboard, deleting, onPressDelete, row, theme],
+    [copyToClipboard, deleting, onPressDelete, stylesheet.rightSwipeActionsStyle, theme],
   );
 
+  const onPressCopyBtn = useCallback((accountProxy: AccountProxy) => {
+    return () => {
+      setSelectedAccountProxy({ name: accountProxy.name, proxyId: accountProxy.id });
+      setTimeout(() => accountChainAddressSelectorRef.current?.onOpenModal(), 100);
+    };
+  }, []);
+
   const renderItem = useCallback(
-    ({ item, index }: ListRenderItemInfo<AccountJson>) => {
-      const isAllAccount = isAccountAll(item.address);
+    ({ item, index }: ListRenderItemInfo<AccountProxyItem>) => {
+      const isAllAccount = isAccountAll(item.id);
 
       return (
         <Swipeable
+          key={item.id}
           enabled={!isAllAccount}
           ref={ref => (row.current[index] = ref)}
           friction={2}
           leftThreshold={80}
           rightThreshold={40}
           onSwipeableWillOpen={() => closeOpenedRow(index)}
-          renderRightActions={rightSwipeActions(item.address, index)}>
-          <SelectAccountItem
-            key={item.address}
-            address={item.address}
-            accountName={item.name}
-            isSelected={currentAccountAddress === item.address}
-            isAllAccount={isAllAccount}
-            avatarGroupStyle={{ width: 40 }}
-            onSelectAccount={selectAccount}
-            onPressDetailBtn={() => {
-              navigation.navigate('EditAccount', { address: item.address, name: item.name || '' });
-            }}
-          />
+          renderRightActions={renderRightSwipeActions(item, index)}>
+          {isAllAccount ? (
+            <SelectAccountAllItem
+              isSelected={item.id === currentAccountProxy?.id}
+              onPress={selectAccount(item)}
+              accountProxies={accountProxies}
+            />
+          ) : (
+            <SelectAccountItem
+              accountProxy={item}
+              isSelected={item.id === currentAccountProxy?.id}
+              isAllAccount={isAllAccount}
+              onPressCopyBtn={onPressCopyBtn(item)}
+              onSelectAccount={selectAccount(item)}
+              onPressDetailBtn={() => {
+                navigation.navigate('EditAccount', { address: item.id, name: item.name || '' });
+              }}
+            />
+          )}
         </Swipeable>
       );
     },
-    [currentAccountAddress, navigation, rightSwipeActions, selectAccount],
+    [accountProxies, currentAccountProxy?.id, navigation, onPressCopyBtn, renderRightSwipeActions, selectAccount],
   );
 
   const onPressFooterBtn = (action: () => void) => {
@@ -329,13 +461,19 @@ export const AccountsScreen = ({
     );
   };
 
+  const closeAccountChainAddressesModal = useCallback(() => {
+    accountChainAddressSelectorRef.current?.onCloseModal();
+    setSelectedAccountProxy(undefined);
+  }, []);
+
   return (
     <>
       <FlatListScreen
         style={{ flex: 1 }}
         onPressBack={() => navigation.goBack()}
         title={i18n.header.selectAccount}
-        items={accounts}
+        grouping={grouping}
+        items={listItems}
         renderItem={renderItem}
         renderListEmptyComponent={renderListEmptyComponent}
         searchFunction={searchFunction}
@@ -357,74 +495,14 @@ export const AccountsScreen = ({
         allowToShowSelectType={true}
       />
 
-      <SwModal isUseModalV2 modalVisible={qrModalVisible} setVisible={setQrModalVisible}>
-        <View style={receiveModalContentWrapper}>
-          <Typography.Text
-            size={'lg'}
-            style={{
-              color: theme.colorWhite,
-              ...FontSemiBold,
-            }}>
-            {i18n.header.yourAddress}
-          </Typography.Text>
-          <View style={{ paddingTop: 38 }}>
-            {selectedAddress && <QRCode qrRef={(ref?) => (svg = ref)} value={selectedAddress} errorLevel={'Q'} />}
-          </View>
-
-          <View
-            style={{
-              height: 48,
-              flexDirection: 'row',
-              backgroundColor: theme.colorBgSecondary,
-              padding: theme.paddingXXS,
-              paddingLeft: theme.paddingSM,
-              alignItems: 'center',
-              gap: theme.paddingXS,
-              borderRadius: theme.borderRadiusLG,
-              marginVertical: theme.margin,
-            }}>
-            <Avatar
-              value={selectedAddress}
-              size={24}
-              theme={isEthereumAddress(selectedAddress) ? 'ethereum' : 'polkadot'}
-            />
-
-            <Typography.Text
-              style={{
-                color: theme.colorTextLight4,
-                ...FontMedium,
-              }}>
-              {toShort(selectedAddress, 7, 7)}
-            </Typography.Text>
-
-            <Button
-              icon={<Icon phosphorIcon={CopySimple} weight={'bold'} size={'sm'} iconColor={theme.colorTextLight4} />}
-              type={'ghost'}
-              size={'xs'}
-              onPress={() => copyToClipboard(selectedAddress)}
-            />
-          </View>
-
-          <View
-            style={{
-              marginHorizontal: -theme.size,
-              paddingHorizontal: theme.size,
-              gap: theme.size,
-              flexDirection: 'row',
-              paddingTop: theme.size,
-              borderTopColor: theme.colorBgSecondary,
-              borderTopWidth: 2,
-              borderStyle: 'solid',
-            }}>
-            <Button
-              style={{ flex: 1 }}
-              icon={<Icon phosphorIcon={ShareIcon} weight={'fill'} size={'lg'} />}
-              onPress={onShareImg}>
-              {i18n.common.share}
-            </Button>
-          </View>
-        </View>
-      </SwModal>
+      {accountProxyToGetAddresses && (
+        <AccountChainAddressesSelector
+          accountProxy={accountProxyToGetAddresses}
+          selectedValueMap={{}}
+          onCancel={closeAccountChainAddressesModal}
+          accountSelectorRef={accountChainAddressSelectorRef}
+        />
+      )}
 
       <DeleteModal
         title={i18n.header.removeThisAcc}

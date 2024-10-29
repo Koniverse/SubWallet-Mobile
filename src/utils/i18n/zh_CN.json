@@ -737,7 +737,7 @@
     "selectAccType": "选择账户类型",
     "importAcc": "导入账户",
     "importFromSeedPhrase": "从助记词导入",
-    "importFromJson": "从Polkadot.{js}导入",
+    "importFromJson": "从Json导入",
     "accounts": "账户",
     "importByPrivateKey": "通过私钥导入",
     "importByQRCode": "通过二维码导入",

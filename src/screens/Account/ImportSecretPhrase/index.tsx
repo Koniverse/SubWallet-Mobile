@@ -1,29 +1,22 @@
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { useNavigation } from '@react-navigation/native';
-import { SelectAccountType } from 'components/common/SelectAccountType';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { Button, Icon, Typography } from 'components/design-system-ui';
+import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
 import { Textarea } from 'components/Textarea';
-import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { createAccountSuriV2, validateSeedV2 } from 'messaging/index';
-import { FileArrowDown, X } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FileArrowDown, Warning, X } from 'phosphor-react-native';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
-
-const ViewStep = {
-  ENTER_SEED: 1,
-  ENTER_PASSWORD: 2,
-};
-
+import { AccountProxyType, ResponseMnemonicValidateV2 } from '@subwallet/extension-base/types';
+import { AppModalContext } from 'providers/AppModalContext';
+import { AccountNameModal } from 'components/Modal/AccountNameModal';
 const secretPhraseFormConfig: FormControlConfig = {
   seed: {
     name: '',
@@ -36,27 +29,77 @@ export const ImportSecretPhrase = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
-  const accountName = useGetDefaultAccountName();
+  const { confirmModal } = useContext(AppModalContext);
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
-  const timeOutRef = useRef<NodeJS.Timer>();
-
   const styles = useMemo(() => createStyle(theme), [theme]);
+  const [accountNameModalVisible, setAccountNameModalVisible] = useState<boolean>(false);
+  const [seedValidationResponse, setSeedValidationResponse] = useState<undefined | ResponseMnemonicValidateV2>();
+  const [accountCreating, setAccountCreating] = useState(false);
+  useHandlerHardwareBackPress(accountCreating);
 
-  const [isBusy, setBusy] = useState(false);
-  useHandlerHardwareBackPress(isBusy);
+  const [submitting, setSubmitting] = useState(false);
 
-  const [validating, setValidating] = useState(false);
-  const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
-  const [keyTypes, setKeyTypes] = useState<KeypairType[]>([SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE]);
+  const onSubmit = () => {
+    const trimSeed = formState.data.seed.trim();
+    validateSeedV2(trimSeed)
+      .then(response => {
+        setSeedValidationResponse(response);
 
-  const _onImportSeed = (): void => {
-    setBusy(true);
+        if (response.mnemonicTypes === 'general') {
+          confirmModal.setConfirmModal({
+            visible: true,
+            title: 'Incompatible seed phrase',
+            message: (
+              <>
+                <Typography.Text>
+                  This seed phrase generates a unified account that can be used on multiple ecosystems in SubWallet
+                  including TON.
+                </Typography.Text>
+                <Typography.Text>
+                  Note that you can’t import this seed phrase into TON-native wallets as this seed phrase is
+                  incompatible with TON-native wallets.
+                </Typography.Text>
+              </>
+            ),
+            onCancelModal: () => {
+              confirmModal.hideConfirmModal();
+              setAccountCreating(false);
+            },
+            onCompleteModal: () => {
+              confirmModal.hideConfirmModal();
+              setAccountNameModalVisible(true);
+            },
+            customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+            completeBtnTitle: 'Import',
+          });
+        } else {
+          setAccountNameModalVisible(true);
+        }
+      })
+      .catch(() => {
+        onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
+  };
+
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(secretPhraseFormConfig, {
+    onSubmitForm: onPressSubmit(onSubmit),
+  });
+
+  const _onImportSeed = (accountName: string): void => {
+    if (!seedValidationResponse) {
+      return;
+    }
+
+    setAccountCreating(true);
     createAccountSuriV2({
       name: accountName,
-      suri: formState.data.seed.trim(),
+      suri: seedValidationResponse.mnemonic,
+      types: seedValidationResponse.mnemonicTypes === 'ton' ? 'ton-native' : undefined,
       isAllowed: true,
-      types: keyTypes,
     })
       .then(() => {
         navigation.reset({
@@ -65,53 +108,9 @@ export const ImportSecretPhrase = () => {
         });
       })
       .catch(() => {
-        setBusy(false);
+        setAccountCreating(false);
       });
   };
-
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(secretPhraseFormConfig, {
-    onSubmitForm: onPressSubmit(_onImportSeed),
-  });
-
-  useEffect(() => {
-    let amount = true;
-
-    if (timeOutRef.current) {
-      clearTimeout(timeOutRef.current);
-    }
-
-    if (amount) {
-      const trimSeed = formState.data.seed.trim();
-
-      if (trimSeed) {
-        setValidating(true);
-        onUpdateErrors('seed')([]);
-
-        timeOutRef.current = setTimeout(() => {
-          validateSeedV2(trimSeed, [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE])
-            .then(() => {
-              if (amount) {
-                onUpdateErrors('seed')([]);
-              }
-            })
-            .catch(() => {
-              if (amount) {
-                onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
-              }
-            })
-            .finally(() => {
-              if (amount) {
-                setValidating(false);
-              }
-            });
-        }, 300);
-      }
-    }
-
-    return () => {
-      amount = false;
-    };
-  }, [onUpdateErrors, formState.data.seed]);
 
   useEffect(() => {
     return navigation.addListener('transitionEnd', () => {
@@ -120,11 +119,7 @@ export const ImportSecretPhrase = () => {
   }, [focus, navigation]);
 
   const onPressBack = () => {
-    if (currentViewStep === ViewStep.ENTER_SEED) {
-      navigation.goBack();
-    } else {
-      setCurrentViewStep(ViewStep.ENTER_SEED);
-    }
+    navigation.goBack();
   };
 
   const renderIconButton = useCallback((iconColor: string) => {
@@ -132,18 +127,18 @@ export const ImportSecretPhrase = () => {
   }, []);
 
   const disabled = useMemo(
-    () => !formState.data.seed || !formState.isValidated.seed || isBusy,
-    [formState.data.seed, formState.isValidated.seed, isBusy],
+    () => !formState.data.seed || !formState.isValidated.seed || accountCreating,
+    [formState.data.seed, formState.isValidated.seed, accountCreating],
   );
 
   return (
     <ContainerWithSubHeader
       onPressBack={onPressBack}
       title={i18n.header.importFromSeedPhrase}
-      disabled={isBusy}
+      disabled={accountCreating}
       onPressRightIcon={goHome}
       rightIcon={X}
-      disableRightButton={isBusy}>
+      disableRightButton={accountCreating}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>
           <Typography.Text style={styles.title}>{i18n.importAccount.importFromSeedPhraseMessage}</Typography.Text>
@@ -154,30 +149,39 @@ export const ImportSecretPhrase = () => {
             onChangeText={(text: string) => {
               onChangeValue('seed')(text);
             }}
-            editable={!isBusy}
+            editable={!accountCreating}
             onSubmitEditing={onSubmitField('seed')}
             errorMessages={formState.errors.seed}
             placeholderTextColor={theme.colorTextTertiary}
             placeholder={i18n.placeholder.seedPhrase}
             autoCapitalize="none"
           />
-
-          <SelectAccountType
-            title={i18n.importAccount.selectAccountType}
-            selectedItems={keyTypes}
-            setSelectedItems={setKeyTypes}
-            disabled={isBusy}
-          />
         </ScrollView>
         <View style={styles.footer}>
           <Button
             icon={renderIconButton}
-            disabled={disabled || validating || !keyTypes.length}
-            loading={validating || isBusy}
-            onPress={onPressSubmit(_onImportSeed)}>
+            disabled={disabled || submitting}
+            loading={submitting || accountCreating}
+            onPress={onPressSubmit(onSubmit)}>
             {i18n.buttonTitles.importAccount}
           </Button>
         </View>
+
+        {accountNameModalVisible && (
+          <AccountNameModal
+            modalVisible={accountNameModalVisible}
+            setModalVisible={setAccountNameModalVisible}
+            accountType={
+              seedValidationResponse
+                ? seedValidationResponse.mnemonicTypes === 'general'
+                  ? AccountProxyType.UNIFIED
+                  : AccountProxyType.SOLO
+                : undefined
+            }
+            isLoading={accountCreating}
+            onSubmit={_onImportSeed}
+          />
+        )}
       </View>
     </ContainerWithSubHeader>
   );

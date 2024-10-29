@@ -24,7 +24,7 @@ export default (theme: ThemeTypes) => {
       marginBottom: theme.marginLG,
     },
     nameContainer: {
-      marginBottom: theme.marginXS,
+      marginBottom: theme.marginSM,
       marginTop: theme.marginXXS,
     },
     body: {

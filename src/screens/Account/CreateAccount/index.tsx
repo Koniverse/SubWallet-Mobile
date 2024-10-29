@@ -1,17 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { InitSecretPhrase } from 'screens/Account/CreateAccount/InitSecretPhrase';
-import { VerifySecretPhrase } from 'screens/Account/CreateAccount/VerifySecretPhrase';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { createAccountSuriV2, createSeedV2 } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { CreateAccountProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
-import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { mmkvStore } from 'utils/storage';
 import { TnCSeedPhraseModal } from 'screens/Account/CreateAccount/TnCSeedPhraseModal';
 import { Linking } from 'react-native';
+import { SELECTED_MNEMONIC_TYPE } from 'constants/localStorage';
+import { AccountProxyType, MnemonicType } from '@subwallet/extension-base/types';
+import { AccountNameModal } from 'components/Modal/AccountNameModal';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
+import { SecretPhraseArea } from 'screens/Account/CreateAccount/SecretPhraseArea';
 
 const ViewStep = {
   INIT_SP: 1,
@@ -26,27 +27,26 @@ function getHeaderTitle(viewStep: number) {
   }
 }
 
-const defaultKeyTypes = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
-
 export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   const isInstructionHidden = mmkvStore.getBoolean('hide-seed-phrase-instruction');
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.INIT_SP);
   const [showSeedPhraseInstruction, setShowSeedPhraseInstruction] = useState<boolean>(!isInstructionHidden);
-  const [seed, setSeed] = useState<null | string>(null);
-  const [isBusy, setIsBusy] = useState(false);
+  const [seedPhrase, setSeedPhrase] = useState<null | string>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
-  const accountName = useGetDefaultAccountName();
   const storedDeeplink = mmkvStore.getString('storedDeeplink');
+  const selectedMnemonicType = mmkvStore.getString(SELECTED_MNEMONIC_TYPE) as MnemonicType;
+  const [accountNameModalVisible, setAccountNameModalVisible] = useState<boolean>(false);
 
-  useHandlerHardwareBackPress(isBusy);
+  useHandlerHardwareBackPress(isLoading);
   useEffect((): void => {
-    createSeedV2(undefined, undefined, defaultKeyTypes)
+    createSeedV2(undefined, undefined, selectedMnemonicType)
       .then((response): void => {
-        // @ts-ignore
-        setSeed(response.seed);
+        const phrase = response.mnemonic;
+        setSeedPhrase(phrase);
       })
       .catch(console.error);
-  }, [params]);
+  }, [params, selectedMnemonicType]);
 
   const onPressBack = () => {
     if (currentViewStep === ViewStep.INIT_SP) {
@@ -56,17 +56,23 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
     }
   };
 
+  const { onPress: onSubmit } = useUnlockModal(navigation);
+
   const onPressSubmitInitSecretPhrase = () => {
-    setCurrentViewStep(ViewStep.VERIFY_SP);
+    if (!seedPhrase) {
+      return;
+    }
+
+    setAccountNameModalVisible(true);
   };
 
-  const onCreateAccount = () => {
-    if (seed) {
-      setIsBusy(true);
+  const _onSubmit = useCallback(
+    (accountName: string) => {
+      setIsLoading(true);
       createAccountSuriV2({
         name: accountName,
-        suri: seed,
-        types: params?.keyTypes || defaultKeyTypes,
+        suri: seedPhrase,
+        types: selectedMnemonicType === 'ton' ? 'ton-native' : undefined,
         isAllowed: true,
       })
         .then(() => {
@@ -85,11 +91,12 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
           }
         })
         .catch((error: Error): void => {
-          setIsBusy(false);
+          setIsLoading(false);
           console.error(error);
         });
-    }
-  };
+    },
+    [navigation, params.isBack, seedPhrase, selectedMnemonicType, storedDeeplink],
+  );
 
   const onPressSubmitTnCSeedPhraseModal = useCallback((hideNextTime: boolean) => {
     setShowSeedPhraseInstruction(false);
@@ -97,18 +104,17 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   }, []);
 
   return (
-    <ContainerWithSubHeader onPressBack={onPressBack} disabled={isBusy} title={getHeaderTitle(currentViewStep)}>
+    <ContainerWithSubHeader onPressBack={onPressBack} disabled={isLoading} title={getHeaderTitle(currentViewStep)}>
       <>
-        {!!seed && (
-          <>
-            {currentViewStep === ViewStep.INIT_SP && (
-              <InitSecretPhrase seed={seed} onPressSubmit={onPressSubmitInitSecretPhrase} />
-            )}
-            {currentViewStep === ViewStep.VERIFY_SP && (
-              <VerifySecretPhrase seed={seed} onPressSubmit={onCreateAccount} isBusy={isBusy} navigation={navigation} />
-            )}
-          </>
-        )}
+        {!!seedPhrase && <SecretPhraseArea seed={seedPhrase} onPressSubmit={onSubmit(onPressSubmitInitSecretPhrase)} />}
+
+        <AccountNameModal
+          modalVisible={accountNameModalVisible}
+          setModalVisible={setAccountNameModalVisible}
+          accountType={selectedMnemonicType === 'general' ? AccountProxyType.UNIFIED : AccountProxyType.SOLO}
+          isLoading={isLoading}
+          onSubmit={_onSubmit}
+        />
 
         <TnCSeedPhraseModal
           onBackButtonPress={() => navigation.goBack()}

@@ -1,7 +1,7 @@
 import React, { useMemo, useRef } from 'react';
-import { Linking, Share, StyleProp, View } from 'react-native';
+import { Linking, Platform, Share, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontMedium, FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import reformatAddress, { getNetworkLogo, toShort } from 'utils/index';
 import { CopySimple, GlobeHemisphereWest, Share as ShareIcon } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -16,12 +16,17 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
+import { VoidFunction } from 'types/index';
+import Svg from 'react-native-svg';
 
 interface Props {
   modalVisible: boolean;
   address?: string;
   selectedNetwork?: string;
   setModalVisible: (arg: boolean) => void;
+  onBack?: VoidFunction;
+  isUseModalV2?: boolean;
+  level?: number;
 }
 
 const receiveModalContentWrapper: StyleProp<any> = {
@@ -29,10 +34,18 @@ const receiveModalContentWrapper: StyleProp<any> = {
   width: '100%',
 };
 
-export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalVisible }: Props) => {
+export const ReceiveModal = ({
+  address,
+  selectedNetwork,
+  modalVisible,
+  setModalVisible,
+  onBack,
+  isUseModalV2,
+  level,
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const toastRef = useRef<ToastContainer>(null);
-  let svg: { toDataURL: (arg0: (data: any) => void) => void };
+  let svg: Svg | null | undefined;
   const chainInfo = useFetchChainInfo(selectedNetwork || '');
   const modalRef = useRef<SWModalRefProps>(null);
   const insets = useSafeAreaInsets();
@@ -70,7 +83,7 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalV
       return;
     }
 
-    svg.toDataURL(data => {
+    svg?.toDataURL(data => {
       const shareImageBase64 = {
         title: 'QR',
         message: `My Public Address to Receive ${chainInfo?.slug.toUpperCase()}: ${formattedAddress}`,
@@ -80,24 +93,23 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalV
     });
   };
 
-  const onCancel = () => modalRef?.current?.close();
+  const _onCancel = () => {
+    onBack ? onBack() : modalRef?.current?.close();
+  };
 
   return (
     <SwModal
       modalBaseV2Ref={modalRef}
       setVisible={setModalVisible}
-      isUseModalV2
+      onBackdropPress={_onCancel}
+      disabledOnPressBackDrop={Platform.OS === 'android'}
       modalVisible={modalVisible}
-      onBackButtonPress={onCancel}>
+      isUseModalV2={isUseModalV2}
+      level={level}
+      modalTitle={i18n.header.yourAddress}
+      titleTextAlign={'center'}
+      onBackButtonPress={_onCancel}>
       <View style={receiveModalContentWrapper}>
-        <Typography.Text
-          size={'lg'}
-          style={{
-            color: theme.colorWhite,
-            ...FontSemiBold,
-          }}>
-          {i18n.header.yourAddress}
-        </Typography.Text>
         <View style={{ paddingTop: 38 }}>
           {formattedAddress && <QRCode qrRef={(ref?) => (svg = ref)} value={formattedAddress} errorLevel={'Q'} />}
         </View>

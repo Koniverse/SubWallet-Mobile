@@ -258,7 +258,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [useParamValidator, setUseParamValidator] = useState<boolean>(redirectFromPreviewRef.current);
   const [checkValidAccountLoading, setCheckValidAccountLoading] = useState<boolean>(redirectFromPreviewRef.current);
   const globalAppModalContext = useContext(GlobalModalContext);
-  const appModalContext = useContext(AppModalContext);
+  const { confirmModal } = useContext(AppModalContext);
   const isDisabledButton = useMemo(
     () =>
       checkMintLoading ||
@@ -766,7 +766,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         });
       } else if (warningConfirmationData && warningConfirmationData.isShowWarningConfirmation) {
         // hotfix for mkt campaign
-        appModalContext.setConfirmModal({
+        confirmModal.setConfirmModal({
           visible: true,
           completeBtnTitle: i18n.buttonTitles.continue,
           customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
@@ -788,9 +788,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
               </Typography.Text>
             </Typography.Text>
           ),
-          onCancelModal: appModalContext.hideConfirmModal,
+          onCancelModal: confirmModal.hideConfirmModal,
           onCompleteModal: () => {
-            appModalContext.hideConfirmModal();
+            confirmModal.hideConfirmModal();
             onSubmit();
           },
         });
@@ -799,7 +799,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       }
     }, 100);
   }, [
-    appModalContext,
+    confirmModal,
     currentConfirmations,
     globalAppModalContext,
     onSubmit,

@@ -1,11 +1,11 @@
 import { decodeAddress, encodeAddress, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import { AbstractAddressJson, AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
+import { AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import {
   _getChainSubstrateAddressPrefix,
   _isChainEvmCompatible,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { isAccountAll, reformatAddress } from '@subwallet/extension-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import { MODE_CAN_SIGN } from 'constants/signer';
 import { AccountSignMode } from 'types/signer';
 import { AccountAddressType } from 'types/index';
@@ -15,6 +15,9 @@ import SInfo, { RNSensitiveInfoOptions } from 'react-native-sensitive-info';
 import { Alert } from 'react-native';
 import i18n from './i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import { isChainInfoAccordantAccountChainType } from 'utils/chain';
+import { AbstractAddressJson, AccountChainType, AccountJson } from '@subwallet/extension-base/types';
+import reformatAddress from 'utils/index';
 
 export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {
@@ -255,3 +258,26 @@ export const getSupportedBiometryType = async () => {
     return null;
   }
 };
+
+export function getReformatedAddressRelatedToChain(
+  accountJson: AccountJson,
+  chainInfo: _ChainInfo,
+): string | undefined {
+  if (accountJson.specialChain && accountJson.specialChain !== chainInfo.slug) {
+    return undefined;
+  }
+
+  if (!isChainInfoAccordantAccountChainType(chainInfo, accountJson.chainType)) {
+    return undefined;
+  }
+
+  if (accountJson.chainType === AccountChainType.SUBSTRATE && chainInfo.substrateInfo) {
+    return reformatAddress(accountJson.address, chainInfo.substrateInfo.addressPrefix);
+  } else if (accountJson.chainType === AccountChainType.ETHEREUM && chainInfo.evmInfo) {
+    return accountJson.address;
+  } else if (accountJson.chainType === AccountChainType.TON && chainInfo.tonInfo) {
+    return reformatAddress(accountJson.address, chainInfo.isTestnet ? 0 : 1);
+  }
+
+  return undefined;
+}

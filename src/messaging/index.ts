@@ -14,7 +14,6 @@ import type {
   MessageTypesWithNoSubscriptions,
   MessageTypesWithNullRequest,
   MessageTypesWithSubscriptions,
-  MetadataRequest,
   RequestCurrentAccountAddress,
   RequestSignatures,
   RequestTypes,
@@ -24,7 +23,6 @@ import type {
   ResponseSigningIsLocked,
   ResponseTypes,
   SeedLengths,
-  SigningRequest,
   SubscriptionMessageTypes,
 } from '@subwallet/extension-base/background/types';
 import {
@@ -76,7 +74,6 @@ import {
   RequestGetDeriveAccounts,
   RequestGetTransaction,
   RequestInitCronAndSubscription,
-  RequestJsonRestoreV2,
   RequestKeyringExportMnemonic,
   RequestMaxTransferable,
   RequestMigratePassword,
@@ -118,13 +115,11 @@ import {
   ResponseMigratePassword,
   ResponseParseEvmContractInput,
   ResponseParseTransactionSubstrate,
-  ResponsePrivateKeyValidateV2,
   ResponseQrParseRLP,
   ResponseQrSignEvm,
   ResponseQrSignSubstrate,
   ResponseResetWallet,
   ResponseSeedCreateV2,
-  ResponseSeedValidateV2,
   ResponseSubscribeHistory,
   ResponseUnlockKeyring,
   StakingJson,
@@ -140,6 +135,7 @@ import {
 import {
   BalanceJson,
   Message,
+  MnemonicType,
   NominationPoolInfo,
   OptimalYieldPathParams,
   RequestEarlyValidateYield,
@@ -511,6 +507,8 @@ export async function subscribeActiveCronAndSubscriptionServiceMap(
   return sendMessage('mobile(cronAndSubscription.activeService.subscribe)', null, callback, handlerId);
 }
 
+export * from './accounts';
+
 export async function startCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
   return sendMessage('mobile(cronAndSubscription.start)', request);
 }
@@ -568,7 +566,7 @@ export async function showAccount(address: string, isShowing: boolean): Promise<
 }
 
 export async function saveCurrentAccountAddress(data: RequestCurrentAccountAddress): Promise<CurrentAccountInfo> {
-  return sendMessage('pri(currentAccount.saveAddress)', data);
+  return sendMessage('pri(accounts.saveCurrentProxy)', data);
 }
 
 export async function toggleBalancesVisibility(): Promise<boolean> {
@@ -744,10 +742,10 @@ export async function createSeed(
 
 export async function createSeedV2(
   length?: SeedLengths,
-  seed?: string,
-  types?: Array<KeypairType>,
+  mnemonic?: string,
+  type?: MnemonicType,
 ): Promise<ResponseSeedCreateV2> {
-  return sendMessage('pri(seed.createV2)', { length, seed, types });
+  return sendMessage('pri(seed.createV2)', { length, mnemonic, type });
 }
 
 export async function createAccountWithSecret(
@@ -942,29 +940,6 @@ export async function forgetAllSite(callback: (data: AuthUrls) => void): Promise
   return sendMessage('pri(authorize.forgetAllSite)', null, callback);
 }
 
-export async function subscribeMetadataRequests(cb: (accounts: MetadataRequest[]) => void): Promise<MetadataRequest[]> {
-  return sendMessage('pri(metadata.requests)', null, cb);
-}
-
-export async function subscribeSigningRequests(cb: (accounts: SigningRequest[]) => void): Promise<SigningRequest[]> {
-  return sendMessage('pri(signing.requests)', null, cb);
-}
-
-export async function validateSeed(suri: string, type?: KeypairType): Promise<{ address: string; suri: string }> {
-  return sendMessage('pri(seed.validate)', { suri, type });
-}
-
-export async function validateSeedV2(suri: string, types: Array<KeypairType>): Promise<ResponseSeedValidateV2> {
-  return sendMessage('pri(seed.validateV2)', { suri, types });
-}
-
-export async function validateMetamaskPrivateKeyV2(
-  suri: string,
-  types: Array<KeypairType>,
-): Promise<ResponsePrivateKeyValidateV2> {
-  return sendMessage('pri(privateKey.validateV2)', { suri, types });
-}
-
 export async function validateDerivationPath(
   parentAddress: string,
   suri: string,
@@ -1010,19 +985,6 @@ export async function jsonRestore(file: KeyringPair$Json, password: string, addr
 
 export async function batchRestore(file: KeyringPairs$Json, password: string, address: string): Promise<void> {
   return sendMessage('pri(json.batchRestore)', { file, password, address });
-}
-
-export async function jsonRestoreV2(request: RequestJsonRestoreV2): Promise<string[]> {
-  return sendMessage('pri(json.restoreV2)', request);
-}
-
-export async function batchRestoreV2(
-  file: KeyringPairs$Json,
-  password: string,
-  accountsInfo: ResponseJsonGetAccountInfo[],
-  isAllowed: boolean,
-): Promise<string[]> {
-  return sendMessage('pri(json.batchRestoreV2)', { file, password, accountsInfo, isAllowed });
 }
 
 export async function setNotification(notification: string): Promise<boolean> {

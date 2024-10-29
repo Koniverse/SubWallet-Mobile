@@ -37,7 +37,7 @@ export const BuyToken = ({
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
   const { tokens } = useSelector((state: RootState) => state.buyService);
-  const appModalContext = useContext(AppModalContext);
+  const { confirmModal } = useContext(AppModalContext);
   const {
     openSelectBuyAccount,
     openSelectBuyToken,
@@ -102,24 +102,24 @@ export const BuyToken = ({
 
       if (!isConnected) {
         setTimeout(() => {
-          appModalContext.setConfirmModal({
+          confirmModal.setConfirmModal({
             visible: true,
             completeBtnTitle: i18n.buttonTitles.enable,
             message: i18n.common.enableChainMessage,
             title: i18n.common.enableChain,
             onCancelModal: () => {
-              appModalContext.hideConfirmModal();
+              confirmModal.hideConfirmModal();
             },
             onCompleteModal: () => {
               turnOnChain(chain);
-              setTimeout(() => appModalContext.hideConfirmModal(), 300);
+              setTimeout(() => confirmModal.hideConfirmModal(), 300);
             },
             messageIcon: chain,
           });
         }, 700);
       }
     },
-    [appModalContext, checkChainConnected, turnOnChain],
+    [confirmModal, checkChainConnected, turnOnChain],
   );
 
   const onSelectBuyToken = useCallback(

@@ -3,7 +3,6 @@
 
 import { _AssetRef, _AssetType, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { AssetSetting, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import {
   _getAssetDecimals,
   _getContractAddressOfToken,
@@ -94,6 +93,7 @@ import { getSnowBridgeGatewayContract } from '@subwallet/extension-base/koni/api
 import useFetchChainAssetInfo from 'hooks/screen/useFetchChainAssetInfo';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -401,7 +401,7 @@ export const SendFund = ({
   const forceTransferAllRef = useRef<boolean>(false);
   const [forceTransferAll, setForceTransferAll] = useState<boolean>(false);
   const chainStatus = useMemo(() => chainStatusMap[chainValue]?.connectionStatus, [chainStatusMap, chainValue]);
-  const appModalContext = useContext(AppModalContext);
+  const { confirmModal } = useContext(AppModalContext);
   const globalAppModalContext = useContext(GlobalModalContext);
   const assetInfo = useFetchChainAssetInfo(assetValue);
 
@@ -919,7 +919,7 @@ export const SendFund = ({
         const isMythosFromHydrationToMythos = _isMythosFromHydrationToMythos(originChainInfo, destChainInfo, assetSlug);
 
         if (_isXcmTransferUnstable(originChainInfo, destChainInfo, assetSlug)) {
-          appModalContext.setConfirmModal({
+          confirmModal.setConfirmModal({
             visible: true,
             title: isMythosFromHydrationToMythos ? 'High fee alert!' : 'Pay attention!', // TODO: i18n
             message: _getXcmUnstableWarning(originChainInfo, destChainInfo, assetSlug),
@@ -927,9 +927,9 @@ export const SendFund = ({
             customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
             onCompleteModal: () => {
               doSubmit(values);
-              appModalContext.hideConfirmModal();
+              confirmModal.hideConfirmModal();
             },
-            onCancelModal: () => appModalContext.hideConfirmModal(),
+            onCancelModal: () => confirmModal.hideConfirmModal(),
           });
           return;
         }
@@ -944,7 +944,7 @@ export const SendFund = ({
 
       doSubmit(values);
     },
-    [appModalContext, chainInfoMap, chainValue, destChainValue, doSubmit, isTransferAll, theme.colorWarning],
+    [confirmModal, chainInfoMap, chainValue, destChainValue, doSubmit, isTransferAll, theme.colorWarning],
   );
 
   const onPressSubmit = useCallback(
