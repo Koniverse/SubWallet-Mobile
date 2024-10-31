@@ -1,13 +1,9 @@
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isAccountAll } from 'utils/accountAll';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { AddressBook, CheckCircle, DownloadSimple, Export, MagnifyingGlass } from 'phosphor-react-native';
 import PasswordModal from 'components/Modal/PasswordModal';
-import { exportAccountsV2 } from 'messaging/index';
-import { AccountSignMode } from 'types/signer';
-import { getSignMode } from 'utils/account';
 import { Button, Icon, SelectItem, SwFullSizeModal, Typography } from 'components/design-system-ui';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
@@ -25,25 +21,8 @@ import { RootState } from 'stores/index';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-
-const filterOptions = [
-  {
-    label: 'Normal account',
-    value: AccountSignMode.PASSWORD,
-  },
-  {
-    label: 'QR signer account',
-    value: AccountSignMode.QR,
-  },
-  {
-    label: 'Ledger account',
-    value: 'ledger',
-  },
-  {
-    label: 'Watch-only account',
-    value: AccountSignMode.READ_ONLY,
-  },
-];
+import { AccountProxy } from '@subwallet/extension-base/types';
+import { exportAccountBatch } from 'messaging/accounts';
 
 const renderListEmptyComponent = () => {
   return (
@@ -55,39 +34,16 @@ const renderListEmptyComponent = () => {
   );
 };
 
-const filterFunction = (items: AccountJson[], filters: string[]) => {
-  if (!filters.length) {
-    return items;
-  }
-
-  return items.filter(item => {
-    const signMode = getSignMode(item);
-    for (const filter of filters) {
-      switch (filter) {
-        case AccountSignMode.PASSWORD:
-          return signMode === AccountSignMode.PASSWORD;
-        case AccountSignMode.QR:
-          return signMode === AccountSignMode.QR;
-        case 'ledger':
-          return signMode === AccountSignMode.LEGACY_LEDGER || signMode === AccountSignMode.GENERIC_LEDGER;
-        case AccountSignMode.READ_ONLY:
-          return signMode === AccountSignMode.READ_ONLY;
-      }
-    }
-    return false;
-  });
-};
-
-const searchFunc = (items: AccountJson[], searchText: string) => {
+const searchFunc = (items: AccountProxy[], searchText: string) => {
   return items.filter(
     acc =>
       (acc.name && acc.name.toLowerCase().includes(searchText.toLowerCase())) ||
-      acc.address.toLowerCase().includes(searchText.toLowerCase()),
+      acc.id.toLowerCase().includes(searchText.toLowerCase()),
   );
 };
 
 export const ExportAllAccount = () => {
-  const fullAccounts = useSelector((state: RootState) => state.accountState.accounts);
+  const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const successModalRef = useRef<SWModalRefProps>(null);
@@ -101,11 +57,11 @@ export const ExportAllAccount = () => {
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
   const [isReady, setIsReady] = useState<boolean>(false);
   const items = useMemo(() => {
-    if (fullAccounts.length > 2) {
-      const foundAccountAll = fullAccounts.find(a => isAccountAll(a.address));
-      const foundCurrentAccount = fullAccounts.find(a => a.address === currentAccountAddress);
+    if (accountProxies.length > 2) {
+      const foundAccountAll = accountProxies.find(a => isAccountAll(a.id));
+      const foundCurrentAccount = accountProxies.find(a => a.id === currentAccountAddress);
 
-      const result = fullAccounts.filter(a => !(isAccountAll(a.address) || a.address === currentAccountAddress));
+      const result = accountProxies.filter(a => !(isAccountAll(a.id) || a.id === currentAccountAddress));
 
       if (foundCurrentAccount && !isAccountAll(currentAccountAddress || '')) {
         result.unshift(foundCurrentAccount);
@@ -118,8 +74,8 @@ export const ExportAllAccount = () => {
       return result;
     }
 
-    return fullAccounts.filter(a => !isAccountAll(a.address));
-  }, [fullAccounts, currentAccountAddress]);
+    return accountProxies.filter(a => !isAccountAll(a.id));
+  }, [accountProxies, currentAccountAddress]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -131,7 +87,7 @@ export const ExportAllAccount = () => {
     const addresses: string[] = [];
 
     items.forEach(obj => {
-      addresses.push(obj.address);
+      addresses.push(obj.id);
     });
 
     return addresses;
@@ -148,17 +104,17 @@ export const ExportAllAccount = () => {
   }, [selectedValueMap]);
 
   const onSelectAccount = useCallback(
-    (value: string, isCheck?: boolean) => {
+    (ap: AccountProxy, isCheck?: boolean) => {
       setSelectedValueMap(prev => {
         const newMap = { ...prev };
 
-        if (isAccountAll(value)) {
+        if (isAccountAll(ap.id)) {
           allAddress.forEach(key => {
             newMap[key] = !!isCheck;
           });
           newMap[ALL_ACCOUNT_KEY] = !!isCheck;
         } else {
-          newMap[value] = !!isCheck;
+          newMap[ap.id] = !!isCheck;
           newMap[ALL_ACCOUNT_KEY] = allAddress.filter(i => !isAccountAll(i)).every(item => newMap[item]);
         }
 
@@ -178,9 +134,9 @@ export const ExportAllAccount = () => {
         setJsonFileName(`${toShort(selectedAccounts[0])}.json`);
       }
 
-      exportAccountsV2({
+      exportAccountBatch({
         password: password,
-        addresses: selectedAccounts,
+        proxyIds: selectedAccounts,
       })
         .then(data => {
           setJsonData(data.exportedJson);
@@ -205,25 +161,23 @@ export const ExportAllAccount = () => {
   }, [navigation]);
 
   const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<AccountJson>) => {
-      const isAllAccount = isAccountAll(item.address);
+    ({ item }: ListRenderItemInfo<AccountProxy>) => {
+      const isAllAccount = isAccountAll(item.id);
 
       return (
         <SelectAccountItem
-          key={item.address}
-          address={item.address}
-          accountName={item.name}
-          isSelected={selectedValueMap[item.address]}
+          key={item.id}
+          accountProxy={item}
+          isSelected={selectedValueMap[item.id]}
           isShowMultiCheck={true}
           isShowEditBtn={false}
           isAllAccount={isAllAccount}
-          onSelectAccount={_item => {
-            onSelectAccount(_item, !selectedValueMap[_item]);
+          onSelectAccount={() => {
+            onSelectAccount(item, !selectedValueMap[item.id]);
           }}
           onPressDetailBtn={() => {
-            navigation.navigate('EditAccount', { address: item.address, name: item.name || '' });
+            navigation.navigate('EditAccount', { address: item.id, name: item.name || '' });
           }}
-          avatarGroupStyle={{ width: 40 }}
         />
       );
     },
@@ -258,14 +212,12 @@ export const ExportAllAccount = () => {
         onPressBack={() => navigation.goBack()}
         renderItem={renderItem}
         loading={!isReady}
-        filterOptions={filterOptions}
-        filterFunction={filterFunction}
         isShowFilterBtn={true}
         afterListItem={renderFooter()}
         searchFunction={searchFunc}
         autoFocus={false}
         extraData={JSON.stringify(selectedValueMap)}
-        keyExtractor={item => item.address}
+        keyExtractor={item => item.id}
         estimatedItemSize={80}
       />
 

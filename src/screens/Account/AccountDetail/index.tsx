@@ -101,6 +101,10 @@ const Component = ({ accountProxy }: Props) => {
     return result;
   }, [showDerivationInfoTab, showDerivedAccounts]);
 
+  const onExportAccount = useCallback(() => {
+    navigation.navigate('AccountExport', { address: accountProxy.id });
+  }, [accountProxy.id, navigation]);
+
   const onSave = useCallback(
     (editName: string) => {
       clearTimeout(saveTimeOutRef.current);
@@ -165,13 +169,14 @@ const Component = ({ accountProxy }: Props) => {
         <Button
           block
           style={styles.noPaddingHorizontal}
+          onPress={onExportAccount}
           icon={<Icon phosphorIcon={Export} weight={'fill'} size={'lg'} />}
           type={'secondary'}>
           {'Export'}
         </Button>
       </>
     );
-  }, [accountProxy.accountType, styles.noPaddingHorizontal]);
+  }, [accountProxy.accountType, onExportAccount, styles.noPaddingHorizontal]);
 
   return (
     <SubScreenContainer

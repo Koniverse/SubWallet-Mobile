@@ -8,8 +8,6 @@ import { WebRunnerStatus } from 'providers/contexts';
 import { WebviewError, WebviewNotReadyError, WebviewResponseError } from '../errors/WebViewErrors';
 import EventEmitter from 'eventemitter3';
 import type {
-  AccountJson,
-  AuthorizeRequest,
   MessageTypes,
   MessageTypesWithNoSubscriptions,
   MessageTypesWithNullRequest,
@@ -18,93 +16,45 @@ import type {
   RequestSignatures,
   RequestTypes,
   ResponseAuthorizeList,
-  ResponseDeriveValidate,
-  ResponseJsonGetAccountInfo,
-  ResponseSigningIsLocked,
   ResponseTypes,
-  SeedLengths,
   SubscriptionMessageTypes,
 } from '@subwallet/extension-base/background/types';
 import {
-  AccountsWithCurrentAddress,
-  ActiveCronAndSubscriptionMap,
   AmountData,
   AmountDataWithId,
   AssetSettingUpdateReq,
-  BrowserConfirmationType,
-  ChainStakingMetadata,
   ConfirmationDefinitions,
-  ConfirmationsQueue,
   ConfirmationType,
-  CronReloadRequest,
-  CronServiceType,
-  CrowdloanJson,
   CurrencyType,
   CurrentAccountInfo,
-  KeyringState,
   LanguageType,
   MobileData,
-  NftCollection,
-  NftJson,
   NftTransactionRequest,
-  NominatorMetadata,
-  OptionInputAddress,
-  PriceJson,
-  RequestAccountBatchExportV2,
-  RequestAccountMeta,
   RequestApproveConnectWalletSession,
   RequestAuthorizationBlock,
   RequestAuthorizationPerSite,
-  RequestBondingSubmit,
   RequestCampaignBannerComplete,
   RequestChangeMasterPassword,
   RequestConnectWalletConnect,
-  RequestCronAndSubscriptionAction,
   RequestCrossChainTransfer,
-  RequestDeriveCreateMultiple,
   RequestDeriveCreateV3,
-  RequestDeriveValidateV2,
   RequestFreeBalance,
-  RequestGetDeriveAccounts,
-  RequestGetTransaction,
-  RequestInitCronAndSubscription,
   RequestKeyringExportMnemonic,
   RequestMaxTransferable,
   RequestMigratePassword,
-  RequestParseEvmContractInput,
   RequestParseTransactionSubstrate,
   RequestQrSignEvm,
   RequestQrSignSubstrate,
   RequestRejectConnectWalletSession,
   RequestResetWallet,
-  RequestSettingsType,
   RequestSigningApprovePasswordV2,
-  RequestStakePoolingBonding,
-  RequestStakePoolingUnbonding,
-  RequestSubscribeBalance,
-  RequestSubscribeBalancesVisibility,
-  RequestSubscribeCrowdloan,
-  RequestSubscribeNft,
-  RequestSubscribePrice,
-  RequestSubscribeStaking,
-  RequestSubscribeStakingReward,
   RequestTransfer,
-  RequestTuringCancelStakeCompound,
-  RequestTuringStakeCompound,
-  RequestUnbondingSubmit,
   RequestUnlockKeyring,
-  RequestYieldFastWithdrawal,
   ResolveAddressToDomainRequest,
   ResolveDomainRequest,
-  ResponseAccountExportPrivateKey,
-  ResponseAccountIsLocked,
-  ResponseAccountMeta,
   ResponseChangeMasterPassword,
-  ResponseDeriveValidateV2,
-  ResponseGetDeriveAccounts,
   ResponseKeyringExportMnemonic,
   ResponseMigratePassword,
-  ResponseParseEvmContractInput,
   ResponseParseTransactionSubstrate,
   ResponseQrParseRLP,
   ResponseQrSignEvm,
@@ -112,18 +62,12 @@ import {
   ResponseResetWallet,
   ResponseSubscribeHistory,
   ResponseUnlockKeyring,
-  StakingJson,
-  StakingRewardJson,
   StakingType,
-  SubscriptionServiceType,
-  ThemeNames,
   TransactionHistoryItem,
-  UiSettings,
   ValidateNetworkResponse,
   ValidatorInfo,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
-  BalanceJson,
   Message,
   NominationPoolInfo,
   OptimalYieldPathParams,
@@ -137,20 +81,12 @@ import {
   RequestYieldWithdrawal,
   TokenSpendingApprovalParams,
   ValidateYieldProcessParams,
-  YieldPoolInfo,
 } from '@subwallet/extension-base/types';
-import type { KeyringPair$Json } from '@subwallet/keyring/types';
-import type { KeyringAddress, KeyringPairs$Json } from '@subwallet/ui-keyring/types';
+import type { KeyringAddress } from '@subwallet/ui-keyring/types';
 import type { HexString } from '@polkadot/util/types';
-import type { KeypairType } from '@polkadot/util-crypto/types';
 import { MetadataDef } from '@subwallet/extension-inject/types';
+import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import {
-  SWTransactionResponse,
-  SWTransactionResult,
-} from '@subwallet/extension-base/services/transaction-service/types';
-import {
-  _ChainApiStatus,
-  _ChainState,
   _NetworkUpsertParams,
   _ValidateCustomAssetRequest,
   _ValidateCustomAssetResponse,
@@ -159,7 +95,6 @@ import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import { AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { _getKnownHashes } from 'utils/defaultChains';
 import { needBackup, triggerBackup } from 'utils/storage';
-import { WindowOpenParams } from '@subwallet/extension-base/background/types';
 import { RequestOptimalTransferProcess } from '@subwallet/extension-base/services/balance-service/helpers';
 import { CommonOptimalPath } from '@subwallet/extension-base/types/service-base';
 import { createRegistry } from '@subwallet/extension-base/utils';
@@ -222,10 +157,6 @@ export function getMessageType(message: string): MessageType {
   }
 
   return 'UNKNOWN';
-}
-
-export function getHandlerId(message: string, id?: string): string {
-  return `${getMessageType(message)}|${id ? id : getId()}`;
 }
 
 function isDappHandle(id: string): boolean {
@@ -478,65 +409,8 @@ export function subscribeMessage<TMessageType extends MessageTypesWithSubscripti
 
 // Controller messages
 
-export async function checkWebRunnerLives(): Promise<boolean> {
-  // @ts-ignore
-  return sendMessage('mobile(ping)', null);
-}
-
-export async function initCronAndSubscription(
-  request: RequestInitCronAndSubscription,
-): Promise<ActiveCronAndSubscriptionMap> {
-  return sendMessage('mobile(cronAndSubscription.init)', request);
-}
-
-export async function subscribeActiveCronAndSubscriptionServiceMap(
-  callback: (data: ActiveCronAndSubscriptionMap) => void,
-  handlerId?: string,
-): Promise<ActiveCronAndSubscriptionMap> {
-  return sendMessage('mobile(cronAndSubscription.activeService.subscribe)', null, callback, handlerId);
-}
-
 export * from './accounts';
 
-export async function startCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
-  return sendMessage('mobile(cronAndSubscription.start)', request);
-}
-
-export async function stopCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
-  return sendMessage('mobile(cronAndSubscription.stop)', request);
-}
-
-export async function restartCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
-  return sendMessage('mobile(cronAndSubscription.restart)', request);
-}
-
-export async function reloadCron(request: CronReloadRequest): Promise<boolean> {
-  return sendMessage('pri(cron.reload)', request);
-}
-
-export async function startCronServices(request: CronServiceType[]): Promise<void> {
-  return sendMessage('mobile(cron.start)', request);
-}
-
-export async function stopCronServices(request: CronServiceType[]): Promise<void> {
-  return sendMessage('mobile(cron.stop)', request);
-}
-
-export async function restartCronServices(request: CronServiceType[]): Promise<void> {
-  return sendMessage('mobile(cron.restart)', request);
-}
-
-export async function startSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
-  return sendMessage('mobile(subscription.start)', request);
-}
-
-export async function stopSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
-  return sendMessage('mobile(subscription.stop)', request);
-}
-
-export async function restartSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
-  return sendMessage('mobile(subscription.restart)', request);
-}
 export async function mobileBackup(): Promise<MobileData> {
   return sendMessage('mobile(storage.backup)');
 }
@@ -550,10 +424,6 @@ export async function editAccount(address: string, name: string): Promise<boolea
   return sendMessage('pri(accounts.edit)', { address, name });
 }
 
-export async function showAccount(address: string, isShowing: boolean): Promise<boolean> {
-  return sendMessage('pri(accounts.show)', { address, isShowing });
-}
-
 export async function saveCurrentAccountAddress(data: RequestCurrentAccountAddress): Promise<CurrentAccountInfo> {
   return sendMessage('pri(accounts.saveCurrentProxy)', data);
 }
@@ -562,74 +432,16 @@ export async function toggleBalancesVisibility(): Promise<boolean> {
   return sendMessage('pri(settings.changeBalancesVisibility)', null);
 }
 
-export async function saveAccountAllLogo(
-  accountAllLogo: string,
-  callback: (data: RequestSettingsType) => void,
-): Promise<boolean> {
-  return sendMessage('pri(settings.saveAccountAllLogo)', accountAllLogo, callback);
-}
-
-export async function saveBrowserConfirmationType(type: BrowserConfirmationType): Promise<boolean> {
-  return sendMessage('pri(settings.saveBrowserConfirmationType)', type);
-}
-
-export async function saveTheme(theme: ThemeNames): Promise<boolean> {
-  return sendMessage('pri(settings.saveTheme)', theme);
-}
-
 export async function saveLanguage(lang: LanguageType): Promise<boolean> {
   return sendMessage('pri(settings.saveLanguage)', { language: lang });
-}
-
-export async function subscribeSettings(
-  data: RequestSubscribeBalancesVisibility,
-  callback: (data: UiSettings) => void,
-): Promise<UiSettings> {
-  return sendMessage('pri(settings.subscribe)', data, callback);
 }
 
 export async function savePriceCurrency(currency: CurrencyType): Promise<boolean> {
   return sendMessage('pri(settings.savePriceCurrency)', { currency });
 }
 
-export async function tieAccount(address: string, genesisHash: string | null): Promise<boolean> {
-  return sendMessage('pri(accounts.tie)', { address, genesisHash });
-}
-
-export async function exportAccount(address: string, password: string): Promise<{ exportedJson: KeyringPair$Json }> {
-  return sendMessage('pri(accounts.export)', { address, password });
-}
-
-export async function exportAccountPrivateKey(
-  address: string,
-  password: string,
-): Promise<ResponseAccountExportPrivateKey> {
-  return sendMessage('pri(accounts.exportPrivateKey)', { address, password });
-}
-
-export async function exportAccounts(
-  addresses: string[],
-  password: string,
-): Promise<{ exportedJson: KeyringPairs$Json }> {
-  return sendMessage('pri(accounts.batchExport)', { addresses, password });
-}
-
-export async function exportAccountsV2(
-  request: RequestAccountBatchExportV2,
-): Promise<{ exportedJson: KeyringPairs$Json }> {
-  return sendMessage('pri(accounts.batchExportV2)', request);
-}
-
-export async function validateAccount(address: string, password: string): Promise<boolean> {
-  return sendMessage('pri(accounts.validate)', { address, password });
-}
-
 export async function forgetAccount(address: string, lockAfter = false): Promise<boolean> {
   return sendMessage('pri(accounts.forget)', { address, lockAfter });
-}
-
-export async function approveAuthRequest(id: string): Promise<boolean> {
-  return sendMessage('pri(authorize.approve)', { id });
 }
 
 export async function approveAuthRequestV2(id: string, accounts: string[]): Promise<boolean> {
@@ -642,10 +454,6 @@ export async function approveMetaRequest(id: string): Promise<boolean> {
 
 export async function cancelSignRequest(id: string): Promise<boolean> {
   return sendMessage('pri(signing.cancel)', { id });
-}
-
-export async function isSignLocked(id: string): Promise<ResponseSigningIsLocked> {
-  return sendMessage('pri(signing.isLocked)', { id });
 }
 
 export async function approveSignPassword(id: string, savePass: boolean, password?: string): Promise<boolean> {
@@ -664,132 +472,6 @@ export async function approveSignSignature(id: string, signature: HexString): Pr
   return sendMessage('pri(signing.approve.signature)', { id, signature });
 }
 
-export async function createAccountExternal(name: string, address: string, genesisHash: string): Promise<boolean> {
-  return sendMessage('pri(accounts.create.external)', { address, genesisHash, name });
-}
-
-export async function createAccountHardware(
-  address: string,
-  hardwareType: string,
-  accountIndex: number,
-  addressOffset: number,
-  name: string,
-  genesisHash: string,
-): Promise<boolean> {
-  return sendMessage('pri(accounts.create.hardware)', {
-    accountIndex,
-    address,
-    addressOffset,
-    genesisHash,
-    hardwareType,
-    name,
-  });
-}
-
-export async function createAccountSuri(
-  name: string,
-  password: string,
-  suri: string,
-  type?: KeypairType,
-  genesisHash?: string,
-): Promise<boolean> {
-  return sendMessage('pri(accounts.create.suri)', { genesisHash, name, password, suri, type });
-}
-
-export async function createSeed(
-  length?: SeedLengths,
-  seed?: string,
-  type?: KeypairType,
-): Promise<{ address: string; seed: string }> {
-  return sendMessage('pri(seed.create)', { length, seed, type });
-}
-
-export async function getAllMetadata(): Promise<MetadataDef[]> {
-  return sendMessage('pri(metadata.list)');
-}
-
-// export async function getMetadata(genesisHash?: string | null, isPartial = false): Promise<Chain | null> {
-//   if (!genesisHash) {
-//     return null;
-//   }
-//
-//   // const chains = await getNetworkMap();
-//   const parsedChains = _getKnownHashes({});
-//
-//   let request = getSavedMeta(genesisHash);
-//
-//   if (!request) {
-//     request = sendMessage('pri(metadata.get)', genesisHash || null);
-//     setSavedMeta(genesisHash, request);
-//   }
-//
-//   const def = await request;
-//
-//   if (def) {
-//     return metadataExpand(def, isPartial);
-//   } else if (isPartial) {
-//     const chain = parsedChains.find(chain => chain.genesisHash === genesisHash);
-//
-//     if (chain) {
-//       return metadataExpand(
-//         {
-//           ...chain,
-//           specVersion: 0,
-//           tokenDecimals: 15,
-//           tokenSymbol: 'Unit',
-//           types: {},
-//         },
-//         isPartial,
-//       );
-//     }
-//   }
-//
-//   return null;
-// }
-//
-// export async function getChainMetadata(genesisHash?: string | null): Promise<Chain | null> {
-//   if (!genesisHash) {
-//     return null;
-//   }
-//
-//   // const chains = await getNetworkMap();
-//   const parsedChains = _getKnownNetworks({});
-//
-//   let request = getSavedMeta(genesisHash);
-//
-//   if (!request) {
-//     request = sendMessage('pri(metadata.get)', genesisHash || null);
-//     setSavedMeta(genesisHash, request);
-//   }
-//
-//   const def = await request;
-//
-//   if (def) {
-//     return metadataExpand(def, false);
-//   } else {
-//     const chain = parsedChains.find(chain => chain.genesisHash === genesisHash);
-//
-//     if (chain) {
-//       return metadataExpand(
-//         {
-//           specVersion: 0,
-//           tokenDecimals: 15,
-//           tokenSymbol: 'Unit',
-//           types: {},
-//           ...chain,
-//         },
-//         false,
-//       );
-//     }
-//   }
-//
-//   return null;
-// }
-
-export async function rejectAuthRequest(id: string): Promise<boolean> {
-  return sendMessage('pri(authorize.reject)', { id });
-}
-
 export async function rejectAuthRequestV2(id: string): Promise<boolean> {
   return sendMessage('pri(authorize.rejectV2)', { id });
 }
@@ -802,20 +484,6 @@ export async function rejectMetaRequest(id: string): Promise<boolean> {
   return sendMessage('pri(metadata.reject)', { id });
 }
 
-export async function subscribeAccounts(cb: (accounts: AccountJson[]) => void): Promise<AccountJson[]> {
-  return sendMessage('pri(accounts.subscribe)', {}, cb);
-}
-
-export async function subscribeAccountsWithCurrentAddress(
-  cb: (data: AccountsWithCurrentAddress) => void,
-): Promise<AccountsWithCurrentAddress> {
-  return sendMessage('pri(accounts.subscribeWithCurrentAddress)', {}, cb);
-}
-
-export async function subscribeAccountsInputAddress(cb: (data: OptionInputAddress) => void): Promise<string> {
-  return sendMessage('pri(accounts.subscribeAccountsInputAddress)', {}, cb);
-}
-
 export async function saveRecentAccountId(accountId: string, chain?: string): Promise<KeyringAddress> {
   return sendMessage('pri(accounts.saveRecent)', { accountId, chain });
 }
@@ -826,24 +494,6 @@ export async function editContactAddress(address: string, name: string): Promise
 
 export async function removeContactAddress(address: string): Promise<boolean> {
   return sendMessage('pri(accounts.deleteContact)', { address: address });
-}
-
-export async function subscribeAuthorizeRequests(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
-  return sendMessage('pri(authorize.requests)', null, cb);
-}
-
-export async function subscribeAuthorizeRequestsV2(
-  cb: (accounts: AuthorizeRequest[]) => void,
-): Promise<AuthorizeRequest[]> {
-  return sendMessage('pri(authorize.requestsV2)', null, cb);
-}
-
-export async function getAuthList(): Promise<ResponseAuthorizeList> {
-  return sendMessage('pri(authorize.list)');
-}
-
-export async function getAuthListV2(): Promise<ResponseAuthorizeList> {
-  return sendMessage('pri(authorize.listV2)');
 }
 
 export async function toggleAuthorization(url: string): Promise<ResponseAuthorizeList> {
@@ -890,141 +540,7 @@ export async function forgetAllSite(callback: (data: AuthUrls) => void): Promise
   return sendMessage('pri(authorize.forgetAllSite)', null, callback);
 }
 
-export async function validateDerivationPath(
-  parentAddress: string,
-  suri: string,
-  parentPassword: string,
-): Promise<ResponseDeriveValidate> {
-  return sendMessage('pri(derivation.validate)', { parentAddress, parentPassword, suri });
-}
-
-export async function deriveAccount(
-  parentAddress: string,
-  suri: string,
-  parentPassword: string,
-  name: string,
-  password: string,
-  genesisHash: string | null,
-): Promise<boolean> {
-  return sendMessage('pri(derivation.create)', { genesisHash, name, parentAddress, parentPassword, password, suri });
-}
-
-export async function deriveAccountV2(
-  parentAddress: string,
-  suri: string,
-  parentPassword: string,
-  name: string,
-  password: string,
-  genesisHash: string | null,
-  isAllowed: boolean,
-): Promise<boolean> {
-  return sendMessage('pri(derivation.createV2)', { genesisHash, name, parentAddress, suri, isAllowed });
-}
-
-export async function windowOpen(params: WindowOpenParams): Promise<boolean> {
-  return sendMessage('pri(window.open)', params);
-}
-
-export async function jsonGetAccountInfo(json: KeyringPair$Json): Promise<ResponseJsonGetAccountInfo> {
-  return sendMessage('pri(json.account.info)', json);
-}
-
-export async function jsonRestore(file: KeyringPair$Json, password: string, address: string): Promise<void> {
-  return sendMessage('pri(json.restore)', { file, password, address });
-}
-
-export async function batchRestore(file: KeyringPairs$Json, password: string, address: string): Promise<void> {
-  return sendMessage('pri(json.batchRestore)', { file, password, address });
-}
-
-export async function setNotification(notification: string): Promise<boolean> {
-  return sendMessage('pri(settings.notification)', notification);
-}
-
-export async function getPrice(): Promise<PriceJson> {
-  return sendMessage('pri(price.getPrice)', null);
-}
-
-export async function subscribePrice(
-  request: RequestSubscribePrice,
-  callback: (priceData: PriceJson) => void,
-): Promise<PriceJson> {
-  return sendMessage('pri(price.getSubscription)', request, callback);
-}
-
-export async function getBalance(): Promise<BalanceJson> {
-  return sendMessage('pri(balance.getBalance)', null);
-}
-
-export async function subscribeBalance(
-  request: RequestSubscribeBalance,
-  callback: (balanceData: BalanceJson) => void,
-): Promise<BalanceJson> {
-  return sendMessage('pri(balance.getSubscription)', request, callback);
-}
-
-export async function getCrowdloan(): Promise<CrowdloanJson> {
-  return sendMessage('pri(crowdloan.getCrowdloan)', null);
-}
-
-export async function subscribeCrowdloan(
-  request: RequestSubscribeCrowdloan,
-  callback: (crowdloanData: CrowdloanJson) => void,
-): Promise<CrowdloanJson> {
-  return sendMessage('pri(crowdloan.getSubscription)', request, callback);
-}
-
 // TODO: remove, deprecated
-export async function subscribeAssetRegistry(
-  callback: (map: Record<string, _ChainAsset>) => void,
-): Promise<Record<string, _ChainAsset>> {
-  return sendMessage('pri(chainService.subscribeAssetRegistry)', null, callback);
-}
-
-export async function subscribeHistory(
-  callback: (historyMap: TransactionHistoryItem[]) => void,
-): Promise<TransactionHistoryItem[]> {
-  return sendMessage('pri(transaction.history.getSubscription)', null, callback);
-}
-
-export async function getNft(account: string): Promise<NftJson> {
-  // @ts-ignore
-  return sendMessage('pri(nft.getNft)', account);
-}
-
-export async function subscribeNft(
-  request: RequestSubscribeNft,
-  callback: (nftData: NftJson) => void,
-): Promise<NftJson> {
-  return sendMessage('pri(nft.getSubscription)', request, callback);
-}
-
-export async function subscribeNftCollection(callback: (data: NftCollection[]) => void): Promise<NftCollection[]> {
-  return sendMessage('pri(nftCollection.getSubscription)', null, callback);
-}
-
-export async function getStaking(account: string): Promise<StakingJson> {
-  // @ts-ignore
-  return sendMessage('pri(staking.getStaking)', account);
-}
-
-export async function subscribeStaking(
-  request: RequestSubscribeStaking,
-  callback: (stakingData: StakingJson) => void,
-): Promise<StakingJson> {
-  return sendMessage('pri(staking.getSubscription)', request, callback);
-}
-
-export async function getStakingReward(): Promise<StakingRewardJson> {
-  return sendMessage('pri(stakingReward.getStakingReward)');
-}
-
-export async function subscribeStakingReward(
-  request: RequestSubscribeStakingReward,
-  callback: (stakingRewardData: StakingRewardJson) => void,
-): Promise<StakingRewardJson> {
-  return sendMessage('pri(stakingReward.getSubscription)', request, callback);
-}
 
 export async function makeTransfer(request: RequestTransfer): Promise<SWTransactionResponse> {
   return sendMessage('pri(accounts.transfer)', request);
@@ -1039,25 +555,6 @@ export async function evmNftSubmitTransaction(request: NftTransactionRequest): P
 }
 
 // ChainService -------------------------------------------------------------------------------------
-
-export async function subscribeChainInfoMap(
-  callback: (data: Record<string, _ChainInfo>) => void,
-): Promise<Record<string, _ChainInfo>> {
-  return sendMessage('pri(chainService.subscribeChainInfoMap)', null, callback);
-}
-
-export async function subscribeChainStateMap(
-  callback: (data: Record<string, _ChainState>) => void,
-): Promise<Record<string, _ChainState>> {
-  return sendMessage('pri(chainService.subscribeChainStateMap)', null, callback);
-}
-
-export async function subscribeChainStatusMap(
-  callback: (data: Record<string, _ChainApiStatus>) => void,
-): Promise<Record<string, _ChainApiStatus>> {
-  return sendMessage('pri(chainService.subscribeChainStatusMap)', null, callback);
-}
-
 export async function removeChain(networkKey: string): Promise<boolean> {
   return sendMessage('pri(chainService.removeChain)', networkKey);
 }
@@ -1078,20 +575,8 @@ export async function enableChain(chainSlug: string, enableTokens = true): Promi
   return sendMessage('pri(chainService.enableChain)', { chainSlug, enableTokens });
 }
 
-export async function enableChains(chainSlugs: string[], enableTokens = true): Promise<boolean> {
-  return sendMessage('pri(chainService.enableChains)', { chainSlugs, enableTokens });
-}
-
-export async function disableChains(targetKeys: string[]): Promise<boolean> {
-  return sendMessage('pri(chainService.disableChains)', targetKeys);
-}
-
 export async function upsertChain(data: _NetworkUpsertParams): Promise<boolean> {
   return sendMessage('pri(chainService.upsertChain)', data);
-}
-
-export async function getSupportedContractTypes(): Promise<string[]> {
-  return sendMessage('pri(chainService.getSupportedContractTypes)', null);
 }
 
 export async function upsertCustomToken(data: _ChainAsset): Promise<boolean> {
@@ -1106,10 +591,6 @@ export async function validateCustomToken(data: _ValidateCustomAssetRequest): Pr
   return sendMessage('pri(chainService.validateCustomAsset)', data);
 }
 
-export async function resetDefaultNetwork(): Promise<boolean> {
-  return sendMessage('pri(chainService.resetDefaultChains)', null);
-}
-
 export async function updateAssetSetting(data: AssetSettingUpdateReq): Promise<boolean> {
   return sendMessage('pri(assetSetting.update)', data);
 }
@@ -1121,10 +602,6 @@ export async function validateCustomChain(
   existedChainSlug?: string,
 ): Promise<ValidateNetworkResponse> {
   return sendMessage('pri(chainService.validateCustomChain)', { provider, existedChainSlug });
-}
-
-export async function disableAllNetwork(): Promise<boolean> {
-  return sendMessage('pri(chainService.disableAllChains)', null);
 }
 
 export async function cancelSubscription(request: string): Promise<boolean> {
@@ -1158,16 +635,7 @@ export async function substrateNftSubmitTransaction(request: NftTransactionReque
   return sendMessage('pri(substrateNft.submitTransaction)', request);
 }
 
-export async function recoverDotSamaApi(request: string): Promise<boolean> {
-  return sendMessage('pri(chainService.recoverSubstrateApi)', request);
-}
-
 // Sign Qr
-
-export async function accountIsLocked(address: string): Promise<ResponseAccountIsLocked> {
-  return sendMessage('pri(account.isLocked)', { address });
-}
-
 export async function qrSignSubstrate(request: RequestQrSignSubstrate): Promise<ResponseQrSignSubstrate> {
   return sendMessage('pri(qr.sign.substrate)', request);
 }
@@ -1186,16 +654,6 @@ export async function parseEVMTransaction(data: string): Promise<ResponseQrParse
   return sendMessage('pri(qr.transaction.parse.evm)', { data });
 }
 
-export async function getAccountMeta(request: RequestAccountMeta): Promise<ResponseAccountMeta> {
-  return sendMessage('pri(accounts.get.meta)', request);
-}
-
-export async function subscribeConfirmations(
-  callback: (data: ConfirmationsQueue) => void,
-): Promise<ConfirmationsQueue> {
-  return sendMessage('pri(confirmations.subscribe)', null, callback);
-}
-
 export async function completeConfirmation<CT extends ConfirmationType>(
   type: CT,
   payload: ConfirmationDefinitions[CT][1],
@@ -1211,61 +669,7 @@ export async function getBondingOptions(networkKey: string, type: StakingType): 
   return sendMessage('pri(bonding.getBondingOptions)', { chain: networkKey, type });
 }
 
-export async function subscribeChainStakingMetadata(
-  callback: (data: ChainStakingMetadata[]) => void,
-): Promise<ChainStakingMetadata[]> {
-  return sendMessage('pri(bonding.subscribeChainStakingMetadata)', null, callback);
-}
-
-export async function subscribeStakingNominatorMetadata(
-  callback: (data: NominatorMetadata[]) => void,
-): Promise<NominatorMetadata[]> {
-  return sendMessage('pri(bonding.subscribeNominatorMetadata)', null, callback);
-}
-
-export async function submitPoolUnbonding(request: RequestStakePoolingUnbonding): Promise<SWTransactionResponse> {
-  return sendMessage('pri(bonding.nominationPool.submitUnbonding)', request);
-}
-
-export async function submitBonding(request: RequestBondingSubmit): Promise<SWTransactionResponse> {
-  return sendMessage('pri(bonding.submitBondingTransaction)', request);
-}
-
-export async function submitPoolBonding(request: RequestStakePoolingBonding): Promise<SWTransactionResponse> {
-  return sendMessage('pri(bonding.nominationPool.submitBonding)', request);
-}
-
-export async function submitUnbonding(request: RequestUnbondingSubmit): Promise<SWTransactionResponse> {
-  return sendMessage('pri(unbonding.submitTransaction)', request);
-}
-
-export async function parseEVMTransactionInput(
-  request: RequestParseEvmContractInput,
-): Promise<ResponseParseEvmContractInput> {
-  return sendMessage('pri(evm.transaction.parse.input)', request);
-}
-
-export async function subscribeAuthUrl(callback: (data: AuthUrls) => void): Promise<AuthUrls> {
-  return sendMessage('pri(authorize.subscribe)', null, callback);
-}
-
-export async function submitTuringStakeCompounding(
-  request: RequestTuringStakeCompound,
-): Promise<SWTransactionResponse> {
-  return sendMessage('pri(staking.submitTuringCompound)', request);
-}
-
-export async function submitTuringCancelStakeCompounding(
-  request: RequestTuringCancelStakeCompound,
-): Promise<SWTransactionResponse> {
-  return sendMessage('pri(staking.submitTuringCancelCompound)', request);
-}
-
 // Keyring state
-export async function keyringStateSubscribe(cb: (value: KeyringState) => void): Promise<KeyringState> {
-  return sendMessage('pri(keyring.subscribe)', null, cb);
-}
-
 export async function keyringChangeMasterPassword(
   request: RequestChangeMasterPassword,
 ): Promise<ResponseChangeMasterPassword> {
@@ -1295,24 +699,8 @@ export async function resetWallet(request: RequestResetWallet): Promise<Response
 }
 
 /// Derive
-export async function validateDerivePathV2(request: RequestDeriveValidateV2): Promise<ResponseDeriveValidateV2> {
-  return sendMessage('pri(derivation.validateV2)', request);
-}
-
-export async function getListDeriveAccounts(request: RequestGetDeriveAccounts): Promise<ResponseGetDeriveAccounts> {
-  return sendMessage('pri(derivation.getList)', request);
-}
-
-export async function deriveMultiple(request: RequestDeriveCreateMultiple): Promise<boolean> {
-  return sendMessage('pri(derivation.create.multiple)', request);
-}
-
 export async function deriveAccountV3(request: RequestDeriveCreateV3): Promise<boolean> {
   return sendMessage('pri(derivation.createV3)', request);
-}
-
-export async function getTransaction(request: RequestGetTransaction): Promise<SWTransactionResult> {
-  return sendMessage('pri(transactions.getOne)', request);
 }
 
 // Wallet Connect
@@ -1339,12 +727,6 @@ export async function resolveDomainToAddress(request: ResolveDomainRequest) {
 
 export async function resolveAddressToDomain(request: ResolveAddressToDomainRequest) {
   return sendMessage('pri(accounts.resolveAddressToDomain)', request);
-}
-
-export async function subscribeTransactions(
-  callback: (rs: Record<string, SWTransactionResult>) => void,
-): Promise<Record<string, SWTransactionResult>> {
-  return sendMessage('pri(transactions.subscribe)', null, callback);
 }
 
 export async function getMetadata(genesisHash?: string | null, isPartial = false): Promise<Chain | null> {
@@ -1422,10 +804,6 @@ export const getMetadataHash = async (chain: string) => {
   return sendMessage('pri(metadata.hash)', { chain });
 };
 
-export const shortenMetadata = async (chain: string, txBlob: string) => {
-  return sendMessage('pri(metadata.transaction.shorten)', { chain, txBlob });
-};
-
 export async function completeBannerCampaign(request: RequestCampaignBannerComplete): Promise<boolean> {
   return sendMessage('pri(campaign.banner.complete)', request);
 }
@@ -1456,14 +834,6 @@ export async function submitJoinYieldPool(data: RequestYieldStepSubmit): Promise
   return sendMessage('pri(yield.join.handleStep)', data);
 }
 
-export async function getYieldNativeStakingValidators(poolInfo: YieldPoolInfo): Promise<ValidatorInfo[]> {
-  return sendMessage('pri(yield.getNativeStakingValidators)', poolInfo);
-}
-
-export async function getYieldNominationPools(poolInfo: YieldPoolInfo): Promise<NominationPoolInfo[]> {
-  return sendMessage('pri(yield.getStakingNominationPools)', poolInfo);
-}
-
 export async function validateYieldProcess(data: ValidateYieldProcessParams): Promise<TransactionError[]> {
   return sendMessage('pri(yield.join.validateProcess)', data);
 }
@@ -1482,14 +852,6 @@ export async function yieldSubmitStakingCancelWithdrawal(data: RequestStakeCance
 
 export async function yieldSubmitStakingClaimReward(data: RequestStakeClaimReward) {
   return sendMessage('pri(yield.claimReward.submit)', data);
-}
-
-export async function yieldSubmitNominationPoolUnstaking(data: RequestStakePoolingUnbonding) {
-  return sendMessage('pri(yield.nominationPool.submitUnstaking)', data);
-}
-
-export async function yieldSubmitRedeem(data: RequestYieldFastWithdrawal) {
-  return sendMessage('pri(yield.submitRedeem)', data);
 }
 
 /* Earning */

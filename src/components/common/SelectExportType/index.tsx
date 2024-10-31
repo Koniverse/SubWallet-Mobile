@@ -1,5 +1,3 @@
-import { isEthereumAddress } from '@polkadot/util-crypto';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { BackgroundIcon } from 'components/design-system-ui';
 import React, { useCallback, useMemo } from 'react';
 import { Text, View, ViewStyle } from 'react-native';
@@ -8,7 +6,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import SelectExportTypeStyles from './style';
 import { FileJs, IconProps, Leaf, QrCode, Wallet } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
-import AlertBox from 'components/design-system-ui/alert-box/simple';
+import { AccountActions, AccountProxy } from '@subwallet/extension-base/types';
 
 export enum ExportType {
   JSON_FILE = 'json-file',
@@ -30,14 +28,14 @@ interface ExportTypeItem {
 interface SelectAccountTypeProps {
   selectedItems: ExportType[];
   setSelectedItems: React.Dispatch<React.SetStateAction<ExportType[]>>;
-  account: AccountJson | null;
+  accountProxy: AccountProxy | null;
   title?: string;
   styles?: ViewStyle;
   loading: boolean;
 }
 
 export const SelectExportType = (props: SelectAccountTypeProps) => {
-  const { title, selectedItems, setSelectedItems, styles, account, loading } = props;
+  const { title, selectedItems, setSelectedItems, styles, accountProxy, loading } = props;
   const theme = useSubWalletTheme().swThemes;
   const _style = SelectExportTypeStyles(theme);
 
@@ -67,7 +65,7 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
         label: i18n.exportAccount.exportSeedPhrase,
         onClick: onClickItem(ExportType.SEED_PHRASE),
         bgColor: theme['orange-7'],
-        disable: !account || account.isExternal || !account.isMasterAccount,
+        disable: !accountProxy || !accountProxy.accountActions.includes(AccountActions.EXPORT_MNEMONIC),
         hidden: false,
       },
       {
@@ -76,7 +74,7 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
         label: i18n.exportAccount.exportJsonFile,
         onClick: onClickItem(ExportType.JSON_FILE),
         bgColor: theme['geekblue-7'],
-        disable: !account || !!account.isExternal,
+        disable: !accountProxy || !accountProxy.accountActions.includes(AccountActions.EXPORT_JSON),
         hidden: false,
       },
       {
@@ -85,8 +83,8 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
         label: i18n.exportAccount.exportPrivateKey,
         onClick: onClickItem(ExportType.PRIVATE_KEY),
         bgColor: theme['magenta-7'],
-        disable: !account || account.isExternal || !isEthereumAddress(account.address),
-        hidden: !isEthereumAddress(account?.address || ''),
+        disable: !accountProxy || !accountProxy.accountActions.includes(AccountActions.EXPORT_PRIVATE_KEY),
+        hidden: false,
       },
       {
         icon: QrCode,
@@ -94,36 +92,24 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
         label: i18n.exportAccount.exportQRCode,
         onClick: onClickItem(ExportType.QR_CODE),
         bgColor: theme['green-7'],
-        disable: !account || !!account?.isExternal,
+        disable: !accountProxy || !accountProxy.accountActions.includes(AccountActions.EXPORT_QR),
         hidden: false,
       },
     ],
-    [onClickItem, theme, account],
+    [accountProxy, onClickItem, theme],
   );
-
-  const accountType = useMemo(() => {
-    if (account?.isExternal) {
-      if (account?.isReadOnly) {
-        return 'watch-only';
-      } else if (account?.isHardware && account?.hardwareType === 'ledger') {
-        return 'ledger';
-      } else {
-        return 'QR-signer';
-      }
-    }
-  }, [account]);
 
   return (
     <View style={[styles]}>
-      {!!account?.isExternal && (
-        <View style={{ paddingBottom: theme.paddingSM }}>
-          <AlertBox
-            title={i18n.warningTitle.payAttention}
-            description={`Your account is ${accountType} account, which doesn't support export and back up. Change to another account to use this feature`}
-            type="warning"
-          />
-        </View>
-      )}
+      {/*{!!account?.isExternal && (*/}
+      {/*  <View style={{ paddingBottom: theme.paddingSM }}>*/}
+      {/*    <AlertBox*/}
+      {/*      title={i18n.warningTitle.payAttention}*/}
+      {/*      description={`Your account is ${accountProxy?.accountType} account, which doesn't support export and back up. Change to another account to use this feature`}*/}
+      {/*      type="warning"*/}
+      {/*    />*/}
+      {/*  </View>*/}
+      {/*)}*/}
       {title && (
         <View>
           <Text style={_style.titleStyle}>{title}</Text>

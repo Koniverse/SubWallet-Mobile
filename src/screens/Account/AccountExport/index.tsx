@@ -12,13 +12,14 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import { ExportType, SelectExportType } from 'components/common/SelectExportType';
 import { Button, Icon, QRCode, SelectItem, Typography } from 'components/design-system-ui';
 import PasswordModal from 'components/Modal/PasswordModal';
-import { exportAccount, exportAccountPrivateKey, keyringExportMnemonic } from 'messaging/index';
-import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { KeyringPair$Json } from '@subwallet/keyring/types';
+import { exportAccountBatch, exportAccountMnemonic, exportAccountPrivateKey } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AddressBook, CheckCircle, CopySimple, DownloadSimple, X } from 'phosphor-react-native';
 import createStyle from './styles';
 import { toShort } from 'utils/index';
+import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
+import { AccountActions } from '@subwallet/extension-base/types';
+import { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 
 const ViewStep = {
   SELECT_TYPES: 1,
@@ -47,7 +48,7 @@ export const AccountExport = ({
   const [privateKey, setPrivateKey] = useState<string>('');
   const [publicKey, setPublicKey] = useState<string>('');
   const [seedPhrase, setSeedPhrase] = useState<string>('');
-  const [jsonData, setJsonData] = useState<null | KeyringPair$Json>(null);
+  const [jsonData, setJsonData] = useState<null | KeyringPairs$Json>(null);
   const titleMap: Record<ExportType, string> = useMemo(
     () => ({
       [ExportType.JSON_FILE]: i18n.header.successful,
@@ -61,20 +62,20 @@ export const AccountExport = ({
   const exportSingle = selectedTypes.length <= 1;
 
   useHandlerHardwareBackPress(isBusy);
-  const account = useGetAccountByAddress(address);
+  const accountProxy = useGetAccountProxyById(address);
 
   const qrData = useMemo((): string => {
     const prefix = 'secret';
     const result: string[] = [prefix, privateKey || '', publicKey];
 
-    if (account?.name) {
-      result.push(account.name);
+    if (accountProxy?.name) {
+      result.push(accountProxy.name);
     }
 
     return result.join(':');
-  }, [account?.name, publicKey, privateKey]);
+  }, [accountProxy?.name, publicKey, privateKey]);
 
-  const onExportJson = useCallback((_jsonData: KeyringPair$Json, _address: string): (() => void) => {
+  const onExportJson = useCallback((_jsonData: KeyringPairs$Json, _address: string): (() => void) => {
     return () => {
       if (_jsonData) {
         Share.share({ title: 'Account Json', message: JSON.stringify(_jsonData) });
@@ -84,11 +85,11 @@ export const AccountExport = ({
 
   const onPressSubmit = useCallback(
     (password: string) => {
-      if (!selectedTypes.length || !account) {
+      if (!selectedTypes.length || !accountProxy) {
         return;
       }
 
-      const _address = account.address;
+      const _address = accountProxy.id;
 
       if (!_address) {
         return;
@@ -110,7 +111,12 @@ export const AccountExport = ({
             }
           };
 
-          if (selectedTypes.includes(ExportType.PRIVATE_KEY) || selectedTypes.includes(ExportType.QR_CODE)) {
+          if (
+            (selectedTypes.includes(ExportType.PRIVATE_KEY) &&
+              accountProxy.accountActions.includes(AccountActions.EXPORT_PRIVATE_KEY)) ||
+            (selectedTypes.includes(ExportType.QR_CODE) &&
+              accountProxy.accountActions.includes(AccountActions.EXPORT_QR))
+          ) {
             exportAccountPrivateKey(_address, password)
               .then(res => {
                 setPrivateKey(res.privateKey);
@@ -125,8 +131,11 @@ export const AccountExport = ({
             result.privateKey = true;
           }
 
-          if (selectedTypes.includes(ExportType.SEED_PHRASE) && account?.isMasterAccount) {
-            keyringExportMnemonic({ address, password: password })
+          if (
+            selectedTypes.includes(ExportType.SEED_PHRASE) &&
+            accountProxy.accountActions.includes(AccountActions.EXPORT_MNEMONIC)
+          ) {
+            exportAccountMnemonic({ proxyId: address, password: password })
               .then(res => {
                 setSeedPhrase(res.result);
                 result.seedPhrase = true;
@@ -140,11 +149,15 @@ export const AccountExport = ({
           }
 
           if (selectedTypes.includes(ExportType.JSON_FILE)) {
-            exportAccount(_address, password)
+            exportAccountBatch({ proxyIds: [accountProxy.id], password: password })
               .then(res => {
                 setJsonData(res.exportedJson);
                 result.jsonFile = true;
                 checkDone();
+
+                if (exportSingle) {
+                  onExportJson(res.exportedJson, accountProxy.name)();
+                }
               })
               .catch((e: Error) => {
                 reject(new Error(e.message));
@@ -165,7 +178,7 @@ export const AccountExport = ({
           });
       }, 500);
     },
-    [account, address, selectedTypes],
+    [accountProxy, address, exportSingle, onExportJson, selectedTypes],
   );
 
   const copyPrivateKey = useCopyClipboard(privateKey);
@@ -186,7 +199,7 @@ export const AccountExport = ({
     }
   }, [currentViewStep, exportSingle, selectedTypes, titleMap]);
 
-  if (!account) {
+  if (!accountProxy || accountProxy.accounts.length === 0) {
     return null;
   }
 
@@ -206,7 +219,7 @@ export const AccountExport = ({
             <SelectExportType
               selectedItems={selectedTypes}
               setSelectedItems={setSelectedTypes}
-              account={account}
+              accountProxy={accountProxy}
               loading={isBusy}
             />
           )}
