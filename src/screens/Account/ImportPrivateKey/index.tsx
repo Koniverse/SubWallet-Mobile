@@ -15,6 +15,7 @@ import { FileArrowDown, X } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStyle from './styles';
 import InputText from 'components/Input/InputText';
+import { KeypairType } from '@subwallet/keyring/types';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.privateKey;
@@ -82,7 +83,7 @@ export const ImportPrivateKey = () => {
     createAccountSuriV2({
       name: formState.data.accountName,
       suri: formState.data.privateKey,
-      types: formState.data.type,
+      type: formState.data.type as KeypairType,
       isAllowed: true,
     })
       .then(() => {

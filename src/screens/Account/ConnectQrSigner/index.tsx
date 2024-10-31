@@ -10,7 +10,6 @@ import { SCAN_TYPE } from 'constants/qr';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useModalScanner from 'hooks/qr/useModalScanner';
 import useGoHome from 'hooks/screen/useGoHome';
-import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { createAccountExternalV2 } from 'messaging/index';
 import { QrCode, X } from 'phosphor-react-native';
@@ -22,6 +21,11 @@ import { RootStackParamList } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
 import createStyle from './styles';
 import i18n from 'utils/i18n/i18n';
+import { isSameAddress } from '@subwallet/extension-base/utils';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { AccountNameModal } from 'components/Modal/AccountNameModal';
+import { AccountProxyType } from '@subwallet/extension-base/types';
 
 interface Props {
   title: string;
@@ -39,13 +43,15 @@ const imageProps: Omit<SWImageProps, 'src'> = {
 
 const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   const { description, logoUrl, subTitle, title, instructionUrl } = props;
-
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
-
+  const [scannedAccount, setScannedAccount] = useState<QrAccount>();
+  const [accountNameModalVisible, setAccountNameModalVisible] = useState<boolean>(false);
   const styles = useMemo(() => createStyle(theme), [theme]);
   const goHome = useGoHome();
+  console.log('accountNameModalVisible', accountNameModalVisible);
 
   const onComplete = useCallback(() => {
     navigation.reset({
@@ -55,42 +61,69 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   }, [navigation]);
   const onBack = navigation.goBack;
 
-  const accountName = useGetDefaultAccountName();
-
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = useCallback(
-    (account: QrAccount) => {
-      setLoading(true);
+  const accountAddressValidator = useCallback(
+    (_scannedAccount: QrAccount) => {
+      if (_scannedAccount?.content) {
+        for (const account of accounts) {
+          // todo: Recheck this logic with master account
+          if (isSameAddress(account.address, _scannedAccount.content)) {
+            return Promise.reject(new Error('Account already exists'));
+          }
+        }
+      }
 
-      setTimeout(() => {
-        createAccountExternalV2({
-          name: accountName,
-          address: account.content,
-          genesisHash: '',
-          isEthereum: account.isEthereum,
-          isAllowed: true,
-          isReadOnly: false,
-        })
-          .then(errors => {
-            if (errors.length) {
-              toast.show(errors[0].message, { type: 'danger' });
-            } else {
-              onComplete();
-            }
-          })
-          .catch((error: Error) => {
-            toast.show(error.message, { type: 'danger' });
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      }, 300);
+      return Promise.resolve();
     },
-    [accountName, onComplete, toast],
+    [accounts],
   );
 
-  const { onOpenModal, onScan, isScanning, onHideModal, setIsScanning } = useModalScanner(onSubmit);
+  const onPreSubmit = (account: QrAccount) => {
+    onHideModal();
+    accountAddressValidator(account)
+      .then(() => {
+        setScannedAccount(account);
+        setAccountNameModalVisible(true);
+      })
+      .catch((error: Error) => {
+        toast.show(error.message, { type: 'danger' });
+      });
+  };
+
+  const onSubmit = useCallback(
+    (name: string) => {
+      if (scannedAccount) {
+        setLoading(true);
+
+        setTimeout(() => {
+          createAccountExternalV2({
+            name,
+            address: scannedAccount.content,
+            genesisHash: '',
+            isAllowed: true,
+            isReadOnly: false,
+          })
+            .then(errors => {
+              if (errors.length) {
+                toast.show(errors[0].message, { type: 'danger' });
+              } else {
+                onComplete();
+              }
+            })
+            .catch((error: Error) => {
+              toast.show(error.message, { type: 'danger' });
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        }, 300);
+      }
+    },
+    [onComplete, scannedAccount, toast],
+  );
+
+  const { onOpenModal, onScan, isScanning, onHideModal, setIsScanning } = useModalScanner(onPreSubmit);
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
   return (
@@ -130,6 +163,17 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
         type={SCAN_TYPE.QR_SIGNER}
         setQrModalVisible={setIsScanning}
       />
+      <>
+        {accountNameModalVisible && (
+          <AccountNameModal
+            modalVisible={accountNameModalVisible}
+            setModalVisible={setAccountNameModalVisible}
+            accountType={AccountProxyType.QR}
+            isLoading={loading}
+            onSubmit={onSubmit}
+          />
+        )}
+      </>
     </ContainerWithSubHeader>
   );
 };

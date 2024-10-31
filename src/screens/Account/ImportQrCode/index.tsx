@@ -12,7 +12,6 @@ import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import { SCAN_TYPE } from 'constants/qr';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useModalScanner from 'hooks/qr/useModalScanner';
-import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { checkPublicAndPrivateKey, createAccountWithSecret } from 'messaging/index';
 import { QrCode, Scan } from 'phosphor-react-native';
@@ -24,6 +23,9 @@ import { QrAccount } from 'types/qr/attach';
 import createStyle from './styles';
 import i18n from 'utils/i18n/i18n';
 import { IMPORT_QR_CODE_URL } from 'constants/index';
+import { createPromiseHandler } from '@subwallet/extension-base/utils';
+import { AccountNameModal } from 'components/Modal/AccountNameModal';
+import { AccountProxyType } from '@subwallet/extension-base/types';
 
 type Props = {};
 
@@ -54,8 +56,8 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
-
-  const accountName = useGetDefaultAccountName();
+  const [accountNameModalVisible, setAccountNameModalVisible] = useState<boolean>(false);
+  const [scannedAccount, setScannedAccount] = useState<QrAccount>();
 
   const styles = useMemo(() => createStyle(theme), [theme]);
 
@@ -70,44 +72,76 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
 
   const [loading, setLoading] = useState(false);
 
+  const accountAddressValidator = useCallback((_scannedAccount: QrAccount) => {
+    const { promise, reject, resolve } = createPromiseHandler<void>();
+
+    if (_scannedAccount) {
+      setTimeout(() => {
+        checkAccount(_scannedAccount)
+          .then(isEthereum => {
+            setScannedAccount({
+              ..._scannedAccount,
+              isEthereum,
+            });
+
+            resolve();
+          })
+          .catch((error: Error) => {
+            reject(error);
+          });
+      }, 300);
+    } else {
+      reject(new Error('Invalid QR code'));
+    }
+
+    return promise;
+  }, []);
+
+  const onPreSubmit = (preSubmitAccount: QrAccount) => {
+    onHideModal();
+    accountAddressValidator(preSubmitAccount)
+      .then(() => {
+        setTimeout(() => {
+          setAccountNameModalVisible(true);
+        }, 1000);
+      })
+      .catch((error: Error) => {
+        toast.show(error.message, { type: 'danger' });
+        setLoading(false);
+      });
+  };
+
   const onSubmit = useCallback(
-    (_account: QrAccount) => {
+    (name: string) => {
       setLoading(true);
 
-      setTimeout(() => {
-        checkAccount(_account)
-          .then(isEthereum => {
-            createAccountWithSecret({
-              name: accountName,
-              isAllow: true,
-              secretKey: _account.content,
-              publicKey: _account.genesisHash,
-              isEthereum: isEthereum,
-            })
-              .then(({ errors, success }) => {
-                if (success) {
-                  onComplete();
-                } else {
-                  toast.show(errors[0].message, { type: 'danger' });
-                }
-              })
-              .catch((error: Error) => {
-                toast.show(error.message, { type: 'danger' });
-              })
-              .finally(() => {
-                setLoading(false);
-              });
+      if (scannedAccount) {
+        createAccountWithSecret({
+          name,
+          isAllow: true,
+          secretKey: scannedAccount.content,
+          publicKey: scannedAccount.genesisHash,
+          isEthereum: scannedAccount.isEthereum,
+        })
+          .then(({ errors, success }) => {
+            if (success) {
+              onComplete();
+            } else {
+              toast.show(errors[0].message, { type: 'danger' });
+            }
           })
           .catch((error: Error) => {
             toast.show(error.message, { type: 'danger' });
+          })
+          .finally(() => {
             setLoading(false);
           });
-      }, 300);
+      }
     },
-    [accountName, onComplete, toast],
+    [onComplete, scannedAccount, toast],
   );
 
-  const { onOpenModal, onScan, isScanning, onHideModal, setIsScanning } = useModalScanner(onSubmit);
+  const { onOpenModal, onScan, isScanning, onHideModal, setIsScanning } = useModalScanner(onPreSubmit);
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
   return (
@@ -148,6 +182,17 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
         type={SCAN_TYPE.SECRET}
         setQrModalVisible={setIsScanning}
       />
+      <>
+        {accountNameModalVisible && (
+          <AccountNameModal
+            modalVisible={accountNameModalVisible}
+            setModalVisible={setAccountNameModalVisible}
+            accountType={AccountProxyType.SOLO}
+            isLoading={loading}
+            onSubmit={onSubmit}
+          />
+        )}
+      </>
     </ContainerWithSubHeader>
   );
 };

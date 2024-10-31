@@ -98,7 +98,7 @@ export const ImportSecretPhrase = () => {
     createAccountSuriV2({
       name: accountName,
       suri: seedValidationResponse.mnemonic,
-      types: seedValidationResponse.mnemonicTypes === 'ton' ? 'ton-native' : undefined,
+      type: seedValidationResponse.mnemonicTypes === 'ton' ? 'ton-native' : undefined,
       isAllowed: true,
     })
       .then(() => {

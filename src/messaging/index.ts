@@ -26,7 +26,6 @@ import type {
   SubscriptionMessageTypes,
 } from '@subwallet/extension-base/background/types';
 import {
-  AccountExternalError,
   AccountsWithCurrentAddress,
   ActiveCronAndSubscriptionMap,
   AmountData,
@@ -52,11 +51,6 @@ import {
   OptionInputAddress,
   PriceJson,
   RequestAccountBatchExportV2,
-  RequestAccountCreateExternalV2,
-  RequestAccountCreateHardwareMultiple,
-  RequestAccountCreateHardwareV2,
-  RequestAccountCreateSuriV2,
-  RequestAccountCreateWithSecretKey,
   RequestAccountMeta,
   RequestApproveConnectWalletSession,
   RequestAuthorizationBlock,
@@ -102,13 +96,10 @@ import {
   RequestYieldFastWithdrawal,
   ResolveAddressToDomainRequest,
   ResolveDomainRequest,
-  ResponseAccountCreateSuriV2,
-  ResponseAccountCreateWithSecretKey,
   ResponseAccountExportPrivateKey,
   ResponseAccountIsLocked,
   ResponseAccountMeta,
   ResponseChangeMasterPassword,
-  ResponseCheckPublicAndSecretKey,
   ResponseDeriveValidateV2,
   ResponseGetDeriveAccounts,
   ResponseKeyringExportMnemonic,
@@ -119,7 +110,6 @@ import {
   ResponseQrSignEvm,
   ResponseQrSignSubstrate,
   ResponseResetWallet,
-  ResponseSeedCreateV2,
   ResponseSubscribeHistory,
   ResponseUnlockKeyring,
   StakingJson,
@@ -135,7 +125,6 @@ import {
 import {
   BalanceJson,
   Message,
-  MnemonicType,
   NominationPoolInfo,
   OptimalYieldPathParams,
   RequestEarlyValidateYield,
@@ -631,13 +620,6 @@ export async function exportAccountsV2(
   return sendMessage('pri(accounts.batchExportV2)', request);
 }
 
-export async function checkPublicAndPrivateKey(
-  publicKey: string,
-  secretKey: string,
-): Promise<ResponseCheckPublicAndSecretKey> {
-  return sendMessage('pri(accounts.checkPublicAndSecretKey)', { publicKey, secretKey });
-}
-
 export async function validateAccount(address: string, password: string): Promise<boolean> {
   return sendMessage('pri(accounts.validate)', { address, password });
 }
@@ -686,12 +668,6 @@ export async function createAccountExternal(name: string, address: string, genes
   return sendMessage('pri(accounts.create.external)', { address, genesisHash, name });
 }
 
-export async function createAccountExternalV2(
-  request: RequestAccountCreateExternalV2,
-): Promise<AccountExternalError[]> {
-  return sendMessage('pri(accounts.create.externalV2)', request);
-}
-
 export async function createAccountHardware(
   address: string,
   hardwareType: string,
@@ -710,14 +686,6 @@ export async function createAccountHardware(
   });
 }
 
-export async function createAccountHardwareV2(request: RequestAccountCreateHardwareV2): Promise<boolean> {
-  return sendMessage('pri(accounts.create.hardwareV2)', request);
-}
-
-export async function createAccountHardwareMultiple(request: RequestAccountCreateHardwareMultiple): Promise<boolean> {
-  return sendMessage('pri(accounts.create.hardwareMultiple)', request);
-}
-
 export async function createAccountSuri(
   name: string,
   password: string,
@@ -728,30 +696,12 @@ export async function createAccountSuri(
   return sendMessage('pri(accounts.create.suri)', { genesisHash, name, password, suri, type });
 }
 
-export async function createAccountSuriV2(request: RequestAccountCreateSuriV2): Promise<ResponseAccountCreateSuriV2> {
-  return sendMessage('pri(accounts.create.suriV2)', request);
-}
-
 export async function createSeed(
   length?: SeedLengths,
   seed?: string,
   type?: KeypairType,
 ): Promise<{ address: string; seed: string }> {
   return sendMessage('pri(seed.create)', { length, seed, type });
-}
-
-export async function createSeedV2(
-  length?: SeedLengths,
-  mnemonic?: string,
-  type?: MnemonicType,
-): Promise<ResponseSeedCreateV2> {
-  return sendMessage('pri(seed.createV2)', { length, mnemonic, type });
-}
-
-export async function createAccountWithSecret(
-  request: RequestAccountCreateWithSecretKey,
-): Promise<ResponseAccountCreateWithSecretKey> {
-  return sendMessage('pri(accounts.create.withSecret)', request);
 }
 
 export async function getAllMetadata(): Promise<MetadataDef[]> {
