@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Button, Icon, Logo, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -36,10 +36,15 @@ interface Props {
   onPressCopyBtn?: () => void;
   onSelectAccount?: () => void;
   isShowEditBtn?: boolean;
+  isShowCopyBtn?: boolean;
   isShowMultiCheck?: boolean;
   isUseCustomAccountSign?: boolean;
   customAccountSignMode?: React.ElementType<IconProps>;
   showDerivedPath?: boolean;
+  showBottomPath?: boolean;
+  avatarSize?: number;
+  wrapperStyle?: ViewStyle;
+  isShowTypeIcon?: boolean;
 }
 
 export const SelectAccountItem = ({
@@ -50,10 +55,15 @@ export const SelectAccountItem = ({
   onPressCopyBtn,
   onSelectAccount,
   isShowEditBtn = true,
+  isShowCopyBtn = true,
   isShowMultiCheck = false,
+  showBottomPath = false,
   isUseCustomAccountSign,
   customAccountSignMode,
   showDerivedPath,
+  avatarSize,
+  wrapperStyle,
+  isShowTypeIcon = true,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
@@ -133,23 +143,26 @@ export const SelectAccountItem = ({
   return (
     <TouchableOpacity
       activeOpacity={1}
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginHorizontal: 16,
-        paddingVertical: theme.paddingXS - 1,
-        paddingLeft: 12,
-        paddingRight: 4,
-        backgroundColor: theme.colorBgSecondary,
-        borderRadius: theme.borderRadiusLG,
-        flex: 1,
-        marginBottom: theme.marginXS,
-      }}
+      style={[
+        {
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginHorizontal: 16,
+          paddingVertical: theme.paddingXS - 1,
+          paddingLeft: 12,
+          paddingRight: 4,
+          backgroundColor: theme.colorBgSecondary,
+          borderRadius: theme.borderRadiusLG,
+          flex: 1,
+          marginBottom: theme.marginXS,
+        },
+        wrapperStyle,
+      ]}
       onPress={() => onSelectAccount && onSelectAccount()}>
       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 2 }}>
         <View style={{ position: 'relative' }}>
-          <AccountProxyAvatar size={32} value={accountProxy.id} />
-          {!!accountProxyTypeIconProps && (
+          <AccountProxyAvatar size={avatarSize || 32} value={accountProxy.id} />
+          {!!accountProxyTypeIconProps && isShowTypeIcon && (
             <View
               style={{
                 position: 'absolute',
@@ -184,20 +197,22 @@ export const SelectAccountItem = ({
             {accountProxy.name}
           </Typography.Text>
 
-          <View style={{ height: 20, alignItems: 'center', flexDirection: 'row' }}>
-            {showDerivedPath && !!accountProxy.parentId ? (
-              <View>
-                <Icon phosphorIcon={GitMerge} weight={'fill'} size={'xxs'} />
-                <Typography.Text>{accountProxy.suri || ''}</Typography.Text>
-              </View>
-            ) : (
-              accountProxy.chainTypes.map((nt, index) => (
-                <View style={index !== 0 && { marginLeft: -4 }}>
-                  <Logo network={chainTypeLogoMap[nt]} size={16} shape={'circle'} />
+          {showBottomPath && (
+            <View style={{ height: 20, alignItems: 'center', flexDirection: 'row' }}>
+              {showDerivedPath && !!accountProxy.parentId ? (
+                <View>
+                  <Icon phosphorIcon={GitMerge} weight={'fill'} size={'xxs'} />
+                  <Typography.Text>{accountProxy.suri || ''}</Typography.Text>
                 </View>
-              ))
-            )}
-          </View>
+              ) : (
+                accountProxy.chainTypes.map((nt, index) => (
+                  <View style={index !== 0 && { marginLeft: -4 }}>
+                    <Logo network={chainTypeLogoMap[nt]} size={16} shape={'circle'} />
+                  </View>
+                ))
+              )}
+            </View>
+          )}
         </View>
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
@@ -213,13 +228,14 @@ export const SelectAccountItem = ({
           </View>
         )}
 
-        <Button
-          icon={<Icon phosphorIcon={Copy} size="sm" iconColor={theme['gray-5']} />}
-          onPress={_onPressCopyButton}
-          size="xs"
-          type="ghost"
-        />
-
+        {!isAllAccount && isShowCopyBtn && (
+          <Button
+            icon={<Icon phosphorIcon={Copy} size="sm" iconColor={theme['gray-5']} />}
+            onPress={_onPressCopyButton}
+            size="xs"
+            type="ghost"
+          />
+        )}
         {!isAllAccount && isShowEditBtn && (
           <Button
             type={'ghost'}

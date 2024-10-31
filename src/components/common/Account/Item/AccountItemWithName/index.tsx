@@ -6,8 +6,8 @@ import { Text, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import AccountItemBase, { AccountItemBaseProps } from '../AccountItemBase';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import AvatarGroup from 'components/common/AvatarGroup';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 interface Props extends AccountItemBaseProps {
   direction?: 'vertical' | 'horizontal';
@@ -53,7 +53,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
           <Text style={styles.accountName} numberOfLines={1}>
             {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
           </Text>
-          {showFallback && (
+          {showFallback && address && (
             <Text style={[styles.accountAddress, direction === 'horizontal' && styles.accountAddressHorizontal]}>
               {direction === 'horizontal' && '('}
               {toShort(address, addressPreLength, addressSufLength)}

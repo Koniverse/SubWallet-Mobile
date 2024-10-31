@@ -37,7 +37,6 @@ import {
   RequestChangeMasterPassword,
   RequestConnectWalletConnect,
   RequestCrossChainTransfer,
-  RequestDeriveCreateV3,
   RequestFreeBalance,
   RequestKeyringExportMnemonic,
   RequestMaxTransferable,
@@ -696,11 +695,6 @@ export async function keyringExportMnemonic(
 
 export async function resetWallet(request: RequestResetWallet): Promise<ResponseResetWallet> {
   return sendMessage('pri(keyring.reset)', request);
-}
-
-/// Derive
-export async function deriveAccountV3(request: RequestDeriveCreateV3): Promise<boolean> {
-  return sendMessage('pri(derivation.createV3)', request);
 }
 
 // Wallet Connect

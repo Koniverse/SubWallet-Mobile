@@ -3,6 +3,7 @@ import ConfirmModal from 'components/common/Modal/ConfirmModal';
 import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 import { noop } from 'utils/function';
 import { VoidFunction } from 'types/index';
+import { DeriveAccountActionModal } from 'components/common/Modal/DeriveAccountModal';
 
 interface AppModalContextProviderProps {
   children?: React.ReactElement;
@@ -26,6 +27,12 @@ export type AddressQrModalInfo = {
   onBack?: VoidFunction;
 };
 
+export type DeriveModalInfo = {
+  visible?: boolean;
+  proxyId?: string;
+  onCompleteCb?: () => void;
+};
+
 export interface AppModal {
   confirmModal: {
     setConfirmModal: React.Dispatch<React.SetStateAction<ConfirmModalInfo>>;
@@ -36,6 +43,11 @@ export interface AppModal {
     setAddressQrModal: React.Dispatch<React.SetStateAction<AddressQrModalInfo>>;
     hideAddressQrModal: () => void;
   };
+  deriveModal: {
+    deriveModalState: DeriveModalInfo;
+    setDeriveModalState: React.Dispatch<React.SetStateAction<DeriveModalInfo>>;
+    hideDeriveModal: () => void;
+  };
 }
 
 export const AppModalContext = React.createContext({} as AppModal);
@@ -43,6 +55,7 @@ export const AppModalContext = React.createContext({} as AppModal);
 export const AppModalContextProvider = ({ children }: AppModalContextProviderProps) => {
   const [confirmModal, setConfirmModal] = useState<ConfirmModalInfo>({});
   const [addressQrModalState, setAddressQrModal] = useState<AddressQrModalInfo>({});
+  const [deriveModalState, setDeriveModalState] = useState<DeriveModalInfo>({});
 
   const hideConfirmModal = useCallback(() => {
     setConfirmModal(prevState => ({ ...prevState, visible: false }));
@@ -75,6 +88,20 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
     );
   }, []);
 
+  const hideDeriveModal = useCallback(() => {
+    setDeriveModalState(prevState => ({ ...prevState, visible: false }));
+    setTimeout(
+      () =>
+        setDeriveModalState(prevState => ({
+          ...prevState,
+          proxyId: '',
+          selectNetwork: '',
+          onBack: undefined,
+        })),
+      300,
+    );
+  }, []);
+
   const contextValue: AppModal = useMemo(
     () => ({
       confirmModal: {
@@ -86,8 +113,13 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         setAddressQrModal,
         hideAddressQrModal,
       },
+      deriveModal: {
+        deriveModalState: deriveModalState,
+        setDeriveModalState,
+        hideDeriveModal,
+      },
     }),
-    [addressQrModalState, hideAddressQrModal, hideConfirmModal],
+    [addressQrModalState, deriveModalState, hideAddressQrModal, hideConfirmModal, hideDeriveModal],
   );
   // TODO: Add back and cancel
   return (
@@ -112,6 +144,18 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           selectedNetwork={addressQrModalState.selectNetwork}
           onBack={addressQrModalState.onBack}
           isUseModalV2={false}
+        />
+      )}
+
+      {deriveModalState.visible && deriveModalState.proxyId && (
+        <DeriveAccountActionModal
+          modalVisible={deriveModalState.visible}
+          setModalVisible={noop}
+          showConfirmModal={setConfirmModal}
+          hideConfirmModal={hideConfirmModal}
+          closeModal={hideDeriveModal}
+          proxyId={deriveModalState.proxyId}
+          onCompleteCb={deriveModalState.onCompleteCb}
         />
       )}
     </AppModalContext.Provider>
