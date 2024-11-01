@@ -89,6 +89,12 @@ export const AccountChainAddressesSelector = ({
     );
   };
 
+  const searchFunc = useCallback((currentItems: AccountChainAddress[], searchString: string) => {
+    return currentItems.filter(item => {
+      return item.name.toLowerCase().includes(searchString.toLowerCase());
+    });
+  }, []);
+
   return (
     <>
       <FullSizeSelectModal
@@ -104,6 +110,7 @@ export const AccountChainAddressesSelector = ({
         closeModalAfterSelect={closeModalAfterSelect}
         isShowContent={isShowContent}
         renderCustomItem={renderCustomItem}
+        searchFunc={searchFunc}
         keyExtractor={item => item.slug}
         estimatedItemSize={60}
         isShowInput={isShowInput}>

@@ -65,8 +65,6 @@ export const EditAccountInputText = forwardRef((inputProps: Props, ref: React.Re
     accountType,
   } = inputProps;
 
-  console.log('inputWrapper, editAccountInputStyle', editAccountInputStyle);
-
   return (
     <>
       <View style={[inputWrapper, editAccountInputStyle]}>

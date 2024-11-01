@@ -37,8 +37,10 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   const storedDeeplink = mmkvStore.getString('storedDeeplink');
   const selectedMnemonicType = mmkvStore.getString(SELECTED_MNEMONIC_TYPE) as MnemonicType;
   const [accountNameModalVisible, setAccountNameModalVisible] = useState<boolean>(false);
+  console.log('selectedMnemonicType', selectedMnemonicType);
 
   useHandlerHardwareBackPress(isLoading);
+
   useEffect((): void => {
     createSeedV2(undefined, undefined, selectedMnemonicType)
       .then((response): void => {

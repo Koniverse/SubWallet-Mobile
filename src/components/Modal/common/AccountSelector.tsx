@@ -1,14 +1,14 @@
 import React from 'react';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { Keyboard, ListRenderItemInfo } from 'react-native';
 import { ModalRef } from 'types/modalRef';
+import { AccountAddressItemType } from 'types/account';
 
 interface Props {
-  items: AccountJson[];
+  items: AccountAddressItemType[];
   selectedValueMap: Record<string, boolean>;
-  onSelectItem?: (item: AccountJson) => void;
+  onSelectItem?: (item: AccountAddressItemType) => void;
   disabled?: boolean;
   renderSelected?: () => JSX.Element;
   accountSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
@@ -16,7 +16,7 @@ interface Props {
   isShowContent?: boolean;
   isShowInput?: boolean;
   children?: React.ReactNode;
-  renderCustomItem?: ({ item }: ListRenderItemInfo<AccountJson>) => JSX.Element;
+  renderCustomItem?: ({ item }: ListRenderItemInfo<AccountAddressItemType>) => JSX.Element;
 }
 
 export const AccountSelector = ({
@@ -32,7 +32,7 @@ export const AccountSelector = ({
   children,
   renderCustomItem,
 }: Props) => {
-  const _onSelectItem = (item: AccountJson) => {
+  const _onSelectItem = (item: AccountAddressItemType) => {
     Keyboard.dismiss();
     onSelectItem && onSelectItem(item);
   };
@@ -52,7 +52,6 @@ export const AccountSelector = ({
       closeModalAfterSelect={closeModalAfterSelect}
       isShowContent={isShowContent}
       renderCustomItem={renderCustomItem}
-      keyExtractor={item => item.address}
       estimatedItemSize={60}
       isShowInput={isShowInput}>
       {children}

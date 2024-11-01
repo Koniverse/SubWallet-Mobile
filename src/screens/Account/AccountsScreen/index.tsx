@@ -27,7 +27,6 @@ import { EmptyList } from 'components/EmptyList';
 import { ModalRef } from 'types/modalRef';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
@@ -286,15 +285,6 @@ export const AccountsScreen = ({
     setVisible: setDeleteVisible,
   } = useConfirmModal(onDelete);
 
-  const copyToClipboard = useCallback(
-    (text: string) => {
-      toast.hideAll();
-      toast.show(i18n.common.copiedToClipboard);
-      Clipboard.setString(text);
-    },
-    [toast],
-  );
-
   const selectAccount = useCallback(
     (accountProxy: AccountProxy) => {
       return () => {
@@ -345,8 +335,12 @@ export const AccountsScreen = ({
               icon={<Icon phosphorIcon={GitMerge} size={'sm'} iconColor={theme['gold-6']} />}
               size={'xs'}
               onPress={() => {
-                copyToClipboard(ap.id);
-                row.current?.[index]?.close();
+                navigation.navigate('EditAccount', {
+                  address: ap.id,
+                  name: ap.name || '',
+                  requestViewDerivedAccounts: true,
+                  requestViewDerivedAccountDetails: false,
+                });
               }}
             />
           )}
@@ -375,7 +369,7 @@ export const AccountsScreen = ({
         </View>
       );
     },
-    [copyToClipboard, deleting, onPressDelete, stylesheet.rightSwipeActionsStyle, theme],
+    [deleting, navigation, onPressDelete, stylesheet.rightSwipeActionsStyle, theme],
   );
 
   const onPressCopyBtn = useCallback((accountProxy: AccountProxy) => {
@@ -413,7 +407,12 @@ export const AccountsScreen = ({
               onPressCopyBtn={onPressCopyBtn(item)}
               onSelectAccount={selectAccount(item)}
               onPressDetailBtn={() => {
-                navigation.navigate('EditAccount', { address: item.id, name: item.name || '' });
+                navigation.navigate('EditAccount', {
+                  address: item.id,
+                  name: item.name || '',
+                  requestViewDerivedAccounts: false,
+                  requestViewDerivedAccountDetails: false,
+                });
               }}
             />
           )}
@@ -481,7 +480,11 @@ export const AccountsScreen = ({
         loading={!isReady}
         afterListItem={renderFooterComponent()}
         placeholder={i18n.placeholder.accountName}
-        estimatedItemSize={80}
+        estimatedItemSize={64}
+        keyExtractor={(item, index) => {
+          console.log(item, index);
+          return `${item.id}`;
+        }}
         rightIconOption={{
           icon: ({ color }) => <Icon phosphorIcon={Export} weight={'fill'} iconColor={color} size={'md'} />,
           onPress: () => navigation.navigate('ExportAllAccount'),

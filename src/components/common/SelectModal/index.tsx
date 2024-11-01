@@ -20,7 +20,7 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { SortFunctionInterface } from 'types/ui-types';
 import { SectionItem } from 'components/LazySectionList';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { AccountJson } from '@subwallet/extension-base/types';
+import { AccountAddressItemType } from 'types/account';
 
 interface Props<T> {
   items: T[];
@@ -151,7 +151,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
           const tokenItems = items as TokenItemType[];
           existed = tokenItems.find(item => item.slug === defaultValue);
         } else if (selectModalItemType === 'account') {
-          const accountItems = items as AccountJson[];
+          const accountItems = items as AccountAddressItemType[];
           existed = accountItems.find(item => item.address === defaultValue);
         } else {
           const chainItems = items as ChainInfo[];
@@ -199,9 +199,9 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
       const lowerCaseSearchString = searchString.toLowerCase();
 
       if (selectModalItemType === 'account') {
-        return (_items as AccountJson[]).filter(
+        return (_items as AccountAddressItemType[]).filter(
           acc =>
-            (acc.name && acc.name.toLowerCase().includes(lowerCaseSearchString)) ||
+            (acc.accountName && acc.accountName.toLowerCase().includes(lowerCaseSearchString)) ||
             acc.address.toLowerCase().includes(lowerCaseSearchString),
         ) as T[];
       } else if (selectModalItemType === 'token') {

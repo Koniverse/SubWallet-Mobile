@@ -33,7 +33,12 @@ export type RootStackParamList = {
   CreateAccount: { keyTypes?: KeypairType[]; isBack?: boolean };
   QrScanner: undefined;
   AccountsScreen: { pathName?: string };
-  EditAccount: { address: string; name: string };
+  EditAccount: {
+    address: string;
+    name: string;
+    requestViewDerivedAccountDetails?: boolean;
+    requestViewDerivedAccounts?: boolean;
+  };
   RemoveAccount: { address: string };
   RestoreJson: undefined;
   ExportPrivateKey: { address: string };

@@ -419,10 +419,6 @@ export async function mobileRestore(request: Partial<MobileData>): Promise<null>
 
 // Logic messages
 
-export async function editAccount(address: string, name: string): Promise<boolean> {
-  return sendMessage('pri(accounts.edit)', { address, name });
-}
-
 export async function saveCurrentAccountAddress(data: RequestCurrentAccountAddress): Promise<CurrentAccountInfo> {
   return sendMessage('pri(accounts.saveCurrentProxy)', data);
 }
@@ -437,10 +433,6 @@ export async function saveLanguage(lang: LanguageType): Promise<boolean> {
 
 export async function savePriceCurrency(currency: CurrencyType): Promise<boolean> {
   return sendMessage('pri(settings.savePriceCurrency)', { currency });
-}
-
-export async function forgetAccount(address: string, lockAfter = false): Promise<boolean> {
-  return sendMessage('pri(accounts.forget)', { address, lockAfter });
 }
 
 export async function approveAuthRequestV2(id: string, accounts: string[]): Promise<boolean> {

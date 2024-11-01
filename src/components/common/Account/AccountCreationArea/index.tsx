@@ -21,6 +21,7 @@ import { canDerive } from '@subwallet/extension-base/utils';
 import { AccountActionSelectModal, ActionItemType } from 'components/Modal/AccountActionSelectModal';
 import { ModalRef } from 'types/modalRef';
 import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
+import { mmkvStore } from 'utils/storage';
 
 interface Props {
   createAccountRef: React.MutableRefObject<ModalRef | undefined>;
@@ -128,8 +129,10 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
 
   const createAccountFunc = (item: ActionItemType) => {
     if (item.key === 'createAcc') {
+      console.log('run to fucking this');
       createAccountRef?.current?.onCloseModal();
       setSelectedMnemonicType('general');
+      mmkvStore.set('use-default-create-content', false);
       setTimeout(() => {
         if (hasMasterPassword) {
           navigation.navigate('CreateAccount', {});

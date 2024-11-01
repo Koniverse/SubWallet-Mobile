@@ -16,6 +16,9 @@ import ModalBaseV2, { SWModalRefProps } from 'components/design-system-ui/modal/
 import { Portal } from '@gorhom/portal';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
+import Button from '../button';
+import { Icon } from 'components/design-system-ui';
+import { CaretLeft, Gear } from 'phosphor-react-native';
 
 export interface SWModalProps {
   children: React.ReactNode;
@@ -41,6 +44,10 @@ export interface SWModalProps {
   disabledOnPressBackDrop?: boolean;
   renderHeader?: React.ReactNode;
   hideWhenCloseApp?: boolean;
+  isShowLeftBtn?: boolean;
+  isShowRightBtn?: boolean;
+  onPressLeftBtn?: () => void;
+  onPressRightBtn?: () => void;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -96,6 +103,10 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       renderHeader,
       disabledOnPressBackDrop,
       hideWhenCloseApp = true,
+      isShowLeftBtn,
+      isShowRightBtn,
+      onPressLeftBtn,
+      onPressRightBtn,
     },
     ref,
   ) => {
@@ -153,20 +164,38 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
     );
     const renderTitle = () => {
       return (
-        <>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: theme.margin }}>
+          {isShowLeftBtn && (
+            <Button
+              style={{ position: 'absolute', left: 0 }}
+              size={'xs'}
+              icon={<Icon phosphorIcon={CaretLeft} />}
+              type={'ghost'}
+              onPress={onPressLeftBtn}
+            />
+          )}
           {modalTitle && (
             <View
               style={{
                 width: '100%',
-                marginBottom: 16,
                 alignItems: titleTextAlign === 'left' ? 'flex-start' : 'center',
+                flex: 1,
               }}>
               <Typography.Title level={4} style={[{ color: theme.colorTextLight1 }, titleStyle]}>
                 {modalTitle}
               </Typography.Title>
             </View>
           )}
-        </>
+          {isShowRightBtn && (
+            <Button
+              style={{ position: 'absolute', right: 0 }}
+              size={'xs'}
+              icon={<Icon phosphorIcon={Gear} />}
+              type={'ghost'}
+              onPress={onPressRightBtn}
+            />
+          )}
+        </View>
       );
     };
     return (

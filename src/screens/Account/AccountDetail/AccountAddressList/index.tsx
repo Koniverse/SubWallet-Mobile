@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { AccountProxy } from '@subwallet/extension-base/types';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import useGetAccountChainAddresses from 'hooks/account/useGetAccountChainAddresses';
@@ -10,6 +10,8 @@ import { AppModalContext } from 'providers/AppModalContext';
 import useHandleTonAccountWarning from 'hooks/account/useHandleTonAccountWarning';
 import { useToast } from 'react-native-toast-notifications';
 import { View } from 'react-native';
+import { Search } from 'components/Search';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   accountProxy: AccountProxy;
@@ -21,6 +23,17 @@ export const AccountAddressList = ({ accountProxy }: Props) => {
   const keyExtractor = (item: AccountChainAddress) => item.slug;
   const { addressQrModal } = useContext(AppModalContext);
   const toast = useToast();
+  const theme = useSubWalletTheme().swThemes;
+  const [searchString, setSearchString] = useState<string>('');
+
+  const filteredItems = useMemo(() => {
+    return items.filter(item => {
+      return (
+        item.name.toLowerCase().includes(searchString.toLowerCase()) ||
+        item.address.toLowerCase().includes(searchString.toLowerCase())
+      );
+    });
+  }, [items, searchString]);
 
   const onShowQr = useCallback(
     (item: AccountChainAddress) => {
@@ -69,15 +82,20 @@ export const AccountAddressList = ({ accountProxy }: Props) => {
 
   return (
     <View style={{ flex: 1, width: '100%' }}>
-      {/*<Search searchText={} onSearch={} onClearSearchString={} />*/}
+      <Search
+        style={{ marginBottom: theme.marginXS }}
+        placeholder={'Enter network name or address'}
+        searchText={searchString}
+        onSearch={setSearchString}
+        onClearSearchString={() => setSearchString('')}
+      />
       <FlashList
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        removeClippedSubviews
-        data={items}
+        data={filteredItems}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        estimatedItemSize={52}
+        estimatedItemSize={60}
       />
     </View>
   );

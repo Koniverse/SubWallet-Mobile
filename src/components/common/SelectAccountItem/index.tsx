@@ -57,7 +57,7 @@ export const SelectAccountItem = ({
   isShowEditBtn = true,
   isShowCopyBtn = true,
   isShowMultiCheck = false,
-  showBottomPath = false,
+  showBottomPath = true,
   isUseCustomAccountSign,
   customAccountSignMode,
   showDerivedPath,
@@ -200,9 +200,13 @@ export const SelectAccountItem = ({
           {showBottomPath && (
             <View style={{ height: 20, alignItems: 'center', flexDirection: 'row' }}>
               {showDerivedPath && !!accountProxy.parentId ? (
-                <View>
-                  <Icon phosphorIcon={GitMerge} weight={'fill'} size={'xxs'} />
-                  <Typography.Text>{accountProxy.suri || ''}</Typography.Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Icon phosphorIcon={GitMerge} weight={'fill'} size={'xxs'} iconColor={theme.colorTextLight4} />
+                  <Typography.Text
+                    size={'sm'}
+                    style={{ color: theme.colorTextTertiary, marginTop: -(theme.marginXXS - 2) }}>
+                    {accountProxy.suri || ''}
+                  </Typography.Text>
                 </View>
               ) : (
                 accountProxy.chainTypes.map((nt, index) => (

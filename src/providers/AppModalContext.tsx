@@ -16,6 +16,7 @@ export type ConfirmModalInfo = {
   messageIcon?: string;
   customIcon?: React.ReactNode;
   completeBtnTitle?: string;
+  cancelBtnTitle?: string;
   onCancelModal?: () => void | undefined;
   onCompleteModal?: () => void | undefined;
 };
@@ -134,6 +135,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         onCancelModal={confirmModal.onCancelModal}
         onCompleteModal={confirmModal.onCompleteModal}
         completeBtnTitle={confirmModal.completeBtnTitle}
+        cancelBtnTitle={confirmModal.cancelBtnTitle}
       />
 
       {addressQrModalState.visible && (

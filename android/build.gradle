@@ -4,7 +4,7 @@ buildscript {
     ext {
         kotlinVersion = "1.6.21"
         buildToolsVersion = "33.0.0"
-        minSdkVersion = 21
+        minSdkVersion = 24
         compileSdkVersion = 34
         targetSdkVersion = 34
         androidXBrowser = "1.4.0"

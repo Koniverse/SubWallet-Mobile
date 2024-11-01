@@ -48,8 +48,9 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
           onBack: showQrBack ? addressQrModal.hideAddressQrModal : undefined,
         });
       };
-
-      onHandleTonAccountWarning(accountType, processFunction);
+      onHandleTonAccountWarning(accountType, () => {
+        processFunction();
+      });
     },
     [addressQrModal, onHandleTonAccountWarning],
   );
@@ -145,17 +146,6 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
     return result;
   }, [accountProxies, chainInfoMap, selectedChain, specificChain]);
-
-  // const onBackAccountSelector = useMemo(() => {
-  //   // if specificChain has value, it means tokenSelector does not show up, so accountSelector does not have back action
-  //   if (specificChain) {
-  //     return undefined;
-  //   }
-  //
-  //   return () => {
-  //     accountRef && accountRef.current?.onCloseModal();
-  //   };
-  // }, [specificChain]);
 
   const onCloseAccountSelector = useCallback(() => {
     accountRef && accountRef.current?.onCloseModal();
@@ -297,7 +287,8 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
         return prev;
       });
     }
-  }, [accountSelectorItems, addressQrModal, selectedAccountAddressItem]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountSelectorItems, selectedAccountAddressItem]);
 
   return {
     onOpenReceive,

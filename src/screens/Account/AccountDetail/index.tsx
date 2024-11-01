@@ -6,11 +6,11 @@ import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFo
 import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Export, FloppyDiskBack, GitMerge, Trash, X } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { EditAccountProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { editAccount } from 'messaging/index';
+import { editAccount, forgetAccount } from 'messaging/index';
 import createStyle from './styles';
 import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
 import { SwTab } from 'components/design-system-ui/tab';
@@ -20,6 +20,11 @@ import { RootState } from 'stores/index';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { AccountAddressList } from './AccountAddressList';
 import { DerivedAccountList } from 'screens/Account/AccountDetail/DerivedAccountList';
+import { TextField } from 'components/Field/Text';
+import useConfirmModal from 'hooks/modal/useConfirmModal';
+import { useToast } from 'react-native-toast-notifications';
+import DeleteModal from 'components/common/Modal/DeleteModal';
+import { AppModalContext } from 'providers/AppModalContext';
 
 export type AccountDetailTab = {
   label: string;
@@ -36,16 +41,20 @@ enum AccountDetailTabType {
 
 interface Props {
   accountProxy: AccountProxy;
+  requestViewDerivedAccountDetails?: boolean;
+  requestViewDerivedAccounts?: boolean;
 }
 
-const Component = ({ accountProxy }: Props) => {
+const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerivedAccountDetails }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const theme = useSubWalletTheme().swThemes;
   const showDerivedAccounts = !!accountProxy?.children?.length;
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
-
+  const [deleting, setDeleting] = useState(false);
   const styles = useMemo(() => createStyle(theme), [theme]);
+  const toast = useToast();
+  const { deriveModal } = useContext(AppModalContext);
 
   const showDerivationInfoTab = useMemo((): boolean => {
     if (accountProxy.parentId) {
@@ -54,6 +63,38 @@ const Component = ({ accountProxy }: Props) => {
       return false;
     }
   }, [accountProxies, accountProxy.parentId]);
+
+  const parentDerivedAccountProxy = useMemo(() => {
+    if (showDerivationInfoTab) {
+      return accountProxies.find(acc => acc.id === accountProxy.parentId);
+    }
+
+    return null;
+  }, [accountProxies, accountProxy.parentId, showDerivationInfoTab]);
+
+  const onDelete = useCallback(() => {
+    if (accountProxy?.id) {
+      setDeleting(true);
+      forgetAccount(accountProxy.id)
+        .then(() => {
+          goHome();
+        })
+        .catch((e: Error) => {
+          toast.show(e.message, { type: 'danger' });
+        })
+        .finally(() => {
+          setDeleting(false);
+        });
+    }
+  }, [accountProxy?.id, goHome, toast]);
+
+  const {
+    onPress: onPressDelete,
+    onCancelModal: onCancelDelete,
+    visible: deleteVisible,
+    onCompleteModal: onCompleteDeleteModal,
+    setVisible,
+  } = useConfirmModal(onDelete);
 
   const formConfig = useMemo(
     (): FormControlConfig => ({
@@ -67,8 +108,18 @@ const Component = ({ accountProxy }: Props) => {
 
   const saveTimeOutRef = useRef<NodeJS.Timeout>();
 
+  const getDefaultTab = () => {
+    if (requestViewDerivedAccounts && showDerivedAccounts) {
+      return AccountDetailTabType.DERIVED_ACCOUNT;
+    } else if (requestViewDerivedAccountDetails) {
+      return AccountDetailTabType.DERIVATION_INFO;
+    } else {
+      return AccountDetailTabType.ACCOUNT_ADDRESS;
+    }
+  };
+
   const [saving, setSaving] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<string>(AccountDetailTabType.ACCOUNT_ADDRESS);
+  const [selectedTab, setSelectedTab] = useState<string>(getDefaultTab());
   const _onSelectType = (value: string) => {
     setSelectedTab(value);
   };
@@ -84,7 +135,7 @@ const Component = ({ accountProxy }: Props) => {
 
     if (showDerivedAccounts) {
       result.push({
-        label: 'Derived account',
+        label: 'DERIVED ACCOUNT',
         value: AccountDetailTabType.DERIVED_ACCOUNT,
         onPress: () => {},
       });
@@ -92,7 +143,7 @@ const Component = ({ accountProxy }: Props) => {
 
     if (showDerivationInfoTab) {
       result.push({
-        label: 'Derivation info',
+        label: 'DERIVATION INFO',
         value: AccountDetailTabType.DERIVATION_INFO,
         onPress: () => {},
       });
@@ -109,9 +160,12 @@ const Component = ({ accountProxy }: Props) => {
     (editName: string) => {
       clearTimeout(saveTimeOutRef.current);
       editAccount(accountProxy.id, editName)
-        .catch(e => console.log(e))
+        .catch((e: Error) => {
+          onUpdateErrors('accountName')([e.message]);
+        })
         .finally(() => setSaving(false));
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [accountProxy.id],
   );
 
@@ -123,7 +177,7 @@ const Component = ({ accountProxy }: Props) => {
     [onSave],
   );
 
-  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: _saveChange,
   });
 
@@ -139,6 +193,19 @@ const Component = ({ accountProxy }: Props) => {
     [onChangeValue, onSave],
   );
 
+  const onPressDeriveAccount = useCallback(() => {
+    deriveModal.setDeriveModalState({
+      visible: true,
+      proxyId: accountProxy.id,
+      onCompleteCb: () => {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      },
+    });
+  }, [accountProxy.id, deriveModal, navigation]);
+
   const footerNode = useMemo(() => {
     if (![AccountProxyType.UNIFIED, AccountProxyType.SOLO].includes(accountProxy.accountType)) {
       return (
@@ -146,6 +213,9 @@ const Component = ({ accountProxy }: Props) => {
           block
           icon={<Icon phosphorIcon={Trash} weight={'fill'} size={'lg'} />}
           style={styles.noPaddingHorizontal}
+          onPress={onPressDelete}
+          loading={deleting}
+          disabled={deleting}
           type={'danger'}>
           {'Delete account'}
         </Button>
@@ -158,11 +228,14 @@ const Component = ({ accountProxy }: Props) => {
           icon={<Icon phosphorIcon={Trash} weight={'fill'} size={'lg'} />}
           style={styles.noPaddingHorizontal}
           type={'danger'}
+          loading={deleting}
+          onPress={onPressDelete}
         />
         <Button
           block
           style={styles.noPaddingHorizontal}
           icon={<Icon phosphorIcon={GitMerge} weight={'fill'} size={'lg'} />}
+          onPress={onPressDeriveAccount}
           type={'secondary'}>
           {'Derive'}
         </Button>
@@ -176,7 +249,46 @@ const Component = ({ accountProxy }: Props) => {
         </Button>
       </>
     );
-  }, [accountProxy.accountType, onExportAccount, styles.noPaddingHorizontal]);
+  }, [
+    accountProxy.accountType,
+    deleting,
+    onExportAccount,
+    onPressDelete,
+    onPressDeriveAccount,
+    styles.noPaddingHorizontal,
+  ]);
+
+  const renderDetailDerivedAccount = () => {
+    return (
+      <View style={{ width: '100%' }}>
+        <TextField text={accountProxy.suri || ''} label={'Derivation path'} placeholder={'Derivation path'} />
+
+        {!!parentDerivedAccountProxy && (
+          <TextField
+            text={parentDerivedAccountProxy?.name || ''}
+            label={'Parent account'}
+            placeholder={'Parent account'}
+          />
+        )}
+      </View>
+    );
+  };
+
+  useEffect(() => {
+    if (accountProxy) {
+      onChangeValue('accountName')(accountProxy.name);
+    }
+  }, [accountProxy, onChangeValue]);
+
+  useEffect(() => {
+    if (requestViewDerivedAccounts && showDerivedAccounts) {
+      setSelectedTab(AccountDetailTabType.DERIVED_ACCOUNT);
+    } else if (requestViewDerivedAccountDetails) {
+      setSelectedTab(AccountDetailTabType.DERIVATION_INFO);
+    } else {
+      setSelectedTab(AccountDetailTabType.ACCOUNT_ADDRESS);
+    }
+  }, [requestViewDerivedAccountDetails, requestViewDerivedAccounts, showDerivedAccounts]);
 
   return (
     <SubScreenContainer
@@ -190,6 +302,7 @@ const Component = ({ accountProxy }: Props) => {
             ref={formState.refs.accountName}
             label={formState.labels.accountName}
             value={formState.data.accountName}
+            errorMessages={formState.errors.accountName}
             editAccountInputStyle={[styles.inputContainer, styles.nameContainer]}
             onChangeText={onChangeName}
             onSubmitField={onSubmitField('accountName')}
@@ -211,7 +324,12 @@ const Component = ({ accountProxy }: Props) => {
             onSelectType={_onSelectType}
             selectedValue={selectedTab}
             containerStyle={{ backgroundColor: 'transparent', width: '100%', marginBottom: theme.marginSM }}
-            itemStyle={{ backgroundColor: 'transparent', flex: undefined, height: 20 }}
+            itemStyle={{
+              backgroundColor: 'transparent',
+              flex: undefined,
+              height: 20,
+              paddingHorizontal: theme.paddingXS,
+            }}
             selectedStyle={{ backgroundColor: 'transparent' }}
             textStyle={{
               fontSize: theme.fontSizeSM,
@@ -224,8 +342,16 @@ const Component = ({ accountProxy }: Props) => {
 
           {selectedTab === AccountDetailTabType.ACCOUNT_ADDRESS && <AccountAddressList accountProxy={accountProxy} />}
           {selectedTab === AccountDetailTabType.DERIVED_ACCOUNT && <DerivedAccountList accountProxy={accountProxy} />}
-          {/*{selectedTab === AccountDetailTabType.DERIVATION_INFO && renderDetailDerivedAccount()}*/}
+          {selectedTab === AccountDetailTabType.DERIVATION_INFO && renderDetailDerivedAccount()}
         </View>
+        <DeleteModal
+          title={i18n.header.removeThisAcc}
+          visible={deleteVisible}
+          message={i18n.removeAccount.removeAccountMessage}
+          onCancelModal={onCancelDelete}
+          onCompleteModal={onCompleteDeleteModal}
+          setVisible={setVisible}
+        />
         <View
           style={{
             display: 'flex',
@@ -243,7 +369,7 @@ const Component = ({ accountProxy }: Props) => {
 
 export const AccountDetail = ({
   route: {
-    params: { address: accountProxyId },
+    params: { address: accountProxyId, requestViewDerivedAccounts, requestViewDerivedAccountDetails },
   },
 }: EditAccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -259,5 +385,11 @@ export const AccountDetail = ({
     return <></>;
   }
 
-  return <Component accountProxy={accountProxy} />;
+  return (
+    <Component
+      accountProxy={accountProxy}
+      requestViewDerivedAccounts={requestViewDerivedAccounts}
+      requestViewDerivedAccountDetails={requestViewDerivedAccountDetails}
+    />
+  );
 };

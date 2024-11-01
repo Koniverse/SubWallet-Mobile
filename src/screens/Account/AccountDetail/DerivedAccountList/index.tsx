@@ -8,6 +8,7 @@ import { AccountChainAddressesSelector } from 'components/Modal/common/AccountCh
 import { ModalRef } from 'types/modalRef';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { View } from 'react-native';
 
 interface Props {
   accountProxy: AccountProxy;
@@ -18,6 +19,7 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [accountProxyToCopyAddresses, setAccountProxyToCopyAddresses] = useState<AccountProxy>();
   const accountChainAddressSelectorRef = useRef<ModalRef>();
+
   const items = useMemo<AccountProxy[]>(() => {
     const result: AccountProxy[] = [];
 
@@ -47,7 +49,11 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
   const onPressDetailBtn = useCallback(
     (item: AccountProxy) => {
       return () => {
-        navigation.navigate('EditAccount', { address: item.id, name: item.name || '' });
+        navigation.navigate('EditAccount', {
+          address: item.id,
+          name: item.name || '',
+          requestViewDerivedAccountDetails: true,
+        });
       };
     },
     [navigation],
@@ -65,12 +71,13 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
         onPressCopyBtn={onPressCopyBtn(item)}
         onPressDetailBtn={onPressDetailBtn(item)}
         showDerivedPath={!!item.parentId}
+        wrapperStyle={{ marginHorizontal: 0 }}
       />
     );
   };
 
   return (
-    <>
+    <View style={{ flex: 1, width: '100%' }}>
       <FlashList
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
@@ -89,6 +96,6 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
           accountSelectorRef={accountChainAddressSelectorRef}
         />
       )}
-    </>
+    </View>
   );
 };

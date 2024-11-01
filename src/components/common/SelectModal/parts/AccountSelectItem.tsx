@@ -1,6 +1,6 @@
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import React from 'react';
-import { AccountJson } from '@subwallet/extension-base/background/types';
+import { AccountAddressItemType } from 'types/account';
 
 interface Props<T> {
   item: T;
@@ -17,13 +17,14 @@ export function AccountSelectItem<T>({
   onCloseModal,
   showAccountSignModeIcon,
 }: Props<T>) {
-  const { address, name } = item as AccountJson;
+  const { address, accountName } = item as AccountAddressItemType;
+
   return (
     <AccountItemWithName
       customStyle={{ container: { marginBottom: 8, marginHorizontal: 16 } }}
       avatarSize={24}
       address={address}
-      accountName={name}
+      accountName={accountName}
       isSelected={!!selectedValueMap[address]}
       showAccountSignModeIcon={showAccountSignModeIcon}
       onPress={() => {
