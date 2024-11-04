@@ -7,6 +7,8 @@ import { ListRenderItemInfo } from '@shopify/flash-list';
 import { ImportJsonAccountItem } from 'screens/Account/RestoreJson/ImportJsonAccountSelector/ImportJsonAccountItem';
 import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass } from 'phosphor-react-native';
+import { View } from 'react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   value?: string;
@@ -23,10 +25,19 @@ interface Props {
 }
 
 export const ImportJsonAccountSelector = ({ grouping, items, accountProxiesSelected, onSelect }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<AccountProxyExtra_>) => {
       const selected = accountProxiesSelected.includes(item.id);
-      return <ImportJsonAccountItem key={item.id} accountProxy={item} isSelected={selected} onPress={onSelect(item)} />;
+      return (
+        <ImportJsonAccountItem
+          disabled={item.group === 'existed_accounts'}
+          key={item.id}
+          accountProxy={item}
+          isSelected={selected}
+          onPress={onSelect(item)}
+        />
+      );
     },
     [accountProxiesSelected, onSelect],
   );
@@ -42,14 +53,16 @@ export const ImportJsonAccountSelector = ({ grouping, items, accountProxiesSelec
   };
 
   return (
-    <LazySectionList
-      items={items}
-      renderItem={renderItem}
-      renderListEmptyComponent={renderEmptyList}
-      groupBy={grouping?.groupBy}
-      renderSectionHeader={grouping?.renderSectionHeader}
-      estimatedItemSize={60}
-      extraData={accountProxiesSelected}
-    />
+    <View style={{ paddingTop: theme.paddingXS }}>
+      <LazySectionList
+        items={items}
+        renderItem={renderItem}
+        renderListEmptyComponent={renderEmptyList}
+        groupBy={grouping?.groupBy}
+        renderSectionHeader={grouping?.renderSectionHeader}
+        estimatedItemSize={60}
+        extraData={accountProxiesSelected}
+      />
+    </View>
   );
 };

@@ -3,21 +3,33 @@ import AccountItemBase from 'components/common/Account/Item/AccountItemBase';
 import { View } from 'react-native';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { Icon, Logo, Typography } from 'components/design-system-ui';
-import { AccountChainType, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
-import { Eye, GitCommit, Needle, QrCode, Question, Strategy, Swatches } from 'phosphor-react-native';
+import { AccountChainType, AccountProxyType } from '@subwallet/extension-base/types';
+import {
+  CheckCircle,
+  Eye,
+  GitCommit,
+  Needle,
+  QrCode,
+  Question,
+  Strategy,
+  Swatches,
+  Warning,
+} from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountProxyTypeIcon } from 'components/common/SelectAccountItem';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { VoidFunction } from 'types/index';
+import { AccountProxyExtra_ } from 'screens/Account/RestoreJson';
 
 interface Props {
-  accountProxy: AccountProxy;
+  accountProxy: AccountProxyExtra_;
   isSelected: boolean;
   onPress: VoidFunction;
+  disabled?: boolean;
 }
 
 export const ImportJsonAccountItem = (props: Props) => {
-  const { accountProxy, isSelected, onPress } = props;
+  const { accountProxy, isSelected, onPress, disabled } = props;
   const theme = useSubWalletTheme().swThemes;
   const chainTypeLogoMap = useMemo(() => {
     return {
@@ -88,6 +100,10 @@ export const ImportJsonAccountItem = (props: Props) => {
     return null;
   })();
 
+  const isDuplicated = useMemo(() => {
+    return (accountProxy.isExistName || accountProxy.isNameDuplicated) && !accountProxy.isExistAccount;
+  }, [accountProxy.isExistAccount, accountProxy.isExistName, accountProxy.isNameDuplicated]);
+
   const leftItemNode = useMemo(
     () => (
       <View style={{ position: 'relative' }}>
@@ -144,14 +160,44 @@ export const ImportJsonAccountItem = (props: Props) => {
     [accountProxy.chainTypes, accountProxy.name, chainTypeLogoMap, theme.colorWhite, theme.paddingXS],
   );
 
+  const rightItems = useMemo(() => {
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.paddingSM - 2 }}>
+        {isDuplicated && (
+          <Icon
+            iconColor={isDuplicated ? theme.colorWarning : theme.colorTextLight4}
+            phosphorIcon={Warning}
+            size="sm"
+            type="phosphor"
+            weight="fill"
+          />
+        )}
+
+        {isSelected && (
+          <Icon
+            iconColor={isSelected ? theme.colorSuccess : theme.colorTextLight4}
+            phosphorIcon={CheckCircle}
+            size="sm"
+            type="phosphor"
+            weight="fill"
+          />
+        )}
+      </View>
+    );
+  }, [isDuplicated, isSelected, theme.colorSuccess, theme.colorTextLight4, theme.colorWarning, theme.paddingSM]);
+
   return (
     <AccountItemBase
-      customStyle={{ container: { marginBottom: theme.marginXS, height: 58 } }}
+      customStyle={{
+        container: [{ marginBottom: theme.marginXS, height: 58 }, disabled && { opacity: theme.opacityDisable }],
+      }}
+      disabled={disabled}
       onPress={onPress}
       isSelected={isSelected}
       address={''}
       leftItem={leftItemNode}
       middleItem={middleItemNode}
+      rightItem={rightItems}
     />
   );
 };

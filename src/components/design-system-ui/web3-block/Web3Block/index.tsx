@@ -1,6 +1,6 @@
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import React, { ReactNode, useMemo } from 'react';
-import { StyleProp, TouchableOpacity, View, ViewProps, ViewStyle } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleProp, TouchableOpacity, TouchableOpacityProps, View, ViewProps, ViewStyle } from 'react-native';
 import createStyle from './styles';
 
 export interface Web3BlockCustomStyle {
@@ -19,6 +19,7 @@ export interface Web3BlockProps {
   renderRightItem?: (dItem: React.ReactNode) => React.ReactNode;
   onPress?: () => void;
   customStyle?: Web3BlockCustomStyle;
+  disabled?: boolean;
 }
 
 function defaultRender(x: React.ReactNode) {
@@ -35,20 +36,21 @@ const Web3Block: React.FC<Web3BlockProps> = (props: Web3BlockProps) => {
     renderRightItem = defaultRender,
     rightItem,
     customStyle,
+    disabled,
   } = props;
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
 
-  const Wrapper = useMemo((): React.FC<ViewProps> => {
+  const Wrapper = useMemo(() => {
     if (onPress) {
-      return (_props: ViewProps) => <TouchableOpacity onPress={onPress} activeOpacity={0.8} {..._props} />;
+      return (_props: TouchableOpacityProps) => <TouchableOpacity onPress={onPress} activeOpacity={0.8} {..._props} />;
     } else {
       return (_props: ViewProps) => <View {..._props} />;
     }
   }, [onPress]);
 
   return (
-    <Wrapper style={[styles.container, customStyle?.container]}>
+    <Wrapper style={[styles.container, customStyle?.container]} disabled={disabled}>
       {!!leftItem && <View style={[styles.left, customStyle?.left]}>{renderLeftItem(leftItem)}</View>}
       {!!middleItem && <View style={[styles.middle, customStyle?.middle]}>{renderMiddleItem(middleItem)}</View>}
       {!!rightItem && <View style={[styles.right, customStyle?.right]}>{renderRightItem(rightItem)}</View>}

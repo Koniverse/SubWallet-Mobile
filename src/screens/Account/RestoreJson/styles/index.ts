@@ -40,6 +40,7 @@ const createStyles = (theme: ThemeTypes) => {
       ...FontMedium,
     },
     description: {
+      marginTop: theme.marginXS,
       color: theme.colorTextDescription,
       fontWeight: theme.bodyFontWeight,
       ...FontMedium,
@@ -75,7 +76,6 @@ const createStyles = (theme: ThemeTypes) => {
     sectionHeaderContainer: {
       paddingBottom: theme.sizeXS,
       backgroundColor: theme.colorBgDefault,
-      paddingHorizontal: theme.padding,
     },
     sectionHeaderTitle: {
       ...FontSemiBold,

@@ -123,7 +123,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const defaultTarget = useRef<string | undefined>(target);
   const redirectFromPreviewRef = useRef(!!redirectFromPreview);
   const autoCheckCompoundRef = useRef<boolean>(true);
-  console.log('slug', slug);
+
   const {
     title,
     form: {

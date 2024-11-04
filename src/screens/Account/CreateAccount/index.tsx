@@ -37,7 +37,6 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   const storedDeeplink = mmkvStore.getString('storedDeeplink');
   const selectedMnemonicType = mmkvStore.getString(SELECTED_MNEMONIC_TYPE) as MnemonicType;
   const [accountNameModalVisible, setAccountNameModalVisible] = useState<boolean>(false);
-  console.log('selectedMnemonicType', selectedMnemonicType);
 
   useHandlerHardwareBackPress(isLoading);
 
@@ -110,13 +109,15 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
       <>
         {!!seedPhrase && <SecretPhraseArea seed={seedPhrase} onPressSubmit={onSubmit(onPressSubmitInitSecretPhrase)} />}
 
-        <AccountNameModal
-          modalVisible={accountNameModalVisible}
-          setModalVisible={setAccountNameModalVisible}
-          accountType={selectedMnemonicType === 'general' ? AccountProxyType.UNIFIED : AccountProxyType.SOLO}
-          isLoading={isLoading}
-          onSubmit={_onSubmit}
-        />
+        {accountNameModalVisible && (
+          <AccountNameModal
+            modalVisible={accountNameModalVisible}
+            setModalVisible={setAccountNameModalVisible}
+            accountType={selectedMnemonicType === 'general' ? AccountProxyType.UNIFIED : AccountProxyType.SOLO}
+            isLoading={isLoading}
+            onSubmit={_onSubmit}
+          />
+        )}
 
         <TnCSeedPhraseModal
           onBackButtonPress={() => navigation.goBack()}

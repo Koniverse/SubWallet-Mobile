@@ -129,7 +129,6 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
 
   const createAccountFunc = (item: ActionItemType) => {
     if (item.key === 'createAcc') {
-      console.log('run to fucking this');
       createAccountRef?.current?.onCloseModal();
       setSelectedMnemonicType('general');
       mmkvStore.set('use-default-create-content', false);

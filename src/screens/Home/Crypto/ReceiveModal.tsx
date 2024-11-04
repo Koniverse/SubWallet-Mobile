@@ -60,8 +60,6 @@ export const ReceiveModal = ({
     return accountInfo?.accountActions.includes(AccountActions.TON_CHANGE_WALLET_CONTRACT_VERSION);
   }, [accountInfo]);
 
-  console.log('isRelatedToTon', isRelatedToTon);
-
   const copyToClipboard = (text: string) => {
     return () => {
       Clipboard.setString(text);

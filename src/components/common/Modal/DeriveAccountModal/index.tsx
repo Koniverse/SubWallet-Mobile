@@ -110,13 +110,11 @@ export const DeriveAccountActionModal = ({
         name: _name,
       })
         .then(() => {
-          console.log('run to then');
           closeModal();
           onCompleteCb && onCompleteCb();
           //go back home
         })
         .catch((e: Error) => {
-          console.log('run to catch');
           onUpdateErrors('accountName')([e.message]);
         })
         .finally(() => {
@@ -205,7 +203,6 @@ export const DeriveAccountActionModal = ({
       })
         .then(rs => {
           if (!cancel) {
-            console.log('rs.info', rs.info);
             if (rs.info) {
               const suri = rs.info.derivationPath || rs.info.suri;
 

@@ -140,6 +140,10 @@ export const RestoreJson = () => {
     if (result.length === 1) {
       setAccountProxiesSelected([result[0].id]);
     }
+
+    if (exitedAccount.length) {
+      result.push(...exitedAccount);
+    }
     return result;
   }, [accountProxies]);
 
@@ -333,7 +337,7 @@ export const RestoreJson = () => {
     [isRequirePassword, onImport, onValidatePassword],
   );
 
-  const { formState, onChangeValue, onSubmitField, focus } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, focus, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
 
@@ -384,10 +388,11 @@ export const RestoreJson = () => {
       setAccountProxies([]);
       setAccountProxiesSelected([]);
       setStepState(StepState.UPLOAD_JSON_FILE);
+      onUpdateErrors('password')([]);
     } else {
       navigation.goBack();
     }
-  }, [navigation, onChangeValue, stepState]);
+  }, [navigation, onChangeValue, onUpdateErrors, stepState]);
 
   const onPressSubmitButton = () => {
     onSubmit(formState);
@@ -479,7 +484,11 @@ export const RestoreJson = () => {
       disableRightButton={submitting}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>
-          <Typography.Text style={styles.title}>{i18n.importAccount.importJsonSubtitle}</Typography.Text>
+          <Typography.Text style={styles.title}>
+            {stepState === StepState.SELECT_ACCOUNT_IMPORT && passwordValidateState.status === 'success'
+              ? "Select the account(s) you'd like to import"
+              : i18n.importAccount.importJsonSubtitle}
+          </Typography.Text>
           {stepState === StepState.SELECT_ACCOUNT_IMPORT && showNoValidAccountAlert && (
             <AlertBox
               description={'All accounts found in this file already exist in SubWallet'}
@@ -528,7 +537,9 @@ export const RestoreJson = () => {
               accountProxiesSelected={accountProxiesSelected}
               onSelect={onSelect}
               grouping={grouping}
-              onClose={() => setStepState(StepState.UPLOAD_JSON_FILE)}
+              onClose={() => {
+                setStepState(StepState.UPLOAD_JSON_FILE);
+              }}
             />
           )}
         </ScrollView>

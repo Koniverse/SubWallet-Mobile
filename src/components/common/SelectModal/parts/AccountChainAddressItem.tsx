@@ -23,7 +23,9 @@ export const AccountChainAddressItem = ({ item, onPress, onPressCopyButton, onPr
       <Logo network={item.slug} shape={'circle'} size={28} />
 
       <View style={styles.centerPart}>
-        <Typography.Text style={styles.chainName}>{item.name}</Typography.Text>
+        <Typography.Text ellipsis style={styles.chainName}>
+          {item.name}
+        </Typography.Text>
         <Typography.Text style={styles.address}>{toShort(item.address, 4, 5)}</Typography.Text>
       </View>
 
@@ -63,9 +65,11 @@ function createStyle(theme: ThemeTypes) {
       alignItems: 'center',
       gap: theme.sizeXXS,
       marginLeft: 10,
+      paddingRight: theme.paddingXS,
     },
     chainName: {
-      color: theme.colorWhite, // Replace with your theme tokens
+      color: theme.colorWhite,
+      flex: 1,
     },
     address: {
       fontSize: 12,

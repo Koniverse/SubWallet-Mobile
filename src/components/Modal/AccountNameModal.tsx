@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { AccountProxyType } from '@subwallet/extension-base/types';
-import { Button, Icon, SwModal } from 'components/design-system-ui';
+import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { Platform } from 'react-native';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
@@ -29,19 +29,20 @@ export const AccountNameModal = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const modalRef = useRef<SWModalRefProps>(null);
-  const validatorFunc = useCallback((value: string) => {
+  const validatorFunc = useCallback(async (value: string) => {
     let result: string[] = [];
 
-    if (value) {
-      validateAccountName({ name: value })
-        .then(({ isValid }) => {
-          if (!isValid) {
-            result = ['Account name already in use'];
-          }
-        })
-        .catch(() => {
-          result = ['Account name invalid'];
-        });
+    if (!value.trim()) {
+      result = ['This field is required'];
+    } else {
+      try {
+        const { isValid } = await validateAccountName({ name: value.trim() });
+        if (!isValid) {
+          result = ['Account name already in use'];
+        }
+      } catch {
+        result = ['Account name invalid'];
+      }
     }
 
     return result;
@@ -52,12 +53,9 @@ export const AccountNameModal = ({
         name: i18n.common.accountName,
         value: '',
         require: true,
-        validateFunc: (value: string) => {
-          return validatorFunc(value);
-        },
       },
     }),
-    [validatorFunc],
+    [],
   );
 
   const _onSubmit = useCallback(
@@ -72,14 +70,18 @@ export const AccountNameModal = ({
   });
 
   const onChangeAccountName = (value: string) => {
-    if (!value) {
-      onUpdateErrors('accountName')([]);
-    }
-
     onChangeValue('accountName')(value);
+    validatorFunc(value)
+      .then(res => {
+        onUpdateErrors('accountName')(res);
+      })
+      .catch((error: Error) => console.log('error validate name', error.message));
   };
 
-  const isDisabled = useMemo(() => !formState.data.accountName || isLoading, [formState.data.accountName, isLoading]);
+  const isDisabled = useMemo(
+    () => !formState.data.accountName || isLoading || !!formState.errors.accountName.length,
+    [formState.data.accountName, formState.errors.accountName, isLoading],
+  );
 
   const footerNode = useMemo(
     () => (
@@ -115,15 +117,19 @@ export const AccountNameModal = ({
       isAllowSwipeDown={Platform.OS === 'ios'}
       modalBaseV2Ref={modalRef}
       footer={footerNode}>
+      <Typography.Text style={{ color: theme.colorTextTertiary, textAlign: 'center', paddingBottom: theme.paddingLG }}>
+        {'Enter a name for your account.\n' + ' You can edit this later.'}
+      </Typography.Text>
       <EditAccountInputText
         ref={formState.refs.accountName}
         label={formState.labels.accountName}
-        editAccountInputStyle={{ marginBottom: theme.margin }}
+        editAccountInputStyle={{ marginBottom: theme.margin, paddingBottom: theme.paddingXS }}
         value={formState.data.accountName}
         onChangeText={onChangeAccountName}
         onSubmitField={onSubmitField('accountName')}
         accountType={accountType}
         isDisabled={isLoading}
+        errorMessages={formState.errors.accountName}
       />
     </SwModal>
   );

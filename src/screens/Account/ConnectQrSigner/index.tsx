@@ -51,7 +51,6 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   const [accountNameModalVisible, setAccountNameModalVisible] = useState<boolean>(false);
   const styles = useMemo(() => createStyle(theme), [theme]);
   const goHome = useGoHome();
-  console.log('accountNameModalVisible', accountNameModalVisible);
 
   const onComplete = useCallback(() => {
     navigation.reset({
