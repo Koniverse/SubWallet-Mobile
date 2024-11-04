@@ -17,6 +17,7 @@ import createStyle from './styles';
 import { AccountProxyType, ResponseMnemonicValidateV2 } from '@subwallet/extension-base/types';
 import { AppModalContext } from 'providers/AppModalContext';
 import { AccountNameModal } from 'components/Modal/AccountNameModal';
+import { useToast } from 'react-native-toast-notifications';
 const secretPhraseFormConfig: FormControlConfig = {
   seed: {
     name: '',
@@ -31,6 +32,7 @@ export const ImportSecretPhrase = () => {
   const goHome = useGoHome();
   const { confirmModal } = useContext(AppModalContext);
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
+  const toast = useToast();
 
   const styles = useMemo(() => createStyle(theme), [theme]);
   const [accountNameModalVisible, setAccountNameModalVisible] = useState<boolean>(false);
@@ -107,7 +109,9 @@ export const ImportSecretPhrase = () => {
           routes: [{ name: 'Home' }],
         });
       })
-      .catch(() => {
+      .catch((e: Error) => {
+        toast.hideAll();
+        toast.show(e.message, { type: 'danger' });
         setAccountCreating(false);
       });
   };
