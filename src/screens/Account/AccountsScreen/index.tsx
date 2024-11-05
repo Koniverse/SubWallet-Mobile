@@ -401,6 +401,7 @@ export const AccountsScreen = ({
             />
           ) : (
             <SelectAccountItem
+              key={item.id}
               accountProxy={item}
               isSelected={item.id === currentAccountProxy?.id}
               isAllAccount={isAllAccount}

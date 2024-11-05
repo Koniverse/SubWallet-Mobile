@@ -1,6 +1,5 @@
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { ScrollView, View } from 'react-native';
 import { Avatar, Button, Icon } from 'components/design-system-ui';
@@ -27,6 +26,7 @@ import { SelectedActionType } from 'stores/types';
 import { noop } from 'utils/function';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
@@ -54,7 +54,7 @@ const ApplyMasterPassword = () => {
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
   const _style = ApplyMasterPasswordStyle(theme);
-  const { accounts, isLocked } = useSelector((state: RootState) => state.accountState);
+  const { accounts } = useSelector((state: RootState) => state.accountState);
   const [step, setStep] = useState<PageStep>('Introduction');
   const [migrateAccount, setMigrateAccount] = useState<AccountJson | undefined>(undefined);
   const [deleting, setDeleting] = useState<boolean>(false);
@@ -72,6 +72,7 @@ const ApplyMasterPassword = () => {
       validateFunc: validatePassword,
     },
   };
+  console.log('step', step);
   const { onPress } = useUnlockModal(navigation);
 
   const migratedRef = useRef<AccountJson[]>(accounts.filter(filterAccountMigrated));
@@ -137,12 +138,6 @@ const ApplyMasterPassword = () => {
   useEffect(() => {
     migrateAddressRef.current = migrateAccount?.address || '';
   }, [migrateAccount?.address]);
-
-  useEffect(() => {
-    if (isLocked && needMigrate.length) {
-      setStep('Introduction');
-    }
-  }, [isLocked, navigation, needMigrate.length]);
 
   useEffect(() => {
     onUpdateErrors('password')(undefined);

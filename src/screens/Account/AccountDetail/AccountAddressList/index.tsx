@@ -96,6 +96,7 @@ export const AccountAddressList = ({ accountProxy }: Props) => {
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         estimatedItemSize={60}
+        keyboardShouldPersistTaps={'handled'}
       />
     </View>
   );

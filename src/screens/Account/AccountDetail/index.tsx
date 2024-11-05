@@ -14,7 +14,7 @@ import { editAccount, forgetAccount } from 'messaging/index';
 import createStyle from './styles';
 import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
 import { SwTab } from 'components/design-system-ui/tab';
-import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
+import { AccountActions, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -159,7 +159,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
   const onSave = useCallback(
     (editName: string) => {
       clearTimeout(saveTimeOutRef.current);
-      editAccount(accountProxy.id, editName)
+      editAccount(accountProxy.id, editName.trim())
         .catch((e: Error) => {
           onUpdateErrors('accountName')([e.message]);
         })
@@ -196,6 +196,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
   const onPressDeriveAccount = useCallback(() => {
     deriveModal.setDeriveModalState({
       visible: true,
+      navigation,
       proxyId: accountProxy.id,
       onCompleteCb: () => {
         navigation.reset({
@@ -230,11 +231,22 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
           type={'danger'}
           loading={deleting}
           onPress={onPressDelete}
+          disabled={deleting}
         />
         <Button
           block
           style={styles.noPaddingHorizontal}
-          icon={<Icon phosphorIcon={GitMerge} weight={'fill'} size={'lg'} />}
+          disabled={!accountProxy.accountActions.includes(AccountActions.DERIVE)}
+          icon={
+            <Icon
+              phosphorIcon={GitMerge}
+              weight={'fill'}
+              size={'lg'}
+              iconColor={
+                !accountProxy.accountActions.includes(AccountActions.DERIVE) ? theme.colorTextLight5 : theme.colorWhite
+              }
+            />
+          }
           onPress={onPressDeriveAccount}
           type={'secondary'}>
           {'Derive'}
@@ -250,12 +262,15 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
       </>
     );
   }, [
+    accountProxy.accountActions,
     accountProxy.accountType,
     deleting,
     onExportAccount,
     onPressDelete,
     onPressDeriveAccount,
     styles.noPaddingHorizontal,
+    theme.colorTextLight5,
+    theme.colorWhite,
   ]);
 
   const renderDetailDerivedAccount = () => {

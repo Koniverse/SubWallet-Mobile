@@ -4,6 +4,8 @@ import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 import { noop } from 'utils/function';
 import { VoidFunction } from 'types/index';
 import { DeriveAccountActionModal } from 'components/common/Modal/DeriveAccountModal';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from 'routes/index';
 
 interface AppModalContextProviderProps {
   children?: React.ReactElement;
@@ -32,6 +34,7 @@ export type DeriveModalInfo = {
   visible?: boolean;
   proxyId?: string;
   onCompleteCb?: () => void;
+  navigation?: NativeStackNavigationProp<RootStackParamList>;
 };
 
 export interface AppModal {
@@ -149,7 +152,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         />
       )}
 
-      {deriveModalState.visible && deriveModalState.proxyId && (
+      {deriveModalState.visible && deriveModalState.proxyId && deriveModalState.navigation && (
         <DeriveAccountActionModal
           modalVisible={deriveModalState.visible}
           setModalVisible={noop}
@@ -158,6 +161,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           closeModal={hideDeriveModal}
           proxyId={deriveModalState.proxyId}
           onCompleteCb={deriveModalState.onCompleteCb}
+          navigation={deriveModalState.navigation}
         />
       )}
     </AppModalContext.Provider>

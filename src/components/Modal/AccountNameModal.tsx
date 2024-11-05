@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { AccountProxyType } from '@subwallet/extension-base/types';
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
-import { Platform } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
 import { validateAccountName } from 'messaging/index';
@@ -60,7 +60,7 @@ export const AccountNameModal = ({
 
   const _onSubmit = useCallback(
     (formState: FormState) => {
-      return onSubmit && onSubmit(formState.data.accountName);
+      return onSubmit && onSubmit(formState.data.accountName.trim());
     },
     [onSubmit],
   );
@@ -103,7 +103,7 @@ export const AccountNameModal = ({
   );
 
   useEffect(() => {
-    setTimeout(() => focus('accountName')(), 100);
+    setTimeout(() => focus('accountName')(), 300);
   }, [focus]);
 
   return (
@@ -126,9 +126,14 @@ export const AccountNameModal = ({
         editAccountInputStyle={{ marginBottom: theme.margin, paddingBottom: theme.paddingXS }}
         value={formState.data.accountName}
         onChangeText={onChangeAccountName}
-        onSubmitField={onSubmitField('accountName')}
+        onSubmitField={
+          formState.data.accountName && !formState.errors.accountName.length
+            ? onSubmitField('accountName')
+            : Keyboard.dismiss
+        }
         accountType={accountType}
         isDisabled={isLoading}
+        placeholder={'Enter the account name'}
         errorMessages={formState.errors.accountName}
       />
     </SwModal>

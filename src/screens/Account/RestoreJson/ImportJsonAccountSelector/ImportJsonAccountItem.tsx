@@ -162,7 +162,7 @@ export const ImportJsonAccountItem = (props: Props) => {
 
   const rightItems = useMemo(() => {
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.paddingSM - 2 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.paddingLG - 4 }}>
         {isDuplicated && (
           <Icon
             iconColor={isDuplicated ? theme.colorWarning : theme.colorTextLight4}
@@ -173,18 +173,16 @@ export const ImportJsonAccountItem = (props: Props) => {
           />
         )}
 
-        {isSelected && (
-          <Icon
-            iconColor={isSelected ? theme.colorSuccess : theme.colorTextLight4}
-            phosphorIcon={CheckCircle}
-            size="sm"
-            type="phosphor"
-            weight="fill"
-          />
-        )}
+        <Icon
+          iconColor={isSelected ? theme.colorSuccess : theme.colorTextLight4}
+          phosphorIcon={CheckCircle}
+          size="sm"
+          type="phosphor"
+          weight="fill"
+        />
       </View>
     );
-  }, [isDuplicated, isSelected, theme.colorSuccess, theme.colorTextLight4, theme.colorWarning, theme.paddingSM]);
+  }, [isDuplicated, isSelected, theme.colorSuccess, theme.colorTextLight4, theme.colorWarning, theme.paddingLG]);
 
   return (
     <AccountItemBase

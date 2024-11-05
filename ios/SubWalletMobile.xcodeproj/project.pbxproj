@@ -14,6 +14,7 @@
 		3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */; };
 		354402E42CBE8391002D4A91 /* Web.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 354402E32CBE8391002D4A91 /* Web.bundle */; };
 		356488AD2C64FC7B00440F84 /* DevModeWeb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 356488AC2C64FC7B00440F84 /* DevModeWeb.bundle */; };
+		35C9BA812CDA4C40007EB84C /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 35C9BA802CDA4C40007EB84C /* main.jsbundle */; };
 		4407831F29CEA0080044030D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4407831E29CEA0080044030D /* fonts */; };
 		440FCA172A72440100B44079 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 440FCA152A72440100B44079 /* RCTMinimizer.m */; };
 		7699B88040F8A987B510C191 /* libPods-SubWalletMobile-SubWalletMobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */; };
@@ -46,6 +47,7 @@
 		3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		354402E32CBE8391002D4A91 /* Web.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Web.bundle; path = ../html/Web.bundle; sourceTree = "<group>"; };
 		356488AC2C64FC7B00440F84 /* DevModeWeb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = DevModeWeb.bundle; path = ../html/DevModeWeb.bundle; sourceTree = "<group>"; };
+		35C9BA802CDA4C40007EB84C /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		3B4440A12AC88292D35C810B /* Pods-SubWalletMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.debug.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		4407831E29CEA0080044030D /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		440FCA152A72440100B44079 /* RCTMinimizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTMinimizer.m; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.m; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				35C9BA802CDA4C40007EB84C /* main.jsbundle */,
 				354402E32CBE8391002D4A91 /* Web.bundle */,
 				356488AC2C64FC7B00440F84 /* DevModeWeb.bundle */,
 				F1F1508628C6028D004B2C94 /* PageJs.bundle */,
@@ -298,6 +301,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 8;
 			files = (
+				35C9BA812CDA4C40007EB84C /* main.jsbundle in Resources */,
 				3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */,
 				354402E42CBE8391002D4A91 /* Web.bundle in Resources */,
 				81AB9BB82440601600AC10FF /* SplashScreen.storyboard in Resources */,

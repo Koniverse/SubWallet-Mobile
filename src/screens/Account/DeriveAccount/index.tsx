@@ -43,6 +43,7 @@ export const DeriveAccount = () => {
       return () => {
         deriveModal.setDeriveModalState({
           visible: true,
+          navigation,
           proxyId: account.id,
           onCompleteCb: () => {
             navigation.navigate('Home');

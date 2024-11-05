@@ -18,7 +18,7 @@ import InputText from 'components/Input/InputText';
 import { KeypairType } from '@subwallet/keyring/types';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
-  return isValidated.privateKey;
+  return isValidated.privateKey && isValidated.accountName;
 }
 
 export const ImportPrivateKey = () => {
@@ -26,6 +26,7 @@ export const ImportPrivateKey = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
+  const [type, setType] = useState<string>('');
 
   const accountNameValidator = useCallback((value: string) => {
     let result: string[] = [];
@@ -59,10 +60,6 @@ export const ImportPrivateKey = () => {
           return accountNameValidator(value);
         },
       },
-      type: {
-        name: 'Type',
-        value: '',
-      },
     }),
     [accountNameValidator],
   );
@@ -81,9 +78,9 @@ export const ImportPrivateKey = () => {
     Keyboard.dismiss();
     setIsBusy(true);
     createAccountSuriV2({
-      name: formState.data.accountName,
+      name: formState.data.accountName.trim(),
       suri: formState.data.privateKey,
-      type: formState.data.type as KeypairType,
+      type: type as KeypairType,
       isAllowed: true,
     })
       .then(() => {
@@ -124,7 +121,7 @@ export const ImportPrivateKey = () => {
                   onChangeValue('privateKey')(`0x${privateKey}`);
                 }
 
-                onChangeValue('type')(keyTypes[0]);
+                setType(keyTypes[0]);
                 onUpdateErrors('privateKey')([]);
               }
             })
@@ -183,6 +180,10 @@ export const ImportPrivateKey = () => {
             label={'Account name'}
             placeholder={'Enter the account name'}
             onChangeText={onChangeValue('accountName')}
+            onSubmitField={() => {
+              onSubmitField('accountName', formState.data.accountName)();
+            }}
+            errorMessages={formState.errors.accountName}
             value={formState.data.accountName}
           />
         </ScrollView>

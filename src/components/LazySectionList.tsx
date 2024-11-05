@@ -188,6 +188,7 @@ export function LazySectionList<T>({
             estimatedItemSize={estimatedItemSize}
             data={sectionData}
             extraData={extraData}
+            showsVerticalScrollIndicator={false}
           />
         </View>
       ) : (

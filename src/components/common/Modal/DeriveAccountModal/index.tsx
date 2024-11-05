@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Icon, Logo, SwModal, Typography } from 'components/design-system-ui';
+import { Button, Icon, Logo, PageIcon, SwModal, Typography } from 'components/design-system-ui';
 import { Platform, View } from 'react-native';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
 import { deriveAccountV3, deriveSuggest, validateAccountName, validateDerivePathV2 } from 'messaging/index';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircle, Warning } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
 import { AccountProxyType, DerivePathInfo } from '@subwallet/extension-base/types';
@@ -13,6 +13,9 @@ import InputText from 'components/Input/InputText';
 import { KeypairType } from '@subwallet/keyring/types';
 import { ConfirmModalInfo } from 'providers/AppModalContext';
 import { EditAccountInputText } from 'components/EditAccountInputText';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
+import { RootStackParamList } from 'routes/index';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 interface Props {
   modalVisible: boolean;
@@ -22,6 +25,7 @@ interface Props {
   closeModal: () => void;
   showConfirmModal: React.Dispatch<React.SetStateAction<ConfirmModalInfo>>;
   hideConfirmModal: () => void;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const alertTypes: DerivePathInfo['type'][] = ['unified', 'ton', 'ethereum'];
@@ -34,8 +38,10 @@ export const DeriveAccountActionModal = ({
   closeModal,
   showConfirmModal,
   hideConfirmModal,
+  navigation,
 }: Props) => {
   const accountProxy = useGetAccountProxyById(proxyId);
+  const { onPress: onPressSubmit } = useUnlockModal(navigation);
   const theme = useSubWalletTheme().swThemes;
   const [, setUpdate] = useState({});
   const infoRef = useRef<DerivePathInfo | undefined>();
@@ -67,6 +73,7 @@ export const DeriveAccountActionModal = ({
 
   const suriValidator = useCallback(
     (suri: string) => {
+      console.log('suri:', suri);
       let result: string[] = [];
       setInfo(undefined);
       if (!suri) {
@@ -78,6 +85,7 @@ export const DeriveAccountActionModal = ({
         proxyId,
       })
         .then(rs => {
+          console.log('rs', rs);
           if (rs.error) {
             result = [rs.error.message];
           } else {
@@ -128,6 +136,7 @@ export const DeriveAccountActionModal = ({
         title: 'Incompatible account',
         message:
           'This derived account can only be used in SubWallet and won’t be compatible with other wallets. Do you still want to continue?',
+        customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
         onCompleteModal: () => {
           _doSubmit();
           hideConfirmModal();
@@ -179,7 +188,7 @@ export const DeriveAccountActionModal = ({
   }, []);
 
   const { formState, onChangeValue, onUpdateErrors, onSubmitField, focus } = useFormControl(formConfig, {
-    onSubmitForm: onSubmit,
+    onSubmitForm: onPressSubmit(onSubmit),
   });
 
   const onChangeAccountName = (value: string) => {
@@ -242,7 +251,7 @@ export const DeriveAccountActionModal = ({
             />
           }
           disabled={disabled}
-          onPress={onSubmit}
+          onPress={onPressSubmit(onSubmit)}
           loading={loading}>
           {'Confirm'}
         </Button>
