@@ -19,9 +19,6 @@ export default (theme: ThemeTypes) => {
       marginBottom: theme.size,
       color: theme.colorTextLight2,
     },
-    accountsContainer: {
-      gap: theme.sizeXS,
-    },
     modalContentContainerStyle: {
       paddingHorizontal: 0,
       paddingBottom: 0,

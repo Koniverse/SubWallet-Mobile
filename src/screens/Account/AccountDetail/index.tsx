@@ -101,6 +101,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
       accountName: {
         name: i18n.common.accountName,
         value: accountProxy.name,
+        require: true,
       },
     }),
     [accountProxy.name],
@@ -159,11 +160,13 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
   const onSave = useCallback(
     (editName: string) => {
       clearTimeout(saveTimeOutRef.current);
-      editAccount(accountProxy.id, editName.trim())
-        .catch((e: Error) => {
-          onUpdateErrors('accountName')([e.message]);
-        })
-        .finally(() => setSaving(false));
+      if (editName.trim()) {
+        editAccount(accountProxy.id, editName.trim())
+          .catch((e: Error) => {
+            onUpdateErrors('accountName')([e.message]);
+          })
+          .finally(() => setSaving(false));
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [accountProxy.id],

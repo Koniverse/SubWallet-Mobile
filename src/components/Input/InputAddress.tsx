@@ -3,7 +3,7 @@ import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRe
 import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { decodeAddress, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
+import { Button, Icon, Typography } from 'components/design-system-ui';
 import reformatAddress, { toShort } from 'utils/index';
 import { Book, Scan } from 'phosphor-react-native';
 import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal';
@@ -11,7 +11,7 @@ import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventType
 import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressScanner';
 import { CHAINS_SUPPORTED_DOMAIN, isAzeroDomain } from '@subwallet/extension-base/koni/api/dotsama/domain';
-import { saveRecentAccountId, resolveAddressToDomain, resolveDomainToAddress } from 'messaging/index';
+import { saveRecentAccount, resolveAddressToDomain, resolveDomainToAddress } from 'messaging/index';
 import createStylesheet from './style/InputAddress';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -19,6 +19,7 @@ import { findContactByAddress } from 'utils/account';
 import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import useCheckCamera from 'hooks/common/useCheckCamera';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props extends InputProps {
   chain?: string;
@@ -92,11 +93,11 @@ const Component = (
 
         if (saveAddress && isAddress(text)) {
           if (isEthereumAddress(text)) {
-            saveRecentAccountId(text, chain).catch(console.error);
+            saveRecentAccount(text, chain).catch(console.error);
           } else {
             try {
               if (decodeAddress(text, true, addressPrefix)) {
-                saveRecentAccountId(text, chain).catch(console.error);
+                saveRecentAccount(text, chain).catch(console.error);
               }
             } catch (e) {}
           }
@@ -173,7 +174,7 @@ const Component = (
       <>
         {showAvatar && (
           <View style={stylesheet.avatarWrapper}>
-            <Avatar value={value || ''} size={hasLabel ? 20 : 24} />
+            <AccountProxyAvatar value={value || ''} size={hasLabel ? 20 : 24} />
           </View>
         )}
         <Typography.Text ellipsis style={stylesheet.addressText}>

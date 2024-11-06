@@ -26,7 +26,6 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   const [selectedAccountAddressItem, setSelectedAccountAddressItem] = useState<AccountAddressItemType | undefined>();
   const chainSupported = useGetChainSlugsByAccount();
   const { addressQrModal } = useContext(AppModalContext);
-  const onHandleTonAccountWarning = useHandleTonAccountWarning();
   const accountRef = useRef<ModalRef>();
   const tokenRef = useRef<ModalRef>();
   const chainRef = useRef<ModalRef>();
@@ -37,6 +36,10 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
     return undefined;
   }, [assetRegistryMap, tokenGroupSlug]);
+  const onHandleTonAccountWarning = useHandleTonAccountWarning(() => {
+    tokenRef && tokenRef.current?.closeModal?.();
+    accountRef && accountRef.current?.closeModal?.();
+  });
 
   const openAddressQrModal = useCallback(
     (address: string, accountType: KeypairType, accountProxyId: string, chainSlug: string, showQrBack = true) => {

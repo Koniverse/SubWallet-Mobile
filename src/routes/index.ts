@@ -6,6 +6,7 @@ import { NftTransferActionStackParamList } from 'routes/nft/transferAction';
 import { SigningActionStackParamList } from 'routes/signing';
 import { TransactionActionStackParamList } from 'routes/transaction/transactionAction';
 import { WrapperParamList } from 'routes/wrapper';
+import { AccountAuthType } from '@subwallet/extension-base/background/types';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -71,7 +72,7 @@ export type RootStackParamList = {
   ConfirmationPopup: undefined;
   Confirmations: undefined;
   DAppAccess: undefined;
-  DAppAccessDetail: { origin: string; accountAuthType: string };
+  DAppAccessDetail: { origin: string; accountAuthTypes: AccountAuthType[] };
   WebViewDebugger: undefined;
   ImportNft: { payload: ConfirmationsQueue['addTokenRequest'][0] } | undefined;
   TransferNft: NavigatorScreenParams<NftTransferActionStackParamList>;

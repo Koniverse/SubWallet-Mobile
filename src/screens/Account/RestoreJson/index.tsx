@@ -2,7 +2,7 @@ import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FileArrowDown, Warning, X } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Linking, Platform, ScrollView, View } from 'react-native';
 import { InputFile } from 'components/common/Field/InputFile';
 import type { KeyringPair$Json } from '@subwallet/keyring/types';
 import type { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
@@ -31,6 +31,7 @@ import { isValidJsonFile } from 'utils/account/typeGuards';
 import { AppModalContext } from 'providers/AppModalContext';
 import { ImportJsonAccountSelector } from 'screens/Account/RestoreJson/ImportJsonAccountSelector';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
+import { CHANGE_ACCOUNT_NAME_URL } from 'constants/index';
 
 const enum StepState {
   UPLOAD_JSON_FILE = 'upload_json_file',
@@ -276,15 +277,31 @@ export const RestoreJson = () => {
       confirmModal.setConfirmModal({
         visible: true,
         title: 'Duplicate account name',
-        message:
-          'You have accounts with the same name. We have added numbers to these account names to differentiate them. You can change account names later using |hyperlink this guide|',
+        customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+        message: (
+          <Typography.Text>
+            <Typography.Text>
+              {
+                'You have accounts with the same name. We have added numbers to these account names to differentiate them. You can change account names later using '
+              }
+            </Typography.Text>
+            <Typography.Text
+              onPress={() => Linking.openURL(CHANGE_ACCOUNT_NAME_URL)}
+              style={{ color: theme.colorPrimary, textDecorationLine: 'underline' }}>
+              {'this guide'}
+            </Typography.Text>
+          </Typography.Text>
+        ),
         onCompleteModal: () => {
           confirmModal.hideConfirmModal();
           onImportFinal(jsonFile, password);
         },
+        onCancelModal: confirmModal.hideConfirmModal,
+        completeBtnTitle: 'I understand',
+        cancelBtnTitle: 'Cancel',
       });
     },
-    [confirmModal, onImportFinal],
+    [confirmModal, onImportFinal, theme.colorPrimary, theme.colorWarning],
   );
 
   const onImport = useCallback(

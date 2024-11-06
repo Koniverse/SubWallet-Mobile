@@ -31,7 +31,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   const isInstructionHidden = mmkvStore.getBoolean('hide-seed-phrase-instruction');
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.INIT_SP);
   const [showSeedPhraseInstruction, setShowSeedPhraseInstruction] = useState<boolean>(!isInstructionHidden);
-  const [seedPhrase, setSeedPhrase] = useState<null | string>(null);
+  const [seedPhrase, setSeedPhrase] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
   const storedDeeplink = mmkvStore.getString('storedDeeplink');
@@ -73,7 +73,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
       createAccountSuriV2({
         name: accountName,
         suri: seedPhrase,
-        types: selectedMnemonicType === 'ton' ? 'ton-native' : undefined,
+        type: selectedMnemonicType === 'ton' ? 'ton-native' : undefined,
         isAllowed: true,
       })
         .then(() => {

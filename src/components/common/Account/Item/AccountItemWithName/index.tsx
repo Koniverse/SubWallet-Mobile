@@ -6,8 +6,8 @@ import { Text, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import AccountItemBase, { AccountItemBaseProps } from '../AccountItemBase';
-import AvatarGroup from 'components/common/AvatarGroup';
 import { AccountJson } from '@subwallet/extension-base/types';
+import { AccountProxyAvatarGroup } from 'components/design-system-ui/avatar/account-proxy-avatar-group';
 
 interface Props extends AccountItemBaseProps {
   direction?: 'vertical' | 'horizontal';
@@ -17,7 +17,6 @@ interface Props extends AccountItemBaseProps {
 
 const AccountItemWithName: React.FC<Props> = (props: Props) => {
   const {
-    avatarSize,
     accountName,
     address,
     addressPreLength = 4,
@@ -46,7 +45,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
     <AccountItemBase
       {...props}
       address={address}
-      leftItem={isAll ? <AvatarGroup avatarSize={avatarSize} /> : props.leftItem}
+      leftItem={isAll ? <AccountProxyAvatarGroup /> : props.leftItem}
       middleItem={
         <View
           style={[direction === 'horizontal' ? styles.contentDirectionHorizontal : styles.contentDirectionVertical]}>

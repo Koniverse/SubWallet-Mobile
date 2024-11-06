@@ -1,8 +1,9 @@
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { Dimensions, Platform } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { getBrand } from 'react-native-device-info';
 import env from 'react-native-config';
+import { AccountAuthType } from '@subwallet/extension-base/background/types';
+import { KeypairType } from '@subwallet/keyring/types';
 
 type DeviceInfo = {
   isIos: boolean;
@@ -29,6 +30,8 @@ export const POLKADOT_VAULT_INSTRUCTION_URL =
   'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/attach-a-polkadot-vault-previously-parity-signer-account';
 export const KEYSTONE_INSTRUCTION_URL =
   'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/connect-keystone-device';
+export const CHANGE_ACCOUNT_NAME_URL =
+  'https://docs.subwallet.app/main/extension-user-guide/account-management/switch-between-accounts-and-change-account-name#change-your-account-name';
 export const WEBSITE_URL = 'https://subwallet.app/';
 export const GITHUB_REPOS_URL = 'https://api.github.com/repos/Koniverse/SubWallet-Mobile/releases?per_page=5&page=1';
 export const APPSTORE_URL = 'https://apps.apple.com/us/app/subwallet-polkadot-wallet/id1633050285';
@@ -43,6 +46,7 @@ export const ALLOW_FONT_SCALING = false;
 export const HIDE_MODAL_DURATION = 1000;
 export const SUBSTRATE_ACCOUNT_TYPE: KeypairType = 'sr25519';
 export const EVM_ACCOUNT_TYPE: KeypairType = 'ethereum';
+export const TON_ACCOUNT_TYPE: KeypairType = 'ton';
 export const DEFAULT_ACCOUNT_TYPES: KeypairType[] = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
 const window = Dimensions.get('window');
 export const deviceWidth = window.width;
@@ -67,3 +71,4 @@ export const regex: RegexType = {
   httpProtocol: /^http:\/\//,
 };
 export const WEBVIEW_ANDROID_SYSTEM_MIN_VERSION = 113;
+export const ALL_ACCOUNT_AUTH_TYPES: AccountAuthType[] = ['evm', 'substrate', 'ton'];

@@ -10,7 +10,7 @@ import { FormItem } from 'components/common/FormItem';
 import Input from 'components/design-system-ui/input';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { editContactAddress, removeContactAddress } from 'messaging/index';
-import { AddressJson } from '@subwallet/extension-base/background/types';
+import { AddressJson } from '@subwallet/extension-base/types';
 import { ReadonlyAddressField } from 'components/Modal/AddressBook/ReadonlyAddressField';
 import { Trash } from 'phosphor-react-native';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
@@ -115,7 +115,7 @@ export const EditContactModal = ({ modalVisible, addressJson, setModalVisible }:
     [address, hideAll, onChangeModalVisible, show],
   );
 
-  const handeDelete = () => {
+  const handleDelete = () => {
     setLoading(true);
     removeContactAddress(address).finally(() => {
       setLoading(false);
@@ -145,7 +145,7 @@ export const EditContactModal = ({ modalVisible, addressJson, setModalVisible }:
     visible: deleteVisible,
     onCompleteModal: onCompleteDelete,
     setVisible,
-  } = useConfirmModal(handeDelete);
+  } = useConfirmModal(handleDelete);
 
   useEffect(() => {
     reset({

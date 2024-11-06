@@ -15,7 +15,7 @@ import { mmkvStore } from 'utils/storage';
 
 type HookType = (accountType: KeypairType, processFunction: VoidFunction) => void;
 
-export default function useHandleTonAccountWarning(): HookType {
+export default function useHandleTonAccountWarning(callback?: VoidFunction): HookType {
   const navigation = useNavigation<RootNavigationProps>();
   const setSelectedMnemonicType = useSetSelectedMnemonicType(true);
   const { confirmModal } = useContext(AppModalContext);
@@ -41,6 +41,7 @@ export default function useHandleTonAccountWarning(): HookType {
           onCancelModal: () => {
             setSelectedMnemonicType('ton');
             mmkvStore.set('use-default-create-content', true);
+            callback && callback();
             navigation.navigate('CreateAccount', {});
 
             confirmModal.hideConfirmModal();
@@ -52,6 +53,6 @@ export default function useHandleTonAccountWarning(): HookType {
 
       processFunction();
     },
-    [confirmModal, navigation, setSelectedMnemonicType, theme.colorWarning],
+    [callback, confirmModal, navigation, setSelectedMnemonicType, theme.colorWarning],
   );
 }

@@ -1,7 +1,6 @@
 import { FlatListScreen } from 'components/FlatListScreen';
 import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useMemo, useState } from 'react';
-import { AddressJson } from '@subwallet/extension-base/background/types';
 import { Keyboard, View } from 'react-native';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -21,6 +20,7 @@ import createStylesheet from './style';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { AddressJson } from '@subwallet/extension-base/types';
 
 enum AccountGroup {
   CONTACT = 'contact',

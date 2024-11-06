@@ -23,8 +23,6 @@ import {
   AmountData,
   AmountDataWithId,
   AssetSettingUpdateReq,
-  ConfirmationDefinitions,
-  ConfirmationType,
   CurrencyType,
   CurrentAccountInfo,
   LanguageType,
@@ -46,7 +44,6 @@ import {
   RequestQrSignSubstrate,
   RequestRejectConnectWalletSession,
   RequestResetWallet,
-  RequestSigningApprovePasswordV2,
   RequestTransfer,
   RequestUnlockKeyring,
   ResolveAddressToDomainRequest,
@@ -81,10 +78,7 @@ import {
   TokenSpendingApprovalParams,
   ValidateYieldProcessParams,
 } from '@subwallet/extension-base/types';
-import type { KeyringAddress } from '@subwallet/ui-keyring/types';
-import type { HexString } from '@polkadot/util/types';
 import { MetadataDef } from '@subwallet/extension-inject/types';
-import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import {
   _NetworkUpsertParams,
   _ValidateCustomAssetRequest,
@@ -99,6 +93,7 @@ import { CommonOptimalPath } from '@subwallet/extension-base/types/service-base'
 import { createRegistry } from '@subwallet/extension-base/utils';
 import { _getChainNativeTokenBasicInfo } from '@subwallet/extension-base/services/chain-service/utils';
 import { base64Encode } from '@polkadot/util-crypto';
+import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -409,6 +404,7 @@ export function subscribeMessage<TMessageType extends MessageTypesWithSubscripti
 // Controller messages
 
 export * from './accounts';
+export * from './confirmation';
 
 export async function mobileBackup(): Promise<MobileData> {
   return sendMessage('mobile(storage.backup)');
@@ -435,56 +431,8 @@ export async function savePriceCurrency(currency: CurrencyType): Promise<boolean
   return sendMessage('pri(settings.savePriceCurrency)', { currency });
 }
 
-export async function approveAuthRequestV2(id: string, accounts: string[]): Promise<boolean> {
-  return sendMessage('pri(authorize.approveV2)', { id, accounts });
-}
-
-export async function approveMetaRequest(id: string): Promise<boolean> {
-  return sendMessage('pri(metadata.approve)', { id });
-}
-
-export async function cancelSignRequest(id: string): Promise<boolean> {
-  return sendMessage('pri(signing.cancel)', { id });
-}
-
-export async function approveSignPassword(id: string, savePass: boolean, password?: string): Promise<boolean> {
-  return sendMessage('pri(signing.approve.password)', { id, password, savePass });
-}
-
-export async function approveSignPasswordV2(request: RequestSigningApprovePasswordV2): Promise<boolean> {
-  return sendMessage('pri(signing.approve.passwordV2)', request);
-}
-
 export async function saveAutoLockTime(value: number): Promise<boolean> {
   return sendMessage('pri(settings.saveAutoLockTime)', { autoLockTime: value });
-}
-
-export async function approveSignSignature(id: string, signature: HexString): Promise<boolean> {
-  return sendMessage('pri(signing.approve.signature)', { id, signature });
-}
-
-export async function rejectAuthRequestV2(id: string): Promise<boolean> {
-  return sendMessage('pri(authorize.rejectV2)', { id });
-}
-
-export async function cancelAuthRequestV2(id: string): Promise<boolean> {
-  return sendMessage('pri(authorize.cancelV2)', { id });
-}
-
-export async function rejectMetaRequest(id: string): Promise<boolean> {
-  return sendMessage('pri(metadata.reject)', { id });
-}
-
-export async function saveRecentAccountId(accountId: string, chain?: string): Promise<KeyringAddress> {
-  return sendMessage('pri(accounts.saveRecent)', { accountId, chain });
-}
-
-export async function editContactAddress(address: string, name: string): Promise<boolean> {
-  return sendMessage('pri(accounts.editContact)', { address: address, meta: { name: name } });
-}
-
-export async function removeContactAddress(address: string): Promise<boolean> {
-  return sendMessage('pri(accounts.deleteContact)', { address: address });
 }
 
 export async function toggleAuthorization(url: string): Promise<ResponseAuthorizeList> {
@@ -643,13 +591,6 @@ export async function parseSubstrateTransaction(
 
 export async function parseEVMTransaction(data: string): Promise<ResponseQrParseRLP> {
   return sendMessage('pri(qr.transaction.parse.evm)', { data });
-}
-
-export async function completeConfirmation<CT extends ConfirmationType>(
-  type: CT,
-  payload: ConfirmationDefinitions[CT][1],
-): Promise<boolean> {
-  return sendMessage('pri(confirmations.complete)', { [type]: payload });
 }
 
 export async function getNominationPoolOptions(chain: string): Promise<NominationPoolInfo[]> {

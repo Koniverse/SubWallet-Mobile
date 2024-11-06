@@ -4,7 +4,6 @@ import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { EmptyList } from 'components/EmptyList';
 import { SectionItem } from 'components/LazySectionList';
-import { AbstractAddressJson, AccountJson } from '@subwallet/extension-base/background/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
@@ -21,6 +20,7 @@ import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { AbstractAddressJson, AccountJson } from '@subwallet/extension-base/types';
 
 interface Props {
   modalVisible: boolean;

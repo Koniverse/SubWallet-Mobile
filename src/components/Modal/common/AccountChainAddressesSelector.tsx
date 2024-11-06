@@ -19,7 +19,7 @@ interface Props {
   selectedValueMap: Record<string, boolean>;
   disabled?: boolean;
   renderSelected?: () => JSX.Element;
-  accountSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  accountSelectorRef?: React.MutableRefObject<ModalRef>;
   closeModalAfterSelect?: boolean;
   isShowContent?: boolean;
   isShowInput?: boolean;
@@ -40,7 +40,9 @@ export const AccountChainAddressesSelector = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const items: AccountChainAddress[] = useGetAccountChainAddresses(accountProxy);
-  const onHandleTonAccountWarning = useHandleTonAccountWarning();
+  const onHandleTonAccountWarning = useHandleTonAccountWarning(() => {
+    accountSelectorRef?.current?.closeModal?.();
+  });
   const { addressQrModal } = useContext(AppModalContext);
   const toast = useToast();
 

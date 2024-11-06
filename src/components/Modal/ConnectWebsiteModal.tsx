@@ -1,21 +1,23 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
+import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
 import { Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { changeAuthorizationBlock, changeAuthorizationPerSite } from 'messaging/index';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { CheckCircle, GlobeHemisphereWest, ShieldCheck, ShieldSlash, XCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ConfirmationGeneralInfo } from 'components/Confirmation/ConfirmationGeneralInfo';
 import { isAccountAll } from 'utils/accountAll';
-import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import SwModal from 'components/design-system-ui/modal/SwModal';
 import { ButtonPropsType } from 'components/design-system-ui/button/PropsType';
 import createStylesheet from './style/ConnectWebsiteModal';
 import i18n from 'utils/i18n/i18n';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { filterAuthorizeAccountProxies } from 'utils/accountProxy';
+import { SelectAccountItem } from 'components/common/SelectAccountItem';
+import { AccountProxy } from '@subwallet/extension-base/types';
+import { isAddressAllowedWithAuthType } from 'utils/account/account';
 
 interface Props {
   modalVisible: boolean;
@@ -43,22 +45,33 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const [allowedMap, setAllowedMap] = useState<Record<string, boolean>>(authInfo?.isAllowedMap || {});
-  const accounts = useSelector((state: RootState) => state.accountState.accounts);
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
+  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
   const [loading, setLoading] = useState(false);
   const _isNotConnected = isNotConnected || !authInfo;
   Keyboard.dismiss();
 
   const onChangeModalVisible = useCallback(() => modalBaseV2Ref?.current?.close(), []);
 
-  const handlerUpdateMap = useCallback((address: string, oldValue: boolean) => {
-    return () => {
-      setAllowedMap(values => ({
-        ...values,
-        [address]: !oldValue,
-      }));
-    };
-  }, []);
+  const handlerUpdateMap = useCallback(
+    (accountProxy: AccountProxy, oldValue: boolean) => {
+      return () => {
+        setAllowedMap(values => {
+          const newValues = { ...values };
+          const listAddress = accountProxy.accounts.map(({ address }) => address);
+
+          listAddress.forEach(address => {
+            const addressIsValid = isAddressAllowedWithAuthType(address, authInfo?.accountAuthTypes || []);
+
+            addressIsValid && (newValues[address] = !oldValue);
+          });
+
+          return newValues;
+        });
+      };
+    },
+    [authInfo?.accountAuthTypes],
+  );
 
   const handlerSubmit = useCallback(() => {
     if (!loading && authInfo?.id) {
@@ -86,18 +99,12 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
   }, [authInfo?.id, loading]);
 
   useEffect(() => {
-    if (!!authInfo?.isAllowedMap && !!authInfo?.accountAuthType) {
-      const type = authInfo.accountAuthType;
+    if (!!authInfo?.isAllowedMap && !!authInfo?.accountAuthTypes) {
+      const types = authInfo.accountAuthTypes;
       const _allowedMap = authInfo.isAllowedMap;
 
       const filterType = (address: string) => {
-        if (type === 'both') {
-          return true;
-        }
-
-        const _type = type || 'substrate';
-
-        return _type === 'substrate' ? !isEthereumAddress(address) : isEthereumAddress(address);
+        return isAddressAllowedWithAuthType(address, types);
       };
 
       const result: Record<string, boolean> = {};
@@ -112,7 +119,7 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
     } else {
       setAllowedMap({});
     }
-  }, [authInfo?.accountAuthType, authInfo?.isAllowedMap]);
+  }, [authInfo?.accountAuthTypes, authInfo?.isAllowedMap]);
 
   const actionButtons = useMemo(() => {
     const cancelButton = (type?: ButtonPropsType['type']) => (
@@ -203,42 +210,53 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
       );
     }
 
-    const list = Object.entries(allowedMap).map(([address, value]) => ({ address, value }));
+    const listAccountProxy = filterAuthorizeAccountProxies(accountProxies, authInfo?.accountAuthTypes || []).map(
+      proxy => {
+        const value = proxy.accounts.some(({ address }) => allowedMap[address]);
 
-    const current = list.find(({ address }) => address === currentAccount?.address);
+        return {
+          ...proxy,
+          value,
+        };
+      },
+    );
+
+    const current = listAccountProxy.find(({ id }) => id === currentAccountProxy?.id);
 
     if (current) {
-      const idx = list.indexOf(current);
+      const idx = listAccountProxy.indexOf(current);
 
-      list.splice(idx, 1);
-      list.unshift(current);
+      listAccountProxy.splice(idx, 1);
+      listAccountProxy.unshift(current);
     }
 
     return (
       <>
         <Typography.Text style={stylesheet.connectAccountMessage}>{i18n.confirmation.siteConnected}</Typography.Text>
 
-        <View style={stylesheet.accountsContainer}>
-          {list.map(({ address, value }) => {
-            const account = accounts.find(acc => acc.address === address);
-
-            if (!account || isAccountAll(account.address)) {
+        <>
+          {listAccountProxy.map(ap => {
+            if (isAccountAll(ap.id)) {
               return null;
             }
 
             return (
-              <AccountItemWithName
-                accountName={account.name}
-                address={account.address}
+              <SelectAccountItem
+                wrapperStyle={{ marginHorizontal: 0, paddingVertical: theme.paddingSM }}
                 avatarSize={24}
-                isSelected={value}
-                key={account.address}
-                onPress={handlerUpdateMap(address, value)}
-                showUnselectIcon
+                accountProxy={ap}
+                key={ap.id}
+                isSelected={ap.value}
+                isShowMultiCheck={true}
+                isShowCopyBtn={false}
+                isShowEditBtn={false}
+                isShowTypeIcon={false}
+                showBottomPath={false}
+                onSelectAccount={handlerUpdateMap(ap, ap.value)}
               />
             );
           })}
-        </View>
+        </>
       </>
     );
   };

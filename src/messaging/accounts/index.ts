@@ -4,3 +4,4 @@ export * from './json';
 export * from './export';
 export * from './derive';
 export * from './edit';
+export * from './addressBook';

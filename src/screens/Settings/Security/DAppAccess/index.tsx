@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
+import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
 import { DotsThree, GlobeSimple, Plugs, PlugsConnected, X } from 'phosphor-react-native';
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { useSelector } from 'react-redux';
@@ -23,6 +23,28 @@ function getDAppItems(authUrlMap: Record<string, AuthUrlInfo>): AuthUrlInfo[] {
   return Object.values(authUrlMap);
 }
 
+// function getAccountCount(item: AuthUrlInfo, accountProxies: AccountProxy[]): number {
+//   const authTypes = item.accountAuthTypes;
+//
+//   return accountProxies.filter(ap => {
+//     return ap.accounts.some(account => {
+//       if (isEthereumAddress(account.address)) {
+//         return authTypes.includes('evm') && item.isAllowedMap[account.address];
+//       }
+//
+//       if (isSubstrateAddress(account.address)) {
+//         return authTypes.includes('substrate') && item.isAllowedMap[account.address];
+//       }
+//
+//       if (isTonAddress(account.address)) {
+//         return authTypes.includes('ton') && item.isAllowedMap[account.address];
+//       }
+//
+//       return false;
+//     });
+//   }).length;
+// }
+
 enum FilterValue {
   SUBSTRATE = 'substrate',
   ETHEREUM = 'ethereum',
@@ -39,12 +61,12 @@ const filterFunction = (items: AuthUrlInfo[], filters: string[]) => {
     for (const filter of filters) {
       switch (filter) {
         case FilterValue.SUBSTRATE:
-          if (item.accountAuthType === 'substrate' || item.accountAuthType === 'both') {
+          if (item.accountAuthTypes?.includes('substrate')) {
             return true;
           }
           break;
         case FilterValue.ETHEREUM:
-          if (item.accountAuthType === 'evm' || item.accountAuthType === 'both') {
+          if (item.accountAuthTypes?.includes('evm')) {
             return true;
           }
           break;
@@ -127,10 +149,11 @@ export const DAppAccessScreen = () => {
         <DappAccessItem
           containerStyle={{ marginBottom: theme.marginXS }}
           item={item}
+          accountCount={1}
           onPress={() => {
             navigation.navigate('DAppAccessDetail', {
               origin: item.id,
-              accountAuthType: item.accountAuthType || '',
+              accountAuthTypes: item.accountAuthTypes,
             });
           }}
         />
