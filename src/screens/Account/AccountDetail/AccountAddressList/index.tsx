@@ -12,6 +12,8 @@ import { useToast } from 'react-native-toast-notifications';
 import { View } from 'react-native';
 import { Search } from 'components/Search';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { EmptyList } from 'components/EmptyList';
+import { MagnifyingGlass } from 'phosphor-react-native';
 
 interface Props {
   accountProxy: AccountProxy;
@@ -80,6 +82,16 @@ export const AccountAddressList = ({ accountProxy }: Props) => {
     );
   };
 
+  const renderEmptyList = () => {
+    return (
+      <EmptyList
+        icon={MagnifyingGlass}
+        title={i18n.emptyScreen.selectorEmptyTitle}
+        message={i18n.emptyScreen.selectorEmptyMessage}
+      />
+    );
+  };
+
   return (
     <View style={{ flex: 1, width: '100%' }}>
       <Search
@@ -89,15 +101,21 @@ export const AccountAddressList = ({ accountProxy }: Props) => {
         onSearch={setSearchString}
         onClearSearchString={() => setSearchString('')}
       />
-      <FlashList
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        data={filteredItems}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        estimatedItemSize={60}
-        keyboardShouldPersistTaps={'handled'}
-      />
+      <>
+        {filteredItems.length ? (
+          <FlashList
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            data={filteredItems}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            estimatedItemSize={60}
+            keyboardShouldPersistTaps={'handled'}
+          />
+        ) : (
+          renderEmptyList()
+        )}
+      </>
     </View>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
-import { ListRenderItemInfo } from 'react-native';
+import { Keyboard, ListRenderItemInfo } from 'react-native';
 import { ModalRef } from 'types/modalRef';
 import { AccountChainAddress } from 'types/account';
 import useGetAccountChainAddresses from 'hooks/account/useGetAccountChainAddresses';
@@ -19,7 +19,7 @@ interface Props {
   selectedValueMap: Record<string, boolean>;
   disabled?: boolean;
   renderSelected?: () => JSX.Element;
-  accountSelectorRef?: React.MutableRefObject<ModalRef>;
+  accountSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
   closeModalAfterSelect?: boolean;
   isShowContent?: boolean;
   isShowInput?: boolean;
@@ -49,6 +49,7 @@ export const AccountChainAddressesSelector = ({
   const onShowQr = useCallback(
     (item: AccountChainAddress) => {
       return () => {
+        Keyboard.dismiss();
         const processFunction = () => {
           addressQrModal.setAddressQrModal({
             visible: true,
@@ -58,7 +59,9 @@ export const AccountChainAddressesSelector = ({
           });
         };
 
-        onHandleTonAccountWarning(item.accountType, processFunction);
+        setTimeout(() => {
+          onHandleTonAccountWarning(item.accountType, processFunction);
+        }, 300);
       };
     },
     [addressQrModal, onHandleTonAccountWarning],

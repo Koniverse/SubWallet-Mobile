@@ -21,8 +21,9 @@ import { RootState } from 'stores/index';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { AccountProxy } from '@subwallet/extension-base/types';
+import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { exportAccountBatch } from 'messaging/accounts';
+import { AccountSignMode } from 'types/signer';
 
 const renderListEmptyComponent = () => {
   return (
@@ -41,6 +42,29 @@ const searchFunc = (items: AccountProxy[], searchText: string) => {
       acc.id.toLowerCase().includes(searchText.toLowerCase()),
   );
 };
+
+const filterOptions = [
+  {
+    label: 'Unified account',
+    value: AccountProxyType.UNIFIED,
+  },
+  {
+    label: 'Solo account',
+    value: AccountProxyType.SOLO,
+  },
+  {
+    label: 'QR signer account',
+    value: AccountProxyType.QR,
+  },
+  {
+    label: 'Ledger account',
+    value: AccountProxyType.LEDGER,
+  },
+  {
+    label: 'Watch-only account',
+    value: AccountSignMode.READ_ONLY,
+  },
+];
 
 export const ExportAllAccount = () => {
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
@@ -76,6 +100,47 @@ export const ExportAllAccount = () => {
 
     return accountProxies.filter(a => !isAccountAll(a.id));
   }, [accountProxies, currentAccountAddress]);
+
+  const filterFunction = useCallback((_items: AccountProxy[], filters: string[]) => {
+    if (!filters.length) {
+      return _items;
+    }
+
+    return _items.filter(item => {
+      const accountType = item.accountType;
+      for (const filter of filters) {
+        switch (filter) {
+          case AccountProxyType.UNIFIED:
+            if (accountType === AccountProxyType.UNIFIED) {
+              return true;
+            }
+            break;
+          case AccountProxyType.SOLO:
+            if (accountType === AccountProxyType.SOLO) {
+              return true;
+            }
+            break;
+          case AccountProxyType.QR:
+            if (accountType === AccountProxyType.QR) {
+              return true;
+            }
+            break;
+          case AccountProxyType.READ_ONLY:
+            if (accountType === AccountProxyType.READ_ONLY) {
+              return true;
+            }
+            break;
+          case AccountProxyType.LEDGER:
+            if (accountType === AccountProxyType.LEDGER) {
+              return true;
+            }
+            break;
+        }
+      }
+
+      return false;
+    });
+  }, []);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -216,9 +281,12 @@ export const ExportAllAccount = () => {
         afterListItem={renderFooter()}
         searchFunction={searchFunc}
         autoFocus={false}
+        filterOptions={filterOptions}
+        filterFunction={filterFunction}
         extraData={JSON.stringify(selectedValueMap)}
         keyExtractor={item => item.id}
         estimatedItemSize={80}
+        placeholder={'Account name'}
       />
 
       <SwFullSizeModal

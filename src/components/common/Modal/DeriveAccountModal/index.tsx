@@ -47,20 +47,23 @@ export const DeriveAccountActionModal = ({
   const infoRef = useRef<DerivePathInfo | undefined>();
   const [loading, setLoading] = useState(false);
   const networkType = infoRef.current?.type;
+  const timeOutRef = useRef<NodeJS.Timeout>();
   const modalRef = useRef<SWModalRefProps>(null);
-  const validatorFunc = useCallback((value: string) => {
+  const [validating, setValidating] = useState(false);
+  const accountNameValidator = useCallback(async (value: string) => {
     let result: string[] = [];
 
-    if (value) {
-      validateAccountName({ name: value })
-        .then(({ isValid }) => {
-          if (!isValid) {
-            result = ['Account name already in use'];
-          }
-        })
-        .catch(() => {
-          result = ['Account name invalid'];
-        });
+    if (!value.trim()) {
+      result = ['This field is required'];
+    } else {
+      try {
+        const { isValid } = await validateAccountName({ name: value.trim() });
+        if (!isValid) {
+          result = ['Account name already in use'];
+        }
+      } catch {
+        result = ['Account name invalid'];
+      }
     }
 
     return result;
@@ -72,30 +75,29 @@ export const DeriveAccountActionModal = ({
   }, []);
 
   const suriValidator = useCallback(
-    (suri: string) => {
-      console.log('suri:', suri);
+    async (suri: string) => {
       let result: string[] = [];
       setInfo(undefined);
       if (!suri) {
         result = ['Derive path is required'];
-      }
+      } else {
+        try {
+          const rs = await validateDerivePathV2({
+            suri,
+            proxyId,
+          });
 
-      validateDerivePathV2({
-        suri,
-        proxyId,
-      })
-        .then(rs => {
-          console.log('rs', rs);
           if (rs.error) {
             result = [rs.error.message];
           } else {
             setInfo(rs.info);
             result = [];
           }
-        })
-        .catch((e: Error) => {
-          result = [e.message];
-        });
+        } catch (e) {
+          result = ['Derive path is invalid'];
+        }
+      }
+
       return result;
     },
     [proxyId, setInfo],
@@ -123,7 +125,7 @@ export const DeriveAccountActionModal = ({
           //go back home
         })
         .catch((e: Error) => {
-          onUpdateErrors('accountName')([e.message]);
+          onUpdateErrors('suri')([e.message]);
         })
         .finally(() => {
           setLoading(false);
@@ -144,6 +146,7 @@ export const DeriveAccountActionModal = ({
         onCancelModal: () => {
           hideConfirmModal();
         },
+        completeBtnTitle: 'Continue',
       });
     } else {
       _doSubmit();
@@ -156,18 +159,14 @@ export const DeriveAccountActionModal = ({
         name: 'Suri',
         value: '',
         require: true,
-        validateFunc: suriValidator,
       },
       accountName: {
         name: i18n.common.accountName,
         value: '',
         require: true,
-        validateFunc: (value: string) => {
-          return validatorFunc(value);
-        },
       },
     }),
-    [suriValidator, validatorFunc],
+    [],
   );
 
   const keypairTypeLogoMap = useMemo((): Record<KeypairType, string> => {
@@ -204,6 +203,68 @@ export const DeriveAccountActionModal = ({
   }, [focus]);
 
   useEffect(() => {
+    let amount = true;
+
+    if (timeOutRef.current) {
+      clearTimeout(timeOutRef.current);
+    }
+    if (amount) {
+      if (formState.data.suri) {
+        setValidating(true);
+        timeOutRef.current = setTimeout(() => {
+          suriValidator(formState.data.suri)
+            .then(res => {
+              onUpdateErrors('suri')(res);
+            })
+            .catch((error: Error) => console.log('error suri', error.message))
+            .finally(() => {
+              if (amount) {
+                setValidating(false);
+              }
+            });
+        }, 500);
+      } else {
+        setValidating(false);
+      }
+    }
+
+    return () => {
+      amount = false;
+    };
+  }, [formState.data.suri, onUpdateErrors, suriValidator]);
+
+  useEffect(() => {
+    let amount = true;
+
+    if (timeOutRef.current) {
+      clearTimeout(timeOutRef.current);
+    }
+    if (amount) {
+      if (formState.data.accountName) {
+        setValidating(true);
+        timeOutRef.current = setTimeout(() => {
+          accountNameValidator(formState.data.accountName)
+            .then(res => {
+              onUpdateErrors('accountName')(res);
+            })
+            .catch((error: Error) => console.log('error account name', error.message))
+            .finally(() => {
+              if (amount) {
+                setValidating(false);
+              }
+            });
+        }, 500);
+      } else {
+        setValidating(false);
+      }
+    }
+
+    return () => {
+      amount = false;
+    };
+  }, [accountNameValidator, formState.data.accountName, onUpdateErrors]);
+
+  useEffect(() => {
     let cancel = false;
 
     if (proxyId && modalVisible) {
@@ -228,8 +289,8 @@ export const DeriveAccountActionModal = ({
   }, [modalVisible, onChangeValue, proxyId]);
 
   const disabled = useMemo(() => {
-    return loading || !formState.data.accountName || !formState.data.suri;
-  }, [formState.data.accountName, formState.data.suri, loading]);
+    return loading || !formState.data.accountName || !formState.data.suri || validating;
+  }, [formState.data.accountName, formState.data.suri, loading, validating]);
 
   return (
     <SwModal
@@ -252,7 +313,7 @@ export const DeriveAccountActionModal = ({
           }
           disabled={disabled}
           onPress={onPressSubmit(onSubmit)}
-          loading={loading}>
+          loading={loading || validating}>
           {'Confirm'}
         </Button>
       }>

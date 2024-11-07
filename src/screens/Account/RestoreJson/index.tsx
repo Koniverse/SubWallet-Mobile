@@ -154,13 +154,17 @@ export const RestoreJson = () => {
 
   const renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null = useCallback(
     (item: string) => {
-      return (
-        <View key={item} style={styles.sectionHeaderContainer}>
-          <Typography.Text size={'sm'} style={styles.sectionHeaderTitle}>
-            {`${item.split('|')[0]} `}
-          </Typography.Text>
-        </View>
-      );
+      if (item.split('|')[0] === RestoreAccGroupLabel.existed_accounts) {
+        return (
+          <View key={item} style={styles.sectionHeaderContainer}>
+            <Typography.Text size={'sm'} style={styles.sectionHeaderTitle}>
+              {`${item.split('|')[0]} `}
+            </Typography.Text>
+          </View>
+        );
+      } else {
+        return <></>;
+      }
     },
     [styles.sectionHeaderContainer, styles.sectionHeaderTitle],
   );
@@ -185,15 +189,20 @@ export const RestoreJson = () => {
       };
 
       if (isKeyringPairs$Json(jsonFile)) {
+        console.log('run to fail');
         parseBatchSingleJson({
           json: jsonFile,
           password,
         })
           .then(({ accountProxies: _accountProxies }) => {
+            console.log(`run to then`);
             setAccountProxies(_accountProxies);
             setPasswordValidateState({ status: 'success' });
           })
-          .catch(onFail)
+          .catch((e: Error) => {
+            console.log(`run to catch`);
+            onFail(e);
+          })
           .finally(() => {
             setPasswordValidating(false);
           });
@@ -484,7 +493,7 @@ export const RestoreJson = () => {
   const passwordErrors = useMemo(() => {
     const result = formState.errors.password;
 
-    if (passwordValidateState && passwordValidateState.message) {
+    if (passwordValidateState && passwordValidateState.message && !result.includes(passwordValidateState.message)) {
       result.push(passwordValidateState.message);
     }
 
@@ -566,7 +575,7 @@ export const RestoreJson = () => {
             loading={fileValidating || passwordValidating || submitting}
             icon={getButtonIcon(FileArrowDown)}
             onPress={onPressSubmit(onPressSubmitButton)}
-            disabled={disableSubmit || submitting}>
+            disabled={disableSubmit || submitting || passwordValidating || !!passwordErrors.length}>
             {i18n.buttonTitles.importByJsonFile}
           </Button>
         </View>

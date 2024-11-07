@@ -46,6 +46,8 @@ export default function useHandleTonAccountWarning(callback?: VoidFunction): Hoo
 
             confirmModal.hideConfirmModal();
           },
+          isAllowSwipeDown: false,
+          disabledOnPressBackDrop: true,
         });
 
         return;

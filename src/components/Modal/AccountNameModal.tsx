@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccountProxyType } from '@subwallet/extension-base/types';
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
-import { Keyboard, Platform } from 'react-native';
+import { Keyboard } from 'react-native';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
 import { validateAccountName } from 'messaging/index';
@@ -29,6 +29,8 @@ export const AccountNameModal = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const modalRef = useRef<SWModalRefProps>(null);
+  const timeOutRef = useRef<NodeJS.Timeout>();
+  const [validating, setValidating] = useState(false);
   const validatorFunc = useCallback(async (value: string) => {
     let result: string[] = [];
 
@@ -71,16 +73,11 @@ export const AccountNameModal = ({
 
   const onChangeAccountName = (value: string) => {
     onChangeValue('accountName')(value);
-    validatorFunc(value)
-      .then(res => {
-        onUpdateErrors('accountName')(res);
-      })
-      .catch((error: Error) => console.log('error validate name', error.message));
   };
 
   const isDisabled = useMemo(
-    () => !formState.data.accountName || isLoading || !!formState.errors.accountName.length,
-    [formState.data.accountName, formState.errors.accountName, isLoading],
+    () => !formState.data.accountName || isLoading || !!formState.errors.accountName.length || validating,
+    [formState.data.accountName, formState.errors.accountName.length, isLoading, validating],
   );
 
   const footerNode = useMemo(
@@ -89,18 +86,49 @@ export const AccountNameModal = ({
         icon={
           <Icon
             phosphorIcon={CheckCircle}
-            iconColor={isDisabled ? theme.colorTextTertiary : theme.colorWhite}
+            iconColor={isDisabled ? theme.colorTextLight5 : theme.colorWhite}
             weight={'fill'}
           />
         }
         disabled={isDisabled}
         onPress={() => _onSubmit(formState)}
-        loading={isLoading}>
+        loading={isLoading || validating}>
         {'Confirm'}
       </Button>
     ),
-    [_onSubmit, formState, isDisabled, isLoading, theme.colorTextTertiary, theme.colorWhite],
+    [_onSubmit, formState, isDisabled, isLoading, theme.colorTextLight5, theme.colorWhite, validating],
   );
+
+  useEffect(() => {
+    let amount = true;
+
+    if (timeOutRef.current) {
+      clearTimeout(timeOutRef.current);
+    }
+    if (amount) {
+      if (formState.data.accountName) {
+        setValidating(true);
+        timeOutRef.current = setTimeout(() => {
+          validatorFunc(formState.data.accountName)
+            .then(res => {
+              onUpdateErrors('accountName')(res);
+            })
+            .catch((error: Error) => console.log('error validate name', error.message))
+            .finally(() => {
+              if (amount) {
+                setValidating(false);
+              }
+            });
+        }, 500);
+      } else {
+        setValidating(false);
+      }
+    }
+
+    return () => {
+      amount = false;
+    };
+  }, [formState.data.accountName, onUpdateErrors, validatorFunc]);
 
   useEffect(() => {
     setTimeout(() => focus('accountName')(), 300);
@@ -114,7 +142,8 @@ export const AccountNameModal = ({
       isUseModalV2
       titleTextAlign={'center'}
       onChangeModalVisible={onCancel}
-      isAllowSwipeDown={Platform.OS === 'ios'}
+      disabledOnPressBackDrop={true}
+      isAllowSwipeDown={false}
       modalBaseV2Ref={modalRef}
       footer={footerNode}>
       <Typography.Text style={{ color: theme.colorTextTertiary, textAlign: 'center', paddingBottom: theme.paddingLG }}>
@@ -134,6 +163,7 @@ export const AccountNameModal = ({
         accountType={accountType}
         isDisabled={isLoading}
         placeholder={'Enter the account name'}
+        placeholderTextColor={theme.colorTextTertiary}
         errorMessages={formState.errors.accountName}
       />
     </SwModal>

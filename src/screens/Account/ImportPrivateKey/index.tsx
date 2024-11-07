@@ -30,8 +30,8 @@ export const ImportPrivateKey = () => {
 
   const accountNameValidator = useCallback((value: string) => {
     let result: string[] = [];
-    if (value) {
-      validateAccountName({ name: value })
+    if (value.trim()) {
+      validateAccountName({ name: value.trim() })
         .then(({ isValid }) => {
           if (!isValid) {
             result = ['Account name already in use'];
@@ -40,6 +40,8 @@ export const ImportPrivateKey = () => {
         .catch(() => {
           result = ['Account name invalid'];
         });
+    } else {
+      result = ['This field is required'];
     }
 
     return result;
@@ -56,9 +58,7 @@ export const ImportPrivateKey = () => {
         name: 'Account name',
         value: '',
         require: true,
-        validateFunc: (value: string) => {
-          return accountNameValidator(value);
-        },
+        validateFunc: accountNameValidator,
       },
     }),
     [accountNameValidator],

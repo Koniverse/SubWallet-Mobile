@@ -21,7 +21,6 @@ import { RootStackParamList } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
 import createStyle from './styles';
 import i18n from 'utils/i18n/i18n';
-import { isSameAddress } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AccountNameModal } from 'components/Modal/AccountNameModal';
@@ -67,7 +66,7 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
       if (_scannedAccount?.content) {
         for (const account of accounts) {
           // todo: Recheck this logic with master account
-          if (isSameAddress(account.address, _scannedAccount.content)) {
+          if (account.address === _scannedAccount.content) {
             return Promise.reject(new Error('Account already exists'));
           }
         }

@@ -18,6 +18,8 @@ interface Props {
   onCancelModal?: VoidFunction;
   completeBtnTitle?: string;
   cancelBtnTitle?: string;
+  disabledOnPressBackDrop?: boolean;
+  isAllowSwipeDown?: boolean;
 }
 
 const ConfirmModal: React.FC<Props> = ({
@@ -30,6 +32,8 @@ const ConfirmModal: React.FC<Props> = ({
   customIcon,
   completeBtnTitle,
   cancelBtnTitle,
+  isAllowSwipeDown,
+  disabledOnPressBackDrop,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -63,6 +67,8 @@ const ConfirmModal: React.FC<Props> = ({
           </View>
         </>
       }
+      disabledOnPressBackDrop={disabledOnPressBackDrop}
+      isAllowSwipeDown={isAllowSwipeDown}
       onBackButtonPress={onCancelModal}
       onChangeModalVisible={onCancelModal}>
       <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>

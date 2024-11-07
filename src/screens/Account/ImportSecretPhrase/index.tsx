@@ -9,7 +9,7 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { createAccountSuriV2, validateSeedV2 } from 'messaging/index';
 import { FileArrowDown, Warning, X } from 'phosphor-react-native';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
@@ -33,63 +33,92 @@ export const ImportSecretPhrase = () => {
   const { confirmModal } = useContext(AppModalContext);
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
   const toast = useToast();
-
+  const timeOutRef = useRef<NodeJS.Timeout>();
   const styles = useMemo(() => createStyle(theme), [theme]);
   const [accountNameModalVisible, setAccountNameModalVisible] = useState<boolean>(false);
   const [seedValidationResponse, setSeedValidationResponse] = useState<undefined | ResponseMnemonicValidateV2>();
   const [accountCreating, setAccountCreating] = useState(false);
+  const [validating, setValidating] = useState(false);
   useHandlerHardwareBackPress(accountCreating);
 
-  const [submitting, setSubmitting] = useState(false);
-
   const onSubmit = () => {
-    const trimSeed = formState.data.seed.trim();
-    validateSeedV2(trimSeed)
-      .then(response => {
-        setSeedValidationResponse(response);
-
-        if (response.mnemonicTypes === 'general') {
-          confirmModal.setConfirmModal({
-            visible: true,
-            title: 'Incompatible seed phrase',
-            message: (
-              <>
-                <Typography.Text>
-                  This seed phrase generates a unified account that can be used on multiple ecosystems in SubWallet
-                  including TON.
-                </Typography.Text>
-                <Typography.Text>
-                  Note that you can’t import this seed phrase into TON-native wallets as this seed phrase is
-                  incompatible with TON-native wallets.
-                </Typography.Text>
-              </>
-            ),
-            onCancelModal: () => {
-              confirmModal.hideConfirmModal();
-              setAccountCreating(false);
-            },
-            onCompleteModal: () => {
-              confirmModal.hideConfirmModal();
-              setAccountNameModalVisible(true);
-            },
-            customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
-            completeBtnTitle: 'Import',
-          });
-        } else {
+    if (seedValidationResponse && seedValidationResponse.mnemonicTypes === 'general') {
+      confirmModal.setConfirmModal({
+        visible: true,
+        title: 'Incompatible seed phrase',
+        message: (
+          <>
+            <Typography.Text>
+              {
+                'This seed phrase generates a unified account that can be used on multiple ecosystems in SubWallet including TON. \n'
+              }
+            </Typography.Text>
+            <Typography.Text>
+              Note that you can’t import this seed phrase into TON-native wallets as this seed phrase is incompatible
+              with TON-native wallets.
+            </Typography.Text>
+          </>
+        ),
+        onCancelModal: () => {
+          confirmModal.hideConfirmModal();
+          setAccountCreating(false);
+        },
+        onCompleteModal: () => {
+          confirmModal.hideConfirmModal();
           setAccountNameModalVisible(true);
-        }
-      })
-      .catch(() => {
-        onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
-      })
-      .finally(() => {
-        setSubmitting(false);
+        },
+        customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+        completeBtnTitle: 'Import',
       });
+    } else {
+      setAccountNameModalVisible(true);
+    }
   };
 
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(secretPhraseFormConfig, {
     onSubmitForm: onPressSubmit(onSubmit),
   });
+
+  useEffect(() => {
+    let amount = true;
+
+    if (timeOutRef.current) {
+      clearTimeout(timeOutRef.current);
+    }
+
+    if (amount) {
+      const trimSeed = formState.data.seed.trim();
+
+      if (trimSeed) {
+        setValidating(true);
+        onUpdateErrors('seed')([]);
+
+        timeOutRef.current = setTimeout(() => {
+          validateSeedV2(trimSeed)
+            .then(response => {
+              if (amount) {
+                setSeedValidationResponse(response);
+                onUpdateErrors('seed')([]);
+              }
+            })
+            .catch(() => {
+              if (amount) {
+                onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
+              }
+            })
+            .finally(() => {
+              if (amount) {
+                setValidating(false);
+              }
+            });
+        }, 300);
+      }
+    }
+
+    return () => {
+      amount = false;
+    };
+  }, [onUpdateErrors, formState.data.seed]);
 
   const _onImportSeed = (accountName: string): void => {
     if (!seedValidationResponse) {
@@ -104,6 +133,7 @@ export const ImportSecretPhrase = () => {
       isAllowed: true,
     })
       .then(() => {
+        setAccountNameModalVisible(false);
         navigation.reset({
           index: 0,
           routes: [{ name: 'Home' }],
@@ -164,8 +194,8 @@ export const ImportSecretPhrase = () => {
         <View style={styles.footer}>
           <Button
             icon={renderIconButton}
-            disabled={disabled || submitting}
-            loading={submitting || accountCreating}
+            disabled={disabled || validating}
+            loading={validating || accountCreating}
             onPress={onPressSubmit(onSubmit)}>
             {i18n.buttonTitles.importAccount}
           </Button>
