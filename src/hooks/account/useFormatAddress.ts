@@ -1,13 +1,13 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { AbstractAddressJson } from '@subwallet/extension-base/background/types';
 import { useCallback } from 'react';
 
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
-import reformatAddress from 'utils/index';
+import { AbstractAddressJson } from '@subwallet/extension-base/types';
+import { reformatAddress } from 'utils/account/account';
 
 const useFormatAddress = (addressPrefix?: number) => {
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);

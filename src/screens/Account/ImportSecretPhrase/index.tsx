@@ -101,9 +101,9 @@ export const ImportSecretPhrase = () => {
                 onUpdateErrors('seed')([]);
               }
             })
-            .catch(() => {
+            .catch((error: Error) => {
               if (amount) {
-                onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
+                onUpdateErrors('seed')([error.message]);
               }
             })
             .finally(() => {

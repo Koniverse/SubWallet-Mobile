@@ -158,14 +158,7 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
       onChangeModalVisible={() => setSelectedTab('tokenDetails')}
       onBackButtonPress={onChangeModalVisible}>
       <>
-        {isAllAccount && (
-          <SwTab
-            tabs={tokenDetailTabs}
-            onSelectType={_onSelectType}
-            tabType={'tokenDetail'}
-            selectedValue={selectedTab}
-          />
-        )}
+        {isAllAccount && <SwTab tabs={tokenDetailTabs} onSelectType={_onSelectType} selectedValue={selectedTab} />}
         {selectedTab === 'tokenDetails' ? (
           <>
             <View style={_style.blockContainer}>

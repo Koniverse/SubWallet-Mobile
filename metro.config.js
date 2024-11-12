@@ -26,6 +26,7 @@ const config = {
       zlib: require.resolve('react-zlib-js'),
       url: require.resolve('react-native-url-polyfill'),
       'expo-crypto': require.resolve('react-native-expo-crypto'),
+      'tiny-secp256k1': require.resolve('@bitcoinerlab/secp256k1'),
     },
   },
 };

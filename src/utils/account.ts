@@ -1,4 +1,3 @@
-import { decodeAddress, encodeAddress, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import {
@@ -18,20 +17,18 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
 import { AbstractAddressJson, AccountChainType, AccountJson } from '@subwallet/extension-base/types';
 import reformatAddress from 'utils/index';
+import { decodeAddress } from 'utils/address/decode';
+import { isAddress } from 'utils/address';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {
-    if (!address) {
+    const isAllAccount = address && isAccountAll(address);
+    if (!isAddress(address) && !isAllAccount) {
       return null;
     }
 
-    if (address === ALL_ACCOUNT_KEY) {
-      const result = accounts.find(account => account.address.toLowerCase() === address.toLowerCase());
-
-      return result || null;
-    }
-
-    const originAddress = isEthereumAddress(address) ? address : encodeAddress(decodeAddress(address));
+    const originAddress = isAccountAll(address) ? address : reformatAddress(address);
     const result = accounts.find(account => account.address.toLowerCase() === originAddress.toLowerCase());
 
     return result || null;
@@ -174,21 +171,16 @@ export const funcSortByName = (a: AbstractAddressJson, b: AbstractAddressJson) =
 export const findContactByAddress = (contacts: AbstractAddressJson[], address?: string): AbstractAddressJson | null => {
   try {
     const isAllAccount = address && isAccountAll(address);
-
     if (!isAddress(address) && !isAllAccount) {
       return null;
     }
 
-    const originAddress = isAccountAll(address)
-      ? address
-      : isEthereumAddress(address)
-      ? address
-      : encodeAddress(decodeAddress(address));
+    const originAddress = isAccountAll(address) ? address : reformatAddress(address);
     const result = contacts.find(contact => contact.address.toLowerCase() === originAddress.toLowerCase());
 
     return result || null;
   } catch (e) {
-    console.error('Fail to detect address', e);
+    console.error(`Fail to detect address ${address}`, e);
 
     return null;
   }

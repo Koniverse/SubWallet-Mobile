@@ -1,7 +1,6 @@
 import React from 'react';
 import { AccountType } from 'types/ui-types';
 import { NETWORK_STATUS, NetWorkGroup, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { isAccountAll, uniqueStringArray } from '@subwallet/extension-base/utils';
 import { decodeAddress, encodeAddress, ethereumEncode, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
@@ -15,6 +14,7 @@ import { Logo as SWLogo } from 'components/design-system-ui';
 import { DEFAULT_ACCOUNT_TYPES, EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { AccountChainType, AccountJson, AccountProxy } from '@subwallet/extension-base/types';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
+import { KeypairType } from '@subwallet/keyring/types';
 
 export interface NetworkSelectOption {
   text: string;

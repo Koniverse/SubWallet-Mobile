@@ -49,13 +49,14 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
           address,
           selectNetwork: chainSlug,
           onBack: showQrBack ? addressQrModal.hideAddressQrModal : undefined,
+          isOpenFromTokenDetailScreen: !!tokenGroupSlug,
         });
       };
       onHandleTonAccountWarning(accountType, () => {
         processFunction();
       });
     },
-    [addressQrModal, onHandleTonAccountWarning],
+    [addressQrModal, onHandleTonAccountWarning, tokenGroupSlug],
   );
 
   /* --- token Selector */
@@ -108,6 +109,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
             address: reformatedAddress,
           };
 
+          tokenRef && tokenRef.current?.onCloseModal();
           setSelectedAccountAddressItem(accountAddressItem);
           openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chainSlug);
 
@@ -166,6 +168,8 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
       }
 
       setSelectedAccountAddressItem(item);
+      tokenRef && tokenRef.current?.onCloseModal();
+      accountRef && accountRef.current?.onCloseModal();
       openAddressQrModal(item.address, item.accountType, item.accountProxyId, targetChain);
     },
     [openAddressQrModal, selectedChain, specificChain],

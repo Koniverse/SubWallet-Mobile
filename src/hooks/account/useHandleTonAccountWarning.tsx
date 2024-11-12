@@ -12,6 +12,7 @@ import { Warning } from 'phosphor-react-native';
 import { PageIcon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { mmkvStore } from 'utils/storage';
+import { Keyboard } from 'react-native';
 
 type HookType = (accountType: KeypairType, processFunction: VoidFunction) => void;
 
@@ -24,31 +25,34 @@ export default function useHandleTonAccountWarning(callback?: VoidFunction): Hoo
   return useCallback(
     (accountType: KeypairType, processFunction: VoidFunction) => {
       if (accountType === 'ton') {
-        confirmModal.setConfirmModal({
-          visible: true,
-          title: 'Incompatible seed phrase',
-          message:
-            "This address's seed phrase is not compatible with TON-native wallets. Continue using this address or create a new account that can be used on both SubWallet and TON-native wallets",
-          customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
-          completeBtnTitle: 'Get address',
-          cancelBtnTitle: 'Create new',
-          onCompleteModal: () => {
-            confirmModal.hideConfirmModal();
-            setTimeout(() => {
-              processFunction();
-            }, 100);
-          },
-          onCancelModal: () => {
-            setSelectedMnemonicType('ton');
-            mmkvStore.set('use-default-create-content', true);
-            callback && callback();
-            navigation.navigate('CreateAccount', {});
+        Keyboard.dismiss();
+        setTimeout(() => {
+          confirmModal.setConfirmModal({
+            visible: true,
+            title: 'Incompatible seed phrase',
+            message:
+              "This address's seed phrase is not compatible with TON-native wallets. Continue using this address or create a new account that can be used on both SubWallet and TON-native wallets",
+            customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+            completeBtnTitle: 'Get address',
+            cancelBtnTitle: 'Create new',
+            onCompleteModal: () => {
+              confirmModal.hideConfirmModal();
+              setTimeout(() => {
+                processFunction();
+              }, 100);
+            },
+            onCancelModal: () => {
+              setSelectedMnemonicType('ton');
+              mmkvStore.set('use-default-create-content', true);
+              callback && callback();
+              navigation.navigate('CreateAccount', {});
 
-            confirmModal.hideConfirmModal();
-          },
-          isAllowSwipeDown: false,
-          disabledOnPressBackDrop: true,
-        });
+              confirmModal.hideConfirmModal();
+            },
+            isAllowSwipeDown: false,
+            disabledOnPressBackDrop: true,
+          });
+        }, 300);
 
         return;
       }

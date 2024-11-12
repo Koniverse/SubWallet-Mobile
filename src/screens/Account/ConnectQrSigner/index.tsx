@@ -25,6 +25,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AccountNameModal } from 'components/Modal/AccountNameModal';
 import { AccountProxyType } from '@subwallet/extension-base/types';
+import { isSameAddress } from 'utils/account/account';
 
 interface Props {
   title: string;
@@ -66,7 +67,7 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
       if (_scannedAccount?.content) {
         for (const account of accounts) {
           // todo: Recheck this logic with master account
-          if (account.address === _scannedAccount.content) {
+          if (isSameAddress(account.address, _scannedAccount.content)) {
             return Promise.reject(new Error('Account already exists'));
           }
         }

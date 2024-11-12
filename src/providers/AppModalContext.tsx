@@ -30,6 +30,7 @@ export type AddressQrModalInfo = {
   address?: string;
   selectNetwork?: string;
   onBack?: VoidFunction;
+  isOpenFromTokenDetailScreen?: boolean;
 };
 
 export type DeriveModalInfo = {
@@ -153,6 +154,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           selectedNetwork={addressQrModalState.selectNetwork}
           onBack={addressQrModalState.onBack}
           isUseModalV2={false}
+          isOpenFromTokenDetailScreen={addressQrModalState.isOpenFromTokenDetailScreen}
         />
       )}
 

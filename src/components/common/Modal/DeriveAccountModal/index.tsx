@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Icon, Logo, PageIcon, SwModal, Typography } from 'components/design-system-ui';
-import { Platform, View } from 'react-native';
+import { Keyboard, Platform, View } from 'react-native';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
 import { deriveAccountV3, deriveSuggest, validateAccountName, validateDerivePathV2 } from 'messaging/index';
@@ -289,8 +289,22 @@ export const DeriveAccountActionModal = ({
   }, [modalVisible, onChangeValue, proxyId]);
 
   const disabled = useMemo(() => {
-    return loading || !formState.data.accountName || !formState.data.suri || validating;
-  }, [formState.data.accountName, formState.data.suri, loading, validating]);
+    return (
+      loading ||
+      !formState.data.accountName ||
+      !formState.data.suri ||
+      !!formState.errors.accountName.length ||
+      !!formState.errors.suri.length ||
+      validating
+    );
+  }, [
+    formState.data.accountName,
+    formState.data.suri,
+    formState.errors.accountName,
+    formState.errors.suri,
+    loading,
+    validating,
+  ]);
 
   return (
     <SwModal
@@ -307,14 +321,14 @@ export const DeriveAccountActionModal = ({
           icon={
             <Icon
               phosphorIcon={CheckCircle}
-              iconColor={disabled ? theme.colorTextTertiary : theme.colorWhite}
+              iconColor={disabled ? theme.colorTextLight5 : theme.colorWhite}
               weight={'fill'}
             />
           }
           disabled={disabled}
           onPress={onPressSubmit(onSubmit)}
           loading={loading || validating}>
-          {'Confirm'}
+          {'Create account'}
         </Button>
       }>
       <Typography.Text style={{ color: theme.colorTextDescription, textAlign: 'center' }}>
@@ -339,7 +353,7 @@ export const DeriveAccountActionModal = ({
         onChangeText={onChangeAccountName}
         placeholderTextColor={theme.colorTextTertiary}
         placeholder={'Account name'}
-        onSubmitField={onSubmitField('accountName')}
+        onSubmitField={disabled ? Keyboard.dismiss : onSubmitField('accountName')}
         accountType={networkType === 'unified' ? AccountProxyType.UNIFIED : AccountProxyType.SOLO}
         isDisabled={loading}
         errorMessages={formState.errors.accountName}

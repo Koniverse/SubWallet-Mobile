@@ -239,14 +239,16 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
         <Button
           block
           style={styles.noPaddingHorizontal}
-          disabled={!accountProxy.accountActions.includes(AccountActions.DERIVE)}
+          disabled={!accountProxy.accountActions.includes(AccountActions.DERIVE) || deleting}
           icon={
             <Icon
               phosphorIcon={GitMerge}
               weight={'fill'}
               size={'lg'}
               iconColor={
-                !accountProxy.accountActions.includes(AccountActions.DERIVE) ? theme.colorTextLight5 : theme.colorWhite
+                !accountProxy.accountActions.includes(AccountActions.DERIVE) || deleting
+                  ? theme.colorTextLight5
+                  : theme.colorWhite
               }
             />
           }
@@ -258,7 +260,15 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
           block
           style={styles.noPaddingHorizontal}
           onPress={onExportAccount}
-          icon={<Icon phosphorIcon={Export} weight={'fill'} size={'lg'} />}
+          disabled={deleting}
+          icon={
+            <Icon
+              phosphorIcon={Export}
+              weight={'fill'}
+              size={'lg'}
+              iconColor={deleting ? theme.colorTextLight5 : theme.colorWhite}
+            />
+          }
           type={'secondary'}>
           {'Export'}
         </Button>

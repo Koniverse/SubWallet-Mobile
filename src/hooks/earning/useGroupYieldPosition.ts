@@ -12,12 +12,13 @@ import {
   YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
-import { isAccountAll, isSameAddress } from '@subwallet/extension-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { isSameAddress } from 'utils/account/account';
 
 const useGroupYieldPosition = (selectedAddress?: string): YieldPositionInfo[] => {
   const { poolInfoMap, yieldPositions } = useSelector((state: RootState) => state.earning);

@@ -7,6 +7,7 @@ import Root from './src/Root';
 import { name as appName } from './app.json';
 import { Text, TextInput } from 'react-native';
 
+global.Buffer = require('buffer').Buffer;
 AppRegistry.registerComponent(appName, () => Root);
 
 if (Text.defaultProps == null) {

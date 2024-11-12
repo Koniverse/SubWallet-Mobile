@@ -2,9 +2,9 @@ import Input, { InputProps } from 'components/design-system-ui/input';
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { isEthereumAddress } from '@polkadot/util-crypto';
+import { decodeAddress, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { Button, Icon, Typography } from 'components/design-system-ui';
-import { toShort } from 'utils/index';
+import reformatAddress, { toShort } from 'utils/index';
 import { Book, Scan } from 'phosphor-react-native';
 import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal';
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
@@ -20,9 +20,6 @@ import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import useCheckCamera from 'hooks/common/useCheckCamera';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
-import { isAddress } from 'utils/address';
-import { decodeAddress } from 'utils/address/decode';
-import { reformatAddress } from 'utils/account/account';
 
 interface Props extends InputProps {
   chain?: string;
@@ -369,4 +366,4 @@ const Component = (
   );
 };
 
-export const InputAddress = forwardRef(Component);
+export const InputAddressNew = forwardRef(Component);

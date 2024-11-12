@@ -68,8 +68,8 @@ function createStyle(theme: ThemeTypes) {
       paddingRight: theme.paddingXS,
     },
     chainName: {
+      flexShrink: 1,
       color: theme.colorWhite,
-      flex: 1,
     },
     address: {
       fontSize: 12,

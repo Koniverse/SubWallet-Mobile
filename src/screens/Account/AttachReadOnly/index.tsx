@@ -22,6 +22,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AccountExternalErrorCode } from '@subwallet/extension-base/background/KoniTypes';
 import InputText from 'components/Input/InputText';
+import { isSameAddress } from 'utils/account/account';
 
 const AttachReadOnly = () => {
   const theme = useSubWalletTheme().swThemes;
@@ -44,7 +45,7 @@ const AttachReadOnly = () => {
 
       if (result) {
         for (const _account of accounts) {
-          if (_account.address === result.content) {
+          if (isSameAddress(_account.address, result.content)) {
             setReformatAddress('');
             setIsHideAccountNameInput(true);
 
