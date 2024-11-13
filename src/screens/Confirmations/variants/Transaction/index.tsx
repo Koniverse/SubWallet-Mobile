@@ -1,5 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  ConfirmationDefinitions,
+  ConfirmationDefinitionsTon,
+  ExtrinsicType,
+} from '@subwallet/extension-base/background/KoniTypes';
 
 import { ConfirmationQueueItem } from 'stores/base/RequestState';
 import { useSelector } from 'react-redux';
@@ -8,7 +12,7 @@ import { SigningRequest } from '@subwallet/extension-base/background/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
-import { EvmSignArea, SubstrateSignArea } from '../../parts';
+import { EvmSignArea, SubstrateSignArea, TonSignArea } from '../../parts';
 import {
   JoinPoolTransactionConfirmation,
   SendNftTransactionConfirmation,
@@ -121,7 +125,6 @@ export const TransactionConfirmation = (props: Props) => {
       {renderContent(_transaction)}
       {type === 'signingRequest' && (
         <SubstrateSignArea
-          account={(item as SigningRequest).account}
           extrinsicType={_transaction.extrinsicType}
           id={item.id}
           isInternal={item.isInternal}
@@ -137,6 +140,16 @@ export const TransactionConfirmation = (props: Props) => {
           type={type}
           navigation={navigation}
           txExpirationTime={txExpirationTime}
+        />
+      )}
+      {(type === 'tonSendTransactionRequest' || type === 'tonWatchTransactionRequest') && (
+        <TonSignArea
+          navigation={navigation}
+          extrinsicType={_transaction.extrinsicType}
+          id={item.id}
+          payload={item as ConfirmationDefinitionsTon['tonSendTransactionRequest' | 'tonWatchTransactionRequest'][0]}
+          txExpirationTime={txExpirationTime}
+          type={type}
         />
       )}
     </>

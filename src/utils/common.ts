@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { mmkvStore } from 'utils/storage';
 
 export const simpleDeepClone = <T>(s: T) => {
   return JSON.parse(JSON.stringify(s)) as T;
@@ -17,6 +18,10 @@ export const getOsVersion = (): string | number => {
     return Platform.Version;
   } else {
     // @ts-ignore
-    return Platform.constants['Release'];
+    return Platform.constants.Release;
   }
+};
+
+export const removeStorage = (key: string) => {
+  mmkvStore.delete(key);
 };

@@ -2,7 +2,7 @@ import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFoote
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { AccountJson, RequestSign } from '@subwallet/extension-base/background/types';
+import { RequestSign } from '@subwallet/extension-base/background/types';
 import { approveSignPasswordV2, approveSignSignature, cancelSignRequest } from 'messaging/index';
 import { useDispatch, useSelector } from 'react-redux';
 import { DisplayPayloadModal, SubstrateQr } from 'screens/Confirmations/parts/Qr/DisplayPayload';
@@ -33,9 +33,9 @@ import { RootStackParamList } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { FontMedium } from 'styles/sharedStyles';
 import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 
 interface Props {
-  account: AccountJson;
   id: string;
   request: RequestSign;
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -65,15 +65,17 @@ const migrationFAQUrl =
 const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMode.PASSWORD];
 
 export const SubstrateSignArea = (props: Props) => {
-  const { account, id, request, txExpirationTime, navigation } = props;
+  const { id, request, txExpirationTime, navigation } = props;
+  const { address } = request.payload;
+  const account = useGetAccountByAddress(address);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const genesisHash = useMemo(() => {
     const _payload = request.payload;
 
     return isRawPayload(_payload)
-      ? account.originGenesisHash || chainInfoMap.polkadot.substrateInfo?.genesisHash || ''
+      ? account?.originGenesisHash || chainInfoMap.polkadot.substrateInfo?.genesisHash || ''
       : _payload.genesisHash;
-  }, [account.originGenesisHash, chainInfoMap.polkadot.substrateInfo?.genesisHash, request.payload]);
+  }, [account?.originGenesisHash, chainInfoMap.polkadot.substrateInfo?.genesisHash, request.payload]);
   const signMode = useMemo(() => getSignMode(account), [account]);
   const isLedger = useMemo(
     () => signMode === AccountSignMode.LEGACY_LEDGER || signMode === AccountSignMode.GENERIC_LEDGER,
@@ -438,7 +440,7 @@ export const SubstrateSignArea = (props: Props) => {
           <>
             <DisplayPayloadModal visible={isShowQr} onOpenScan={openScanning} setVisible={setIsShowQr}>
               <>
-                <SubstrateQr address={account.address} genesisHash={genesisHash} payload={payload || ''} />
+                <SubstrateQr address={account?.address || address} genesisHash={genesisHash} payload={payload || ''} />
                 <SignatureScanner visible={isScanning} onSuccess={onSuccess} setVisible={setIsScanning} />
               </>
             </DisplayPayloadModal>

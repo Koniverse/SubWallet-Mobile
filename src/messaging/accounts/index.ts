@@ -5,3 +5,4 @@ export * from './export';
 export * from './derive';
 export * from './edit';
 export * from './addressBook';
+export * from './currentAccount';

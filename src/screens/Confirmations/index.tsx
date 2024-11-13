@@ -1,11 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {
-  AccountJson,
-  AuthorizeRequest,
-  MetadataRequest,
-  SigningRequest,
-} from '@subwallet/extension-base/background/types';
+import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/extension-base/background/types';
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
 import { NEED_SIGN_CONFIRMATION } from 'constants/transaction';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
@@ -38,10 +33,13 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Portal } from '@gorhom/portal';
-import { getSignMode } from 'utils/account';
+import { findAccountByAddress, getSignMode } from 'utils/account';
 import { AccountSignMode } from 'types/signer';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { getDevMode } from 'utils/storage';
+import { AccountJson } from '@subwallet/extension-base/types';
+import { SignerPayloadJSON } from '@polkadot/types/types';
+import { _isRuntimeUpdated } from '@subwallet/extension-base/utils';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
   return {
@@ -67,6 +65,7 @@ const subWalletModalSeparator: StyleProp<any> = {
 export const Confirmations = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { confirmationQueue, numberOfConfirmations } = useConfirmationsInfo();
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
   const [index, setIndex] = useState(0);
   const confirmation = confirmationQueue[index] || null;
@@ -188,9 +187,28 @@ export const Confirmations = () => {
       if (confirmation.type === 'signingRequest') {
         const request = confirmation.item as SigningRequest;
         const _isMessage = isRawPayload(request.request.payload);
+        const address = request.request.payload.address;
 
-        account = request.account;
-        canSign = !_isMessage || !account.isHardware;
+        account = findAccountByAddress(accounts, address) || undefined;
+        const isEthereum = isEthereumAddress(address);
+        if (account?.isHardware) {
+          if (account?.isGeneric) {
+            canSign = !isEthereum;
+          } else {
+            if (_isMessage) {
+              canSign = true;
+            } else {
+              const payload = request.request.payload as SignerPayloadJSON;
+
+              // Valid even with evm ledger account (evm - availableGenesisHashes is empty)
+              canSign =
+                !!account?.availableGenesisHashes?.includes(payload.genesisHash) ||
+                _isRuntimeUpdated(payload?.signedExtensions);
+            }
+          }
+        } else {
+          canSign = true;
+        }
         isMessage = _isMessage;
       } else if (
         ['evmSignatureRequest', 'evmSendTransactionRequest', 'evmWatchTransactionRequest'].includes(confirmation.type)
@@ -200,7 +218,7 @@ export const Confirmations = () => {
           | 'evmSendTransactionRequest'
           | 'evmWatchTransactionRequest'][0];
 
-        account = request.payload.account;
+        account = findAccountByAddress(accounts, request.payload.address) || undefined;
         canSign = request.payload.canSign;
         isMessage = confirmation.type === 'evmSignatureRequest';
       }
@@ -279,7 +297,7 @@ export const Confirmations = () => {
     }
 
     return null;
-  }, [confirmation, isDevMode, navigation]);
+  }, [accounts, confirmation, isDevMode, navigation]);
 
   useEffect(() => {
     if (numberOfConfirmations) {
