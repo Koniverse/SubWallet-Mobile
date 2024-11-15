@@ -9,10 +9,11 @@ import { useSelector } from 'react-redux';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { RootState } from 'stores/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
-import reformatAddress, { toShort } from 'utils/index';
+import { toShort } from 'utils/index';
 import Typography from '../../design-system-ui/typography';
 import { isAddress } from '@polkadot/util-crypto';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { reformatAddress } from 'utils/account/account';
 
 export interface AccountInfoItem extends InfoItemBase {
   address: string;

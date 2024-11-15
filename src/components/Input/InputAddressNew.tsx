@@ -4,7 +4,7 @@ import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { decodeAddress, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { Button, Icon, Typography } from 'components/design-system-ui';
-import reformatAddress, { toShort } from 'utils/index';
+import { toShort } from 'utils/index';
 import { Book, Scan } from 'phosphor-react-native';
 import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal';
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
@@ -20,6 +20,7 @@ import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import useCheckCamera from 'hooks/common/useCheckCamera';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { reformatAddress } from 'utils/account/account';
 
 interface Props extends InputProps {
   chain?: string;

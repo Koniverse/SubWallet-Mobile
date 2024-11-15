@@ -1,6 +1,6 @@
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
-import { Avatar, Button, Field, Icon, Typography } from 'components/design-system-ui';
+import { Button, Field, Icon, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
 import React, { useCallback } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -8,6 +8,7 @@ import { Copy } from 'phosphor-react-native';
 import createStylesheet from './style/ReadonlyAddressField';
 import Toast from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props {
   label?: string;
@@ -32,7 +33,7 @@ export const ReadonlyAddressField = ({ address, label, showAvatar = true, toastR
       <View style={stylesheet.contentBlock}>
         {showAvatar && (
           <View style={stylesheet.avatarWrapper}>
-            <Avatar value={address || ''} size={hasLabel ? 20 : 24} />
+            <AccountProxyAvatar value={address || ''} size={hasLabel ? 20 : 24} />
           </View>
         )}
         <Typography.Text style={stylesheet.address}>{toShort(address, 9, 11)}</Typography.Text>

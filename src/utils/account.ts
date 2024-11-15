@@ -16,10 +16,10 @@ import i18n from './i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
 import { AbstractAddressJson, AccountChainType, AccountJson } from '@subwallet/extension-base/types';
-import reformatAddress from 'utils/index';
 import { decodeAddress } from 'utils/address/decode';
 import { isAddress } from 'utils/address';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import { reformatAddress } from 'utils/account/account';
 
 export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {

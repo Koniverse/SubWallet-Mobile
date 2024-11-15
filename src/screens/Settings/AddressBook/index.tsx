@@ -9,7 +9,6 @@ import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass, PencilSimpleLine, Plus } from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import reformatAddress from 'utils/index';
 import { isAddress } from '@polkadot/util-crypto';
 import { AddContactModal } from 'components/Modal/AddressBook/AddContactModal';
 import { EditContactModal } from 'components/Modal/AddressBook/EditContactModal';
@@ -21,6 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AddressJson } from '@subwallet/extension-base/types';
+import { reformatAddress } from 'utils/account/account';
 
 enum AccountGroup {
   CONTACT = 'contact',

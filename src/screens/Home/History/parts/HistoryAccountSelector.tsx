@@ -4,11 +4,10 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
 import { toShort } from 'utils/index';
-import { Avatar } from 'components/design-system-ui';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { CaretDown } from 'phosphor-react-native';
 import Typography from 'components/design-system-ui/typography';
 import { AccountAddressItemType } from 'types/account';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props {
   items: AccountAddressItemType[];
@@ -40,7 +39,7 @@ export const HistoryAccountSelector = ({ items, value, onSelectItem, disabled, s
             backgroundColor: theme.colorBgSecondary,
           },
         ]}>
-        <Avatar value={value} size={20} theme={isEthereumAddress(value) ? 'ethereum' : 'polkadot'} />
+        <AccountProxyAvatar value={value} size={20} />
         <View style={{ flex: 1 }}>
           {!!value && (
             <Typography.Text ellipsis style={{ color: theme.colorTextLight2 }}>

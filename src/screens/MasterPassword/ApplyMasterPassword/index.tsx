@@ -2,7 +2,7 @@ import useConfirmModal from 'hooks/modal/useConfirmModal';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { ScrollView, View } from 'react-native';
-import { Avatar, Button, Icon } from 'components/design-system-ui';
+import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, CheckCircle, Info, Trash } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ApplyMasterPasswordStyle from './style';
@@ -27,6 +27,7 @@ import { noop } from 'utils/function';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { AccountJson } from '@subwallet/extension-base/types';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
@@ -72,7 +73,6 @@ const ApplyMasterPassword = () => {
       validateFunc: validatePassword,
     },
   };
-  console.log('step', step);
   const { onPress } = useUnlockModal(navigation);
 
   const migratedRef = useRef<AccountJson[]>(accounts.filter(filterAccountMigrated));
@@ -323,11 +323,7 @@ const ApplyMasterPassword = () => {
         {step === 'Migrate' && migrateAccount && (
           <ScrollView style={{ flex: 1, paddingHorizontal: theme.padding }}>
             <View style={{ alignItems: 'center', justifyContent: 'center', paddingBottom: 32, paddingTop: 16 }}>
-              <Avatar
-                size={112}
-                value={migrateAccount.address}
-                theme={migrateAccount.type === 'ethereum' ? 'ethereum' : 'polkadot'}
-              />
+              <AccountProxyAvatar size={112} value={migrateAccount.address} />
             </View>
 
             <TextField text={migrateAccount.name || ''} label={i18n.inputLabel.accountName} />

@@ -6,11 +6,14 @@ import { KeypairType } from '@subwallet/keyring/types';
 import { encodeAddress } from 'utils/address/encode';
 import { getKeypairTypeByAddress, isTonAddress } from 'utils/address/validate';
 import {
+  _chainInfoToChainType,
+  _getChainSubstrateAddressPrefix,
   _isChainEvmCompatible,
   _isChainSubstrateCompatible,
   _isChainTonCompatible,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { _ChainInfo } from '@subwallet/chain-list/types';
+import { AccountChainType } from '@subwallet/extension-base/types';
 
 export const isAddressAllowedWithAuthType = (address: string, authAccountTypes?: AccountAuthType[]) => {
   if (authAccountTypes?.includes('evm')) {
@@ -69,6 +72,18 @@ export function isSameAddress(address1: string, address2: string) {
 
   return reformatAddress(address1, 0) === reformatAddress(address2, 0); // TODO: maybe there's a better way
 }
+
+export const _reformatAddressWithChain = (address: string, chainInfo: _ChainInfo) => {
+  const chainType = _chainInfoToChainType(chainInfo);
+  if (chainType === AccountChainType.SUBSTRATE) {
+    return reformatAddress(address, _getChainSubstrateAddressPrefix(chainInfo));
+  } else if (chainType === AccountChainType.TON) {
+    const isTestnet = chainInfo.isTestnet;
+    return reformatAddress(address, isTestnet ? 0 : 1);
+  } else {
+    return address;
+  }
+};
 
 export function isAddressAndChainCompatible(address: string, chain: _ChainInfo) {
   const isEvmCompatible = isEthereumAddress(address) && _isChainEvmCompatible(chain);

@@ -6,9 +6,8 @@ import Text from '../../components/Text';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDown } from 'phosphor-react-native';
-import { Avatar } from 'components/design-system-ui';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import i18n from 'utils/i18n/i18n';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props extends FieldBaseProps {
   disabled?: boolean;
@@ -72,7 +71,7 @@ export const AccountSelectField = ({
     <FieldBase label={label} {...fieldBase} outerStyle={outerStyle}>
       <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Avatar value={value} size={label ? 20 : 24} theme={isEthereumAddress(value) ? 'ethereum' : 'polkadot'} />
+          <AccountProxyAvatar value={value} size={label ? 20 : 24} />
           {!!value && <Text style={accountNameTextStyle}>{accountName}</Text>}
           {!!value && <Text style={getTextStyle(!!disabled)}>{`(${toShort(value, 4, 4)})`}</Text>}
           {!value && <Text style={getPlaceholderStyle()}>{i18n.header.selectAccount}</Text>}

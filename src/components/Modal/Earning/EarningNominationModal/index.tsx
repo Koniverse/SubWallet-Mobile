@@ -1,7 +1,7 @@
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { YieldPositionInfo } from '@subwallet/extension-base/types';
-import { Avatar, Number, SwModal, Typography } from 'components/design-system-ui';
+import { Number, SwModal, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
@@ -9,6 +9,7 @@ import { Platform, ScrollView, View } from 'react-native';
 import { toShort } from 'utils/index';
 import createStyles from './style';
 import { deviceHeight } from 'constants/index';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props {
   item: YieldPositionInfo;
@@ -39,7 +40,7 @@ const EarningNominationModal: React.FC<Props> = (props: Props) => {
             return (
               <View style={styles.infoRow} key={nomination.validatorAddress}>
                 <View style={styles.accountRow}>
-                  <Avatar value={nomination.validatorAddress} size={theme.sizeLG} />
+                  <AccountProxyAvatar value={nomination.validatorAddress} size={theme.sizeLG} />
                   <Typography.Text style={styles.accountText} ellipsis={true} numberOfLines={1}>
                     {nomination.validatorIdentity || toShort(nomination.validatorAddress)}
                   </Typography.Text>

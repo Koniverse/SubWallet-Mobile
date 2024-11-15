@@ -9,7 +9,6 @@ import { View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import reformatAddress from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
@@ -21,6 +20,7 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AbstractAddressJson, AccountJson } from '@subwallet/extension-base/types';
+import { reformatAddress } from 'utils/account/account';
 
 interface Props {
   modalVisible: boolean;

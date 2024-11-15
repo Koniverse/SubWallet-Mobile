@@ -1,7 +1,9 @@
 import {
   CronReloadRequest,
+  CronServiceType,
   MobileData,
   ResponseSubscribeHistory,
+  SubscriptionServiceType,
   TransactionHistoryItem,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { sendMessage } from 'messaging/base';
@@ -17,6 +19,26 @@ export async function mobileRestore(request: Partial<MobileData>): Promise<null>
 
 export async function reloadCron(request: CronReloadRequest): Promise<boolean> {
   return sendMessage('pri(cron.reload)', request);
+}
+
+export async function startCronServices(request: CronServiceType[]): Promise<void> {
+  return sendMessage('mobile(cron.start)', request);
+}
+
+export async function stopCronServices(request: CronServiceType[]): Promise<void> {
+  return sendMessage('mobile(cron.stop)', request);
+}
+
+export async function restartCronServices(request: CronServiceType[]): Promise<void> {
+  return sendMessage('mobile(cron.restart)', request);
+}
+
+export async function startSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
+  return sendMessage('mobile(subscription.start)', request);
+}
+
+export async function stopSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
+  return sendMessage('mobile(subscription.stop)', request);
 }
 
 export async function subscribeTransactionHistory(

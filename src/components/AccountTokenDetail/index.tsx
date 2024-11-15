@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { Avatar, Button, Icon, Number, Typography } from 'components/design-system-ui';
+import { Button, Icon, Number, Typography } from 'components/design-system-ui';
 import { Linking, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
-import reformatAddress, { toShort } from 'utils/index';
+import { toShort } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './style';
 import { BalanceItem } from '@subwallet/extension-base/types';
@@ -15,6 +15,8 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import MetaInfo from 'components/MetaInfo';
 import { ArrowSquareOut } from 'phosphor-react-native';
 import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
+import { reformatAddress } from 'utils/account/account';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props {
   item: BalanceItem;
@@ -51,7 +53,7 @@ export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
       <View style={{ flex: 1 }}>
         <View style={[_style.row, { paddingBottom: theme.paddingXXS }]}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.paddingXS }}>
-            <Avatar value={address} size={24} />
+            <AccountProxyAvatar value={address} size={24} />
             {name ? (
               <View>
                 <Typography.Text style={_style.accountDetailLabel} ellipsis>

@@ -36,10 +36,10 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { FormItem } from 'components/common/FormItem';
-import reformatAddress from 'utils/index';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import InputText from 'components/Input/InputText';
 import useGetFungibleContractSupportedChains from 'hooks/screen/ImportNft/useGetFungibleContractSupportedChains';
+import { reformatAddress } from 'utils/account/account';
 
 interface ImportTokenFormValues extends TransactionFormValues {
   selectedTokenType: string;

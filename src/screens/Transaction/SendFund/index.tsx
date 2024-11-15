@@ -16,7 +16,7 @@ import {
   _isTokenTransferredByEvm,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
-import { _reformatAddressWithChain, addLazy, removeLazy } from '@subwallet/extension-base/utils';
+import { addLazy, removeLazy } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
 import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
@@ -105,7 +105,7 @@ import { SelectModalField } from 'components/common/SelectModal/parts/SelectModa
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
-import { isSameAddress } from 'utils/account/account';
+import { _reformatAddressWithChain, isSameAddress } from 'utils/account/account';
 
 interface TransferOptions {
   isTransferAll: boolean;

@@ -1,12 +1,14 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React, { useMemo } from 'react';
-import reformatAddress, { toShort } from 'utils/index';
+import { toShort } from 'utils/index';
 import { StyleSheet, View } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';
 import { IconProps, Info } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
+import { Button, Icon, Typography } from 'components/design-system-ui';
+import { AccountProxyAvatar } from '../design-system-ui/avatar/account-proxy-avatar';
+import { reformatAddress } from 'utils/account/account';
 
 interface Props extends FieldBaseProps {
   address: string;
@@ -50,7 +52,7 @@ export const AddressField = ({
       <View style={styles.blockContent}>
         {!!showAvatar && (
           <View style={styles.logoWrapper}>
-            <Avatar value={address} size={label ? 20 : 24} />
+            <AccountProxyAvatar value={address} size={label ? 20 : 24} />
           </View>
         )}
         {!!placeholder && <Typography.Text style={styles.text}>{placeholder}</Typography.Text>}

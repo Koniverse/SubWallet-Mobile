@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import AccountItemBase from 'components/common/Account/Item/AccountItemBase';
-import AvatarGroup from 'components/common/AvatarGroup';
 import { Icon, Typography } from 'components/design-system-ui';
 import { DotsThree } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
@@ -8,6 +7,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import { isSameAddress } from 'utils/account/account';
 import { AccountJson } from '@subwallet/extension-base/types';
+import { AccountProxyAvatarGroup } from 'components/design-system-ui/avatar/account-proxy-avatar-group';
 
 interface Props {
   accounts: AccountJson[];
@@ -20,6 +20,14 @@ export const WCAccountInput = ({ accounts, selected }: Props) => {
     () => accounts.filter(account => selected.some(address => isSameAddress(address, account.address))),
     [accounts, selected],
   );
+  const basicAccountProxiesInfo = useMemo(() => {
+    return selectedAccounts.map(account => {
+      return {
+        id: account.proxyId || '',
+        name: account.name,
+      };
+    });
+  }, [selectedAccounts]);
 
   const countSelected = selectedAccounts.length;
 
@@ -27,7 +35,7 @@ export const WCAccountInput = ({ accounts, selected }: Props) => {
     <AccountItemBase
       customStyle={{ left: { paddingRight: countSelected ? 8 : 0 }, right: { marginRight: -2 } }}
       address={''}
-      leftItem={<AvatarGroup addresses={selectedAccounts.map(acc => acc.address)} />}
+      leftItem={<AccountProxyAvatarGroup accountProxies={basicAccountProxiesInfo} />}
       middleItem={
         <Typography.Text style={{ color: theme.colorWhite, ...FontMedium }}>
           {countSelected ? i18n.formatString(i18n.message.connectedAccounts, countSelected) : i18n.inputLabel.selectAcc}
