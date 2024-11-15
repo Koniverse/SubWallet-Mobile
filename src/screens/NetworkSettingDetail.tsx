@@ -20,9 +20,9 @@ import {
   _getEvmChainId,
   _getSubstrateParaId,
   _isChainEvmCompatible,
+  _isChainSubstrateCompatible,
   _isCustomChain,
   _isPureEvmChain,
-  _isSubstrateChain,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import InputText from 'components/Input/InputText';
 import { Button, Icon } from 'components/design-system-ui';
@@ -99,12 +99,16 @@ export const NetworkSettingDetail = ({
     let result = '';
     const types: string[] = [];
 
-    if (_isSubstrateChain(chainInfo)) {
+    if (_isChainSubstrateCompatible(chainInfo)) {
       types.push('Substrate');
     }
 
     if (_isChainEvmCompatible(chainInfo)) {
       types.push('EVM');
+    }
+
+    if (chainInfo.slug === 'ton') {
+      types.push('TON');
     }
 
     for (let i = 0; i < types.length; i++) {

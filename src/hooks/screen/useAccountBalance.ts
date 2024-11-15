@@ -344,14 +344,14 @@ export default function useAccountBalance(
   lazy?: boolean,
   showZero?: boolean,
 ): AccountBalanceHookType {
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
   const balanceMap = useSelector((state: RootState) => state.balance.balanceMap);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const priceMap = useSelector((state: RootState) => state.price.priceMap);
-  const price24hMap = useSelector((state: RootState) => state.price.price24hMap);
+  const { priceMap, price24hMap } = useSelector((state: RootState) => state.price);
   const currency = useSelector((state: RootState) => state.price.currencyData);
-  const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
+  const { assetRegistry: assetRegistryMap, multiChainAssetMap } = useSelector(
+    (state: RootState) => state.assetRegistry,
+  );
   const isShowZeroBalanceSetting = useSelector((state: RootState) => state.settings.isShowZeroBalance);
 
   const isShowZeroBalance = useMemo(() => {
@@ -362,7 +362,7 @@ export default function useAccountBalance(
     lazy
       ? DEFAULT_RESULT
       : getAccountBalance(
-          currentAccount?.address || '',
+          currentAccountProxy?.id || '',
           tokenGroupMap,
           balanceMap,
           priceMap,
@@ -378,7 +378,7 @@ export default function useAccountBalance(
     const timeoutID = setTimeout(() => {
       setResult(
         getAccountBalance(
-          currentAccount?.address || '',
+          currentAccountProxy?.id || '',
           tokenGroupMap,
           balanceMap,
           priceMap,
@@ -397,7 +397,7 @@ export default function useAccountBalance(
     balanceMap,
     chainInfoMap,
     currency,
-    currentAccount,
+    currentAccountProxy,
     isShowZeroBalance,
     multiChainAssetMap,
     price24hMap,

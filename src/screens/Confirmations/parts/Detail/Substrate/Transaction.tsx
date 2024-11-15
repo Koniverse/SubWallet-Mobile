@@ -1,7 +1,6 @@
 import { Call, ExtrinsicEra, ExtrinsicPayload } from '@polkadot/types/interfaces';
 import { AnyJson, SignerPayloadJSON } from '@polkadot/types/types';
 import { BN, bnToBn, formatNumber } from '@polkadot/util';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
 import useMetadata from 'hooks/transaction/confirmation/useMetadata';
@@ -20,7 +19,8 @@ interface Decoded {
 interface Props {
   payload: ExtrinsicPayload;
   request: SignerPayloadJSON;
-  account: AccountJson;
+  address: string;
+  accountName?: string;
 }
 
 const displayDecodeVersion = (message: string, chain: Chain, specVersion: BN): string => {
@@ -94,7 +94,8 @@ const mortalityAsString = (era: ExtrinsicEra, hexBlockNumber: string): string =>
 
 const SubstrateTransactionDetail: React.FC<Props> = (props: Props) => {
   const {
-    account,
+    address,
+    accountName,
     payload: { era, nonce, tip },
     request: { blockNumber, genesisHash, method, specVersion: hexSpec },
   } = props;
@@ -117,9 +118,9 @@ const SubstrateTransactionDetail: React.FC<Props> = (props: Props) => {
         <MetaInfo.Default label={i18n.common.genesis}>{toShort(genesisHash, 10, 10)}</MetaInfo.Default>
       )}
       <MetaInfo.Account
-        address={account.address}
+        address={address}
         label={i18n.common.from}
-        name={account.name}
+        name={accountName}
         networkPrefix={chain?.ss58Format ?? chainInfo?.substrateInfo?.addressPrefix}
       />
       <MetaInfo.Number label={i18n.common.version} value={specVersion.toNumber()} />

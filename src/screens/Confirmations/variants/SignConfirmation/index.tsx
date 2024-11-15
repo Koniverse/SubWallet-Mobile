@@ -22,6 +22,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { enableChain } from 'messaging/index';
 import { noop } from 'utils/function';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 
 interface Props {
   request: SigningRequest;
@@ -30,14 +31,15 @@ interface Props {
 
 const SignConfirmation: React.FC<Props> = (props: Props) => {
   const { request, navigation } = props;
-  const { account } = request;
+  const { address } = request;
+  const account = useGetAccountByAddress(address);
   const theme = useSubWalletTheme().swThemes;
   const { chainInfoMap, chainStateMap } = useSelector((root: RootState) => root.chainStore);
   const genesisHash = useMemo(() => {
     const _payload = request.request.payload;
 
     return isRawPayload(_payload)
-      ? account.originGenesisHash || chainInfoMap.polkadot.substrateInfo?.genesisHash || ''
+      ? account?.originGenesisHash || chainInfoMap.polkadot.substrateInfo?.genesisHash || ''
       : _payload.genesisHash;
   }, [account, chainInfoMap, request]);
 
@@ -61,13 +63,14 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
         <ConfirmationGeneralInfo request={request} />
         <Text style={styles.title}>{i18n.confirmation.signatureRequest}</Text>
         <Text style={styles.description}>{i18n.confirmation.requestWithAccount}</Text>
-        <AccountItemWithName accountName={account.name} address={account.address} avatarSize={24} isSelected={true} />
+        <AccountItemWithName accountName={account?.name} address={address} avatarSize={24} isSelected={true} />
         <BaseDetailModal title={isMessage ? i18n.confirmation.messageDetail : i18n.confirmation.transactionDetail}>
           {isMessage ? (
             <SubstrateMessageDetail bytes={payload as string} />
           ) : (
             <SubstrateTransactionDetail
-              account={account}
+              address={address}
+              accountName={account?.name}
               payload={payload as ExtrinsicPayload}
               request={request.request.payload as SignerPayloadJSON}
             />
@@ -75,7 +78,6 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
         </BaseDetailModal>
       </ConfirmationContent>
       <SubstrateSignArea
-        account={account}
         id={request.id}
         isInternal={request.isInternal}
         request={request.request}

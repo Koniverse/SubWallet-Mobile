@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { APIItemState } from '@subwallet/extension-base/background/KoniTypes';
 import { isAccountAll } from 'utils/accountAll';
-import { BN_ZERO, isSameAddress } from '@subwallet/extension-base/utils';
+import { BN_ZERO } from '@subwallet/extension-base/utils';
 import { BalanceItem } from '@subwallet/extension-base/types';
 import { deviceHeight } from 'constants/index';
 import { EmptyList } from 'components/EmptyList';
@@ -23,6 +23,7 @@ import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import reformatAddress from 'utils/index';
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
+import { isSameAddress } from 'utils/account/account';
 
 export type ItemType = {
   symbol: string;

@@ -28,6 +28,7 @@ import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndT
 import { tokenItem } from 'constants/itemHeight';
 import { sortTokenByValue } from 'utils/sort/token';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
+import { AccountProxyType } from '@subwallet/extension-base/types';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -55,7 +56,7 @@ export const TokenGroups = () => {
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
   const [isCustomizationModalVisible, setCustomizationModalVisible] = useState<boolean>(false);
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
   const {
     accountSelectorItems,
     onOpenReceive,
@@ -158,12 +159,16 @@ export const TokenGroups = () => {
   );
 
   const _onOpenSendFund = useCallback(() => {
-    if (currentAccount && currentAccount.isReadOnly) {
+    if (!currentAccountProxy) {
+      return;
+    }
+
+    if (currentAccountProxy.accountType === AccountProxyType.READ_ONLY) {
       showNoti(i18n.notificationMessage.watchOnlyNoti);
       return;
     }
 
-    if (currentAccount && currentAccount.isHardware && currentAccount.hardwareType === 'ledger') {
+    if (currentAccountProxy.accountType === AccountProxyType.LEDGER) {
       showNoti(i18n.formatString(i18n.notificationMessage.accountTypeNoti, 'ledger') as string);
       return;
     }
@@ -176,7 +181,7 @@ export const TokenGroups = () => {
     };
 
     onSuccess();
-  }, [currentAccount, navigation, showNoti]);
+  }, [currentAccountProxy, navigation, showNoti]);
 
   const listHeaderNode = useMemo(() => {
     return (

@@ -1,4 +1,5 @@
 import {
+  CronReloadRequest,
   MobileData,
   ResponseSubscribeHistory,
   TransactionHistoryItem,
@@ -12,6 +13,10 @@ export async function mobileBackup(): Promise<MobileData> {
 }
 export async function mobileRestore(request: Partial<MobileData>): Promise<null> {
   return sendMessage('mobile(storage.restore)', request);
+}
+
+export async function reloadCron(request: CronReloadRequest): Promise<boolean> {
+  return sendMessage('pri(cron.reload)', request);
 }
 
 export async function subscribeTransactionHistory(

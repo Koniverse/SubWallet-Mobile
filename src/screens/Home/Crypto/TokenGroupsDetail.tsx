@@ -13,7 +13,6 @@ import { useNavigation } from '@react-navigation/native';
 import { TokenDetailModal } from 'screens/Home/Crypto/TokenDetailModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
-import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
@@ -23,6 +22,7 @@ import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
+import { AccountProxyType } from '@subwallet/extension-base/types';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -56,21 +56,16 @@ export const TokenGroupsDetail = ({
     return '';
   }, [tokenGroupSlug, assetRegistryMap, multiChainAssetMap]);
 
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
 
   const {
     accountSelectorItems,
     onOpenReceive,
     openSelectAccount,
     openSelectToken,
-    selectedAccount,
-    selectedNetwork,
-    setQrModalVisible,
-    isQrModalVisible,
     tokenSelectorItems,
     accountRef,
     tokenRef,
-    selectedAccountMap,
   } = useReceiveQR(tokenGroupSlug);
 
   const toast = useToast();
@@ -148,12 +143,16 @@ export const TokenGroupsDetail = ({
   );
 
   const _onOpenSendFund = useCallback(() => {
-    if (currentAccount && currentAccount.isReadOnly) {
+    if (!currentAccountProxy) {
+      return;
+    }
+
+    if (currentAccountProxy.accountType === AccountProxyType.READ_ONLY) {
       showNoti(i18n.notificationMessage.watchOnlyNoti);
       return;
     }
 
-    if (currentAccount && currentAccount.isHardware && currentAccount.hardwareType === 'ledger') {
+    if (currentAccountProxy.accountType === AccountProxyType.LEDGER) {
       showNoti(i18n.formatString(i18n.notificationMessage.accountTypeNoti, 'ledger') as string);
       return;
     }
@@ -162,15 +161,19 @@ export const TokenGroupsDetail = ({
       screen: 'TransactionAction',
       params: { screen: 'SendFund', params: { slug: tokenGroupSlug } },
     });
-  }, [currentAccount, navigation, showNoti, tokenGroupSlug]);
+  }, [currentAccountProxy, navigation, showNoti, tokenGroupSlug]);
 
   const _onOpenSwap = useCallback(() => {
-    if (currentAccount && currentAccount.isReadOnly) {
+    if (!currentAccountProxy) {
+      return;
+    }
+
+    if (currentAccountProxy.accountType === AccountProxyType.READ_ONLY) {
       showNoti(i18n.notificationMessage.watchOnlyNoti);
       return;
     }
 
-    if (currentAccount && currentAccount.isHardware && currentAccount.hardwareType === 'ledger') {
+    if (currentAccountProxy.accountType === AccountProxyType.LEDGER) {
       showNoti(i18n.formatString(i18n.notificationMessage.accountTypeNoti, 'ledger') as string);
       return;
     }
@@ -179,7 +182,7 @@ export const TokenGroupsDetail = ({
       screen: 'TransactionAction',
       params: { screen: 'Swap', params: { slug: tokenGroupSlug } },
     });
-  }, [currentAccount, navigation, showNoti, tokenGroupSlug]);
+  }, [currentAccountProxy, navigation, showNoti, tokenGroupSlug]);
 
   const listHeaderNode = useMemo(() => {
     return (
@@ -250,14 +253,6 @@ export const TokenGroupsDetail = ({
           tokenItems={tokenSelectorItems}
           openSelectAccount={openSelectAccount}
           openSelectToken={openSelectToken}
-          selectedValueMap={selectedAccountMap}
-        />
-
-        <ReceiveModal
-          modalVisible={isQrModalVisible}
-          address={selectedAccount}
-          selectedNetwork={selectedNetwork}
-          setModalVisible={setQrModalVisible}
         />
       </>
     </ScreenContainer>

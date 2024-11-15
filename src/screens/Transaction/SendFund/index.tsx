@@ -105,6 +105,7 @@ import { SelectModalField } from 'components/common/SelectModal/parts/SelectModa
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
+import { isSameAddress } from 'utils/account/account';
 
 interface TransferOptions {
   isTransferAll: boolean;
@@ -196,8 +197,7 @@ function getTokenAvailableDestinationsForViewStep2(
   chainValue: string,
 ) {
   const isRecipientAddressEvmType = isEthereumAddress(recipientAddress);
-  // const _isSameAddress = isSameAddress(senderAddress, recipientAddress);
-  const _isSameAddress = senderAddress === recipientAddress;
+  const _isSameAddress = isSameAddress(senderAddress, recipientAddress);
 
   return originChainItems.filter(ci => {
     if (_isSameAddress && chainValue === ci.slug) {

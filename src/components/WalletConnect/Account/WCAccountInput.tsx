@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import AccountItemBase from 'components/common/Account/Item/AccountItemBase';
 import AvatarGroup from 'components/common/AvatarGroup';
 import { Icon, Typography } from 'components/design-system-ui';
-import { AccountJson } from '@subwallet/extension-base/background/types';
-import { isSameAddress } from '@subwallet/extension-base/utils';
 import { DotsThree } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
+import { isSameAddress } from 'utils/account/account';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 interface Props {
   accounts: AccountJson[];

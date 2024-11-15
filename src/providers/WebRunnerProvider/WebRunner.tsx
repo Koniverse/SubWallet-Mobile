@@ -6,7 +6,7 @@ import WebView from 'react-native-webview';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
 import StaticServer from 'react-native-static-server';
-import { listenMessage, restartAllHandlers } from 'messaging/index';
+import { listenMessage, restartAllHandlers } from 'messaging/base';
 import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import { getVersion, getBuildNumber } from 'react-native-device-info';

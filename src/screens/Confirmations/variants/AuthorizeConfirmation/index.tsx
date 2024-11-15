@@ -1,4 +1,3 @@
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AccountAuthType, AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
@@ -22,15 +21,16 @@ import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from '
 import { useSelector } from 'react-redux';
 import { RootStackParamList } from 'routes/index';
 import { RootState } from 'stores/index';
-import { isNoAccount } from 'utils/account';
 import { isAccountAll } from 'utils/accountAll';
 import i18n from 'utils/i18n/i18n';
 
 import createStyle from './styles';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
-import { AccountJson } from '@subwallet/extension-base/types';
+import { AccountChainType } from '@subwallet/extension-base/types';
 import { filterAuthorizeAccountProxies } from 'utils/accountProxy';
+import { KeypairType } from '@subwallet/keyring/types';
+import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
 
 interface Props {
   request: AuthorizeRequest;
@@ -52,24 +52,6 @@ async function handleBlock({ id }: AuthorizeRequest) {
   return await rejectAuthRequestV2(id);
 }
 
-export const filterAuthorizeAccounts = (accounts: AccountJson[], accountAuthType: AccountAuthType) => {
-  let rs = [...accounts];
-
-  if (accountAuthType === 'evm') {
-    rs = rs.filter(acc => !isAccountAll(acc.address) && acc.type === 'ethereum');
-  } else if (accountAuthType === 'substrate') {
-    rs = rs.filter(acc => !isAccountAll(acc.address) && acc.type !== 'ethereum');
-  } else {
-    rs = rs.filter(acc => !isAccountAll(acc.address));
-  }
-
-  if (isNoAccount(rs)) {
-    return [];
-  }
-
-  return rs;
-};
-
 const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   const { request, navigation } = props;
   const { accountAuthTypes, allowedAccounts } = request.request;
@@ -81,6 +63,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     () => filterAuthorizeAccountProxies(accountProxies, accountAuthTypes || ALL_ACCOUNT_AUTH_TYPES),
     [accountAuthTypes, accountProxies],
   );
+  const setSelectedMnemonicType = useSetSelectedMnemonicType(true);
   const noAvailableTitle: string = useMemo(() => {
     if (accountAuthTypes && accountAuthTypes.length === 1) {
       switch (accountAuthTypes[0]) {
@@ -125,7 +108,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
 
       return { ...map };
     });
-  }, [accountProxies, accounts, allowedAccounts, visibleAccountProxies]);
+  }, [accountProxies, allowedAccounts, visibleAccountProxies]);
 
   // Handle buttons actions
   const onBlock = useCallback(() => {
@@ -144,12 +127,28 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
 
   const onConfirm = useCallback(() => {
     setLoading(true);
-    const selectedAccounts = Object.keys(selectedMap).filter(key => selectedMap[key]);
+    const selectedAccountProxyIds = Object.keys(selectedMap).filter(key => selectedMap[key]);
+    const selectedAccounts = accounts
+      .filter(({ chainType, proxyId }) => {
+        if (selectedAccountProxyIds.includes(proxyId || '')) {
+          switch (chainType) {
+            case AccountChainType.SUBSTRATE:
+              return accountAuthTypes?.includes('substrate');
+            case AccountChainType.ETHEREUM:
+              return accountAuthTypes?.includes('evm');
+            case AccountChainType.TON:
+              return accountAuthTypes?.includes('ton');
+          }
+        }
+
+        return false;
+      })
+      .map(({ address }) => address);
 
     handleConfirm(request, selectedAccounts).finally(() => {
       setLoading(false);
     });
-  }, [request, selectedMap]);
+  }, [accountAuthTypes, accounts, request, selectedMap]);
 
   const onAddAccount = useCallback(() => {
     let types: KeypairType[];
@@ -165,8 +164,10 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     } else {
       types = DEFAULT_ACCOUNT_TYPES;
     }
-    navigation.replace('CreateAccount', { keyTypes: types, isBack: true });
-  }, [accountAuthTypes, navigation]);
+    console.log('types', types);
+    setSelectedMnemonicType('general');
+    navigation.replace('CreateAccount', { isBack: true });
+  }, [accountAuthTypes, navigation, setSelectedMnemonicType]);
 
   const { onPress: onPressCreateOne } = useUnlockModal(navigation);
 
@@ -240,6 +241,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
                 onPress={onAccountSelect(item.id)}
                 avatarSize={24}
                 showUnselectIcon={true}
+                showAddress={false}
               />
             ))}
           </>

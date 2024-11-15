@@ -65,6 +65,7 @@ const subWalletModalSeparator: StyleProp<any> = {
 export const Confirmations = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { confirmationQueue, numberOfConfirmations } = useConfirmationsInfo();
+  console.log('confirmationQueue', confirmationQueue);
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
   const [index, setIndex] = useState(0);

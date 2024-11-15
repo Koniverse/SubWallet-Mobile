@@ -1,6 +1,5 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { NftTransferActionStackParamList } from 'routes/nft/transferAction';
 import { SigningActionStackParamList } from 'routes/signing';
@@ -31,7 +30,7 @@ export type RootStackParamList = {
   ConnectDetail: { topic: string; isLastItem: boolean };
   ConnectWalletConnect: undefined;
   MigratePassword: undefined;
-  CreateAccount: { keyTypes?: KeypairType[]; isBack?: boolean };
+  CreateAccount: { isBack?: boolean };
   QrScanner: undefined;
   AccountsScreen: { pathName?: string };
   EditAccount: {

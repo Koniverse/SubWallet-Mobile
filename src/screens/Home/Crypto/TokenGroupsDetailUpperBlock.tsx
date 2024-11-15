@@ -8,18 +8,16 @@ import { BalancesVisibility } from 'components/BalancesVisibility';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { getAccountType } from 'utils/index';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { ThemeTypes } from 'styles/themes';
 import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { isAccountAll } from 'utils/accountAll';
-import { BuyTokenInfo } from 'types/buy';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
-import { isEthereumAddress } from '@polkadot/util-crypto';
-import { _isChainEvmCompatible } from '@subwallet/extension-base/services/chain-service/utils';
+import { _getAssetOriginChain } from '@subwallet/extension-base/services/chain-service/utils';
+import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import { BuyTokenInfo } from '@subwallet/extension-base/types';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
@@ -44,16 +42,14 @@ export const TokenGroupsDetailUpperBlock = ({
 }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
-  const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const { currencyData } = useSelector((state: RootState) => state.price);
-  const { currentAccount, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { assetRegistry: assetRegistryMap } = useSelector((state: RootState) => state.assetRegistry);
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const swapPairs = useSelector((state: RootState) => state.swap.swapPairs);
   const { isShowBuyToken } = useShowBuyToken();
   const { tokens } = useSelector((state: RootState) => state.buyService);
   const _style = createStyleSheet(theme);
-  const swapTokenMap = useMemo<Record<string, string[]>>(() => {
+  const allowedChains = useGetChainSlugsByAccount();
+  const fromAndToTokenMap = useMemo<Record<string, string[]>>(() => {
     const result: Record<string, string[]> = {};
 
     swapPairs.forEach(pair => {
@@ -67,55 +63,33 @@ export const TokenGroupsDetailUpperBlock = ({
     return result;
   }, [swapPairs]);
 
-  const swapInfos = useMemo(() => {
-    return Object.keys(swapTokenMap)
-      .map(tokenSlug => assetRegistryMap[tokenSlug])
-      .filter(item => {
-        // if (item.originChain === 'hydradx_main' && Platform.OS === 'android') {
-        //   return false;
-        // }
-        const chainInfo = chainInfoMap[item.originChain];
-        if (isAllAccount) {
-          const isAnyValidAccount = accounts.filter(
-            _item =>
-              !isAccountAll(_item.address) && isEthereumAddress(_item.address) === _isChainEvmCompatible(chainInfo),
-          );
-          return isAnyValidAccount.length && (item.slug === tokenGroupSlug || item.multiChainAsset === tokenGroupSlug);
-        } else {
-          return (
-            currentAccount &&
-            isEthereumAddress(currentAccount.address) === _isChainEvmCompatible(chainInfo) &&
-            (item.slug === tokenGroupSlug || item.multiChainAsset === tokenGroupSlug)
-          );
-        }
-      });
-  }, [accounts, assetRegistryMap, chainInfoMap, currentAccount, isAllAccount, swapTokenMap, tokenGroupSlug]);
+  const isSupportSwap = useMemo(() => {
+    return Object.keys(fromAndToTokenMap).some(tokenSlug => {
+      const chainAsset = assetRegistryMap[tokenSlug];
+
+      if (chainAsset && !allowedChains.includes(_getAssetOriginChain(chainAsset))) {
+        return false;
+      }
+
+      return chainAsset.slug === tokenGroupSlug || chainAsset.multiChainAsset === tokenGroupSlug;
+    });
+  }, [allowedChains, assetRegistryMap, fromAndToTokenMap, tokenGroupSlug]);
 
   const buyInfos = useMemo(() => {
     const groupSlug = tokenGroupSlug || '';
-    const slugsMap = tokenGroupMap[groupSlug] ? tokenGroupMap[groupSlug] : [groupSlug];
+    const groupSlugs = tokenGroupMap[groupSlug] ? tokenGroupMap[groupSlug] : [groupSlug];
     const result: BuyTokenInfo[] = [];
 
-    for (const [slug, buyInfo] of Object.entries(tokens)) {
-      if (slugsMap.includes(slug)) {
-        const supportType = buyInfo.support;
-
-        if (isAccountAll(currentAccount?.address || '')) {
-          const support = accounts.some(account => supportType === getAccountType(account.address));
-
-          if (support) {
-            result.push(buyInfo);
-          }
-        } else {
-          if (currentAccount?.address && supportType === getAccountType(currentAccount?.address)) {
-            result.push(buyInfo);
-          }
-        }
+    Object.values(tokens).forEach(item => {
+      if (!allowedChains.includes(item.network) || !groupSlugs.includes(item.slug)) {
+        return;
       }
-    }
+
+      result.push(item);
+    });
 
     return result;
-  }, [accounts, currentAccount?.address, tokenGroupMap, tokenGroupSlug, tokens]);
+  }, [allowedChains, tokenGroupMap, tokenGroupSlug, tokens]);
 
   const onOpenBuyTokens = useCallback(() => {
     let symbol = '';
@@ -168,7 +142,7 @@ export const TokenGroupsDetailUpperBlock = ({
             icon={ButtonIcon.Swap}
             onPress={onOpenSwap}
             buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
-            disabled={!swapInfos.length}
+            disabled={!isSupportSwap}
           />
         )}
         {isShowBuyToken && (

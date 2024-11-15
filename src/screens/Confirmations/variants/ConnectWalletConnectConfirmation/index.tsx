@@ -170,7 +170,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
 
   const onAddAccount = useCallback(() => {
     if (hasMasterPassword) {
-      navigation.replace('CreateAccount', { keyTypes: convertKeyTypes(missingType), isBack: true });
+      navigation.replace('CreateAccount', { isBack: true });
     } else {
       navigation.replace('CreatePassword', { pathName: 'CreateAccount', state: convertKeyTypes(missingType) });
     }

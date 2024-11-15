@@ -35,12 +35,13 @@ const EvmTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const { request, type, navigation } = props;
   const {
     id,
-    payload: { account, chainId, errors, to },
+    payload: { address, chainId, errors, to },
   } = request;
   const chainInfo = useGetChainInfoByChainId(chainId);
   const recipientAddress = to;
   const recipient = useGetAccountByAddress(recipientAddress);
   const theme = useSubWalletTheme().swThemes;
+  const account = useGetAccountByAddress(address);
 
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
 
@@ -65,7 +66,7 @@ const EvmTransactionConfirmation: React.FC<Props> = (props: Props) => {
               value={amount}
             />
           )}
-          <MetaInfo.Account address={account.address} label={i18n.confirmation.fromAccount} name={account.name} />
+          <MetaInfo.Account address={address} label={i18n.confirmation.fromAccount} name={account?.name || ''} />
           <MetaInfo.Account
             address={recipient?.address || recipientAddress || ''}
             label={request.payload.isToContract ? i18n.confirmation.toContract : i18n.confirmation.toAccount}
@@ -92,7 +93,7 @@ const EvmTransactionConfirmation: React.FC<Props> = (props: Props) => {
         )}
         {(!errors || errors.length === 0) && (
           <BaseDetailModal title={i18n.confirmation.messageDetail}>
-            <EvmTransactionDetail account={account} request={request.payload} />
+            <EvmTransactionDetail address={address} accountName={account?.name} request={request.payload} />
           </BaseDetailModal>
         )}
       </ConfirmationContent>

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson, ConfirmationRequestBase } from '@subwallet/extension-base/background/types';
+import { ConfirmationRequestBase } from '@subwallet/extension-base/background/types';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
@@ -16,6 +16,7 @@ import { Text } from 'react-native';
 import { EvmSignatureSupportType } from 'types/confirmation';
 import createStyle from './styles';
 import i18n from 'utils/i18n/i18n';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 interface Props {
   request: ConfirmationRequestBase;

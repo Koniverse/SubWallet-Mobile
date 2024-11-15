@@ -13,6 +13,7 @@ interface Props extends AccountItemBaseProps {
   direction?: 'vertical' | 'horizontal';
   accounts?: AccountJson[];
   fallbackName?: boolean;
+  showAddress?: boolean;
 }
 
 const AccountItemWithName: React.FC<Props> = (props: Props) => {
@@ -23,6 +24,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
     addressSufLength = 4,
     direction = 'horizontal',
     fallbackName = true,
+    showAddress = true,
   } = props;
   const isAll = isAccountAll(address);
 
@@ -52,7 +54,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
           <Text style={styles.accountName} numberOfLines={1}>
             {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
           </Text>
-          {showFallback && address && (
+          {showFallback && address && showAddress && (
             <Text style={[styles.accountAddress, direction === 'horizontal' && styles.accountAddressHorizontal]}>
               {direction === 'horizontal' && '('}
               {toShort(address, addressPreLength, addressSufLength)}
