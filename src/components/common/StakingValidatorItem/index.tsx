@@ -5,11 +5,11 @@ import { FontMedium } from 'styles/sharedStyles';
 import { CheckCircle, DotsThree, Medal } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import StakingValidatorItemStyle from './style';
-import { ValidatorDataType } from 'hooks/screen/Staking/useGetValidatorList';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { toShort } from 'utils/index';
 import { getValidatorKey } from 'utils/transaction/stake';
 import i18n from 'utils/i18n/i18n';
+import { ValidatorDataType } from 'types/earning';
 
 interface Props {
   validatorInfo: ValidatorDataType;

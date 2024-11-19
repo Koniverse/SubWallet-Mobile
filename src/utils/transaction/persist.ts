@@ -15,8 +15,9 @@ import {
   UN_STAKE_TRANSACTION,
   WITHDRAW_TRANSACTION,
 } from 'constants/localStorage';
+import { ExtraExtrinsicType, ExtrinsicTypeMobile } from 'types/transaction';
 
-export const detectTransactionPersistKey = (type?: ExtrinsicType): string => {
+export const detectTransactionPersistKey = (type?: ExtrinsicTypeMobile): string => {
   switch (type) {
     case ExtrinsicType.SEND_NFT:
       return NFT_TRANSACTION;
@@ -41,6 +42,10 @@ export const detectTransactionPersistKey = (type?: ExtrinsicType): string => {
       return CLAIM_REWARD_TRANSACTION;
     case ExtrinsicType.SWAP:
       return SWAP_TRANSACTION;
+    case ExtraExtrinsicType.IMPORT_NFT:
+      return ExtraExtrinsicType.IMPORT_NFT;
+    case ExtraExtrinsicType.IMPORT_TOKEN:
+      return ExtraExtrinsicType.IMPORT_TOKEN;
     // case ExtrinsicType.CLAIM_AVAIL_BRIDGE:
     //   return CLAIM_AVAIL_BRIDGE_TRANSACTION;
     default:

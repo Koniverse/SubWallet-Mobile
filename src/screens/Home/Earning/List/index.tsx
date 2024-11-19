@@ -120,7 +120,7 @@ export const EarningList = ({
             text: 'Create new',
             onPress: () => {
               isShowAlert = false;
-              rootNavigation.navigate('CreateAccount', { keyTypes: [accountType], isBack: true });
+              rootNavigation.navigate('CreateAccount', { isBack: true });
             },
           },
         ],

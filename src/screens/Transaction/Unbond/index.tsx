@@ -1,4 +1,4 @@
-import { YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
+import { AccountProxy, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
 import { RequestYieldLeave } from '@subwallet/extension-base/types/yield/actions/others';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import InputCheckBox from 'components/Input/InputCheckBox';
@@ -22,7 +22,6 @@ import { InputAmount } from 'components/Input/InputAmount';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { BN_ZERO } from 'utils/chainBalances';
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { Button, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { yieldSubmitLeavePool } from 'messaging/index';
@@ -45,6 +44,8 @@ import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
+import { AccountAddressItemType } from 'types/account';
+import { getReformatedAddressRelatedToChain } from 'utils/account';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -56,9 +57,11 @@ const _accountFilterFunc = (
   chainInfoMap: Record<string, _ChainInfo>,
   poolType: YieldPoolType,
   poolChain?: string,
-): ((account: AccountJson) => boolean) => {
-  return (account: AccountJson): boolean => {
-    const nominator = positionInfos.find(item => item.address.toLowerCase() === account.address.toLowerCase());
+): ((account: AccountProxy) => boolean) => {
+  return (account: AccountProxy): boolean => {
+    const nominator = positionInfos.find(
+      item => account.accounts && account.accounts.some(ap => ap.address.toLowerCase() === item.address.toLowerCase()),
+    );
 
     return (
       new BigN(nominator?.activeStake || BN_ZERO).gt(BN_ZERO) &&
@@ -101,7 +104,7 @@ export const Unbond = ({
   const currentValue = useWatch<UnstakeFormValues>({ name: 'value', control });
   const fastLeave = useWatch<UnstakeFormValues>({ name: 'fastLeave', control });
 
-  const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const { accountProxies, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const poolInfo = poolInfoMap[slug];
@@ -219,9 +222,34 @@ export const Unbond = ({
   }, [poolInfo?.statistic]);
 
   const [loading, setLoading] = useState(false);
-  const accountList = useMemo(() => {
-    return accounts.filter(_accountFilterFunc(allPositions, chainInfoMap, poolType, poolChain));
-  }, [accounts, allPositions, chainInfoMap, poolChain, poolType]);
+  const accountList: AccountAddressItemType[] = useMemo(() => {
+    const chainInfo = poolChain ? chainInfoMap[poolChain] : undefined;
+    if (!chainInfo) {
+      return [];
+    }
+    const filteredAccountList = accountProxies.filter(
+      _accountFilterFunc(allPositions, chainInfoMap, poolType, poolChain),
+    );
+
+    const result: AccountAddressItemType[] = [];
+    filteredAccountList.forEach(ap => {
+      ap.accounts.forEach(a => {
+        const address = getReformatedAddressRelatedToChain(a, chainInfo);
+
+        if (address) {
+          result.push({
+            accountName: ap.name,
+            accountProxyId: ap.id,
+            accountProxyType: ap.accountType,
+            accountType: a.type,
+            address,
+          });
+        }
+      });
+    });
+
+    return result;
+  }, [accountProxies, allPositions, chainInfoMap, poolChain, poolType]);
 
   const renderBounded = useCallback(() => {
     return <BondedBalance bondedBalance={bondedValue} decimals={decimals} symbol={symbol} />;

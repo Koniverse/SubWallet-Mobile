@@ -1,4 +1,4 @@
-import { YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
+import { AccountProxy, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
 import { useYieldPositionDetail } from 'hooks/earning';
 import { yieldSubmitStakingCancelWithdrawal } from 'messaging/index';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -14,8 +14,6 @@ import { ScrollView, View } from 'react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import { AccountJson } from '@subwallet/extension-base/background/types';
-import { isSameAddress } from '@subwallet/extension-base/utils';
 import { CancelUnstakeSelector } from 'components/Modal/common/CancelUnstakeSelector';
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
@@ -29,6 +27,9 @@ import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { isSameAddress } from 'utils/account/account';
+import { AccountAddressItemType } from 'types/account';
+import { getReformatedAddressRelatedToChain } from 'utils/account';
 
 interface CancelUnstakeFormValues extends TransactionFormValues {
   unstakeIndex: string;
@@ -39,9 +40,11 @@ const filterAccount = (
   allNominatorInfo: YieldPositionInfo[],
   stakingType: YieldPoolType,
   stakingChain?: string,
-): ((account: AccountJson) => boolean) => {
-  return (account: AccountJson): boolean => {
-    const nomination = allNominatorInfo.find(data => isSameAddress(data.address, account.address));
+): ((account: AccountProxy) => boolean) => {
+  return (account: AccountProxy): boolean => {
+    const nomination = allNominatorInfo.find(data =>
+      account.accounts.some(ac => isSameAddress(data.address, ac.address)),
+    );
 
     return (
       (nomination ? nomination.unstakings.length > 0 : false) &&
@@ -58,7 +61,7 @@ export const CancelUnstake = ({
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
 
-  const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
+  const { isAllAccount, accountProxies } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
 
@@ -105,8 +108,34 @@ export const CancelUnstake = ({
   const [isBalanceReady, setIsBalanceReady] = useState(true);
 
   const accountList = useMemo(() => {
-    return accounts.filter(filterAccount(chainInfoMap, allPositionInfos, poolType, poolChain));
-  }, [accounts, allPositionInfos, chainInfoMap, poolChain, poolType]);
+    const chainInfo = poolChain ? chainInfoMap[poolChain] : undefined;
+
+    if (!chainInfo) {
+      return [];
+    }
+    const filteredAccountProxyList = accountProxies.filter(
+      filterAccount(chainInfoMap, allPositionInfos, poolType, poolChain),
+    );
+    const result: AccountAddressItemType[] = [];
+
+    filteredAccountProxyList.forEach(ap => {
+      ap.accounts.forEach(a => {
+        const address = getReformatedAddressRelatedToChain(a, chainInfo);
+
+        if (address) {
+          result.push({
+            accountName: ap.name,
+            accountProxyId: ap.id,
+            accountProxyType: ap.accountType,
+            accountType: a.type,
+            address,
+          });
+        }
+      });
+    });
+
+    return result;
+  }, [accountProxies, allPositionInfos, chainInfoMap, poolChain, poolType]);
 
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
   const onPreCheck = usePreCheckAction(fromValue);

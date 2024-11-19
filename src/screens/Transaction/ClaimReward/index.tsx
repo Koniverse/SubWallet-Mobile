@@ -1,5 +1,5 @@
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
-import { EarningRewardItem, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
+import { AccountProxy, EarningRewardItem, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
 import { useYieldPositionDetail } from 'hooks/earning';
 import { yieldSubmitStakingClaimReward } from 'messaging/index';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -14,15 +14,10 @@ import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import {
-  _getSubstrateGenesisHash,
-  _isChainEvmCompatible,
-} from '@subwallet/extension-base/services/chain-service/utils';
+import { _isChainEvmCompatible } from '@subwallet/extension-base/services/chain-service/utils';
 import { isAccountAll } from 'utils/accountAll';
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
 import MetaInfo from 'components/MetaInfo';
@@ -39,6 +34,9 @@ import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
+import { isSameAddress } from 'utils/account/account';
+import { AccountAddressItemType } from 'types/account';
+import { getReformatedAddressRelatedToChain } from 'utils/account';
 
 interface ClaimRewardFormValues extends TransactionFormValues {
   bondReward: string;
@@ -50,36 +48,38 @@ const filterAccount = (
   rewardList: EarningRewardItem[],
   poolType: YieldPoolType,
   poolChain?: string,
-): ((account: AccountJson) => boolean) => {
+): ((account: AccountProxy) => boolean) => {
   const _poolChain = poolChain || '';
   const chain = chainInfoMap[_poolChain];
 
-  return (account: AccountJson): boolean => {
+  return (account: AccountProxy): boolean => {
     if (!chain) {
       return false;
     }
 
-    if (account.originGenesisHash && _getSubstrateGenesisHash(chain) !== account.originGenesisHash) {
+    if (account.specialChain && _poolChain !== account.specialChain) {
       return false;
     }
 
-    if (isAccountAll(account.address)) {
+    if (isAccountAll(account.id)) {
       return false;
     }
 
     const isEvmChain = _isChainEvmCompatible(chain);
 
-    if (isEvmChain !== isEthereumAddress(account.address)) {
+    if (isEvmChain !== isEthereumAddress(account.id)) {
       return false;
     }
 
-    const nominatorMetadata = yieldPositions.find(value => isSameAddress(value.address, account.address));
+    const nominatorMetadata = yieldPositions.find(value =>
+      account.accounts.some(ac => isSameAddress(value.address, ac.address)),
+    );
 
     if (!nominatorMetadata) {
       return false;
     }
 
-    const reward = rewardList.find(value => isSameAddress(value.address, account.address));
+    const reward = rewardList.find(value => account.accounts.some(ac => isSameAddress(value.address, ac.address)));
 
     const isAstarNetwork = _STAKING_CHAIN_GROUP.astar.includes(_poolChain);
     const isAmplitudeNetwork = _STAKING_CHAIN_GROUP.amplitude.includes(_poolChain);
@@ -100,7 +100,7 @@ const ClaimReward = ({
   const accountSelectorRef = useRef<ModalRef>();
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
-  const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
+  const { isAllAccount, accountProxies } = useSelector((state: RootState) => state.accountState);
   const { earningRewards, poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
@@ -198,8 +198,34 @@ const ClaimReward = ({
   }, [errors.from, fromValue]);
 
   const accountList = useMemo(() => {
-    return accounts.filter(filterAccount(chainInfoMap, allPositions, rewardList, poolType, poolChain));
-  }, [accounts, allPositions, chainInfoMap, rewardList, poolChain, poolType]);
+    const chainInfo = poolChain ? chainInfoMap[poolChain] : undefined;
+
+    if (!chainInfo) {
+      return [];
+    }
+    const filteredAccountProxyList = accountProxies.filter(
+      filterAccount(chainInfoMap, allPositions, rewardList, poolType, poolChain),
+    );
+    const result: AccountAddressItemType[] = [];
+
+    filteredAccountProxyList.forEach(ap => {
+      ap.accounts.forEach(a => {
+        const address = getReformatedAddressRelatedToChain(a, chainInfo);
+
+        if (address) {
+          result.push({
+            accountName: ap.name,
+            accountProxyId: ap.id,
+            accountProxyType: ap.accountType,
+            accountType: a.type,
+            address,
+          });
+        }
+      });
+    });
+
+    return result;
+  }, [accountProxies, allPositions, chainInfoMap, rewardList, poolChain, poolType]);
 
   const onChangeBondReward = (value: string) => {
     setValue('bondReward', value);

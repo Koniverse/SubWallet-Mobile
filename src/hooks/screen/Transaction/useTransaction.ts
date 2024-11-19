@@ -12,6 +12,7 @@ import { FieldValues, UseFormProps } from 'react-hook-form/dist/types';
 import { FieldPath, useForm } from 'react-hook-form';
 import { FieldPathValue } from 'react-hook-form/dist/types/path';
 import i18n from 'utils/i18n/i18n';
+import { AccountProxy } from '@subwallet/extension-base/types';
 
 export interface TransactionFormValues extends FieldValues {
   from: string;
@@ -28,11 +29,15 @@ export interface TransactionDoneInfo {
   address: string;
 }
 
+export const getTransactionFromAccountProxyValue = (accountProxy: AccountProxy | null): string => {
+  return accountProxy?.id ? (isAccountAll(accountProxy.id) ? '' : accountProxy.id) : '';
+};
+
 export const useTransaction = <T extends TransactionFormValues = TransactionFormValues, TContext = any>(
   action: string,
   formOptions: UseFormProps<T, TContext> = {},
 ) => {
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { turnOnChain, checkChainConnected } = useChainChecker();
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
@@ -89,13 +94,13 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
 
   const defaultValues = useMemo(
     () => ({
-      from: (!isAccountAll(currentAccount?.address as string) && currentAccount?.address) || '',
+      from: getTransactionFromAccountProxyValue(currentAccountProxy),
       chain: '',
       asset: '',
       value: '',
       ...formOptions.defaultValues,
     }),
-    [currentAccount?.address, formOptions.defaultValues],
+    [currentAccountProxy, formOptions.defaultValues],
   );
 
   const form = useForm<T, TContext>({

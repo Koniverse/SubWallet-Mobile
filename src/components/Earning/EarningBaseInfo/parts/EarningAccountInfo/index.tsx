@@ -6,7 +6,6 @@ import {
   YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
-import { isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
@@ -25,6 +24,7 @@ import i18n from 'utils/i18n/i18n';
 import { findAccountByAddress, toShort } from 'utils/index';
 import createStyles from './styles';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { isSameAddress } from 'utils/account/account';
 
 type Props = {
   compound: YieldPositionInfo;

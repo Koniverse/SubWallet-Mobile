@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { useCallback } from 'react';
 
 import { VoidFunction } from 'types/index';
@@ -13,6 +12,7 @@ import { ALL_STAKING_ACTIONS } from 'constants/transaction';
 import { useToast } from 'react-native-toast-notifications';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { getDevMode } from 'utils/storage';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 //todo: i18n
 //todo: solve error

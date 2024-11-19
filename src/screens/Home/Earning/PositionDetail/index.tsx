@@ -31,6 +31,9 @@ import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
 import { GettingDataModal } from 'components/Modal/GettingDataModal';
+import { isAccountAll } from '@subwallet/extension-base/utils';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import { isChainInfoAccordantAccountChainType } from 'utils/chain';
 
 interface Props {
   compound: YieldPositionInfo;
@@ -44,8 +47,9 @@ const Component: React.FC<Props> = (props: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
-  const { isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { isAllAccount, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const [dAppStakingWarningModalVisible, setDAppStakingWarningModalVisible] = useState<boolean>(false);
   const isOpenDAppWarningInPositionDetail = mmkvStore.getBoolean('isOpenDAppWarningInPositionDetail');
   const { checkChainConnected, turnOnChain } = useChainChecker(false);
@@ -53,6 +57,23 @@ const Component: React.FC<Props> = (props: Props) => {
   const loadingRef = useRef(isLoading);
   const [state, setState] = React.useState({ num: 0 });
   const counter = useRef(0);
+  const targetAddress = useMemo(() => {
+    if (currentAccountProxy && isAccountAll(currentAccountProxy?.id)) {
+      return ALL_ACCOUNT_KEY;
+    }
+
+    const accountAddress = currentAccountProxy?.accounts.find(({ chainType }) => {
+      if (chainInfoMap[poolInfo.chain]) {
+        const chainInfo = chainInfoMap[poolInfo.chain];
+
+        return isChainInfoAccordantAccountChainType(chainInfo, chainType);
+      }
+
+      return false;
+    });
+
+    return accountAddress?.address;
+  }, [chainInfoMap, currentAccountProxy, poolInfo.chain]);
 
   const isChainUnsupported = useMemo(() => {
     if (poolInfo.chain === 'parallel' && poolInfo.type === YieldPoolType.LIQUID_STAKING) {
@@ -157,12 +178,12 @@ const Component: React.FC<Props> = (props: Props) => {
   }, [activeStake, inputAsset?.decimals, price]);
 
   const filteredRewardHistories = useMemo(() => {
-    if (!isAllAccount && currentAccount) {
-      return rewardHistories.filter(item => item.slug === poolInfo?.slug && item.address === currentAccount.address);
+    if (!isAllAccount && targetAddress) {
+      return rewardHistories.filter(item => item.slug === poolInfo.slug && item.address === targetAddress);
     } else {
       return [];
     }
-  }, [currentAccount, isAllAccount, poolInfo?.slug, rewardHistories]);
+  }, [targetAddress, isAllAccount, poolInfo?.slug, rewardHistories]);
 
   const _goBack = useCallback(() => {
     navigation.navigate('Home', {
