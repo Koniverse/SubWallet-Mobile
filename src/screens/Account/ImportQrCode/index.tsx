@@ -32,11 +32,11 @@ type Props = {};
 const checkAccount = (qrAccount: QrAccount): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     checkPublicAndPrivateKey(qrAccount.genesisHash, qrAccount.content)
-      .then(({ isEthereum, isValid }) => {
+      .then(({ errorMessage, isEthereum, isValid }) => {
         if (isValid) {
           resolve(isEthereum);
         } else {
-          reject(new Error('Invalid qr'));
+          reject(new Error(errorMessage || 'Invalid qr'));
         }
       })
       .catch((e: Error) => {

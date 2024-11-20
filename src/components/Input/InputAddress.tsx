@@ -67,6 +67,7 @@ const Component = (
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
+  console.log('isAddress(value)----', isAddress(value));
   const isAddressValid = isAddress(value) && (isValidValue !== undefined ? isValidValue : true);
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
   const [error, setError] = useState<string | undefined>(undefined);

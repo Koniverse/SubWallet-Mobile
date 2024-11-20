@@ -15,3 +15,5 @@ export const CLAIM_REWARD_TRANSACTION = 'transaction.claim-reward';
 export const IMPORT_NFT = 'import.nft';
 export const IMPORT_TOKEN = 'import.token';
 export const CLAIM_AVAIL_BRIDGE_TRANSACTION = 'transaction.claim-avail-bridge';
+
+export const IS_SHOW_TON_CONTRACT_VERSION_WARNING = 'account.is-show-ton-contract-version-warning';

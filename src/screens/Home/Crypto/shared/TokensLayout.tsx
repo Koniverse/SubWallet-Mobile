@@ -47,6 +47,7 @@ interface Props {
   banners?: AppBannerData[];
   onPressBanner?: (id: string) => (url?: string | undefined) => void;
   dismissBanner?: (ids: string[]) => void;
+  beforeListNode?: React.ReactNode;
 }
 
 const flatListContentContainerStyle: StyleProp<any> = {
@@ -76,6 +77,7 @@ export const TokensLayout = ({
   banners,
   dismissBanner,
   onPressBanner,
+  beforeListNode,
 }: Props) => {
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -158,17 +160,22 @@ export const TokensLayout = ({
 
   const customRenderItem = (data: ListRenderItemInfo<TokenBalanceItemType>) => {
     if (data.item?.slug === null) {
+      const isHasBanner = !!(banners && banners.length);
       return (
-        <View style={{ marginBottom: theme.marginSM }}>
+        <View style={{ marginBottom: isHasBanner ? theme.marginSM : 0 }}>
           {!!listActions && <Animated.View style={stickyHeaderStyles}>{listActions}</Animated.View>}
 
-          {!!(banners && banners.length) && (
+          {isHasBanner && (
             <View style={{ paddingTop: theme.paddingXS, paddingBottom: theme.marginXXS }}>
               <BannerGenerator banners={banners} dismissBanner={dismissBanner} onPressBanner={onPressBanner} />
             </View>
           )}
         </View>
       );
+    }
+
+    if (data.item?.slug === 'tonWarning') {
+      return <View style={{ marginBottom: beforeListNode ? theme.marginSM : 0 }}>{beforeListNode}</View>;
     }
 
     return renderItem(data);
@@ -191,8 +198,29 @@ export const TokensLayout = ({
     }
     setPageNumber(prev => prev + 1);
   };
-  const handledTokenListData =
-    listActions || !!(banners && banners.length) ? [{ slug: null }, ...tokenListData] : tokenListData;
+  const handledTokenListData = () => {
+    if (listActions) {
+      if (beforeListNode) {
+        return [{ slug: null }, { slug: 'tonWarning' }, ...tokenListData];
+      }
+
+      return [{ slug: null }, ...tokenListData];
+    } else {
+      if (!!(banners && banners.length) && !!beforeListNode) {
+        return [{ slug: null }, ...tokenListData, { slug: 'tonWarning' }];
+      }
+
+      if (banners && banners.length) {
+        return [{ slug: null }, ...tokenListData];
+      }
+
+      if (beforeListNode) {
+        return [...tokenListData, { slug: 'tonWarning' }];
+      }
+
+      return tokenListData;
+    }
+  };
 
   // TODO: Move these codes to style folder in next refactor
   const flex1 = { flex: 1 };
@@ -236,14 +264,14 @@ export const TokensLayout = ({
         </Animated.View>
       )}
 
-      {handledTokenListData.length ? (
+      {handledTokenListData().length ? (
         <Animated.FlatList
           onScroll={onScrollHandler}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps={'handled'}
           ListHeaderComponent={renderHeaderComponent}
           contentContainerStyle={listContainerStyle}
-          data={handledTokenListData}
+          data={handledTokenListData()}
           renderItem={customRenderItem}
           ListFooterComponent={layoutFooter}
           maxToRenderPerBatch={12}

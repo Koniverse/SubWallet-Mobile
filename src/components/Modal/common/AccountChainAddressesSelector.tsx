@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { Keyboard, ListRenderItemInfo } from 'react-native';
@@ -13,6 +13,7 @@ import useHandleTonAccountWarning from 'hooks/account/useHandleTonAccountWarning
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 
 interface Props {
   accountProxy: AccountProxy;
@@ -99,6 +100,29 @@ export const AccountChainAddressesSelector = ({
       return item.name.toLowerCase().includes(searchString.toLowerCase());
     });
   }, []);
+
+  useEffect(() => {
+    console.log('123123123');
+    if (addressQrModal.addressModalState.visible) {
+      addressQrModal.setAddressQrModal(prev => {
+        if (!prev || !TON_CHAINS.includes(prev.selectNetwork || '')) {
+          return prev;
+        }
+
+        const targetAddress = items.find(i => i.slug === prev.selectNetwork)?.address;
+
+        if (!targetAddress) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          address: targetAddress,
+        };
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items]);
 
   return (
     <>

@@ -18,7 +18,6 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { CustomizationModal } from 'screens/Home/Crypto/CustomizationModal';
@@ -28,7 +27,16 @@ import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndT
 import { tokenItem } from 'constants/itemHeight';
 import { sortTokenByValue } from 'utils/sort/token';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
-import { AccountProxyType } from '@subwallet/extension-base/types';
+import { AccountChainType, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
+import { IS_SHOW_TON_CONTRACT_VERSION_WARNING } from 'constants/localStorage';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
+import { TonWalletContractSelectorModal } from 'components/Modal/TonWalletContractSelectorModal';
+import { AccountAddressItemType } from 'types/account';
+import { isTonAddress } from 'utils/address/validate';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { ModalRef } from 'types/modalRef';
+import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import { useMMKVBoolean } from 'react-native-mmkv';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -50,13 +58,21 @@ export const TokenGroups = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<CryptoNavigationProps>();
   const tokenSearchRef = useRef<TokenSearchRef>();
-  const chainsByAccountType = useGetChainSlugs();
+  const tonAccountRef = useRef<ModalRef>();
+  const chainsByAccountType = useGetChainSlugsByAccount();
   const { sortedTokenGroups, tokenGroupMap, sortedTokenSlugs } = useTokenGroup(chainsByAccountType);
   const { tokenGroupBalanceMap, totalBalanceInfo, tokenBalanceMap } = useAccountBalance(tokenGroupMap);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
   const [isCustomizationModalVisible, setCustomizationModalVisible] = useState<boolean>(false);
-  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
+  const [isTonVersionSelectorVisible, setTonVersionSelectorVisible] = useState<boolean>(false);
+  const { accountProxies, currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const [isShowTonWarning = true, setIsShowTonWarning] = useMMKVBoolean(IS_SHOW_TON_CONTRACT_VERSION_WARNING);
+
+  const tonAddress = useMemo(() => {
+    return currentAccountProxy?.accounts.find(acc => isTonAddress(acc.address))?.address;
+  }, [currentAccountProxy]);
+  const [currentTonAddress, setCurrentTonAddress] = useState(isAllAccount ? undefined : tonAddress);
   const {
     accountSelectorItems,
     onOpenReceive,
@@ -68,6 +84,66 @@ export const TokenGroups = () => {
   } = useReceiveQR();
   const toast = useToast();
   const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('token');
+
+  const isHaveOnlyTonSoloAcc = useMemo(() => {
+    const checkValidAcc = (currentAcc: AccountProxy) => {
+      return currentAcc?.accountType === AccountProxyType.SOLO && currentAcc?.chainTypes.includes(AccountChainType.TON);
+    };
+
+    if (isAllAccount) {
+      return accountProxies
+        .filter(a => a.accountType !== AccountProxyType.ALL_ACCOUNT)
+        .every(acc => checkValidAcc(acc));
+    } else {
+      return currentAccountProxy && checkValidAcc(currentAccountProxy);
+    }
+  }, [accountProxies, currentAccountProxy, isAllAccount]);
+
+  const tonAccountList: AccountAddressItemType[] = useMemo(() => {
+    return accountProxies
+      .filter(acc => acc?.accountType === AccountProxyType.SOLO && acc?.chainTypes.includes(AccountChainType.TON))
+      .map(item => ({
+        accountName: item.name,
+        accountProxyId: item.id,
+        accountProxyType: item.accountType,
+        accountType: item.accounts[0].type,
+        address: item.accounts[0].address,
+        accountActions: item.accountActions,
+      }));
+  }, [accountProxies]);
+
+  const onCloseAccountSelector = useCallback(() => {
+    setIsShowTonWarning(false);
+    tonAccountRef && tonAccountRef.current?.closeModal?.();
+  }, [setIsShowTonWarning]);
+
+  const onSelectAccountSelector = useCallback((item: AccountAddressItemType) => {
+    setCurrentTonAddress(item.address);
+    setTonVersionSelectorVisible(true);
+  }, []);
+
+  const onBackTonWalletContactModal = useCallback(() => {
+    setIsShowTonWarning(false);
+    setTonVersionSelectorVisible(false);
+  }, [setIsShowTonWarning]);
+
+  const onCloseTonWalletContactModal = useCallback(() => {
+    setIsShowTonWarning(false);
+    setTimeout(() => {
+      tonAccountRef && tonAccountRef.current?.closeModal?.();
+      setTonVersionSelectorVisible(false);
+    }, 200);
+  }, [setIsShowTonWarning]);
+
+  const onOpenTonWalletContactModal = useCallback(() => {
+    if (isAllAccount) {
+      tonAccountRef && tonAccountRef.current?.onOpenModal();
+    } else {
+      setCurrentTonAddress(tonAddress);
+      setTonVersionSelectorVisible(true);
+    }
+  }, [isAllAccount, tonAddress]);
+
   const onPressItem = useCallback(
     (item: TokenBalanceItemType) => {
       return () => {
@@ -131,7 +207,9 @@ export const TokenGroups = () => {
             type="ghost"
             size="xs"
             icon={<Icon size="md" phosphorIcon={MagnifyingGlass} iconColor={theme['gray-5']} weight={'bold'} />}
-            onPress={onOpenTokenSearchModal}
+            onPress={() => {
+              onOpenTokenSearchModal();
+            }}
           />
           <Button
             type="ghost"
@@ -215,6 +293,61 @@ export const TokenGroups = () => {
     );
   }, [navigation]);
 
+  const BeforeListNode = useMemo(() => {
+    if (isHaveOnlyTonSoloAcc && isShowTonWarning) {
+      return (
+        <>
+          <AlertBox
+            description={
+              <Typography.Text>
+                <Typography.Text>
+                  {'TON wallets have multiple versions, each with its own wallet address and balance. '}
+                </Typography.Text>
+                <Typography.Text
+                  style={{ color: theme.colorPrimary, textDecorationLine: 'underline' }}
+                  onPress={onOpenTonWalletContactModal}>
+                  {'Change versions'}
+                </Typography.Text>
+                <Typography.Text>{" if you don't see balances"}</Typography.Text>
+              </Typography.Text>
+            }
+            title={'Change wallet address & version'}
+            type={'warning'}
+          />
+          <AccountSelector
+            accountSelectorRef={tonAccountRef}
+            items={tonAccountList}
+            selectedValueMap={{}}
+            onSelectItem={onSelectAccountSelector}
+            onCloseModal={onCloseAccountSelector}
+          />
+          {currentTonAddress && isTonVersionSelectorVisible && (
+            <TonWalletContractSelectorModal
+              address={currentTonAddress}
+              chainSlug={'ton'}
+              onCancel={onCloseTonWalletContactModal}
+              setModalVisible={setTonVersionSelectorVisible}
+              modalVisible={isTonVersionSelectorVisible}
+              onChangeModalVisible={onBackTonWalletContactModal}
+            />
+          )}
+        </>
+      );
+    }
+  }, [
+    currentTonAddress,
+    isHaveOnlyTonSoloAcc,
+    isShowTonWarning,
+    isTonVersionSelectorVisible,
+    onBackTonWalletContactModal,
+    onCloseAccountSelector,
+    onCloseTonWalletContactModal,
+    onOpenTonWalletContactModal,
+    onSelectAccountSelector,
+    theme.colorPrimary,
+    tonAccountList,
+  ]);
+
   return (
     <ScreenContainer
       gradientBackground={isTotalBalanceDecrease ? GradientBackgroundColorSet[1] : GradientBackgroundColorSet[0]}>
@@ -231,6 +364,7 @@ export const TokenGroups = () => {
           banners={banners}
           onPressBanner={onPressBanner}
           dismissBanner={dismissBanner}
+          beforeListNode={BeforeListNode}
         />
 
         <SelectAccAndTokenModal

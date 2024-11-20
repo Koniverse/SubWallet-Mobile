@@ -4,6 +4,7 @@ import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { Keyboard, ListRenderItemInfo } from 'react-native';
 import { ModalRef } from 'types/modalRef';
 import { AccountAddressItemType } from 'types/account';
+import { VoidFunction } from 'types/index';
 
 interface Props {
   items: AccountAddressItemType[];
@@ -17,6 +18,7 @@ interface Props {
   isShowInput?: boolean;
   children?: React.ReactNode;
   renderCustomItem?: ({ item }: ListRenderItemInfo<AccountAddressItemType>) => JSX.Element;
+  onCloseModal?: VoidFunction;
 }
 
 export const AccountSelector = ({
@@ -31,6 +33,7 @@ export const AccountSelector = ({
   isShowInput,
   children,
   renderCustomItem,
+  onCloseModal,
 }: Props) => {
   const _onSelectItem = (item: AccountAddressItemType) => {
     Keyboard.dismiss();
@@ -53,6 +56,7 @@ export const AccountSelector = ({
       isShowContent={isShowContent}
       renderCustomItem={renderCustomItem}
       estimatedItemSize={60}
+      onCloseModal={onCloseModal}
       isShowInput={isShowInput}>
       {children}
     </FullSizeSelectModal>

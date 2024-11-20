@@ -24,12 +24,15 @@ import { reformatAddress } from 'utils/account/account';
 export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {
     const isAllAccount = address && isAccountAll(address);
+    console.log('!isAddress(address) && !isAllAccount', !isAddress(address) && !isAllAccount);
     if (!isAddress(address) && !isAllAccount) {
       return null;
     }
 
     const originAddress = isAccountAll(address) ? address : reformatAddress(address);
     const result = accounts.find(account => account.address.toLowerCase() === originAddress.toLowerCase());
+    console.log('originAddress', originAddress);
+    console.log('accounts', accounts);
 
     return result || null;
   } catch (e) {

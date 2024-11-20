@@ -205,6 +205,7 @@ export const ReceiveModal = ({
             setModalVisible={setTonWalletContractVisible}
             chainSlug={selectedNetwork || ''}
             onCancel={onCloseTonWalletContactModal}
+            onChangeModalVisible={() => setTonWalletContractVisible(false)}
           />
         )}
         {

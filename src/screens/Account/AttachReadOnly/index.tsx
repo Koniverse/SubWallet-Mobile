@@ -17,12 +17,12 @@ import { Warning } from 'components/Warning';
 import { Button, PageIcon, Typography } from 'components/design-system-ui';
 import createStyle from './styles';
 import { getButtonIcon } from 'utils/button';
-import { isAddress } from '@polkadot/util-crypto';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AccountExternalErrorCode } from '@subwallet/extension-base/background/KoniTypes';
 import InputText from 'components/Input/InputText';
 import { isSameAddress } from 'utils/account/account';
+import { isAddress } from 'utils/address';
 
 const AttachReadOnly = () => {
   const theme = useSubWalletTheme().swThemes;
@@ -34,13 +34,16 @@ const AttachReadOnly = () => {
   const [isHideAccountNameInput, setIsHideAccountNameInput] = useState(false);
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const [isScanning, setIsScanning] = useState<boolean>(false);
-  const [errors, setErrors] = useState<string[]>([]);
   const [scanError, setScanError] = useState<string | undefined>(undefined);
   const [isBusy, setIsBusy] = useState<boolean>(false);
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
   const accountAddressValidator = useCallback(
     (value: string) => {
+      if (!isAddress(value)) {
+        return ['Invalid address'];
+      }
+
       const result = readOnlyScan(value);
 
       if (result) {
@@ -48,7 +51,6 @@ const AttachReadOnly = () => {
           if (isSameAddress(_account.address, result.content)) {
             setReformatAddress('');
             setIsHideAccountNameInput(true);
-
             return ['Account already exists'];
           }
         }
@@ -62,7 +64,6 @@ const AttachReadOnly = () => {
       }
 
       setIsHideAccountNameInput(false);
-
       return [];
     },
     [accounts],
@@ -150,21 +151,18 @@ const AttachReadOnly = () => {
 
   const onChangeAddress = useCallback(
     (currentTextValue: string) => {
-      setErrors([]);
       onChangeValue('address')(currentTextValue);
-      if (!currentTextValue) {
-        setErrors([i18n.warningMessage.requireMessage]);
+
+      if (!isAddress(currentTextValue)) {
         return;
       }
 
       const qrAccount = readOnlyScan(currentTextValue);
 
-      if (!qrAccount) {
-        setErrors([i18n.errorMessage.invalidAddress]);
+      if (qrAccount) {
+        setReformatAddress(qrAccount.content);
         return;
       }
-
-      setReformatAddress(qrAccount.content);
     },
     [onChangeValue],
   );
@@ -181,12 +179,12 @@ const AttachReadOnly = () => {
 
       if (isAddress(text)) {
         if (!qrAccount) {
-          setErrors([i18n.warningMessage.invalidQRCode]);
+          onUpdateErrors('address')([i18n.warningMessage.invalidQRCode]);
           update('');
           return;
         }
 
-        setErrors([]);
+        onUpdateErrors('address')([]);
         setScanError(undefined);
         setIsScanning(false);
         setReformatAddress(qrAccount.content);
@@ -196,7 +194,7 @@ const AttachReadOnly = () => {
         return;
       }
     },
-    [formState.refs.address],
+    [formState.refs.address, onUpdateErrors],
   );
 
   return (
@@ -222,7 +220,7 @@ const AttachReadOnly = () => {
             isValidValue={formState.isValidated.address}
             placeholder={i18n.placeholder.accountAddress}
             disabled={isBusy}
-            onSubmitEditing={errors.length > 0 ? () => Keyboard.dismiss() : onSubmitField('address')}
+            onSubmitEditing={formState.errors.address.length > 0 ? () => Keyboard.dismiss() : onSubmitField('address')}
           />
           {!isHideAccountNameInput && (
             <InputText
@@ -235,8 +233,10 @@ const AttachReadOnly = () => {
               disabled={isBusy}
             />
           )}
-          {errors.length > 0 &&
-            errors.map((message, index) => <Warning isDanger message={message} key={index} style={styles.warning} />)}
+          {formState.errors.address.length > 0 &&
+            formState.errors.address.map((message, index) => (
+              <Warning isDanger message={message} key={index} style={styles.warning} />
+            ))}
           <AddressScanner
             qrModalVisible={isScanning}
             onPressCancel={onCloseScanner}
@@ -251,7 +251,7 @@ const AttachReadOnly = () => {
             icon={getButtonIcon(Eye)}
             loading={isBusy}
             onPress={onPressSubmit(_onSubmitForm)}
-            disabled={errors.length > 0 || !formState.data.address || !formState.data.name || isBusy}>
+            disabled={formState.errors.address.length > 0 || !formState.data.address || !formState.data.name || isBusy}>
             {i18n.buttonTitles.attachWatchOnlyAcc}
           </Button>
         </View>

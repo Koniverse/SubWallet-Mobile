@@ -27,6 +27,7 @@ interface Props {
   modalVisible: boolean;
   setModalVisible: (visible: boolean) => void;
   isOpenFromTokenDetailScreen?: boolean;
+  onChangeModalVisible?: VoidFunction;
 }
 
 const TON_WALLET_CONTRACT_TYPES_URL = 'https://docs.ton.org/participate/wallets/contracts#how-can-wallets-be-different';
@@ -38,6 +39,7 @@ export const TonWalletContractSelectorModal = ({
   setModalVisible,
   onCancel,
   isOpenFromTokenDetailScreen,
+  onChangeModalVisible,
 }: Props) => {
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
   const chainInfo = useFetchChainInfo(chainSlug);
@@ -139,7 +141,7 @@ export const TonWalletContractSelectorModal = ({
     <SwModal
       modalVisible={modalVisible}
       setVisible={setModalVisible}
-      onChangeModalVisible={() => setModalVisible(false)}
+      onChangeModalVisible={onChangeModalVisible}
       modalTitle={'Wallet address & version'}
       hideWhenCloseApp={true}
       isUseForceHidden={true}
