@@ -82,6 +82,9 @@ jobs:
     - name: Install Pods
       run: cd ios && pod update hermes-engine --no-repo-update && cd ..
 
+    - name: Select Xcode version
+      run: sudo xcode-select -s '/Applications/Xcode.app/Contents/Developer'
+
     # Build IPA file
     - name: iOS Build Action
       uses: yukiarrr/ios-build-action@v1.12.0
