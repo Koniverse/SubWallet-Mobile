@@ -68,6 +68,7 @@ const MissionPoolScreen = (props: JSX.IntrinsicAttributes) => {
 };
 
 const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
+  console.log('test');
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
   const theme = useSubWalletTheme().swThemes;
