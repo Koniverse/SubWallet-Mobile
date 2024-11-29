@@ -81,6 +81,14 @@ target 'SubWalletMobile' do
       end
     end
 
+    installer.pods_project.targets.each do |target|
+      if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+        target.build_configurations.each do |config|
+          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+        end
+      end
+    end
+
     # Fix bundle targets' 'Signing Certificate' to 'Sign to Run Locally'
     installer.pods_project.targets.each do |target|
         if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
