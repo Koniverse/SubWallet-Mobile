@@ -102,7 +102,6 @@ export const AccountChainAddressesSelector = ({
   }, []);
 
   useEffect(() => {
-    console.log('123123123');
     if (addressQrModal.addressModalState.visible) {
       addressQrModal.setAddressQrModal(prev => {
         if (!prev || !TON_CHAINS.includes(prev.selectNetwork || '')) {
@@ -122,7 +121,7 @@ export const AccountChainAddressesSelector = ({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items]);
+  }, [items, addressQrModal.addressModalState.visible]);
 
   return (
     <>
