@@ -4,7 +4,7 @@ import {
   _getChainSubstrateAddressPrefix,
   _isChainEvmCompatible,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { isAccountAll } from '@subwallet/extension-base/utils';
+import { isAccountAll, reformatAddress } from '@subwallet/extension-base/utils';
 import { MODE_CAN_SIGN } from 'constants/signer';
 import { AccountSignMode } from 'types/signer';
 import { AccountAddressType } from 'types/index';
@@ -16,23 +16,18 @@ import i18n from './i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
 import { AbstractAddressJson, AccountChainType, AccountJson } from '@subwallet/extension-base/types';
-import { decodeAddress } from 'utils/address/decode';
-import { isAddress } from 'utils/address';
-import { isEthereumAddress } from '@polkadot/util-crypto';
-import { reformatAddress } from 'utils/account/account';
+import { decodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { isAddress } from '@subwallet/keyring';
 
 export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {
     const isAllAccount = address && isAccountAll(address);
-    console.log('!isAddress(address) && !isAllAccount', !isAddress(address) && !isAllAccount);
     if (!isAddress(address) && !isAllAccount) {
       return null;
     }
 
     const originAddress = isAccountAll(address) ? address : reformatAddress(address);
     const result = accounts.find(account => account.address.toLowerCase() === originAddress.toLowerCase());
-    console.log('originAddress', originAddress);
-    console.log('accounts', accounts);
 
     return result || null;
   } catch (e) {

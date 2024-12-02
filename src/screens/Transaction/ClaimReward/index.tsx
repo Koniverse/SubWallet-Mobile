@@ -34,9 +34,9 @@ import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
-import { isSameAddress } from 'utils/account/account';
 import { AccountAddressItemType } from 'types/account';
 import { getReformatedAddressRelatedToChain } from 'utils/account';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 interface ClaimRewardFormValues extends TransactionFormValues {
   bondReward: string;

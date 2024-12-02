@@ -20,7 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AddressJson } from '@subwallet/extension-base/types';
-import { reformatAddress } from 'utils/account/account';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 enum AccountGroup {
   CONTACT = 'contact',

@@ -7,8 +7,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import { findAccountByAddress } from 'utils/index';
-import { isSameAddress } from 'utils/account/account';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 const useYieldRewardTotal = (slug: string): string | undefined => {
   const { poolInfoMap, earningRewards } = useSelector((state: RootState) => state.earning);

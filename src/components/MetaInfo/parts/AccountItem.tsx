@@ -11,9 +11,9 @@ import { RootState } from 'stores/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { toShort } from 'utils/index';
 import Typography from '../../design-system-ui/typography';
-import { isAddress } from '@polkadot/util-crypto';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
-import { reformatAddress } from 'utils/account/account';
+import { isAddress } from '@subwallet/keyring';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 export interface AccountInfoItem extends InfoItemBase {
   address: string;

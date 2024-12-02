@@ -12,7 +12,7 @@ import { completeConfirmation, upsertCustomToken, validateCustomToken } from 'me
 import { Warning } from 'components/Warning';
 import { InputAddress } from 'components/Input/InputAddress';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { addLazy, isValidSubstrateAddress, removeLazy } from '@subwallet/extension-base/utils';
+import { addLazy, isValidSubstrateAddress, reformatAddress, removeLazy } from '@subwallet/extension-base/utils';
 import { WebRunnerContext } from 'providers/contexts';
 import { _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
 import {
@@ -39,7 +39,6 @@ import { FormItem } from 'components/common/FormItem';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import InputText from 'components/Input/InputText';
 import useGetFungibleContractSupportedChains from 'hooks/screen/ImportNft/useGetFungibleContractSupportedChains';
-import { reformatAddress } from 'utils/account/account';
 
 interface ImportTokenFormValues extends TransactionFormValues {
   selectedTokenType: string;

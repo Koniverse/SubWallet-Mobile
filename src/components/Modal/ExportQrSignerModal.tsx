@@ -10,7 +10,7 @@ import ViewShot from 'react-native-view-shot';
 import { ColorMap } from 'styles/color';
 import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { reformatAddress } from 'utils/account/account';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   networkKey: string;

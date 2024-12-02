@@ -11,7 +11,7 @@ import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { CheckCircle } from 'phosphor-react-native';
 import { ModalRef } from 'types/modalRef';
 import { AccountJson } from '@subwallet/extension-base/types';
-import { isSameAddress } from 'utils/account/account';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   selectedAccounts: string[];

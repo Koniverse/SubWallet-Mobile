@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
-import { isSameAddress } from 'utils/account/account';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 const useGetYieldPositionForSpecificAccount = (address?: string): YieldPositionInfo[] => {
   const poolInfoMap = useSelector((state: RootState) => state.earning.poolInfoMap);

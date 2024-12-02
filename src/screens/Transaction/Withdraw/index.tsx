@@ -41,9 +41,9 @@ import { yieldSubmitStakingWithdrawal } from 'messaging/index';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
-import { isSameAddress } from 'utils/account/account';
 import { AccountAddressItemType } from 'types/account';
 import { getReformatedAddressRelatedToChain } from 'utils/account';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,

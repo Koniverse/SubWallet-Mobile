@@ -3,8 +3,8 @@ import { StyleProp, Text, View } from 'react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { reformatAddress } from 'utils/account/account';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   address: string;

@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { Linking, Platform, Share, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import reformatAddress, { getNetworkLogo, toShort } from 'utils/index';
+import { getNetworkLogo, toShort } from 'utils/index';
 import { CopySimple, GlobeHemisphereWest, Share as ShareIcon } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
@@ -21,6 +21,7 @@ import Svg from 'react-native-svg';
 import { TonWalletContractSelectorModal } from 'components/Modal/TonWalletContractSelectorModal';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { AccountActions } from '@subwallet/extension-base/types';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   modalVisible: boolean;

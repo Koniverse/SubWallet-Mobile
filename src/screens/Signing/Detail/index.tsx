@@ -12,7 +12,7 @@ import SubstrateTransactionDetail from 'screens/Signing/Detail/Transaction/Subst
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { reformatAddress } from 'utils/account/account';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   isVisible: boolean;

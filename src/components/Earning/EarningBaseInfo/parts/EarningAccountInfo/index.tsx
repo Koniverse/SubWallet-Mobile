@@ -24,7 +24,7 @@ import i18n from 'utils/i18n/i18n';
 import { findAccountByAddress, toShort } from 'utils/index';
 import createStyles from './styles';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
-import { isSameAddress } from 'utils/account/account';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 type Props = {
   compound: YieldPositionInfo;

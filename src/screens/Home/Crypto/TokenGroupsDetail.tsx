@@ -30,10 +30,10 @@ import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { Typography } from 'components/design-system-ui';
 import { TonWalletContractSelectorModal } from 'components/Modal/TonWalletContractSelectorModal';
 import { ModalRef } from 'types/modalRef';
-import { isTonAddress } from 'utils/address/validate';
 import { AccountAddressItemType } from 'types/account';
 import { KeypairType } from '@subwallet/keyring/types';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { isTonAddress } from '@subwallet/keyring';
 
 type CurrentSelectToken = {
   symbol: string;

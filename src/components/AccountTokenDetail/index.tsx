@@ -15,8 +15,8 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import MetaInfo from 'components/MetaInfo';
 import { ArrowSquareOut } from 'phosphor-react-native';
 import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
-import { reformatAddress } from 'utils/account/account';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   item: BalanceItem;

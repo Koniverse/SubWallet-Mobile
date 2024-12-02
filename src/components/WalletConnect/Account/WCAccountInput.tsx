@@ -5,9 +5,9 @@ import { DotsThree } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
-import { isSameAddress } from 'utils/account/account';
 import { AccountJson } from '@subwallet/extension-base/types';
 import { AccountProxyAvatarGroup } from 'components/design-system-ui/avatar/account-proxy-avatar-group';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   accounts: AccountJson[];

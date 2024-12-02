@@ -14,7 +14,7 @@ import { TransactionDoneInfo } from 'hooks/screen/Transaction/useTransaction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { mmkvStore } from 'utils/storage';
 import InAppReview from 'react-native-in-app-review';
-import { reformatAddress } from 'utils/account/account';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   transactionDoneInfo: TransactionDoneInfo;

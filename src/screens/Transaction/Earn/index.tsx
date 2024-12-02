@@ -76,9 +76,9 @@ import { GlobalModalContext } from 'providers/GlobalModalContext';
 import { AppModalContext } from 'providers/AppModalContext';
 import { AccountAddressItemType } from 'types/account';
 import { getReformatedAddressRelatedToChain } from 'utils/account';
-import { reformatAddress } from 'utils/account/account';
 import useGetYieldPositionForSpecificAccount from 'hooks/earning/useGetYieldPositionForSpecificAccount';
 import { VoidFunction } from 'types/index';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;

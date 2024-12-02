@@ -25,7 +25,6 @@ import { TransactionHistoryDisplayData, TransactionHistoryDisplayItem } from 'ty
 import { customFormatDate, formatHistoryDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import reformatAddress from 'utils/index';
 import { HistoryItem } from 'components/common/HistoryItem';
 import { TxTypeNameMap } from 'screens/Home/History/shared';
 import i18n from 'utils/i18n/i18n';
@@ -51,7 +50,8 @@ import { HistoryChainSelector } from 'screens/Home/History/parts/HistoryChainSel
 import LinearGradient from 'react-native-linear-gradient';
 import { AccountAddressItemType } from 'types/account';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { isAddress } from 'utils/address';
+import { isAddress } from '@subwallet/keyring';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 type Props = {};
 

@@ -25,7 +25,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AccountNameModal } from 'components/Modal/AccountNameModal';
 import { AccountProxyType } from '@subwallet/extension-base/types';
-import { isSameAddress } from 'utils/account/account';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   title: string;

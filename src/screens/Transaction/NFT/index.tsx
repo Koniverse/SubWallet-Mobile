@@ -37,7 +37,7 @@ import { useWatch } from 'react-hook-form';
 import { FormItem } from 'components/common/FormItem';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
-import { isSameAddress, reformatAddress } from 'utils/account/account';
+import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
 
 const DEFAULT_ITEM: NftItem = {
   collectionId: 'unknown',

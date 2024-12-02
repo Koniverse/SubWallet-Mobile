@@ -7,7 +7,7 @@ import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { AbstractAddressJson } from '@subwallet/extension-base/types';
-import { reformatAddress } from 'utils/account/account';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 const useFormatAddress = (addressPrefix?: number) => {
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);

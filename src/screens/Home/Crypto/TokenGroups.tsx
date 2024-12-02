@@ -32,11 +32,11 @@ import { IS_SHOW_TON_CONTRACT_VERSION_WARNING } from 'constants/localStorage';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { TonWalletContractSelectorModal } from 'components/Modal/TonWalletContractSelectorModal';
 import { AccountAddressItemType } from 'types/account';
-import { isTonAddress } from 'utils/address/validate';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { ModalRef } from 'types/modalRef';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { useMMKVBoolean } from 'react-native-mmkv';
+import { isTonAddress } from '@subwallet/keyring';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',

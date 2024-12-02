@@ -9,7 +9,7 @@ import {
   isSupportWalletConnectChain,
   isSupportWalletConnectNamespace,
 } from '@subwallet/extension-base/services/wallet-connect-service/helpers';
-import { uniqueStringArray } from '@subwallet/extension-base/utils';
+import { isSameAddress, reformatAddress, uniqueStringArray } from '@subwallet/extension-base/utils';
 import {
   WALLET_CONNECT_EIP155_NAMESPACE,
   WALLET_CONNECT_SUPPORT_NAMESPACES,
@@ -18,7 +18,6 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import { ProposalTypes } from '@walletconnect/types';
 import { chainsToWalletConnectChainInfos } from 'utils/walletConnect';
 import { AccountJson } from '@subwallet/extension-base/types';
-import { isSameAddress, reformatAddress } from 'utils/account/account';
 
 interface SelectAccount {
   availableAccounts: AccountJson[];

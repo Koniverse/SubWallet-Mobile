@@ -27,9 +27,9 @@ import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { isSameAddress } from 'utils/account/account';
 import { AccountAddressItemType } from 'types/account';
 import { getReformatedAddressRelatedToChain } from 'utils/account';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 interface CancelUnstakeFormValues extends TransactionFormValues {
   unstakeIndex: string;

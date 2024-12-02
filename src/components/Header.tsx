@@ -9,13 +9,13 @@ import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SVGImages } from 'assets/index';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
-import { isAddress } from '@polkadot/util-crypto';
 import i18n from 'utils/i18n/i18n';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { DisabledStyle } from 'styles/sharedStyles';
 import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import useCheckCamera from 'hooks/common/useCheckCamera';
+import { isAddress } from '@subwallet/keyring';
 
 export interface HeaderProps {
   rightComponent?: JSX.Element;

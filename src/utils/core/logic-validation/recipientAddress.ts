@@ -1,7 +1,7 @@
 import { ActionType, ValidateRecipientParams, ValidationCondition } from '@subwallet/extension-base/core/types';
 import { AccountSignMode } from '@subwallet/extension-base/types';
 import { detectTranslate } from '@subwallet/extension-base/utils';
-import { isSubstrateAddress, isTonAddress } from 'utils/address/validate';
+import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import {
   _isAddress,
   _isNotDuplicateAddress,
@@ -10,8 +10,8 @@ import {
   _isValidAddressForEcosystem,
   _isValidSubstrateAddressFormat,
   _isValidTonAddressFormat,
-} from 'utils/core/utils';
-import { ValidateResult } from 'react-hook-form/dist/types/validator';
+} from '@subwallet/extension-base/core/utils';
+import { isSubstrateAddress, isTonAddress } from '@subwallet/keyring';
 
 function getConditions(validateRecipientParams: ValidateRecipientParams): ValidationCondition[] {
   const { account, actionType, autoFormatValue, destChainInfo, srcChain, toAddress } = validateRecipientParams;

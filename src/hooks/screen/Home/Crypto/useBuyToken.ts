@@ -13,11 +13,11 @@ import { isAccountAll } from 'utils/accountAll';
 import useAppLock from 'hooks/useAppLock';
 import { _getOriginChainOfAsset, _isAssetFungibleToken } from '@subwallet/extension-base/services/chain-service/utils';
 import { AccountJson, AccountProxy, BuyTokenInfo } from '@subwallet/extension-base/types';
-import { reformatAddress } from 'utils/account/account';
 import { AccountAddressItemType } from 'types/account';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import useAssetChecker from 'hooks/chain/useAssetChecker';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 const convertChainActivePriority = (active?: boolean) => (active ? 1 : 0);
 

@@ -1,13 +1,11 @@
 import React from 'react';
 import { AccountType } from 'types/ui-types';
-import { NETWORK_STATUS, NetWorkGroup, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { isAccountAll, uniqueStringArray } from '@subwallet/extension-base/utils';
-import { decodeAddress, encodeAddress, ethereumEncode, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 import { StyleProp } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { SiDef } from '@polkadot/util/types';
-import BigN from 'bignumber.js';
 import { IconProps } from 'phosphor-react-native';
 import { _ChainInfo, _ChainStatus } from '@subwallet/chain-list/types';
 import { Logo as SWLogo } from 'components/design-system-ui';
@@ -15,53 +13,6 @@ import { DEFAULT_ACCOUNT_TYPES, EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 
 import { AccountChainType, AccountJson, AccountProxy } from '@subwallet/extension-base/types';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
 import { KeypairType } from '@subwallet/keyring/types';
-
-export interface NetworkSelectOption {
-  text: string;
-  value: string;
-  networkKey: string;
-  networkPrefix: number;
-  icon: string;
-  groups: NetWorkGroup[];
-  isEthereum: boolean;
-  active: boolean;
-  apiStatus: NETWORK_STATUS;
-}
-
-export function getTokenNetworkKeyMap(): Record<string, string[]> {
-  const result: Record<string, string[]> = {};
-
-  Object.entries({} as Record<string, _ChainInfo>).forEach(([networkKey, chainInfo]) => {
-    try {
-      let token = chainInfo.substrateInfo?.symbol || chainInfo.evmInfo?.symbol;
-
-      if (!token) {
-        return;
-      }
-
-      token = token.toLowerCase();
-
-      const tgKey = getTokenGroupKey(token, chainInfo.isTestnet);
-
-      if (!result[tgKey]) {
-        result[tgKey] = [networkKey];
-      } else {
-        result[tgKey].push(networkKey);
-      }
-    } catch (e) {
-      return;
-    }
-  });
-
-  return result;
-}
-
-// all keys must be lowercase
-export const tokenNetworkKeyMap: Record<string, string[]> = Object.assign(getTokenNetworkKeyMap(), {
-  intr: ['interlay'],
-  'betadev|test': ['moonbase'],
-  ibtc: ['interlay'],
-});
 
 export const subscanByNetworkKey: Record<string, string> = {
   acala: 'https://acala.subscan.io',
@@ -190,36 +141,6 @@ export function toShort(text: string, preLength = 6, sufLength = 6): string {
 
 export function findAccountByAddress(accounts: AccountJson[], _address: string): AccountJson | null {
   return accounts.find(({ address }): boolean => address === _address) || null;
-}
-
-export default function reformatAddress(address: string, networkPrefix = 42, isEthereum = false): string {
-  if (!isAddress(address)) {
-    return address;
-  }
-
-  if (isAccountAll(address)) {
-    return address;
-  }
-
-  if (isEthereumAddress(address)) {
-    return address;
-  }
-
-  try {
-    const publicKey = decodeAddress(address);
-
-    if (isEthereum) {
-      return ethereumEncode(publicKey);
-    }
-
-    if (networkPrefix < 0) {
-      return address;
-    }
-
-    return encodeAddress(publicKey, networkPrefix);
-  } catch {
-    return address;
-  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -376,12 +297,6 @@ export function getNetworkKeysByAddressType(
   return result;
 }
 
-export function getBalanceWithSi(value: string, decimals: number, si: SiDef, token: string): [string, string] {
-  let valueBigN = new BigN(!isNaN(parseFloat(value)) ? value : '0');
-  valueBigN = valueBigN.div(new BigN(10).pow(decimals + si.power));
-  return [valueBigN.toFixed(), si.power === 0 ? token : `${si.text} ${token}`];
-}
-
 export function getTokenGroupKey(token: string, isTestnet = false): string {
   return `${token.toLowerCase()}${isTestnet ? '|test' : ''}`;
 }
@@ -394,35 +309,10 @@ export function getAccountType(address: string): AccountType {
   return isAccountAll(address) ? 'ALL' : isEthereumAddress(address) ? 'ETHEREUM' : 'SUBSTRATE';
 }
 
-export function getRoundedDecimalNumber(numberString: string, digits: number = 2): string {
-  const number = isNaN(parseFloat(numberString)) ? '0' : numberString;
-
-  return (+(Math.round(+(number + `e+${digits}`)) + `e-${digits}`)).toString();
-}
-
 export function getLeftSelectItemIcon(icon: (iconProps: IconProps) => JSX.Element) {
   const Icon = icon;
   return <Icon size={20} color={ColorMap.disabled} weight={'bold'} />;
 }
-
-export const getNetworkJsonByGenesisHash = (
-  networkMap: Record<string, NetworkJson>,
-  hash: string,
-): NetworkJson | null => {
-  for (const n in networkMap) {
-    if (!Object.prototype.hasOwnProperty.call(networkMap, n)) {
-      continue;
-    }
-
-    const networkInfo = networkMap[n];
-
-    if (networkInfo.genesisHash === hash) {
-      return networkInfo;
-    }
-  }
-
-  return null;
-};
 
 export function isUrl(targetString: string) {
   return targetString.startsWith('http:') || targetString.startsWith('https:') || targetString.startsWith('wss:');

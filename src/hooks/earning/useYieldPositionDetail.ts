@@ -16,8 +16,8 @@ import BigN from 'bignumber.js';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { isSameAddress } from 'utils/account/account';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 interface Result {
   compound: YieldPositionInfo | undefined;

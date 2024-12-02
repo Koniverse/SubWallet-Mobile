@@ -21,8 +21,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AccountExternalErrorCode } from '@subwallet/extension-base/background/KoniTypes';
 import InputText from 'components/Input/InputText';
-import { isSameAddress } from 'utils/account/account';
-import { isAddress } from 'utils/address';
+import { isSameAddress } from '@subwallet/extension-base/utils';
+import { isAddress } from '@subwallet/keyring';
 
 const AttachReadOnly = () => {
   const theme = useSubWalletTheme().swThemes;

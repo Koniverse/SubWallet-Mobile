@@ -8,7 +8,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
-import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
@@ -20,7 +20,8 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AbstractAddressJson, AccountJson } from '@subwallet/extension-base/types';
-import { reformatAddress } from 'utils/account/account';
+import { reformatAddress } from '@subwallet/extension-base/utils';
+import { isAddress } from '@subwallet/keyring';
 
 interface Props {
   modalVisible: boolean;

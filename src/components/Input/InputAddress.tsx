@@ -2,7 +2,7 @@ import Input, { InputProps } from 'components/design-system-ui/input';
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { isEthereumAddress } from '@polkadot/util-crypto';
+import { decodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
 import { Book, Scan } from 'phosphor-react-native';
@@ -20,9 +20,8 @@ import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import useCheckCamera from 'hooks/common/useCheckCamera';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
-import { isAddress } from 'utils/address';
-import { decodeAddress } from 'utils/address/decode';
-import { reformatAddress } from 'utils/account/account';
+import { isAddress } from '@subwallet/keyring';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props extends InputProps {
   chain?: string;
@@ -67,7 +66,6 @@ const Component = (
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
-  console.log('isAddress(value)----', isAddress(value));
   const isAddressValid = isAddress(value) && (isValidValue !== undefined ? isValidValue : true);
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
   const [error, setError] = useState<string | undefined>(undefined);

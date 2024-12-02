@@ -6,7 +6,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { UseControllerProps } from 'react-hook-form/dist/types/controller';
-import { isAddress } from '@polkadot/util-crypto';
 import { FormItem } from 'components/common/FormItem';
 import Input from 'components/design-system-ui/input';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -18,6 +17,7 @@ import { useToast } from 'react-native-toast-notifications';
 import createStylesheet from './style/AddContactModal';
 import { TextInputProps } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { isAddress } from '@subwallet/keyring';
 
 type Props = {
   modalVisible: boolean;

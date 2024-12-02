@@ -20,8 +20,8 @@ import { funcSortByName } from 'utils/account';
 import { isAccountAll } from 'utils/accountAll';
 import { BackgroundIcon, Button } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { isAddressAllowedWithAuthType } from 'utils/account/account';
 import { AccountJson } from '@subwallet/extension-base/types';
+import { isAddressAllowedWithAuthType } from 'utils/account/account';
 
 enum ConnectionStatement {
   NOT_CONNECTED = 'not-connected',

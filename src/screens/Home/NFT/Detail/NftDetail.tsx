@@ -28,7 +28,7 @@ import WebView from 'react-native-webview';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deviceWidth } from 'constants/index';
 import { SHOW_3D_MODELS_CHAIN } from 'constants/nft';
-import { reformatAddress } from '../../../../utils/account/account';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',

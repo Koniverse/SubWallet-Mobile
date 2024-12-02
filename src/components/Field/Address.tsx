@@ -8,7 +8,7 @@ import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { AccountProxyAvatar } from '../design-system-ui/avatar/account-proxy-avatar';
-import { reformatAddress } from 'utils/account/account';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props extends FieldBaseProps {
   address: string;
