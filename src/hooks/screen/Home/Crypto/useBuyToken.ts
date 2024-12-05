@@ -47,7 +47,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
         require: true,
       },
       tokenSlug: {
-        name: 'Token',
+        name: 'token',
         value: fixedTokenSlug || '',
       },
       service: {
@@ -60,7 +60,6 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
   const { formState, onChangeValue } = useFormControl(formConfig, {
     onSubmitForm: () => {},
   });
-  console.log('formState', formState.data);
 
   const getServiceItems = useCallback(
     (tokenSlug: string): ServiceItem[] => {
@@ -199,7 +198,6 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
 
   const openSelectBuyAccount = useCallback(
     (account: AccountJson) => {
-      onChangeValue('service')('');
       onChangeValue('address')(account.address);
     },
     [onChangeValue],
@@ -208,7 +206,6 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
   const openSelectBuyToken = useCallback(
     (item: TokenItemType) => {
       onChangeValue('tokenSlug')(item.slug);
-      onChangeValue('service')('');
       tokenBuyRef && tokenBuyRef.current?.onCloseModal();
     },
     [onChangeValue],

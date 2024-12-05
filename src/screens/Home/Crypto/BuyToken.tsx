@@ -141,21 +141,24 @@ export const BuyToken = ({
               />
             </View>
           </View>
-          <AccountSelector
-            items={buyAccountSelectorItems}
-            selectedValueMap={selectedAccount ? { [selectedAccount.address]: true } : {}}
-            onSelectItem={openSelectBuyAccount}
-            accountSelectorRef={accountBuyRef}
-            disabled={!isAllAccount}
-            renderSelected={() => (
-              <AccountSelectField
-                label={i18n.inputLabel.selectAcc}
-                accountName={selectedAccount?.name || ''}
-                value={selectedBuyAccount || ''}
-                showIcon
-              />
-            )}
-          />
+          <View style={{ marginBottom: theme.marginSM }}>
+            <AccountSelector
+              items={buyAccountSelectorItems}
+              selectedValueMap={selectedAccount ? { [selectedAccount.address]: true } : {}}
+              onSelectItem={openSelectBuyAccount}
+              accountSelectorRef={accountBuyRef}
+              disabled={!isAllAccount}
+              renderSelected={() => (
+                <AccountSelectField
+                  label={'To:'}
+                  accountName={selectedAccount?.name || ''}
+                  value={selectedBuyAccount || ''}
+                  showIcon
+                  labelStyle={{ width: 48 }}
+                />
+              )}
+            />
+          </View>
           <Typography.Text style={styles.buyTokenText}>{i18n.message.buyMessage}</Typography.Text>
         </View>
         <Button
@@ -208,7 +211,13 @@ function createStyle(theme: ThemeTypes) {
       paddingTop: theme.paddingXXL,
       paddingBottom: theme.paddingLG,
     },
-    tokenAndServiceWrapper: { width: '100%', flexDirection: 'row', gap: 12, paddingTop: 4 },
+    tokenAndServiceWrapper: {
+      width: '100%',
+      flexDirection: 'row',
+      gap: 12,
+      paddingTop: 4,
+      paddingBottom: theme.paddingXXS,
+    },
     buyTokenText: {
       fontSize: theme.fontSize,
       lineHeight: theme.fontSize * theme.lineHeight,
