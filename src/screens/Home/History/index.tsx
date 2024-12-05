@@ -607,6 +607,17 @@ function History({
               zIndex: 10,
               flexDirection: 'row',
             }}>
+            <View style={{ flex: 1 }}>
+              <HistoryChainSelector
+                items={chainItems}
+                value={selectedChain}
+                onSelectItem={onSelectChain}
+                disabled={chainSelectorDisabled}
+                selectorRef={chainSelectorRef}
+                loading={loading}
+              />
+            </View>
+
             {isAllAccount && (
               <View style={{ flex: 1 }}>
                 <HistoryAccountSelector
@@ -618,17 +629,6 @@ function History({
                 />
               </View>
             )}
-
-            <View style={{ flex: 1 }}>
-              <HistoryChainSelector
-                items={chainItems}
-                value={selectedChain}
-                onSelectItem={onSelectChain}
-                disabled={chainSelectorDisabled}
-                selectorRef={chainSelectorRef}
-                loading={loading}
-              />
-            </View>
           </View>
 
           <LazySectionList

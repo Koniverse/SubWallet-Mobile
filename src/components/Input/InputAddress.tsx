@@ -85,6 +85,7 @@ const Component = (
     inputProps.readonly,
     showAvatar,
     showAddressBook,
+    horizontal,
   );
 
   useEffect(() => setAdjustResize(), []);
@@ -176,7 +177,7 @@ const Component = (
 
   const LeftPart = useMemo(() => {
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: horizontal ? 0 : 4 }}>
         {showAvatar && (
           <View style={stylesheet.avatarWrapper}>
             <AccountProxyAvatar value={value || ''} size={hasLabel ? 20 : 24} />
@@ -197,6 +198,7 @@ const Component = (
     fitNetwork,
     formattedAddress,
     hasLabel,
+    horizontal,
     showAvatar,
     stylesheet.addressAliasText,
     stylesheet.addressText,

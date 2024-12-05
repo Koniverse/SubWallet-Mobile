@@ -268,6 +268,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
                     <InputAddress
                       ref={ref}
                       showAddressBook
+                      showAvatar={false}
                       addressPrefix={addressPrefix}
                       networkGenesisHash={chainGenesisHash}
                       label={i18n.inputLabel.sendTo}
