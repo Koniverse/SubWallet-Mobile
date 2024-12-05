@@ -250,7 +250,6 @@ function getAccountBalance(
     } else if (!multiChainAsset && tokenGroupMap[tokenGroupKey].length === 1 && tokenBalanceMap[tokenGroupKey]) {
       tokenGroupBalance.isTestnet = tokenBalanceMap[tokenGroupKey].isTestnet;
     }
-
     if (!isShowZeroBalance && (!isTokenGroupBalanceReady || tokenGroupBalance.total.value.eq(BN_0))) {
       return;
     }

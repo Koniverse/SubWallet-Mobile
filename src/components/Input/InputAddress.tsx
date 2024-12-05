@@ -3,7 +3,7 @@ import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRe
 import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { decodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import { Button, Icon, Typography } from 'components/design-system-ui';
+import { Button, Icon, Input, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
 import { Book, Scan } from 'phosphor-react-native';
 import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal';
@@ -22,6 +22,7 @@ import useCheckCamera from 'hooks/common/useCheckCamera';
 import { isAddress } from '@subwallet/keyring';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import HorizontalInput from 'components/design-system-ui/input/HorizontalInput';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props extends InputProps {
   chain?: string;
@@ -38,6 +39,7 @@ interface Props extends InputProps {
   >;
   onSideEffectChange?: () => void; // callback for address book or scan QR
   fitNetwork?: boolean;
+  horizontal?: boolean;
 }
 
 const addressLength = 9;
@@ -56,6 +58,7 @@ const Component = (
     reValidate,
     onSideEffectChange,
     fitNetwork,
+    horizontal,
     ...inputProps
   }: Props,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -174,6 +177,11 @@ const Component = (
   const LeftPart = useMemo(() => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {showAvatar && (
+          <View style={stylesheet.avatarWrapper}>
+            <AccountProxyAvatar value={value || ''} size={hasLabel ? 20 : 24} />
+          </View>
+        )}
         <Typography.Text ellipsis style={stylesheet.addressText}>
           {accountName || domainName || toShort(value, addressLength, addressLength)}
         </Typography.Text>
@@ -188,8 +196,11 @@ const Component = (
     domainName,
     fitNetwork,
     formattedAddress,
+    hasLabel,
+    showAvatar,
     stylesheet.addressAliasText,
     stylesheet.addressText,
+    stylesheet.avatarWrapper,
     value,
   ]);
 
@@ -318,24 +329,44 @@ const Component = (
 
   return (
     <>
-      <HorizontalInput
-        ref={myRef => {
-          inputRef.current = myRef;
-          // @ts-ignored
-          ref = inputRef.current;
-        }}
-        {...inputProps}
-        leftPart={LeftPart}
-        leftPartStyle={stylesheet.inputLeftPart}
-        rightPart={RightPart}
-        isError={!isAddressValid}
-        onChangeText={onChangeInputText}
-        onFocus={onInputFocus}
-        onBlur={onInputBlur}
-        inputStyle={stylesheet.input}
-        value={value}
-        labelStyle={{ width: 48 }}
-      />
+      {horizontal ? (
+        <HorizontalInput
+          ref={myRef => {
+            inputRef.current = myRef;
+            // @ts-ignored
+            ref = inputRef.current;
+          }}
+          {...inputProps}
+          leftPart={LeftPart}
+          leftPartStyle={stylesheet.inputLeftPart}
+          rightPart={RightPart}
+          isError={!isAddressValid}
+          onChangeText={onChangeInputText}
+          onFocus={onInputFocus}
+          onBlur={onInputBlur}
+          inputStyle={stylesheet.input}
+          value={value}
+          labelStyle={{ width: 48 }}
+        />
+      ) : (
+        <Input
+          ref={myRef => {
+            inputRef.current = myRef;
+            // @ts-ignored
+            ref = inputRef.current;
+          }}
+          {...inputProps}
+          leftPart={LeftPart}
+          leftPartStyle={stylesheet.inputLeftPart}
+          rightPart={RightPart}
+          isError={!isAddressValid}
+          onChangeText={onChangeInputText}
+          onFocus={onInputFocus}
+          onBlur={onInputBlur}
+          inputStyle={stylesheet.input}
+          value={value}
+        />
+      )}
 
       <AddressScanner
         {...scannerProps}

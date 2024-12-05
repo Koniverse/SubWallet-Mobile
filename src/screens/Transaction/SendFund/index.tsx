@@ -1155,6 +1155,8 @@ export const SendFund = ({
                               clearErrors('to');
                               onChange(text);
                             }}
+                            horizontal
+                            showAvatar={false}
                             onBlur={onBlur}
                             onSideEffectChange={onBlur}
                             placeholder={i18n.placeholder.accountAddress}
