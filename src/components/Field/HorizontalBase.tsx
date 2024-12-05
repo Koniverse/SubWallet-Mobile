@@ -11,7 +11,7 @@ export interface FieldBaseProps extends ViewProps {
   fieldBgc?: string;
 }
 
-export const FieldBase = ({ children, label, outerStyle, ...props }: FieldBaseProps) => {
+export const FieldHorizontalBase = ({ children, label, outerStyle, ...props }: FieldBaseProps) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
 
@@ -29,13 +29,15 @@ function createStyle(theme: ThemeTypes) {
       borderRadius: theme.borderRadiusLG,
       marginBottom: theme.sizeXS,
       backgroundColor: theme.colorBgSecondary,
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     label: {
       ...FontMedium,
       fontSize: theme.fontSizeSM,
       lineHeight: theme.lineHeightSM * theme.fontSizeSM,
       color: theme.colorTextLight4,
-      paddingHorizontal: theme.sizeSM,
+      paddingLeft: theme.sizeSM,
     },
   });
 }

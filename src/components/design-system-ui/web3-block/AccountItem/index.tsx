@@ -14,6 +14,7 @@ interface CustomStyle extends Web3BlockCustomStyle {
 
 export interface AccountItemProps extends Omit<Web3BlockProps, 'customStyle'> {
   address: string;
+  avatarValue?: string;
   avatarSize?: number;
   addressPreLength?: number;
   addressSufLength?: number;
@@ -27,6 +28,7 @@ const AccountItem: React.FC<AccountItemProps> = (props: AccountItemProps) => {
     rightItem,
     middleItem,
     address,
+    avatarValue,
     avatarSize = 24,
     addressPreLength,
     addressSufLength,
@@ -45,7 +47,7 @@ const AccountItem: React.FC<AccountItemProps> = (props: AccountItemProps) => {
         container: [styles.container, isSelected && styles.containerSelected, containerStyle],
         ...restStyle,
       }}
-      leftItem={leftItem || <AccountProxyAvatar value={address} size={avatarSize} />}
+      leftItem={leftItem || <AccountProxyAvatar value={avatarValue || address} size={avatarSize} />}
       middleItem={
         middleItem || (
           <Typography.Text style={[addressStyle]}>

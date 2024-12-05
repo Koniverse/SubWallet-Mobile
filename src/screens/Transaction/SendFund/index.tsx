@@ -16,7 +16,7 @@ import {
   _isTokenTransferredByEvm,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
-import { _reformatAddressWithChain, addLazy, isSameAddress, removeLazy } from '@subwallet/extension-base/utils';
+import { _reformatAddressWithChain, addLazy, removeLazy } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
 import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { BN, BN_ZERO } from '@polkadot/util';
@@ -187,26 +187,6 @@ function getTokenAvailableDestinations(
   return result;
 }
 
-function getTokenAvailableDestinationsForViewStep2(
-  originChainItems: ChainItemType[],
-  chainInfoMap: Record<string, _ChainInfo>,
-  senderAddress: string,
-  recipientAddress: string,
-  chainValue: string,
-) {
-  const isRecipientAddressEvmType = isEthereumAddress(recipientAddress);
-  const _isSameAddress = isSameAddress(senderAddress, recipientAddress);
-
-  return originChainItems.filter(ci => {
-    if (_isSameAddress && chainValue === ci.slug) {
-      return false;
-    }
-
-    const isDestChainEvmCompatible = _isChainEvmCompatible(chainInfoMap[ci.slug]);
-    return isDestChainEvmCompatible === isRecipientAddressEvmType;
-  });
-}
-
 export const SendFund = ({
   route: {
     params: { slug: sendFundSlug, recipient: scanRecipient },
@@ -224,23 +204,14 @@ export const SendFund = ({
 
   const {
     title,
-    form: {
-      setValue,
-      resetField,
-      getValues,
-      control,
-      handleSubmit,
-      trigger,
-      setFocus,
-      formState: { errors, dirtyFields },
-    },
+    form: { setValue, resetField, clearErrors, getValues, control, handleSubmit, trigger, setFocus },
     onChangeFromValue: setFrom,
     onChangeAssetValue: setAsset,
     onChangeChainValue: setChain,
     onTransactionDone: onDone,
     transactionDoneInfo,
   } = useTransaction<TransferFormValues>('send-fund', {
-    mode: 'onBlur',
+    mode: 'onSubmit',
     reValidateMode: 'onBlur',
     defaultValues: {
       destChain: '',
@@ -252,7 +223,6 @@ export const SendFund = ({
     asset: assetValue,
     chain: chainValue,
     from: fromValue,
-    to: toValue,
     destChain: destChainValue,
     value: transferAmount,
   } = {
@@ -280,6 +250,7 @@ export const SendFund = ({
   const [forceUpdateValue, setForceUpdateValue] = useState<{ value: string | null } | undefined>(undefined);
   const forceTransferAllRef = useRef<boolean>(false);
   const [forceTransferAll, setForceTransferAll] = useState<boolean>(false);
+  const [isFetchingMaxValue, setIsFetchingMaxValue] = useState(false);
   const chainStatus = useMemo(() => chainStatusMap[chainValue]?.connectionStatus, [chainStatusMap, chainValue]);
   const { confirmModal } = useContext(AppModalContext);
   const globalAppModalContext = useContext(GlobalModalContext);
@@ -294,16 +265,6 @@ export const SendFund = ({
   }, [chainValue, destChainValue, getCurrentConfirmation]);
 
   const [processState, dispatchProcessState] = useReducer(commonProcessReducer, DEFAULT_COMMON_PROCESS);
-
-  const senderAccountName = useMemo(() => {
-    if (!fromValue) {
-      return i18n.inputLabel.selectAcc;
-    }
-
-    const targetAccount = accounts.find(a => a.address === fromValue);
-
-    return targetAccount?.name || '';
-  }, [accounts, fromValue]);
 
   const triggerOnChangeValue = useCallback(() => {
     setForceUpdateValue({ value: transferAmount });
@@ -352,6 +313,16 @@ export const SendFund = ({
 
     return result;
   }, [accountProxies, chainInfoMap, chainValue, currentAccountProxy]);
+
+  const senderAccountName = useMemo(() => {
+    if (!fromValue) {
+      return i18n.inputLabel.selectAcc;
+    }
+
+    const targetAccount = accountAddressItems.find(a => a.address === fromValue);
+
+    return targetAccount?.accountName || '';
+  }, [accountAddressItems, fromValue]);
 
   const destChainItems = useMemo<ChainItemType[]>(() => {
     return getTokenAvailableDestinations(assetValue, xcmRefMap, chainInfoMap);
@@ -470,23 +441,7 @@ export const SendFund = ({
 
   const _onChangeAsset = (item: TokenItemType) => {
     setAsset(item.slug);
-    const currentDestChainItems = getTokenAvailableDestinationsForViewStep2(
-      destChainItems,
-      chainInfoMap,
-      fromValue,
-      toValue,
-      item.originChain,
-    );
-
-    if (viewStep === 2) {
-      if (currentDestChainItems.some(destChainItem => destChainItem.slug === item.originChain)) {
-        setValue('destChain', item.originChain);
-      } else {
-        setValue('destChain', '');
-      }
-    } else {
-      setValue('destChain', item.originChain);
-    }
+    setValue('destChain', item.originChain);
 
     tokenSelectorRef?.current?.onCloseModal();
     setForceUpdateValue(undefined);
@@ -563,10 +518,6 @@ export const SendFund = ({
       const { asset, chain, destChain, from: _from, to, value } = values;
 
       let sendPromise: Promise<SWTransactionResponse>;
-
-      // const currentChainInfo = chainInfoMap[chain];
-      // const addressPrefix = currentChainInfo?.substrateInfo?.addressPrefix ?? 42;
-      // const from = reformatAddress(_from, addressPrefix);
       const from = _from;
 
       if (chain === destChain) {
@@ -811,23 +762,13 @@ export const SendFund = ({
     [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons],
   );
 
-  const isNextButtonDisable = (() => {
-    if (!isBalanceReady || !fromValue || !assetValue || !destChainValue || !toValue) {
-      return true;
-    }
-
-    return !!errors.to;
-  })();
-
   const isSubmitButtonDisable = (() => {
-    return loading || isNextButtonDisable || !transferAmount || !!errors.value;
+    return !isBalanceReady || loading || (isTransferAll ? !isFetchingMaxValue : false);
   })();
 
   const onInputChangeAmount = useCallback(() => {
     setIsTransferAll(false);
   }, []);
-
-  const reValidate = () => trigger('to');
 
   const renderAmountInput = useCallback(
     ({ field: { onBlur, onChange, value, ref } }: UseControllerReturn<TransferFormValues>) => {
@@ -842,6 +783,7 @@ export const SendFund = ({
             onBlur={onBlur}
             onSideEffectChange={onBlur}
             decimals={decimals}
+            clearErrors={clearErrors}
             placeholder={'0'}
             showMaxButton
           />
@@ -853,7 +795,7 @@ export const SendFund = ({
         </>
       );
     },
-    [assetValue, decimals, forceUpdateValue, onInputChangeAmount, stylesheet.amountValueConverter],
+    [assetValue, clearErrors, decimals, forceUpdateValue, onInputChangeAmount, stylesheet.amountValueConverter],
   );
 
   useEffect(() => {
@@ -910,10 +852,30 @@ export const SendFund = ({
     }
   }, [accounts, tokenItems, assetRegistry, setChain, chainInfoMap, getValues, setValue]);
 
+  useEffect(() => {
+    const updateFromValue = () => {
+      if (!accountAddressItems.length) {
+        return;
+      }
+
+      if (accountAddressItems.length === 1) {
+        if (!fromValue || accountAddressItems[0].address !== fromValue) {
+          setFrom(accountAddressItems[0].address);
+        }
+      } else {
+        if (fromValue && !accountAddressItems.some(i => i.address === fromValue)) {
+          setFrom('');
+        }
+      }
+    };
+
+    updateFromValue();
+  }, [accountAddressItems, fromValue, setFrom]);
+
   // Get max transfer value
   useEffect(() => {
     let cancel = false;
-
+    setIsFetchingMaxValue(false);
     if (fromValue && assetValue) {
       getMaxTransfer({
         address: fromValue,
@@ -923,10 +885,16 @@ export const SendFund = ({
         destChain: destChainValue,
       })
         .then(balance => {
-          !cancel && setMaxTransfer(balance.value);
+          if (!cancel) {
+            setMaxTransfer(balance.value);
+            setIsFetchingMaxValue(true);
+          }
         })
         .catch(() => {
-          !cancel && setMaxTransfer('0');
+          if (!cancel) {
+            setMaxTransfer('0');
+            setIsFetchingMaxValue(true);
+          }
         })
         .finally(() => {
           if (!cancel) {
@@ -955,6 +923,7 @@ export const SendFund = ({
     }
   }, [maxTransfer, transferAmount]);
 
+  //TODO re-check and remove this useEffect
   useEffect(() => {
     if (scanRecipient) {
       if (isAddress(scanRecipient)) {
@@ -962,22 +931,6 @@ export const SendFund = ({
       }
     }
   }, [scanRecipient]);
-
-  useEffect(() => {
-    if (fromValue && chainValue && destChainValue && dirtyFields.to) {
-      addLazy(
-        'trigger-validate-send-fund-to',
-        () => {
-          trigger('to');
-        },
-        100,
-      );
-    }
-
-    return () => {
-      removeLazy('trigger-validate-send-fund-to');
-    };
-  }, [chainValue, destChainValue, dirtyFields.to, fromValue, trigger]);
 
   useEffect(() => {
     addLazy('auto-focus-send-fund', () => {
@@ -1167,39 +1120,42 @@ export const SendFund = ({
                     </View>
                   )}
                   {isAllAccount && viewStep === 1 && (
-                    <>
+                    <View style={{ marginBottom: theme.marginSM }}>
                       <AccountSelector
                         items={accountAddressItems}
                         selectedValueMap={{ [fromValue]: true }}
                         onSelectItem={_onChangeFrom}
                         renderSelected={() => (
                           <AccountSelectField
-                            label={i18n.inputLabel.sendFrom}
+                            label={'From:'}
                             accountName={senderAccountName}
                             value={fromValue}
                             showIcon
-                            outerStyle={{ marginBottom: theme.marginSM }}
+                            labelStyle={{ width: 48 }}
                           />
                         )}
                         disabled={loading}
                         accountSelectorRef={accountSelectorRef}
                       />
-                    </>
+                    </View>
                   )}
 
                   {viewStep === 1 && (
                     <>
                       <FormItem
+                        style={{ marginBottom: theme.marginSM }}
                         control={control}
                         rules={recipientAddressRules}
                         render={({ field: { value, ref, onChange, onBlur } }) => (
                           <InputAddress
                             ref={ref}
-                            label={i18n.inputLabel.sendTo}
+                            label={'To:'}
                             value={value}
-                            onChangeText={onChange}
+                            onChangeText={text => {
+                              clearErrors('to');
+                              onChange(text);
+                            }}
                             onBlur={onBlur}
-                            reValidate={reValidate}
                             onSideEffectChange={onBlur}
                             placeholder={i18n.placeholder.accountAddress}
                             disabled={loading}
@@ -1248,7 +1204,7 @@ export const SendFund = ({
                 <View style={stylesheet.footer}>
                   {viewStep === 1 && (
                     <Button
-                      disabled={isNextButtonDisable}
+                      disabled={isSubmitButtonDisable}
                       icon={getButtonIcon(ArrowCircleRight)}
                       onPress={() => {
                         trigger('to').then(pass => {

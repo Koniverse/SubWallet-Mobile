@@ -19,9 +19,9 @@ import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { AbstractAddressJson, AccountJson } from '@subwallet/extension-base/types';
-import { reformatAddress } from '@subwallet/extension-base/utils';
-import { isAddress } from '@subwallet/keyring';
+import { AbstractAddressJson } from '@subwallet/extension-base/types';
+import { _reformatAddressWithChain, reformatAddress } from '@subwallet/extension-base/utils';
+import { getReformatedAddressRelatedToChain } from 'utils/account';
 
 interface Props {
   modalVisible: boolean;
@@ -40,6 +40,8 @@ enum AccountGroup {
 
 interface AccountItem extends AbstractAddressJson {
   group: AccountGroup;
+  formatedAddress: string;
+  proxyId?: string;
 }
 
 function searchFunction(items: AccountItem[], searchText: string) {
@@ -110,10 +112,6 @@ const sortFunction = (a: AccountItem, b: AccountItem) => {
   return b.address.localeCompare(a.address);
 };
 
-const checkLedger = (account: AccountJson, networkGenesisHash?: string): boolean => {
-  return !networkGenesisHash || !account.isHardware || account.originGenesisHash === networkGenesisHash;
-};
-
 export const AddressBookModal = ({
   addressPrefix,
   networkGenesisHash,
@@ -122,7 +120,7 @@ export const AddressBookModal = ({
   value = '',
   setVisible,
 }: Props) => {
-  const { accounts, contacts, recent } = useSelector((state: RootState) => state.accountState);
+  const { accountProxies, contacts, recent } = useSelector((state: RootState) => state.accountState);
   const formatAddress = useFormatAddress(addressPrefix);
   const chainInfo = useGetChainInfoByGenesisHash(networkGenesisHash);
   const chain = chainInfo?.slug || '';
@@ -162,36 +160,52 @@ export const AddressBookModal = ({
   }));
 
   const items = useMemo((): AccountItem[] => {
+    if (!chainInfo) {
+      return [];
+    }
+
     const result: AccountItem[] = [];
 
     recent.forEach(acc => {
       const chains = acc.recentChainSlugs || [];
 
       if (chains.includes(chain)) {
-        const address = isAddress(acc.address) ? reformatAddress(acc.address) : acc.address;
-
-        result.push({ ...acc, address: address, group: AccountGroup.RECENT });
+        result.push({
+          ...acc,
+          address: acc.address,
+          formatedAddress: _reformatAddressWithChain(acc.address, chainInfo),
+          group: AccountGroup.RECENT,
+        });
       }
     });
 
     contacts.forEach(acc => {
-      const address = isAddress(acc.address) ? reformatAddress(acc.address) : acc.address;
-
-      result.push({ ...acc, address: address, group: AccountGroup.CONTACT });
+      result.push({
+        ...acc,
+        address: acc.address,
+        formatedAddress: _reformatAddressWithChain(acc.address, chainInfo),
+        group: AccountGroup.CONTACT,
+      });
     });
 
-    accounts
-      .filter(acc => !isAccountAll(acc.address))
-      .forEach(acc => {
-        const address = isAddress(acc.address) ? reformatAddress(acc.address) : acc.address;
+    accountProxies.forEach(ap => {
+      if (isAccountAll(ap.id)) {
+        return;
+      }
 
-        if (checkLedger(acc, networkGenesisHash)) {
-          result.push({ ...acc, address: address, group: AccountGroup.WALLET });
+      // todo: recheck with ledger
+
+      ap.accounts.forEach(acc => {
+        const formatedAddress = getReformatedAddressRelatedToChain(acc, chainInfo);
+
+        if (formatedAddress) {
+          result.push({ ...acc, address: acc.address, formatedAddress, proxyId: ap.id, group: AccountGroup.WALLET });
         }
       });
+    });
 
     return result;
-  }, [accounts, chain, contacts, networkGenesisHash, recent]);
+  }, [accountProxies, chain, chainInfo, contacts, recent]);
 
   const onSelectItem = useCallback(
     (item: AccountItem) => {
@@ -211,16 +225,17 @@ export const AddressBookModal = ({
       let selected: boolean;
 
       if (isEthereumAddress(value)) {
-        selected = value.toLowerCase() === address.toLowerCase();
+        selected = value.toLowerCase() === item.formatedAddress.toLowerCase();
       } else {
         selected = value === address;
       }
 
       return (
         <AccountItemWithName
-          key={`${item.name}-${item.address}`}
+          key={`${item.name}-${item.formatedAddress}`}
           accountName={item.name}
-          address={address}
+          avatarValue={item.proxyId || item.address}
+          address={item.formatedAddress}
           addressPreLength={isRecent ? 9 : 4}
           addressSufLength={isRecent ? 9 : 4}
           avatarSize={theme.sizeLG}

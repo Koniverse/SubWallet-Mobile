@@ -1,4 +1,4 @@
-import Input, { InputProps } from 'components/design-system-ui/input';
+import { InputProps } from 'components/design-system-ui/input';
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -19,9 +19,9 @@ import { findContactByAddress } from 'utils/account';
 import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import useCheckCamera from 'hooks/common/useCheckCamera';
-import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { isAddress } from '@subwallet/keyring';
 import { reformatAddress } from '@subwallet/extension-base/utils';
+import HorizontalInput from 'components/design-system-ui/input/HorizontalInput';
 
 interface Props extends InputProps {
   chain?: string;
@@ -173,19 +173,14 @@ const Component = (
 
   const LeftPart = useMemo(() => {
     return (
-      <>
-        {showAvatar && (
-          <View style={stylesheet.avatarWrapper}>
-            <AccountProxyAvatar value={value || ''} size={hasLabel ? 20 : 24} />
-          </View>
-        )}
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Typography.Text ellipsis style={stylesheet.addressText}>
           {accountName || domainName || toShort(value, addressLength, addressLength)}
         </Typography.Text>
         {(fitNetwork ? accountName || domainName : accountName || domainName || addressPrefix !== undefined) && (
           <Typography.Text style={stylesheet.addressAliasText}>({toShort(formattedAddress, 4, 4)})</Typography.Text>
         )}
-      </>
+      </View>
     );
   }, [
     accountName,
@@ -193,11 +188,8 @@ const Component = (
     domainName,
     fitNetwork,
     formattedAddress,
-    hasLabel,
-    showAvatar,
     stylesheet.addressAliasText,
     stylesheet.addressText,
-    stylesheet.avatarWrapper,
     value,
   ]);
 
@@ -245,7 +237,7 @@ const Component = (
 
   const RightPart = useMemo(() => {
     return (
-      <>
+      <View style={{ flexDirection: 'row' }}>
         {showAddressBook && (
           <Button
             disabled={inputProps.disabled || inputProps.readonly}
@@ -275,7 +267,7 @@ const Component = (
             />
           }
         />
-      </>
+      </View>
     );
   }, [
     inputProps.disabled,
@@ -326,7 +318,7 @@ const Component = (
 
   return (
     <>
-      <Input
+      <HorizontalInput
         ref={myRef => {
           inputRef.current = myRef;
           // @ts-ignored
@@ -342,6 +334,7 @@ const Component = (
         onBlur={onInputBlur}
         inputStyle={stylesheet.input}
         value={value}
+        labelStyle={{ width: 48 }}
       />
 
       <AddressScanner

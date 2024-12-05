@@ -38,6 +38,7 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
   const senderPrefix = useGetChainPrefixBySlug(transaction.chain);
   const network = useMemo(() => chainInfoMap[transaction.chain], [chainInfoMap, transaction.chain]);
   const receiverPrefix = useGetChainPrefixBySlug(receiveChain);
+  console.log('data.from', data.from);
 
   return (
     <ConfirmationContent isFullHeight>

@@ -59,8 +59,9 @@ export default (theme: ThemeTypes) =>
       gap: theme.size,
     },
     balance: {
-      paddingTop: theme.padding,
+      // paddingTop: theme.padding,
       marginBottom: 0,
       flex: 1,
+      justifyContent: 'flex-end',
     },
   });

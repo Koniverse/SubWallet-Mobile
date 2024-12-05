@@ -71,15 +71,33 @@ const AccountItem: React.FC<AccountInfoItem> = ({
     };
   }, [_style.value, theme, valueColorSchema, valueGeneralStyle]);
 
+  const subValueStyle = useMemo(() => {
+    return {
+      ..._style.subValue,
+      ...valueGeneralStyle,
+      ...(valueColorSchema && { color: getSchemaColor(valueColorSchema, theme) }),
+      flexShrink: 1,
+    };
+  }, [_style.subValue, theme, valueColorSchema, valueGeneralStyle]);
+
   return (
     <View style={_style.row}>
-      <View style={[_style.col]}>{renderColContent(label, { ..._style.label, ...labelGeneralStyle })}</View>
+      <View style={[_style.col, !!name && { justifyContent: 'flex-start' }]}>
+        {renderColContent(label, { ..._style.label, ...labelGeneralStyle })}
+      </View>
       <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
-        <View style={[_style.valueWrapper, { gap: theme.sizeXS }]}>
+        <View style={[_style.valueWrapper, { gap: theme.sizeXS, alignItems: 'flex-start' }]}>
           <AccountProxyAvatar value={address} size={24} />
-          <Typography.Text ellipsis style={valueStyle}>
-            {name || toShort(address)}
-          </Typography.Text>
+          <View>
+            {!!name && (
+              <Typography.Text ellipsis style={valueStyle}>
+                {name}
+              </Typography.Text>
+            )}
+            <Typography.Text ellipsis style={!!name ? subValueStyle : valueStyle}>
+              {toShort(address)}
+            </Typography.Text>
+          </View>
         </View>
       </View>
     </View>

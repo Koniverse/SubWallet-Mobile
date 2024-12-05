@@ -14,6 +14,7 @@ export const isInvalidAmountValue = (value: string) => {
 interface InputAmountProps extends Omit<InputProps, 'onChange' | 'onChangeText'> {
   decimals: number;
   onChangeValue: (value: string) => void;
+  clearErrors: (name?: string | string[] | readonly string[] | undefined) => void;
   onInputChange?: () => void;
   showMaxButton?: boolean;
   forceUpdateValue?: { value: string | null }; // null means reset
@@ -57,6 +58,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     value = '',
     inputStyle,
     containerStyle,
+    clearErrors,
     ...inputProps
   } = props;
   const stylesheet = createStylesheet(theme);
@@ -77,12 +79,9 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
   const onChangeInput = useCallback(
     (_rawValue: string) => {
       setIsDirty(true);
-      // if (!/^(0|[1-9]\d*)(\.\d*)?$/.test(_value)) {
-      //   return;
-      // }
-
       if (!_rawValue) {
         setInputValue('');
+        clearErrors('value');
         onChangeValue('');
 
         return;
@@ -100,13 +99,14 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
         setInputValue(currentValue);
 
         const transformVal = getOutputValuesFromString(currentValue, decimals);
-
+        clearErrors('value');
         onChangeValue(transformVal);
       } else {
+        clearErrors('value');
         onChangeValue(InvalidAmountValue);
       }
     },
-    [decimals, getMaxLengthText, onChangeValue],
+    [clearErrors, decimals, getMaxLengthText, onChangeValue],
   );
 
   const _onInputChange = useCallback(
