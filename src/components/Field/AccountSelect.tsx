@@ -34,7 +34,11 @@ export const AccountSelectField = ({
     <FieldHorizontal label={label} {...fieldBase} outerStyle={outerStyle} labelStyle={labelStyle}>
       <View style={styles.blockContentStyle}>
         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-          {!!value && <Typography.Text style={styles.accountNameTextStyle}>{accountName}</Typography.Text>}
+          {!!value && (
+            <Typography.Text ellipsis style={styles.accountNameTextStyle}>
+              {accountName}
+            </Typography.Text>
+          )}
           {!!value && <Typography.Text style={styles.textStyle}>{`(${toShort(value, 4, 4)})`}</Typography.Text>}
           {!value && <Typography.Text style={styles.placeholderStyle}>{i18n.header.selectAccount}</Typography.Text>}
         </View>
@@ -54,6 +58,7 @@ function createStyle(theme: ThemeTypes) {
       ...FontSemiBold,
       paddingLeft: theme.sizeXXS,
       paddingBottom: 2,
+      maxWidth: 120,
     },
     textStyle: {
       fontSize: theme.fontSize,

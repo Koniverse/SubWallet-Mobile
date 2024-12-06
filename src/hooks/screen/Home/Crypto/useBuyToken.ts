@@ -263,7 +263,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
       const { network: serviceNetwork, symbol } = serviceInfo;
       const { network } = buyInfo;
       const networkPrefix = chainInfoMap[network].substrateInfo?.addressPrefix;
-      const walletAddress = reformatAddress(selectedTokenSlug, networkPrefix === undefined ? -1 : networkPrefix);
+      const walletAddress = reformatAddress(selectedAddress, networkPrefix === undefined ? -1 : networkPrefix);
       try {
         const url = await urlPromise(symbol, walletAddress, serviceNetwork, walletReference);
         if (await InAppBrowser.isAvailable()) {

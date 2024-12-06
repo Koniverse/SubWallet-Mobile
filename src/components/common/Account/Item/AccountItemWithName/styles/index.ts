@@ -40,6 +40,7 @@ export default (theme: ThemeTypes) => {
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
       color: theme.colorTextBase,
       marginLeft: theme.marginXXS,
+      maxWidth: 150,
       ...FontSemiBold,
     },
   });

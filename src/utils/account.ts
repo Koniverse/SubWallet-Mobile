@@ -254,6 +254,8 @@ export function getReformatedAddressRelatedToChain(
   chainInfo: _ChainInfo,
 ): string | undefined {
   if (accountJson.specialChain && accountJson.specialChain !== chainInfo.slug) {
+    console.log('accountJson', accountJson);
+    console.log('chainInfo.slug', chainInfo.slug);
     return undefined;
   }
 

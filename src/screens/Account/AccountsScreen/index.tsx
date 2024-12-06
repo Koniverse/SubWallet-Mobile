@@ -32,12 +32,12 @@ import DeleteModal from 'components/common/Modal/DeleteModal';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import useGoHome from 'hooks/screen/useGoHome';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
+import { AccountActions, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import createStylesheet from 'screens/Settings/AddressBook/style';
 import { SelectAccountAllItem } from 'components/common/SelectAccountAllItem';
 import { AccountChainAddressesSelector } from 'components/Modal/common/AccountChainAddressesSelector';
 
-enum AccountGroupType {
+export enum AccountGroupType {
   ALL_ACCOUNT = 'all',
   MASTER_ACCOUNT = 'master_account',
   QR = 'qr',
@@ -47,7 +47,7 @@ enum AccountGroupType {
   UNKNOWN = 'unknown',
 }
 
-const AccountGroupLabel: Record<AccountGroupType, string> = {
+export const AccountGroupLabel: Record<AccountGroupType, string> = {
   [AccountGroupType.ALL_ACCOUNT]: 'All account',
   [AccountGroupType.MASTER_ACCOUNT]: 'Master account',
   [AccountGroupType.QR]: 'QR signer account',
@@ -253,6 +253,19 @@ export const AccountsScreen = ({
       setIsReady(true);
     });
   }, []);
+
+  useEffect(() => {
+    const selectedAccount = accountProxies.find(account => account.name === selectedAccountProxy?.name);
+    const isSoloAccount = selectedAccount?.accountType === AccountProxyType.SOLO;
+    const hasTonChangeWalletContractVersion = selectedAccount?.accountActions.includes(
+      AccountActions.TON_CHANGE_WALLET_CONTRACT_VERSION,
+    );
+
+    if (isSoloAccount && hasTonChangeWalletContractVersion) {
+      setSelectedAccountProxy({ name: selectedAccount?.name, proxyId: selectedAccount?.id });
+      setTimeout(() => accountChainAddressSelectorRef.current?.onOpenModal(), 100);
+    }
+  }, [accountProxies, selectedAccountProxy?.name]);
 
   const onDelete = useCallback(() => {
     if (selectedAddress) {

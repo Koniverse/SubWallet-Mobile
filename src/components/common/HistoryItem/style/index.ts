@@ -23,7 +23,7 @@ export default (theme: ThemeTypes) => {
       flexGrow: 1,
       flexShrink: 1,
       paddingLeft: theme.sizeXS,
-      paddingRight: theme.sizeXS,
+      paddingRight: theme.size,
       justifyContent: 'center',
     },
     rightPart: {

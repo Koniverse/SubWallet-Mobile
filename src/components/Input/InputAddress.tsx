@@ -384,7 +384,7 @@ const Component = (
         <AddressBookModal
           addressPrefix={addressPrefix}
           modalVisible={isShowAddressBookModal}
-          networkGenesisHash={networkGenesisHash}
+          chainSlug={chain}
           onSelect={onSelectAddressBook}
           value={value}
           setVisible={setShowAddressBookModal}

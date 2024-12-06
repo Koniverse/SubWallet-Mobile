@@ -14,7 +14,6 @@ export default (theme: ThemeTypes) =>
       ...MarginBottomForSubmitButton,
     },
     footerBalanceWrapper: {
-      flexDirection: 'row',
       marginTop: -theme.margin,
       marginBottom: -theme.margin,
     },
@@ -63,5 +62,11 @@ export default (theme: ThemeTypes) =>
       marginBottom: 0,
       flex: 1,
       justifyContent: 'flex-end',
+    },
+    balanceStep2: {
+      paddingTop: theme.padding,
+      marginBottom: 0,
+      flex: 1,
+      justifyContent: 'space-between',
     },
   });

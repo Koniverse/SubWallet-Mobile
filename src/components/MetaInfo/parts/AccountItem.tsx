@@ -67,6 +67,7 @@ const AccountItem: React.FC<AccountInfoItem> = ({
       ..._style.value,
       ...valueGeneralStyle,
       ...(valueColorSchema && { color: getSchemaColor(valueColorSchema, theme) }),
+      maxWidth: 120,
       flexShrink: 1,
     };
   }, [_style.value, theme, valueColorSchema, valueGeneralStyle]);

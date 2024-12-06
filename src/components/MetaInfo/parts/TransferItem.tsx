@@ -44,6 +44,7 @@ const TransferItem: React.FC<TransferInfoItem> = ({
       ...valueGeneralStyle,
       ...(valueColorSchema && { color: getSchemaColor(valueColorSchema, theme) }),
       flexShrink: 1,
+      maxWidth: 120,
     };
   }, [_style.value, theme, valueColorSchema, valueGeneralStyle]);
   const subValueStyle = useMemo(() => {

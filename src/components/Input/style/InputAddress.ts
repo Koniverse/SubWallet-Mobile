@@ -26,6 +26,7 @@ export default (
     addressText: {
       ...addressText,
       flexShrink: 1,
+      maxWidth: 120,
     },
     addressAliasText: {
       ...addressText,

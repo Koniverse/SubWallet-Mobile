@@ -66,7 +66,7 @@ import i18n from 'utils/i18n/i18n';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { InputAddress } from 'components/Input/InputAddress';
 import { NetworkField } from 'components/Field/Network';
-import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
+import { Button, Divider, Icon, PageIcon, Typography } from 'components/design-system-ui';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { FormItem } from 'components/common/FormItem';
@@ -441,14 +441,17 @@ export const SendFund = ({
 
   const _onChangeAsset = (item: TokenItemType) => {
     setAsset(item.slug);
+    setValue('to', '');
+    clearErrors('to');
     setValue('destChain', item.originChain);
-
     tokenSelectorRef?.current?.onCloseModal();
     setForceUpdateValue(undefined);
     setIsTransferAll(false);
   };
 
   const _onChangeDestChain = (item: ChainInfo) => {
+    setValue('to', '');
+    clearErrors('to');
     setValue('destChain', item.slug);
     chainSelectorRef?.current?.onCloseModal();
   };
@@ -1221,29 +1224,25 @@ export const SendFund = ({
                   {viewStep === 2 && (
                     <>
                       <View style={stylesheet.footerBalanceWrapper}>
-                        <FreeBalanceDisplay
-                          label={
-                            viewStep === 2
-                              ? `${
-                                  i18n.customization.balance[0].toUpperCase() +
-                                  i18n.customization.balance.slice(1).toLowerCase()
-                                }:`
-                              : undefined
-                          }
-                          tokenSlug={assetValue}
-                          nativeTokenBalance={nativeTokenBalance}
-                          nativeTokenSlug={nativeTokenSlug}
-                          tokenBalance={tokenBalance}
-                          style={stylesheet.balance}
-                          error={isGetBalanceError}
-                          isLoading={isGetBalanceLoading}
-                        />
+                        <Divider />
+                        <View style={{ flexDirection: 'row' }}>
+                          <FreeBalanceDisplay
+                            label={'Available balance:'}
+                            tokenSlug={assetValue}
+                            nativeTokenBalance={nativeTokenBalance}
+                            nativeTokenSlug={nativeTokenSlug}
+                            tokenBalance={tokenBalance}
+                            style={stylesheet.balanceStep2}
+                            error={isGetBalanceError}
+                            isLoading={isGetBalanceLoading}
+                          />
 
-                        {viewStep === 2 && !hideMaxButton && (
-                          <TouchableOpacity onPress={onSetMaxTransferable} style={stylesheet.max}>
-                            {<Typography.Text style={stylesheet.maxText}>{i18n.common.max}</Typography.Text>}
-                          </TouchableOpacity>
-                        )}
+                          {viewStep === 2 && !hideMaxButton && (
+                            <TouchableOpacity onPress={onSetMaxTransferable} style={stylesheet.max}>
+                              {<Typography.Text style={stylesheet.maxText}>{i18n.common.max}</Typography.Text>}
+                            </TouchableOpacity>
+                          )}
+                        </View>
                       </View>
                       <Button
                         disabled={isSubmitButtonDisable}

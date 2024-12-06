@@ -17,18 +17,18 @@ import AccountItemWithName from 'components/common/Account/Item/AccountItemWithN
 import createStylesheet from './style/AddressBookModal';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AbstractAddressJson } from '@subwallet/extension-base/types';
 import { _reformatAddressWithChain, reformatAddress } from '@subwallet/extension-base/utils';
 import { getReformatedAddressRelatedToChain } from 'utils/account';
+import useChainInfo from 'hooks/chain/useChainInfo';
 
 interface Props {
   modalVisible: boolean;
   value?: string;
   addressPrefix?: number;
   onSelect: (val: string) => void;
-  networkGenesisHash?: string;
+  chainSlug?: string;
   setVisible: (arg: boolean) => void;
 }
 
@@ -114,7 +114,7 @@ const sortFunction = (a: AccountItem, b: AccountItem) => {
 
 export const AddressBookModal = ({
   addressPrefix,
-  networkGenesisHash,
+  chainSlug,
   modalVisible,
   onSelect,
   value = '',
@@ -122,7 +122,7 @@ export const AddressBookModal = ({
 }: Props) => {
   const { accountProxies, contacts, recent } = useSelector((state: RootState) => state.accountState);
   const formatAddress = useFormatAddress(addressPrefix);
-  const chainInfo = useGetChainInfoByGenesisHash(networkGenesisHash);
+  const chainInfo = useChainInfo(chainSlug);
   const chain = chainInfo?.slug || '';
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
@@ -160,6 +160,8 @@ export const AddressBookModal = ({
   }));
 
   const items = useMemo((): AccountItem[] => {
+    // console.log('accountProxies', accountProxies);
+    console.log('chainInfo', chainInfo);
     if (!chainInfo) {
       return [];
     }
@@ -189,6 +191,7 @@ export const AddressBookModal = ({
     });
 
     accountProxies.forEach(ap => {
+      console.log('ap---', ap);
       if (isAccountAll(ap.id)) {
         return;
       }
