@@ -26,11 +26,9 @@ export default (
     addressText: {
       ...addressText,
       flexShrink: 1,
-      maxWidth: 120,
     },
     addressAliasText: {
       ...addressText,
-      flexShrink: 1,
       color: isValid ? theme.colorTextLight4 : undefined,
     },
     scanButton: {

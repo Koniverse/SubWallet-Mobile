@@ -160,8 +160,6 @@ export const AddressBookModal = ({
   }));
 
   const items = useMemo((): AccountItem[] => {
-    // console.log('accountProxies', accountProxies);
-    console.log('chainInfo', chainInfo);
     if (!chainInfo) {
       return [];
     }
@@ -191,7 +189,6 @@ export const AddressBookModal = ({
     });
 
     accountProxies.forEach(ap => {
-      console.log('ap---', ap);
       if (isAccountAll(ap.id)) {
         return;
       }

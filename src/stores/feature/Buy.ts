@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
+import { BuyServiceInfo, BuyTokenInfo } from '@subwallet/extension-base/types';
 import { BuyServiceStore, ReduxStatus } from 'stores/types';
-import { BuyServiceInfo, BuyTokenInfo } from 'types/buy';
 
 const initialState: BuyServiceStore = {
   tokens: {},

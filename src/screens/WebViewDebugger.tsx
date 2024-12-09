@@ -20,6 +20,7 @@ import {
   updatePopupHistoryData,
 } from 'stores/base/StaticContent';
 import { useDispatch } from 'react-redux';
+import { IS_SHOW_TON_CONTRACT_VERSION_WARNING } from 'constants/localStorage';
 
 const BUNDLE_ENV = env.BUNDLE_ENV;
 export const WebViewDebugger = () => {
@@ -138,6 +139,7 @@ export const WebViewDebugger = () => {
               mmkvStore.set('storedLiveMissionPools', '[]');
               mmkvStore.set('isOpenedWarningPopup', false);
               mmkvStore.set('isOpenedNoticeModal', false);
+              mmkvStore.set(IS_SHOW_TON_CONTRACT_VERSION_WARNING, true);
               dispatch(updatePopupHistoryData({}));
               dispatch(updateBannerHistoryData({}));
               dispatch(updateConfirmationHistoryData({}));

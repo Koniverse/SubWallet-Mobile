@@ -1,6 +1,7 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { deviceWidth } from 'constants/index';
 
 export interface ComponentStyle {
   contentWrapper: ViewStyle;
@@ -40,7 +41,7 @@ export default (theme: ThemeTypes) => {
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
       color: theme.colorTextBase,
       marginLeft: theme.marginXXS,
-      maxWidth: 150,
+      maxWidth: deviceWidth - 168,
       ...FontSemiBold,
     },
   });

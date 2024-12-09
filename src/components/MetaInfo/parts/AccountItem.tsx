@@ -67,7 +67,6 @@ const AccountItem: React.FC<AccountInfoItem> = ({
       ..._style.value,
       ...valueGeneralStyle,
       ...(valueColorSchema && { color: getSchemaColor(valueColorSchema, theme) }),
-      maxWidth: 120,
       flexShrink: 1,
     };
   }, [_style.value, theme, valueColorSchema, valueGeneralStyle]);
@@ -83,13 +82,13 @@ const AccountItem: React.FC<AccountInfoItem> = ({
 
   return (
     <View style={_style.row}>
-      <View style={[_style.col, !!name && { justifyContent: 'flex-start' }]}>
+      <View style={[_style.col, _style['col.grow'], !!name && { justifyContent: 'flex-start' }]}>
         {renderColContent(label, { ..._style.label, ...labelGeneralStyle })}
       </View>
       <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
-        <View style={[_style.valueWrapper, { gap: theme.sizeXS, alignItems: 'flex-start' }]}>
+        <View style={[_style.valueWrapper, { gap: theme.sizeXS, alignItems: 'flex-start', flex: 1 }]}>
           <AccountProxyAvatar value={address} size={24} />
-          <View>
+          <View style={{ flexShrink: 1 }}>
             {!!name && (
               <Typography.Text ellipsis style={valueStyle}>
                 {name}

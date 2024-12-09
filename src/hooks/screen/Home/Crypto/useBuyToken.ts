@@ -12,7 +12,7 @@ import { BrowserOptions, createBanxaOrder, createCoinbaseOrder, createTransakOrd
 import { isAccountAll } from 'utils/accountAll';
 import useAppLock from 'hooks/useAppLock';
 import { _getOriginChainOfAsset, _isAssetFungibleToken } from '@subwallet/extension-base/services/chain-service/utils';
-import { AccountJson, AccountProxy, BuyTokenInfo } from '@subwallet/extension-base/types';
+import { AccountProxy, BuyTokenInfo } from '@subwallet/extension-base/types';
 import { AccountAddressItemType } from 'types/account';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
@@ -197,7 +197,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
   }, [assetRegistry, chainStateMap, tokenItems]);
 
   const openSelectBuyAccount = useCallback(
-    (account: AccountJson) => {
+    (account: AccountAddressItemType) => {
       onChangeValue('address')(account.address);
     },
     [onChangeValue],

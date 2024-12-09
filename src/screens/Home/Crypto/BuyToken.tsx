@@ -3,7 +3,7 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
 import { ShoppingCartSimple } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { AccountSelector } from 'components/Modal/common/AccountSelectorNew';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { TokenSelector } from 'components/Modal/common/TokenSelectorNew';
 import useBuyToken from 'hooks/screen/Home/Crypto/useBuyToken';
 import { useSelector } from 'react-redux';

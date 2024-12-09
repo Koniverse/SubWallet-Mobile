@@ -60,12 +60,12 @@ export default (theme: ThemeTypes) =>
     balance: {
       // paddingTop: theme.padding,
       marginBottom: 0,
-      flex: 1,
+      // flex: 1,
       justifyContent: 'flex-end',
+      textAlign: 'right',
     },
     balanceStep2: {
       paddingTop: theme.padding,
-      marginBottom: 0,
       flex: 1,
       justifyContent: 'space-between',
     },

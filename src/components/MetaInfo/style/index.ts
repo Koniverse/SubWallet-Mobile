@@ -50,6 +50,7 @@ export default (theme: ThemeTypes) =>
     subValue: {
       fontSize: theme.fontSizeSM,
       lineHeight: theme.lineHeightSM * theme.fontSizeSM,
+      textAlign: 'right',
     },
     valueWrapper: {
       flexDirection: 'row',

@@ -23,6 +23,7 @@ import { isAddress } from '@subwallet/keyring';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import HorizontalInput from 'components/design-system-ui/input/HorizontalInput';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { deviceWidth } from 'constants/index';
 
 interface Props extends InputProps {
   chain?: string;
@@ -177,7 +178,15 @@ const Component = (
 
   const LeftPart = useMemo(() => {
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: horizontal ? 0 : 4 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingLeft: horizontal ? 0 : 4,
+          flexShrink: 1,
+          maxWidth: deviceWidth - 168,
+          overflow: 'hidden',
+        }}>
         {showAvatar && (
           <View style={stylesheet.avatarWrapper}>
             <AccountProxyAvatar value={value || ''} size={hasLabel ? 20 : 24} />

@@ -1183,17 +1183,17 @@ export const SendFund = ({
                     </View>
                   ) : (
                     <View style={stylesheet.balanceWrapper}>
-                      {!(!fromValue && !chainValue) && (
-                        <FreeBalanceDisplay
-                          tokenSlug={assetValue}
-                          nativeTokenBalance={nativeTokenBalance}
-                          nativeTokenSlug={nativeTokenSlug}
-                          tokenBalance={tokenBalance}
-                          style={stylesheet.balance}
-                          error={isGetBalanceError}
-                          isLoading={isGetBalanceLoading}
-                        />
-                      )}
+                      <FreeBalanceDisplay
+                        address={fromValue}
+                        chain={chainValue}
+                        tokenSlug={assetValue}
+                        nativeTokenBalance={nativeTokenBalance}
+                        nativeTokenSlug={nativeTokenSlug}
+                        tokenBalance={tokenBalance}
+                        style={stylesheet.balance}
+                        error={isGetBalanceError}
+                        isLoading={isGetBalanceLoading}
+                      />
 
                       {chainValue !== destChainValue && (
                         <AlertBox
@@ -1227,6 +1227,8 @@ export const SendFund = ({
                         <Divider />
                         <View style={{ flexDirection: 'row' }}>
                           <FreeBalanceDisplay
+                            address={fromValue}
+                            chain={chainValue}
                             label={'Available balance:'}
                             tokenSlug={assetValue}
                             nativeTokenBalance={nativeTokenBalance}
