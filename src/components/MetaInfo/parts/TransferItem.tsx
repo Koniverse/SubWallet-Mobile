@@ -44,7 +44,6 @@ const TransferItem: React.FC<TransferInfoItem> = ({
       ...valueGeneralStyle,
       ...(valueColorSchema && { color: getSchemaColor(valueColorSchema, theme) }),
       flexShrink: 1,
-      maxWidth: 120,
     };
   }, [_style.value, theme, valueColorSchema, valueGeneralStyle]);
   const subValueStyle = useMemo(() => {
@@ -53,6 +52,7 @@ const TransferItem: React.FC<TransferInfoItem> = ({
       ...valueGeneralStyle,
       ...(valueColorSchema && { color: getSchemaColor(valueColorSchema, theme) }),
       flexShrink: 1,
+      textAlign: 'left',
     };
   }, [_style.subValue, theme, valueColorSchema, valueGeneralStyle]);
 
@@ -60,7 +60,7 @@ const TransferItem: React.FC<TransferInfoItem> = ({
     return (
       <View style={[_style.valueWrapper, { gap: theme.sizeXS, alignItems: 'flex-start' }]}>
         <Avatar value={address} size={24} />
-        <View>
+        <View style={{ flexShrink: 1 }}>
           {!!name && (
             <Typography.Text ellipsis style={valueStyle}>
               {name}

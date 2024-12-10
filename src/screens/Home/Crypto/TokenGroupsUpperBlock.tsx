@@ -69,8 +69,6 @@ export const TokenGroupsUpperBlock = ({
     return Object.values(buyTokenInfos).some(item => allowedChains.includes(item.network));
   }, [allowedChains, buyTokenInfos]);
 
-  console.log('isSupportBuyTokens', isSupportBuyTokens);
-
   return (
     <View style={containerStyle} pointerEvents="box-none">
       <TouchableOpacity style={{ alignItems: 'center', paddingTop: theme.paddingSM - 2 }} onPress={_toggleBalances}>
@@ -170,7 +168,7 @@ export const TokenGroupsUpperBlock = ({
         )}
         {isShowBuyToken && (
           <ActionButton
-            // disabled={!isSupportBuyTokens}
+            disabled={!isSupportBuyTokens}
             label={i18n.cryptoScreen.buy}
             icon={ButtonIcon.Buy}
             onPress={() => navigation.navigate('Drawer', { screen: 'BuyToken', params: {} })}

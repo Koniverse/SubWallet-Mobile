@@ -447,11 +447,13 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeBuyTokens,
           name: 'subscribeBuyTokens',
           relatedStores: ['buyService'],
+          isStartImmediately: true,
         });
         _DataContext.addHandler({
           ...subscribeBuyServices,
           name: 'subscribeBuyServices',
           relatedStores: ['buyService'],
+          isStartImmediately: true,
         });
 
         /* Buy service */

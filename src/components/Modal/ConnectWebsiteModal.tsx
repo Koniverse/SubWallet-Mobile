@@ -50,15 +50,19 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
   const [loading, setLoading] = useState(false);
   const _isNotConnected = isNotConnected || !authInfo;
   Keyboard.dismiss();
+  console.log('authInfo', authInfo);
 
   const onChangeModalVisible = useCallback(() => modalBaseV2Ref?.current?.close(), []);
 
   const handlerUpdateMap = useCallback(
     (accountProxy: AccountProxy, oldValue: boolean) => {
       return () => {
+        console.log('123123');
         setAllowedMap(values => {
           const newValues = { ...values };
+
           const listAddress = accountProxy.accounts.map(({ address }) => address);
+          console.log('listAddress', listAddress);
 
           listAddress.forEach(address => {
             const addressIsValid = isAddressAllowedWithAuthType(address, authInfo?.accountAuthTypes || []);
@@ -220,6 +224,8 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
         };
       },
     );
+
+    console.log('authInfo?.accountAuthTypes', listAccountProxy);
 
     const current = listAccountProxy.find(({ id }) => id === currentAccountProxy?.id);
 

@@ -187,7 +187,7 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<AccountProxy>) => {
-      const isEnabled: boolean = authInfo.isAllowedMap[item.id];
+      const isEnabled: boolean = item.accounts.some(account => authInfo.isAllowedMap[account.address]);
 
       const onChangeToggle = () => {
         setPendingMap(prevMap => {
@@ -213,6 +213,7 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
             customStyle={{ container: [{ marginHorizontal: theme.margin }, !authInfo.isAllowed && DisabledStyle] }}
             address={item.id}
             accountName={item.name}
+            showAddress={false}
             renderRightItem={() => (
               <Switch
                 disabled={pendingMap[item.id] !== undefined || !authInfo.isAllowed}

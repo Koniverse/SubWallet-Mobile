@@ -400,14 +400,16 @@ export const AccountDetail = ({
     params: { address: accountProxyId, requestViewDerivedAccounts, requestViewDerivedAccountDetails },
   },
 }: EditAccountProps) => {
-  const navigation = useNavigation<RootNavigationProps>();
+  // const navigation = useNavigation<RootNavigationProps>();
   const accountProxy = useGetAccountProxyById(accountProxyId);
 
-  useEffect(() => {
-    if (!accountProxy) {
-      navigation.goBack();
-    }
-  }, [accountProxy, navigation]);
+  // useEffect(() => {
+  //   console.log('accountProxy', accountProxy);
+  //   if (!accountProxy) {
+  //     console.log('run to this');
+  //     navigation.goBack();
+  //   }
+  // }, [accountProxy, navigation]);
 
   if (!accountProxy) {
     return <></>;

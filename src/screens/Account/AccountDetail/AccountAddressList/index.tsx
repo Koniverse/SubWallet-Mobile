@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { AccountProxy } from '@subwallet/extension-base/types';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import useGetAccountChainAddresses from 'hooks/account/useGetAccountChainAddresses';
@@ -14,6 +14,7 @@ import { Search } from 'components/Search';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass } from 'phosphor-react-native';
+import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 
 interface Props {
   accountProxy: AccountProxy;
@@ -91,6 +92,28 @@ export const AccountAddressList = ({ accountProxy }: Props) => {
       />
     );
   };
+
+  useEffect(() => {
+    if (addressQrModal.addressModalState.visible) {
+      addressQrModal.setAddressQrModal(prev => {
+        if (!prev || !TON_CHAINS.includes(prev.selectNetwork || '')) {
+          return prev;
+        }
+
+        const targetAddress = items.find(i => i.slug === prev.selectNetwork)?.address;
+
+        if (!targetAddress) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          address: targetAddress,
+        };
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, addressQrModal.addressModalState.visible]);
 
   return (
     <View style={{ flex: 1, width: '100%' }}>

@@ -696,6 +696,7 @@ export const getMissionPoolData = (() => {
 /* Buy service */
 
 export const updateBuyTokens = (data: Record<string, BuyTokenInfo>) => {
+  console.log('updateBuyTokens', data);
   store.dispatch({ type: 'buyService/updateBuyTokens', payload: data });
 };
 

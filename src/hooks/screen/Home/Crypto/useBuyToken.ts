@@ -266,6 +266,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
       const walletAddress = reformatAddress(selectedAddress, networkPrefix === undefined ? -1 : networkPrefix);
       try {
         const url = await urlPromise(symbol, walletAddress, serviceNetwork, walletReference);
+        console.log('url', url);
         if (await InAppBrowser.isAvailable()) {
           // A delay to change the StatusBar when the browser is opened
           isOpenInAppBrowser.current = true;
