@@ -55,7 +55,6 @@ async function handleBlock({ id }: AuthorizeRequest) {
 const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   const { request, navigation } = props;
   const { accountAuthTypes, allowedAccounts } = request.request;
-  console.log('accountAuthTypes', accountAuthTypes);
   const theme = useSubWalletTheme().swThemes;
   const { accountProxies, accounts } = useSelector((state: RootState) => state.accountState);
   const styles = useMemo(() => createStyle(theme), [theme]);

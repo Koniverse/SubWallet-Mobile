@@ -14,7 +14,7 @@ export default (
 ) => {
   const addressText: StyleProp<TextStyle> = {
     ...FontSemiBold,
-    paddingLeft: theme.paddingXS,
+    paddingLeft: theme.paddingXXS,
     color: isValid ? (isReadonly ? theme.colorTextLight5 : theme.colorTextLight1) : theme.colorError,
     opacity: isInputVisible ? 0 : 1,
   };

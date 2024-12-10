@@ -145,7 +145,9 @@ export const ConnectionDetail = ({
                   paddingTop: theme.padding,
                   paddingBottom: theme.paddingXXS,
                 }}>
-                {i18n.formatString(i18n.message.connectedAccounts, accountItems.length)}
+                {accountItems.length <= 1
+                  ? i18n.formatString(i18n.message.connectedAccount, accountItems.length)
+                  : i18n.formatString(i18n.message.connectedAccounts, accountItems.length)}
               </Typography.Text>
 
               <View style={{ gap: theme.paddingXS }}>

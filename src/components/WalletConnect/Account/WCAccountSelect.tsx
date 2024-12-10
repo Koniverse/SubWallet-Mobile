@@ -114,7 +114,9 @@ export const WCAccountSelect = ({
             disabled={!selectedAccounts.length}
             icon={renderButtonIcon}
             onPress={_onApply}>
-            {i18n.formatString(i18n.buttonTitles.applyAccounts, selectedAccounts.length)}
+            {selectedAccounts.length <= 1
+              ? i18n.formatString(i18n.buttonTitles.applyAccount, selectedAccounts.length)
+              : i18n.formatString(i18n.buttonTitles.applyAccounts, selectedAccounts.length)}
           </Button>
         </BasicSelectModal>
       ) : (
