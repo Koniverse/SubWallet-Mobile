@@ -8,7 +8,6 @@ import { RootState } from 'stores/index';
 
 const useGetAccountProxyById = (id?: string): AccountProxy | null => {
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
-
   return useMemo((): AccountProxy | null => {
     return accountProxies.find(ap => ap.id === id) || null;
   }, [accountProxies, id]);

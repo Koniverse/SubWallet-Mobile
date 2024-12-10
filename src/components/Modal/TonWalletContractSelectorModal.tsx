@@ -26,7 +26,7 @@ interface Props {
   chainSlug: string;
   modalVisible: boolean;
   setModalVisible: (visible: boolean) => void;
-  isOpenFromTokenDetailScreen?: boolean;
+  isOpenFromAccountDetailScreen?: boolean;
   onChangeModalVisible?: VoidFunction;
 }
 
@@ -38,7 +38,7 @@ export const TonWalletContractSelectorModal = ({
   modalVisible,
   setModalVisible,
   onCancel,
-  isOpenFromTokenDetailScreen,
+  isOpenFromAccountDetailScreen,
   onChangeModalVisible,
 }: Props) => {
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
@@ -108,18 +108,21 @@ export const TonWalletContractSelectorModal = ({
         version: selectedContractVersion,
       })
         .then(newAddress => {
-          setTimeout(() => {
-            onCancel?.();
-            setIsSubmitting(false);
-            const selectedAccount = accountProxies.find(account => account.id === accountInfo.proxyId);
-            const isSoloAccount = selectedAccount?.accountType === AccountProxyType.SOLO;
-            const hasTonChangeWalletContractVersion = selectedAccount?.accountActions.includes(
-              AccountActions.TON_CHANGE_WALLET_CONTRACT_VERSION,
-            );
-            const shouldNavigate = isOpenFromTokenDetailScreen && isSoloAccount && hasTonChangeWalletContractVersion;
+          const selectedAccount = accountProxies.find(account => account.id === accountInfo.proxyId);
+          const isSoloAccount = selectedAccount?.accountType === AccountProxyType.SOLO;
+          const hasTonChangeWalletContractVersion = selectedAccount?.accountActions.includes(
+            AccountActions.TON_CHANGE_WALLET_CONTRACT_VERSION,
+          );
+          const shouldNavigate = isOpenFromAccountDetailScreen && isSoloAccount && hasTonChangeWalletContractVersion;
 
+          setTimeout(() => {
             if (shouldNavigate) {
-              Linking.openURL(`subwallet://home/main/tokens/token-groups-detail?slug=${newAddress}`);
+              setIsSubmitting(false);
+              Linking.openURL(`subwallet://account-detail?address=${newAddress}&name=${accountInfo.name}`).then(() => {
+                onCancel?.();
+              });
+            } else {
+              onCancel?.();
             }
           }, 400);
         })
@@ -129,9 +132,10 @@ export const TonWalletContractSelectorModal = ({
     }
   }, [
     accountInfo?.address,
+    accountInfo?.name,
     accountInfo?.proxyId,
     accountProxies,
-    isOpenFromTokenDetailScreen,
+    isOpenFromAccountDetailScreen,
     onCancel,
     selectedContractVersion,
     toast,

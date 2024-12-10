@@ -192,6 +192,15 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
         },
       },
     },
+    EditAccount: {
+      path: 'account-detail',
+      stringify: {
+        address: (address: string) => address,
+        name: (name: string) => name,
+        requestViewDerivedAccountDetails: requestViewDerivedAccountDetails => requestViewDerivedAccountDetails,
+        requestViewDerivedAccounts: requestViewDerivedAccounts => requestViewDerivedAccounts,
+      },
+    },
     Drawer: {
       path: 'drawer',
       screens: {

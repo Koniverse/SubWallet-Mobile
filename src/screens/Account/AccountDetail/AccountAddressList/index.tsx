@@ -47,6 +47,7 @@ export const AccountAddressList = ({ accountProxy }: Props) => {
             address: item.address,
             selectNetwork: item.slug,
             onBack: addressQrModal.hideAddressQrModal,
+            isOpenFromAccountDetailScreen: true,
           });
         };
 

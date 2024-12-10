@@ -163,6 +163,7 @@ export function FlatListScreen<T>({
             groupBy={grouping.groupBy}
             renderSectionHeader={grouping.renderSectionHeader}
             estimatedItemSize={estimatedItemSize}
+            stickyHeader={false}
           />
         ) : (
           <LazyFlatList

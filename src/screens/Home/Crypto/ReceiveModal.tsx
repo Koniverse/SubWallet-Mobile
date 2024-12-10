@@ -31,7 +31,7 @@ interface Props {
   onBack?: VoidFunction;
   isUseModalV2?: boolean;
   level?: number;
-  isOpenFromTokenDetailScreen?: boolean;
+  isOpenFromAccountDetailScreen?: boolean;
 }
 
 const receiveModalContentWrapper: StyleProp<any> = {
@@ -47,7 +47,7 @@ export const ReceiveModal = ({
   onBack,
   isUseModalV2,
   level,
-  isOpenFromTokenDetailScreen,
+  isOpenFromAccountDetailScreen,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const toastRef = useRef<ToastContainer>(null);
@@ -200,7 +200,7 @@ export const ReceiveModal = ({
         </View>
         {isRelatedToTon && tonWalletContractVisible && (
           <TonWalletContractSelectorModal
-            isOpenFromTokenDetailScreen={isOpenFromTokenDetailScreen}
+            isOpenFromAccountDetailScreen={isOpenFromAccountDetailScreen}
             address={address || ''}
             modalVisible={tonWalletContractVisible}
             setModalVisible={setTonWalletContractVisible}
