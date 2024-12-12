@@ -80,7 +80,7 @@ export const TokenGroupsUpperBlock = ({
     return result;
   }, [swapPairs]);
 
-  const isSupportSwap = useMemo(() => {
+  const isEnableSwapButton = useMemo(() => {
     return Object.keys(fromAndToTokenMap).some(tokenSlug => {
       return allowedChains.includes(_getOriginChainOfAsset(tokenSlug));
     });
@@ -173,7 +173,7 @@ export const TokenGroupsUpperBlock = ({
         />
         {isShowBuyToken && (
           <ActionButton
-            disabled={!isSupportSwap}
+            disabled={!isEnableSwapButton}
             label={i18n.cryptoScreen.swap}
             icon={ButtonIcon.Swap}
             onPress={() =>
