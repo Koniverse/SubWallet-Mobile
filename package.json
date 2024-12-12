@@ -142,6 +142,7 @@
     "react-native-vector-icons": "^10.0.0",
     "react-native-video": "^5.2.1",
     "react-native-view-shot": "^3.5.0",
+    "react-native-walkthrough-tooltip": "^1.6.0",
     "react-native-webview": "^13.6.2",
     "react-redux": "^8.0.5",
     "react-zlib-js": "^1.0.5",

@@ -5,16 +5,7 @@ import { InteractionManager, Keyboard, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import {
-  Export,
-  FileArrowDown,
-  GitMerge,
-  MagnifyingGlass,
-  PlusCircle,
-  QrCode,
-  Swatches,
-  Trash,
-} from 'phosphor-react-native';
+import { Export, FileArrowDown, GitMerge, MagnifyingGlass, PlusCircle, Swatches, Trash } from 'phosphor-react-native';
 import { AccountsScreenProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
@@ -213,7 +204,7 @@ export const AccountsScreen = ({
       result.push(...unknownAccounts);
     }
 
-    if (result.length && accountAll) {
+    if (result.length > 1 && accountAll) {
       result.unshift(accountAll);
     }
 
@@ -357,14 +348,14 @@ export const AccountsScreen = ({
               }}
             />
           )}
-          <Button
-            shape={'circle'}
-            style={{ backgroundColor: 'rgba(0, 75, 255, 0.1)' }}
-            type={'ghost'}
-            icon={<Icon phosphorIcon={QrCode} size={'sm'} iconColor={theme.colorPrimary} />}
-            size={'xs'}
-            onPress={() => {}}
-          />
+          {/*<Button*/}
+          {/*  shape={'circle'}*/}
+          {/*  style={{ backgroundColor: 'rgba(0, 75, 255, 0.1)' }}*/}
+          {/*  type={'ghost'}*/}
+          {/*  icon={<Icon phosphorIcon={QrCode} size={'sm'} iconColor={theme.colorPrimary} />}*/}
+          {/*  size={'xs'}*/}
+          {/*  onPress={() => {}}*/}
+          {/*/>*/}
           <Button
             shape={'circle'}
             style={{ backgroundColor: 'rgba(191, 22, 22, 0.1)' }}

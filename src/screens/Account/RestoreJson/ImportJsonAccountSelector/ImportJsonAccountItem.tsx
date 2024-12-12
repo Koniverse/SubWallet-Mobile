@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import AccountItemBase from 'components/common/Account/Item/AccountItemBase';
 import { View } from 'react-native';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
-import { Icon, Logo, Typography } from 'components/design-system-ui';
+import { Button, Icon, Logo, Typography } from 'components/design-system-ui';
 import { AccountChainType, AccountProxyType } from '@subwallet/extension-base/types';
+import Tooltip from 'react-native-walkthrough-tooltip';
 import {
   CheckCircle,
   Eye,
@@ -31,6 +32,7 @@ interface Props {
 export const ImportJsonAccountItem = (props: Props) => {
   const { accountProxy, isSelected, onPress, disabled } = props;
   const theme = useSubWalletTheme().swThemes;
+  const [tooltipVisible, setTooltipVisible] = useState(false);
   const chainTypeLogoMap = useMemo(() => {
     return {
       [AccountChainType.SUBSTRATE]: 'polkadot',
@@ -162,15 +164,35 @@ export const ImportJsonAccountItem = (props: Props) => {
 
   const rightItems = useMemo(() => {
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.paddingLG - 4 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeSM }}>
         {isDuplicated && (
-          <Icon
-            iconColor={isDuplicated ? theme.colorWarning : theme.colorTextLight4}
-            phosphorIcon={Warning}
-            size="sm"
-            type="phosphor"
-            weight="fill"
-          />
+          <Tooltip
+            isVisible={tooltipVisible}
+            disableShadow={true}
+            placement={'bottom'}
+            contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
+            closeOnBackgroundInteraction={true}
+            onClose={() => setTooltipVisible(false)}
+            content={
+              <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
+                {'Account already in use'}
+              </Typography.Text>
+            }>
+            <Button
+              icon={
+                <Icon
+                  iconColor={isDuplicated ? theme.colorWarning : theme.colorTextLight4}
+                  phosphorIcon={Warning}
+                  size="sm"
+                  type="phosphor"
+                  weight="fill"
+                />
+              }
+              onPress={() => setTooltipVisible(true)}
+              type={'ghost'}
+              size={'xs'}
+            />
+          </Tooltip>
         )}
 
         <Icon
@@ -182,7 +204,18 @@ export const ImportJsonAccountItem = (props: Props) => {
         />
       </View>
     );
-  }, [isDuplicated, isSelected, theme.colorSuccess, theme.colorTextLight4, theme.colorWarning, theme.paddingLG]);
+  }, [
+    isDuplicated,
+    isSelected,
+    theme.borderRadiusLG,
+    theme.colorBgSpotlight,
+    theme.colorSuccess,
+    theme.colorTextLight4,
+    theme.colorWarning,
+    theme.colorWhite,
+    theme.sizeSM,
+    tooltipVisible,
+  ]);
 
   return (
     <AccountItemBase
