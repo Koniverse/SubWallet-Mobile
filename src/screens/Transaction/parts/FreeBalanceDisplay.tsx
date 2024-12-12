@@ -10,8 +10,6 @@ import { ThemeTypes } from 'styles/themes';
 interface Props {
   error: string | null;
   label?: string;
-  address?: string;
-  chain?: string;
   style?: StyleProp<ViewStyle>;
   nativeTokenSlug?: string;
   nativeTokenBalance?: AmountData;
@@ -25,8 +23,6 @@ interface Props {
 
 export const FreeBalanceDisplay = ({
   label,
-  address,
-  chain,
   tokenSlug,
   style,
   error,
@@ -51,14 +47,6 @@ export const FreeBalanceDisplay = ({
     },
     [chainName, showNetwork],
   );
-
-  if (!address && !chain) {
-    return <></>;
-  }
-
-  if (!address) {
-    return <Typography.Text style={[styles.text, style]}>{'Select account to view available balance'}</Typography.Text>;
-  }
 
   return (
     <View

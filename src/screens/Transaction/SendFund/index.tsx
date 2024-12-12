@@ -36,7 +36,6 @@ import {
 import { findAccountByAddress, getReformatedAddressRelatedToChain } from 'utils/account';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { balanceFormatter, formatBalance, formatNumber } from 'utils/number';
-import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
 import { isAccountAll } from 'utils/accountAll';
 import { ChainInfo, ChainItemType } from 'types/index';
@@ -78,7 +77,6 @@ import { UseControllerReturn } from 'react-hook-form/dist/types';
 import { AmountValueConverter } from 'screens/Transaction/SendFund/AmountValueConverter';
 import createStylesheet from './styles';
 import { useGetBalance } from 'hooks/balance';
-import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay';
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
@@ -104,6 +102,7 @@ import { SelectModalField } from 'components/common/SelectModal/parts/SelectModa
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
+import { FreeBalance } from '../parts/FreeBalance';
 
 interface TransferOptions {
   isTransferAll: boolean;
@@ -359,10 +358,6 @@ export const SendFund = ({
     nativeTokenSlug,
     tokenBalance,
   } = useGetBalance(chainValue, fromValue, assetValue, false, extrinsicType);
-
-  // const fromChainNetworkPrefix = useGetChainPrefixBySlug(chainValue); // will use it for account selector later
-  const destChainNetworkPrefix = useGetChainPrefixBySlug(destChainValue);
-  const destChainGenesisHash = chainInfoMap[destChainValue]?.substrateInfo?.genesisHash || '';
 
   const hideMaxButton = useMemo(() => {
     const _chainInfo = chainInfoMap[chainValue];
@@ -1131,6 +1126,7 @@ export const SendFund = ({
                         renderSelected={() => (
                           <AccountSelectField
                             label={'From:'}
+                            horizontal
                             accountName={senderAccountName}
                             value={fromValue}
                             showIcon
@@ -1164,8 +1160,6 @@ export const SendFund = ({
                             onSideEffectChange={onBlur}
                             placeholder={i18n.placeholder.accountAddress}
                             disabled={loading}
-                            addressPrefix={destChainNetworkPrefix}
-                            networkGenesisHash={destChainGenesisHash}
                             chain={destChainValue}
                             fitNetwork
                             showAddressBook
@@ -1183,16 +1177,13 @@ export const SendFund = ({
                     </View>
                   ) : (
                     <View style={stylesheet.balanceWrapper}>
-                      <FreeBalanceDisplay
+                      <FreeBalance
                         address={fromValue}
                         chain={chainValue}
                         tokenSlug={assetValue}
-                        nativeTokenBalance={nativeTokenBalance}
-                        nativeTokenSlug={nativeTokenSlug}
-                        tokenBalance={tokenBalance}
+                        isSubscribe={true}
+                        label={`${i18n.inputLabel.availableBalance}:`}
                         style={stylesheet.balance}
-                        error={isGetBalanceError}
-                        isLoading={isGetBalanceLoading}
                       />
 
                       {chainValue !== destChainValue && (
@@ -1226,17 +1217,13 @@ export const SendFund = ({
                       <View style={stylesheet.footerBalanceWrapper}>
                         <Divider />
                         <View style={{ flexDirection: 'row' }}>
-                          <FreeBalanceDisplay
+                          <FreeBalance
                             address={fromValue}
                             chain={chainValue}
-                            label={'Available balance:'}
                             tokenSlug={assetValue}
-                            nativeTokenBalance={nativeTokenBalance}
-                            nativeTokenSlug={nativeTokenSlug}
-                            tokenBalance={tokenBalance}
+                            isSubscribe={true}
+                            label={`${i18n.inputLabel.availableBalance}:`}
                             style={stylesheet.balanceStep2}
-                            error={isGetBalanceError}
-                            isLoading={isGetBalanceLoading}
                           />
 
                           {viewStep === 2 && !hideMaxButton && (

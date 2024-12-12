@@ -36,6 +36,8 @@ function createStyle(theme: ThemeTypes) {
       lineHeight: theme.lineHeightSM * theme.fontSizeSM,
       color: theme.colorTextLight4,
       paddingHorizontal: theme.sizeSM,
+      paddingTop: theme.sizeXS,
+      marginBottom: -4,
     },
   });
 }

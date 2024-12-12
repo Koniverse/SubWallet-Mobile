@@ -1,4 +1,4 @@
-import { FieldBaseProps } from 'components/Field/Base';
+import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import { toShort } from 'utils/index';
 import { StyleProp, StyleSheet, View } from 'react-native';
@@ -10,12 +10,14 @@ import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FieldHorizontal } from 'components/design-system-ui/field/HorizontalField';
 import { TextStyle } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props extends FieldBaseProps {
   showIcon?: boolean;
   outerStyle?: StyleProp<any>;
   value: string;
   accountName: string;
+  horizontal?: boolean;
   labelStyle?: StyleProp<TextStyle>;
 }
 
@@ -25,15 +27,38 @@ export const AccountSelectField = ({
   showIcon,
   outerStyle,
   value,
+  horizontal,
   label,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const styles = createStyle(theme);
+  const styles = createStyle(theme, !!label, !!horizontal);
+
+  if (horizontal) {
+    return (
+      <FieldHorizontal label={label} {...fieldBase} outerStyle={outerStyle} labelStyle={labelStyle}>
+        <View style={styles.blockContentStyle}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            {!!value && (
+              <Typography.Text ellipsis style={styles.accountNameTextStyle}>
+                {accountName}
+              </Typography.Text>
+            )}
+            {!!value && <Typography.Text style={styles.textStyle}>{`(${toShort(value, 4, 4)})`}</Typography.Text>}
+            {!value && <Typography.Text style={styles.placeholderStyle}>{i18n.header.selectAccount}</Typography.Text>}
+          </View>
+
+          {!!showIcon && <CaretDown size={20} color={theme.colorTextLight2} weight={'bold'} />}
+        </View>
+      </FieldHorizontal>
+    );
+  }
+
   return (
-    <FieldHorizontal label={label} {...fieldBase} outerStyle={outerStyle} labelStyle={labelStyle}>
+    <FieldBase label={label} {...fieldBase} outerStyle={outerStyle}>
       <View style={styles.blockContentStyle}>
         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+          <AccountProxyAvatar value={value} size={label ? 20 : 24} />
           {!!value && (
             <Typography.Text ellipsis style={styles.accountNameTextStyle}>
               {accountName}
@@ -45,19 +70,19 @@ export const AccountSelectField = ({
 
         {!!showIcon && <CaretDown size={20} color={theme.colorTextLight2} weight={'bold'} />}
       </View>
-    </FieldHorizontal>
+    </FieldBase>
   );
 };
 
-function createStyle(theme: ThemeTypes) {
+function createStyle(theme: ThemeTypes, hasLabel: boolean, horizontal: boolean) {
   return StyleSheet.create({
     accountNameTextStyle: {
       fontSize: theme.fontSize,
       lineHeight: theme.fontSize * theme.lineHeight,
       color: theme.colorTextLight2,
       ...FontSemiBold,
-      paddingLeft: theme.sizeXXS,
       paddingBottom: 2,
+      paddingLeft: horizontal ? 0 : theme.sizeXS,
       maxWidth: 120,
     },
     textStyle: {
@@ -73,6 +98,7 @@ function createStyle(theme: ThemeTypes) {
       fontSize: theme.fontSize,
       lineHeight: theme.fontSize * theme.lineHeight,
       ...FontSemiBold,
+      paddingLeft: horizontal ? 0 : theme.sizeXS,
       paddingRight: theme.sizeXXS,
       color: theme.colorTextLight4,
       paddingBottom: 2,
@@ -82,7 +108,7 @@ function createStyle(theme: ThemeTypes) {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingLeft: theme.sizeXXS,
+      paddingLeft: horizontal ? (hasLabel ? theme.sizeXXS : theme.sizeSM) : theme.sizeSM,
       paddingRight: theme.paddingSM,
       height: 48,
       flex: 1,

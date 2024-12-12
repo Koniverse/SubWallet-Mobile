@@ -1,5 +1,4 @@
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import { AbstractAddressJson, AccountJson } from '@subwallet/extension-base/background/types';
 import {
   findChainInfoByChainId,
   findChainInfoByHalfGenesisHash,
@@ -9,13 +8,12 @@ import {
   WALLET_CONNECT_POLKADOT_NAMESPACE,
 } from '@subwallet/extension-base/services/wallet-connect-service/constants';
 import { SessionTypes } from '@walletconnect/types';
-
-import { findAccountByAddress } from '../account';
 import { WalletConnectChainInfo } from 'types/walletConnect';
 import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import { ToastType } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
+import { AccountProxy } from '@subwallet/extension-base/types';
 
 export const chainsToWalletConnectChainInfos = (
   chainMap: Record<string, _ChainInfo>,
@@ -50,11 +48,11 @@ export const chainsToWalletConnectChainInfos = (
   });
 };
 
-export const getWCAccountList = (
-  accounts: AccountJson[],
+export const getWCAccountProxyList = (
+  accountProxies: AccountProxy[],
   namespaces: SessionTypes.Namespaces,
-): AbstractAddressJson[] => {
-  const rawMap: Record<string, string> = {};
+): AccountProxy[] => {
+  const filteredList: string[] = [];
   const rawList = Object.values(namespaces)
     .map(namespace => namespace.accounts || [])
     .flat();
@@ -62,30 +60,14 @@ export const getWCAccountList = (
   rawList.forEach(info => {
     const [, , address] = info.split(':');
 
-    rawMap[address] = address;
-  });
-
-  const convertMap: Record<string, AbstractAddressJson> = {};
-  const convertList = Object.keys(rawMap).map((address): AbstractAddressJson | null => {
-    const account = findAccountByAddress(accounts, address);
-
-    if (account) {
-      return {
-        address: account.address,
-        name: account.name,
-      };
-    } else {
-      return null;
+    if (!filteredList.includes(address)) {
+      filteredList.push(address);
     }
   });
 
-  convertList.forEach(info => {
-    if (info) {
-      convertMap[info.address] = info;
-    }
+  return accountProxies.filter(({ accounts }) => {
+    return accounts.some(({ address }) => filteredList.includes(address));
   });
-
-  return Object.values(convertMap);
 };
 
 export const isValidUri = (uri: string) => {

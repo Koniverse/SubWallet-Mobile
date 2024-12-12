@@ -44,7 +44,6 @@ const useUnlockModal = (
   const onPress = useCallback(
     (onComplete: VoidFunction): (() => Promise<boolean> | undefined) => {
       return () => {
-        console.log('123123');
         Keyboard.dismiss();
         if (promiseRef.current) {
           return promiseRef.current;

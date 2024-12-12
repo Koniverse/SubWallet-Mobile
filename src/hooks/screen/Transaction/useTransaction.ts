@@ -94,7 +94,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
 
   const defaultValues = useMemo(
     () => ({
-      from: getTransactionFromAccountProxyValue(currentAccountProxy),
+      fromAccountProxy: getTransactionFromAccountProxyValue(currentAccountProxy),
+      from: '',
       chain: '',
       asset: '',
       value: '',

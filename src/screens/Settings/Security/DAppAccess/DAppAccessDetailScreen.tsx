@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { DAppAccessDetailProps, RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
-import { changeAuthorization, changeAuthorizationPerAccount, forgetSite, toggleAuthorization } from 'messaging/index';
+import { changeAuthorization, changeAuthorizationPerSite, forgetSite, toggleAuthorization } from 'messaging/index';
 import { updateAuthUrls } from 'stores/updater';
 import { useNavigation } from '@react-navigation/native';
 import i18n from 'utils/i18n/i18n';
@@ -196,15 +196,24 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
             [item.id]: !isEnabled,
           };
         });
-        changeAuthorizationPerAccount(item.id, !isEnabled, origin, updateAuthUrls).catch(() => {
-          setPendingMap(prevMap => {
-            const newMap = { ...prevMap };
+        const newAllowedMap = { ...authInfo.isAllowedMap };
 
-            delete newMap[item.id];
-
-            return newMap;
-          });
+        item.accounts.forEach(account => {
+          if (checkAccountAddressValid(account.chainType, authInfo.accountAuthTypes)) {
+            newAllowedMap[account.address] = !isEnabled;
+          }
         });
+        changeAuthorizationPerSite({ values: newAllowedMap, id: authInfo.id })
+          .catch(console.log)
+          .finally(() => {
+            setPendingMap(prevMap => {
+              const newMap = { ...prevMap };
+
+              delete newMap[item.id];
+
+              return newMap;
+            });
+          });
       };
 
       return (
@@ -226,7 +235,15 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
         </View>
       );
     },
-    [authInfo.isAllowedMap, authInfo.isAllowed, theme.marginXS, theme.margin, origin, pendingMap],
+    [
+      theme.marginXS,
+      theme.margin,
+      authInfo.isAllowed,
+      authInfo.isAllowedMap,
+      authInfo.id,
+      authInfo.accountAuthTypes,
+      pendingMap,
+    ],
   );
 
   return (

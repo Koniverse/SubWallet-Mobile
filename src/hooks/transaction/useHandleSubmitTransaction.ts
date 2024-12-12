@@ -24,7 +24,6 @@ const useHandleSubmitTransaction = (
   const onSuccess = useCallback(
     (rs: SWTransactionResponse) => {
       const { errors, id, warnings, estimateFee } = rs;
-      console.log('errors', errors);
       if (errors.length || warnings.length) {
         if (errors[0]?.message !== 'Rejected by user') {
           if (errors[0]?.message?.startsWith('Unable to fetch staking data.')) {
@@ -97,7 +96,6 @@ const useHandleSubmitTransaction = (
 
   const onError = useCallback(
     (error: Error) => {
-      console.log('error', error);
       setTransactionDone(false);
       hideAll();
       show(error.message, { type: 'danger', duration: 8000 });

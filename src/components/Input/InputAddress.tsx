@@ -2,7 +2,6 @@ import { InputProps } from 'components/design-system-ui/input';
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { decodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { Button, Icon, Input, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
 import { Book, Scan } from 'phosphor-react-native';
@@ -20,10 +19,11 @@ import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import useCheckCamera from 'hooks/common/useCheckCamera';
 import { isAddress } from '@subwallet/keyring';
-import { reformatAddress } from '@subwallet/extension-base/utils';
+import { _reformatAddressWithChain } from '@subwallet/extension-base/utils';
 import HorizontalInput from 'components/design-system-ui/input/HorizontalInput';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { deviceWidth } from 'constants/index';
+import useFetchChainInfo from 'hooks/common/useFetchChainInfo';
 
 interface Props extends InputProps {
   chain?: string;
@@ -31,8 +31,6 @@ interface Props extends InputProps {
   isValidValue?: boolean;
   showAvatar?: boolean;
   showAddressBook?: boolean;
-  networkGenesisHash?: string;
-  addressPrefix?: number;
   saveAddress?: boolean;
   scannerProps?: Omit<
     AddressScannerProps,
@@ -51,8 +49,6 @@ const Component = (
     isValidValue,
     showAvatar = true,
     showAddressBook,
-    networkGenesisHash,
-    addressPrefix,
     scannerProps = {},
     saveAddress = true,
     value = '',
@@ -75,7 +71,7 @@ const Component = (
   const [error, setError] = useState<string | undefined>(undefined);
   const inputRef = useRef<TextInput | null>(null);
   const checkCamera = useCheckCamera();
-
+  const chainInfo = useFetchChainInfo(chain || '');
   const hasLabel = !!inputProps.label;
   const isInputVisible = !isAddressValid || !value || !isInputBlur;
   const stylesheet = createStylesheet(
@@ -99,20 +95,12 @@ const Component = (
         inputProps.onChangeText(text);
 
         if (saveAddress && isAddress(text)) {
-          if (isEthereumAddress(text)) {
-            saveRecentAccount(text, chain).catch(console.error);
-          } else {
-            try {
-              if (decodeAddress(text, true, addressPrefix)) {
-                saveRecentAccount(text, chain).catch(console.error);
-              }
-            } catch (e) {}
-          }
+          saveRecentAccount(text, chain).catch(console.error);
         }
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [addressPrefix, chain, saveAddress],
+    [chain, saveAddress],
   );
 
   useEffect(() => {
@@ -165,16 +153,12 @@ const Component = (
   const formattedAddress = useMemo((): string => {
     const _value = value || '';
 
-    if (addressPrefix === undefined) {
+    if (!chainInfo) {
       return _value;
     }
 
-    try {
-      return reformatAddress(_value, addressPrefix);
-    } catch (e) {
-      return _value;
-    }
-  }, [addressPrefix, value]);
+    return _reformatAddressWithChain(_value, chainInfo);
+  }, [chainInfo, value]);
 
   const LeftPart = useMemo(() => {
     return (
@@ -195,14 +179,13 @@ const Component = (
         <Typography.Text ellipsis style={stylesheet.addressText}>
           {accountName || domainName || toShort(value, addressLength, addressLength)}
         </Typography.Text>
-        {(fitNetwork ? accountName || domainName : accountName || domainName || addressPrefix !== undefined) && (
+        {(fitNetwork ? accountName || domainName : accountName || domainName) && (
           <Typography.Text style={stylesheet.addressAliasText}>({toShort(formattedAddress, 4, 4)})</Typography.Text>
         )}
       </View>
     );
   }, [
     accountName,
-    addressPrefix,
     domainName,
     fitNetwork,
     formattedAddress,
@@ -224,38 +207,6 @@ const Component = (
     Keyboard.dismiss();
     checkCamera(undefined, openScannerScreen)();
   }, [checkCamera]);
-
-  useEffect(() => {
-    if (value) {
-      const account = findContactByAddress(_contacts, value);
-
-      if (account) {
-        if (!isEthereumAddress(account.address) && !!account.isHardware) {
-          const availableGens: string[] = (account.availableGenesisHashes as string[]) || [];
-
-          if (!availableGens.includes(networkGenesisHash || '')) {
-            return;
-          }
-        }
-
-        const address = reformatAddress(account.address, addressPrefix);
-
-        onChangeInputText(address);
-        if (inputRef.current) {
-          if (!inputRef.current.isFocused() && reValidate) {
-            reValidate();
-          } else {
-            inputRef.current.blur();
-          }
-        }
-      } else {
-        if (isAddress(value)) {
-          onChangeInputText(value);
-        }
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [_contacts, addressPrefix, networkGenesisHash, onChangeInputText, value]);
 
   const RightPart = useMemo(() => {
     return (
@@ -391,7 +342,6 @@ const Component = (
 
       {showAddressBook && (
         <AddressBookModal
-          addressPrefix={addressPrefix}
           modalVisible={isShowAddressBookModal}
           chainSlug={chain}
           onSelect={onSelectAddressBook}

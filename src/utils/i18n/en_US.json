@@ -178,7 +178,7 @@
     "destinationChain": "Destination chain",
     "viewOnExplorer": "View on explorer",
     "currentPassword": "Current password",
-    "selectedValidators": "Selected ({0}) validators",
+    "selectedValidators": "Selected ({0}) {1}{2}}",
     "specVersion": "Spec version",
     "selectStakingValidator": "Select {0}",
     "searchStakingValidator": "Search {0}",

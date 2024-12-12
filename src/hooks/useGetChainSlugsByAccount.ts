@@ -51,7 +51,7 @@ export const useGetChainSlugsByAccount = (address?: string): string[] => {
         return allAccount?.specialChain;
       }
 
-      const proxy = accountProxies.find(currentProxy => currentProxy.id === _address);
+      const proxy = accountProxies.find(_proxy => _proxy.id === _address);
 
       if (proxy) {
         return proxy.specialChain;

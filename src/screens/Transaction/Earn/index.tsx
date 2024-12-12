@@ -176,7 +176,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     const result: AccountAddressItemType[] = [];
 
     accountProxies.forEach(ap => {
-      if (!(!defaultValues.from || ap.id === defaultValues.from)) {
+      if (!(!defaultValues.fromAccountProxy || ap.id === defaultValues.fromAccountProxy)) {
         return;
       }
 
@@ -196,7 +196,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     });
 
     return result;
-  }, [accountProxies, chainInfoMap, defaultValues.from, poolChain]);
+  }, [accountProxies, chainInfoMap, defaultValues.fromAccountProxy, poolChain]);
 
   const accountInfo = useMemo(() => {
     if (!currentFrom) {
@@ -932,7 +932,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [inputAsset, setAsset]);
 
   useEffect(() => {
-    if (!currentFrom && (isAllAccount || accountAddressItems.length === 1)) {
+    if (!currentFrom && accountAddressItems.length === 1) {
       if ((redirectFromPreviewRef.current && accountAddressItems.length >= 1) || accountAddressItems.length === 1) {
         setFrom(accountAddressItems[0].address);
       }
@@ -1269,7 +1269,12 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       accountSelectorRef && accountSelectorRef.current?.onCloseModal();
                     }}
                     renderSelected={() => (
-                      <AccountSelectField accountName={accountInfo?.accountName || ''} value={currentFrom} showIcon />
+                      <AccountSelectField
+                        accountName={accountInfo?.accountName || ''}
+                        value={currentFrom}
+                        showIcon
+                        outerStyle={{ marginBottom: theme.sizeSM }}
+                      />
                     )}
                   />
                   <FreeBalanceToYield

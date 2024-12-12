@@ -8,25 +8,22 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
-import useFormatAddress from 'hooks/account/useFormatAddress';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import createStylesheet from './style/AddressBookModal';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AbstractAddressJson } from '@subwallet/extension-base/types';
-import { _reformatAddressWithChain, reformatAddress } from '@subwallet/extension-base/utils';
+import { _reformatAddressWithChain } from '@subwallet/extension-base/utils';
 import { getReformatedAddressRelatedToChain } from 'utils/account';
 import useChainInfo from 'hooks/chain/useChainInfo';
 
 interface Props {
   modalVisible: boolean;
   value?: string;
-  addressPrefix?: number;
   onSelect: (val: string) => void;
   chainSlug?: string;
   setVisible: (arg: boolean) => void;
@@ -112,18 +109,9 @@ const sortFunction = (a: AccountItem, b: AccountItem) => {
   return b.address.localeCompare(a.address);
 };
 
-export const AddressBookModal = ({
-  addressPrefix,
-  chainSlug,
-  modalVisible,
-  onSelect,
-  value = '',
-  setVisible,
-}: Props) => {
+export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = '', setVisible }: Props) => {
   const { accountProxies, contacts, recent } = useSelector((state: RootState) => state.accountState);
-  const formatAddress = useFormatAddress(addressPrefix);
   const chainInfo = useChainInfo(chainSlug);
-  const chain = chainInfo?.slug || '';
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -169,7 +157,7 @@ export const AddressBookModal = ({
     recent.forEach(acc => {
       const chains = acc.recentChainSlugs || [];
 
-      if (chains.includes(chain)) {
+      if (chainSlug && chains.includes(chainSlug)) {
         result.push({
           ...acc,
           address: acc.address,
@@ -205,30 +193,21 @@ export const AddressBookModal = ({
     });
 
     return result;
-  }, [accountProxies, chain, chainInfo, contacts, recent]);
+  }, [accountProxies, chainInfo, chainSlug, contacts, recent]);
 
   const onSelectItem = useCallback(
     (item: AccountItem) => {
-      const address = reformatAddress(item.address, addressPrefix);
       return () => {
-        onSelect(address);
+        onSelect(item.formatedAddress);
         onClose();
       };
     },
-    [addressPrefix, onClose, onSelect],
+    [onClose, onSelect],
   );
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<AccountItem>) => {
-      const address = formatAddress(item);
       const isRecent = item.group === AccountGroup.RECENT;
-      let selected: boolean;
-
-      if (isEthereumAddress(value)) {
-        selected = value.toLowerCase() === item.formatedAddress.toLowerCase();
-      } else {
-        selected = value === address;
-      }
 
       return (
         <AccountItemWithName
@@ -241,12 +220,12 @@ export const AddressBookModal = ({
           avatarSize={theme.sizeLG}
           fallbackName={false}
           onPress={onSelectItem(item)}
-          isSelected={selected}
+          isSelected={value.toLowerCase() === item.formatedAddress.toLowerCase()}
           customStyle={{ container: { marginHorizontal: theme.margin, marginBottom: theme.marginXS } }}
         />
       );
     },
-    [formatAddress, onSelectItem, theme.margin, theme.marginXS, theme.sizeLG, value],
+    [onSelectItem, theme.margin, theme.marginXS, theme.sizeLG, value],
   );
 
   const renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null = useCallback(

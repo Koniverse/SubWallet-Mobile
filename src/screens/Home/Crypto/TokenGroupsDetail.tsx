@@ -275,8 +275,6 @@ export const TokenGroupsDetail = ({
     });
   }, [currentAccountProxy, navigation, showNoti, tokenGroupSlug]);
 
-  console.log('123123123', !isHaveOnlyTonSoloAcc && !isReadonlyAccount && isIncludesTonToken && isShowTonWarning);
-
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsDetailUpperBlock

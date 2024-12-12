@@ -127,7 +127,6 @@ function formReducer(state: FormState, action: FormControlAction) {
       state.data[fieldName] = _value;
       return fireUpdate ? { ...state } : state;
     case 'submit':
-      console.log('value', value);
       if (value !== undefined) {
         state.data[fieldName] = value;
       }

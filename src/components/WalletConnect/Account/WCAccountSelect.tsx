@@ -63,6 +63,7 @@ export const WCAccountSelect = ({
             key={item.address}
             onPress={onSelectAccount(item.address, false)}
             showUnselectIcon={true}
+            showAddress={false}
           />
         </>
       );
@@ -144,6 +145,7 @@ export const WCAccountSelect = ({
                 key={item.address}
                 onPress={onSelectAccount(item.address, true)}
                 showUnselectIcon
+                showAddress={false}
               />
             );
           })}

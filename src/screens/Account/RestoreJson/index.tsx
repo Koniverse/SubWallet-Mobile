@@ -189,7 +189,6 @@ export const RestoreJson = () => {
       };
 
       if (isKeyringPairs$Json(jsonFile)) {
-        console.log('run to fail');
         parseBatchSingleJson({
           json: jsonFile,
           password,

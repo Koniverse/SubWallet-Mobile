@@ -4,14 +4,14 @@ import { SessionTypes } from '@walletconnect/types';
 import { stripUrl } from '@subwallet/extension-base/utils';
 import { TouchableOpacity, View } from 'react-native';
 import { DAppIconMap } from '../../predefined/dAppSites';
-import { AbstractAddressJson } from '@subwallet/extension-base/background/types';
-import { getWCAccountList } from 'utils/walletConnect';
+import { getWCAccountProxyList } from 'utils/walletConnect';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { CaretRight } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
+import { AccountProxy } from '@subwallet/extension-base/types';
 
 interface Props {
   session: SessionTypes.Struct;
@@ -20,16 +20,16 @@ interface Props {
 
 export const ConnectionItem = ({ session, onPress }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { accounts } = useSelector((state: RootState) => state.accountState);
+  const { accountProxies } = useSelector((state: RootState) => state.accountState);
   const {
     namespaces,
     peer: { metadata: dAppInfo },
     topic,
   } = session;
 
-  const accountItems = useMemo(
-    (): AbstractAddressJson[] => getWCAccountList(accounts, namespaces),
-    [accounts, namespaces],
+  const accountProxyItems = useMemo(
+    (): AccountProxy[] => getWCAccountProxyList(accountProxies, namespaces),
+    [accountProxies, namespaces],
   );
   const currentDomain = useMemo(() => {
     try {
@@ -73,7 +73,7 @@ export const ConnectionItem = ({ session, onPress }: Props) => {
                 {currentDomain}
               </Typography.Text>
               <Typography.Text size={'md'} style={{ ...FontSemiBold, color: theme.colorWhite }}>
-                {accountItems.length}
+                {accountProxyItems.length}
               </Typography.Text>
             </View>
           </View>

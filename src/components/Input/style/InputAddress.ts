@@ -39,7 +39,7 @@ export default (
       marginRight: (showAddressBook ? 40 : 0) + 40 + theme.paddingXXS,
     },
     input: {
-      paddingLeft: showAvatar ? theme.sizeSM + (hasLabel ? 20 : 24) + theme.sizeXS : horizontal ? 8 : 12,
+      paddingLeft: showAvatar ? theme.sizeSM + (hasLabel ? 20 : 24) + theme.sizeXS : horizontal ? 4 : 12,
       opacity: isInputVisible ? 1 : 0,
       paddingRight: (showAddressBook ? 40 : 0) + 44,
     },
