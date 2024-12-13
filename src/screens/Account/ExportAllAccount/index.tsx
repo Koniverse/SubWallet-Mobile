@@ -236,6 +236,7 @@ export const ExportAllAccount = () => {
           isSelected={selectedValueMap[item.id]}
           isShowMultiCheck={true}
           isShowEditBtn={false}
+          isShowCopyBtn={false}
           isAllAccount={isAllAccount}
           onSelectAccount={() => {
             onSelectAccount(item, !selectedValueMap[item.id]);

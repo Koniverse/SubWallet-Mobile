@@ -154,6 +154,7 @@ export const BuyToken = ({
                   accountName={selectedAccount?.name || ''}
                   value={selectedBuyAccount || ''}
                   showIcon
+                  horizontal
                   labelStyle={{ width: 48 }}
                 />
               )}

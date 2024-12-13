@@ -7,6 +7,7 @@ import { TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import InputCheckBox from 'components/Input/InputCheckBox';
 import { mmkvStore } from 'utils/storage';
+import { deviceHeight } from 'constants/index';
 
 // todo: refactor code, style, i18n later
 
@@ -106,7 +107,7 @@ export function TnCSeedPhraseModal({
       footer={footer()}
       onChangeModalVisible={onBackButtonPress}
       modalStyle={{ maxHeight: '90%' }}>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: '100%' }}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: deviceHeight * 0.6 }}>
         <View
           style={{
             paddingTop: 6,
@@ -124,20 +125,19 @@ export function TnCSeedPhraseModal({
             <InstructionItem {...item} key={item.value} onPress={onPressInstructionItem} valueMap={agreementMap} />
           ))}
         </View>
-
-        <InputCheckBox
-          wrapperStyle={{
-            paddingBottom: 0,
-            paddingTop: 16,
-          }}
-          labelStyle={{
-            color: 'rgba(255, 255, 255, 0.45)',
-          }}
-          checked={hideNextTime}
-          label={'Don’t show again'}
-          onPress={onPressHideNextTime}
-        />
       </ScrollView>
+      <InputCheckBox
+        wrapperStyle={{
+          paddingBottom: 0,
+          paddingTop: 16,
+        }}
+        labelStyle={{
+          color: 'rgba(255, 255, 255, 0.45)',
+        }}
+        checked={hideNextTime}
+        label={'Don’t show again'}
+        onPress={onPressHideNextTime}
+      />
     </SwModal>
   );
 }

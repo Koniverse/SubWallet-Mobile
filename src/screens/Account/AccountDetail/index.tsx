@@ -174,7 +174,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
 
   const _saveChange = useCallback(
     (formState: FormState) => {
-      const editName = formState.data.accountName;
+      const editName = formState.data.accountName.trim();
       onSave(editName);
     },
     [onSave],

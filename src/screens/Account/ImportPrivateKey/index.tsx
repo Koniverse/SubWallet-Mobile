@@ -28,20 +28,20 @@ export const ImportPrivateKey = () => {
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
   const [type, setType] = useState<string>('');
 
-  const accountNameValidator = useCallback((value: string) => {
+  const validatorFunc = useCallback(async (value: string) => {
     let result: string[] = [];
-    if (value.trim()) {
-      validateAccountName({ name: value.trim() })
-        .then(({ isValid }) => {
-          if (!isValid) {
-            result = ['Account name already in use'];
-          }
-        })
-        .catch(() => {
-          result = ['Account name invalid'];
-        });
-    } else {
+
+    if (!value.trim()) {
       result = ['This field is required'];
+    } else {
+      try {
+        const { isValid } = await validateAccountName({ name: value.trim() });
+        if (!isValid) {
+          result = ['Account name already in use'];
+        }
+      } catch {
+        result = ['Account name invalid'];
+      }
     }
 
     return result;
@@ -58,10 +58,9 @@ export const ImportPrivateKey = () => {
         name: 'Account name',
         value: '',
         require: true,
-        validateFunc: accountNameValidator,
       },
     }),
-    [accountNameValidator],
+    [],
   );
 
   const timeOutRef = useRef<NodeJS.Timeout>();
@@ -79,7 +78,7 @@ export const ImportPrivateKey = () => {
     setIsBusy(true);
     createAccountSuriV2({
       name: formState.data.accountName.trim(),
-      suri: formState.data.privateKey,
+      suri: formState.data.privateKey.trim(),
       type: type as KeypairType,
       isAllowed: true,
     })
@@ -106,19 +105,50 @@ export const ImportPrivateKey = () => {
       clearTimeout(timeOutRef.current);
     }
     if (amount) {
-      const privateKey = formState.data.privateKey;
+      if (formState.data.accountName) {
+        setValidating(true);
+        timeOutRef.current = setTimeout(() => {
+          validatorFunc(formState.data.accountName)
+            .then(res => {
+              onUpdateErrors('accountName')(res);
+            })
+            .catch((error: Error) => console.log('error validate name', error.message))
+            .finally(() => {
+              if (amount) {
+                setValidating(false);
+              }
+            });
+        }, 500);
+      } else {
+        setValidating(false);
+      }
+    }
 
-      if (privateKey?.trim()) {
+    return () => {
+      amount = false;
+    };
+  }, [formState.data.accountName, onUpdateErrors, validatorFunc]);
+
+  useEffect(() => {
+    let amount = true;
+
+    if (timeOutRef.current) {
+      clearTimeout(timeOutRef.current);
+    }
+    if (amount) {
+      const privateKey = formState.data.privateKey;
+      const trimPrivateKey = privateKey?.trim();
+      if (trimPrivateKey) {
         setValidating(false);
         onUpdateErrors('privateKey')([]);
 
         timeOutRef.current = setTimeout(() => {
           setValidating(true);
-          validateMetamaskPrivateKeyV2(privateKey)
+          validateMetamaskPrivateKeyV2(trimPrivateKey)
             .then(({ autoAddPrefix, keyTypes }) => {
               if (amount) {
                 if (autoAddPrefix) {
-                  onChangeValue('privateKey')(`0x${privateKey}`);
+                  onChangeValue('privateKey')(`0x${trimPrivateKey}`);
                 }
 
                 setType(keyTypes[0]);

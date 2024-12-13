@@ -222,6 +222,10 @@ const AttachReadOnly = () => {
             disabled={isBusy}
             onSubmitEditing={formState.errors.address.length > 0 ? () => Keyboard.dismiss() : onSubmitField('address')}
           />
+          {formState.errors.address.length > 0 &&
+            formState.errors.address.map((message, index) => (
+              <Warning isDanger message={message} key={index} style={styles.warning} />
+            ))}
           {!isHideAccountNameInput && (
             <InputText
               ref={formState.refs.name}
@@ -233,10 +237,6 @@ const AttachReadOnly = () => {
               disabled={isBusy}
             />
           )}
-          {formState.errors.address.length > 0 &&
-            formState.errors.address.map((message, index) => (
-              <Warning isDanger message={message} key={index} style={styles.warning} />
-            ))}
           <AddressScanner
             qrModalVisible={isScanning}
             onPressCancel={onCloseScanner}

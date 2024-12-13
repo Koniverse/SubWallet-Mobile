@@ -253,13 +253,13 @@ export const RestoreJson = () => {
             withMasterPassword: true,
           })
       )
-        .then(addressList => {
-          if (addressList.length === 1) {
+        .then(() => {
+          if (accountProxiesSelected.length === 1) {
             hideAll();
             show('1 account imported', { type: 'success' });
-          } else if (addressList.length > 1) {
+          } else if (accountProxiesSelected.length > 1) {
             hideAll();
-            show(`${addressList.length} accounts imported`, { type: 'success' });
+            show(`${accountProxiesSelected.length} accounts imported`, { type: 'success' });
           }
           setSubmitting(false);
           navigation.reset({

@@ -38,7 +38,11 @@ export const WCAccountInput = ({ accounts, selected }: Props) => {
       leftItem={<AccountProxyAvatarGroup accountProxies={basicAccountProxiesInfo} />}
       middleItem={
         <Typography.Text style={{ color: theme.colorWhite, ...FontMedium }}>
-          {countSelected ? i18n.formatString(i18n.message.connectedAccounts, countSelected) : i18n.inputLabel.selectAcc}
+          {countSelected
+            ? countSelected === 1
+              ? i18n.formatString(i18n.message.connectedAccount, 1)
+              : i18n.formatString(i18n.message.connectedAccounts, countSelected)
+            : i18n.inputLabel.selectAcc}
         </Typography.Text>
       }
       rightItem={<Icon phosphorIcon={DotsThree} weight={'fill'} />}
