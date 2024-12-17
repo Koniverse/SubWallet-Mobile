@@ -986,7 +986,7 @@
       "unstakeTransaction": "Unstake transaction",
       "bondTransaction": "Stake transaction",
       "unbondTransaction": "Unstake transaction",
-      "claimRewardTransaction": "Claim Reward transaction",
+      "claimRewardTransaction": "Claim reward transaction",
       "withdrawTransaction": "Withdraw transaction",
       "cancelUnstakeTransaction": "Cancel unstake transaction",
       "evmTransaction": "EVM Transaction",

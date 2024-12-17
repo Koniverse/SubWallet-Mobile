@@ -69,6 +69,7 @@ export const BACKUP_WHITELIST: string[] = [
   'pri(accounts.saveRecent)',
   'pri(accounts.editContact)',
   'pri(accounts.deleteContact)',
+  'pri(accounts.derive.createV3)',
 
   // Settings events
   'pri(settings.changeBalancesVisibility)',

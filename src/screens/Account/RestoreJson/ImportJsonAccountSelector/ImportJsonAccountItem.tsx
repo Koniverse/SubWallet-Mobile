@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import AccountItemBase from 'components/common/Account/Item/AccountItemBase';
-import { View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { Button, Icon, Logo, Typography } from 'components/design-system-ui';
 import { AccountChainType, AccountProxyType } from '@subwallet/extension-base/types';
@@ -170,6 +170,8 @@ export const ImportJsonAccountItem = (props: Props) => {
             isVisible={tooltipVisible}
             disableShadow={true}
             placement={'bottom'}
+            showChildInTooltip={false}
+            topAdjustment={Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0}
             contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
             closeOnBackgroundInteraction={true}
             onClose={() => setTooltipVisible(false)}

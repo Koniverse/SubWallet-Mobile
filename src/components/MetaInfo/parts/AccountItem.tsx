@@ -86,7 +86,7 @@ const AccountItem: React.FC<AccountInfoItem> = ({
         {renderColContent(label, { ..._style.label, ...labelGeneralStyle })}
       </View>
       <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
-        <View style={[_style.valueWrapper, { gap: theme.sizeXS, alignItems: 'flex-start', flex: 1 }]}>
+        <View style={[_style.valueWrapper, { gap: theme.sizeXS, alignItems: 'flex-start' }]}>
           <AccountProxyAvatar value={address} size={24} />
           <View style={{ flexShrink: 1 }}>
             {!!name && (

@@ -8,7 +8,7 @@ import { updateChainActiveState } from 'messaging/index';
 import {
   _isChainEvmCompatible,
   _isCustomChain,
-  _isSubstrateChain,
+  _isChainSubstrateCompatible,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
@@ -61,7 +61,7 @@ const filterFunction = (items: ChainInfoWithStateAnhStatus[], filters: string[])
           }
           break;
         case FilterValue.SUBSTRATE:
-          if (_isSubstrateChain(item)) {
+          if (_isChainSubstrateCompatible(item)) {
             return true;
           }
           break;

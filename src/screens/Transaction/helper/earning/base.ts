@@ -4,6 +4,8 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AccountProxy, YieldPoolType } from '@subwallet/extension-base/types';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { ALL_KEY } from 'constants/index';
+import { AccountChainType } from '@subwallet/extension-base/types/account/info/keyring';
+import { AccountProxyType } from '@subwallet/extension-base/types/account/info/proxy';
 
 const defaultAccountFilter = (poolType: YieldPoolType, poolChain?: string): ((account: AccountProxy) => boolean) => {
   return (account: AccountProxy) => {
@@ -15,7 +17,11 @@ const defaultAccountFilter = (poolType: YieldPoolType, poolChain?: string): ((ac
       return false;
     }
 
-    return !(poolType === YieldPoolType.NOMINATION_POOL && account.accounts.some(ap => isEthereumAddress(ap.address)));
+    return !(
+      poolType === YieldPoolType.NOMINATION_POOL &&
+      account.accountType === AccountProxyType.SOLO &&
+      account.chainTypes.includes(AccountChainType.ETHEREUM)
+    );
   };
 };
 
@@ -29,7 +35,6 @@ export const accountFilterFunc = (
       const chain = chainInfoMap[poolChain];
       const defaultFilter = defaultAccountFilter(poolType, poolChain);
       const isEvmChain = _isChainEvmCompatible(chain);
-
       return defaultFilter(account) && account.accounts.some(ap => isEvmChain === isEthereumAddress(ap.address));
     } else {
       return defaultAccountFilter(poolType)(account);

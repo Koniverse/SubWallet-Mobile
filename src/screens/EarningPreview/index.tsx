@@ -322,7 +322,6 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
             if (isSync) {
               let _defaultTarget = targetParam;
               setDefaultSlug(poolInfo.slug);
-
               if (rs && rs.targets && rs.targets.length) {
                 const isValidatorSupported = rs.targets.find(item => {
                   if (typeParam === YieldPoolType.NOMINATION_POOL) {

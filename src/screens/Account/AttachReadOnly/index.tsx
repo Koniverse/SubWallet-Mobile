@@ -103,7 +103,7 @@ const AttachReadOnly = () => {
 
   const _onSubmitForm = (): void => {
     setIsBusy(true);
-    const accountName = formState.data.name;
+    const accountName = formState.data.name.trim();
     if (reformatAddress && accountName) {
       createAccountExternalV2({
         name: accountName,

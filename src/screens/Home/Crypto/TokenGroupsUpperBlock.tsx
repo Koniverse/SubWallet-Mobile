@@ -26,6 +26,7 @@ interface Props {
   isPriceDecrease: boolean;
   onOpenSendFund?: () => void;
   onOpenReceive?: () => void;
+  onOpenSwap?: () => void;
 }
 
 const actionButtonWrapper: StyleProp<any> = {
@@ -50,6 +51,7 @@ export const TokenGroupsUpperBlock = ({
   isPriceDecrease,
   onOpenReceive,
   onOpenSendFund,
+  onOpenSwap,
   totalChangePercent,
   totalChangeValue,
   totalValue,
@@ -176,15 +178,7 @@ export const TokenGroupsUpperBlock = ({
             disabled={!isEnableSwapButton}
             label={i18n.cryptoScreen.swap}
             icon={ButtonIcon.Swap}
-            onPress={() =>
-              navigation.navigate('Drawer', {
-                screen: 'TransactionAction',
-                params: {
-                  screen: 'Swap',
-                  params: {},
-                },
-              })
-            }
+            onPress={onOpenSwap}
             buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
           />
         )}

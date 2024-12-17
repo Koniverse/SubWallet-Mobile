@@ -9,8 +9,8 @@ import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 import {
   _generateCustomProviderKey,
   _isChainEvmCompatible,
+  _isChainSubstrateCompatible,
   _isCustomProvider,
-  _isSubstrateChain,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { ValidateStatus } from '@subwallet/react-ui/es/form/FormItem';
 import { _NetworkUpsertParams } from '@subwallet/extension-base/services/chain-service/types';
@@ -78,7 +78,7 @@ export const AddProvider = ({
     let result = '';
     const types: string[] = [];
 
-    if (_isSubstrateChain(chainInfo)) {
+    if (_isChainSubstrateCompatible(chainInfo)) {
       types.push('Substrate');
     }
 

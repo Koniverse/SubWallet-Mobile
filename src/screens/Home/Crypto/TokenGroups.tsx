@@ -37,6 +37,7 @@ import { ModalRef } from 'types/modalRef';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { useMMKVBoolean } from 'react-native-mmkv';
 import { isTonAddress } from '@subwallet/keyring';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -246,7 +247,13 @@ export const TokenGroups = () => {
       return;
     }
 
-    if (currentAccountProxy.accountType === AccountProxyType.LEDGER) {
+    const filteredAccounts = accountProxies.filter(ap => !isAccountAll(ap.id));
+
+    const isAllLedger =
+      currentAccountProxy.accountType === AccountProxyType.LEDGER ||
+      (filteredAccounts.length > 0 && filteredAccounts.every(ap => ap.accountType === AccountProxyType.LEDGER));
+
+    if (isAllLedger) {
       showNoti(i18n.formatString(i18n.notificationMessage.accountTypeNoti, 'ledger') as string);
       return;
     }
@@ -259,7 +266,37 @@ export const TokenGroups = () => {
     };
 
     onSuccess();
-  }, [currentAccountProxy, navigation, showNoti]);
+  }, [accountProxies, currentAccountProxy, navigation, showNoti]);
+
+  const _onPressSwap = useCallback(() => {
+    if (!currentAccountProxy) {
+      return;
+    }
+
+    if (currentAccountProxy.accountType === AccountProxyType.READ_ONLY) {
+      showNoti(i18n.notificationMessage.watchOnlyNoti);
+      return;
+    }
+
+    const filteredAccounts = accountProxies.filter(ap => !isAccountAll(ap.id));
+
+    const isAllLedger =
+      currentAccountProxy.accountType === AccountProxyType.LEDGER ||
+      (filteredAccounts.length > 0 && filteredAccounts.every(ap => ap.accountType === AccountProxyType.LEDGER));
+
+    if (isAllLedger) {
+      showNoti(i18n.formatString(i18n.notificationMessage.accountTypeNoti, 'ledger') as string);
+      return;
+    }
+
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: {
+        screen: 'Swap',
+        params: {},
+      },
+    });
+  }, [accountProxies, currentAccountProxy, navigation, showNoti]);
 
   const listHeaderNode = useMemo(() => {
     return (
@@ -270,6 +307,7 @@ export const TokenGroups = () => {
         totalValue={totalBalanceInfo.convertedValue}
         isPriceDecrease={isTotalBalanceDecrease}
         onOpenSendFund={_onOpenSendFund}
+        onOpenSwap={_onPressSwap}
       />
     );
   }, [
@@ -279,6 +317,7 @@ export const TokenGroups = () => {
     totalBalanceInfo.convertedValue,
     isTotalBalanceDecrease,
     _onOpenSendFund,
+    _onPressSwap,
   ]);
 
   const listFooterNode = useMemo(() => {

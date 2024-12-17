@@ -73,11 +73,12 @@ const renderListEmptyComponent = () => {
 };
 
 const searchFunction = (items: AccountProxyItem[], searchString: string) => {
-  return items.filter(
-    account =>
-      account.name?.toLowerCase().includes(searchString.toLowerCase()) ||
-      account.id.toLowerCase().includes(searchString.toLowerCase()),
-  );
+  return items.filter(account => {
+    const isValidSearchByAddress = account.accounts.some(acc => {
+      return acc.address.toLowerCase().includes(searchString.toLowerCase());
+    });
+    return account.name?.toLowerCase().includes(searchString.toLowerCase()) || isValidSearchByAddress;
+  });
 };
 
 function reorderAccounts(items: AccountProxyItem[]): AccountProxyItem[] {
@@ -486,8 +487,7 @@ export const AccountsScreen = ({
         afterListItem={renderFooterComponent()}
         placeholder={i18n.placeholder.accountName}
         estimatedItemSize={64}
-        keyExtractor={(item, index) => {
-          console.log(item, index);
+        keyExtractor={item => {
           return `${item.id}`;
         }}
         rightIconOption={{

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { NominationPoolDataType } from 'hooks/screen/Staking/useGetValidatorList';
+
 import { SwModal, Number, Typography } from 'components/design-system-ui';
 import { View } from 'react-native';
 import MetaInfo from 'components/MetaInfo';
@@ -8,6 +8,7 @@ import i18n from 'utils/i18n/i18n';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { getSchemaColor } from 'components/MetaInfo/shared';
+import { NominationPoolDataType } from 'types/earning';
 
 interface Props {
   detailModalVisible: boolean;

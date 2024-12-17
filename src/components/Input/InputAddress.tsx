@@ -166,7 +166,7 @@ const Component = (
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingLeft: horizontal ? 0 : 4,
+          paddingLeft: horizontal ? 0 : showAvatar ? 0 : 8,
           flexShrink: 1,
           maxWidth: deviceWidth - 168,
           overflow: 'hidden',

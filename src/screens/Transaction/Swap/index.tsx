@@ -153,14 +153,12 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       formState: { errors },
     },
     onChangeFromValue: setFrom,
+    onChangeChainValue: setChain,
     onTransactionDone: onDone,
     transactionDoneInfo,
   } = useTransaction<SwapFormValues>('swap', {
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-    defaultValues: {
-      destChain: '',
-    },
+    mode: 'onSubmit',
+    reValidateMode: 'onBlur',
   });
 
   const fromValue = useWatch<SwapFormValues>({ name: 'from', control });
@@ -349,15 +347,15 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
   const recipientAddressRules = useMemo(
     () => ({
-      validate: (_recipientAddress: string): Promise<ValidateResult> => {
-        const destChain = assetRegistryMap[toTokenSlugValue].originChain;
+      validate: (_recipientAddress: string, { from, chain, toTokenSlug }: SwapFormValues): Promise<ValidateResult> => {
+        const destChain = assetRegistryMap[toTokenSlug].originChain;
         const destChainInfo = chainInfoMap[destChain];
         const account = findAccountByAddress(accounts, _recipientAddress);
 
         return validateRecipientAddress({
-          srcChain: chainValue,
+          srcChain: chain,
           destChainInfo,
-          fromAddress: fromValue,
+          fromAddress: from,
           toAddress: _recipientAddress,
           account,
           actionType: ActionType.SWAP,
@@ -365,7 +363,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
         });
       },
     }),
-    [accounts, assetRegistryMap, chainInfoMap, chainValue, fromValue, toTokenSlugValue],
+    [accounts, assetRegistryMap, chainInfoMap],
   );
 
   const getConvertedBalance = useCallback(
@@ -472,6 +470,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   }, [currencyData.symbol, currentQuote?.feeInfo.feeComponent, getConvertedBalance]);
 
   const canShowAvailableBalance = useMemo(() => {
+    console.log('fromValue', fromValue);
     if (fromValue && chainValue && chainInfoMap[chainValue]) {
       return isEthereumAddress(fromValue) === _isChainEvmCompatible(chainInfoMap[chainValue]);
     }
@@ -889,8 +888,8 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
   useEffect(() => {
     const chain = _getAssetOriginChain(fromAssetInfo);
-    setValue('chain', chain);
-  }, [fromAssetInfo, setValue]);
+    setChain(chain);
+  }, [fromAssetInfo, setChain, setValue]);
 
   useEffect(() => {
     const unsubscribe = AppState.addEventListener('change', state => {
