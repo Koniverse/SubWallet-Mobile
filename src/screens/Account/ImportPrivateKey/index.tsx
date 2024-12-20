@@ -27,6 +27,7 @@ export const ImportPrivateKey = () => {
   const goHome = useGoHome();
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
   const [type, setType] = useState<string>('');
+  const typeRef = useRef<string>(type);
 
   const validatorFunc = useCallback(async (value: string) => {
     let result: string[] = [];
@@ -79,7 +80,7 @@ export const ImportPrivateKey = () => {
     createAccountSuriV2({
       name: formState.data.accountName.trim(),
       suri: formState.data.privateKey.trim(),
-      type: type as KeypairType,
+      type: typeRef.current as KeypairType,
       isAllowed: true,
     })
       .then(() => {
@@ -152,6 +153,7 @@ export const ImportPrivateKey = () => {
                 }
 
                 setType(keyTypes[0]);
+                typeRef.current = keyTypes[0];
                 onUpdateErrors('privateKey')([]);
               }
             })

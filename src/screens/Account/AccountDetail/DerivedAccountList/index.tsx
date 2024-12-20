@@ -132,7 +132,7 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
     <View style={{ flex: 1, width: '100%' }}>
       <Search
         style={{ marginBottom: theme.marginXS }}
-        placeholder={'Enter network name or address'}
+        placeholder={'Enter account name or address'}
         searchText={searchString}
         onSearch={setSearchString}
         onClearSearchString={() => setSearchString('')}

@@ -58,15 +58,12 @@ export default (theme: ThemeTypes) =>
       gap: theme.size,
     },
     balance: {
-      // paddingTop: theme.padding,
       marginBottom: 0,
-      // flex: 1,
       justifyContent: 'flex-end',
       textAlign: 'right',
     },
     balanceStep2: {
       paddingTop: theme.padding,
       flex: 1,
-      justifyContent: 'space-between',
     },
   });

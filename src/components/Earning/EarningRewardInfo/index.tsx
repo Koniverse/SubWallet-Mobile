@@ -25,6 +25,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { HideBalanceItem } from 'components/HideBalanceItem';
+import { getReformatedAddressRelatedToChain } from 'utils/account';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -37,7 +39,7 @@ type Props = {
 const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   const { inputAsset, compound, isShowBalance, rewardHistories, poolInfo } = props;
   const { slug, type } = compound;
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
@@ -116,6 +118,25 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
       ]);
     }
   }, [isDAppStaking, navigation, slug, total, type]);
+
+  const onPressViewExplore = useCallback(() => {
+    if (currentAccountProxy && currentAccountProxy.accounts.length > 0) {
+      const subscanSlug = chainInfoMap[compound.chain]?.extraInfo?.subscanSlug;
+      const accountJson = currentAccountProxy.accounts.find(account =>
+        isSameAddress(account.address, compound.address),
+      );
+
+      if (!subscanSlug || !accountJson) {
+        return;
+      }
+
+      const formatAddress = getReformatedAddressRelatedToChain(accountJson, chainInfoMap[compound.chain]);
+
+      if (formatAddress) {
+        Linking.openURL(`https://${subscanSlug}.subscan.io/account/${formatAddress}?tab=reward`);
+      }
+    }
+  }, [chainInfoMap, compound.address, compound.chain, currentAccountProxy]);
 
   return (
     <MetaInfo hasBackgroundWrapper={true} labelColorScheme="gray" style={styles.wrapper}>
@@ -202,15 +223,7 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
           <Button
             size={'sm'}
             type={'ghost'}
-            onPress={() => {
-              currentAccount &&
-                chainInfoMap[poolInfo?.chain].extraInfo &&
-                Linking.openURL(
-                  `https://${chainInfoMap[poolInfo?.chain].extraInfo?.subscanSlug}.subscan.io/account/${
-                    currentAccount.address
-                  }?tab=reward`,
-                );
-            }}
+            onPress={onPressViewExplore}
             icon={<Icon phosphorIcon={ArrowSquareOut} iconColor={theme.colorTextLight4} />}>
             {i18n.common.viewOnExplorer}
           </Button>

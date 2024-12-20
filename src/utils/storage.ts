@@ -59,6 +59,7 @@ export const BACKUP_WHITELIST: string[] = [
   'pri(accounts.create.hardwareMultiple)',
   'pri(accounts.create.withSecret)',
   'pri(accounts.forget)',
+  'pri(accounts.ton.version.change)',
   // 'pri(accounts.inject.add)',
   // 'pri(accounts.inject.remove)',
   'pri(derivation.createV2)',

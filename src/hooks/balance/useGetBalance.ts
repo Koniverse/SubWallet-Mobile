@@ -29,7 +29,6 @@ const useGetBalance = (
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const isChainActive = useMemo(() => chainStateMap[chain]?.active, [chain, chainStateMap]);
-  console.log(chain, tokenSlug, isChainActive);
   const nativeTokenActive = nativeTokenSlug && assetSettingMap[nativeTokenSlug]?.visible;
   const isTokenActive = assetSettingMap[tokenSlug]?.visible;
   const isFocused = useIsFocused();

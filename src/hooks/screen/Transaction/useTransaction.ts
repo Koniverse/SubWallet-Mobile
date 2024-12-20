@@ -38,7 +38,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
   formOptions: UseFormProps<T, TContext> = {},
 ) => {
   const { currentAccountProxy } = useSelector((state: RootState) => state.accountState);
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { turnOnChain, checkChainConnected } = useChainChecker();
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const { confirmModal } = useContext(AppModalContext);
@@ -153,8 +153,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
         }, 700);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [confirmModal, turnOnChain],
+    [chainInfoMap, checkChainConnected, confirmModal, turnOnChain],
   );
 
   const onChangeFromValue = useCallback(

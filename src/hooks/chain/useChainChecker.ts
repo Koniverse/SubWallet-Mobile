@@ -30,14 +30,7 @@ export default function useChainChecker(isShowToast = true) {
 
   const checkChainConnected = useCallback(
     (chain: string) => {
-      const chainState = chainStateMap[chain];
-
-      if (!chainState) {
-        // Couldn't get chain state
-        return false;
-      }
-
-      return chainState.active;
+      return chainStateMap[chain]?.active;
     },
     [chainStateMap],
   );

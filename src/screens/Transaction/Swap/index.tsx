@@ -470,7 +470,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   }, [currencyData.symbol, currentQuote?.feeInfo.feeComponent, getConvertedBalance]);
 
   const canShowAvailableBalance = useMemo(() => {
-    console.log('fromValue', fromValue);
     if (fromValue && chainValue && chainInfoMap[chainValue]) {
       return isEthereumAddress(fromValue) === _isChainEvmCompatible(chainInfoMap[chainValue]);
     }
@@ -818,6 +817,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
               }
             }
           } catch (e) {
+            console.log('e---', e);
             onError(e as Error);
 
             return false;
