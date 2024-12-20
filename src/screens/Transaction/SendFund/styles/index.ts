@@ -59,8 +59,7 @@ export default (theme: ThemeTypes) =>
     },
     balance: {
       marginBottom: 0,
-      justifyContent: 'flex-end',
-      textAlign: 'right',
+      flex: 1,
     },
     balanceStep2: {
       paddingTop: theme.padding,

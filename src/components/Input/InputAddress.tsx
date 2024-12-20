@@ -66,7 +66,7 @@ const Component = (
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
-  const isAddressValid = isAddress(value) && (isValidValue !== undefined ? isValidValue : true);
+  const isAddressValid = isValidValue !== undefined ? isValidValue : true;
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
   const [error, setError] = useState<string | undefined>(undefined);
   const inputRef = useRef<TextInput | null>(null);
@@ -154,6 +154,10 @@ const Component = (
     const _value = value || '';
 
     if (!chainInfo) {
+      return _value;
+    }
+
+    if (!isAddress(_value)) {
       return _value;
     }
 

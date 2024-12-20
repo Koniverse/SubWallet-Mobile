@@ -439,6 +439,7 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...getMissionPoolData,
           name: 'getMissionPoolData',
           relatedStores: ['missionPool'],
+          isStartImmediately: true,
         });
 
         /* Buy service */

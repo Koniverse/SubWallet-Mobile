@@ -1145,7 +1145,7 @@ export const SendFund = ({
                         style={{ marginBottom: theme.marginSM }}
                         control={control}
                         rules={recipientAddressRules}
-                        render={({ field: { value, ref, onChange, onBlur } }) => (
+                        render={({ field: { value, ref, onChange, onBlur }, formState: { errors } }) => (
                           <InputAddress
                             ref={ref}
                             label={'To:'}
@@ -1154,6 +1154,7 @@ export const SendFund = ({
                               clearErrors('to');
                               onChange(text);
                             }}
+                            isValidValue={!Object.keys(errors).length}
                             horizontal
                             showAvatar={false}
                             onBlur={onBlur}
@@ -1181,7 +1182,6 @@ export const SendFund = ({
                         address={fromValue}
                         chain={chainValue}
                         tokenSlug={assetValue}
-                        isSubscribe={true}
                         label={`${i18n.inputLabel.availableBalance}:`}
                         style={stylesheet.balance}
                       />
