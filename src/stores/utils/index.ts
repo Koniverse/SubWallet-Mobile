@@ -9,6 +9,7 @@ import {
   CampaignBanner,
   ChainStakingMetadata,
   ConfirmationsQueue,
+  ConfirmationsQueueTon,
   CrowdloanJson,
   KeyringState,
   MantaPayConfig,
@@ -185,6 +186,17 @@ export const subscribeConfirmationRequests = lazySubscribeMessage(
   null,
   updateConfirmationRequests,
   updateConfirmationRequests,
+);
+
+export const updateConfirmationRequestsTon = (data: ConfirmationsQueueTon) => {
+  store.dispatch({ type: 'requestState/updateConfirmationRequestsTon', payload: data });
+};
+
+export const subscribeConfirmationRequestsTon = lazySubscribeMessage(
+  'pri(confirmationsTon.subscribe)',
+  null,
+  updateConfirmationRequestsTon,
+  updateConfirmationRequestsTon,
 );
 
 export const updateTransactionRequests = (data: Record<string, SWTransactionResult>) => {

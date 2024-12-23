@@ -512,7 +512,7 @@ export const SendFund = ({
   );
 
   const handleBasicSubmit = useCallback(
-    (values: TransferFormValues): Promise<SWTransactionResponse> => {
+    (values: TransferFormValues, options: TransferOptions): Promise<SWTransactionResponse> => {
       const { asset, chain, destChain, from: _from, to, value } = values;
 
       let sendPromise: Promise<SWTransactionResponse>;
@@ -527,6 +527,7 @@ export const SendFund = ({
           tokenSlug: asset,
           value: value,
           transferAll: isTransferAll,
+          transferBounceable: options.isTransferBounceable,
         });
       } else {
         // Make cross chain transfer
@@ -538,6 +539,7 @@ export const SendFund = ({
           to,
           value,
           transferAll: isTransferAll,
+          transferBounceable: options.isTransferBounceable,
         });
       }
 
@@ -580,7 +582,7 @@ export const SendFund = ({
   );
 
   const doSubmit = useCallback(
-    (values: TransferFormValues) => {
+    (values: TransferFormValues, options: TransferOptions) => {
       if (isShowWarningOnSubmit(values)) {
         return;
       }
@@ -612,7 +614,7 @@ export const SendFund = ({
             const submitPromise: Promise<SWTransactionResponse> | undefined =
               stepType === CommonStepType.TOKEN_APPROVAL
                 ? handleSnowBridgeSpendingApproval(values)
-                : handleBasicSubmit(values);
+                : handleBasicSubmit(values, options);
 
             const rs = await submitPromise;
             const success = onSuccess(isLastStep, needRollback)(rs);
@@ -684,7 +686,7 @@ export const SendFund = ({
             completeBtnTitle: 'Continue',
             customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
             onCompleteModal: () => {
-              doSubmit(values);
+              doSubmit(values, options);
               confirmModal.hideConfirmModal();
             },
             onCancelModal: () => confirmModal.hideConfirmModal(),
@@ -713,7 +715,7 @@ export const SendFund = ({
                 shouldTouch: true,
               });
               options.isTransferBounceable = true;
-              doSubmit({ ...values, to: formattedAddress });
+              doSubmit({ ...values, to: formattedAddress }, options);
               confirmModal.hideConfirmModal();
             },
             onCancelModal: () => {
@@ -732,7 +734,7 @@ export const SendFund = ({
         return;
       }
 
-      doSubmit(values);
+      doSubmit(values, options);
     },
     [isTransferAll, chainValue, destChainValue, doSubmit, chainInfoMap, confirmModal, theme.colorWarning, setValue],
   );
@@ -994,7 +996,7 @@ export const SendFund = ({
               let currentValues = getValues();
               setForceTransferAll(false);
               setLoading(true);
-              doSubmit(currentValues);
+              onSubmit(currentValues);
             },
           },
         ],
@@ -1009,6 +1011,7 @@ export const SendFund = ({
     nativeTokenBalance.decimals,
     nativeTokenBalance.symbol,
     nativeTokenSlug,
+    onSubmit,
     tokenBalance.decimals,
     tokenBalance.symbol,
   ]);

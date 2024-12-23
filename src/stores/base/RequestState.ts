@@ -52,6 +52,9 @@ export const CONFIRMATIONS_FIELDS: Array<keyof RequestState> = [
   'evmWatchTransactionRequest',
   'errorConnectNetwork',
   'connectWCRequest',
+  'tonSignatureRequest',
+  'tonSendTransactionRequest',
+  'tonWatchTransactionRequest',
 ];
 
 export interface ConfirmationQueueItem {

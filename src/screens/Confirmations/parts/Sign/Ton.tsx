@@ -80,13 +80,13 @@ export const TonSignArea = (props: Props) => {
         show('Transaction expired', { type: 'danger' });
         onCancel();
       }
-
-      setLoading(true);
-      Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
-      onConfirmPassword(onApprovePassword)()?.catch(() => {
-        setLoading(false);
-      });
     }
+
+    setLoading(true);
+    Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
+    onConfirmPassword(onApprovePassword)()?.catch(() => {
+      setLoading(false);
+    });
   }, [hideAll, onApprovePassword, onCancel, onConfirmPassword, show, txExpirationTime]);
 
   useEffect(() => {
@@ -111,7 +111,12 @@ export const TonSignArea = (props: Props) => {
       <Button disabled={loading} block icon={getButtonIcon(XCircle)} type={'secondary'} onPress={onCancel}>
         {i18n.common.cancel}
       </Button>
-      <Button block disabled={showQuoteExpired} icon={getButtonIcon(approveIcon)} loading={loading} onPress={onConfirm}>
+      <Button
+        block
+        disabled={showQuoteExpired || loading}
+        icon={getButtonIcon(approveIcon)}
+        loading={loading}
+        onPress={onConfirm}>
         {i18n.buttonTitles.approve}
       </Button>
     </ConfirmationFooter>
