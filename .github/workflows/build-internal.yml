@@ -2,7 +2,7 @@ name: Internal builds
 
 on:
   pull_request:
-    branches: [ "koni-dev", "upgrade-ui" ]
+    branches: [ "koni-dev", "upgrade-ui", "check-build" ]
 
 jobs:
   # iOS build workflow -------------------------------------------------
