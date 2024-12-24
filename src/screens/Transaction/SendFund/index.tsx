@@ -249,6 +249,7 @@ export const SendFund = ({
   const [forceUpdateValue, setForceUpdateValue] = useState<{ value: string | null } | undefined>(undefined);
   const forceTransferAllRef = useRef<boolean>(false);
   const [forceTransferAll, setForceTransferAll] = useState<boolean>(false);
+  const checkTransferAllRef = useRef<boolean>(false);
   const [isFetchingMaxValue, setIsFetchingMaxValue] = useState(false);
   const chainStatus = useMemo(() => chainStatusMap[chainValue]?.connectionStatus, [chainStatusMap, chainValue]);
   const { confirmModal } = useContext(AppModalContext);
@@ -583,6 +584,7 @@ export const SendFund = ({
 
   const doSubmit = useCallback(
     (values: TransferFormValues, options: TransferOptions) => {
+      checkTransferAllRef.current = false;
       if (isShowWarningOnSubmit(values)) {
         return;
       }
@@ -672,71 +674,85 @@ export const SendFund = ({
       };
       Keyboard.dismiss();
 
-      if (chainValue !== destChainValue) {
-        const originChainInfo = chainInfoMap[chainValue];
-        const destChainInfo = chainInfoMap[destChainValue];
-        const assetSlug = values.asset;
-        const isMythosFromHydrationToMythos = _isMythosFromHydrationToMythos(originChainInfo, destChainInfo, assetSlug);
+      if (checkTransferAllRef.current) {
+        if (chainValue !== destChainValue) {
+          const originChainInfo = chainInfoMap[chainValue];
+          const destChainInfo = chainInfoMap[destChainValue];
+          const assetSlug = values.asset;
+          const isMythosFromHydrationToMythos = _isMythosFromHydrationToMythos(
+            originChainInfo,
+            destChainInfo,
+            assetSlug,
+          );
 
-        if (_isXcmTransferUnstable(originChainInfo, destChainInfo, assetSlug)) {
-          confirmModal.setConfirmModal({
-            visible: true,
-            title: isMythosFromHydrationToMythos ? 'High fee alert!' : 'Pay attention!', // TODO: i18n
-            message: _getXcmUnstableWarning(originChainInfo, destChainInfo, assetSlug),
-            completeBtnTitle: 'Continue',
-            customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
-            onCompleteModal: () => {
-              doSubmit(values, options);
-              confirmModal.hideConfirmModal();
-            },
-            onCancelModal: () => confirmModal.hideConfirmModal(),
-          });
-          return;
+          if (_isXcmTransferUnstable(originChainInfo, destChainInfo, assetSlug)) {
+            confirmModal.setConfirmModal({
+              visible: true,
+              title: isMythosFromHydrationToMythos ? 'High fee alert!' : 'Pay attention!', // TODO: i18n
+              message: _getXcmUnstableWarning(originChainInfo, destChainInfo, assetSlug),
+              completeBtnTitle: 'Continue',
+              customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+              onCompleteModal: () => {
+                doSubmit(values, options);
+                confirmModal.hideConfirmModal();
+              },
+              onCancelModal: () => {
+                checkTransferAllRef.current = false;
+                setLoading(false);
+                confirmModal.hideConfirmModal();
+              },
+            });
+            return;
+          }
+        }
+
+        if (TON_CHAINS.includes(values.chain)) {
+          const isShowTonBouncealbeModal = await isTonBounceableAddress({ address: values.to, chain: values.chain });
+          const chainInfo = chainInfoMap[values.destChain];
+
+          if (isShowTonBouncealbeModal && !options.isTransferBounceable) {
+            const bounceableAddressPrefix = values.to.substring(0, 2);
+            const formattedAddress = _reformatAddressWithChain(values.to, chainInfo);
+            const formattedAddressPrefix = formattedAddress.substring(0, 2);
+
+            confirmModal.setConfirmModal({
+              visible: true,
+              title: 'Unsupported address',
+              message: `Transferring to an ${bounceableAddressPrefix} address is not supported. Continuing will result in a transfer to the corresponding ${formattedAddressPrefix} address (same seed phrase)`,
+              customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+              completeBtnTitle: 'Continue',
+              onCompleteModal: () => {
+                setValue('to', formattedAddress, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                });
+                options.isTransferBounceable = true;
+                doSubmit({ ...values, to: formattedAddress }, options);
+                confirmModal.hideConfirmModal();
+              },
+              onCancelModal: () => {
+                checkTransferAllRef.current = false;
+                setLoading(false);
+                confirmModal.hideConfirmModal();
+              },
+            });
+
+            return;
+          }
         }
       }
 
-      if (TON_CHAINS.includes(values.chain)) {
-        const isShowTonBouncealbeModal = await isTonBounceableAddress({ address: values.to, chain: values.chain });
-        const chainInfo = chainInfoMap[values.destChain];
-
-        if (isShowTonBouncealbeModal && !options.isTransferBounceable) {
-          const bounceableAddressPrefix = values.to.substring(0, 2);
-          const formattedAddress = _reformatAddressWithChain(values.to, chainInfo);
-          const formattedAddressPrefix = formattedAddress.substring(0, 2);
-
-          confirmModal.setConfirmModal({
-            visible: true,
-            title: 'Unsupported address',
-            message: `Transferring to an ${bounceableAddressPrefix} address is not supported. Continuing will result in a transfer to the corresponding ${formattedAddressPrefix} address (same seed phrase)`,
-            customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
-            onCompleteModal: () => {
-              setValue('to', formattedAddress, {
-                shouldDirty: true,
-                shouldTouch: true,
-              });
-              options.isTransferBounceable = true;
-              doSubmit({ ...values, to: formattedAddress }, options);
-              confirmModal.hideConfirmModal();
-            },
-            onCancelModal: () => {
-              confirmModal.hideConfirmModal();
-            },
-          });
-
-          return;
-        }
-      }
-
-      if (isTransferAll) {
+      if (isTransferAll && !checkTransferAllRef.current) {
         setForceTransferAll(true);
         forceTransferAllRef.current = true;
+        checkTransferAllRef.current = true;
 
         return;
       }
 
       doSubmit(values, options);
     },
-    [isTransferAll, chainValue, destChainValue, doSubmit, chainInfoMap, confirmModal, theme.colorWarning, setValue],
+    [isTransferAll, doSubmit, chainValue, destChainValue, chainInfoMap, confirmModal, theme.colorWarning, setValue],
   );
 
   const onPressSubmit = useCallback(
@@ -987,6 +1003,7 @@ export const SendFund = ({
           {
             text: i18n.buttonTitles.cancel,
             onPress: () => {
+              checkTransferAllRef.current = false;
               setForceTransferAll(false);
             },
           },
