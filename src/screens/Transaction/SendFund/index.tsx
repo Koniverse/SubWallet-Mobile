@@ -744,7 +744,7 @@ export const SendFund = ({
         if (isLedger) {
           setLoading(false);
           hideAll();
-          show('This feature is not available for Ledger account', { type: 'warning' });
+          show('This feature is not available for Ledger account ', { type: 'warning' });
           return true;
         }
       }
