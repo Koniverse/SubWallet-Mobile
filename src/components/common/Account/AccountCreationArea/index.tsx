@@ -17,11 +17,11 @@ import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import ToastContainer from 'react-native-toast-notifications';
-import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { canDerive } from '@subwallet/extension-base/utils';
 import { AccountActionSelectModal, ActionItemType } from 'components/Modal/AccountActionSelectModal';
 import { ModalRef } from 'types/modalRef';
+import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
+import { mmkvStore } from 'utils/storage';
 
 interface Props {
   createAccountRef: React.MutableRefObject<ModalRef | undefined>;
@@ -30,15 +30,10 @@ interface Props {
   allowToShowSelectType?: boolean;
 }
 
-export const AccountCreationArea = ({
-  allowToShowSelectType = false,
-  createAccountRef,
-  importAccountRef,
-  attachAccountRef,
-}: Props) => {
+export const AccountCreationArea = ({ createAccountRef, importAccountRef, attachAccountRef }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
-  const selectTypeRef = useRef<ModalRef>();
+  const setSelectedMnemonicType = useSetSelectedMnemonicType(false);
   const importAccountActions = [
     {
       key: 'secretPhrase',
@@ -114,21 +109,6 @@ export const AccountCreationArea = ({
     }
   }, []);
 
-  const onSelectAccountTypes = useCallback(
-    (keyTypes: KeypairType[]) => {
-      createAccountRef && createAccountRef.current?.onCloseModal();
-      selectTypeRef && selectTypeRef.current?.onCloseModal();
-      setTimeout(() => {
-        if (hasMasterPassword) {
-          navigation.navigate('CreateAccount', { keyTypes: keyTypes });
-        } else {
-          navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: keyTypes });
-        }
-      }, 300);
-    },
-    [createAccountRef, hasMasterPassword, navigation],
-  );
-
   const createAccountAction = useMemo(() => {
     return [
       {
@@ -149,18 +129,16 @@ export const AccountCreationArea = ({
 
   const createAccountFunc = (item: ActionItemType) => {
     if (item.key === 'createAcc') {
-      if (allowToShowSelectType) {
-        selectTypeRef && selectTypeRef.current?.onOpenModal();
-      } else {
-        createAccountRef?.current?.onCloseModal();
-        setTimeout(() => {
-          if (hasMasterPassword) {
-            navigation.navigate('CreateAccount', {});
-          } else {
-            navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
-          }
-        }, 3000);
-      }
+      createAccountRef?.current?.onCloseModal();
+      setSelectedMnemonicType('general');
+      mmkvStore.set('use-default-create-content', false);
+      setTimeout(() => {
+        if (hasMasterPassword) {
+          navigation.navigate('CreateAccount', {});
+        } else {
+          navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
+        }
+      }, 2000);
     } else {
       createAccountRef?.current?.onCloseModal();
       navigation.navigate('DeriveAccount');
@@ -225,8 +203,6 @@ export const AccountCreationArea = ({
         items={createAccountAction}
         onSelectItem={createAccountFunc}
       />
-
-      <SelectAccountTypeModal selectTypeRef={selectTypeRef} onConfirm={onSelectAccountTypes} />
 
       <AccountActionSelectModal
         accActionRef={importAccountRef}

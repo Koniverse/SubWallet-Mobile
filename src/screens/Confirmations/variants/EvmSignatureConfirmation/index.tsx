@@ -10,6 +10,7 @@ import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 
 interface Props {
   type: EvmSignatureSupportType;
@@ -20,7 +21,8 @@ interface Props {
 const EvmSignatureConfirmation: React.FC<Props> = (props: Props) => {
   const { request, type, navigation } = props;
   const { id, payload } = request;
-  const { account, errors } = payload;
+  const { address, errors } = payload;
+  const account = useGetAccountByAddress(address);
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -31,7 +33,7 @@ const EvmSignatureConfirmation: React.FC<Props> = (props: Props) => {
         <ConfirmationGeneralInfo request={request} />
         <Text style={styles.title}>{i18n.confirmation.signatureRequest}</Text>
         <Text style={styles.description}>{i18n.confirmation.requestWithAccount}</Text>
-        <AccountItemWithName accountName={account.name} address={account.address} avatarSize={24} isSelected={true} />
+        <AccountItemWithName accountName={account?.name} address={address} avatarSize={24} isSelected={true} />
         {(!errors || errors.length === 0) && (
           <BaseDetailModal title={i18n.confirmation.messageDetail}>
             <EvmMessageDetail payload={payload} />

@@ -98,7 +98,7 @@ function getDefaultTokenBalance(
 }
 
 function getAccountBalance(
-  address: string,
+  accountProxyId: string,
   tokenGroupMap: Record<string, string[]>,
   balanceMap: BalanceStore['balanceMap'],
   priceMap: PriceStore['priceMap'],
@@ -140,7 +140,7 @@ function getAccountBalance(
 
       tokenBalance.currency = currency;
       const originChain = _getAssetOriginChain(chainAsset);
-      const balanceItem = balanceMap[address]?.[tokenSlug];
+      const balanceItem = balanceMap[accountProxyId]?.[tokenSlug];
       const decimals = _getAssetDecimals(chainAsset);
 
       const isTokenBalanceReady = !!balanceItem && balanceItem.state !== APIItemState.PENDING;
@@ -170,30 +170,12 @@ function getAccountBalance(
 
         tokenBalance.total.value = tokenBalance.free.value.plus(tokenBalance.locked.value);
 
-        // if (balanceItem?.substrateInfo) {
-        //   const mergeData = (key: keyof SubstrateBalance) => {
-        //     const newValue = balanceItem?.substrateInfo?.[key];
-        //
-        //     if (newValue) {
-        //       const value = getBalanceValue(newValue, decimals);
-        //
-        //       tokenBalance[key] = new BigN(tokenBalance[key] || '0').plus(value).toString();
-        //       tokenGroupBalance[key] = new BigN(tokenGroupBalance[key] || '0').plus(value).toString();
-        //     }
-        //   };
-        //
-        //   mergeData('reserved');
-        //   mergeData('miscFrozen');
-        //   mergeData('feeFrozen');
-        // }
-
         if (!isShowZeroBalance && tokenBalance.total.value.eq(BN_0)) {
           return;
         }
 
         tokenGroupBalance.total.value = tokenGroupBalance.total.value.plus(tokenBalance.total.value);
       }
-
       const priceId = _getAssetPriceId(chainAsset);
 
       // convert token value to real life currency value
@@ -263,6 +245,11 @@ function getAccountBalance(
     tokenGroupBalance.isReady = isTokenGroupBalanceReady;
     tokenGroupBalance.isNotSupport = tokenGroupNotSupport.every(e => e);
 
+    if (multiChainAsset && !multiChainAsset.hasValue) {
+      tokenGroupBalance.isTestnet = true;
+    } else if (!multiChainAsset && tokenGroupMap[tokenGroupKey].length === 1 && tokenBalanceMap[tokenGroupKey]) {
+      tokenGroupBalance.isTestnet = tokenBalanceMap[tokenGroupKey].isTestnet;
+    }
     if (!isShowZeroBalance && (!isTokenGroupBalanceReady || tokenGroupBalance.total.value.eq(BN_0))) {
       return;
     }
@@ -344,14 +331,14 @@ export default function useAccountBalance(
   lazy?: boolean,
   showZero?: boolean,
 ): AccountBalanceHookType {
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
   const balanceMap = useSelector((state: RootState) => state.balance.balanceMap);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const priceMap = useSelector((state: RootState) => state.price.priceMap);
-  const price24hMap = useSelector((state: RootState) => state.price.price24hMap);
+  const { priceMap, price24hMap } = useSelector((state: RootState) => state.price);
   const currency = useSelector((state: RootState) => state.price.currencyData);
-  const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
+  const { assetRegistry: assetRegistryMap, multiChainAssetMap } = useSelector(
+    (state: RootState) => state.assetRegistry,
+  );
   const isShowZeroBalanceSetting = useSelector((state: RootState) => state.settings.isShowZeroBalance);
 
   const isShowZeroBalance = useMemo(() => {
@@ -362,7 +349,7 @@ export default function useAccountBalance(
     lazy
       ? DEFAULT_RESULT
       : getAccountBalance(
-          currentAccount?.address || '',
+          currentAccountProxy?.id || '',
           tokenGroupMap,
           balanceMap,
           priceMap,
@@ -378,7 +365,7 @@ export default function useAccountBalance(
     const timeoutID = setTimeout(() => {
       setResult(
         getAccountBalance(
-          currentAccount?.address || '',
+          currentAccountProxy?.id || '',
           tokenGroupMap,
           balanceMap,
           priceMap,
@@ -397,7 +384,7 @@ export default function useAccountBalance(
     balanceMap,
     chainInfoMap,
     currency,
-    currentAccount,
+    currentAccountProxy,
     isShowZeroBalance,
     multiChainAssetMap,
     price24hMap,

@@ -1,19 +1,19 @@
 import React from 'react';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
+import { TokenSelector } from 'components/Modal/common/TokenSelector';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { ModalRef } from 'types/modalRef';
+import { AccountAddressItemType } from 'types/account';
+import { _ChainAsset } from '@subwallet/chain-list/types';
 
 interface Props {
   accountRef: React.MutableRefObject<ModalRef | undefined>;
   tokenRef: React.MutableRefObject<ModalRef | undefined>;
-  accountItems: AccountJson[];
-  tokenItems: TokenItemType[];
-  openSelectAccount: (account: AccountJson) => void;
-  openSelectToken: (value: TokenItemType) => void;
-  selectedValueMap: Record<string, boolean>;
+  accountItems: AccountAddressItemType[];
+  tokenItems: _ChainAsset[];
+  openSelectAccount: (account: AccountAddressItemType) => void;
+  openSelectToken: (value: _ChainAsset) => void;
 }
 
 export const SelectAccAndTokenModal = ({
@@ -23,29 +23,29 @@ export const SelectAccAndTokenModal = ({
   tokenRef,
   openSelectAccount,
   openSelectToken,
-  selectedValueMap,
 }: Props) => {
   const isAllAccount = useSelector((state: RootState) => state.accountState.isAllAccount);
   return (
     <>
+      <TokenSelector
+        items={tokenItems}
+        onSelectItem={openSelectToken}
+        selectedValueMap={{}}
+        tokenSelectorRef={tokenRef}
+        closeModalAfterSelect={false}
+        isShowInput={false}
+        onCloseAccountSelector={() => accountRef.current?.onCloseModal()}
+      />
+
       <AccountSelector
         items={accountItems}
-        selectedValueMap={selectedValueMap}
+        selectedValueMap={{}}
         onSelectItem={openSelectAccount}
         accountSelectorRef={accountRef}
         closeModalAfterSelect={false}
         isShowContent={isAllAccount}
-        isShowInput={false}>
-        <TokenSelector
-          items={tokenItems}
-          onSelectItem={openSelectToken}
-          selectedValueMap={{}}
-          tokenSelectorRef={tokenRef}
-          closeModalAfterSelect={false}
-          isShowInput={false}
-          onCloseAccountSelector={() => accountRef.current?.onCloseModal()}
-        />
-      </AccountSelector>
+        isShowInput={false}
+      />
     </>
   );
 };

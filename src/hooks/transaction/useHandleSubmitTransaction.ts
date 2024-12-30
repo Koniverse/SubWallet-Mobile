@@ -19,7 +19,7 @@ const useHandleSubmitTransaction = (
 ) => {
   const navigation = useNavigation<RootNavigationProps>();
   const { show, hideAll } = useToast();
-  const appModalContext = useContext(AppModalContext);
+  const { confirmModal } = useContext(AppModalContext);
 
   const onSuccess = useCallback(
     (rs: SWTransactionResponse) => {
@@ -27,17 +27,17 @@ const useHandleSubmitTransaction = (
       if (errors.length || warnings.length) {
         if (errors[0]?.message !== 'Rejected by user') {
           if (errors[0]?.message?.startsWith('Unable to fetch staking data.')) {
-            appModalContext.setConfirmModal({
+            confirmModal.setConfirmModal({
               visible: true,
               completeBtnTitle: i18n.buttonTitles.update,
               message: i18n.common.updateChainMessage,
               title: i18n.header.updateChain,
               onCancelModal: () => {
-                appModalContext.hideConfirmModal();
+                confirmModal.hideConfirmModal();
               },
               onCompleteModal: () => {
                 navigation.navigate('NetworksSetting', { chainName: errors[0].message.split('"')[1] });
-                appModalContext.hideConfirmModal();
+                confirmModal.hideConfirmModal();
               },
             });
           } else if (
@@ -82,7 +82,7 @@ const useHandleSubmitTransaction = (
       }
     },
     [
-      appModalContext,
+      confirmModal,
       handleDataForInsufficientAlert,
       hideAll,
       navigation,

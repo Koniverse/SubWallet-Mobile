@@ -40,7 +40,11 @@ export const WCNetworkSupported = ({ networks }: Props) => {
       renderSelected={() => (
         <WCNetworkInput
           networks={networks}
-          content={i18n.formatString(i18n.message.networkSupported, networkNumber) as string}
+          content={
+            networkNumber === 1
+              ? i18n.message.oneNetworkSupported
+              : (i18n.formatString(i18n.message.networkSupported, networkNumber) as string)
+          }
           onPress={() => {}}
         />
       )}

@@ -1,17 +1,16 @@
-import Input, { InputProps } from 'components/design-system-ui/input';
+import { InputProps } from 'components/design-system-ui/input';
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { decodeAddress, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
-import reformatAddress, { toShort } from 'utils/index';
+import { Button, Icon, Input, Typography } from 'components/design-system-ui';
+import { toShort } from 'utils/index';
 import { Book, Scan } from 'phosphor-react-native';
 import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal';
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressScanner';
 import { CHAINS_SUPPORTED_DOMAIN, isAzeroDomain } from '@subwallet/extension-base/koni/api/dotsama/domain';
-import { saveRecentAccountId, resolveAddressToDomain, resolveDomainToAddress } from 'messaging/index';
+import { saveRecentAccount, resolveAddressToDomain, resolveDomainToAddress } from 'messaging/index';
 import createStylesheet from './style/InputAddress';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -19,6 +18,12 @@ import { findContactByAddress } from 'utils/account';
 import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import useCheckCamera from 'hooks/common/useCheckCamera';
+import { isAddress } from '@subwallet/keyring';
+import { _reformatAddressWithChain } from '@subwallet/extension-base/utils';
+import HorizontalInput from 'components/design-system-ui/input/HorizontalInput';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { deviceWidth } from 'constants/index';
+import useFetchChainInfo from 'hooks/common/useFetchChainInfo';
 
 interface Props extends InputProps {
   chain?: string;
@@ -26,8 +31,6 @@ interface Props extends InputProps {
   isValidValue?: boolean;
   showAvatar?: boolean;
   showAddressBook?: boolean;
-  networkGenesisHash?: string;
-  addressPrefix?: number;
   saveAddress?: boolean;
   scannerProps?: Omit<
     AddressScannerProps,
@@ -35,6 +38,7 @@ interface Props extends InputProps {
   >;
   onSideEffectChange?: () => void; // callback for address book or scan QR
   fitNetwork?: boolean;
+  horizontal?: boolean;
 }
 
 const addressLength = 9;
@@ -45,14 +49,13 @@ const Component = (
     isValidValue,
     showAvatar = true,
     showAddressBook,
-    networkGenesisHash,
-    addressPrefix,
     scannerProps = {},
     saveAddress = true,
     value = '',
     reValidate,
     onSideEffectChange,
     fitNetwork,
+    horizontal,
     ...inputProps
   }: Props,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -63,12 +66,12 @@ const Component = (
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
-  const isAddressValid = isAddress(value) && (isValidValue !== undefined ? isValidValue : true);
+  const isAddressValid = isValidValue !== undefined ? isValidValue : true;
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
   const [error, setError] = useState<string | undefined>(undefined);
   const inputRef = useRef<TextInput | null>(null);
   const checkCamera = useCheckCamera();
-
+  const chainInfo = useFetchChainInfo(chain || '');
   const hasLabel = !!inputProps.label;
   const isInputVisible = !isAddressValid || !value || !isInputBlur;
   const stylesheet = createStylesheet(
@@ -79,6 +82,7 @@ const Component = (
     inputProps.readonly,
     showAvatar,
     showAddressBook,
+    horizontal,
   );
 
   useEffect(() => setAdjustResize(), []);
@@ -91,20 +95,12 @@ const Component = (
         inputProps.onChangeText(text);
 
         if (saveAddress && isAddress(text)) {
-          if (isEthereumAddress(text)) {
-            saveRecentAccountId(text, chain).catch(console.error);
-          } else {
-            try {
-              if (decodeAddress(text, true, addressPrefix)) {
-                saveRecentAccountId(text, chain).catch(console.error);
-              }
-            } catch (e) {}
-          }
+          saveRecentAccount(text, chain).catch(console.error);
         }
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [addressPrefix, chain, saveAddress],
+    [chain, saveAddress],
   );
 
   useEffect(() => {
@@ -157,40 +153,48 @@ const Component = (
   const formattedAddress = useMemo((): string => {
     const _value = value || '';
 
-    if (addressPrefix === undefined) {
+    if (!chainInfo) {
       return _value;
     }
 
-    try {
-      return reformatAddress(_value, addressPrefix);
-    } catch (e) {
+    if (!isAddress(_value)) {
       return _value;
     }
-  }, [addressPrefix, value]);
+
+    return _reformatAddressWithChain(_value, chainInfo);
+  }, [chainInfo, value]);
 
   const LeftPart = useMemo(() => {
     return (
-      <>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingLeft: horizontal ? 0 : showAvatar ? 0 : 8,
+          flexShrink: 1,
+          maxWidth: deviceWidth - 168,
+          overflow: 'hidden',
+        }}>
         {showAvatar && (
           <View style={stylesheet.avatarWrapper}>
-            <Avatar value={value || ''} size={hasLabel ? 20 : 24} />
+            <AccountProxyAvatar value={value || ''} size={hasLabel ? 20 : 24} />
           </View>
         )}
         <Typography.Text ellipsis style={stylesheet.addressText}>
           {accountName || domainName || toShort(value, addressLength, addressLength)}
         </Typography.Text>
-        {(fitNetwork ? accountName || domainName : accountName || domainName || addressPrefix !== undefined) && (
+        {(fitNetwork ? accountName || domainName : accountName || domainName) && (
           <Typography.Text style={stylesheet.addressAliasText}>({toShort(formattedAddress, 4, 4)})</Typography.Text>
         )}
-      </>
+      </View>
     );
   }, [
     accountName,
-    addressPrefix,
     domainName,
     fitNetwork,
     formattedAddress,
     hasLabel,
+    horizontal,
     showAvatar,
     stylesheet.addressAliasText,
     stylesheet.addressText,
@@ -208,41 +212,9 @@ const Component = (
     checkCamera(undefined, openScannerScreen)();
   }, [checkCamera]);
 
-  useEffect(() => {
-    if (value) {
-      const account = findContactByAddress(_contacts, value);
-
-      if (account) {
-        if (!isEthereumAddress(account.address) && !!account.isHardware) {
-          const availableGens: string[] = (account.availableGenesisHashes as string[]) || [];
-
-          if (!availableGens.includes(networkGenesisHash || '')) {
-            return;
-          }
-        }
-
-        const address = reformatAddress(account.address, addressPrefix);
-
-        onChangeInputText(address);
-        if (inputRef.current) {
-          if (!inputRef.current.isFocused() && reValidate) {
-            reValidate();
-          } else {
-            inputRef.current.blur();
-          }
-        }
-      } else {
-        if (isAddress(value)) {
-          onChangeInputText(value);
-        }
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [_contacts, addressPrefix, networkGenesisHash, onChangeInputText, value]);
-
   const RightPart = useMemo(() => {
     return (
-      <>
+      <View style={{ flexDirection: 'row' }}>
         {showAddressBook && (
           <Button
             disabled={inputProps.disabled || inputProps.readonly}
@@ -272,7 +244,7 @@ const Component = (
             />
           }
         />
-      </>
+      </View>
     );
   }, [
     inputProps.disabled,
@@ -323,23 +295,44 @@ const Component = (
 
   return (
     <>
-      <Input
-        ref={myRef => {
-          inputRef.current = myRef;
-          // @ts-ignored
-          ref = inputRef.current;
-        }}
-        {...inputProps}
-        leftPart={LeftPart}
-        leftPartStyle={stylesheet.inputLeftPart}
-        rightPart={RightPart}
-        isError={!isAddressValid}
-        onChangeText={onChangeInputText}
-        onFocus={onInputFocus}
-        onBlur={onInputBlur}
-        inputStyle={stylesheet.input}
-        value={value}
-      />
+      {horizontal ? (
+        <HorizontalInput
+          ref={myRef => {
+            inputRef.current = myRef;
+            // @ts-ignored
+            ref = inputRef.current;
+          }}
+          {...inputProps}
+          leftPart={LeftPart}
+          leftPartStyle={stylesheet.inputLeftPart}
+          rightPart={RightPart}
+          isError={!isAddressValid}
+          onChangeText={onChangeInputText}
+          onFocus={onInputFocus}
+          onBlur={onInputBlur}
+          inputStyle={stylesheet.input}
+          value={value}
+          labelStyle={{ width: 48 }}
+        />
+      ) : (
+        <Input
+          ref={myRef => {
+            inputRef.current = myRef;
+            // @ts-ignored
+            ref = inputRef.current;
+          }}
+          {...inputProps}
+          leftPart={LeftPart}
+          leftPartStyle={stylesheet.inputLeftPart}
+          rightPart={RightPart}
+          isError={!isAddressValid}
+          onChangeText={onChangeInputText}
+          onFocus={onInputFocus}
+          onBlur={onInputBlur}
+          inputStyle={stylesheet.input}
+          value={value}
+        />
+      )}
 
       <AddressScanner
         {...scannerProps}
@@ -353,9 +346,8 @@ const Component = (
 
       {showAddressBook && (
         <AddressBookModal
-          addressPrefix={addressPrefix}
           modalVisible={isShowAddressBookModal}
-          networkGenesisHash={networkGenesisHash}
+          chainSlug={chain}
           onSelect={onSelectAddressBook}
           value={value}
           setVisible={setShowAddressBookModal}

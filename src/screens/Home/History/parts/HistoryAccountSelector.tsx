@@ -1,21 +1,20 @@
 import React, { useCallback, useMemo } from 'react';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
 import { toShort } from 'utils/index';
-import { Avatar } from 'components/design-system-ui';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { CaretDown } from 'phosphor-react-native';
 import Typography from 'components/design-system-ui/typography';
+import { AccountAddressItemType } from 'types/account';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props {
-  items: AccountJson[];
+  items: AccountAddressItemType[];
   value: string;
   disabled?: boolean;
   selectorRef?: React.MutableRefObject<ModalRef | undefined>;
-  onSelectItem?: (item: AccountJson) => void;
+  onSelectItem?: (item: AccountAddressItemType) => void;
 }
 
 export const HistoryAccountSelector = ({ items, value, onSelectItem, disabled, selectorRef }: Props) => {
@@ -23,7 +22,7 @@ export const HistoryAccountSelector = ({ items, value, onSelectItem, disabled, s
 
   const renderSelected = useCallback(() => {
     const selectedItem = value ? items.find(i => i.address === value) : undefined;
-    const accountName = selectedItem?.name || (value ? toShort(value, 7, 7) : '');
+    const accountName = selectedItem?.accountName || (value ? toShort(value, 7, 7) : '');
 
     return (
       <View
@@ -40,7 +39,7 @@ export const HistoryAccountSelector = ({ items, value, onSelectItem, disabled, s
             backgroundColor: theme.colorBgSecondary,
           },
         ]}>
-        <Avatar value={value} size={20} theme={isEthereumAddress(value) ? 'ethereum' : 'polkadot'} />
+        <AccountProxyAvatar value={value} size={20} />
         <View style={{ flex: 1 }}>
           {!!value && (
             <Typography.Text ellipsis style={{ color: theme.colorTextLight2 }}>

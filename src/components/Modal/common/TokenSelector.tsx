@@ -16,6 +16,13 @@ export type TokenItemType = {
   originChain: string;
 };
 
+export type TokenSelectorItemType = {
+  name: string;
+  slug: string;
+  symbol: string;
+  originChain: string;
+};
+
 interface Props {
   items: TokenItemType[];
   selectedValueMap: Record<string, boolean>;

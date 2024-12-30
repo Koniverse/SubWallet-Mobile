@@ -6,24 +6,25 @@ import { Text, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import AccountItemBase, { AccountItemBaseProps } from '../AccountItemBase';
-import { AccountJson } from '@subwallet/extension-base/background/types';
-import AvatarGroup from 'components/common/AvatarGroup';
+import { AccountJson } from '@subwallet/extension-base/types';
+import { AccountProxyAvatarGroup } from 'components/design-system-ui/avatar/account-proxy-avatar-group';
 
 interface Props extends AccountItemBaseProps {
   direction?: 'vertical' | 'horizontal';
   accounts?: AccountJson[];
   fallbackName?: boolean;
+  showAddress?: boolean;
 }
 
 const AccountItemWithName: React.FC<Props> = (props: Props) => {
   const {
-    avatarSize,
     accountName,
     address,
     addressPreLength = 4,
     addressSufLength = 4,
     direction = 'horizontal',
     fallbackName = true,
+    showAddress = true,
   } = props;
   const isAll = isAccountAll(address);
 
@@ -46,14 +47,14 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
     <AccountItemBase
       {...props}
       address={address}
-      leftItem={isAll ? <AvatarGroup avatarSize={avatarSize} /> : props.leftItem}
+      leftItem={isAll ? <AccountProxyAvatarGroup /> : props.leftItem}
       middleItem={
         <View
           style={[direction === 'horizontal' ? styles.contentDirectionHorizontal : styles.contentDirectionVertical]}>
           <Text style={styles.accountName} numberOfLines={1}>
             {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
           </Text>
-          {showFallback && (
+          {showFallback && address && showAddress && (
             <Text style={[styles.accountAddress, direction === 'horizontal' && styles.accountAddressHorizontal]}>
               {direction === 'horizontal' && '('}
               {toShort(address, addressPreLength, addressSufLength)}

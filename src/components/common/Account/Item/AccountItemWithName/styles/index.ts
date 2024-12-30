@@ -18,9 +18,11 @@ export default (theme: ThemeTypes) => {
     },
     contentDirectionHorizontal: {
       flexDirection: 'row',
+      paddingRight: theme.padding,
     },
     contentDirectionVertical: {
       flexDirection: 'column',
+      paddingRight: theme.padding,
     },
     accountAddress: {
       fontWeight: `${theme.fontWeightStrong}`,

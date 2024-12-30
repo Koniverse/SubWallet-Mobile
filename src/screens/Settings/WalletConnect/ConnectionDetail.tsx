@@ -6,7 +6,7 @@ import MetaInfo from 'components/MetaInfo';
 import { Button, Icon, Image, SwModal, Typography } from 'components/design-system-ui';
 import { WCNetworkAvatarGroup } from 'components/WalletConnect/Network/WCNetworkAvatarGroup';
 import { WalletConnectChainInfo } from 'types/walletConnect';
-import { chainsToWalletConnectChainInfos, getWCAccountList } from 'utils/walletConnect';
+import { chainsToWalletConnectChainInfos, getWCAccountProxyList } from 'utils/walletConnect';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
@@ -14,7 +14,6 @@ import { ConnectDetailProps, RootNavigationProps } from 'routes/index';
 import { DeviceEventEmitter, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
-import { AbstractAddressJson } from '@subwallet/extension-base/background/types';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import i18n from 'utils/i18n/i18n';
 import { Globe, Info, Plugs } from 'phosphor-react-native';
@@ -42,7 +41,7 @@ export const ConnectionDetail = ({
   const [networkModalVisible, setNetworkModalVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const { accounts } = useSelector((state: RootState) => state.accountState);
+  const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
 
   const domain = useMemo(() => {
     if (currentSession) {
@@ -55,9 +54,9 @@ export const ConnectionDetail = ({
     }
   }, [currentSession]);
 
-  const accountItems = useMemo(
-    (): AbstractAddressJson[] => (currentSession ? getWCAccountList(accounts, currentSession.namespaces) : []),
-    [accounts, currentSession],
+  const accountProxyItems = useMemo(
+    () => (currentSession ? getWCAccountProxyList(accountProxies, currentSession.namespaces) : []),
+    [accountProxies, currentSession],
   );
 
   const chains = useMemo((): WalletConnectChainInfo[] => {
@@ -145,12 +144,14 @@ export const ConnectionDetail = ({
                   paddingTop: theme.padding,
                   paddingBottom: theme.paddingXXS,
                 }}>
-                {i18n.formatString(i18n.message.connectedAccounts, accountItems.length)}
+                {accountProxyItems.length <= 1
+                  ? i18n.formatString(i18n.message.connectedAccount, accountProxyItems.length)
+                  : i18n.formatString(i18n.message.connectedAccounts, accountProxyItems.length)}
               </Typography.Text>
 
               <View style={{ gap: theme.paddingXS }}>
-                {accountItems.map(item => (
-                  <AccountItemWithName key={item.address} address={item.address} accountName={item?.name} />
+                {accountProxyItems.map(item => (
+                  <AccountItemWithName key={item.id} address={item.id} accountName={item?.name} showAddress={false} />
                 ))}
               </View>
             </ScrollView>

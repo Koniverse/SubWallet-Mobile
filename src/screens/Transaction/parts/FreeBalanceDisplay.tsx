@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react';
-import { StyleProp, Text, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { ActivityIndicator, Number, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
+import { ThemeTypes } from 'styles/themes';
 
 interface Props {
   error: string | null;
@@ -34,6 +35,7 @@ export const FreeBalanceDisplay = ({
   chainName,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const styles = createStyle(theme);
 
   const renderSuffix = useCallback(
     (data: AmountData) => {
@@ -59,13 +61,13 @@ export const FreeBalanceDisplay = ({
         style,
       ]}>
       {!error && (
-        <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
+        <Typography.Text style={[styles.text, { paddingRight: 4 }]}>
           {label || `${i18n.sendToken.senderAvailableBalance}:`}
-        </Text>
+        </Typography.Text>
       )}
       {isLoading && <ActivityIndicator size={14} indicatorColor={theme.colorTextTertiary} />}
       {error && (
-        <Typography.Text ellipsis style={{ fontSize: 14, lineHeight: 22, color: theme.colorError, ...FontMedium }}>
+        <Typography.Text ellipsis style={styles.errorText}>
           {error}
         </Typography.Text>
       )}
@@ -83,7 +85,7 @@ export const FreeBalanceDisplay = ({
       )}
       {!isLoading && !error && !!tokenSlug && tokenSlug !== nativeTokenSlug && !!tokenBalance && (
         <>
-          <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium }}>{' and '}</Text>
+          <Typography.Text style={styles.text}>{' and '}</Typography.Text>
           <Number
             decimal={tokenBalance.decimals || 18}
             decimalColor={theme.colorTextTertiary}
@@ -99,3 +101,20 @@ export const FreeBalanceDisplay = ({
     </View>
   );
 };
+
+function createStyle(theme: ThemeTypes) {
+  return StyleSheet.create({
+    text: {
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      color: theme.colorTextTertiary,
+      ...FontMedium,
+    },
+    errorText: {
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      color: theme.colorError,
+      ...FontMedium,
+    },
+  });
+}

@@ -19,7 +19,6 @@ import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } fr
 import { accountCanSign, findAccountByAddress, getSignMode } from 'utils/account';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
-import reformatAddress from 'utils/index';
 import { NFTDetailProps } from 'screens/Home/NFT/NFTStackScreen';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { ActivityIndicator, Button } from 'components/design-system-ui';
@@ -29,6 +28,7 @@ import WebView from 'react-native-webview';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deviceWidth } from 'constants/index';
 import { SHOW_3D_MODELS_CHAIN } from 'constants/nft';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',

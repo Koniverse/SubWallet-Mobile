@@ -1,284 +1,331 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { AccountJson } from '@subwallet/extension-base/background/types';
-import {
-  _getMultiChainAsset,
-  _isAssetFungibleToken,
-  _isChainEvmCompatible,
-} from '@subwallet/extension-base/services/chain-service/utils';
-import { isAccountAll as checkIsAccountAll } from '@subwallet/extension-base/utils';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { _getAssetOriginChain, _getMultiChainAsset } from '@subwallet/extension-base/services/chain-service/utils';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { RootState } from 'stores/index';
-import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
-import { TokenItemType } from 'components/Modal/common/TokenSelector';
-import { findAccountByAddress } from 'utils/account';
+import { getReformatedAddressRelatedToChain } from 'utils/account';
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { _ChainAsset } from '@subwallet/chain-list/types';
-import { _MANTA_ZK_CHAIN_GROUP, _ZK_ASSET_PREFIX } from '@subwallet/extension-base/services/chain-service/constants';
-import { MantaPayConfig } from '@subwallet/extension-base/background/KoniTypes';
-
-type ReceiveSelectedResult = {
-  selectedAccount?: string;
-  selectedNetwork?: string;
-};
-
-const getChainsByTokenGroup = (tokenGroupSlug: string, assetRegistryMap: Record<string, _ChainAsset>): string[] => {
-  // case tokenGroupSlug is token slug
-  if (assetRegistryMap[tokenGroupSlug]) {
-    return [assetRegistryMap[tokenGroupSlug].originChain];
-  }
-
-  // case tokenGroupSlug is multiChainAsset slug
-
-  const assetRegistryItems: _ChainAsset[] = Object.values(assetRegistryMap).filter(assetItem => {
-    return _isAssetFungibleToken(assetItem) && _getMultiChainAsset(assetItem) === tokenGroupSlug;
-  });
-
-  const map: Record<string, boolean> = {};
-
-  for (const assetItem of assetRegistryItems) {
-    const chainSlug = assetRegistryMap[assetItem.slug].originChain;
-
-    map[chainSlug] = true;
-  }
-
-  return Object.keys(map);
-};
-
-function isMantaPayEnabled(account: AccountJson | null, configs: MantaPayConfig[]) {
-  for (const config of configs) {
-    if (config.address === account?.address) {
-      return true;
-    }
-  }
-
-  return false;
-}
+import { AccountAddressItemType } from 'types/account';
+import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import { KeypairType } from '@subwallet/keyring/types';
+import useHandleTonAccountWarning from 'hooks/account/useHandleTonAccountWarning';
+import { AppModalContext } from 'providers/AppModalContext';
+import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
+import { AccountActions, AccountProxyType } from '@subwallet/extension-base/types';
+import { VoidFunction } from 'types/index';
 
 export default function useReceiveQR(tokenGroupSlug?: string) {
-  const { accounts, currentAccount, isAllAccount } = useSelector((state: RootState) => state.accountState);
-  const assetRegistryMap = useChainAssets().chainAssetRegistry;
+  const { accountProxies, currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const { chainAssets } = useChainAssets();
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const mantaPayConfigs = useSelector((state: RootState) => state.mantaPay.configs);
-  const [tokenSelectorItems, setTokenSelectorItems] = useState<TokenItemType[]>([]);
-  const [isQrModalVisible, setQrModalVisible] = useState<boolean>(false);
-  const [{ selectedAccount, selectedNetwork }, setReceiveSelectedResult] = useState<ReceiveSelectedResult>({
-    selectedAccount: isAllAccount ? undefined : currentAccount?.address,
-  });
-  useEffect(() => {
-    if (!isQrModalVisible) {
-      setReceiveSelectedResult({ selectedAccount: isAllAccount ? undefined : currentAccount?.address });
-    }
-  }, [currentAccount?.address, isAllAccount, isQrModalVisible]);
-
+  const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
+  const [selectedChain, setSelectedChain] = useState<string | undefined>();
+  const [selectedAccountAddressItem, setSelectedAccountAddressItem] = useState<AccountAddressItemType | undefined>();
+  const chainSupported = useGetChainSlugsByAccount();
+  const { addressQrModal } = useContext(AppModalContext);
   const accountRef = useRef<ModalRef>();
   const tokenRef = useRef<ModalRef>();
   const chainRef = useRef<ModalRef>();
+  const specificChain = useMemo(() => {
+    if (tokenGroupSlug && assetRegistryMap[tokenGroupSlug]) {
+      return _getAssetOriginChain(assetRegistryMap[tokenGroupSlug]);
+    }
 
-  const accountSelectorItems = useMemo<AccountJson[]>(() => {
-    if (!isAllAccount) {
+    return undefined;
+  }, [assetRegistryMap, tokenGroupSlug]);
+  const onHandleTonAccountWarning = useHandleTonAccountWarning(() => {
+    tokenRef && tokenRef.current?.closeModal?.();
+    accountRef && accountRef.current?.closeModal?.();
+  });
+
+  const openAddressQrModal = useCallback(
+    (
+      address: string,
+      accountType: KeypairType,
+      accountProxyId: string,
+      chainSlug: string,
+      closeCallback?: VoidFunction,
+    ) => {
+      const processFunction = () => {
+        addressQrModal.setAddressQrModal({
+          visible: true,
+          address,
+          selectNetwork: chainSlug,
+          onBack: () => {
+            addressQrModal.hideAddressQrModal();
+            closeCallback?.();
+          },
+        });
+      };
+      onHandleTonAccountWarning(accountType, () => {
+        processFunction();
+      });
+    },
+    [addressQrModal, onHandleTonAccountWarning],
+  );
+
+  /* --- token Selector */
+  const tokenSelectorItems = useMemo<_ChainAsset[]>(() => {
+    const rawAssets = chainAssets.filter(asset => chainSupported.includes(asset.originChain));
+
+    if (tokenGroupSlug) {
+      return rawAssets.filter(asset => asset.slug === tokenGroupSlug || _getMultiChainAsset(asset) === tokenGroupSlug);
+    }
+
+    return rawAssets;
+  }, [chainAssets, tokenGroupSlug, chainSupported]);
+
+  const onCloseTokenSelector = useCallback(() => {
+    tokenRef && tokenRef.current?.onCloseModal();
+  }, []);
+
+  const onSelectTokenSelector = useCallback(
+    (item: _ChainAsset) => {
+      if (!currentAccountProxy) {
+        return;
+      }
+
+      const chainSlug = _getAssetOriginChain(item);
+      const chainInfo = chainInfoMap[chainSlug];
+
+      if (!chainInfo) {
+        console.warn(`Missing chainInfo with slug ${chainSlug}`);
+
+        return;
+      }
+
+      setSelectedChain(chainSlug);
+
+      if (isAllAccount) {
+        setTimeout(() => accountRef && accountRef.current?.onOpenModal(), 100);
+
+        return;
+      }
+
+      for (const accountJson of currentAccountProxy.accounts) {
+        const reformatedAddress = getReformatedAddressRelatedToChain(accountJson, chainInfo);
+
+        if (reformatedAddress) {
+          const accountAddressItem: AccountAddressItemType = {
+            accountName: accountJson.name || '',
+            accountProxyId: accountJson.proxyId || '',
+            accountProxyType: currentAccountProxy.accountType,
+            accountType: accountJson.type,
+            address: reformatedAddress,
+          };
+
+          tokenRef && tokenRef.current?.onCloseModal();
+          setSelectedAccountAddressItem(accountAddressItem);
+          openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chainSlug, () => {
+            setSelectedAccountAddressItem(undefined);
+          });
+
+          break;
+        }
+      }
+    },
+    [chainInfoMap, currentAccountProxy, isAllAccount, openAddressQrModal],
+  );
+  /* token Selector --- */
+
+  /* --- account Selector */
+  const accountSelectorItems = useMemo<AccountAddressItemType[]>(() => {
+    const targetChain = specificChain || selectedChain;
+    const chainInfo = targetChain ? chainInfoMap[targetChain] : undefined;
+
+    if (!chainInfo) {
       return [];
     }
 
-    if (tokenGroupSlug) {
-      const chains = getChainsByTokenGroup(tokenGroupSlug, assetRegistryMap);
+    const result: AccountAddressItemType[] = [];
 
-      return accounts.filter(account => {
-        const isEvm = isEthereumAddress(account.address);
-        const isAll = checkIsAccountAll(account.address);
+    accountProxies.forEach(ap => {
+      ap.accounts.forEach(a => {
+        const reformatedAddress = getReformatedAddressRelatedToChain(a, chainInfo);
 
-        if (isAll) {
-          return false;
+        if (reformatedAddress) {
+          result.push({
+            accountName: ap.name,
+            accountProxyId: ap.id,
+            accountProxyType: ap.accountType,
+            accountType: a.type,
+            address: reformatedAddress,
+            accountActions: ap.accountActions,
+          });
         }
-
-        if (account.isHardware) {
-          if (!account.isGeneric) {
-            if (!isEvm) {
-              const availableGen: string[] = account.availableGenesisHashes || [];
-              const networks = availableGen
-                .map(gen => findNetworkJsonByGenesisHash(chainInfoMap, gen)?.slug)
-                .filter(slug => slug) as string[];
-
-              return networks.some(n => chains.includes(n));
-            }
-          }
-        }
-
-        return chains.some(chain => {
-          const info = chainInfoMap[chain];
-
-          if (info) {
-            return isEvm === _isChainEvmCompatible(info);
-          } else {
-            return false;
-          }
-        });
       });
-    }
-
-    return accounts.filter(a => !checkIsAccountAll(a.address));
-  }, [isAllAccount, tokenGroupSlug, accounts, assetRegistryMap, chainInfoMap]);
-
-  const selectedAccountMap: Record<string, boolean> = useMemo(() => {
-    let result: Record<string, boolean> = {};
-    accountSelectorItems.forEach(acc => {
-      result[acc.address] = acc.address === selectedAccount;
     });
 
     return result;
-  }, [accountSelectorItems, selectedAccount]);
+  }, [accountProxies, chainInfoMap, selectedChain, specificChain]);
 
-  const getTokenSelectorItems = useCallback(
-    (_selectedAccount: string): TokenItemType[] => {
-      // if selectedAccount is not available or is ethereum type
-      if (!_selectedAccount) {
-        return [];
+  const onCloseAccountSelector = useCallback(() => {
+    accountRef && accountRef.current?.onCloseModal();
+    tokenRef && tokenRef.current?.onCloseModal();
+    setSelectedChain(undefined);
+    setSelectedAccountAddressItem(undefined);
+  }, []);
+
+  const onSelectAccountSelector = useCallback(
+    (item: AccountAddressItemType) => {
+      const targetChain = specificChain || selectedChain;
+
+      if (!targetChain) {
+        return;
       }
 
-      // if tokenGroupSlug is token slug
-      if (tokenGroupSlug && assetRegistryMap[tokenGroupSlug]) {
-        return [assetRegistryMap[tokenGroupSlug]];
-      }
-
-      const isEvmAddress = isEthereumAddress(_selectedAccount);
-      const acc = findAccountByAddress(accounts, _selectedAccount);
-
-      return Object.values(assetRegistryMap).filter(asset => {
-        const availableGen: string[] = acc?.availableGenesisHashes || [];
-
-        if (
-          acc?.isHardware &&
-          !acc?.isGeneric &&
-          !availableGen.includes(chainInfoMap[asset.originChain].substrateInfo?.genesisHash || '')
-        ) {
-          return false;
-        }
-
-        if (_MANTA_ZK_CHAIN_GROUP.includes(asset.originChain) && asset.symbol.startsWith(_ZK_ASSET_PREFIX)) {
-          return isMantaPayEnabled(acc, mantaPayConfigs);
-        }
-
-        if (_isAssetFungibleToken(asset)) {
-          if (_isChainEvmCompatible(chainInfoMap[asset.originChain]) === isEvmAddress) {
-            if (tokenGroupSlug) {
-              return _getMultiChainAsset(asset) === tokenGroupSlug;
-            }
-
-            return true;
-          }
-        }
-
-        return false;
-      });
+      setSelectedAccountAddressItem(item);
+      tokenRef && tokenRef.current?.onCloseModal();
+      accountRef && accountRef.current?.onCloseModal();
+      openAddressQrModal(item.address, item.accountType, item.accountProxyId, targetChain);
     },
-    [tokenGroupSlug, assetRegistryMap, accounts, chainInfoMap, mantaPayConfigs],
+    [openAddressQrModal, selectedChain, specificChain],
   );
+  /* account Selector --- */
 
   const onOpenReceive = useCallback(() => {
-    if (!currentAccount) {
+    if (!currentAccountProxy) {
       return;
     }
 
-    if (checkIsAccountAll(currentAccount.address)) {
-      accountRef && accountRef.current?.onOpenModal();
-    } else {
-      // if currentAccount is ledger type
-      if (currentAccount.isHardware) {
-        if (!currentAccount.isGeneric) {
-          const availableGen: string[] = currentAccount.availableGenesisHashes || [];
-          const networks = availableGen
-            .map(gen => findNetworkJsonByGenesisHash(chainInfoMap, gen)?.slug)
-            .filter(slug => slug) as string[];
+    const handleShowQrModal = (chain: string) => {
+      const chainInfo = chainInfoMap[chain];
 
-          if (networks.length === 1) {
-            setReceiveSelectedResult(prevState => ({ ...prevState, selectedNetwork: networks[0] }));
-            setQrModalVisible(true);
-
-            return;
-          }
-        }
+      if (!chainInfo) {
+        return;
       }
 
-      const _tokenSelectorItems = getTokenSelectorItems(currentAccount.address);
+      for (const accountJson of currentAccountProxy.accounts) {
+        const reformatedAddress = getReformatedAddressRelatedToChain(accountJson, chainInfo);
 
-      setTokenSelectorItems(_tokenSelectorItems);
+        if (reformatedAddress) {
+          const accountAddressItem: AccountAddressItemType = {
+            accountName: accountJson.name || '',
+            accountProxyId: accountJson.proxyId || '',
+            accountProxyType: currentAccountProxy.accountType,
+            accountType: accountJson.type,
+            address: reformatedAddress,
+          };
 
-      if (tokenGroupSlug) {
-        if (_tokenSelectorItems.length === 1) {
-          setReceiveSelectedResult(prev => ({ ...prev, selectedNetwork: _tokenSelectorItems[0].originChain }));
-          setQrModalVisible(true);
+          setSelectedAccountAddressItem(accountAddressItem);
 
-          return;
+          openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chain, () => {
+            setSelectedAccountAddressItem(undefined);
+          });
+
+          break;
         }
       }
-      tokenRef && tokenRef.current?.onOpenModal();
+    };
+
+    if (specificChain) {
+      if (!chainSupported.includes(specificChain)) {
+        console.warn('tokenGroupSlug does not work with current account');
+
+        return;
+      }
+
+      // current account is All
+      if (isAllAccount) {
+        accountRef && accountRef.current?.onOpenModal();
+
+        return;
+      }
+
+      // current account is not All, just do show QR logic
+
+      handleShowQrModal(specificChain);
+
+      return;
     }
-  }, [chainInfoMap, currentAccount, getTokenSelectorItems, tokenGroupSlug]);
 
-  const openSelectAccount = useCallback(
-    (account: AccountJson) => {
-      setReceiveSelectedResult({ selectedAccount: account.address });
-      const _tokenSelectorItems = getTokenSelectorItems(account.address);
+    if (tokenSelectorItems.length === 1 && tokenGroupSlug) {
+      if (isAllAccount) {
+        setSelectedChain(tokenSelectorItems[0].originChain);
+        accountRef && accountRef.current?.onOpenModal();
 
-      setTokenSelectorItems(_tokenSelectorItems);
-
-      if (tokenGroupSlug) {
-        if (_tokenSelectorItems.length === 1) {
-          setReceiveSelectedResult(prev => ({ ...prev, selectedNetwork: _tokenSelectorItems[0].originChain }));
-          accountRef && accountRef.current?.onCloseModal();
-          setQrModalVisible(true);
-
-          return;
-        }
+        return;
       }
 
-      tokenRef && tokenRef.current?.onOpenModal();
-    },
-    [getTokenSelectorItems, tokenGroupSlug],
-  );
+      handleShowQrModal(tokenSelectorItems[0].originChain);
 
-  const openSelectToken = useCallback((value: TokenItemType) => {
-    setReceiveSelectedResult(prevState => ({ ...prevState, selectedNetwork: value.originChain }));
-    tokenRef && tokenRef.current?.onCloseModal();
-    accountRef && accountRef.current?.onCloseModal();
-    setQrModalVisible(true);
-  }, []);
+      return;
+    }
 
-  const onCloseSelectAccount = useCallback(() => {
-    accountRef && accountRef.current?.onCloseModal();
-  }, []);
+    tokenRef && tokenRef.current?.onOpenModal();
+  }, [
+    chainInfoMap,
+    chainSupported,
+    currentAccountProxy,
+    isAllAccount,
+    openAddressQrModal,
+    specificChain,
+    tokenGroupSlug,
+    tokenSelectorItems,
+  ]);
 
-  const onCloseSelectToken = useCallback(() => {
-    tokenRef && tokenRef.current?.onCloseModal();
-  }, []);
+  // useEffect(() => {
+  //   if (addressQrModal.addressModalState.visible && selectedAccountAddressItem) {
+  //     onOpenReceive();
+  //   }
+  // }, [addressQrModal.addressModalState.visible, selectedAccountAddressItem, onOpenReceive]);
 
   useEffect(() => {
-    setReceiveSelectedResult(prev => ({
-      ...prev,
-      selectedAccount: currentAccount?.address,
-    }));
-  }, [currentAccount?.address]);
+    if (addressQrModal.addressModalState.visible && selectedAccountAddressItem) {
+      addressQrModal.setAddressQrModal(prev => {
+        if (!prev || !TON_CHAINS.includes(prev.selectNetwork || '')) {
+          return prev;
+        }
+
+        const targetAddress = accountSelectorItems.find(
+          i => i.accountProxyId === selectedAccountAddressItem.accountProxyId,
+        )?.address;
+
+        if (targetAddress) {
+          return {
+            ...prev,
+            address: targetAddress,
+          };
+        }
+
+        const _selectedAccount = accountSelectorItems.find(
+          item => item.accountName === selectedAccountAddressItem.accountName,
+        );
+        const isSoloAccount = _selectedAccount?.accountProxyType === AccountProxyType.SOLO;
+        const hasTonChangeWalletContractVersion = _selectedAccount?.accountActions?.includes(
+          AccountActions.TON_CHANGE_WALLET_CONTRACT_VERSION,
+        );
+        const latestAddress = _selectedAccount?.address;
+
+        if (isSoloAccount && hasTonChangeWalletContractVersion && latestAddress) {
+          setSelectedAccountAddressItem(_selectedAccount);
+
+          return {
+            ...prev,
+            address: latestAddress,
+          };
+        }
+
+        return prev;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountSelectorItems, addressQrModal.addressModalState.visible, selectedAccountAddressItem]);
 
   return {
-    isQrModalVisible,
     onOpenReceive,
-    openSelectAccount,
-    openSelectToken,
-    onCloseSelectAccount,
-    onCloseSelectToken,
-    setQrModalVisible,
-    selectedAccount,
+    openSelectAccount: onSelectAccountSelector,
+    openSelectToken: onSelectTokenSelector,
+    onCloseSelectAccount: onCloseAccountSelector,
+    onCloseSelectToken: onCloseTokenSelector,
     accountSelectorItems,
     tokenSelectorItems,
-    selectedNetwork,
     accountRef,
     tokenRef,
     chainRef,
-    selectedAccountMap,
   };
 }

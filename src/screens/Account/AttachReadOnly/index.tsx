@@ -5,13 +5,11 @@ import { AddressScanner } from 'components/Scanner/AddressScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
-import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Eye, X } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, ScrollView, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
-import { QrAccount } from 'types/qr/attach';
 import { readOnlyScan } from 'utils/scanner/attach';
 import { createAccountExternalV2 } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
@@ -19,36 +17,57 @@ import { Warning } from 'components/Warning';
 import { Button, PageIcon, Typography } from 'components/design-system-ui';
 import createStyle from './styles';
 import { getButtonIcon } from 'utils/button';
-import { isAddress } from '@polkadot/util-crypto';
-
-const validateAddress = (value: string) => {
-  const qrAccount = readOnlyScan(value);
-  if (!qrAccount) {
-    return [i18n.warningMessage.invalidQRCode];
-  } else {
-    return [];
-  }
-};
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { AccountExternalErrorCode } from '@subwallet/extension-base/background/KoniTypes';
+import InputText from 'components/Input/InputText';
+import { isSameAddress } from '@subwallet/extension-base/utils';
+import { isAddress } from '@subwallet/keyring';
 
 const AttachReadOnly = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
-  const defaultName = useGetDefaultAccountName();
 
   const styles = useMemo(() => createStyle(theme), [theme]);
-
-  const [account, setAccount] = useState<QrAccount | null>(null);
+  const [reformatAddress, setReformatAddress] = useState('');
+  const [isHideAccountNameInput, setIsHideAccountNameInput] = useState(false);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const [isScanning, setIsScanning] = useState<boolean>(false);
-  const [errors, setErrors] = useState<string[]>([]);
   const [scanError, setScanError] = useState<string | undefined>(undefined);
   const [isBusy, setIsBusy] = useState<boolean>(false);
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
-  const accountRef = useRef<QrAccount | null>(null);
 
-  useEffect(() => {
-    accountRef.current = account;
-  }, [account]);
+  const accountAddressValidator = useCallback(
+    (value: string) => {
+      if (!isAddress(value)) {
+        return ['Invalid address'];
+      }
+
+      const result = readOnlyScan(value);
+
+      if (result) {
+        for (const _account of accounts) {
+          if (isSameAddress(_account.address, result.content)) {
+            setReformatAddress('');
+            setIsHideAccountNameInput(true);
+            return ['Account already exists'];
+          }
+        }
+      } else {
+        setReformatAddress('');
+        setIsHideAccountNameInput(true);
+
+        if (value !== '') {
+          return ['Invalid address'];
+        }
+      }
+
+      setIsHideAccountNameInput(false);
+      return [];
+    },
+    [accounts],
+  );
 
   const formConfig = useMemo((): FormControlConfig => {
     return {
@@ -56,10 +75,15 @@ const AttachReadOnly = () => {
         name: i18n.common.accountAddress,
         value: '',
         require: true,
-        validateFunc: validateAddress,
+        validateFunc: accountAddressValidator,
+      },
+      name: {
+        name: 'Account name',
+        value: '',
+        require: true,
       },
     };
-  }, []);
+  }, [accountAddressValidator]);
 
   const goBack = useCallback(() => {
     navigation.goBack();
@@ -79,64 +103,66 @@ const AttachReadOnly = () => {
 
   const _onSubmitForm = (): void => {
     setIsBusy(true);
-    const _account = accountRef.current;
-    if (formState.data.address) {
-      if (!_account) {
-        setIsBusy(false);
-        return;
-      }
-      if (_account.isAddress) {
-        createAccountExternalV2({
-          name: defaultName,
-          address: _account.content,
-          genesisHash: _account.genesisHash,
-          isEthereum: _account.isEthereum,
-          isAllowed: true,
-          isReadOnly: true,
+    const accountName = formState.data.name.trim();
+    if (reformatAddress && accountName) {
+      createAccountExternalV2({
+        name: accountName,
+        address: reformatAddress,
+        genesisHash: '',
+        isAllowed: true,
+        isReadOnly: true,
+      })
+        .then(errs => {
+          if (errs.length) {
+            const errorNameInputs: string[] = [];
+            const errorAddressInputs: string[] = [];
+
+            errs.forEach(error => {
+              if (error.code === AccountExternalErrorCode.INVALID_ADDRESS) {
+                errorAddressInputs.push(error.message);
+              } else if (error.message.toLowerCase().includes('account name already exists')) {
+                errorNameInputs.push(error.message);
+              } else {
+                errorAddressInputs.push('Invalid address');
+              }
+            });
+
+            onUpdateErrors('address')(errorAddressInputs);
+            onUpdateErrors('name')(errorNameInputs);
+          } else {
+            onComplete();
+          }
         })
-          .then(errs => {
-            if (errs.length) {
-              setErrors(errs.map(e => e.message));
-            } else {
-              onComplete();
-            }
-          })
-          .catch((error: Error) => {
-            setErrors([error.message]);
-            console.error(error);
-          })
-          .finally(() => {
-            setIsBusy(false);
-          });
-      } else {
-        setIsBusy(false);
-      }
+        .catch((error: Error) => {
+          onUpdateErrors('name')([error.message]);
+          console.error(error);
+        })
+        .finally(() => {
+          setIsBusy(false);
+        });
     } else {
       Keyboard.dismiss();
     }
   };
 
-  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onPressSubmit(_onSubmitForm),
   });
 
   const onChangeAddress = useCallback(
     (currentTextValue: string) => {
-      setErrors([]);
       onChangeValue('address')(currentTextValue);
-      if (!currentTextValue) {
-        setErrors([i18n.warningMessage.requireMessage]);
+
+      if (!isAddress(currentTextValue)) {
         return;
       }
 
       const qrAccount = readOnlyScan(currentTextValue);
 
-      if (!qrAccount) {
-        setErrors([i18n.errorMessage.invalidAddress]);
+      if (qrAccount) {
+        setReformatAddress(qrAccount.content);
         return;
       }
-
-      setAccount(qrAccount);
     },
     [onChangeValue],
   );
@@ -153,22 +179,22 @@ const AttachReadOnly = () => {
 
       if (isAddress(text)) {
         if (!qrAccount) {
-          setErrors([i18n.warningMessage.invalidQRCode]);
+          onUpdateErrors('address')([i18n.warningMessage.invalidQRCode]);
           update('');
           return;
         }
 
-        setErrors([]);
+        onUpdateErrors('address')([]);
         setScanError(undefined);
         setIsScanning(false);
-        setAccount(qrAccount);
+        setReformatAddress(qrAccount.content);
         update(qrAccount.content);
       } else {
         setScanError(i18n.errorMessage.isNotAnAddress);
         return;
       }
     },
-    [formState.refs.address],
+    [formState.refs.address, onUpdateErrors],
   );
 
   return (
@@ -194,10 +220,23 @@ const AttachReadOnly = () => {
             isValidValue={formState.isValidated.address}
             placeholder={i18n.placeholder.accountAddress}
             disabled={isBusy}
-            onSubmitEditing={errors.length > 0 ? () => Keyboard.dismiss() : onSubmitField('address')}
+            onSubmitEditing={formState.errors.address.length > 0 ? () => Keyboard.dismiss() : onSubmitField('address')}
           />
-          {errors.length > 0 &&
-            errors.map((message, index) => <Warning isDanger message={message} key={index} style={styles.warning} />)}
+          {formState.errors.address.length > 0 &&
+            formState.errors.address.map((message, index) => (
+              <Warning isDanger message={message} key={index} style={styles.warning} />
+            ))}
+          {!isHideAccountNameInput && (
+            <InputText
+              ref={formState.refs.name}
+              label={'Account name'}
+              placeholder={'Enter the account name'}
+              onChangeText={onChangeValue('name')}
+              value={formState.data.name}
+              errorMessages={formState.errors.name}
+              disabled={isBusy}
+            />
+          )}
           <AddressScanner
             qrModalVisible={isScanning}
             onPressCancel={onCloseScanner}
@@ -212,7 +251,7 @@ const AttachReadOnly = () => {
             icon={getButtonIcon(Eye)}
             loading={isBusy}
             onPress={onPressSubmit(_onSubmitForm)}
-            disabled={errors.length > 0 || !formState.data.address || isBusy}>
+            disabled={formState.errors.address.length > 0 || !formState.data.address || !formState.data.name || isBusy}>
             {i18n.buttonTitles.attachWatchOnlyAcc}
           </Button>
         </View>

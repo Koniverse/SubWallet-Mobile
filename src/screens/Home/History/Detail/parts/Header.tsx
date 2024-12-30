@@ -18,9 +18,9 @@ const HistoryDetailHeader: React.FC<Props> = (props: Props) => {
 
   const isStaking = isTypeStaking(data.type);
 
-  const xcmInfo = useMemo((): TransactionAdditionalInfo<ExtrinsicType.TRANSFER_XCM> | undefined => {
+  const xcmInfo = useMemo((): TransactionAdditionalInfo[ExtrinsicType.TRANSFER_XCM] | undefined => {
     if (isTypeTransfer(data.type) && data.additionalInfo && data.type === ExtrinsicType.TRANSFER_XCM) {
-      return data.additionalInfo as TransactionAdditionalInfo<ExtrinsicType.TRANSFER_XCM>;
+      return data.additionalInfo as TransactionAdditionalInfo[ExtrinsicType.TRANSFER_XCM];
     }
 
     return undefined;

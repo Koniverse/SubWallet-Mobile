@@ -1,12 +1,17 @@
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AccountAuthType, AccountJson, AuthorizeRequest } from '@subwallet/extension-base/background/types';
+import { AccountAuthType, AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import { Button, Icon } from 'components/design-system-ui';
-import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import {
+  ALL_ACCOUNT_AUTH_TYPES,
+  DEFAULT_ACCOUNT_TYPES,
+  EVM_ACCOUNT_TYPE,
+  SUBSTRATE_ACCOUNT_TYPE,
+  TON_ACCOUNT_TYPE,
+} from 'constants/index';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { PlusCircle, ShieldSlash, XCircle } from 'phosphor-react-native';
@@ -16,15 +21,16 @@ import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from '
 import { useSelector } from 'react-redux';
 import { RootStackParamList } from 'routes/index';
 import { RootState } from 'stores/index';
-import { isNoAccount } from 'utils/account';
 import { isAccountAll } from 'utils/accountAll';
 import i18n from 'utils/i18n/i18n';
 
 import createStyle from './styles';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
-import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
+import { AccountChainType } from '@subwallet/extension-base/types';
+import { filterAuthorizeAccountProxies } from 'utils/accountProxy';
+import { KeypairType } from '@subwallet/keyring/types';
+import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
 
 interface Props {
   request: AuthorizeRequest;
@@ -46,37 +52,45 @@ async function handleBlock({ id }: AuthorizeRequest) {
   return await rejectAuthRequestV2(id);
 }
 
-export const filterAuthorizeAccounts = (accounts: AccountJson[], accountAuthType: AccountAuthType) => {
-  let rs = [...accounts];
-
-  if (accountAuthType === 'evm') {
-    rs = rs.filter(acc => !isAccountAll(acc.address) && acc.type === 'ethereum');
-  } else if (accountAuthType === 'substrate') {
-    rs = rs.filter(acc => !isAccountAll(acc.address) && acc.type !== 'ethereum');
-  } else {
-    rs = rs.filter(acc => !isAccountAll(acc.address));
-  }
-
-  if (isNoAccount(rs)) {
-    return [];
-  }
-
-  return rs;
-};
-
 const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   const { request, navigation } = props;
-  const { accountAuthType, allowedAccounts } = request.request;
+  const { accountAuthTypes, allowedAccounts } = request.request;
   const theme = useSubWalletTheme().swThemes;
-  const { accounts } = useSelector((state: RootState) => state.accountState);
+  const { accountProxies, accounts } = useSelector((state: RootState) => state.accountState);
   const styles = useMemo(() => createStyle(theme), [theme]);
   const [loading, setLoading] = useState(false);
-  const visibleAccounts = useMemo(
-    () => filterAuthorizeAccounts(accounts, accountAuthType || 'both'),
-    [accountAuthType, accounts],
+  const visibleAccountProxies = useMemo(
+    () => filterAuthorizeAccountProxies(accountProxies, accountAuthTypes || ALL_ACCOUNT_AUTH_TYPES),
+    [accountAuthTypes, accountProxies],
   );
-  const accountTypeMessage =
-    accountAuthType === 'substrate' ? 'Substrate' : accountAuthType === 'evm' ? 'EVM' : 'Substrate & EVM';
+  const setSelectedMnemonicType = useSetSelectedMnemonicType(true);
+  const noAvailableTitle: string = useMemo(() => {
+    if (accountAuthTypes && accountAuthTypes.length === 1) {
+      switch (accountAuthTypes[0]) {
+        case 'substrate':
+          return 'No available Substrate account';
+        case 'evm':
+          return 'No available EVM account';
+        case 'ton':
+          return 'No available TON account';
+      }
+    }
+
+    return 'No available account';
+  }, [accountAuthTypes]);
+
+  const noAvailableDescription: string = useMemo(() => {
+    if (accountAuthTypes && accountAuthTypes.length === 1) {
+      switch (accountAuthTypes[0]) {
+        case 'substrate':
+          return "You don't have any Substrate account to connect. Please create one or skip this step by hitting Cancel.";
+        case 'evm':
+          return "You don't have any EVM account to connect. Please create one or skip this step by hitting Cancel.";
+      }
+    }
+
+    return "You don't have any account to connect. Please create one or skip this step by hitting Cancel.";
+  }, [accountAuthTypes]);
   // Selected map with default values is map of all accounts
   const [selectedMap, setSelectedMap] = useState<Record<string, boolean>>({});
   // Create selected map by default
@@ -84,17 +98,17 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     setSelectedMap(map => {
       const existedKey = Object.keys(map);
 
-      accounts.forEach(item => {
-        if (!existedKey.includes(item.address)) {
-          map[item.address] = (allowedAccounts || []).includes(item.address);
+      accountProxies.forEach(item => {
+        if (!existedKey.includes(item.id)) {
+          map[item.id] = (allowedAccounts || []).includes(item.id);
         }
       });
 
-      map[ALL_ACCOUNT_KEY] = visibleAccounts.every(item => map[item.address]);
+      map[ALL_ACCOUNT_KEY] = visibleAccountProxies.every(item => map[item.id]);
 
       return { ...map };
     });
-  }, [accounts, allowedAccounts, visibleAccounts]);
+  }, [accountProxies, allowedAccounts, visibleAccountProxies]);
 
   // Handle buttons actions
   const onBlock = useCallback(() => {
@@ -113,28 +127,47 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
 
   const onConfirm = useCallback(() => {
     setLoading(true);
-    const selectedAccounts = Object.keys(selectedMap).filter(key => selectedMap[key]);
+    const selectedAccountProxyIds = Object.keys(selectedMap).filter(key => selectedMap[key]);
+    const selectedAccounts = accounts
+      .filter(({ chainType, proxyId }) => {
+        if (selectedAccountProxyIds.includes(proxyId || '')) {
+          switch (chainType) {
+            case AccountChainType.SUBSTRATE:
+              return accountAuthTypes?.includes('substrate');
+            case AccountChainType.ETHEREUM:
+              return accountAuthTypes?.includes('evm');
+            case AccountChainType.TON:
+              return accountAuthTypes?.includes('ton');
+          }
+        }
+
+        return false;
+      })
+      .map(({ address }) => address);
 
     handleConfirm(request, selectedAccounts).finally(() => {
       setLoading(false);
     });
-  }, [request, selectedMap]);
+  }, [accountAuthTypes, accounts, request, selectedMap]);
 
   const onAddAccount = useCallback(() => {
     let types: KeypairType[];
 
-    switch (accountAuthType) {
-      case 'substrate':
-        types = [SUBSTRATE_ACCOUNT_TYPE];
-        break;
-      case 'evm':
-        types = [EVM_ACCOUNT_TYPE];
-        break;
-      default:
-        types = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
+    const addAccountType: Record<AccountAuthType, KeypairType> = {
+      evm: EVM_ACCOUNT_TYPE,
+      substrate: SUBSTRATE_ACCOUNT_TYPE,
+      ton: TON_ACCOUNT_TYPE,
+    };
+
+    if (accountAuthTypes) {
+      types = accountAuthTypes.map(type => addAccountType[type]);
+    } else {
+      types = DEFAULT_ACCOUNT_TYPES;
     }
-    navigation.replace('CreateAccount', { keyTypes: types, isBack: true });
-  }, [accountAuthType, navigation]);
+    console.log('types', types);
+    setSelectedMnemonicType('general');
+    navigation.replace('CreateAccount', { isBack: true });
+  }, [accountAuthTypes, navigation, setSelectedMnemonicType]);
 
   const { onPress: onPressCreateOne } = useUnlockModal(navigation);
 
@@ -143,7 +176,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
       const isAll = isAccountAll(address);
 
       return () => {
-        const visibleAddresses = visibleAccounts.map(item => item.address);
+        const visibleAddresses = visibleAccountProxies.map(item => item.id);
 
         setSelectedMap(map => {
           const isChecked = !map[address];
@@ -165,23 +198,12 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
         });
       };
     },
-    [visibleAccounts],
+    [visibleAccountProxies],
   );
 
-  const isDisable = useMemo(() => {
-    let filteredSelectMap: Record<string, boolean>;
-    if (accountAuthType === 'substrate') {
-      filteredSelectMap = Object.fromEntries(
-        Object.entries(selectedMap).filter(([key]) => isValidSubstrateAddress(key)),
-      );
-    } else if (accountAuthType === 'evm') {
-      filteredSelectMap = Object.fromEntries(Object.entries(selectedMap).filter(([key]) => isEthereumAddress(key)));
-    } else {
-      filteredSelectMap = { ...selectedMap };
-    }
-
-    return Object.values(filteredSelectMap).every(value => !value);
-  }, [accountAuthType, selectedMap]);
+  const isDisableConnect = useMemo(() => {
+    return !visibleAccountProxies.filter(({ id }) => !!selectedMap[id]).length;
+  }, [selectedMap, visibleAccountProxies]);
 
   useHandleInternetConnectionForConfirmation(onCancel);
 
@@ -189,21 +211,17 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     <React.Fragment>
       <ConfirmationContent gap={theme.size}>
         <ConfirmationGeneralInfo request={request} gap={0} />
-        {visibleAccounts.length > 0 ? (
+        {visibleAccountProxies.length > 0 ? (
           <Text style={styles.text}>{i18n.common.chooseAccount}</Text>
         ) : (
           <>
-            <Text style={styles.noAccountTextStyle}>
-              {i18n.formatString(i18n.common.noAvailableAccount, accountTypeMessage || '')}
-            </Text>
-            <Text style={styles.textCenter}>
-              {i18n.formatString(i18n.common.youDonotHaveAnyAcc, accountTypeMessage || '')}
-            </Text>
+            <Text style={styles.noAccountTextStyle}>{noAvailableTitle}</Text>
+            <Text style={styles.textCenter}>{noAvailableDescription}</Text>
           </>
         )}
         <View style={styles.contentContainer}>
           <>
-            {visibleAccounts.length > 1 && (
+            {visibleAccountProxies.length > 1 && (
               <AccountItemWithName
                 key={ALL_ACCOUNT_KEY}
                 isSelected={selectedMap[ALL_ACCOUNT_KEY]}
@@ -214,28 +232,29 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
                 showUnselectIcon={true}
               />
             )}
-            {visibleAccounts.map(item => (
+            {visibleAccountProxies.map(item => (
               <AccountItemWithName
-                key={item.address}
-                isSelected={selectedMap[item.address]}
-                address={item.address}
+                key={item.id}
+                isSelected={selectedMap[item.id]}
+                address={item.id}
                 accountName={item.name || ''}
-                onPress={onAccountSelect(item.address)}
+                onPress={onAccountSelect(item.id)}
                 avatarSize={24}
                 showUnselectIcon={true}
+                showAddress={false}
               />
             ))}
           </>
         </View>
       </ConfirmationContent>
       <ConfirmationFooter>
-        {visibleAccounts.length > 0 ? (
+        {visibleAccountProxies.length > 0 ? (
           <>
             <Button icon={<Icon phosphorIcon={ShieldSlash} weight="fill" />} type="danger" onPress={onBlock} />
             <Button block={true} type="secondary" onPress={onCancel}>
               {i18n.common.cancel}
             </Button>
-            <Button block={true} onPress={onConfirm} disabled={isDisable} loading={loading}>
+            <Button block={true} onPress={onConfirm} disabled={isDisableConnect} loading={loading}>
               {i18n.common.connect}
             </Button>
           </>

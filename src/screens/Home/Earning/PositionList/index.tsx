@@ -1,5 +1,5 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { YieldPoolType } from '@subwallet/extension-base/types';
+import { YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
 import BigNumber from 'bignumber.js';
 import { EmptyList } from 'components/EmptyList';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -8,8 +8,8 @@ import { useGroupYieldPosition } from 'hooks/earning';
 import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
-import { Plus, Vault } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import { Plus, Vault, Warning } from 'phosphor-react-native';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import { Alert, Keyboard, Linking, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
@@ -24,8 +24,12 @@ import { isRelatedToAstar } from 'utils/earning';
 import { BannerGenerator } from 'components/common/BannerGenerator';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-
-let cacheData: Record<string, boolean> = {};
+import { isAccountAll } from '@subwallet/extension-base/utils';
+import useGetYieldPositionForSpecificAccount from 'hooks/earning/useGetYieldPositionForSpecificAccount';
+import { mmkvStore } from 'utils/storage';
+import { EARNING_WARNING_ANNOUNCEMENT } from 'constants/localStorage';
+import { AppModalContext } from 'providers/AppModalContext';
+import { PageIcon, Typography } from 'components/design-system-ui';
 
 interface Props {
   setStep: (value: number) => void;
@@ -98,7 +102,13 @@ export const PositionList = ({ setStep, loading }: Props) => {
   const { isShowBalance } = useSelector((state: RootState) => state.settings);
   const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const { assetRegistry: assetInfoMap } = useSelector((state: RootState) => state.assetRegistry);
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { currentAccountProxy, accounts } = useSelector((state: RootState) => state.accountState);
+  const { confirmModal } = useContext(AppModalContext);
+  const specificList = useGetYieldPositionForSpecificAccount();
+  const announcement = mmkvStore.getString(EARNING_WARNING_ANNOUNCEMENT) || 'nonConfirmed';
+  const setAnnouncement = (value: string) => {
+    mmkvStore.set(EARNING_WARNING_ANNOUNCEMENT, value);
+  };
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -130,6 +140,48 @@ export const PositionList = ({ setStep, loading }: Props) => {
         return getValue(secondItem) - getValue(firstItem);
       });
   }, [assetInfoMap, currencyData, data, priceMap]);
+
+  const chainStakingBoth = useMemo(() => {
+    if (!currentAccountProxy) {
+      return null;
+    }
+
+    const chains = ['polkadot', 'kusama'];
+
+    const findChainWithStaking = (list: YieldPositionInfo[]) => {
+      const hasNativeStaking = (chain: string) =>
+        list.some(item => item.chain === chain && item.type === YieldPoolType.NATIVE_STAKING);
+      const hasNominationPool = (chain: string) =>
+        list.some(item => item.chain === chain && item.type === YieldPoolType.NOMINATION_POOL);
+
+      for (const chain of chains) {
+        if (hasNativeStaking(chain) && hasNominationPool(chain)) {
+          return chain;
+        }
+      }
+
+      return null;
+    };
+
+    if (isAccountAll(currentAccountProxy.id)) {
+      return findChainWithStaking(specificList);
+    }
+
+    for (const acc of accounts) {
+      if (isAccountAll(acc.address)) {
+        continue;
+      }
+
+      const listStaking = specificList.filter(item => item.address === acc.address);
+      const chain = findChainWithStaking(listStaking);
+
+      if (chain) {
+        return chain;
+      }
+    }
+
+    return null;
+  }, [accounts, currentAccountProxy, specificList]);
 
   const handleOnPress = useCallback(
     (positionInfo: ExtraYieldPositionInfo): (() => void) => {
@@ -221,12 +273,49 @@ export const PositionList = ({ setStep, loading }: Props) => {
     [chainInfoMap],
   );
 
+  const learnMore = useCallback(() => {
+    Linking.openURL(
+      'https://support.polkadot.network/support/solutions/articles/65000188140-changes-for-nomination-pool-members-and-opengov-participation',
+    );
+  }, []);
+
   useEffect(() => {
-    const address = currentAccount?.address || '';
-    if (cacheData[address] === undefined && isFocused) {
-      cacheData = { [address]: !items.length };
+    if (chainStakingBoth && announcement.includes('nonConfirmed')) {
+      const chainInfo = chainStakingBoth && chainInfoMap[chainStakingBoth];
+      const symbol = (!!chainInfo && chainInfo?.substrateInfo?.symbol) || '';
+      const originChain = (!!chainInfo && chainInfo?.name) || '';
+
+      confirmModal.setConfirmModal({
+        visible: true,
+        title: `Unstake your ${symbol} now!`,
+        customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+        message: (
+          <Typography.Text>
+            <Typography.Text>
+              {`You’re dual staking via both direct nomination and nomination pool, which will not be supported in the upcoming ${originChain} runtime upgrade. Read more to learn about the upgrade, and`}
+            </Typography.Text>
+            <Typography.Text
+              onPress={() => {
+                Linking.openURL('https://docs.subwallet.app/main/mobile-app-user-guide/manage-staking/unstake');
+              }}
+              style={styles.highlightText}>{` unstake your ${symbol} `}</Typography.Text>
+            <Typography.Text>{'from one of the methods to avoid issues'}</Typography.Text>
+          </Typography.Text>
+        ),
+        completeBtnTitle: 'Read update',
+        cancelBtnTitle: 'Dismiss',
+        onCompleteModal: () => {
+          learnMore();
+          setAnnouncement('confirmed');
+          confirmModal.hideConfirmModal();
+        },
+        onCancelModal: () => {
+          setAnnouncement('confirmed');
+          confirmModal.hideConfirmModal();
+        },
+      });
     }
-  }, [items.length, currentAccount, isFocused]);
+  }, [announcement, chainInfoMap, chainStakingBoth, confirmModal, learnMore, styles.highlightText, theme.colorWarning]);
 
   useEffect(() => {
     if (isFocused) {

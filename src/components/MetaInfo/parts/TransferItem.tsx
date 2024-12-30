@@ -10,7 +10,8 @@ import i18n from 'utils/i18n/i18n';
 import { View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
 import { toShort } from 'utils/index';
-import { Avatar, Logo } from 'components/design-system-ui';
+import { Logo } from 'components/design-system-ui';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 export interface TransferInfoItem extends Omit<InfoItemBase, 'label'> {
   senderAddress: string;
@@ -46,14 +47,30 @@ const TransferItem: React.FC<TransferInfoItem> = ({
       flexShrink: 1,
     };
   }, [_style.value, theme, valueColorSchema, valueGeneralStyle]);
+  const subValueStyle = useMemo(() => {
+    return {
+      ..._style.subValue,
+      ...valueGeneralStyle,
+      ...(valueColorSchema && { color: getSchemaColor(valueColorSchema, theme) }),
+      flexShrink: 1,
+      textAlign: 'left',
+    };
+  }, [_style.subValue, theme, valueColorSchema, valueGeneralStyle]);
 
   const genAccountBlock = (address: string, name?: string) => {
     return (
-      <View style={[_style.valueWrapper, { gap: theme.sizeXS }]}>
-        <Avatar value={address} size={24} />
-        <Typography.Text ellipsis style={valueStyle}>
-          {name || toShort(address)}
-        </Typography.Text>
+      <View style={[_style.valueWrapper, { gap: theme.sizeXS, alignItems: 'flex-start' }]}>
+        <AccountProxyAvatar value={address} size={24} />
+        <View style={{ flexShrink: 1 }}>
+          {!!name && (
+            <Typography.Text ellipsis style={valueStyle}>
+              {name}
+            </Typography.Text>
+          )}
+          <Typography.Text ellipsis style={!!name ? subValueStyle : valueStyle}>
+            {toShort(address)}
+          </Typography.Text>
+        </View>
       </View>
     );
   };
@@ -80,7 +97,7 @@ const TransferItem: React.FC<TransferInfoItem> = ({
   }
 
   return (
-    <View style={_style.row}>
+    <View style={[_style.row, { alignItems: 'flex-start' }]}>
       <View style={[_style.col, _style['col.grow'], { gap: theme.sizeXS }]}>
         {renderColContent(senderLabel || i18n.common.sender, { ..._style.label, ...labelGeneralStyle })}
         {genAccountBlock(senderAddress, senderName)}

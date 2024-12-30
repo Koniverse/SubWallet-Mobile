@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
-import { BalanceItem } from '@subwallet/extension-base/types';
 import { BalanceStore, ReduxStatus } from 'stores/types';
+import { BalanceMap } from '@subwallet/extension-base/types';
 
 const initialState: BalanceStore = {
   balanceMap: {},
@@ -14,14 +14,11 @@ const balanceSlice = createSlice({
   initialState,
   name: 'balance',
   reducers: {
-    update(state, action: PayloadAction<Record<string, BalanceItem>>) {
-      const data = action.payload;
-      if (Object.values(data || {}).length === 0) {
-        return;
-      }
+    update(state, action: PayloadAction<BalanceMap>) {
+      const payload = action.payload;
 
       return {
-        balanceMap: data,
+        balanceMap: { ...payload },
         reduxStatus: ReduxStatus.READY,
       };
     },

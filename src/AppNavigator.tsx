@@ -66,7 +66,6 @@ import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { AppModalContext } from 'providers/AppModalContext';
 import { PortalHost } from '@gorhom/portal';
 import { findAccountByAddress } from 'utils/index';
-import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { enableChain, saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
 import urlParse from 'url-parse';
 import useChainChecker from 'hooks/chain/useChainChecker';
@@ -84,7 +83,6 @@ import { AboutSubWallet } from 'screens/Settings/AboutSubWallet';
 import { updateCurrentRoute } from 'stores/utils';
 import { AppOnlineContentContext } from 'providers/AppOnlineContentProvider';
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import {
   _getSubstrateGenesisHash,
@@ -95,6 +93,8 @@ import { EarningPreview } from 'screens/EarningPreview';
 import { EarningPreviewPools } from 'screens/EarningPreview/EarningPreviewPools';
 import { ExportAllAccount } from 'screens/Account/ExportAllAccount';
 import { CrowdloansScreen } from 'screens/Home/Crowdloans';
+import { AccountJson } from '@subwallet/extension-base/types';
+import { CurrentAccountInfo } from '@subwallet/extension-base/background/types';
 
 interface Props {
   isAppReady: boolean;
@@ -190,6 +190,15 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
             },
           },
         },
+      },
+    },
+    EditAccount: {
+      path: 'account-detail',
+      stringify: {
+        address: (address: string) => address,
+        name: (name: string) => name,
+        requestViewDerivedAccountDetails: requestViewDerivedAccountDetails => requestViewDerivedAccountDetails,
+        requestViewDerivedAccounts: requestViewDerivedAccounts => requestViewDerivedAccounts,
       },
     },
     Drawer: {
@@ -305,7 +314,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   );
   const isLogin = useSelector((state: RootState) => state.appState.isLocked);
   const [isNavigationReady, setNavigationReady] = useState<boolean>(false);
-  const appModalContext = useContext(AppModalContext);
+  const { confirmModal } = useContext(AppModalContext);
   const isLockedRef = useRef(isLogin);
   const { checkChainConnected } = useChainChecker();
   const toast = useToast();
@@ -577,7 +586,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
 
   useEffect(() => {
     if (isLogin && !!accounts.length && isNavigationReady) {
-      appModalContext.hideConfirmModal();
+      confirmModal.hideConfirmModal();
       if (currentRoute && currentRoute.name === 'Confirmations') {
         setTimeout(() => navigationRef.current?.dispatch(StackActions.replace('Login')), 300);
       } else {

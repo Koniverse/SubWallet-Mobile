@@ -12,6 +12,7 @@ import { FieldValues, UseFormProps } from 'react-hook-form/dist/types';
 import { FieldPath, useForm } from 'react-hook-form';
 import { FieldPathValue } from 'react-hook-form/dist/types/path';
 import i18n from 'utils/i18n/i18n';
+import { AccountProxy } from '@subwallet/extension-base/types';
 
 export interface TransactionFormValues extends FieldValues {
   from: string;
@@ -28,15 +29,19 @@ export interface TransactionDoneInfo {
   address: string;
 }
 
+export const getTransactionFromAccountProxyValue = (accountProxy: AccountProxy | null): string => {
+  return accountProxy?.id ? (isAccountAll(accountProxy.id) ? '' : accountProxy.id) : '';
+};
+
 export const useTransaction = <T extends TransactionFormValues = TransactionFormValues, TContext = any>(
   action: string,
   formOptions: UseFormProps<T, TContext> = {},
 ) => {
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { currentAccountProxy } = useSelector((state: RootState) => state.accountState);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { turnOnChain, checkChainConnected } = useChainChecker();
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const { hideConfirmModal, setConfirmModal } = useContext(AppModalContext);
+  const { confirmModal } = useContext(AppModalContext);
   const transactionType = useMemo((): ExtrinsicTypeMobile => {
     switch (action) {
       case 'earn':
@@ -89,13 +94,14 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
 
   const defaultValues = useMemo(
     () => ({
-      from: (!isAccountAll(currentAccount?.address as string) && currentAccount?.address) || '',
+      fromAccountProxy: getTransactionFromAccountProxyValue(currentAccountProxy),
+      from: '',
       chain: '',
       asset: '',
       value: '',
       ...formOptions.defaultValues,
     }),
-    [currentAccount?.address, formOptions.defaultValues],
+    [currentAccountProxy, formOptions.defaultValues],
   );
 
   const form = useForm<T, TContext>({
@@ -130,25 +136,24 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
       const isConnected = checkChainConnected(chain);
       if (!isConnected) {
         setTimeout(() => {
-          setConfirmModal({
+          confirmModal.setConfirmModal({
             visible: true,
             completeBtnTitle: i18n.buttonTitles.enable,
             message: i18n.common.enableChainMessage,
             title: i18n.common.enableChain,
             onCancelModal: () => {
-              hideConfirmModal();
+              confirmModal.hideConfirmModal();
             },
             onCompleteModal: () => {
               turnOnChain(chain);
-              setTimeout(() => hideConfirmModal(), 300);
+              setTimeout(() => confirmModal.hideConfirmModal(), 300);
             },
             messageIcon: chain,
           });
         }, 700);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [hideConfirmModal, setConfirmModal, chainInfoMap],
+    [chainInfoMap, checkChainConnected, confirmModal, turnOnChain],
   );
 
   const onChangeFromValue = useCallback(

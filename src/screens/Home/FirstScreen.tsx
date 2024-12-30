@@ -22,6 +22,7 @@ import { SelectLanguageModal } from 'components/Modal/SelectLanguageModal';
 import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import { getPoolSlug } from 'utils/earn';
 import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
+import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -84,6 +85,7 @@ export const FirstScreen = () => {
   const [generalTermVisible, setGeneralTermVisible] = useState<boolean>(false);
   const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false);
   const [selectedActionType, setSelectedActionType] = useState<SelectedActionType>('createAcc');
+  const setSelectedMnemonicType = useSetSelectedMnemonicType(false);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
   const [previewModalVisible, setPreviewModalVisible] = useState<boolean>(false);
   const isFocused = useIsFocused();
@@ -186,12 +188,14 @@ export const FirstScreen = () => {
   };
 
   const onCreate = useCallback(() => {
+    setSelectedMnemonicType('general');
+    mmkvStore.set('use-default-create-content', false);
     if (hasMasterPassword) {
       navigation.navigate('CreateAccount', {});
     } else {
       navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
     }
-  }, [hasMasterPassword, navigation]);
+  }, [hasMasterPassword, navigation, setSelectedMnemonicType]);
 
   const actionList = [
     {

@@ -5,6 +5,7 @@ import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay
 import i18n from 'utils/i18n/i18n';
 import { Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 
 interface Props {
   address?: string;
@@ -16,6 +17,7 @@ interface Props {
   hidden?: boolean;
   isSubscribe?: boolean;
   showNetwork?: boolean;
+  extrinsicType?: ExtrinsicType;
 }
 
 export const FreeBalance = ({
@@ -28,12 +30,14 @@ export const FreeBalance = ({
   hidden,
   isSubscribe,
   showNetwork,
+  extrinsicType,
 }: Props) => {
   const { error, isLoading, nativeTokenBalance, nativeTokenSlug, tokenBalance, chainInfo } = useGetBalance(
     chain,
     address,
     tokenSlug,
     isSubscribe,
+    extrinsicType,
   );
   const theme = useSubWalletTheme().swThemes;
   useEffect(() => {

@@ -2,7 +2,6 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ExtrinsicType, NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
-import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import {
@@ -38,6 +37,10 @@ import { useWatch } from 'react-hook-form';
 import { FormItem } from 'components/common/FormItem';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
+import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
+import { ActionType } from '@subwallet/extension-base/core/types';
+import { findAccountByAddress } from 'utils/account';
+import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 
 const DEFAULT_ITEM: NftItem = {
   collectionId: 'unknown',
@@ -83,50 +86,29 @@ const SendNFT: React.FC<SendNFTProps> = ({
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
+  const { accounts } = useSelector((state: RootState) => state.accountState);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
-  const [recipientAddressInvalid, setRecipientAddressInvalid] = useState<boolean>(false);
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const addressPrefix = useGetChainPrefixBySlug(nftChain);
-  const chainGenesisHash = chainInfoMap[nftChain]?.substrateInfo?.genesisHash || '';
   const [isTransactionDone, setTransactionDone] = useState<boolean>(false);
   const recipientAddressRules = useMemo(
     () => ({
-      validate: (_recipientAddress: string): Promise<ValidateResult> => {
-        if (!isAddress(_recipientAddress)) {
-          return Promise.resolve(i18n.errorMessage.invalidRecipientAddress);
-        }
+      validate: (_recipientAddress: string, { chain, from }: SendNftFormValues): Promise<ValidateResult> => {
+        const destChainInfo = chainInfoMap[chain];
+        const account = findAccountByAddress(accounts, _recipientAddress);
 
-        if (!_recipientAddress) {
-          return Promise.resolve(undefined);
-        }
-
-        if (!isEthereumAddress(_recipientAddress)) {
-          const chainInfo = chainInfoMap[nftChain];
-          const _addressPrefix = chainInfo?.substrateInfo?.addressPrefix ?? 42;
-          const _addressOnChain = reformatAddress(_recipientAddress, _addressPrefix);
-
-          if (_addressOnChain !== _recipientAddress) {
-            return Promise.resolve(i18n.formatString(i18n.errorMessage.recipientAddressInvalid, chainInfo.name));
-          }
-        }
-
-        if (isSameAddress(_recipientAddress, owner)) {
-          return Promise.resolve(i18n.errorMessage.sameAddressError);
-        }
-
-        if (isEthereumAddress(_recipientAddress) !== isEthereumAddress(owner)) {
-          const message = i18n.formatString(
-            i18n.errorMessage.recipientAddressMustBeType,
-            isEthereumAddress(owner) ? 'evm' : 'substrate',
-          );
-
-          return Promise.resolve(message);
-        }
-
-        return Promise.resolve(undefined);
+        return validateRecipientAddress({
+          srcChain: chain,
+          destChainInfo,
+          fromAddress: from,
+          toAddress: _recipientAddress,
+          account,
+          actionType: ActionType.SEND_NFT,
+          autoFormatValue: false,
+        });
       },
     }),
-    [chainInfoMap, nftChain, owner],
+    [accounts, chainInfoMap],
   );
 
   const nftItem = useMemo(
@@ -177,15 +159,9 @@ const SendNFT: React.FC<SendNFTProps> = ({
     navigation.goBack();
   }, [navigation]);
 
-  useEffect(() => {
-    recipientAddressRules.validate(recipientAddressValue).then(result => {
-      setRecipientAddressInvalid(!!result);
-    });
-  }, [recipientAddressRules, recipientAddressValue]);
-
   const disableSubmit = useMemo(
-    () => !owner || !isAddress(recipientAddressValue) || !isNetConnected || loading || recipientAddressInvalid,
-    [isNetConnected, loading, owner, recipientAddressInvalid, recipientAddressValue],
+    () => !owner || !isAddress(recipientAddressValue) || !isNetConnected || loading,
+    [isNetConnected, loading, owner, recipientAddressValue],
   );
 
   const onSubmitForm = useCallback(
@@ -268,8 +244,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
                     <InputAddress
                       ref={ref}
                       showAddressBook
-                      addressPrefix={addressPrefix}
-                      networkGenesisHash={chainGenesisHash}
+                      showAvatar={false}
                       label={i18n.inputLabel.sendTo}
                       value={value}
                       onChangeText={onChange}

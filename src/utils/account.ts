@@ -1,5 +1,4 @@
-import { decodeAddress, encodeAddress, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import { AbstractAddressJson, AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
+import { AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import {
   _getChainSubstrateAddressPrefix,
@@ -15,20 +14,19 @@ import SInfo, { RNSensitiveInfoOptions } from 'react-native-sensitive-info';
 import { Alert } from 'react-native';
 import i18n from './i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import { isChainInfoAccordantAccountChainType } from 'utils/chain';
+import { AbstractAddressJson, AccountChainType, AccountJson } from '@subwallet/extension-base/types';
+import { decodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { isAddress } from '@subwallet/keyring';
 
 export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {
-    if (!address) {
+    const isAllAccount = address && isAccountAll(address);
+    if (!isAddress(address) && !isAllAccount) {
       return null;
     }
 
-    if (address === ALL_ACCOUNT_KEY) {
-      const result = accounts.find(account => account.address.toLowerCase() === address.toLowerCase());
-
-      return result || null;
-    }
-
-    const originAddress = isEthereumAddress(address) ? address : encodeAddress(decodeAddress(address));
+    const originAddress = isAccountAll(address) ? address : reformatAddress(address);
     const result = accounts.find(account => account.address.toLowerCase() === originAddress.toLowerCase());
 
     return result || null;
@@ -171,21 +169,16 @@ export const funcSortByName = (a: AbstractAddressJson, b: AbstractAddressJson) =
 export const findContactByAddress = (contacts: AbstractAddressJson[], address?: string): AbstractAddressJson | null => {
   try {
     const isAllAccount = address && isAccountAll(address);
-
     if (!isAddress(address) && !isAllAccount) {
       return null;
     }
 
-    const originAddress = isAccountAll(address)
-      ? address
-      : isEthereumAddress(address)
-      ? address
-      : encodeAddress(decodeAddress(address));
+    const originAddress = isAccountAll(address) ? address : reformatAddress(address);
     const result = contacts.find(contact => contact.address.toLowerCase() === originAddress.toLowerCase());
 
     return result || null;
   } catch (e) {
-    console.error('Fail to detect address', e);
+    console.error(`Fail to detect address ${address}`, e);
 
     return null;
   }
@@ -255,3 +248,26 @@ export const getSupportedBiometryType = async () => {
     return null;
   }
 };
+
+export function getReformatedAddressRelatedToChain(
+  accountJson: AccountJson,
+  chainInfo: _ChainInfo,
+): string | undefined {
+  if (accountJson.specialChain && accountJson.specialChain !== chainInfo.slug) {
+    return undefined;
+  }
+
+  if (!isChainInfoAccordantAccountChainType(chainInfo, accountJson.chainType)) {
+    return undefined;
+  }
+
+  if (accountJson.chainType === AccountChainType.SUBSTRATE && chainInfo.substrateInfo) {
+    return reformatAddress(accountJson.address, chainInfo.substrateInfo.addressPrefix);
+  } else if (accountJson.chainType === AccountChainType.ETHEREUM && chainInfo.evmInfo) {
+    return accountJson.address;
+  } else if (accountJson.chainType === AccountChainType.TON && chainInfo.tonInfo) {
+    return reformatAddress(accountJson.address, chainInfo.isTestnet ? 0 : 1);
+  }
+
+  return undefined;
+}

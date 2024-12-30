@@ -1,5 +1,6 @@
 import { getAstarWithdrawable } from '@subwallet/extension-base/services/earning-service/handlers/native-staking/astar';
 import {
+  AccountProxy,
   RequestYieldWithdrawal,
   UnstakingInfo,
   UnstakingStatus,
@@ -17,8 +18,6 @@ import { useSelector } from 'react-redux';
 import { accountFilterFunc } from 'screens/Transaction/helper/earning';
 import { RootState } from 'stores/index';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { AccountJson } from '@subwallet/extension-base/background/types';
-import { isSameAddress } from '@subwallet/extension-base/utils';
 import { AmountData, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import MetaInfo from 'components/MetaInfo';
@@ -42,15 +41,20 @@ import { yieldSubmitStakingWithdrawal } from 'messaging/index';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
+import { AccountAddressItemType } from 'types/account';
+import { getReformatedAddressRelatedToChain } from 'utils/account';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
   allPositionInfos: YieldPositionInfo[],
   poolType: YieldPoolType,
   poolChain?: string,
-): ((account: AccountJson) => boolean) => {
-  return (account: AccountJson): boolean => {
-    const nomination = allPositionInfos.find(data => isSameAddress(data.address, account.address));
+): ((account: AccountProxy) => boolean) => {
+  return (account: AccountProxy): boolean => {
+    const nomination = allPositionInfos.find(data =>
+      account.accounts.some(ap => isSameAddress(data.address, ap.address)),
+    );
 
     return (
       (nomination
@@ -68,7 +72,7 @@ export const Withdraw = ({
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<StakingScreenNavigationProps>();
 
-  const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
+  const { isAllAccount, accountProxies } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
 
@@ -103,7 +107,7 @@ export const Withdraw = ({
   const accountInfo = useGetAccountByAddress(fromValue);
   const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
   const stakingChain = useMemo(() => poolInfo?.chain || '', [poolInfo?.chain]);
-
+  const poolChain = poolInfo?.chain;
   const inputAsset = useGetChainAssetInfo(poolInfo?.metadata.inputAsset);
   const decimals = inputAsset?.decimals || 0;
   const symbol = inputAsset?.symbol || '';
@@ -136,8 +140,31 @@ export const Withdraw = ({
   );
 
   const accountList = useMemo(() => {
-    return accounts.filter(filterAccount(chainInfoMap, allPositionInfos, poolInfo?.type));
-  }, [accounts, allPositionInfos, chainInfoMap, poolInfo?.type]);
+    const chainInfo = poolChain ? chainInfoMap[poolChain] : undefined;
+    if (!chainInfo) {
+      return [];
+    }
+    const filteredAccountList = accountProxies.filter(filterAccount(chainInfoMap, allPositionInfos, poolInfo?.type));
+
+    const result: AccountAddressItemType[] = [];
+    filteredAccountList.forEach(ap => {
+      ap.accounts.forEach(a => {
+        const address = getReformatedAddressRelatedToChain(a, chainInfo);
+
+        if (address) {
+          result.push({
+            accountName: ap.name,
+            accountProxyId: ap.id,
+            accountProxyType: ap.accountType,
+            accountType: a.type,
+            address,
+          });
+        }
+      });
+    });
+
+    return result;
+  }, [accountProxies, allPositionInfos, chainInfoMap, poolChain, poolInfo?.type]);
 
   const unstakingInfo = useMemo((): UnstakingInfo | undefined => {
     if (fromValue && !isAccountAll(fromValue) && !!yieldPosition) {

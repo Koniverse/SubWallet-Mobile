@@ -1,60 +1,26 @@
 // Copyright 2019-2022 @polkadot/extension-web-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { _ChainAsset, _MultiChainAsset } from '@subwallet/chain-list/types';
-import { _getAssetOriginChain } from '@subwallet/extension-base/services/chain-service/utils';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
-import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
-import BigN from 'bignumber.js';
+import { YieldPoolInfo } from '@subwallet/extension-base/types';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { YieldGroupInfo } from 'types/earning';
 import { isRelatedToAstar } from 'utils/earning';
 import { BalanceValueInfo } from 'types/balance';
-import { BN_TEN, BN_ZERO } from 'utils/chainBalances';
-
-const isRelatedToRelayChain = (
-  group: string,
-  assetRegistry: Record<string, _ChainAsset>,
-  multiChainAssetMap: Record<string, _MultiChainAsset>,
-) => {
-  if (assetRegistry[group]) {
-    return _STAKING_CHAIN_GROUP.relay.includes(_getAssetOriginChain(assetRegistry[group]));
-  }
-
-  if (multiChainAssetMap[group]) {
-    const originChainAsset = multiChainAssetMap[group].originChainAsset;
-
-    return _STAKING_CHAIN_GROUP.relay.includes(_getAssetOriginChain(assetRegistry[originChainAsset]));
-  }
-
-  return false;
-};
-
-function calculateTotalValueStaked(
-  poolInfo: YieldPoolInfo,
-  assetRegistry: Record<string, _ChainAsset>,
-  priceMap: Record<string, number>,
-) {
-  const asset = assetRegistry[poolInfo.metadata.inputAsset];
-  const tvl = poolInfo.statistic?.tvl;
-
-  if (!asset || !asset.priceId || !tvl) {
-    return new BigN(0);
-  }
-
-  const price = priceMap[asset.priceId] || 0;
-
-  return new BigN(tvl).div(BN_TEN.pow(asset.decimals || 0)).multipliedBy(price);
-}
+import { BN_ZERO } from 'utils/chainBalances';
+import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import useTokenGroup from 'hooks/screen/useTokenGroup';
+import useAccountBalance from 'hooks/screen/useAccountBalance';
 
 const usePreviewYieldGroupInfo = (poolInfoMap: Record<string, YieldPoolInfo>): YieldGroupInfo[] => {
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const priceMap = useSelector((state: RootState) => state.price.priceMap);
+  const chainsByAccountType = useGetChainSlugsByAccount();
+  const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
+  const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, true);
 
   return useMemo(() => {
     const result: Record<string, YieldGroupInfo> = {};
@@ -88,23 +54,23 @@ const usePreviewYieldGroupInfo = (poolInfoMap: Record<string, YieldPoolInfo>): Y
           exists.maxApy = Math.max(exists.maxApy || 0, apy);
         }
 
-        if (pool.statistic?.earningThreshold?.join) {
-          if (new BigN(exists.minJoin || 0).gt(pool.statistic?.earningThreshold?.join || '0')) {
-            exists.description = pool.metadata.description;
-          }
-        }
-
         exists.isTestnet = exists.isTestnet || chainInfo.isTestnet;
         exists.poolSlugs.push(pool.slug);
 
-        if (exists.isRelatedToRelayChain) {
-          if (pool.type === YieldPoolType.NATIVE_STAKING) {
-            exists.totalValueStaked = calculateTotalValueStaked(pool, assetRegistry, priceMap);
+        const inputAsset = pool.metadata.inputAsset;
+
+        if (!exists.assetSlugs.includes(inputAsset)) {
+          exists.assetSlugs.push(inputAsset);
+
+          const balanceItem = tokenBalanceMap[inputAsset];
+
+          if (balanceItem) {
+            exists.balance.value = exists.balance.value.plus(balanceItem.free.value);
+            exists.balance.convertedValue = exists.balance.convertedValue.plus(balanceItem.free.convertedValue);
+            exists.balance.pastConvertedValue = exists.balance.pastConvertedValue.plus(
+              balanceItem.free.pastConvertedValue,
+            );
           }
-        } else {
-          exists.totalValueStaked = exists.totalValueStaked.plus(
-            calculateTotalValueStaked(pool, assetRegistry, priceMap),
-          );
         }
       } else {
         const token = multiChainAssetMap[group] || assetRegistry[group];
@@ -129,7 +95,14 @@ const usePreviewYieldGroupInfo = (poolInfoMap: Record<string, YieldPoolInfo>): Y
           apy = calculateReward(pool.statistic?.totalApr).apy;
         }
 
-        const checkRelatedRelaChain = isRelatedToRelayChain(group, assetRegistry, multiChainAssetMap);
+        const inputAsset = pool.metadata.inputAsset;
+        const balanceItem = tokenBalanceMap[inputAsset];
+
+        if (balanceItem) {
+          freeBalance.value = freeBalance.value.plus(balanceItem.free.value);
+          freeBalance.convertedValue = freeBalance.convertedValue.plus(balanceItem.free.convertedValue);
+          freeBalance.pastConvertedValue = freeBalance.pastConvertedValue.plus(balanceItem.free.pastConvertedValue);
+        }
 
         result[group] = {
           group: group,
@@ -142,19 +115,13 @@ const usePreviewYieldGroupInfo = (poolInfoMap: Record<string, YieldPoolInfo>): Y
           chain: chain,
           poolListLength: 1,
           poolSlugs: [pool.slug],
-          description: pool.metadata.description,
-          totalValueStaked:
-            checkRelatedRelaChain && pool.type !== YieldPoolType.NATIVE_STAKING
-              ? BN_ZERO
-              : calculateTotalValueStaked(pool, assetRegistry, priceMap),
-          minJoin: pool.statistic?.earningThreshold?.join,
-          isRelatedToRelayChain: checkRelatedRelaChain,
+          assetSlugs: [pool.metadata.inputAsset],
         };
       }
     }
 
     return Object.values(result);
-  }, [assetRegistry, chainInfoMap, multiChainAssetMap, poolInfoMap, priceMap]);
+  }, [assetRegistry, chainInfoMap, multiChainAssetMap, poolInfoMap, tokenBalanceMap]);
 };
 
 export default usePreviewYieldGroupInfo;

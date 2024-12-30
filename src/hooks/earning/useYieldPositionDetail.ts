@@ -12,12 +12,12 @@ import {
   YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
-import { isAccountAll, isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
-import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 interface Result {
   compound: YieldPositionInfo | undefined;
@@ -26,36 +26,41 @@ interface Result {
 
 const useYieldPositionDetail = (slug: string, address?: string): Result => {
   const { poolInfoMap, yieldPositions } = useSelector((state: RootState) => state.earning);
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
-  const chainsByAccountType = useGetChainSlugs();
+  const { currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const chainsByAccountType = useGetChainSlugsByAccount();
 
   return useMemo(() => {
-    const _address = address || currentAccount?.address || '';
-    const isAll = isAccountAll(_address);
-
     const checkAddress = (item: YieldPositionInfo) => {
-      if (isAll) {
+      if (isAllAccount) {
+        if (address) {
+          return isSameAddress(address, item.address);
+        }
+
         return true;
       } else {
-        return isSameAddress(_address, item.address);
+        return currentAccountProxy?.accounts.some(({ address: _address }) => {
+          const compareAddress = address ? isSameAddress(address, _address) : true;
+
+          return compareAddress && isSameAddress(_address, item.address);
+        });
       }
     };
 
     const infoList: YieldPositionInfo[] = [];
 
     for (const info of yieldPositions) {
-      if (chainsByAccountType.includes(info.chain) && poolInfoMap[info.slug]) {
+      if (info.slug === slug && chainsByAccountType.includes(info.chain) && poolInfoMap[info.slug]) {
         const isValid = checkAddress(info);
         const haveStake = new BigN(info.totalStake).gt(0);
 
-        if (isValid && haveStake && info.slug === slug) {
+        if (isValid && haveStake) {
           infoList.push(info);
         }
       }
     }
 
     if (infoList.length) {
-      if (isAll) {
+      if (isAllAccount && !address) {
         const positionInfo = infoList[0];
         const base: AbstractYieldPositionInfo = {
           slug: slug,
@@ -141,7 +146,7 @@ const useYieldPositionDetail = (slug: string, address?: string): Result => {
         list: infoList,
       };
     }
-  }, [chainsByAccountType, currentAccount?.address, poolInfoMap, slug, yieldPositions, address]);
+  }, [isAllAccount, address, currentAccountProxy?.accounts, yieldPositions, slug, chainsByAccountType, poolInfoMap]);
 };
 
 export default useYieldPositionDetail;

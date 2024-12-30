@@ -4,30 +4,28 @@ import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { EmptyList } from 'components/EmptyList';
 import { SectionItem } from 'components/LazySectionList';
-import { AbstractAddressJson, AccountJson } from '@subwallet/extension-base/background/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
-import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import reformatAddress from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
-import useFormatAddress from 'hooks/account/useFormatAddress';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import createStylesheet from './style/AddressBookModal';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { AbstractAddressJson } from '@subwallet/extension-base/types';
+import { _reformatAddressWithChain } from '@subwallet/extension-base/utils';
+import { getReformatedAddressRelatedToChain } from 'utils/account';
+import useChainInfo from 'hooks/chain/useChainInfo';
 
 interface Props {
   modalVisible: boolean;
   value?: string;
-  addressPrefix?: number;
   onSelect: (val: string) => void;
-  networkGenesisHash?: string;
+  chainSlug?: string;
   setVisible: (arg: boolean) => void;
 }
 
@@ -39,6 +37,8 @@ enum AccountGroup {
 
 interface AccountItem extends AbstractAddressJson {
   group: AccountGroup;
+  formatedAddress: string;
+  proxyId?: string;
 }
 
 function searchFunction(items: AccountItem[], searchText: string) {
@@ -109,22 +109,9 @@ const sortFunction = (a: AccountItem, b: AccountItem) => {
   return b.address.localeCompare(a.address);
 };
 
-const checkLedger = (account: AccountJson, networkGenesisHash?: string): boolean => {
-  return !networkGenesisHash || !account.isHardware || account.originGenesisHash === networkGenesisHash;
-};
-
-export const AddressBookModal = ({
-  addressPrefix,
-  networkGenesisHash,
-  modalVisible,
-  onSelect,
-  value = '',
-  setVisible,
-}: Props) => {
-  const { accounts, contacts, recent } = useSelector((state: RootState) => state.accountState);
-  const formatAddress = useFormatAddress(addressPrefix);
-  const chainInfo = useGetChainInfoByGenesisHash(networkGenesisHash);
-  const chain = chainInfo?.slug || '';
+export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = '', setVisible }: Props) => {
+  const { accountProxies, contacts, recent } = useSelector((state: RootState) => state.accountState);
+  const chainInfo = useChainInfo(chainSlug);
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -161,76 +148,84 @@ export const AddressBookModal = ({
   }));
 
   const items = useMemo((): AccountItem[] => {
+    if (!chainInfo) {
+      return [];
+    }
+
     const result: AccountItem[] = [];
 
     recent.forEach(acc => {
       const chains = acc.recentChainSlugs || [];
 
-      if (chains.includes(chain)) {
-        const address = isAddress(acc.address) ? reformatAddress(acc.address) : acc.address;
-
-        result.push({ ...acc, address: address, group: AccountGroup.RECENT });
+      if (chainSlug && chains.includes(chainSlug)) {
+        result.push({
+          ...acc,
+          address: acc.address,
+          formatedAddress: _reformatAddressWithChain(acc.address, chainInfo),
+          group: AccountGroup.RECENT,
+        });
       }
     });
 
     contacts.forEach(acc => {
-      const address = isAddress(acc.address) ? reformatAddress(acc.address) : acc.address;
-
-      result.push({ ...acc, address: address, group: AccountGroup.CONTACT });
+      result.push({
+        ...acc,
+        address: acc.address,
+        formatedAddress: _reformatAddressWithChain(acc.address, chainInfo),
+        group: AccountGroup.CONTACT,
+      });
     });
 
-    accounts
-      .filter(acc => !isAccountAll(acc.address))
-      .forEach(acc => {
-        const address = isAddress(acc.address) ? reformatAddress(acc.address) : acc.address;
+    accountProxies.forEach(ap => {
+      if (isAccountAll(ap.id)) {
+        return;
+      }
 
-        if (checkLedger(acc, networkGenesisHash)) {
-          result.push({ ...acc, address: address, group: AccountGroup.WALLET });
+      // todo: recheck with ledger
+
+      ap.accounts.forEach(acc => {
+        const formatedAddress = getReformatedAddressRelatedToChain(acc, chainInfo);
+
+        if (formatedAddress) {
+          result.push({ ...acc, address: acc.address, formatedAddress, proxyId: ap.id, group: AccountGroup.WALLET });
         }
       });
+    });
 
     return result;
-  }, [accounts, chain, contacts, networkGenesisHash, recent]);
+  }, [accountProxies, chainInfo, chainSlug, contacts, recent]);
 
   const onSelectItem = useCallback(
     (item: AccountItem) => {
-      const address = reformatAddress(item.address, addressPrefix);
       return () => {
-        onSelect(address);
+        onSelect(item.formatedAddress);
         onClose();
       };
     },
-    [addressPrefix, onClose, onSelect],
+    [onClose, onSelect],
   );
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<AccountItem>) => {
-      const address = formatAddress(item);
       const isRecent = item.group === AccountGroup.RECENT;
-      let selected: boolean;
-
-      if (isEthereumAddress(value)) {
-        selected = value.toLowerCase() === address.toLowerCase();
-      } else {
-        selected = value === address;
-      }
 
       return (
         <AccountItemWithName
-          key={`${item.name}-${item.address}`}
+          key={`${item.name}-${item.formatedAddress}`}
           accountName={item.name}
-          address={address}
+          avatarValue={item.proxyId || item.address}
+          address={item.formatedAddress}
           addressPreLength={isRecent ? 9 : 4}
           addressSufLength={isRecent ? 9 : 4}
           avatarSize={theme.sizeLG}
           fallbackName={false}
           onPress={onSelectItem(item)}
-          isSelected={selected}
+          isSelected={value.toLowerCase() === item.formatedAddress.toLowerCase()}
           customStyle={{ container: { marginHorizontal: theme.margin, marginBottom: theme.marginXS } }}
         />
       );
     },
-    [formatAddress, onSelectItem, theme.margin, theme.marginXS, theme.sizeLG, value],
+    [onSelectItem, theme.margin, theme.marginXS, theme.sizeLG, value],
   );
 
   const renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null = useCallback(

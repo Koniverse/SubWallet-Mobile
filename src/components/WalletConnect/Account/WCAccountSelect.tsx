@@ -1,17 +1,17 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { View } from 'react-native';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { VoidFunction } from 'types/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import i18n from 'utils/i18n/i18n';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { Button, Icon } from 'components/design-system-ui';
 import { WCAccountInput } from 'components/WalletConnect/Account/WCAccountInput';
-import { isSameAddress } from '@subwallet/extension-base/utils';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { CheckCircle } from 'phosphor-react-native';
 import { ModalRef } from 'types/modalRef';
+import { AccountJson } from '@subwallet/extension-base/types';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   selectedAccounts: string[];
@@ -63,6 +63,7 @@ export const WCAccountSelect = ({
             key={item.address}
             onPress={onSelectAccount(item.address, false)}
             showUnselectIcon={true}
+            showAddress={false}
           />
         </>
       );
@@ -114,7 +115,9 @@ export const WCAccountSelect = ({
             disabled={!selectedAccounts.length}
             icon={renderButtonIcon}
             onPress={_onApply}>
-            {i18n.formatString(i18n.buttonTitles.applyAccounts, selectedAccounts.length)}
+            {selectedAccounts.length <= 1
+              ? i18n.formatString(i18n.buttonTitles.applyAccount, selectedAccounts.length)
+              : i18n.formatString(i18n.buttonTitles.applyAccounts, selectedAccounts.length)}
           </Button>
         </BasicSelectModal>
       ) : (
@@ -142,6 +145,7 @@ export const WCAccountSelect = ({
                 key={item.address}
                 onPress={onSelectAccount(item.address, true)}
                 showUnselectIcon
+                showAddress={false}
               />
             );
           })}

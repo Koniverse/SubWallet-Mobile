@@ -5,7 +5,7 @@ import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AccountInfoFieldStyle from './style';
-import { Avatar } from 'components/design-system-ui';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props {
   address: string;
@@ -27,7 +27,7 @@ const AccountInfoField = ({ address, name, rightIcon, style }: Props) => {
   return (
     <View style={[_style.container, style]}>
       <View style={_style.accountInfoFieldLeftPart}>
-        <Avatar value={address} size={24} />
+        <AccountProxyAvatar value={address} size={24} />
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 12 }}>
           <Text numberOfLines={1} style={[textStyle, { maxWidth: 100, color: theme.colorTextLight1 }]}>
             {name}

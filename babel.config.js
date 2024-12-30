@@ -34,6 +34,7 @@ module.exports = {
     ['@babel/plugin-transform-flow-strip-types'],
     ['@babel/plugin-transform-private-methods', { loose: true }],
     'react-native-reanimated/plugin',
+    ['babel-plugin-transform-import-meta', { module: 'ES6' }],
   ],
   presets: ['module:metro-react-native-babel-preset'],
   env: {

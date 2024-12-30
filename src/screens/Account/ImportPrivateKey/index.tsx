@@ -1,57 +1,74 @@
 import useUnlockModal from 'hooks/modal/useUnlockModal';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import i18n from 'utils/i18n/i18n';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { Keyboard, ScrollView, View } from 'react-native';
-import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from 'messaging/index';
+import { createAccountSuriV2, validateAccountName, validateMetamaskPrivateKeyV2 } from 'messaging/index';
 import { Textarea } from 'components/Textarea';
-import { EVM_ACCOUNT_TYPE } from 'constants/index';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { FileArrowDown, X } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStyle from './styles';
+import InputText from 'components/Input/InputText';
+import { KeypairType } from '@subwallet/keyring/types';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
-  return isValidated.privateKey;
-}
-
-function autoFormatPrivateKey(privateKey: string) {
-  const key = privateKey.trim();
-
-  if (key.startsWith('0x')) {
-    return key;
-  } else {
-    return `0x${key}`;
-  }
+  return isValidated.privateKey && isValidated.accountName;
 }
 
 export const ImportPrivateKey = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
-  const accountName = useGetDefaultAccountName();
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
+  const [type, setType] = useState<string>('');
+  const typeRef = useRef<string>(type);
 
-  const privateKeyFormConfig: FormControlConfig = {
-    privateKey: {
-      name: i18n.common.privateKey,
-      value: '',
-      require: true,
-    },
-  };
+  const validatorFunc = useCallback(async (value: string) => {
+    let result: string[] = [];
 
-  const timeOutRef = useRef<NodeJS.Timer>();
+    if (!value.trim()) {
+      result = ['This field is required'];
+    } else {
+      try {
+        const { isValid } = await validateAccountName({ name: value.trim() });
+        if (!isValid) {
+          result = ['Account name already in use'];
+        }
+      } catch {
+        result = ['Account name invalid'];
+      }
+    }
+
+    return result;
+  }, []);
+
+  const privateKeyFormConfig = useMemo(
+    (): FormControlConfig => ({
+      privateKey: {
+        name: i18n.common.privateKey,
+        value: '',
+        require: true,
+      },
+      accountName: {
+        name: 'Account name',
+        value: '',
+        require: true,
+      },
+    }),
+    [],
+  );
+
+  const timeOutRef = useRef<NodeJS.Timeout>();
 
   const styles = useMemo(() => createStyle(theme), [theme]);
 
   const [isBusy, setIsBusy] = useState(false);
-  const [isEmpty, setIsEmpty] = useState(true);
 
   useHandlerHardwareBackPress(isBusy);
 
@@ -61,10 +78,10 @@ export const ImportPrivateKey = () => {
     Keyboard.dismiss();
     setIsBusy(true);
     createAccountSuriV2({
-      name: accountName,
-      suri: autoFormatPrivateKey(formState.data.privateKey),
+      name: formState.data.accountName.trim(),
+      suri: formState.data.privateKey.trim(),
+      type: typeRef.current as KeypairType,
       isAllowed: true,
-      types: [EVM_ACCOUNT_TYPE],
     })
       .then(() => {
         navigation.reset({
@@ -89,37 +106,68 @@ export const ImportPrivateKey = () => {
       clearTimeout(timeOutRef.current);
     }
     if (amount) {
-      const key = autoFormatPrivateKey(formState.data.privateKey);
-
-      if (key) {
+      if (formState.data.accountName) {
+        setValidating(true);
+        timeOutRef.current = setTimeout(() => {
+          validatorFunc(formState.data.accountName)
+            .then(res => {
+              onUpdateErrors('accountName')(res);
+            })
+            .catch((error: Error) => console.log('error validate name', error.message))
+            .finally(() => {
+              if (amount) {
+                setValidating(false);
+              }
+            });
+        }, 500);
+      } else {
         setValidating(false);
-        setIsEmpty(true);
+      }
+    }
+
+    return () => {
+      amount = false;
+    };
+  }, [formState.data.accountName, onUpdateErrors, validatorFunc]);
+
+  useEffect(() => {
+    let amount = true;
+
+    if (timeOutRef.current) {
+      clearTimeout(timeOutRef.current);
+    }
+    if (amount) {
+      const privateKey = formState.data.privateKey;
+      const trimPrivateKey = privateKey?.trim();
+      if (trimPrivateKey) {
+        setValidating(false);
         onUpdateErrors('privateKey')([]);
 
-        if (key !== '0x') {
-          timeOutRef.current = setTimeout(() => {
-            setValidating(true);
-            setIsEmpty(false);
-            validateMetamaskPrivateKeyV2(key, [EVM_ACCOUNT_TYPE])
-              .then(() => {
-                if (amount) {
-                  onUpdateErrors('privateKey')([]);
+        timeOutRef.current = setTimeout(() => {
+          setValidating(true);
+          validateMetamaskPrivateKeyV2(trimPrivateKey)
+            .then(({ autoAddPrefix, keyTypes }) => {
+              if (amount) {
+                if (autoAddPrefix) {
+                  onChangeValue('privateKey')(`0x${trimPrivateKey}`);
                 }
-              })
-              .catch((e: Error) => {
-                if (amount) {
-                  onUpdateErrors('privateKey')([e.message]);
-                }
-              })
-              .finally(() => {
-                if (amount) {
-                  setValidating(false);
-                }
-              });
-          }, 300);
-        } else {
-          setIsEmpty(true);
-        }
+
+                setType(keyTypes[0]);
+                typeRef.current = keyTypes[0];
+                onUpdateErrors('privateKey')([]);
+              }
+            })
+            .catch((e: Error) => {
+              if (amount) {
+                onUpdateErrors('privateKey')([e.message]);
+              }
+            })
+            .finally(() => {
+              if (amount) {
+                setValidating(false);
+              }
+            });
+        }, 300);
       }
     }
   }, [onUpdateErrors, formState.data.privateKey, onChangeValue]);
@@ -132,7 +180,7 @@ export const ImportPrivateKey = () => {
     return unsubscribe;
   }, [focus, navigation]);
 
-  const canSubmit = !checkValidateForm(formState.isValidated) || validating || isBusy || isEmpty;
+  const canSubmit = !checkValidateForm(formState.isValidated) || validating || isBusy;
 
   return (
     <SubScreenContainer
@@ -157,6 +205,18 @@ export const ImportPrivateKey = () => {
             onSubmitEditing={onSubmitField('privateKey')}
             errorMessages={formState.errors.privateKey}
             editable={!isBusy}
+          />
+
+          <InputText
+            ref={formState.refs.accountName}
+            label={'Account name'}
+            placeholder={'Enter the account name'}
+            onChangeText={onChangeValue('accountName')}
+            onSubmitField={() => {
+              onSubmitField('accountName', formState.data.accountName)();
+            }}
+            errorMessages={formState.errors.accountName}
+            value={formState.data.accountName}
           />
         </ScrollView>
         <View style={styles.footer}>

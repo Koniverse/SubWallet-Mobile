@@ -126,7 +126,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
           }
         })
         .catch((e: Error) => {
-          console.log(e, 'error');
           onUpdateErrors('password')([e.message]);
         })
         .finally(() => {

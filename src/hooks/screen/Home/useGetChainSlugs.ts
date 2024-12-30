@@ -1,5 +1,4 @@
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { _isChainEvmCompatible } from '@subwallet/extension-base/services/chain-service/utils';
 
 import { useMemo } from 'react';
@@ -12,6 +11,7 @@ import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash'
 import { isAccountAll } from 'utils/accountAll';
 import { analysisAccounts } from 'hooks/screen/Home/Crypto/useGetChainSlugsByAccountType';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 function getChainsAccountType(
   accountType: AccountType,

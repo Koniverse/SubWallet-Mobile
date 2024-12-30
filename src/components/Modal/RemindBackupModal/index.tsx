@@ -9,11 +9,12 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { AccountSelector } from 'components/Modal/common/AccountSelectorNew';
 import { ModalRef } from 'types/modalRef';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isShowRemindBackupModal, setIsShowRemindBackupModal } from 'screens/Home';
 import { BACKUP_SEED_PHRASE_CODE_URL } from 'constants/index';
+import { AccountProxySelector } from '../common/AccountSelectorNew';
+import { AccountProxyItem } from 'screens/Account/AccountsScreen';
+import { AccountProxyType } from '@subwallet/extension-base/types';
 
 interface Props {
   modalVisible: boolean;
@@ -23,21 +24,25 @@ interface Props {
 export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
-  const { isAllAccount, currentAccount, accounts } = useSelector((state: RootState) => state.accountState);
+  const { accountProxies, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const accountSelectorRef = useRef<ModalRef>();
   const onSetCurrentRemindBackupTimeout = () => {
     mmkvStore.set('lastTimeLogin', Date.now());
     mmkvStore.set('remindBackupTimeout', Date.now());
   };
-  const onSelectItem = (item: AccountJson) => {
-    navigation.navigate('AccountExport', { address: item?.address || '' });
+  const onSelectItem = (item: AccountProxyItem) => {
+    navigation.navigate('AccountExport', { address: item?.id || '' });
   };
 
   const onBackUpAccount = () => {
-    if (isAllAccount) {
-      accountSelectorRef.current?.onOpenModal();
+    if (currentAccountProxy) {
+      if ([AccountProxyType.SOLO, AccountProxyType.UNIFIED].includes(currentAccountProxy.accountType)) {
+        navigation.navigate('AccountExport', { address: currentAccountProxy?.id || '' });
+      } else {
+        accountSelectorRef.current?.onOpenModal();
+      }
     } else {
-      navigation.navigate('AccountExport', { address: currentAccount?.address || '' });
+      accountSelectorRef.current?.onOpenModal();
     }
   };
 
@@ -107,8 +112,8 @@ export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
         </SwModal>
       )}
 
-      <AccountSelector
-        items={accounts.filter(item => item.address !== 'ALL')}
+      <AccountProxySelector
+        items={accountProxies.filter(item => item.id !== 'ALL')}
         selectedValueMap={{}}
         onSelectItem={onSelectItem}
         accountSelectorRef={accountSelectorRef}

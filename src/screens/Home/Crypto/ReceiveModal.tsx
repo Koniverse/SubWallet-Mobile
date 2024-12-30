@@ -1,8 +1,8 @@
-import React, { useMemo, useRef } from 'react';
-import { Linking, Share, StyleProp, View } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { Linking, Platform, Share, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontMedium, FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import reformatAddress, { getNetworkLogo, toShort } from 'utils/index';
+import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { getNetworkLogo, toShort } from 'utils/index';
 import { CopySimple, GlobeHemisphereWest, Share as ShareIcon } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
@@ -16,12 +16,22 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
+import { VoidFunction } from 'types/index';
+import Svg from 'react-native-svg';
+import { TonWalletContractSelectorModal } from 'components/Modal/TonWalletContractSelectorModal';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import { AccountActions } from '@subwallet/extension-base/types';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   modalVisible: boolean;
   address?: string;
   selectedNetwork?: string;
   setModalVisible: (arg: boolean) => void;
+  onBack?: VoidFunction;
+  isUseModalV2?: boolean;
+  level?: number;
+  isOpenFromAccountDetailScreen?: boolean;
 }
 
 const receiveModalContentWrapper: StyleProp<any> = {
@@ -29,14 +39,29 @@ const receiveModalContentWrapper: StyleProp<any> = {
   width: '100%',
 };
 
-export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalVisible }: Props) => {
+export const ReceiveModal = ({
+  address,
+  selectedNetwork,
+  modalVisible,
+  setModalVisible,
+  onBack,
+  isUseModalV2,
+  level,
+  isOpenFromAccountDetailScreen,
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const toastRef = useRef<ToastContainer>(null);
-  let svg: { toDataURL: (arg0: (data: any) => void) => void };
+  let svg: Svg | null | undefined;
   const chainInfo = useFetchChainInfo(selectedNetwork || '');
   const modalRef = useRef<SWModalRefProps>(null);
   const insets = useSafeAreaInsets();
   const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - insets.bottom - insets.top - 50;
+  const accountInfo = useGetAccountByAddress(address);
+  const [tonWalletContractVisible, setTonWalletContractVisible] = useState<boolean>(false);
+
+  const isRelatedToTon = useMemo(() => {
+    return accountInfo?.accountActions.includes(AccountActions.TON_CHANGE_WALLET_CONTRACT_VERSION);
+  }, [accountInfo]);
 
   const copyToClipboard = (text: string) => {
     return () => {
@@ -70,7 +95,7 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalV
       return;
     }
 
-    svg.toDataURL(data => {
+    svg?.toDataURL(data => {
       const shareImageBase64 = {
         title: 'QR',
         message: `My Public Address to Receive ${chainInfo?.slug.toUpperCase()}: ${formattedAddress}`,
@@ -80,26 +105,35 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalV
     });
   };
 
-  const onCancel = () => modalRef?.current?.close();
+  const _onCancel = () => {
+    onBack ? onBack() : modalRef?.current?.close();
+  };
+
+  const onCloseTonWalletContactModal = () => {
+    setTonWalletContractVisible(false);
+  };
+
+  const onOpenTonWalletContactModal = () => {
+    setTonWalletContractVisible(true);
+  };
 
   return (
     <SwModal
       modalBaseV2Ref={modalRef}
       setVisible={setModalVisible}
-      isUseModalV2
+      onBackdropPress={_onCancel}
+      disabledOnPressBackDrop={Platform.OS === 'android'}
       modalVisible={modalVisible}
-      onBackButtonPress={onCancel}>
+      isUseModalV2={isUseModalV2}
+      level={level}
+      modalTitle={i18n.header.yourAddress}
+      isShowRightBtn={isRelatedToTon}
+      onPressRightBtn={onOpenTonWalletContactModal}
+      titleTextAlign={'center'}
+      onBackButtonPress={_onCancel}>
       <View style={receiveModalContentWrapper}>
-        <Typography.Text
-          size={'lg'}
-          style={{
-            color: theme.colorWhite,
-            ...FontSemiBold,
-          }}>
-          {i18n.header.yourAddress}
-        </Typography.Text>
-        <View style={{ paddingTop: 38 }}>
-          {formattedAddress && <QRCode qrRef={(ref?) => (svg = ref)} value={formattedAddress} errorLevel={'Q'} />}
+        <View style={{ paddingTop: 16 }}>
+          {formattedAddress && <QRCode qrRef={(ref?) => (svg = ref)} value={formattedAddress} />}
         </View>
 
         <View
@@ -164,6 +198,17 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalV
             {i18n.common.share}
           </Button>
         </View>
+        {isRelatedToTon && tonWalletContractVisible && (
+          <TonWalletContractSelectorModal
+            isOpenFromAccountDetailScreen={isOpenFromAccountDetailScreen}
+            address={address || ''}
+            modalVisible={tonWalletContractVisible}
+            setModalVisible={setTonWalletContractVisible}
+            chainSlug={selectedNetwork || ''}
+            onCancel={onCloseTonWalletContactModal}
+            onChangeModalVisible={() => setTonWalletContractVisible(false)}
+          />
+        )}
         {
           <Toast
             duration={TOAST_DURATION}

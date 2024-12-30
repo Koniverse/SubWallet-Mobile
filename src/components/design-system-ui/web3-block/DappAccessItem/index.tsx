@@ -6,32 +6,14 @@ import { Image, StyleProp, View, ViewStyle } from 'react-native';
 import createStyle from './styles';
 import { CaretRight } from 'phosphor-react-native';
 import { DAppIconMap, DAppTitleMap } from '../../../../predefined/dAppSites';
-import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { ColorMap } from 'styles/color';
 import { getHostName } from 'utils/browser';
+import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
 
 export interface DappAccessItemProps extends Omit<Web3BlockProps, 'customStyle'> {
   item: AuthUrlInfo;
   containerStyle?: StyleProp<ViewStyle>;
-}
-
-function getAccountCount(item: AuthUrlInfo): number {
-  const authType = item.accountAuthType;
-
-  if (authType === 'evm') {
-    return item.isAllowedMap
-      ? Object.entries(item.isAllowedMap).filter(([address, rs]) => rs && isEthereumAddress(address)).length
-      : 0;
-  }
-
-  if (authType === 'substrate') {
-    return item.isAllowedMap
-      ? Object.entries(item.isAllowedMap).filter(([address, rs]) => rs && !isEthereumAddress(address)).length
-      : 0;
-  }
-
-  return Object.values(item.isAllowedMap).filter(i => i).length;
+  accountCount: number;
 }
 
 export function getImageSource(hostName: string): string {
@@ -51,7 +33,7 @@ export function getSiteTitle(hostName: string, origin: string): string {
 }
 
 const DappAccessItem: React.FC<DappAccessItemProps> = (props: DappAccessItemProps) => {
-  const { leftItem, rightItem, middleItem, item, containerStyle, ...restProps } = props;
+  const { leftItem, rightItem, middleItem, item, containerStyle, accountCount, ...restProps } = props;
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
   const hostName = getHostName(item.url);
@@ -73,7 +55,7 @@ const DappAccessItem: React.FC<DappAccessItemProps> = (props: DappAccessItemProp
               {item.url}
             </Typography.Text>
             <Typography.Text ellipsis style={[styles.itemMainTextStyle, { paddingRight: 10 }]}>
-              {getAccountCount(item)}
+              {accountCount}
             </Typography.Text>
           </View>
         )

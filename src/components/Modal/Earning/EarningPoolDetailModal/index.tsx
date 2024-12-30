@@ -29,6 +29,9 @@ import { mmkvStore } from 'utils/storage';
 import { noop } from 'utils/function';
 import { EARNING_POOL_DETAIL_DATA } from 'constants/earning/EarningDataRaw';
 import { useGetEarningPoolDetailModalData } from 'hooks/earning/useGetEarningPoolDetailModalData';
+import { isAccountAll } from 'utils/accountAll';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import { isChainInfoAccordantAccountChainType } from 'utils/chain';
 
 interface Props {
   slug: string;
@@ -82,10 +85,33 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { poolInfoMap: _poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { currentAccountProxy } = useSelector((state: RootState) => state.accountState);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const [scrollHeight, setScrollHeight] = useState<number>(0);
   const [contentHeight, setContentHeight] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const poolInfoMap = useMemo(() => {
+    return onlinePoolInfoMap ? onlinePoolInfoMap : _poolInfoMap;
+  }, [_poolInfoMap, onlinePoolInfoMap]);
+
+  const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
+  const targetAddress = useMemo(() => {
+    if (currentAccountProxy && isAccountAll(currentAccountProxy?.id)) {
+      return ALL_ACCOUNT_KEY;
+    }
+
+    const accountAddress = currentAccountProxy?.accounts.find(({ chainType }) => {
+      if (chainInfoMap[poolInfo.chain]) {
+        const chainInfo = chainInfoMap[poolInfo.chain];
+
+        return isChainInfoAccordantAccountChainType(chainInfo, chainType);
+      }
+
+      return false;
+    });
+
+    return accountAddress?.address;
+  }, [chainInfoMap, currentAccountProxy, poolInfo.chain]);
   const earningStaticData = useMemo(() => {
     try {
       const storedData = JSON.parse(mmkvStore.getString('earningStaticData') || '[]') as StaticDataProps[];
@@ -99,12 +125,6 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       return EARNING_POOL_DETAIL_DATA;
     }
   }, []);
-
-  const poolInfoMap = useMemo(() => {
-    return onlinePoolInfoMap ? onlinePoolInfoMap : _poolInfoMap;
-  }, [_poolInfoMap, onlinePoolInfoMap]);
-
-  const poolInfo = useMemo(() => poolInfoMap[slug], [poolInfoMap, slug]);
 
   const { data } = useGetEarningPoolDetailModalData(earningStaticData, poolInfo);
   const title = useMemo(() => {
@@ -330,7 +350,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
     earlyValidateJoin({
       slug: slug,
-      address: currentAccount?.address || '',
+      address: targetAddress || '',
     })
       .then(rs => {
         if (isValid()) {
@@ -356,7 +376,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
           setLoading(false);
         }
       });
-  }, [currentAccount?.address, onStakeMore, setVisible, slug]);
+  }, [targetAddress, onStakeMore, setVisible, slug]);
 
   const scrollBottom = useCallback(() => {
     scrollRef.current?.scrollToEnd();

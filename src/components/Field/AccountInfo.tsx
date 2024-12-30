@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
-import reformatAddress, { getNetworkLogo, toShort } from 'utils/index';
+import { getNetworkLogo, toShort } from 'utils/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { Avatar } from 'components/design-system-ui';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   address: string;
@@ -32,7 +33,7 @@ export const AccountInfoField = ({ address, name, networkKey, networkPrefix }: P
         alignItems: 'center',
       }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-        <Avatar value={address} size={18} />
+        <AccountProxyAvatar value={address} size={18} />
         <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 12 }}>
           <Text numberOfLines={1} style={[{ maxWidth: 100 }, textStyle]}>
             {name}

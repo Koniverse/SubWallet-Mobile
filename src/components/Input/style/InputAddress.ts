@@ -10,10 +10,11 @@ export default (
   isReadonly?: boolean,
   showAvatar?: boolean,
   showAddressBook?: boolean,
+  horizontal?: boolean,
 ) => {
   const addressText: StyleProp<TextStyle> = {
     ...FontSemiBold,
-    paddingLeft: showAvatar ? theme.paddingXS : 0,
+    paddingLeft: theme.paddingXXS,
     color: isValid ? (isReadonly ? theme.colorTextLight5 : theme.colorTextLight1) : theme.colorError,
     opacity: isInputVisible ? 0 : 1,
   };
@@ -38,7 +39,8 @@ export default (
       marginRight: (showAddressBook ? 40 : 0) + 40 + theme.paddingXXS,
     },
     input: {
-      paddingLeft: showAvatar ? theme.sizeSM + (hasLabel ? 20 : 24) + theme.sizeXS : undefined,
+      flex: horizontal ? 1 : undefined,
+      paddingLeft: showAvatar ? theme.sizeSM + (hasLabel ? 20 : 24) + theme.sizeXS : horizontal ? 4 : 12,
       opacity: isInputVisible ? 1 : 0,
       paddingRight: (showAddressBook ? 40 : 0) + 44,
     },

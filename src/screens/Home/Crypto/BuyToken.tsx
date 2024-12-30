@@ -1,9 +1,9 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
 import { ShoppingCartSimple } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { AccountSelector } from 'components/Modal/common/AccountSelectorNew';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { TokenSelector } from 'components/Modal/common/TokenSelectorNew';
 import useBuyToken from 'hooks/screen/Home/Crypto/useBuyToken';
 import { useSelector } from 'react-redux';
@@ -21,8 +21,6 @@ import { ThemeTypes } from 'styles/themes';
 import { BuyTokenProps } from 'routes/wrapper';
 import { DisclaimerModal } from 'components/Buy/DisclaimerModal';
 import { SupportService } from 'types/buy';
-import useChainChecker from 'hooks/chain/useChainChecker';
-import { AppModalContext } from 'providers/AppModalContext';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
 
 const submitButtonIcon = (iconColor: string) => (
@@ -37,7 +35,7 @@ export const BuyToken = ({
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
   const { tokens } = useSelector((state: RootState) => state.buyService);
-  const appModalContext = useContext(AppModalContext);
+  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
   const {
     openSelectBuyAccount,
     openSelectBuyToken,
@@ -53,7 +51,7 @@ export const BuyToken = ({
     selectedService,
     serviceItems,
     disclaimerData,
-  } = useBuyToken(groupSymbol);
+  } = useBuyToken(currentAccountProxy, groupSymbol);
   const [disclaimerAgree, setDisclaimerAgree] = useState<Record<SupportService, boolean>>({
     transak: false,
     banxa: false,
@@ -64,24 +62,6 @@ export const BuyToken = ({
   const [isVisible, setVisible] = useState(false);
   const { isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { contactUrl, name: serviceName, policyUrl, termUrl, url } = disclaimerData;
-  const { checkChainConnected, turnOnChain } = useChainChecker();
-  const sortedBuyTokenSelectorItems = useMemo(() => {
-    return buyTokenSelectorItems.sort((a, b) => {
-      if (checkChainConnected(a.originChain)) {
-        if (checkChainConnected(b.originChain)) {
-          return 0;
-        } else {
-          return -1;
-        }
-      } else {
-        if (checkChainConnected(b.originChain)) {
-          return 1;
-        } else {
-          return 0;
-        }
-      }
-    });
-  }, [buyTokenSelectorItems, checkChainConnected]);
 
   useEffect(() => {
     const onBackPress = () => {
@@ -93,41 +73,11 @@ export const BuyToken = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const showPopupEnableChain = useCallback(
-    (chain: string) => {
-      if (!chain) {
-        return;
-      }
-      const isConnected = checkChainConnected(chain);
-
-      if (!isConnected) {
-        setTimeout(() => {
-          appModalContext.setConfirmModal({
-            visible: true,
-            completeBtnTitle: i18n.buttonTitles.enable,
-            message: i18n.common.enableChainMessage,
-            title: i18n.common.enableChain,
-            onCancelModal: () => {
-              appModalContext.hideConfirmModal();
-            },
-            onCompleteModal: () => {
-              turnOnChain(chain);
-              setTimeout(() => appModalContext.hideConfirmModal(), 300);
-            },
-            messageIcon: chain,
-          });
-        }, 700);
-      }
-    },
-    [appModalContext, checkChainConnected, turnOnChain],
-  );
-
   const onSelectBuyToken = useCallback(
     (item: TokenItemType) => {
       openSelectBuyToken(item);
-      showPopupEnableChain(item.originChain);
     },
-    [openSelectBuyToken, showPopupEnableChain],
+    [openSelectBuyToken],
   );
 
   const selectedAccount = useGetAccountByAddress(selectedBuyAccount);
@@ -139,7 +89,7 @@ export const BuyToken = ({
   }, [selectedBuyToken, tokens]);
 
   const onSubmit = () => {
-    if (selectedService && disclaimerAgree[selectedService]) {
+    if (selectedService && disclaimerAgree[selectedService as SupportService]) {
       onBuyToken();
       return;
     }
@@ -170,26 +120,10 @@ export const BuyToken = ({
             <PageIcon icon={ShoppingCartSimple} color={theme.colorSuccess} />
           </View>
 
-          <AccountSelector
-            items={buyAccountSelectorItems}
-            selectedValueMap={selectedAccount ? { [selectedAccount.address]: true } : {}}
-            onSelectItem={openSelectBuyAccount}
-            accountSelectorRef={accountBuyRef}
-            disabled={!isAllAccount}
-            renderSelected={() => (
-              <AccountSelectField
-                label={i18n.inputLabel.selectAcc}
-                accountName={selectedAccount?.name || ''}
-                value={selectedBuyAccount || ''}
-                showIcon
-              />
-            )}
-          />
           <View style={styles.tokenAndServiceWrapper}>
             <View style={{ flex: 1 }}>
               <TokenSelector
-                disabled={!selectedBuyAccount}
-                items={sortedBuyTokenSelectorItems}
+                items={buyTokenSelectorItems}
                 selectedValueMap={selectedBuyToken ? { [selectedBuyToken]: true } : {}}
                 onSelectItem={onSelectBuyToken}
                 tokenSelectorRef={tokenBuyRef}
@@ -201,12 +135,30 @@ export const BuyToken = ({
             <View style={{ flex: 1 }}>
               <ServiceModal
                 items={serviceItems}
-                disabled={!selectedBuyAccount || !selectedBuyToken}
                 serviceRef={serviceBuyRef}
                 onPressItem={onPressItem}
                 selectedService={selectedService}
               />
             </View>
+          </View>
+          <View style={{ marginBottom: theme.marginSM }}>
+            <AccountSelector
+              items={buyAccountSelectorItems}
+              selectedValueMap={selectedAccount ? { [selectedAccount.address]: true } : {}}
+              onSelectItem={openSelectBuyAccount}
+              accountSelectorRef={accountBuyRef}
+              disabled={!isAllAccount}
+              renderSelected={() => (
+                <AccountSelectField
+                  label={'To:'}
+                  accountName={selectedAccount?.name || ''}
+                  value={selectedBuyAccount || ''}
+                  showIcon
+                  horizontal
+                  labelStyle={{ width: 48 }}
+                />
+              )}
+            />
           </View>
           <Typography.Text style={styles.buyTokenText}>{i18n.message.buyMessage}</Typography.Text>
         </View>
@@ -260,7 +212,13 @@ function createStyle(theme: ThemeTypes) {
       paddingTop: theme.paddingXXL,
       paddingBottom: theme.paddingLG,
     },
-    tokenAndServiceWrapper: { width: '100%', flexDirection: 'row', gap: 12, paddingTop: 4 },
+    tokenAndServiceWrapper: {
+      width: '100%',
+      flexDirection: 'row',
+      gap: 12,
+      paddingTop: 4,
+      paddingBottom: theme.paddingXXS,
+    },
     buyTokenText: {
       fontSize: theme.fontSize,
       lineHeight: theme.fontSize * theme.lineHeight,

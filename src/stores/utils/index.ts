@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
-import { AuthUrls } from '@subwallet/extension-base/background/handlers/State';
+import { AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import {
-  AccountsWithCurrentAddress,
   AddressBookInfo,
   AssetSetting,
   CampaignBanner,
   ChainStakingMetadata,
   ConfirmationsQueue,
+  ConfirmationsQueueTon,
   CrowdloanJson,
   KeyringState,
   MantaPayConfig,
@@ -25,7 +25,6 @@ import {
   UiSettings,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
-  AccountJson,
   AccountsContext,
   AuthorizeRequest,
   ConfirmationRequestBase,
@@ -34,17 +33,20 @@ import {
 } from '@subwallet/extension-base/background/types';
 import { _ChainApiStatus, _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
-import { addLazy, canDerive } from '@subwallet/extension-base/utils';
+import { addLazy } from '@subwallet/extension-base/utils';
 import { lazySubscribeMessage } from 'messaging/index';
 import { AppSettings } from 'stores/types';
 import { store } from '..';
-import { buildHierarchy } from 'utils/buildHierarchy';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { SessionTypes } from '@walletconnect/types';
 import { MissionInfo } from 'types/missionPool';
-import { BuyServiceInfo, BuyTokenInfo } from 'types/buy';
+import { BuyServiceInfo } from 'types/buy';
 import {
+  AccountJson,
+  AccountProxy,
+  AccountsWithCurrentAddress,
   BalanceJson,
+  BuyTokenInfo,
   EarningRewardHistoryItem,
   EarningRewardJson,
   YieldPoolInfo,
@@ -67,25 +69,25 @@ function voidFn() {
 
 // Base
 // AccountState store
-export const updateAccountData = (data: AccountsWithCurrentAddress) => {
-  let currentAccountJson: AccountJson = data.accounts[0];
-  const accounts = data.accounts;
+export const updateCurrentAccountProxy = (accountProxy: AccountProxy) => {
+  store.dispatch({ type: 'accountState/updateCurrentAccountProxy', payload: accountProxy });
+};
 
-  accounts.forEach(accountJson => {
-    if (accountJson.address === data.currentAddress) {
-      currentAccountJson = accountJson;
+export const updateAccountProxies = (data: AccountProxy[]) => {
+  store.dispatch({ type: 'accountState/updateAccountProxies', payload: data });
+};
+
+export const updateAccountData = (data: AccountsWithCurrentAddress) => {
+  let currentAccountProxy: AccountProxy = data.accounts[0];
+  const accountProxies = data.accounts;
+
+  accountProxies.forEach(ap => {
+    if (ap.id === data.currentAccountProxy) {
+      currentAccountProxy = ap;
     }
   });
-
-  const hierarchy = buildHierarchy(accounts);
-  const master = hierarchy.find(({ isExternal, type }) => !isExternal && canDerive(type));
-
-  updateCurrentAccountState(currentAccountJson);
-  updateAccountsContext({
-    accounts,
-    hierarchy,
-    master,
-  } as AccountsContext);
+  updateCurrentAccountProxy(currentAccountProxy);
+  updateAccountProxies(accountProxies);
 };
 
 export const updateCurrentAccountState = (currentAccountJson: AccountJson) => {
@@ -97,7 +99,7 @@ export const updateAccountsContext = (data: AccountsContext) => {
 };
 
 export const subscribeAccountsData = lazySubscribeMessage(
-  'pri(accounts.subscribeWithCurrentAddress)',
+  'pri(accounts.subscribeWithCurrentProxy)',
   {},
   updateAccountData,
   updateAccountData,
@@ -119,7 +121,7 @@ export const updateAddressBook = (data: AddressBookInfo) => {
 };
 
 export const subscribeAddressBook = lazySubscribeMessage(
-  'pri(accounts.subscribeAddresses)',
+  'pri(addressBook.subscribe)',
   null,
   updateAddressBook,
   updateAddressBook,
@@ -184,6 +186,17 @@ export const subscribeConfirmationRequests = lazySubscribeMessage(
   null,
   updateConfirmationRequests,
   updateConfirmationRequests,
+);
+
+export const updateConfirmationRequestsTon = (data: ConfirmationsQueueTon) => {
+  store.dispatch({ type: 'requestState/updateConfirmationRequestsTon', payload: data });
+};
+
+export const subscribeConfirmationRequestsTon = lazySubscribeMessage(
+  'pri(confirmationsTon.subscribe)',
+  null,
+  updateConfirmationRequestsTon,
+  updateConfirmationRequestsTon,
 );
 
 export const updateTransactionRequests = (data: Record<string, SWTransactionResult>) => {

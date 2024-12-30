@@ -5,11 +5,11 @@ import { RootStackParamList } from 'routes/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { CaretDown } from 'phosphor-react-native';
-import { Avatar, Icon } from 'components/design-system-ui';
+import { Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import AvatarGroup from 'components/common/AvatarGroup';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import createStylesheet from './styles/AccountSettingButton';
+import { AccountProxyAvatarGroup } from 'components/design-system-ui/avatar/account-proxy-avatar-group';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -28,14 +28,8 @@ export const AccountSettingButton = ({ navigation, style }: Props) => {
       onPress={() => {
         navigation.navigate('AccountsScreen', {});
       }}>
-      {isAllAccount && <AvatarGroup avatarSize={20} />}
-      {!isAllAccount && (
-        <Avatar
-          value={currentAccountAddress}
-          size={20}
-          theme={isEthereumAddress(currentAccountAddress) ? 'ethereum' : 'polkadot'}
-        />
-      )}
+      {isAllAccount && <AccountProxyAvatarGroup />}
+      {!isAllAccount && <AccountProxyAvatar value={currentAccountAddress} size={20} />}
       {!isReady && (
         <View style={stylesheet.placeholder}>
           <ActivityIndicator size={16} />

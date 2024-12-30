@@ -25,14 +25,11 @@ import { TransactionHistoryDisplayData, TransactionHistoryDisplayItem } from 'ty
 import { customFormatDate, formatHistoryDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { isAccountAll } from 'utils/accountAll';
-import reformatAddress, { findAccountByAddress } from 'utils/index';
-import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { HistoryItem } from 'components/common/HistoryItem';
 import { TxTypeNameMap } from 'screens/Home/History/shared';
 import i18n from 'utils/i18n/i18n';
 import { FontMedium } from 'styles/sharedStyles';
-import { Keyboard, ListRenderItemInfo, View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
@@ -41,20 +38,20 @@ import { SortFunctionInterface } from 'types/ui-types';
 import { LazySectionList, SectionItem } from 'components/LazySectionList';
 import { useNavigation } from '@react-navigation/native';
 import { useHistorySelection } from 'hooks/history';
-import useChainInfoWithState from 'hooks/chain/useChainInfoWithState';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ChainItemType } from 'types/index';
 import { _isChainEvmCompatible } from '@subwallet/extension-base/services/chain-service/utils';
 import { ModalRef } from 'types/modalRef';
 import { cancelSubscription, subscribeTransactionHistory } from 'messaging/index';
-import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
-import { _ChainInfo } from '@subwallet/chain-list/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import FilterModal from 'components/common/FilterModal';
 import { useFilterModal } from 'hooks/useFilterModal';
 import { HistoryAccountSelector } from 'screens/Home/History/parts/HistoryAccountSelector';
 import { HistoryChainSelector } from 'screens/Home/History/parts/HistoryChainSelector';
 import LinearGradient from 'react-native-linear-gradient';
+import { AccountAddressItemType } from 'types/account';
+import { ListRenderItemInfo } from '@shopify/flash-list';
+import { isAddress } from '@subwallet/keyring';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 type Props = {};
 
@@ -125,7 +122,6 @@ function getDisplayData(
   ) {
     if (item.direction === TransactionDirection.RECEIVED) {
       displayData = {
-        className: `-receive -${item.status}`,
         title: titleMap.receive,
         name: nameMap.receive,
         typeName: `${nameMap.receive}${displayStatus} - ${time}`,
@@ -133,7 +129,6 @@ function getDisplayData(
       };
     } else {
       displayData = {
-        className: `-send -${item.status}`,
         title: titleMap.send,
         name: nameMap.send,
         typeName: `${nameMap.send}${displayStatus} - ${time}`,
@@ -144,7 +139,6 @@ function getDisplayData(
     const typeName = nameMap[item.type] || nameMap.default;
 
     displayData = {
-      className: `-${item.type} -${item.status}`,
       title: titleMap[item.type],
       typeName: `${typeName}${displayStatus} - ${time}`,
       name: nameMap[item.type],
@@ -249,39 +243,6 @@ const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[
   });
 };
 
-function findLedgerChainOfSelectedAccount(
-  address: string,
-  accounts: AccountJson[],
-  chainInfoMap: Record<string, _ChainInfo>,
-): string | undefined {
-  if (!address) {
-    return undefined;
-  }
-
-  const isAccountEthereum = isEthereumAddress(address);
-
-  const account = findAccountByAddress(accounts, address);
-
-  if (isAccountEthereum && account?.isHardware) {
-    return 'ethereum';
-  }
-
-  if (!account || !account.isHardware) {
-    return undefined;
-  }
-
-  const validGen: string[] = account.availableGenesisHashes || [];
-  const validLedgerNetworks = validGen
-    .map(genesisHash => findNetworkJsonByGenesisHash(chainInfoMap, genesisHash)?.slug)
-    .filter(i => !!i);
-
-  if (validLedgerNetworks.length) {
-    return validLedgerNetworks[0];
-  }
-
-  return undefined;
-}
-
 function filterDuplicateItems(items: TransactionHistoryItem[]): TransactionHistoryItem[] {
   const result: TransactionHistoryItem[] = [];
 
@@ -320,13 +281,9 @@ function History({
   },
 }: HistoryProps): React.ReactElement<Props> {
   const theme = useSubWalletTheme().swThemes;
-  const { selectedAddress, selectedChain, setSelectedAddress, setSelectedChain } = useHistorySelection(
-    chain,
-    propAddress,
-  );
-  const isAllAccount = useSelector((root: RootState) => root.accountState.isAllAccount);
-  const accounts = useSelector((root: RootState) => root.accountState.accounts);
-  const currentAccount = useSelector((root: RootState) => root.accountState.currentAccount);
+  const { selectedAddress, selectedChain, setSelectedAddress, setSelectedChain, chainItems, accountAddressItems } =
+    useHistorySelection(chain, propAddress);
+  const { accounts, currentAccountProxy, isAllAccount } = useSelector((root: RootState) => root.accountState);
   const [rawHistoryList, setRawHistoryList] = useState<TransactionHistoryItem[]>([]);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
@@ -335,7 +292,6 @@ function History({
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
-  const chainInfoList = useChainInfoWithState();
   const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
     useFilterModal();
   const accountMap = useMemo(() => {
@@ -398,27 +354,16 @@ function History({
     [],
   );
 
-  const [historyMap, setHistoryMap] = useState<Record<string, TransactionHistoryDisplayItem>>({});
-
-  // Fill display data to history list
-  const getHistoryMap = useCallback(() => {
-    const currentAddress = currentAccount?.address || '';
-    const currentAddressLowerCase = currentAddress.toLowerCase();
-    const isFilterByAddress = currentAccount?.address && !isAccountAll(currentAddress);
+  const historyMap = useMemo(() => {
+    const txtTypeNameMap = TxTypeNameMap();
     const finalHistoryMap: Record<string, TransactionHistoryDisplayItem> = {};
 
     rawHistoryList.forEach((item: TransactionHistoryItem) => {
-      // Filter account by current account
-      if (isFilterByAddress && currentAddressLowerCase !== quickFormatAddressToCompare(item.address)) {
-        return;
-      }
-
       // Format display name for account by address
       const fromName = accountMap[quickFormatAddressToCompare(item.from) || ''];
       const toName = accountMap[quickFormatAddressToCompare(item.to) || ''];
       const key = getHistoryItemKey(item);
 
-      const txtTypeNameMap = TxTypeNameMap();
       finalHistoryMap[key] = {
         ...item,
         fromName,
@@ -428,20 +373,23 @@ function History({
     });
 
     return finalHistoryMap;
-  }, [currentAccount?.address, rawHistoryList, accountMap, typeTitleMap]);
+  }, [accountMap, rawHistoryList, typeTitleMap]);
+
+  // Fill display data to history list
+  const getHistoryItems = useCallback(() => {
+    return Object.values(historyMap).sort((a, b) => b.time - a.time);
+  }, [historyMap]);
+
+  const [historyItems, setHistoryItems] = useState<TransactionHistoryDisplayItem[]>(getHistoryItems());
 
   useEffect(() => {
     const timeoutID = setTimeout(() => {
-      setHistoryMap(getHistoryMap());
+      setHistoryItems(getHistoryItems());
     });
     return () => clearTimeout(timeoutID);
-  }, [getHistoryMap]);
+  }, [getHistoryItems]);
 
-  const historyList = useMemo<TransactionHistoryDisplayItem[]>(() => {
-    return Object.values(historyMap);
-  }, [historyMap]);
-
-  const [curAdr] = useState(currentAccount?.address);
+  const [currentAccountProxyId] = useState(currentAccountProxy?.id);
 
   // Handle detail modal
   // const { chain, extrinsicHash } = useParams();
@@ -464,7 +412,7 @@ function History({
 
   useEffect(() => {
     if (transactionId && chain && !isOpenByLink) {
-      const existed = historyList.find(
+      const existed = historyItems.find(
         item => item.chain === chain && (item.transactionId === transactionId || item.extrinsicHash === transactionId),
       );
 
@@ -476,14 +424,14 @@ function History({
         }
       }, 300);
     }
-  }, [chain, transactionId, historyList, isOpenByLink]);
+  }, [chain, transactionId, historyItems, isOpenByLink]);
 
   useEffect(() => {
-    if (currentAccount?.address !== curAdr) {
+    if (currentAccountProxy?.id !== currentAccountProxyId) {
       setDetailModalVisible(false);
       setSelectedItem(null);
     }
-  }, [curAdr, currentAccount?.address]);
+  }, [currentAccountProxyId, currentAccountProxy?.id]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TransactionHistoryDisplayItem>) => {
@@ -542,31 +490,8 @@ function History({
     );
   }, []);
 
-  const accountItems = useMemo(() => {
-    return accounts.filter(a => !isAccountAll(a.address));
-  }, [accounts]);
-
-  const chainItems = useMemo<ChainItemType[]>(() => {
-    if (!selectedAddress) {
-      return [];
-    }
-
-    const result: ChainItemType[] = [];
-
-    Object.values(chainInfoList).forEach(c => {
-      if (_isChainEvmCompatible(c) === isEthereumAddress(selectedAddress)) {
-        result.push({
-          name: c.name,
-          slug: c.slug,
-        });
-      }
-    });
-
-    return result;
-  }, [chainInfoList, selectedAddress]);
-
   const onSelectAccount = useCallback(
-    (item: AccountJson) => {
+    (item: AccountAddressItemType) => {
       setSelectedAddress(item.address);
     },
     [setSelectedAddress],
@@ -593,23 +518,12 @@ function History({
     }
   }, [detailModalVisible, historyMap]);
 
-  const currentLedgerChainOfSelectedAccount = useMemo(() => {
-    return findLedgerChainOfSelectedAccount(selectedAddress, accounts, chainInfoMap);
-  }, [accounts, chainInfoMap, selectedAddress]);
-
   const isChainSelectorEmpty = !chainItems.length;
 
-  const chainSelectorDisabled = useMemo(() => {
-    if (loading || !selectedAddress || isChainSelectorEmpty) {
-      return true;
-    }
-
-    if (!isEthereumAddress(selectedAddress)) {
-      return !!currentLedgerChainOfSelectedAccount;
-    }
-
-    return false;
-  }, [loading, selectedAddress, isChainSelectorEmpty, currentLedgerChainOfSelectedAccount]);
+  const chainSelectorDisabled = useMemo(
+    () => loading || !selectedAddress || isChainSelectorEmpty,
+    [loading, selectedAddress, isChainSelectorEmpty],
+  );
 
   const isSelectedChainEvm = useMemo(() => {
     const selectedChainInfo = chainInfoMap[selectedChain];
@@ -656,34 +570,6 @@ function History({
     };
   }, [isSelectedChainEvm, selectedAddress, selectedChain]);
 
-  useEffect(() => {
-    if (chainItems.length) {
-      setSelectedChain(prevChain => {
-        const _isEthereumAddress = isEthereumAddress(selectedAddress);
-
-        if (currentLedgerChainOfSelectedAccount) {
-          if (!_isEthereumAddress) {
-            return currentLedgerChainOfSelectedAccount;
-          }
-        }
-
-        if (prevChain && chainInfoMap[prevChain]) {
-          const _isPrevChainEvm = _isChainEvmCompatible(chainInfoMap[prevChain]);
-
-          if (_isEthereumAddress && !_isPrevChainEvm && currentLedgerChainOfSelectedAccount) {
-            return currentLedgerChainOfSelectedAccount;
-          }
-
-          if (_isPrevChainEvm === _isEthereumAddress) {
-            return prevChain;
-          }
-        }
-
-        return chainItems[0].slug;
-      });
-    }
-  }, [chainInfoMap, chainItems, currentLedgerChainOfSelectedAccount, selectedAddress, setSelectedChain]);
-
   return (
     <>
       <ContainerWithSubHeader
@@ -721,18 +607,6 @@ function History({
               zIndex: 10,
               flexDirection: 'row',
             }}>
-            {isAllAccount && (
-              <View style={{ flex: 1 }}>
-                <HistoryAccountSelector
-                  items={accountItems}
-                  value={selectedAddress}
-                  onSelectItem={onSelectAccount}
-                  disabled={loading}
-                  selectorRef={accountSelectorRef}
-                />
-              </View>
-            )}
-
             <View style={{ flex: 1 }}>
               <HistoryChainSelector
                 items={chainItems}
@@ -743,6 +617,18 @@ function History({
                 loading={loading}
               />
             </View>
+
+            {isAllAccount && (
+              <View style={{ flex: 1 }}>
+                <HistoryAccountSelector
+                  items={accountAddressItems}
+                  value={selectedAddress}
+                  onSelectItem={onSelectAccount}
+                  disabled={loading}
+                  selectorRef={accountSelectorRef}
+                />
+              </View>
+            )}
           </View>
 
           <LazySectionList
@@ -752,7 +638,7 @@ function History({
               paddingTop: theme.paddingXS,
               paddingBottom: theme.paddingXS,
             }}
-            items={historyList}
+            items={historyItems}
             renderItem={renderItem}
             renderListEmptyComponent={emptyList}
             filterFunction={filterFunction}

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -6,6 +6,8 @@ import { CheckCircle } from 'phosphor-react-native';
 import { TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import InputCheckBox from 'components/Input/InputCheckBox';
+import { mmkvStore } from 'utils/storage';
+import { deviceHeight } from 'constants/index';
 
 // todo: refactor code, style, i18n later
 
@@ -14,6 +16,7 @@ interface TnCSeedPhraseModalProps {
   isVisible: boolean;
   onPressSubmit: (hideNextTime: boolean) => void;
   onBackButtonPress: () => void;
+  isUseForceHidden?: boolean;
 }
 
 interface InstructionInfo {
@@ -52,10 +55,12 @@ export function TnCSeedPhraseModal({
   isVisible,
   onPressSubmit,
   onBackButtonPress,
+  isUseForceHidden,
 }: TnCSeedPhraseModalProps) {
   const theme = useSubWalletTheme().swThemes;
   const [hideNextTime, setHideNextTime] = useState<boolean>(false);
   const [agreementMap, setAgreementMap] = useState<Record<string, boolean>>({});
+  const useDefaultContent = mmkvStore.getBoolean('use-default-create-content');
 
   const _onPressSubmit = useCallback(() => {
     onPressSubmit(hideNextTime);
@@ -84,6 +89,12 @@ export function TnCSeedPhraseModal({
     setHideNextTime(prev => !prev);
   }, []);
 
+  const subtitle: string = useMemo(() => {
+    return useDefaultContent
+      ? 'Tap on all checkboxes to confirm you understand the importance of your seed phrase'
+      : 'This seed phrase creates a unified account that can be used for Polkadot, Ethereum, Bitcoin and TON ecosystem. Keep in mind that for TON specifically, this seed phrase is not compatible with TON-native wallets.';
+  }, [useDefaultContent]);
+
   return (
     <SwModal
       isUseModalV2
@@ -94,11 +105,12 @@ export function TnCSeedPhraseModal({
       modalTitle={'Keep your seed phrase safe'}
       titleTextAlign="center"
       titleStyle={{ textAlign: 'center' }}
+      isUseForceHidden={isUseForceHidden}
       isAllowSwipeDown={false}
       footer={footer()}
       onChangeModalVisible={onBackButtonPress}
       modalStyle={{ maxHeight: '90%' }}>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: '100%' }}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: deviceHeight * 0.6 }}>
         <View
           style={{
             paddingTop: 6,
@@ -107,7 +119,7 @@ export function TnCSeedPhraseModal({
             paddingRight: 16,
           }}>
           <Typography.Text size={'sm'} style={{ color: 'rgba(255, 255, 255, 0.45)', textAlign: 'center' }}>
-            Tap on all checkboxes to confirm you understand the importance of your seed phrase
+            {subtitle}
           </Typography.Text>
         </View>
 
@@ -116,20 +128,19 @@ export function TnCSeedPhraseModal({
             <InstructionItem {...item} key={item.value} onPress={onPressInstructionItem} valueMap={agreementMap} />
           ))}
         </View>
-
-        <InputCheckBox
-          wrapperStyle={{
-            paddingBottom: 0,
-            paddingTop: 16,
-          }}
-          labelStyle={{
-            color: 'rgba(255, 255, 255, 0.45)',
-          }}
-          checked={hideNextTime}
-          label={'Don’t show again'}
-          onPress={onPressHideNextTime}
-        />
       </ScrollView>
+      <InputCheckBox
+        wrapperStyle={{
+          paddingBottom: 0,
+          paddingTop: 16,
+        }}
+        labelStyle={{
+          color: 'rgba(255, 255, 255, 0.45)',
+        }}
+        checked={hideNextTime}
+        label={'Don’t show again'}
+        onPress={onPressHideNextTime}
+      />
     </SwModal>
   );
 }

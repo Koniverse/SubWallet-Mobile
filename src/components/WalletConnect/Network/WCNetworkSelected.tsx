@@ -30,7 +30,10 @@ export const WCNetworkSelected = ({ networks }: Props) => {
           supported: false,
           chainInfo: {
             slug: '',
-            name: i18n.formatString(i18n.message.unknownNetworks, unSupportNetworks.length),
+            name:
+              unSupportNetworks.length <= 1
+                ? i18n.message.unknownNetwork
+                : i18n.formatString(i18n.message.unknownNetworks, unSupportNetworks.length),
           },
           slug: '',
         }
@@ -58,7 +61,11 @@ export const WCNetworkSelected = ({ networks }: Props) => {
       renderSelected={() => (
         <WCNetworkInput
           networks={connectedNetworks}
-          content={i18n.formatString(i18n.message.connectedNetworkConnected, networkNumber) as string}
+          content={
+            networkNumber === 1
+              ? i18n.message.connectedOneNetworkConnected
+              : (i18n.formatString(i18n.message.connectedNetworkConnected, networkNumber) as string)
+          }
           onPress={() => {}}
         />
       )}
@@ -70,7 +77,9 @@ export const WCNetworkSelected = ({ networks }: Props) => {
             color: theme.colorWhite,
             paddingBottom: theme.paddingXS,
           }}>
-          {i18n.formatString(i18n.message.connectedNetworkConnected, networkNumber)}
+          {networkNumber === 1
+            ? i18n.message.connectedOneNetworkConnected
+            : (i18n.formatString(i18n.message.connectedNetworkConnected, networkNumber) as string)}
         </Typography.Text>
       }
       renderCustomItem={renderItem}

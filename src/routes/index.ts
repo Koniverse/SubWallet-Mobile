@@ -1,11 +1,11 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { NftTransferActionStackParamList } from 'routes/nft/transferAction';
 import { SigningActionStackParamList } from 'routes/signing';
 import { TransactionActionStackParamList } from 'routes/transaction/transactionAction';
 import { WrapperParamList } from 'routes/wrapper';
+import { AccountAuthType } from '@subwallet/extension-base/background/types';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -30,10 +30,15 @@ export type RootStackParamList = {
   ConnectDetail: { topic: string; isLastItem: boolean };
   ConnectWalletConnect: undefined;
   MigratePassword: undefined;
-  CreateAccount: { keyTypes?: KeypairType[]; isBack?: boolean };
+  CreateAccount: { isBack?: boolean };
   QrScanner: undefined;
   AccountsScreen: { pathName?: string };
-  EditAccount: { address: string; name: string };
+  EditAccount: {
+    address: string;
+    name: string;
+    requestViewDerivedAccountDetails?: boolean;
+    requestViewDerivedAccounts?: boolean;
+  };
   RemoveAccount: { address: string };
   RestoreJson: undefined;
   ExportPrivateKey: { address: string };
@@ -66,7 +71,7 @@ export type RootStackParamList = {
   ConfirmationPopup: undefined;
   Confirmations: undefined;
   DAppAccess: undefined;
-  DAppAccessDetail: { origin: string; accountAuthType: string };
+  DAppAccessDetail: { origin: string; accountAuthTypes: AccountAuthType[] };
   WebViewDebugger: undefined;
   ImportNft: { payload: ConfirmationsQueue['addTokenRequest'][0] } | undefined;
   TransferNft: NavigatorScreenParams<NftTransferActionStackParamList>;

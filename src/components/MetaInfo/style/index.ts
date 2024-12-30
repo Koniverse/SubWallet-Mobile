@@ -47,6 +47,11 @@ export default (theme: ThemeTypes) =>
       fontSize: theme.fontSize,
       lineHeight: theme.lineHeight * theme.fontSize,
     },
+    subValue: {
+      fontSize: theme.fontSizeSM,
+      lineHeight: theme.lineHeightSM * theme.fontSizeSM,
+      textAlign: 'right',
+    },
     valueWrapper: {
       flexDirection: 'row',
       alignItems: 'center',

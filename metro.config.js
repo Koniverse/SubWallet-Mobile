@@ -15,6 +15,19 @@ const config = {
   resolver: {
     assetExts: assetExts.filter(ext => ext !== 'svg'),
     sourceExts: [...sourceExts, 'svg'],
+    extraNodeModules: {
+      // Override fs with react-native-fs
+      fs: require.resolve('react-native-fs'),
+      path: require.resolve('react-native-path'),
+      crypto: require.resolve('react-native-crypto'),
+      stream: require.resolve('stream-browserify'),
+      http: require.resolve('react-native-http'),
+      https: require.resolve('https-browserify'),
+      zlib: require.resolve('react-zlib-js'),
+      url: require.resolve('react-native-url-polyfill'),
+      'expo-crypto': require.resolve('react-native-expo-crypto'),
+      'tiny-secp256k1': require.resolve('@bitcoinerlab/secp256k1'),
+    },
   },
 };
 

@@ -6,6 +6,7 @@ import {
   ChainStakingMetadata,
   ConfirmationDefinitions,
   ConfirmationsQueue,
+  ConfirmationsQueueTon,
   ConfirmationType,
   CrowdloanItem,
   KeyringState,
@@ -21,18 +22,18 @@ import {
   ValidatorInfo,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
-  AccountJson,
   AccountsContext,
   AuthorizeRequest,
   MetadataRequest,
   SigningRequest,
 } from '@subwallet/extension-base/background/types';
-import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { SettingsStruct } from '@polkadot/ui-settings/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { _ChainApiStatus, _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import {
+  AccountJson,
+  AccountProxy,
   BalanceMap,
   BuyServiceInfo,
   BuyTokenInfo,
@@ -44,7 +45,10 @@ import {
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
 import { SessionTypes } from '@walletconnect/types';
-import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
+import {
+  WalletConnectNotSupportRequest,
+  WalletConnectSessionRequest,
+} from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { MissionInfo } from 'types/missionPool';
 import { DAppCategory, DAppInfo } from 'types/browser';
 import { RootRouteProps } from 'routes/index';
@@ -55,6 +59,7 @@ import {
   AppConfirmationData,
   AppPopupData,
 } from '@subwallet/extension-base/services/mkt-campaign-service/types';
+import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -182,11 +187,13 @@ export interface AppOnlineContent {
 
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {
   currentAccount: AccountJson | null;
+  currentAccountProxy: AccountProxy | null;
+  accountProxies: AccountProxy[];
   isNoAccount: boolean;
   isAllAccount: boolean;
 }
 
-export interface RequestState extends ConfirmationsQueue, BaseReduxStore {
+export interface RequestState extends ConfirmationsQueue, ConfirmationsQueueTon, BaseReduxStore {
   authorizeRequest: Record<string, AuthorizeRequest>;
   metadataRequest: Record<string, MetadataRequest>;
   signingRequest: Record<string, SigningRequest>;
@@ -195,6 +202,7 @@ export interface RequestState extends ConfirmationsQueue, BaseReduxStore {
   numberOfConfirmations: number;
   transactionRequest: Record<string, SWTransactionResult>;
   connectWCRequest: Record<string, WalletConnectSessionRequest>;
+  notSupportWCRequest: Record<string, WalletConnectNotSupportRequest>;
 }
 
 export interface UpdateConfirmationsQueueRequest extends BaseReduxStore {

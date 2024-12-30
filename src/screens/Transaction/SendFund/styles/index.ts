@@ -14,7 +14,6 @@ export default (theme: ThemeTypes) =>
       ...MarginBottomForSubmitButton,
     },
     footerBalanceWrapper: {
-      flexDirection: 'row',
       marginTop: -theme.margin,
       marginBottom: -theme.margin,
     },
@@ -59,8 +58,11 @@ export default (theme: ThemeTypes) =>
       gap: theme.size,
     },
     balance: {
-      paddingTop: theme.padding,
       marginBottom: 0,
+      flex: 1,
+    },
+    balanceStep2: {
+      paddingTop: theme.padding,
       flex: 1,
     },
   });

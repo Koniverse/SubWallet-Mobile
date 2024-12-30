@@ -1,19 +1,40 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import StakingTabStyle from './style';
 import { DisabledStyle } from 'styles/sharedStyles';
 import { TokenDetailsTab } from 'screens/Home/Crypto/TokenDetailModal';
+import { Typography } from 'components/design-system-ui';
 
-interface Props<T> {
-  selectedValue: string;
-  onSelectType: (type: string) => void;
-  tabs: T[];
-  tabType: 'tokenDetail';
+export interface TabItem {
+  label: string;
+  onPress: () => void;
+  disabled?: boolean;
+  value: string;
 }
 
-export function SwTab<T>({ selectedValue, onSelectType, tabs, tabType }: Props<T>) {
+interface Props {
+  selectedValue: string;
+  onSelectType: (type: string) => void;
+  tabs: TabItem[];
+  containerStyle?: ViewStyle;
+  itemStyle?: ViewStyle;
+  selectedStyle?: ViewStyle;
+  textStyle?: TextStyle;
+  selectedTextStyle?: TextStyle;
+}
+
+export function SwTab({
+  selectedValue,
+  onSelectType,
+  tabs,
+  containerStyle,
+  selectedStyle,
+  itemStyle,
+  textStyle,
+  selectedTextStyle,
+}: Props) {
   const theme = useSubWalletTheme().swThemes;
   const _style = StakingTabStyle(theme);
 
@@ -24,25 +45,26 @@ export function SwTab<T>({ selectedValue, onSelectType, tabs, tabType }: Props<T
   };
 
   return (
-    <View style={_style.container}>
+    <View style={[_style.container, containerStyle]}>
       {tabs.map(item => {
-        if (tabType === 'tokenDetail') {
-          const _item = item as TokenDetailsTab;
-          return (
-            <TouchableOpacity
-              key={_item.value}
-              disabled={_item.disabled}
-              activeOpacity={BUTTON_ACTIVE_OPACITY}
-              style={[
-                _style.item,
-                selectedValue === _item.value && _style.selectedItem,
-                _item.disabled && DisabledStyle,
-              ]}
-              onPress={() => _onSelectType(_item.value)}>
-              <Text style={_style.itemText}>{_item.label}</Text>
-            </TouchableOpacity>
-          );
-        }
+        const _item = item as TokenDetailsTab;
+        return (
+          <TouchableOpacity
+            key={_item.value}
+            disabled={_item.disabled}
+            activeOpacity={BUTTON_ACTIVE_OPACITY}
+            style={[
+              { ..._style.item, ...itemStyle },
+              selectedValue === _item.value && { ..._style.selectedItem, ...selectedStyle },
+              _item.disabled && DisabledStyle,
+            ]}
+            onPress={() => _onSelectType(_item.value)}>
+            <Typography.Text
+              style={[{ ..._style.itemText, ...textStyle }, selectedValue === _item.value && selectedTextStyle]}>
+              {_item.label}
+            </Typography.Text>
+          </TouchableOpacity>
+        );
       })}
     </View>
   );

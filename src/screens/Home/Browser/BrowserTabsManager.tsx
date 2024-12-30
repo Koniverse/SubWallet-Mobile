@@ -16,12 +16,12 @@ import { clearAllTabScreenshots, createNewTabIfEmpty, updateActiveTab } from 'st
 import { Plug, Plugs, PlugsConnected } from 'phosphor-react-native';
 import { useGetCurrentAuth } from 'hooks/auth/useGetCurrentAuth';
 import { ConnectWebsiteModal } from 'components/Modal/ConnectWebsiteModal';
-import { isEthereumAddress } from '@polkadot/util-crypto';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { funcSortByName } from 'utils/account';
 import { isAccountAll } from 'utils/accountAll';
 import { BackgroundIcon, Button } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { AccountJson } from '@subwallet/extension-base/types';
+import { isAddressAllowedWithAuthType } from 'utils/account/account';
 
 enum ConnectionStatement {
   NOT_CONNECTED = 'not-connected',
@@ -124,9 +124,11 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   const currentActiveTabRef = useRef<BrowserTabRef>(null);
   const isEmptyAccounts = useCheckEmptyAccounts();
   const [connectionState, setConnectionState] = useState<ConnectionStatement>(ConnectionStatement.NOT_CONNECTED);
-  const isAllAccount = useSelector((state: RootState) => state.accountState.isAllAccount);
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
-  const _accounts = useSelector((state: RootState) => state.accountState.accounts);
+  const {
+    accounts: _accounts,
+    currentAccountProxy,
+    isAllAccount,
+  } = useSelector((state: RootState) => state.accountState);
 
   const accounts = useMemo((): AccountJson[] => {
     const result = [..._accounts].sort(funcSortByName);
@@ -163,57 +165,59 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
       if (!currentAuth.isAllowed) {
         setConnectionState(ConnectionStatement.BLOCKED);
       } else {
-        const type = currentAuth.accountAuthType;
+        const types = currentAuth.accountAuthTypes;
         const allowedMap = currentAuth.isAllowedMap;
 
         const filterType = (address: string) => {
-          if (type === 'both') {
-            return true;
-          }
-
-          const _type = type || 'substrate';
-
-          return _type === 'substrate' ? !isEthereumAddress(address) : isEthereumAddress(address);
+          return isAddressAllowedWithAuthType(address, types);
         };
+        let accountToCheck = noAllAccounts;
 
-        if (!isAllAccount) {
-          const _allowedMap: Record<string, boolean> = {};
+        if (!isAllAccount && currentAccountProxy) {
+          accountToCheck = [...currentAccountProxy.accounts];
+        }
 
-          Object.entries(allowedMap)
-            .filter(([address]) => filterType(address))
-            .forEach(([address, value]) => {
-              _allowedMap[address] = value;
-            });
+        const idProxiesCanConnect = new Set<string>();
+        const allowedIdProxies = new Set<string>();
 
-          const isAllowed = _allowedMap[currentAccount?.address || ''];
-
-          if (isAllowed === undefined) {
-            setConnectionState(ConnectionStatement.NOT_CONNECTED);
-          } else {
-            const connectionStatus = isAllowed ? ConnectionStatement.CONNECTED : ConnectionStatement.DISCONNECTED;
-            setConnectionState(connectionStatus);
+        accountToCheck.forEach(({ address, proxyId }) => {
+          if (filterType(address) && proxyId) {
+            idProxiesCanConnect.add(proxyId);
           }
-        } else {
-          const numberAccounts = noAllAccounts.filter(({ address }) => filterType(address)).length;
-          const numberAllowedAccounts = Object.entries(allowedMap)
-            .filter(([address]) => filterType(address))
-            .filter(([, value]) => value).length;
+        });
+        Object.entries(allowedMap).forEach(([address, value]) => {
+          if (filterType(address)) {
+            const account = accountToCheck.find(({ address: accAddress }) => accAddress === address);
 
-          if (numberAllowedAccounts === 0) {
-            setConnectionState(ConnectionStatement.DISCONNECTED);
-          } else {
-            if (numberAllowedAccounts > 0 && numberAllowedAccounts < numberAccounts) {
-              setConnectionState(ConnectionStatement.PARTIAL_CONNECTED);
-            } else {
-              setConnectionState(ConnectionStatement.CONNECTED);
+            if (account?.proxyId && value) {
+              allowedIdProxies.add(account.proxyId);
             }
+          }
+        });
+
+        const numberAllowedAccountProxies = allowedIdProxies.size;
+        const numberAllAccountProxiesCanConnect = idProxiesCanConnect.size;
+
+        if (numberAllAccountProxiesCanConnect === 0) {
+          setConnectionState(ConnectionStatement.NOT_CONNECTED);
+
+          return;
+        }
+
+        if (numberAllowedAccountProxies === 0) {
+          setConnectionState(ConnectionStatement.DISCONNECTED);
+        } else {
+          if (numberAllowedAccountProxies > 0 && numberAllowedAccountProxies < numberAllAccountProxiesCanConnect) {
+            setConnectionState(ConnectionStatement.PARTIAL_CONNECTED);
+          } else {
+            setConnectionState(ConnectionStatement.CONNECTED);
           }
         }
       }
     } else {
       setConnectionState(ConnectionStatement.NOT_CONNECTED);
     }
-  }, [currentAccount?.address, currentAuth, isAllAccount, noAllAccounts]);
+  }, [currentAccountProxy, currentAuth, isAllAccount, noAllAccounts]);
 
   useEffect(() => {
     return () => {

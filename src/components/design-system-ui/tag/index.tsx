@@ -78,7 +78,6 @@ const Tag: React.FC<TagNativeProps> = props => {
   const wrapStyle = _styles[`${color}${capitalize(bgType)}Wrap`] || getTagColorBgc;
   // @ts-ignore
   const textStyle = _styles[`${color}${capitalize(bgType)}Text`] || getTagColorText;
-
   const closableDom = closable ? (
     <TouchableOpacity style={_styles.close} onPress={onTagClose}>
       <Icon type="phosphor" phosphorIcon={X} customSize={12} iconColor={theme.colorTextDescription} />

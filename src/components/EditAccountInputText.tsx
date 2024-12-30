@@ -2,8 +2,10 @@ import React, { forwardRef } from 'react';
 import { StyleProp, TextInput, TextInputProps, TextStyle, View, ViewStyle } from 'react-native';
 import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import Text from '../components/Text';
 import { Warning } from 'components/Warning';
+import { Typography } from 'components/design-system-ui';
+import { AccountProxyTypeTag } from 'components/AccountProxy/AccountProxyTypeTag';
+import { AccountProxyType } from '@subwallet/extension-base/types';
 
 interface Props extends TextInputProps {
   isDisabled?: boolean;
@@ -14,16 +16,17 @@ interface Props extends TextInputProps {
   onSubmitField?: () => void;
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
+  accountType?: AccountProxyType;
 }
 
 const inputWrapper: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
+  backgroundColor: '#1A1A1A',
   width: '100%',
-  borderRadius: 5,
-  height: 64,
-  paddingHorizontal: 16,
-  paddingTop: 4,
-  paddingBottom: 10,
+  borderRadius: 8,
+  paddingLeft: 16,
+  paddingRight: 12,
+  paddingTop: 8,
+  paddingBottom: 2,
   justifyContent: 'center',
 };
 const labelStyle: StyleProp<any> = {
@@ -59,12 +62,23 @@ export const EditAccountInputText = forwardRef((inputProps: Props, ref: React.Re
     onSubmitField,
     prefix,
     suffix,
+    accountType,
   } = inputProps;
 
   return (
     <>
       <View style={[inputWrapper, editAccountInputStyle]}>
-        <Text style={labelStyle}>{label}</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <Typography.Text style={labelStyle}>{label}</Typography.Text>
+
+          <AccountProxyTypeTag type={accountType} />
+        </View>
+
         <View style={contentWrapper}>
           {prefix}
           <TextInput

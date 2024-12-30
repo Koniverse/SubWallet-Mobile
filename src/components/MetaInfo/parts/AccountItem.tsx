@@ -5,14 +5,10 @@ import MetaInfoStyles from 'components/MetaInfo/style';
 import useGeneralStyles from 'components/MetaInfo/hooks/useGeneralStyles';
 import { getSchemaColor, renderColContent } from 'components/MetaInfo/shared';
 import { View } from 'react-native';
-import { useSelector } from 'react-redux';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { RootState } from 'stores/index';
-import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
-import reformatAddress, { toShort } from 'utils/index';
+import { toShort } from 'utils/index';
 import Typography from '../../design-system-ui/typography';
-import { Avatar } from 'components/design-system-ui';
-import { isAddress } from '@polkadot/util-crypto';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 export interface AccountInfoItem extends InfoItemBase {
   address: string;
@@ -25,13 +21,10 @@ const AccountItem: React.FC<AccountInfoItem> = ({
   label,
   address: accountAddress,
   name: accountName,
-  networkPrefix: addressPrefix,
 }: AccountInfoItem) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = MetaInfoStyles(theme);
   const { labelGeneralStyle, valueGeneralStyle } = useGeneralStyles(theme);
-
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   const account = useGetAccountByAddress(accountAddress);
 
@@ -39,27 +32,7 @@ const AccountItem: React.FC<AccountInfoItem> = ({
     return accountName || account?.name;
   }, [account?.name, accountName]);
 
-  const address = useMemo(() => {
-    let addPrefix = 42;
-
-    if (addressPrefix !== undefined) {
-      addPrefix = addressPrefix;
-    }
-
-    if (account?.originGenesisHash) {
-      const network = findNetworkJsonByGenesisHash(chainInfoMap, account.originGenesisHash);
-
-      if (network) {
-        addPrefix = network.substrateInfo?.addressPrefix ?? addPrefix;
-      }
-    }
-
-    if (!accountAddress || !isAddress(accountAddress)) {
-      return accountAddress;
-    }
-
-    return reformatAddress(accountAddress, addPrefix);
-  }, [account, accountAddress, addressPrefix, chainInfoMap]);
+  const shortAddress = toShort(accountAddress);
 
   const valueStyle = useMemo(() => {
     return {
@@ -70,15 +43,33 @@ const AccountItem: React.FC<AccountInfoItem> = ({
     };
   }, [_style.value, theme, valueColorSchema, valueGeneralStyle]);
 
+  const subValueStyle = useMemo(() => {
+    return {
+      ..._style.subValue,
+      ...valueGeneralStyle,
+      ...(valueColorSchema && { color: getSchemaColor(valueColorSchema, theme) }),
+      flexShrink: 1,
+    };
+  }, [_style.subValue, theme, valueColorSchema, valueGeneralStyle]);
+
   return (
     <View style={_style.row}>
-      <View style={[_style.col]}>{renderColContent(label, { ..._style.label, ...labelGeneralStyle })}</View>
+      <View style={[_style.col, _style['col.grow'], !!name && { justifyContent: 'flex-start' }]}>
+        {renderColContent(label, { ..._style.label, ...labelGeneralStyle })}
+      </View>
       <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
-        <View style={[_style.valueWrapper, { gap: theme.sizeXS }]}>
-          <Avatar value={address} size={24} />
-          <Typography.Text ellipsis style={valueStyle}>
-            {name || toShort(address)}
-          </Typography.Text>
+        <View style={[_style.valueWrapper, { gap: theme.sizeXS, alignItems: 'flex-start' }]}>
+          <AccountProxyAvatar value={account?.proxyId || accountAddress} size={24} />
+          <View style={{ flexShrink: 1 }}>
+            {!!name && (
+              <Typography.Text ellipsis style={valueStyle}>
+                {name}
+              </Typography.Text>
+            )}
+            <Typography.Text ellipsis style={!!name ? subValueStyle : valueStyle}>
+              {shortAddress}
+            </Typography.Text>
+          </View>
         </View>
       </View>
     </View>

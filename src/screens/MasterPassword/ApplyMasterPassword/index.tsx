@@ -1,9 +1,8 @@
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { ScrollView, View } from 'react-native';
-import { Avatar, Button, Icon } from 'components/design-system-ui';
+import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, CheckCircle, Info, Trash } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ApplyMasterPasswordStyle from './style';
@@ -27,6 +26,8 @@ import { SelectedActionType } from 'stores/types';
 import { noop } from 'utils/function';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { AccountJson } from '@subwallet/extension-base/types';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
@@ -54,7 +55,7 @@ const ApplyMasterPassword = () => {
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
   const _style = ApplyMasterPasswordStyle(theme);
-  const { accounts, isLocked } = useSelector((state: RootState) => state.accountState);
+  const { accounts } = useSelector((state: RootState) => state.accountState);
   const [step, setStep] = useState<PageStep>('Introduction');
   const [migrateAccount, setMigrateAccount] = useState<AccountJson | undefined>(undefined);
   const [deleting, setDeleting] = useState<boolean>(false);
@@ -137,12 +138,6 @@ const ApplyMasterPassword = () => {
   useEffect(() => {
     migrateAddressRef.current = migrateAccount?.address || '';
   }, [migrateAccount?.address]);
-
-  useEffect(() => {
-    if (isLocked && needMigrate.length) {
-      setStep('Introduction');
-    }
-  }, [isLocked, navigation, needMigrate.length]);
 
   useEffect(() => {
     onUpdateErrors('password')(undefined);
@@ -328,11 +323,7 @@ const ApplyMasterPassword = () => {
         {step === 'Migrate' && migrateAccount && (
           <ScrollView style={{ flex: 1, paddingHorizontal: theme.padding }}>
             <View style={{ alignItems: 'center', justifyContent: 'center', paddingBottom: 32, paddingTop: 16 }}>
-              <Avatar
-                size={112}
-                value={migrateAccount.address}
-                theme={migrateAccount.type === 'ethereum' ? 'ethereum' : 'polkadot'}
-              />
+              <AccountProxyAvatar size={112} value={migrateAccount.address} />
             </View>
 
             <TextField text={migrateAccount.name || ''} label={i18n.inputLabel.accountName} />

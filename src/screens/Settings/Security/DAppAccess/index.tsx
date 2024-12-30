@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
+import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
 import { DotsThree, GlobeSimple, Plugs, PlugsConnected, X } from 'phosphor-react-native';
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { useSelector } from 'react-redux';
@@ -14,6 +14,9 @@ import { EmptyList } from 'components/EmptyList';
 import DappAccessItem from 'components/design-system-ui/web3-block/DappAccessItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { AccountProxy } from '@subwallet/extension-base/types';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import { isSubstrateAddress, isTonAddress } from '@subwallet/keyring';
 
 function searchFunction(items: AuthUrlInfo[], searchString: string) {
   return items.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -21,6 +24,28 @@ function searchFunction(items: AuthUrlInfo[], searchString: string) {
 
 function getDAppItems(authUrlMap: Record<string, AuthUrlInfo>): AuthUrlInfo[] {
   return Object.values(authUrlMap);
+}
+
+function getAccountCount(item: AuthUrlInfo, accountProxies: AccountProxy[]): number {
+  const authTypes = item.accountAuthTypes;
+
+  return accountProxies.filter(ap => {
+    return ap.accounts.some(account => {
+      if (isEthereumAddress(account.address)) {
+        return authTypes.includes('evm') && item.isAllowedMap[account.address];
+      }
+
+      if (isSubstrateAddress(account.address)) {
+        return authTypes.includes('substrate') && item.isAllowedMap[account.address];
+      }
+
+      if (isTonAddress(account.address)) {
+        return authTypes.includes('ton') && item.isAllowedMap[account.address];
+      }
+
+      return false;
+    });
+  }).length;
 }
 
 enum FilterValue {
@@ -39,12 +64,12 @@ const filterFunction = (items: AuthUrlInfo[], filters: string[]) => {
     for (const filter of filters) {
       switch (filter) {
         case FilterValue.SUBSTRATE:
-          if (item.accountAuthType === 'substrate' || item.accountAuthType === 'both') {
+          if (item.accountAuthTypes?.includes('substrate')) {
             return true;
           }
           break;
         case FilterValue.ETHEREUM:
-          if (item.accountAuthType === 'evm' || item.accountAuthType === 'both') {
+          if (item.accountAuthTypes?.includes('evm')) {
             return true;
           }
           break;
@@ -66,6 +91,7 @@ const filterFunction = (items: AuthUrlInfo[], filters: string[]) => {
 
 export const DAppAccessScreen = () => {
   const authUrlMap = useSelector((state: RootState) => state.settings.authUrls);
+  const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const theme = useSubWalletTheme().swThemes;
@@ -127,16 +153,17 @@ export const DAppAccessScreen = () => {
         <DappAccessItem
           containerStyle={{ marginBottom: theme.marginXS }}
           item={item}
+          accountCount={getAccountCount(item, accountProxies)}
           onPress={() => {
             navigation.navigate('DAppAccessDetail', {
               origin: item.id,
-              accountAuthType: item.accountAuthType || '',
+              accountAuthTypes: item.accountAuthTypes,
             });
           }}
         />
       );
     },
-    [navigation, theme.marginXS],
+    [accountProxies, navigation, theme.marginXS],
   );
 
   return (

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
+import { ConfirmationsQueue, ConfirmationsQueueTon } from '@subwallet/extension-base/background/KoniTypes';
 import {
   AuthorizeRequest,
   ConfirmationRequestBase,
@@ -11,7 +11,10 @@ import {
 } from '@subwallet/extension-base/background/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { ReduxStatus, RequestState } from 'stores/types';
-import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
+import {
+  WalletConnectNotSupportRequest,
+  WalletConnectSessionRequest,
+} from '@subwallet/extension-base/services/wallet-connect-service/types';
 
 const initialState: RequestState = {
   authorizeRequest: {},
@@ -27,6 +30,10 @@ const initialState: RequestState = {
   evmSendTransactionRequest: {},
   evmWatchTransactionRequest: {},
   errorConnectNetwork: {},
+  notSupportWCRequest: {},
+  tonSignatureRequest: {},
+  tonWatchTransactionRequest: {},
+  tonSendTransactionRequest: {},
   // Summary Info
   reduxStatus: ReduxStatus.INIT,
   hasConfirmations: false,
@@ -45,6 +52,9 @@ export const CONFIRMATIONS_FIELDS: Array<keyof RequestState> = [
   'evmWatchTransactionRequest',
   'errorConnectNetwork',
   'connectWCRequest',
+  'tonSignatureRequest',
+  'tonSendTransactionRequest',
+  'tonWatchTransactionRequest',
 ];
 
 export interface ConfirmationQueueItem {
@@ -59,6 +69,9 @@ const readyMap = {
   updateMetadataRequests: false,
   updateSigningRequests: false,
   updateConfirmationRequests: false,
+  updateConfirmationRequestsTon: false,
+  updateConnectWalletConnect: false,
+  updateNotSupportWalletConnect: false,
 };
 
 function computeStateSummary(state: RequestState) {
@@ -90,22 +103,22 @@ const requestStateSlice = createSlice({
     updateAuthorizeRequests(state, { payload }: PayloadAction<Record<string, AuthorizeRequest>>) {
       state.authorizeRequest = payload;
       readyMap.updateAuthorizeRequests = true;
-      computeStateSummary(state);
+      computeStateSummary(state as RequestState);
     },
     updateMetadataRequests(state, { payload }: PayloadAction<Record<string, MetadataRequest>>) {
       state.metadataRequest = payload;
       readyMap.updateMetadataRequests = true;
-      computeStateSummary(state);
+      computeStateSummary(state as RequestState);
     },
     updateSigningRequests(state, { payload }: PayloadAction<Record<string, SigningRequest>>) {
       state.signingRequest = payload;
       readyMap.updateSigningRequests = true;
-      computeStateSummary(state);
+      computeStateSummary(state as RequestState);
     },
     updateConfirmationRequests(state, action: PayloadAction<Partial<ConfirmationsQueue>>) {
       Object.assign(state, action.payload);
       readyMap.updateConfirmationRequests = true;
-      computeStateSummary(state);
+      computeStateSummary(state as RequestState);
     },
     updateTransactionRequests(state, { payload }: PayloadAction<Record<string, SWTransactionResult>>) {
       state.transactionRequest = payload;
@@ -113,11 +126,29 @@ const requestStateSlice = createSlice({
     updateConnectWCRequests(state, { payload }: PayloadAction<Record<string, WalletConnectSessionRequest>>) {
       state.connectWCRequest = payload;
       readyMap.updateConfirmationRequests = true;
-      computeStateSummary(state);
+      computeStateSummary(state as RequestState);
+    },
+    updateConfirmationRequestsTon(state, action: PayloadAction<Partial<ConfirmationsQueueTon>>) {
+      Object.assign(state, action.payload);
+      readyMap.updateConfirmationRequestsTon = true;
+      computeStateSummary(state as RequestState);
+    },
+    updateWCNotSupportRequests(state, { payload }: PayloadAction<Record<string, WalletConnectNotSupportRequest>>) {
+      state.notSupportWCRequest = payload;
+      readyMap.updateNotSupportWalletConnect = true;
+      computeStateSummary(state as RequestState);
     },
   },
 });
 
-export const { updateAuthorizeRequests, updateConfirmationRequests, updateMetadataRequests, updateSigningRequests } =
-  requestStateSlice.actions;
+export const {
+  updateAuthorizeRequests,
+  updateConfirmationRequests,
+  updateMetadataRequests,
+  updateSigningRequests,
+  updateConfirmationRequestsTon,
+  updateWCNotSupportRequests,
+  updateTransactionRequests,
+  updateConnectWCRequests,
+} = requestStateSlice.actions;
 export default requestStateSlice.reducer;

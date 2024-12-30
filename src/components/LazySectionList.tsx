@@ -27,6 +27,8 @@ interface Props<T> {
   loading?: boolean;
   estimatedItemSize?: number;
   stickyHeader?: boolean;
+  keyExtractor?: (item: T | string, index: number) => string;
+  extraData?: any;
 }
 
 export function LazySectionList<T>({
@@ -46,6 +48,7 @@ export function LazySectionList<T>({
   sortSectionFunction,
   estimatedItemSize,
   stickyHeader = true,
+  extraData,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
   const sectionListRef = useRef<FlashList<string | T>>(null);
@@ -128,13 +131,13 @@ export function LazySectionList<T>({
   };
 
   const renderSectionItem = useCallback(
-    ({ item, index, extraData, target }: ListRenderItemInfo<string | T>) => {
+    ({ item, index, extraData: _extraData, target }: ListRenderItemInfo<string | T>) => {
       if (typeof item === 'string') {
         const itemLength = sections.find(_item => _item.title === item)?.data.length;
         return renderSectionHeader(item, itemLength);
       } else {
         if (renderItem) {
-          return renderItem({ item, index, extraData, target });
+          return renderItem({ item, index, extraData: _extraData, target });
         } else {
           return <></>;
         }
@@ -184,6 +187,8 @@ export function LazySectionList<T>({
             getItemType={getItemType}
             estimatedItemSize={estimatedItemSize}
             data={sectionData}
+            extraData={extraData}
+            showsVerticalScrollIndicator={false}
           />
         </View>
       ) : (

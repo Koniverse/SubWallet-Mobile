@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { EvmSendTransactionRequest, EvmTransactionArg } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import BigN from 'bignumber.js';
 import { Icon, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
@@ -16,7 +15,8 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   request: EvmSendTransactionRequest;
-  account: AccountJson;
+  address: string;
+  accountName?: string;
 }
 
 const convertToBigN = (num: EvmSendTransactionRequest['value']): string | number | undefined => {
@@ -28,7 +28,7 @@ const convertToBigN = (num: EvmSendTransactionRequest['value']): string | number
 };
 
 const EvmTransactionDetail: React.FC<Props> = (props: Props) => {
-  const { account, request } = props;
+  const { address, accountName, request } = props;
   const { chainId } = request;
   const theme = useSubWalletTheme().swThemes;
   const [isShowDetailHexData, setShowHexData] = useState<boolean>(false);
@@ -86,9 +86,9 @@ const EvmTransactionDetail: React.FC<Props> = (props: Props) => {
         recipientAddress={recipient?.address || request.to || ''}
         recipientLabel={i18n.inputLabel.to}
         recipientName={recipient?.name || ''}
-        senderAddress={account.address}
+        senderAddress={address}
         senderLabel={i18n.inputLabel.from}
-        senderName={account.name}
+        senderName={accountName}
       />
       {(!request.isToContract || amount !== 0) && (
         <MetaInfo.Number

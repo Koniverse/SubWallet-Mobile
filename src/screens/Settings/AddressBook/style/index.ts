@@ -29,4 +29,11 @@ export default (theme: ThemeTypes) =>
     },
     itemContainerStyle: { marginBottom: theme.marginXS, marginHorizontal: theme.margin },
     itemAddressTextStyle: { ...FontSemiBold, color: theme.colorTextLight4 },
+    rightSwipeActionsStyle: {
+      flexDirection: 'row',
+      height: '100%',
+      alignItems: 'center',
+      paddingRight: theme.padding,
+      gap: theme.paddingXS,
+    },
   });

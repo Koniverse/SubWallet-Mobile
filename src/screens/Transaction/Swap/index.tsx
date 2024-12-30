@@ -5,14 +5,15 @@ import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/
 import { SwapFromField } from 'components/Swap/SwapFromField';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { TokenItemType } from 'components/Modal/common/TokenSelector';
+import { TokenItemType, TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { _ChainAsset } from '@subwallet/chain-list/types';
-import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 import {
   _getAssetDecimals,
   _getAssetOriginChain,
   _getAssetSymbol,
   _getChainNativeTokenSlug,
+  _getMultiChainAsset,
   _getOriginChainOfAsset,
   _isChainEvmCompatible,
   _parseAssetRefKey,
@@ -45,16 +46,10 @@ import {
   SwapRequest,
 } from '@subwallet/extension-base/types/swap';
 import { CommonFeeComponent, CommonOptimalPath, CommonStepType } from '@subwallet/extension-base/types/service-base';
-import {
-  addLazy,
-  formatNumberString,
-  reformatAddress,
-  removeLazy,
-  swapCustomFormatter,
-} from '@subwallet/extension-base/utils';
+import { formatNumberString, isSameAddress, swapCustomFormatter } from '@subwallet/extension-base/utils';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
-import { findAccountByAddress } from 'utils/account';
+import { findAccountByAddress, getReformatedAddressRelatedToChain } from 'utils/account';
 import { getLatestSwapQuote, handleSwapRequest, handleSwapStep, validateSwapProcess } from 'messaging/swap';
 import { DEFAULT_COMMON_PROCESS, CommonActionType, commonProcessReducer } from 'reducers/transaction-process';
 import { FormItem } from 'components/common/FormItem';
@@ -71,18 +66,24 @@ import AlertBox from 'components/design-system-ui/alert-box/simple';
 import UserInactivity from 'react-native-user-inactivity';
 import { SwapIdleWarningModal } from 'components/Modal/Swap/SwapIdleWarningModal';
 import { SendFundProps } from 'routes/transaction/transactionAction';
-import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { SwapError } from '@subwallet/extension-base/background/errors/SwapError';
 import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMultiTransaction';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { AccountAddressItemType } from 'types/account';
+import { AccountProxyType } from '@subwallet/extension-base/types';
+import { isTokenCompatibleWithAccountChainTypes } from 'utils/chainAndAsset';
+import { getChainsByAccountAll } from 'utils/index';
+import { isChainInfoAccordantAccountChainType } from 'utils/chain';
+import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
+import { ActionType } from '@subwallet/extension-base/core/types';
+import { CHAINFLIP_SLIPPAGE } from 'types/swap';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
   fromTokenSlug: string;
   toTokenSlug: string;
   recipient?: string;
-  destChain: string;
 }
 
 function getTokenSelectorItem(tokenSlugs: string[], assetRegistryMap: Record<string, _ChainAsset>): TokenItemType[] {
@@ -130,7 +131,9 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     (state: RootState) => state.assetRegistry,
   );
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const { accounts, currentAccount, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const { accountProxies, accounts, currentAccountProxy, isAllAccount } = useSelector(
+    (state: RootState) => state.accountState,
+  );
   const hasInternalConfirmations = useSelector((state: RootState) => state.requestState.hasInternalConfirmations);
   const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const swapPairs = useSelector((state: RootState) => state.swap.swapPairs);
@@ -147,18 +150,15 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       setValue,
       trigger,
       handleSubmit,
-      formState: { dirtyFields, errors },
+      formState: { errors },
     },
-    defaultValues,
     onChangeFromValue: setFrom,
+    onChangeChainValue: setChain,
     onTransactionDone: onDone,
     transactionDoneInfo,
   } = useTransaction<SwapFormValues>('swap', {
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-    defaultValues: {
-      destChain: '',
-    },
+    mode: 'onSubmit',
+    reValidateMode: 'onBlur',
   });
 
   const fromValue = useWatch<SwapFormValues>({ name: 'from', control });
@@ -167,14 +167,11 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   const toTokenSlugValue = useWatch<SwapFormValues>({ name: 'toTokenSlug', control });
   const chainValue = useWatch<SwapFormValues>({ name: 'chain', control });
   const recipientValue = useWatch<SwapFormValues>({ name: 'recipient', control });
-  const destChainValue = useWatch<SwapFormValues>({ name: 'destChain', control });
   const { checkChainConnected, turnOnChain } = useChainChecker(false);
   const accountInfo = useGetAccountByAddress(fromValue);
   const [processState, dispatchProcessState] = useReducer(commonProcessReducer, DEFAULT_COMMON_PROCESS);
   const { onError, onSuccess } = useHandleSubmitMultiTransaction(onDone, setTransactionDone, dispatchProcessState);
   const onPreCheck = usePreCheckAction(fromValue);
-  const destChainNetworkPrefix = useGetChainPrefixBySlug(destChainValue);
-  const destChainGenesisHash = chainInfoMap[destChainValue]?.substrateInfo?.genesisHash || '';
   const accountSelectorRef = useRef<ModalRef>();
   const [showQuoteArea, setShowQuoteArea] = useState<boolean>(false);
   const [quoteOptions, setQuoteOptions] = useState<SwapQuote[]>([]);
@@ -203,9 +200,41 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   const scrollRef = useRef<ScrollView>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [isScrollEnd, setIsScrollEnd] = useState<boolean>(false);
-  const accountSelectorList = useMemo(() => {
-    return accounts.filter(({ address }) => !isAccountAll(address));
-  }, [accounts]);
+  const accountAddressItems = useMemo(() => {
+    const chainInfo = chainValue ? chainInfoMap[chainValue] : undefined;
+
+    if (!chainInfo) {
+      return [];
+    }
+
+    const result: AccountAddressItemType[] = [];
+
+    accountProxies.forEach(ap => {
+      if (!currentAccountProxy || !(isAccountAll(currentAccountProxy.id) || ap.id === currentAccountProxy.id)) {
+        return;
+      }
+
+      if ([AccountProxyType.READ_ONLY, AccountProxyType.LEDGER].includes(ap.accountType)) {
+        return;
+      }
+
+      ap.accounts.forEach(a => {
+        const address = getReformatedAddressRelatedToChain(a, chainInfo);
+
+        if (address) {
+          result.push({
+            accountName: ap.name,
+            accountProxyId: ap.id,
+            accountProxyType: ap.accountType,
+            accountType: a.type,
+            address,
+          });
+        }
+      });
+    });
+
+    return result;
+  }, [accountProxies, chainInfoMap, chainValue, currentAccountProxy]);
   const fromAndToTokenMap = useMemo<Record<string, string[]>>(() => {
     const result: Record<string, string[]> = {};
 
@@ -220,42 +249,75 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     return result;
   }, [swapPairs]);
 
-  const rawFromTokenItems = useMemo<TokenItemType[]>(() => {
-    return getTokenSelectorItem(Object.keys(fromAndToTokenMap), assetRegistryMap);
-  }, [assetRegistryMap, fromAndToTokenMap]);
-
-  const fromTokenItems = useMemo<TokenItemType[]>(() => {
-    if (!fromValue) {
-      return rawFromTokenItems;
-    }
-
-    return rawFromTokenItems.filter(i => {
-      return (
-        chainInfoMap[i.originChain] &&
-        isEthereumAddress(fromValue) === _isChainEvmCompatible(chainInfoMap[i.originChain])
-      );
-    });
-  }, [chainInfoMap, fromValue, rawFromTokenItems]);
-
-  const filterFromAssetInfo = useMemo(() => {
-    if (!fromTokenItems || !assetRegistryMap) {
+  const fromTokenItems = useMemo<TokenSelectorItemType[]>(() => {
+    if (!currentAccountProxy) {
       return [];
     }
 
-    const filteredAssets = fromTokenItems
-      .map(item => assetRegistryMap[item.slug])
-      .filter(chainAsset =>
-        tokenGroupSlug ? chainAsset.slug === tokenGroupSlug || chainAsset.multiChainAsset === tokenGroupSlug : true,
-      );
+    const rawTokenSlugs = Object.keys(fromAndToTokenMap);
+    let targetTokenSlugs: string[] = [];
 
-    return filteredAssets;
-  }, [assetRegistryMap, fromTokenItems, tokenGroupSlug]);
+    (() => {
+      // defaultSlug is just TokenSlug
+      if (tokenGroupSlug && rawTokenSlugs.includes(tokenGroupSlug)) {
+        if (isTokenCompatibleWithAccountChainTypes(tokenGroupSlug, currentAccountProxy.chainTypes, chainInfoMap)) {
+          targetTokenSlugs.push(tokenGroupSlug);
+        }
 
-  const fromTokenLists = useMemo(() => {
-    return tokenGroupSlug ? filterFromAssetInfo : fromTokenItems;
-  }, [tokenGroupSlug, filterFromAssetInfo, fromTokenItems]);
+        return;
+      }
 
-  const toTokenItems = useMemo<TokenItemType[]>(() => {
+      rawTokenSlugs.forEach(rts => {
+        const assetInfo = assetRegistryMap[rts];
+
+        if (!assetInfo) {
+          return;
+        }
+
+        if (tokenGroupSlug) {
+          // defaultSlug is MultiChainAssetSlug
+          if (
+            _getMultiChainAsset(assetInfo) === tokenGroupSlug &&
+            isTokenCompatibleWithAccountChainTypes(rts, currentAccountProxy.chainTypes, chainInfoMap)
+          ) {
+            targetTokenSlugs.push(rts);
+          }
+
+          return;
+        }
+
+        if (isTokenCompatibleWithAccountChainTypes(rts, currentAccountProxy.chainTypes, chainInfoMap)) {
+          targetTokenSlugs.push(rts);
+        }
+
+        if (isAllAccount) {
+          const allowChainSlug = getChainsByAccountAll(currentAccountProxy, accountProxies, chainInfoMap);
+
+          targetTokenSlugs = targetTokenSlugs.filter(tokenSlug => {
+            const chainSlug = _getOriginChainOfAsset(tokenSlug);
+
+            return allowChainSlug.includes(chainSlug);
+          });
+        }
+      });
+    })();
+
+    if (targetTokenSlugs.length) {
+      return getTokenSelectorItem(targetTokenSlugs, assetRegistryMap);
+    }
+
+    return [];
+  }, [
+    accountProxies,
+    assetRegistryMap,
+    chainInfoMap,
+    tokenGroupSlug,
+    fromAndToTokenMap,
+    isAllAccount,
+    currentAccountProxy,
+  ]);
+
+  const toTokenItems = useMemo<TokenSelectorItemType[]>(() => {
     return getTokenSelectorItem(fromAndToTokenMap[fromTokenSlugValue] || [], assetRegistryMap);
   }, [assetRegistryMap, fromAndToTokenMap, fromTokenSlugValue]);
 
@@ -267,6 +329,8 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     return assetRegistryMap[toTokenSlugValue] || undefined;
   }, [assetRegistryMap, toTokenSlugValue]);
 
+  const destChainValue = _getAssetOriginChain(toAssetInfo);
+
   const feeAssetInfo = useMemo(() => {
     return currentFeeOption ? assetRegistryMap[currentFeeOption] : undefined;
   }, [assetRegistryMap, currentFeeOption]);
@@ -274,71 +338,32 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   const toChainValue = useMemo(() => _getAssetOriginChain(toAssetInfo), [toAssetInfo]);
 
   const isSwitchable = useMemo(() => {
-    if (!fromAndToTokenMap[toTokenSlugValue]) {
+    if (!fromAndToTokenMap[toTokenSlugValue] || !currentAccountProxy) {
       return false;
     }
 
-    if (!fromValue) {
-      return true;
-    }
-
-    const toChain = _getAssetOriginChain(toAssetInfo);
-
-    return chainInfoMap[toChain] && isEthereumAddress(fromValue) === _isChainEvmCompatible(chainInfoMap[toChain]);
-  }, [chainInfoMap, fromAndToTokenMap, fromValue, toAssetInfo, toTokenSlugValue]);
+    return isTokenCompatibleWithAccountChainTypes(toTokenSlugValue, currentAccountProxy.chainTypes, chainInfoMap);
+  }, [fromAndToTokenMap, toTokenSlugValue, currentAccountProxy, chainInfoMap]);
 
   const recipientAddressRules = useMemo(
     () => ({
-      validate: (_recipientAddress: string): Promise<ValidateResult> => {
-        if (!_recipientAddress) {
-          return Promise.resolve('Recipient address is required');
-        }
-
-        if (!isAddress(_recipientAddress)) {
-          return Promise.resolve(i18n.errorMessage.invalidRecipientAddress);
-        }
-
-        if (!isEthereumAddress(_recipientAddress)) {
-          const destChainInfo = chainInfoMap[toAssetInfo.originChain];
-          const addressPrefix = destChainInfo?.substrateInfo?.addressPrefix ?? 42;
-          const _addressOnChain = reformatAddress(_recipientAddress, addressPrefix);
-
-          if (_addressOnChain !== _recipientAddress) {
-            return Promise.resolve(i18n.formatString(i18n.errorMessage.recipientAddressInvalid, destChainInfo.name));
-          }
-        }
-
-        if (toAssetInfo && toAssetInfo?.originChain && chainInfoMap[toAssetInfo?.originChain]) {
-          const isAddressEvm = isEthereumAddress(_recipientAddress);
-          const isEvmCompatible = _isChainEvmCompatible(chainInfoMap[toAssetInfo?.originChain]);
-
-          if (isAddressEvm !== isEvmCompatible) {
-            return Promise.resolve('Invalid swap recipient account');
-          }
-        }
-
+      validate: (_recipientAddress: string, { from, chain, toTokenSlug }: SwapFormValues): Promise<ValidateResult> => {
+        const destChain = assetRegistryMap[toTokenSlug].originChain;
+        const destChainInfo = chainInfoMap[destChain];
         const account = findAccountByAddress(accounts, _recipientAddress);
 
-        if (account?.isHardware && toAssetInfo?.originChain) {
-          const destChainInfo = chainInfoMap[toAssetInfo.originChain];
-          const availableGen: string[] = account.availableGenesisHashes || [];
-
-          if (
-            !isEthereumAddress(account.address) &&
-            !availableGen.includes(destChainInfo?.substrateInfo?.genesisHash || '')
-          ) {
-            const destChainName = destChainInfo?.name || 'Unknown';
-
-            return Promise.resolve(
-              `Wrong network. Your Ledger account is not supported by ${destChainName}. Please choose another receiving account and try again.`,
-            );
-          }
-        }
-
-        return Promise.resolve(undefined);
+        return validateRecipientAddress({
+          srcChain: chain,
+          destChainInfo,
+          fromAddress: from,
+          toAddress: _recipientAddress,
+          account,
+          actionType: ActionType.SWAP,
+          autoFormatValue: false,
+        });
       },
     }),
-    [accounts, chainInfoMap, toAssetInfo],
+    [accounts, assetRegistryMap, chainInfoMap],
   );
 
   const getConvertedBalance = useCallback(
@@ -357,7 +382,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     [assetRegistryMap, priceMap],
   );
 
-  const supportSlippageSelection = useMemo(() => {
+  const notSupportSlippageSelection = useMemo(() => {
     if (
       currentQuote?.provider.id === SwapProviderId.CHAIN_FLIP_TESTNET ||
       currentQuote?.provider.id === SwapProviderId.CHAIN_FLIP_MAINNET
@@ -387,9 +412,9 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
   const minimumReceived = useMemo(() => {
     const calcMinimumReceived = (value: string) => {
-      const adjustedValue = supportSlippageSelection
-        ? value
-        : new BigN(value).multipliedBy(new BigN(1).minus(currentSlippage.slippage)).integerValue(BigN.ROUND_DOWN);
+      const adjustedValue = new BigN(value)
+        .multipliedBy(new BigN(1).minus(currentSlippage.slippage))
+        .integerValue(BigN.ROUND_DOWN);
 
       return adjustedValue.toString().includes('e')
         ? formatNumberString(adjustedValue.toString())
@@ -397,18 +422,23 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     };
 
     return calcMinimumReceived(currentQuote?.toAmount || '0');
-  }, [supportSlippageSelection, currentQuote?.toAmount, currentSlippage.slippage]);
+  }, [currentQuote?.toAmount, currentSlippage.slippage]);
+
+  const isNotShowAccountSelector = !isAllAccount && accountAddressItems.length < 2;
 
   const showRecipientField = useMemo(() => {
-    if (fromValue && toAssetInfo?.originChain && chainInfoMap[toAssetInfo?.originChain]) {
-      const isAddressEvm = isEthereumAddress(fromValue);
-      const isEvmCompatibleTo = _isChainEvmCompatible(chainInfoMap[toAssetInfo?.originChain]);
-
-      return isAddressEvm !== isEvmCompatibleTo;
+    if (!fromValue || !destChainValue || !chainInfoMap[destChainValue]) {
+      return false;
     }
 
-    return false; // Add a default return value in case none of the conditions are met
-  }, [chainInfoMap, fromValue, toAssetInfo?.originChain]);
+    const fromAccountJson = accounts.find(account => isSameAddress(account.address, fromValue));
+
+    if (!fromAccountJson) {
+      return false;
+    }
+
+    return !isChainInfoAccordantAccountChainType(chainInfoMap[destChainValue], fromAccountJson.chainType);
+  }, [accounts, chainInfoMap, destChainValue, fromValue]);
 
   const feeItems = useMemo(() => {
     const result: FeeItem[] = [];
@@ -531,10 +561,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     return false;
   }, [altChain, checkChainConnected]);
 
-  const defaultFromValue = useMemo(() => {
-    return currentAccount?.address ? (isAccountAll(currentAccount.address) ? '' : currentAccount.address) : '';
-  }, [currentAccount?.address]);
-
   const onSelectFromToken = useCallback(
     (tokenSlug: string) => {
       setValue('fromTokenSlug', tokenSlug);
@@ -594,10 +620,10 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   }, []);
 
   const onOpenSlippageModal = useCallback(() => {
-    if (!supportSlippageSelection) {
+    if (!notSupportSlippageSelection) {
       setSlippageModalVisible(true);
     }
-  }, [supportSlippageSelection]);
+  }, [notSupportSlippageSelection]);
 
   const reValidateField = useCallback((name: string) => trigger(name), [trigger]);
 
@@ -605,21 +631,12 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     if (fromTokenSlugValue && toTokenSlugValue) {
       setValue('fromTokenSlug', toTokenSlugValue);
       setValue('toTokenSlug', fromTokenSlugValue);
+      setValue('from', '');
+      setValue('recipient', undefined, { shouldDirty: false, shouldTouch: false });
 
-      Promise.all([reValidateField('from'), reValidateField('recipient')])
-        .then(res => {
-          if (!res.some(r => !r)) {
-            setIsFormInvalid(false);
-          } else {
-            setIsFormInvalid(true);
-          }
-        })
-        .catch(e => {
-          console.log('Error when validating', e);
-          setIsFormInvalid(true);
-        });
+      setIsFormInvalid(true);
     }
-  }, [fromTokenSlugValue, reValidateField, setValue, toTokenSlugValue]);
+  }, [fromTokenSlugValue, setValue, toTokenSlugValue]);
 
   const renderSlippage = useCallback(() => {
     return (
@@ -642,20 +659,24 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
           <Number
             size={14}
-            value={supportSlippageSelection ? 0 : currentSlippage.slippage.multipliedBy(100).toString()}
+            value={
+              notSupportSlippageSelection
+                ? (CHAINFLIP_SLIPPAGE * 100).toString()
+                : currentSlippage.slippage.multipliedBy(100).toString()
+            }
             decimal={0}
             suffix={'%'}
             intColor={theme.colorSuccess}
             decimalColor={theme.colorSuccess}
             unitColor={theme.colorSuccess}
           />
-          {!supportSlippageSelection && (
+          {!notSupportSlippageSelection && (
             <Icon phosphorIcon={PencilSimpleLine} size={'xs'} iconColor={theme.colorSuccess} weight={'bold'} />
           )}
         </View>
       </TouchableOpacity>
     );
-  }, [currentSlippage.slippage, onOpenSlippageModal, supportSlippageSelection, theme.colorSuccess, theme.sizeXXS]);
+  }, [currentSlippage.slippage, onOpenSlippageModal, notSupportSlippageSelection, theme.colorSuccess, theme.sizeXXS]);
 
   const renderRateInfo = useCallback(() => {
     if (!currentQuote) {
@@ -866,13 +887,8 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
   useEffect(() => {
     const chain = _getAssetOriginChain(fromAssetInfo);
-    setValue('chain', chain);
-  }, [fromAssetInfo, setValue]);
-
-  useEffect(() => {
-    const destChain = _getAssetOriginChain(toAssetInfo);
-    setValue('destChain', destChain);
-  }, [toAssetInfo, setValue]);
+    setChain(chain);
+  }, [fromAssetInfo, setChain, setValue]);
 
   useEffect(() => {
     const unsubscribe = AppState.addEventListener('change', state => {
@@ -968,7 +984,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       setQuoteAliveUntil(undefined);
       setCurrentQuote(undefined);
       setSwapError(undefined);
-      setIsFormInvalid(false);
+      setIsFormInvalid(true);
     }
 
     return () => {
@@ -987,12 +1003,12 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   ]);
 
   useEffect(() => {
-    if (fromTokenLists.length) {
+    if (fromTokenItems.length) {
       if (!fromTokenSlugValue) {
-        setValue('fromTokenSlug', fromTokenLists[0].slug);
+        setValue('fromTokenSlug', fromTokenItems[0].slug);
       } else {
-        if (!fromTokenLists.some(item => item.slug === fromTokenSlugValue)) {
-          setValue('fromTokenSlug', fromTokenLists[0].slug);
+        if (!fromTokenItems.some(item => item.slug === fromTokenSlugValue)) {
+          setValue('fromTokenSlug', fromTokenItems[0].slug);
         }
       }
     } else {
@@ -1003,7 +1019,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
         setCurrentQuote(undefined);
       }
     }
-  }, [fromTokenLists, fromTokenSlugValue, onChangeAmount, setValue]);
+  }, [fromTokenItems, fromTokenSlugValue, onChangeAmount, setValue]);
 
   useEffect(() => {
     if (toTokenItems.length) {
@@ -1014,10 +1030,24 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   }, [setValue, toTokenItems, toTokenSlugValue]);
 
   useEffect(() => {
-    if (defaultValues.from !== defaultFromValue && !isAllAccount) {
-      setValue('from', defaultFromValue);
-    }
-  }, [defaultFromValue, defaultValues.from, isAllAccount, setValue]);
+    const updateFromValue = () => {
+      if (!accountAddressItems.length) {
+        return;
+      }
+
+      if (accountAddressItems.length === 1) {
+        if (!fromValue || accountAddressItems[0].address !== fromValue) {
+          setValue('from', accountAddressItems[0].address);
+        }
+      } else {
+        if (fromValue && !accountAddressItems.some(i => i.address === fromValue)) {
+          setValue('from', '');
+        }
+      }
+    };
+
+    updateFromValue();
+  }, [accountAddressItems, fromValue, setValue]);
 
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
@@ -1088,6 +1118,16 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   }, [currentQuoteRequest, hasInternalConfirmations, quoteAliveUntil, requestUserInteractToContinue]);
 
   useEffect(() => {
+    if (isFormInvalid) {
+      setQuoteAliveUntil(undefined);
+      setShowQuoteArea(false);
+      setQuoteOptions([]);
+      setCurrentQuote(undefined);
+      setCurrentQuoteRequest(undefined);
+    }
+  }, [isFormInvalid]);
+
+  useEffect(() => {
     if (requestUserInteractToContinue) {
       setSwapQuoteModalVisible(false);
       setChooseFeeModalVisible(false);
@@ -1108,22 +1148,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       setValue('recipient', '');
     }
   }, [setValue, showRecipientField]);
-
-  useEffect(() => {
-    if (fromValue && chainValue && destChainValue && dirtyFields.recipient) {
-      addLazy(
-        'trigger-validate-swap-to',
-        () => {
-          trigger('recipient');
-        },
-        100,
-      );
-    }
-
-    return () => {
-      removeLazy('trigger-validate-swap-to');
-    };
-  }, [chainValue, destChainValue, dirtyFields.recipient, fromValue, trigger]);
 
   const renderAlertBox = useCallback(() => {
     const multichainAsset = fromAssetInfo?.multiChainAsset;
@@ -1182,33 +1206,12 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
               showsVerticalScrollIndicator={false}
               ref={scrollRef}
               keyboardShouldPersistTaps={'handled'}>
-              {isAllAccount && (
-                <AccountSelector
-                  items={accountSelectorList}
-                  selectedValueMap={{ [fromValue]: true }}
-                  accountSelectorRef={accountSelectorRef}
-                  disabled={false}
-                  onSelectItem={item => {
-                    setFrom(item.address);
-                    accountSelectorRef && accountSelectorRef.current?.onCloseModal();
-                  }}
-                  renderSelected={() => (
-                    <AccountSelectField
-                      label={'Swap from account'}
-                      accountName={accountInfo?.name || ''}
-                      value={fromValue}
-                      showIcon
-                    />
-                  )}
-                />
-              )}
-
               <SwapFromField
                 fromAsset={fromAssetInfo}
                 onChangeInput={onChangeAmount}
                 assetValue={fromTokenSlugValue}
                 chainValue={chainValue}
-                tokenSelectorItems={fromTokenLists}
+                tokenSelectorItems={fromTokenItems}
                 amountValue={fromAmountValue}
                 chainInfo={chainInfoMap[chainValue]}
                 onSelectToken={onSelectFromToken}
@@ -1245,6 +1248,30 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                 loading={handleRequestLoading && showQuoteArea}
               />
 
+              {!isNotShowAccountSelector && (
+                <AccountSelector
+                  items={accountAddressItems}
+                  selectedValueMap={{ [fromValue]: true }}
+                  accountSelectorRef={accountSelectorRef}
+                  disabled={false}
+                  onSelectItem={item => {
+                    setFrom(item.address);
+                    accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                  }}
+                  renderSelected={() => (
+                    <AccountSelectField
+                      label={'From:'}
+                      horizontal
+                      accountName={accountInfo?.name || ''}
+                      value={fromValue}
+                      showIcon
+                      labelStyle={{ width: 48 }}
+                      outerStyle={{ marginTop: theme.sizeSM }}
+                    />
+                  )}
+                />
+              )}
+
               {showRecipientField && (
                 <FormItem
                   name={'recipient'}
@@ -1254,15 +1281,15 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                     <InputAddress
                       containerStyle={{ marginTop: theme.marginXS }}
                       ref={ref}
-                      label={'Recipient account'}
+                      label={'To:'}
                       value={value}
+                      horizontal
+                      showAvatar={false}
                       onChangeText={onChange}
                       onSideEffectChange={onBlur}
                       onBlur={onBlur}
-                      reValidate={() => reValidateField('recipient')}
+                      // reValidate={() => reValidateField('recipient')}
                       placeholder={'Input your recipient account'}
-                      addressPrefix={destChainNetworkPrefix}
-                      networkGenesisHash={destChainGenesisHash}
                       chain={destChainValue}
                       showAddressBook
                       fitNetwork
@@ -1291,7 +1318,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                 />
               </View>
 
-              {showQuoteArea && !!fromTokenLists.length && (
+              {showQuoteArea && !!fromTokenItems.length && (
                 <>
                   {!!currentQuote && !isFormInvalid && (
                     <>
@@ -1347,7 +1374,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                 </>
               )}
 
-              {!!fromTokenLists.length && !errors.recipient && renderAlertBox()}
+              {!!fromTokenItems.length && !errors.recipient && renderAlertBox()}
               {tokenGroupSlug && !fromAssetInfo && (
                 <AlertBox
                   type={'warning'}
@@ -1365,7 +1392,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                   submitLoading ||
                   handleRequestLoading ||
                   isNotConnectedAltChain ||
-                  !fromTokenLists.length ||
+                  !fromTokenItems.length ||
                   !!swapError ||
                   !!errors.recipient ||
                   !currentQuote

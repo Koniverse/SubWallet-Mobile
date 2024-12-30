@@ -26,6 +26,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 
 interface Props {
   id: string;
@@ -61,8 +62,9 @@ const handleSignature = async (type: EvmSignatureSupportType, id: string, signat
 export const EvmSignArea = (props: Props) => {
   const { id, payload, type, navigation, txExpirationTime } = props;
   const {
-    payload: { account, canSign, hashPayload, errors },
+    payload: { address, canSign, hashPayload, errors },
   } = payload;
+  const account = useGetAccountByAddress(address);
   const { hideAll, show } = useToast();
   const signMode = useMemo(() => getSignMode(account), [account]);
   const [loading, setLoading] = useState(false);
@@ -214,7 +216,11 @@ export const EvmSignArea = (props: Props) => {
           <>
             <DisplayPayloadModal visible={isShowQr} setVisible={setIsShowQr} onOpenScan={openScanning}>
               <>
-                <EvmQr address={account.address} hashPayload={hashPayload} isMessage={isEvmMessage(payload)} />
+                <EvmQr
+                  address={account?.address || address}
+                  hashPayload={hashPayload}
+                  isMessage={isEvmMessage(payload)}
+                />
                 <SignatureScanner visible={isScanning} setVisible={setIsScanning} onSuccess={onSuccess} />
               </>
             </DisplayPayloadModal>

@@ -12,30 +12,28 @@ import {
   YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
-import { isAccountAll, isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
-import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
-const useGroupYieldPosition = (selectedAddress?: string): YieldPositionInfo[] => {
-  const { poolInfoMap, yieldPositions } = useSelector((state: RootState) => state.earning);
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
-  const chainsByAccountType = useGetChainSlugs();
+const useGroupYieldPosition = (): YieldPositionInfo[] => {
+  const poolInfoMap = useSelector((state: RootState) => state.earning.poolInfoMap);
+  const yieldPositions = useSelector((state: RootState) => state.earning.yieldPositions);
+  const { currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const chainsByAccountType = useGetChainSlugsByAccount();
 
   return useMemo(() => {
     const raw: Record<string, YieldPositionInfo[]> = {};
     const result: YieldPositionInfo[] = [];
 
-    const address = selectedAddress ? selectedAddress : currentAccount?.address || '';
-    const isAll = isAccountAll(address);
-
     const checkAddress = (item: YieldPositionInfo) => {
-      if (isAll) {
+      if (isAllAccount) {
         return true;
       } else {
-        return isSameAddress(address, item.address);
+        return currentAccountProxy?.accounts.some(({ address }) => isSameAddress(address, item.address));
       }
     };
 
@@ -61,7 +59,7 @@ const useGroupYieldPosition = (selectedAddress?: string): YieldPositionInfo[] =>
         continue;
       }
 
-      if (isAll) {
+      if (isAllAccount) {
         const base: AbstractYieldPositionInfo = {
           slug: slug,
           chain: positionInfo.chain,
@@ -119,7 +117,7 @@ const useGroupYieldPosition = (selectedAddress?: string): YieldPositionInfo[] =>
     }
 
     return result;
-  }, [chainsByAccountType, currentAccount?.address, poolInfoMap, selectedAddress, yieldPositions]);
+  }, [currentAccountProxy?.accounts, isAllAccount, yieldPositions, chainsByAccountType, poolInfoMap]);
 };
 
 export default useGroupYieldPosition;

@@ -1,7 +1,6 @@
 import { FlatListScreen } from 'components/FlatListScreen';
 import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useMemo, useState } from 'react';
-import { AddressJson } from '@subwallet/extension-base/background/types';
 import { Keyboard, View } from 'react-native';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -10,7 +9,6 @@ import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass, PencilSimpleLine, Plus } from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import reformatAddress from 'utils/index';
 import { isAddress } from '@polkadot/util-crypto';
 import { AddContactModal } from 'components/Modal/AddressBook/AddContactModal';
 import { EditContactModal } from 'components/Modal/AddressBook/EditContactModal';
@@ -21,6 +19,8 @@ import createStylesheet from './style';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { AddressJson } from '@subwallet/extension-base/types';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 
 enum AccountGroup {
   CONTACT = 'contact',
@@ -242,6 +242,7 @@ export const ManageAddressBook = () => {
         searchMarginBottom={theme.sizeXS}
         flatListStyle={stylesheet.flatListStyle}
         onPressBack={() => navigation.goBack()}
+        estimatedItemSize={60}
       />
 
       <AddContactModal modalVisible={isShowAddContactModal} setModalVisible={setShowAddContactModal} />

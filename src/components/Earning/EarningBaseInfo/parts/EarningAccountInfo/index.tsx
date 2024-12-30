@@ -6,9 +6,8 @@ import {
   YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
-import { isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
-import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
+import { Button, Icon, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
 import EarningNominationModal from 'components/Modal/Earning/EarningNominationModal';
 import { StakingStatusUi } from 'constants/stakingStatusUi';
@@ -24,6 +23,8 @@ import { createEarningTypeTags } from 'utils/earning';
 import i18n from 'utils/i18n/i18n';
 import { findAccountByAddress, toShort } from 'utils/index';
 import createStyles from './styles';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -103,7 +104,7 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
       return () => {
         return (
           <View style={styles.accountRow}>
-            <Avatar value={item.address} size={theme.sizeLG} />
+            <AccountProxyAvatar value={item.address} size={theme.sizeLG} />
             <Typography.Text style={styles.accountText} ellipsis={true} numberOfLines={1}>
               {account?.name || toShort(item.address)}
             </Typography.Text>

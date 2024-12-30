@@ -31,7 +31,6 @@ export default (theme: ThemeTypes) => {
       height: 4 * theme.sizeLG,
       paddingHorizontal: theme.paddingSM,
       paddingVertical: theme.paddingXS,
-      marginBottom: theme.margin,
     },
     footer: {
       marginTop: theme.margin,
