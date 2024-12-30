@@ -16,6 +16,7 @@ interface TnCSeedPhraseModalProps {
   isVisible: boolean;
   onPressSubmit: (hideNextTime: boolean) => void;
   onBackButtonPress: () => void;
+  isUseForceHidden?: boolean;
 }
 
 interface InstructionInfo {
@@ -54,6 +55,7 @@ export function TnCSeedPhraseModal({
   isVisible,
   onPressSubmit,
   onBackButtonPress,
+  isUseForceHidden,
 }: TnCSeedPhraseModalProps) {
   const theme = useSubWalletTheme().swThemes;
   const [hideNextTime, setHideNextTime] = useState<boolean>(false);
@@ -103,6 +105,7 @@ export function TnCSeedPhraseModal({
       modalTitle={'Keep your seed phrase safe'}
       titleTextAlign="center"
       titleStyle={{ textAlign: 'center' }}
+      isUseForceHidden={isUseForceHidden}
       isAllowSwipeDown={false}
       footer={footer()}
       onChangeModalVisible={onBackButtonPress}

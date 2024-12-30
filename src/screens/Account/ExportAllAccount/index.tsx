@@ -24,6 +24,7 @@ import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { exportAccountBatch } from 'messaging/accounts';
 import { AccountSignMode } from 'types/signer';
+import { SelectAccountAllItem } from 'components/common/SelectAccountAllItem';
 
 const renderListEmptyComponent = () => {
   return (
@@ -83,6 +84,7 @@ export const ExportAllAccount = () => {
   const items = useMemo(() => {
     if (accountProxies.length > 2) {
       const foundAccountAll = accountProxies.find(a => isAccountAll(a.id));
+      const accountAll = { ...foundAccountAll, name: 'All accounts' } as AccountProxy;
       const foundCurrentAccount = accountProxies.find(a => a.id === currentAccountAddress);
 
       const result = accountProxies.filter(a => !(isAccountAll(a.id) || a.id === currentAccountAddress));
@@ -91,8 +93,8 @@ export const ExportAllAccount = () => {
         result.unshift(foundCurrentAccount);
       }
 
-      if (foundAccountAll) {
-        result.unshift(foundAccountAll);
+      if (accountAll) {
+        result.unshift(accountAll);
       }
 
       return result;
@@ -229,6 +231,18 @@ export const ExportAllAccount = () => {
     ({ item }: ListRenderItemInfo<AccountProxy>) => {
       const isAllAccount = isAccountAll(item.id);
 
+      if (isAllAccount) {
+        return (
+          <SelectAccountAllItem
+            isSelected={selectedValueMap[item.id]}
+            onPress={() => {
+              onSelectAccount(item, !selectedValueMap[item.id]);
+            }}
+            accountProxies={accountProxies}
+          />
+        );
+      }
+
       return (
         <SelectAccountItem
           key={item.id}
@@ -247,7 +261,7 @@ export const ExportAllAccount = () => {
         />
       );
     },
-    [navigation, onSelectAccount, selectedValueMap],
+    [accountProxies, navigation, onSelectAccount, selectedValueMap],
   );
 
   const renderFooter = useCallback(() => {

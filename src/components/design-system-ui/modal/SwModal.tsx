@@ -208,7 +208,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
               height={childrenHeight}
               ref={modalBaseV2Ref}
               disabledOnPressBackDrop={disabledOnPressBackDrop}
-              isUseForceHidden={Platform.OS === 'android'}
+              isUseForceHidden={isUseForceHidden === undefined ? Platform.OS === 'android' : isUseForceHidden}
               onChangeModalVisible={onChangeModalVisible}
               isAllowSwipeDown={isAllowSwipeDown}
               onBackButtonPress={onBackButtonPress}

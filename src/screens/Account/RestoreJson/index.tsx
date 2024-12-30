@@ -194,12 +194,10 @@ export const RestoreJson = () => {
           password,
         })
           .then(({ accountProxies: _accountProxies }) => {
-            console.log(`run to then`);
             setAccountProxies(_accountProxies);
             setPasswordValidateState({ status: 'success' });
           })
           .catch((e: Error) => {
-            console.log(`run to catch`);
             onFail(e);
           })
           .finally(() => {

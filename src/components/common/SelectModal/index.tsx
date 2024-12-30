@@ -21,6 +21,8 @@ import { SortFunctionInterface } from 'types/ui-types';
 import { SectionItem } from 'components/LazySectionList';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AccountAddressItemExtraType } from 'components/Modal/common/AccountSelector';
+import { AccountProxyItem } from 'screens/Account/AccountsScreen';
+import { AccountProxySelectItem } from 'components/common/SelectModal/parts/AccountProxySelectItem';
 
 interface Props<T> {
   items: T[];
@@ -37,7 +39,7 @@ interface Props<T> {
   isShowListWrapper?: boolean;
   renderSelectModalBtn?: (onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => JSX.Element;
   renderSelected?: () => JSX.Element;
-  selectModalItemType?: 'account' | 'token' | 'chain' | 'account-chain-address';
+  selectModalItemType?: 'account' | 'token' | 'chain' | 'account-chain-address' | 'account-proxy';
   selectModalType?: 'single' | 'multi';
   selectedValueMap: Record<string, boolean>;
   onSelectItem?: (item: T) => void;
@@ -153,6 +155,9 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
         } else if (selectModalItemType === 'account') {
           const accountItems = items as AccountAddressItemExtraType[];
           existed = accountItems.find(item => item.address === defaultValue);
+        } else if (selectModalItemType === 'account-proxy') {
+          const accountItems = items as AccountProxyItem[];
+          existed = accountItems.find(item => item.id === defaultValue);
         } else {
           const chainItems = items as ChainInfo[];
           existed = chainItems.find(item => item.slug === defaultValue);
@@ -204,6 +209,13 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
             (acc.accountName && acc.accountName.toLowerCase().includes(lowerCaseSearchString)) ||
             acc.address.toLowerCase().includes(lowerCaseSearchString),
         ) as T[];
+      } else if (selectModalItemType === 'account-proxy') {
+        return (_items as AccountProxyItem[]).filter(acc => {
+          const isValidSearchByAddress = acc.accounts.some(ac => {
+            return ac.address.toLowerCase().includes(searchString.toLowerCase());
+          });
+          return (acc.name && acc.name.toLowerCase().includes(lowerCaseSearchString)) || isValidSearchByAddress;
+        }) as T[];
       } else if (selectModalItemType === 'token') {
         return (_items as TokenItemType[]).filter(
           ({ symbol, originChain }) =>
@@ -224,6 +236,18 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
       return (
         <>
           <AccountSelectItem
+            item={item}
+            selectedValueMap={selectedValueMap}
+            onSelectItem={_onSelectItem}
+            showAccountSignModeIcon={showAccountSignModeIcon}
+            onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
+          />
+        </>
+      );
+    } else if (selectModalItemType === 'account-proxy') {
+      return (
+        <>
+          <AccountProxySelectItem
             item={item}
             selectedValueMap={selectedValueMap}
             onSelectItem={_onSelectItem}

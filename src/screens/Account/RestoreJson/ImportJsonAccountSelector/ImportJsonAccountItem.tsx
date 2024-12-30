@@ -177,7 +177,7 @@ export const ImportJsonAccountItem = (props: Props) => {
             onClose={() => setTooltipVisible(false)}
             content={
               <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
-                {'Account already in use'}
+                {'Duplicate account name'}
               </Typography.Text>
             }>
             <Button

@@ -111,6 +111,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
 
         {accountNameModalVisible && (
           <AccountNameModal
+            isUseForceHidden={!params.isBack}
             modalVisible={accountNameModalVisible}
             setModalVisible={setAccountNameModalVisible}
             accountType={selectedMnemonicType === 'general' ? AccountProxyType.UNIFIED : AccountProxyType.SOLO}
@@ -120,6 +121,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
         )}
 
         <TnCSeedPhraseModal
+          isUseForceHidden={!params.isBack}
           onBackButtonPress={() => navigation.goBack()}
           onPressSubmit={onPressSubmitTnCSeedPhraseModal}
           setVisible={setShowSeedPhraseInstruction}

@@ -38,9 +38,6 @@ export const BACKUP_WHITELIST: string[] = [
 
   // Assets events
   'pri(assetSetting.update)',
-  // 'pri(mantaPay.enable)',
-  // 'pri(mantaPay.disable)',
-  // 'pri(mantaPay.initSyncMantaPay)',
 
   // Account events
   'pri(authorize.approveV2)',
@@ -60,17 +57,13 @@ export const BACKUP_WHITELIST: string[] = [
   'pri(accounts.create.withSecret)',
   'pri(accounts.forget)',
   'pri(accounts.ton.version.change)',
-  // 'pri(accounts.inject.add)',
-  // 'pri(accounts.inject.remove)',
-  'pri(derivation.createV2)',
-  'pri(json.restoreV2)',
-  'pri(json.batchRestoreV2)',
-  'pri(accounts.updateCurrentAddress)',
-  'pri(currentAccount.saveAddress)',
-  'pri(accounts.saveRecent)',
-  'pri(accounts.editContact)',
-  'pri(accounts.deleteContact)',
+  'pri(accounts.json.restoreV2)',
+  'pri(accounts.json.batchRestoreV2)',
+  'pri(accounts.saveCurrentProxy)',
   'pri(accounts.derive.createV3)',
+  'pri(addressBook.saveRecent)',
+  'pri(addressBook.edit)',
+  'pri(addressBook.delete)',
 
   // Settings events
   'pri(settings.changeBalancesVisibility)',
@@ -93,10 +86,7 @@ export const BACKUP_WHITELIST: string[] = [
   'pri(keyring.migrate)',
   'pri(keyring.reset)',
   'pri(signing.approve.passwordV2)',
-  'pri(derivation.create.multiple)',
-  'pri(derivation.createV3)',
-  // 'pri(transactions.subscribe)',
-  // 'pri(notifications.subscribe)',
+  'pri(accounts.derive.create.multiple)',
   'pub(token.add)',
 
   // WalletConnect events

@@ -10,7 +10,8 @@ import i18n from 'utils/i18n/i18n';
 import { View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
 import { toShort } from 'utils/index';
-import { Avatar, Logo } from 'components/design-system-ui';
+import { Logo } from 'components/design-system-ui';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 export interface TransferInfoItem extends Omit<InfoItemBase, 'label'> {
   senderAddress: string;
@@ -59,7 +60,7 @@ const TransferItem: React.FC<TransferInfoItem> = ({
   const genAccountBlock = (address: string, name?: string) => {
     return (
       <View style={[_style.valueWrapper, { gap: theme.sizeXS, alignItems: 'flex-start' }]}>
-        <Avatar value={address} size={24} />
+        <AccountProxyAvatar value={address} size={24} />
         <View style={{ flexShrink: 1 }}>
           {!!name && (
             <Typography.Text ellipsis style={valueStyle}>

@@ -16,6 +16,7 @@ import useHandleTonAccountWarning from 'hooks/account/useHandleTonAccountWarning
 import { AppModalContext } from 'providers/AppModalContext';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 import { AccountActions, AccountProxyType } from '@subwallet/extension-base/types';
+import { VoidFunction } from 'types/index';
 
 export default function useReceiveQR(tokenGroupSlug?: string) {
   const { accountProxies, currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
@@ -42,21 +43,29 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   });
 
   const openAddressQrModal = useCallback(
-    (address: string, accountType: KeypairType, accountProxyId: string, chainSlug: string, showQrBack = true) => {
+    (
+      address: string,
+      accountType: KeypairType,
+      accountProxyId: string,
+      chainSlug: string,
+      closeCallback?: VoidFunction,
+    ) => {
       const processFunction = () => {
         addressQrModal.setAddressQrModal({
           visible: true,
           address,
           selectNetwork: chainSlug,
-          onBack: showQrBack ? addressQrModal.hideAddressQrModal : undefined,
-          isOpenFromTokenDetailScreen: !!tokenGroupSlug,
+          onBack: () => {
+            addressQrModal.hideAddressQrModal();
+            closeCallback?.();
+          },
         });
       };
       onHandleTonAccountWarning(accountType, () => {
         processFunction();
       });
     },
-    [addressQrModal, onHandleTonAccountWarning, tokenGroupSlug],
+    [addressQrModal, onHandleTonAccountWarning],
   );
 
   /* --- token Selector */
@@ -111,7 +120,9 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
           tokenRef && tokenRef.current?.onCloseModal();
           setSelectedAccountAddressItem(accountAddressItem);
-          openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chainSlug);
+          openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chainSlug, () => {
+            setSelectedAccountAddressItem(undefined);
+          });
 
           break;
         }
@@ -202,7 +213,9 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
           setSelectedAccountAddressItem(accountAddressItem);
 
-          openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chain, false);
+          openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chain, () => {
+            setSelectedAccountAddressItem(undefined);
+          });
 
           break;
         }
@@ -255,6 +268,12 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     tokenSelectorItems,
   ]);
 
+  // useEffect(() => {
+  //   if (addressQrModal.addressModalState.visible && selectedAccountAddressItem) {
+  //     onOpenReceive();
+  //   }
+  // }, [addressQrModal.addressModalState.visible, selectedAccountAddressItem, onOpenReceive]);
+
   useEffect(() => {
     if (addressQrModal.addressModalState.visible && selectedAccountAddressItem) {
       addressQrModal.setAddressQrModal(prev => {
@@ -295,7 +314,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountSelectorItems, selectedAccountAddressItem]);
+  }, [accountSelectorItems, addressQrModal.addressModalState.visible, selectedAccountAddressItem]);
 
   return {
     onOpenReceive,

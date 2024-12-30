@@ -222,6 +222,7 @@ export const SendFund = ({
     asset: assetValue,
     chain: chainValue,
     from: fromValue,
+    to: toValue,
     destChain: destChainValue,
     value: transferAmount,
   } = {
@@ -244,6 +245,7 @@ export const SendFund = ({
   );
   const [loading, setLoading] = useState(false);
   const [isTransferAll, setIsTransferAll] = useState(false);
+  const [isTransferBounceable, setTransferBounceable] = useState(false);
   const [, update] = useState({});
   const [isBalanceReady, setIsBalanceReady] = useState(true);
   const [forceUpdateValue, setForceUpdateValue] = useState<{ value: string | null } | undefined>(undefined);
@@ -456,6 +458,7 @@ export const SendFund = ({
     if (viewStep === 1) {
       navigation.goBack();
     } else {
+      setTransferBounceable(false);
       setViewStep(1);
       resetField('value', {
         keepDirty: false,
@@ -705,14 +708,30 @@ export const SendFund = ({
             return;
           }
         }
+      }
 
-        if (TON_CHAINS.includes(values.chain)) {
-          const isShowTonBouncealbeModal = await isTonBounceableAddress({ address: values.to, chain: values.chain });
-          const chainInfo = chainInfoMap[values.destChain];
+      if (isTransferAll && !checkTransferAllRef.current) {
+        setForceTransferAll(true);
+        forceTransferAllRef.current = true;
+        checkTransferAllRef.current = true;
 
-          if (isShowTonBouncealbeModal && !options.isTransferBounceable) {
-            const bounceableAddressPrefix = values.to.substring(0, 2);
-            const formattedAddress = _reformatAddressWithChain(values.to, chainInfo);
+        return;
+      }
+
+      doSubmit(values, options);
+    },
+    [isTransferAll, doSubmit, chainValue, destChainValue, chainInfoMap, confirmModal, theme.colorWarning],
+  );
+
+  const onPressNextStep = useCallback(async () => {
+    trigger('to').then(async pass => {
+      if (pass) {
+        if (TON_CHAINS.includes(chainValue)) {
+          const isShowTonBouncealbeModal = await isTonBounceableAddress({ address: toValue, chain: chainValue });
+          const chainInfo = chainInfoMap[destChainValue];
+          if (isShowTonBouncealbeModal && !isTransferBounceable) {
+            const bounceableAddressPrefix = toValue.substring(0, 2);
+            const formattedAddress = _reformatAddressWithChain(toValue, chainInfo);
             const formattedAddressPrefix = formattedAddress.substring(0, 2);
 
             confirmModal.setConfirmModal({
@@ -726,8 +745,8 @@ export const SendFund = ({
                   shouldDirty: true,
                   shouldTouch: true,
                 });
-                options.isTransferBounceable = true;
-                doSubmit({ ...values, to: formattedAddress }, options);
+                setTransferBounceable(true);
+                setViewStep(2);
                 confirmModal.hideConfirmModal();
               },
               onCancelModal: () => {
@@ -740,20 +759,21 @@ export const SendFund = ({
             return;
           }
         }
+
+        setViewStep(2);
       }
-
-      if (isTransferAll && !checkTransferAllRef.current) {
-        setForceTransferAll(true);
-        forceTransferAllRef.current = true;
-        checkTransferAllRef.current = true;
-
-        return;
-      }
-
-      doSubmit(values, options);
-    },
-    [isTransferAll, doSubmit, chainValue, destChainValue, chainInfoMap, confirmModal, theme.colorWarning, setValue],
-  );
+    });
+  }, [
+    chainInfoMap,
+    chainValue,
+    confirmModal,
+    destChainValue,
+    isTransferBounceable,
+    setValue,
+    theme.colorWarning,
+    toValue,
+    trigger,
+  ]);
 
   const onPressSubmit = useCallback(
     (values: TransferFormValues) => {
@@ -1202,6 +1222,7 @@ export const SendFund = ({
                         address={fromValue}
                         chain={chainValue}
                         tokenSlug={assetValue}
+                        extrinsicType={extrinsicType}
                         label={`${i18n.inputLabel.availableBalance}:`}
                         style={stylesheet.balance}
                       />
@@ -1222,13 +1243,7 @@ export const SendFund = ({
                     <Button
                       disabled={isSubmitButtonDisable}
                       icon={getButtonIcon(ArrowCircleRight)}
-                      onPress={() => {
-                        trigger('to').then(pass => {
-                          if (pass) {
-                            setViewStep(2);
-                          }
-                        });
-                      }}>
+                      onPress={onPressNextStep}>
                       {i18n.buttonTitles.next}
                     </Button>
                   )}
@@ -1241,7 +1256,7 @@ export const SendFund = ({
                             address={fromValue}
                             chain={chainValue}
                             tokenSlug={assetValue}
-                            isSubscribe={true}
+                            extrinsicType={extrinsicType}
                             label={`${i18n.inputLabel.availableBalance}:`}
                             style={stylesheet.balanceStep2}
                           />

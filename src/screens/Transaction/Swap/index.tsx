@@ -817,7 +817,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
               }
             }
           } catch (e) {
-            console.log('e---', e);
             onError(e as Error);
 
             return false;

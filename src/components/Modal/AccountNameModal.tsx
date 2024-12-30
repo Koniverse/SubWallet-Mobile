@@ -17,6 +17,7 @@ interface Props {
   onCancel?: () => void;
   modalVisible: boolean;
   setModalVisible: (value: boolean) => void;
+  isUseForceHidden?: boolean;
 }
 
 export const AccountNameModal = ({
@@ -26,6 +27,7 @@ export const AccountNameModal = ({
   onCancel,
   modalVisible,
   setModalVisible,
+  isUseForceHidden,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const modalRef = useRef<SWModalRefProps>(null);
@@ -140,6 +142,7 @@ export const AccountNameModal = ({
       modalTitle={'Account name'}
       setVisible={setModalVisible}
       isUseModalV2
+      isUseForceHidden={isUseForceHidden}
       titleTextAlign={'center'}
       onChangeModalVisible={onCancel}
       disabledOnPressBackDrop={true}

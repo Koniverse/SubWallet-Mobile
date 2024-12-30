@@ -4,7 +4,6 @@ import { NominationPoolInfo, ValidatorInfo } from '@subwallet/extension-base/typ
 import { SWIconProps } from 'components/design-system-ui/icon';
 import { BalanceValueInfo } from 'types/balance';
 import { PhosphorIcon } from 'utils/campaign';
-import BigN from 'bignumber.js';
 import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
 import { InfoItemBase } from 'components/MetaInfo/types';
 
@@ -32,10 +31,7 @@ export interface YieldGroupInfo {
   chain: string;
   poolListLength: number;
   poolSlugs: string[];
-  description: string;
-  totalValueStaked: BigN;
-  minJoin?: string;
-  isRelatedToRelayChain: boolean;
+  assetSlugs: string[];
 }
 
 export interface EarningTagType {

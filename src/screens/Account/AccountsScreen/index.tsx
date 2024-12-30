@@ -58,7 +58,7 @@ const EARNING_SCREEN_LIST = [
   'Withdraw',
 ];
 
-interface AccountProxyItem extends AccountProxy {
+export interface AccountProxyItem extends AccountProxy {
   group: AccountGroupType;
 }
 

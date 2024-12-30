@@ -132,7 +132,7 @@ export const ReceiveModal = ({
       titleTextAlign={'center'}
       onBackButtonPress={_onCancel}>
       <View style={receiveModalContentWrapper}>
-        <View style={{ paddingTop: 38 }}>
+        <View style={{ paddingTop: 16 }}>
           {formattedAddress && <QRCode qrRef={(ref?) => (svg = ref)} value={formattedAddress} />}
         </View>
 
