@@ -153,6 +153,7 @@ const _DataContext: DataContextType = {
     const key = storeNames.join('-');
 
     // Check await cache to avoid rerun many times
+    console.log('check', !Object.hasOwnProperty.call(this.awaitRequestsCache, key) || renew);
     if (!Object.hasOwnProperty.call(this.awaitRequestsCache, key) || renew) {
       const handlers = storeNames.reduce((acc, sName) => {
         (this.storeDependencies[sName] || []).forEach(handlerName => {
@@ -183,6 +184,7 @@ const _DataContext: DataContextType = {
       });
 
       this.awaitRequestsCache[key] = Promise.all(promiseList).then(() => true);
+      console.log('this.awaitRequestsCache[key]', this.awaitRequestsCache[key]);
     }
 
     // Wait for all handlers to finish
@@ -505,6 +507,7 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeSwapPairs,
           name: 'subscribeSwapPairs',
           relatedStores: ['swap'],
+          isStartImmediately: true,
         });
 
         _DataContext.addHandler({
