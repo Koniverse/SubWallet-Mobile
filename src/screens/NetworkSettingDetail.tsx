@@ -23,6 +23,7 @@ import {
   _isChainSubstrateCompatible,
   _isCustomChain,
   _isPureEvmChain,
+  _isPureTonChain,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import InputText from 'components/Input/InputText';
 import { Button, Icon } from 'components/design-system-ui';
@@ -88,7 +89,11 @@ export const NetworkSettingDetail = ({
   }, [chainInfo]);
 
   const chainId = useMemo(() => {
-    return _getEvmChainId(chainInfo);
+    return _getEvmChainId(chainInfo) as number;
+  }, [chainInfo]);
+
+  const isPureTonChain = useMemo(() => {
+    return chainInfo && _isPureTonChain(chainInfo);
   }, [chainInfo]);
 
   const isPureEvmChain = useMemo(() => {
@@ -334,22 +339,27 @@ export const NetworkSettingDetail = ({
 
           <View style={{ flexDirection: 'row', width: '100%' }}>
             <TextField outerStyle={{ flex: 1, marginRight: 12 }} text={decimals.toString()} />
-            {!isPureEvmChain ? (
-              <TextField outerStyle={{ flex: 1 }} text={paraId > -1 ? paraId.toString() : 'ParaId'} />
-            ) : (
-              <TextField outerStyle={{ flex: 1 }} text={chainId > -1 ? chainId.toString() : 'None'} />
+            {!isPureTonChain && (
+              <>
+                {!isPureEvmChain ? (
+                  <TextField outerStyle={{ flex: 1 }} text={paraId > -1 ? paraId.toString() : 'ParaId'} />
+                ) : (
+                  <TextField outerStyle={{ flex: 1 }} text={chainId > -1 ? chainId.toString() : 'None'} />
+                )}
+              </>
+            )}
+            {isPureTonChain && (
+              <TextField outerStyle={{ flex: 1 }} text={chainTypeString()} placeholder={'Network type'} />
             )}
           </View>
 
           <View style={[{ width: '100%' }, !isPureEvmChain && { flexDirection: 'row' }]}>
-            {!isPureEvmChain && (
+            {!isPureEvmChain && !isPureTonChain && (
               <TextField
                 outerStyle={[{ flex: 1 }, !isPureEvmChain && { marginRight: 12 }]}
                 text={addressPrefix.toString()}
               />
             )}
-
-            <TextField outerStyle={{ flex: 1 }} text={chainTypeString()} />
           </View>
 
           <InputText
@@ -361,14 +371,16 @@ export const NetworkSettingDetail = ({
             placeholder={formState.labels.blockExplorer}
           />
 
-          <InputText
-            ref={formState.refs.crowdloanUrl}
-            value={formState.data.crowdloanUrl}
-            onChangeText={onChangeCrowdloanUrl}
-            onSubmitField={onSubmitField('crowdloanUrl')}
-            errorMessages={formState.errors.crowdloanUrl}
-            placeholder={formState.labels.crowdloanUrl}
-          />
+          {!_isPureEvmChain(chainInfo) && !isPureTonChain && (
+            <InputText
+              ref={formState.refs.crowdloanUrl}
+              value={formState.data.crowdloanUrl}
+              onChangeText={onChangeCrowdloanUrl}
+              onSubmitField={onSubmitField('crowdloanUrl')}
+              errorMessages={formState.errors.crowdloanUrl}
+              placeholder={formState.labels.crowdloanUrl}
+            />
+          )}
         </ScrollView>
 
         <View style={{ ...MarginBottomForSubmitButton }}>
