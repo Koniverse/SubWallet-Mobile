@@ -26,7 +26,7 @@ function getDAppItems(authUrlMap: Record<string, AuthUrlInfo>): AuthUrlInfo[] {
   return Object.values(authUrlMap);
 }
 
-function getAccountCount(item: AuthUrlInfo, accountProxies: AccountProxy[]): number {
+export function getAccountCount(item: AuthUrlInfo, accountProxies: AccountProxy[]): number {
   const authTypes = item.accountAuthTypes;
 
   return accountProxies.filter(ap => {

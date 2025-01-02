@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { DotsThree, Plugs, PlugsConnected, Shield, ShieldSlash, Users, X } from 'phosphor-react-native';
+import { DotsThree, Plugs, PlugsConnected, Shield, ShieldSlash, Users, X, Plug } from 'phosphor-react-native';
 import { MoreOptionItemType, MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -23,11 +23,28 @@ import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
 import { AccountChainType, AccountProxy } from '@subwallet/extension-base/types';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
+import { getAccountCount } from 'screens/Settings/Security/DAppAccess/index';
 
 type Props = {
   origin: string;
   accountAuthTypes: AccountAuthType[];
   authInfo: AuthUrlInfo;
+};
+
+enum ConnectionStatement {
+  NOT_CONNECTED = 'not-connected',
+  CONNECTED = 'connected',
+  PARTIAL_CONNECTED = 'partial-connected',
+  DISCONNECTED = 'disconnected',
+  BLOCKED = 'blocked',
+}
+
+const iconMap = {
+  [ConnectionStatement.NOT_CONNECTED]: Plug,
+  [ConnectionStatement.CONNECTED]: PlugsConnected,
+  [ConnectionStatement.PARTIAL_CONNECTED]: PlugsConnected,
+  [ConnectionStatement.DISCONNECTED]: Plugs,
+  [ConnectionStatement.BLOCKED]: Plugs,
 };
 
 const searchFunction = (items: AccountProxy[], searchString: string) => {
@@ -68,15 +85,48 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
     );
   }, [accountAuthTypes, accountProxies]);
   const styles = createStyle(theme);
-  const accountConnectedItems = useMemo(() => {
-    return accountProxyItems.filter(acc => authInfo.isAllowedMap[acc.id]);
-  }, [accountProxyItems, authInfo.isAllowedMap]);
+  const accountConnectedItemLength = useMemo(
+    () => getAccountCount(authInfo, accountProxies),
+    [accountProxies, authInfo],
+  );
+
+  const dAppStatus = useMemo(() => {
+    if (authInfo) {
+      if (!authInfo.isAllowed) {
+        return ConnectionStatement.BLOCKED;
+      } else {
+        if (accountConnectedItemLength === 0) {
+          return ConnectionStatement.DISCONNECTED;
+        } else {
+          if (accountConnectedItemLength > 0 && accountConnectedItemLength < accountProxyItems.length) {
+            return ConnectionStatement.PARTIAL_CONNECTED;
+          } else {
+            return ConnectionStatement.CONNECTED;
+          }
+        }
+      }
+    } else {
+      return ConnectionStatement.NOT_CONNECTED;
+    }
+  }, [accountConnectedItemLength, accountProxyItems.length, authInfo]);
+
+  const iconBackgroundColorMap = useMemo(
+    () => ({
+      [ConnectionStatement.DISCONNECTED]: theme['gray-3'],
+      [ConnectionStatement.BLOCKED]: theme.colorError,
+      [ConnectionStatement.NOT_CONNECTED]: theme['gray-3'],
+      [ConnectionStatement.PARTIAL_CONNECTED]: theme.colorWarning,
+      [ConnectionStatement.CONNECTED]: theme['green-6'],
+    }),
+    [theme],
+  );
 
   const renderBeforeListItem = () => (
     <>
       <DappAccessItem
         containerStyle={{ marginVertical: 16 }}
         item={authInfo}
+        accountCount={accountConnectedItemLength}
         middleItem={
           <View style={{ flexDirection: 'row', alignItems: 'stretch', flex: 1, justifyContent: 'space-between' }}>
             <Typography.Text ellipsis style={styles.dAppAccessDetailName}>
@@ -90,15 +140,15 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
         rightItem={
           <BackgroundIcon
             shape={'circle'}
-            backgroundColor={authInfo.isAllowed ? theme['green-6'] : theme.colorError}
-            phosphorIcon={authInfo.isAllowed ? PlugsConnected : ShieldSlash}
+            backgroundColor={iconBackgroundColorMap[dAppStatus]}
+            phosphorIcon={iconMap[dAppStatus]}
             weight={'fill'}
           />
         }
       />
       <Typography.Text style={{ paddingLeft: theme.padding, paddingBottom: 4 }}>
         <Typography.Text style={styles.dAppAccessDetailConnectedAcc}>
-          {`${('0' + accountConnectedItems.length).slice(-2)}`}
+          {`${('0' + accountConnectedItemLength).slice(-2)}`}
         </Typography.Text>
         <Typography.Text style={styles.dAppAccessDetailAllAcc}>
           {`/${('0' + accountProxyItems.length).slice(-2)} ${i18n.common.accountConnected}`}
@@ -284,8 +334,13 @@ export const DAppAccessDetailScreen = ({
   },
 }: DAppAccessDetailProps) => {
   const authInfo: undefined | AuthUrlInfo = useSelector((state: RootState) => state.settings.authUrls[origin]);
+  const [_authInfo, setAuthInfo] = useState<undefined | AuthUrlInfo>(undefined);
 
-  return <>{!!authInfo && <Content accountAuthTypes={accountAuthTypes} origin={origin} authInfo={authInfo} />}</>;
+  useEffect(() => {
+    setAuthInfo(authInfo);
+  }, [authInfo]);
+
+  return <>{!!_authInfo && <Content accountAuthTypes={accountAuthTypes} origin={origin} authInfo={_authInfo} />}</>;
 };
 
 function createStyle(theme: ThemeTypes) {
