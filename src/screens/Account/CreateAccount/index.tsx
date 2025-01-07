@@ -9,10 +9,9 @@ import { mmkvStore } from 'utils/storage';
 import { TnCSeedPhraseModal } from 'screens/Account/CreateAccount/TnCSeedPhraseModal';
 import { Linking } from 'react-native';
 import { SELECTED_MNEMONIC_TYPE } from 'constants/localStorage';
-import { AccountProxyType, MnemonicType } from '@subwallet/extension-base/types';
-import { AccountNameModal } from 'components/Modal/AccountNameModal';
-import useUnlockModal from 'hooks/modal/useUnlockModal';
+import { MnemonicType } from '@subwallet/extension-base/types';
 import { SecretPhraseArea } from 'screens/Account/CreateAccount/SecretPhraseArea';
+import { VerifySecretPhrase } from 'screens/Account/CreateAccount/VerifySecretPhrase';
 
 const ViewStep = {
   INIT_SP: 1,
@@ -36,7 +35,6 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const storedDeeplink = mmkvStore.getString('storedDeeplink');
   const selectedMnemonicType = mmkvStore.getString(SELECTED_MNEMONIC_TYPE) as MnemonicType;
-  const [accountNameModalVisible, setAccountNameModalVisible] = useState<boolean>(false);
 
   useHandlerHardwareBackPress(isLoading);
 
@@ -57,14 +55,8 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
     }
   };
 
-  const { onPress: onSubmit } = useUnlockModal(navigation);
-
   const onPressSubmitInitSecretPhrase = () => {
-    if (!seedPhrase) {
-      return;
-    }
-
-    setAccountNameModalVisible(true);
+    setCurrentViewStep(ViewStep.VERIFY_SP);
   };
 
   const _onSubmit = useCallback(
@@ -107,17 +99,23 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   return (
     <ContainerWithSubHeader onPressBack={onPressBack} disabled={isLoading} title={getHeaderTitle(currentViewStep)}>
       <>
-        {!!seedPhrase && <SecretPhraseArea seed={seedPhrase} onPressSubmit={onSubmit(onPressSubmitInitSecretPhrase)} />}
+        {!!seedPhrase && (
+          <>
+            {currentViewStep === ViewStep.INIT_SP && (
+              <SecretPhraseArea seed={seedPhrase} onPressSubmit={onPressSubmitInitSecretPhrase} />
+            )}
 
-        {accountNameModalVisible && (
-          <AccountNameModal
-            isUseForceHidden={!params.isBack}
-            modalVisible={accountNameModalVisible}
-            setModalVisible={setAccountNameModalVisible}
-            accountType={selectedMnemonicType === 'general' ? AccountProxyType.UNIFIED : AccountProxyType.SOLO}
-            isLoading={isLoading}
-            onSubmit={_onSubmit}
-          />
+            {currentViewStep === ViewStep.VERIFY_SP && (
+              <VerifySecretPhrase
+                seed={seedPhrase}
+                onPressSubmit={_onSubmit}
+                isLoading={isLoading}
+                navigation={navigation}
+                selectedMnemonicType={selectedMnemonicType}
+                isOpenedFromConfirmation={params.isBack}
+              />
+            )}
+          </>
         )}
 
         <TnCSeedPhraseModal

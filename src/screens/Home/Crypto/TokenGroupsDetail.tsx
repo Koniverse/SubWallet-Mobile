@@ -15,7 +15,6 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { useToast } from 'react-native-toast-notifications';
@@ -34,6 +33,8 @@ import { AccountAddressItemType } from 'types/account';
 import { KeypairType } from '@subwallet/keyring/types';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { isTonAddress } from '@subwallet/keyring';
+import { sortTokenByValue } from 'utils/sort/token';
+import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -109,7 +110,7 @@ export const TokenGroupsDetail = ({
 
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
-  const chainsByAccountType = useGetChainSlugs();
+  const chainsByAccountType = useGetChainSlugsByAccount();
   const { tokenGroupMap, isComputing: isTokenGroupComputing } = useTokenGroup(chainsByAccountType, true);
   const {
     tokenBalanceMap,
@@ -142,11 +143,7 @@ export const TokenGroupsDetail = ({
           }
         });
 
-        return (
-          items
-            // @ts-ignore
-            .sort((firstItem, secondItem) => secondItem.total.convertedValue - firstItem.total.convertedValue)
-        );
+        return items.sort(sortTokenByValue);
       }
 
       if (tokenBalanceMap[tokenGroupSlug]) {

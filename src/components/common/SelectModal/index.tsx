@@ -12,8 +12,6 @@ import { SelectModalField } from 'components/common/SelectModal/parts/SelectModa
 import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { ChainInfo } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
@@ -123,7 +121,6 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     keyExtractor,
     flatListStyle,
   } = selectModalProps;
-  const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isLoadingData, setLoadingData] = useState<boolean>(true);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -197,38 +194,6 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
       isModalOpen: isOpen,
     }),
     [isOpen, onCloseModal, onModalOpened],
-  );
-
-  const _searchFunction = useCallback(
-    (_items: T[], searchString: string): T[] => {
-      const lowerCaseSearchString = searchString.toLowerCase();
-
-      if (selectModalItemType === 'account') {
-        return (_items as AccountAddressItemExtraType[]).filter(
-          acc =>
-            (acc.accountName && acc.accountName.toLowerCase().includes(lowerCaseSearchString)) ||
-            acc.address.toLowerCase().includes(lowerCaseSearchString),
-        ) as T[];
-      } else if (selectModalItemType === 'account-proxy') {
-        return (_items as AccountProxyItem[]).filter(acc => {
-          const isValidSearchByAddress = acc.accounts.some(ac => {
-            return ac.address.toLowerCase().includes(searchString.toLowerCase());
-          });
-          return (acc.name && acc.name.toLowerCase().includes(lowerCaseSearchString)) || isValidSearchByAddress;
-        }) as T[];
-      } else if (selectModalItemType === 'token') {
-        return (_items as TokenItemType[]).filter(
-          ({ symbol, originChain }) =>
-            symbol.toLowerCase().includes(lowerCaseSearchString) ||
-            chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
-        ) as T[];
-      } else if (selectModalItemType === 'chain') {
-        return (items as ChainInfo[]).filter(({ name }) => name.toLowerCase().includes(lowerCaseSearchString)) as T[];
-      } else {
-        return items;
-      }
-    },
-    [chainInfoMap, items, selectModalItemType],
   );
 
   const renderItem = ({ item }: ListRenderItemInfo<T>) => {
@@ -353,35 +318,37 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
           setVisible={setOpen}
           onBackButtonPress={onBackButtonPress}>
           <>
-            <FlatListScreen
-              autoFocus={true}
-              items={items}
-              style={{ flex: 1 }}
-              flatListStyle={flatListStyle}
-              renderItem={renderCustomItem || renderItem}
-              searchFunction={searchFunc || _searchFunction}
-              renderListEmptyComponent={renderListEmptyComponent || _renderListEmptyComponent}
-              title={title}
-              onPressBack={onCloseModal}
-              isLoadingData={isLoadingData}
-              isShowFilterBtn={isShowFilterBtn}
-              filterFunction={filterFunction}
-              filterOptions={filterOptions}
-              placeholder={placeholder}
-              loading={loading}
-              withSearchInput={withSearchInput}
-              isShowListWrapper={isShowListWrapper}
-              rightIconOption={rightIconOption}
-              grouping={grouping}
-              removeClippedSubviews={true}
-              afterListItem={
-                selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
-              }
-              estimatedItemSize={estimatedItemSize || 80}
-              searchMarginBottom={grouping ? theme.sizeXS : undefined}
-              extraData={extraData}
-              keyExtractor={keyExtractor}
-            />
+            {isOpen && (
+              <FlatListScreen
+                autoFocus={true}
+                items={items}
+                style={{ flex: 1 }}
+                flatListStyle={flatListStyle}
+                renderItem={renderCustomItem || renderItem}
+                searchFunction={searchFunc}
+                renderListEmptyComponent={renderListEmptyComponent || _renderListEmptyComponent}
+                title={title}
+                onPressBack={onCloseModal}
+                isLoadingData={isLoadingData}
+                isShowFilterBtn={isShowFilterBtn}
+                filterFunction={filterFunction}
+                filterOptions={filterOptions}
+                placeholder={placeholder}
+                loading={loading}
+                withSearchInput={withSearchInput}
+                isShowListWrapper={isShowListWrapper}
+                rightIconOption={rightIconOption}
+                grouping={grouping}
+                removeClippedSubviews={true}
+                afterListItem={
+                  selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
+                }
+                estimatedItemSize={estimatedItemSize || 80}
+                searchMarginBottom={grouping ? theme.sizeXS : undefined}
+                extraData={extraData}
+                keyExtractor={keyExtractor}
+              />
+            )}
           </>
 
           {children}

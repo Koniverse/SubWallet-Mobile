@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 export type TokenItemType = {
   name: string;
@@ -41,12 +43,28 @@ export const TokenSelector = ({
   defaultValue,
   acceptDefaultValue,
 }: Props) => {
+  const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
+
+  const searchFunc = useCallback(
+    (_items: TokenItemType[], searchString: string) => {
+      const lowerCaseSearchString = searchString.toLowerCase();
+
+      return (_items as TokenItemType[]).filter(
+        ({ symbol, originChain }) =>
+          symbol.toLowerCase().includes(lowerCaseSearchString) ||
+          chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
+      );
+    },
+    [chainInfoMap],
+  );
+
   return (
     <FullSizeSelectModal
       items={items}
       selectedValueMap={selectedValueMap}
       selectModalType={'single'}
       selectModalItemType={'token'}
+      searchFunc={searchFunc}
       title={i18n.header.selectToken}
       onSelectItem={onSelectItem}
       ref={tokenSelectorRef}

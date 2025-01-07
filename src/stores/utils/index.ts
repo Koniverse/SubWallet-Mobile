@@ -349,7 +349,14 @@ export const subscribeChainStateMap = lazySubscribeMessage(
 
 export const updateChainStatusMap = (data: Record<string, _ChainApiStatus>) => {
   if (data && Object.keys(data).length > 0) {
-    store.dispatch({ type: 'chainStore/updateChainStatusMap', payload: data });
+    addLazy(
+      'updateChainStatusMap',
+      () => {
+        store.dispatch({ type: 'chainStore/updateChainStatusMap', payload: data });
+      },
+      200,
+      600,
+    );
   }
 };
 

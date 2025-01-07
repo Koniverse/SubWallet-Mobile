@@ -145,6 +145,16 @@ export const AccountSelector = ({
     return { groupBy, sortSection: undefined, renderSectionHeader };
   }, [groupBy, renderSectionHeader]);
 
+  const searchFunc = useCallback((_items: AccountAddressItemExtraType[], searchString: string) => {
+    const lowerCaseSearchString = searchString.toLowerCase();
+
+    return _items.filter(
+      acc =>
+        (acc.accountName && acc.accountName.toLowerCase().includes(lowerCaseSearchString)) ||
+        acc.address.toLowerCase().includes(lowerCaseSearchString),
+    );
+  }, []);
+
   return (
     <FullSizeSelectModal
       items={listItems}
@@ -153,6 +163,7 @@ export const AccountSelector = ({
       selectModalType={'single'}
       selectModalItemType={'account'}
       disabled={disabled}
+      searchFunc={searchFunc}
       renderSelected={renderSelected}
       placeholder={i18n.placeholder.accountName}
       title={i18n.header.selectAccount}

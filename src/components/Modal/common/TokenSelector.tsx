@@ -8,6 +8,8 @@ import { MagnifyingGlass } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 export type TokenItemType = {
   name: string;
@@ -58,6 +60,7 @@ export const TokenSelector = ({
   onCloseAccountSelector,
   showAddBtn = true,
 }: Props) => {
+  const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const navigation = useNavigation<RootNavigationProps>();
   useEffect(() => {
     setAdjustPan();
@@ -87,12 +90,26 @@ export const TokenSelector = ({
     );
   }, [navigation, onCloseAccountSelector, showAddBtn, tokenSelectorRef]);
 
+  const searchFunc = useCallback(
+    (_items: TokenItemType[], searchString: string) => {
+      const lowerCaseSearchString = searchString.toLowerCase();
+
+      return (_items as TokenItemType[]).filter(
+        ({ symbol, originChain }) =>
+          symbol.toLowerCase().includes(lowerCaseSearchString) ||
+          chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
+      );
+    },
+    [chainInfoMap],
+  );
+
   return (
     <FullSizeSelectModal
       items={items}
       selectedValueMap={selectedValueMap}
       selectModalType={'single'}
       selectModalItemType={'token'}
+      searchFunc={searchFunc}
       title={i18n.header.selectToken}
       onSelectItem={_onSelectItem}
       ref={tokenSelectorRef}

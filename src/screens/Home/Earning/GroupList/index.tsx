@@ -25,11 +25,12 @@ import { useHandleChainConnection } from 'hooks/earning/useHandleChainConnection
 import { isRelatedToAstar } from 'utils/earning';
 import useAccountBalance, { getBalanceValue } from 'hooks/screen/useAccountBalance';
 import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
-import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { BannerGenerator } from 'components/common/BannerGenerator';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -111,7 +112,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const data = useYieldGroupInfo();
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
-  const chainsByAccountType = useGetChainSlugs();
+  const chainsByAccountType = useGetChainSlugsByAccount();
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
   const yieldPositions = useGroupYieldPosition();
@@ -221,7 +222,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
       if (poolGroup.poolListLength > 1) {
         let isHiddenPool = false;
 
-        if (poolGroup.poolListLength === 2 && poolGroup.isRelatedToRelayChain) {
+        if (poolGroup.poolListLength === 2) {
           poolGroup.poolSlugs.forEach(poolSlug => {
             const poolInfo = poolInfoMap[poolSlug];
 
@@ -243,7 +244,10 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
 
               if (!availableBalance) {
                 isHiddenPool = true;
-              } else if (minJoinPoolBalanceValue.isGreaterThan(availableBalance)) {
+              } else if (
+                _STAKING_CHAIN_GROUP.relay.includes(poolInfo.chain) &&
+                minJoinPoolBalanceValue.isGreaterThan(availableBalance)
+              ) {
                 isHiddenPool = true;
               }
             }
@@ -263,7 +267,6 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
           navigation.navigate('EarningPoolList', {
             group: poolGroup.group,
             symbol: poolGroup.symbol,
-            isRelatedToRelayChain: poolGroup.isRelatedToRelayChain,
           });
         }
       } else if (poolGroup.poolListLength === 1) {

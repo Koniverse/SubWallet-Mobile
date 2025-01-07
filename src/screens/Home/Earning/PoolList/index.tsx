@@ -24,10 +24,12 @@ import { useHandleChainConnection } from 'hooks/earning/useHandleChainConnection
 import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
 import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
 import useAccountBalance, { getBalanceValue } from 'hooks/screen/useAccountBalance';
-import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { useGroupYieldPosition } from 'hooks/earning';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import { _ChainInfo } from '@subwallet/chain-list/types';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 
 const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
   if (!filters.length) {
@@ -86,7 +88,7 @@ const FILTER_OPTIONS = [
 
 export const PoolList: React.FC<EarningPoolListProps> = ({
   route: {
-    params: { group: poolGroup, symbol, isRelatedToRelayChain },
+    params: { group: poolGroup, symbol },
   },
 }: EarningPoolListProps) => {
   const theme = useSubWalletTheme().swThemes;
@@ -98,7 +100,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const [selectedPoolOpt, setSelectedPoolOpt] = React.useState<YieldPoolInfo | undefined>(undefined);
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const { currencyData } = useSelector((state: RootState) => state.price);
-  const chainsByAccountType = useGetChainSlugs();
+  const chainsByAccountType = useGetChainSlugsByAccount();
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
   const yieldPositions = useGroupYieldPosition();
@@ -164,7 +166,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         return;
       }
 
-      if (poolInfo.type === YieldPoolType.NATIVE_STAKING && isRelatedToRelayChain) {
+      if (poolInfo.type === YieldPoolType.NATIVE_STAKING && _STAKING_CHAIN_GROUP.relay.includes(poolInfo.chain)) {
         let minJoinPool: string;
 
         if (poolInfo.statistic && !positionSlugs.includes(poolInfo.slug)) {
@@ -204,7 +206,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     });
 
     return result;
-  }, [chainAsset, isRelatedToRelayChain, pools, positionSlugs, tokenBalanceMap]);
+  }, [chainAsset, pools, positionSlugs, tokenBalanceMap]);
 
   const onPressItem = useCallback(
     (chainSlug: string, poolInfo: YieldPoolInfo) => {
@@ -257,7 +259,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const searchFunction = useCallback(
     (_items: YieldPoolInfo[], searchString: string) => {
       return _items.filter(({ chain: _chain, metadata: { shortName } }) => {
-        const chainInfo = chainInfoMap[_chain];
+        const chainInfo: _ChainInfo = chainInfoMap[_chain];
 
         return (
           chainInfo?.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase()) ||

@@ -6,7 +6,6 @@ export type EarningScreenStackParamList = {
   EarningPoolList: {
     group: string;
     symbol: string;
-    isRelatedToRelayChain?: boolean;
   };
   EarningPositionDetail: {
     earningSlug: string;

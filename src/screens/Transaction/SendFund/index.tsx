@@ -104,11 +104,6 @@ import { validateRecipientAddress } from 'utils/core/logic-validation/recipientA
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 import { FreeBalance } from '../parts/FreeBalance';
 
-interface TransferOptions {
-  isTransferAll: boolean;
-  isTransferBounceable: boolean;
-}
-
 interface TransferFormValues extends TransactionFormValues {
   to: string;
   destChain: string;
@@ -251,7 +246,6 @@ export const SendFund = ({
   const [forceUpdateValue, setForceUpdateValue] = useState<{ value: string | null } | undefined>(undefined);
   const forceTransferAllRef = useRef<boolean>(false);
   const [forceTransferAll, setForceTransferAll] = useState<boolean>(false);
-  const checkTransferAllRef = useRef<boolean>(false);
   const [isFetchingMaxValue, setIsFetchingMaxValue] = useState(false);
   const chainStatus = useMemo(() => chainStatusMap[chainValue]?.connectionStatus, [chainStatusMap, chainValue]);
   const { confirmModal } = useContext(AppModalContext);
@@ -516,7 +510,7 @@ export const SendFund = ({
   );
 
   const handleBasicSubmit = useCallback(
-    (values: TransferFormValues, options: TransferOptions): Promise<SWTransactionResponse> => {
+    (values: TransferFormValues): Promise<SWTransactionResponse> => {
       const { asset, chain, destChain, from: _from, to, value } = values;
 
       let sendPromise: Promise<SWTransactionResponse>;
@@ -531,7 +525,7 @@ export const SendFund = ({
           tokenSlug: asset,
           value: value,
           transferAll: isTransferAll,
-          transferBounceable: options.isTransferBounceable,
+          transferBounceable: isTransferBounceable,
         });
       } else {
         // Make cross chain transfer
@@ -543,13 +537,13 @@ export const SendFund = ({
           to,
           value,
           transferAll: isTransferAll,
-          transferBounceable: options.isTransferBounceable,
+          transferBounceable: isTransferBounceable,
         });
       }
 
       return sendPromise;
     },
-    [isTransferAll],
+    [isTransferAll, isTransferBounceable],
   );
 
   const handleSnowBridgeSpendingApproval = useCallback(
@@ -586,8 +580,7 @@ export const SendFund = ({
   );
 
   const doSubmit = useCallback(
-    (values: TransferFormValues, options: TransferOptions) => {
-      checkTransferAllRef.current = false;
+    (values: TransferFormValues) => {
       if (isShowWarningOnSubmit(values)) {
         return;
       }
@@ -619,7 +612,7 @@ export const SendFund = ({
             const submitPromise: Promise<SWTransactionResponse> | undefined =
               stepType === CommonStepType.TOKEN_APPROVAL
                 ? handleSnowBridgeSpendingApproval(values)
-                : handleBasicSubmit(values, options);
+                : handleBasicSubmit(values);
 
             const rs = await submitPromise;
             const success = onSuccess(isLastStep, needRollback)(rs);
@@ -671,54 +664,42 @@ export const SendFund = ({
 
   const onSubmit = useCallback(
     async (values: TransferFormValues) => {
-      const options: TransferOptions = {
-        isTransferAll: isTransferAll,
-        isTransferBounceable: false,
-      };
       Keyboard.dismiss();
 
-      if (checkTransferAllRef.current) {
-        if (chainValue !== destChainValue) {
-          const originChainInfo = chainInfoMap[chainValue];
-          const destChainInfo = chainInfoMap[destChainValue];
-          const assetSlug = values.asset;
-          const isMythosFromHydrationToMythos = _isMythosFromHydrationToMythos(
-            originChainInfo,
-            destChainInfo,
-            assetSlug,
-          );
+      if (chainValue !== destChainValue) {
+        const originChainInfo = chainInfoMap[chainValue];
+        const destChainInfo = chainInfoMap[destChainValue];
+        const assetSlug = values.asset;
+        const isMythosFromHydrationToMythos = _isMythosFromHydrationToMythos(originChainInfo, destChainInfo, assetSlug);
 
-          if (_isXcmTransferUnstable(originChainInfo, destChainInfo, assetSlug)) {
-            confirmModal.setConfirmModal({
-              visible: true,
-              title: isMythosFromHydrationToMythos ? 'High fee alert!' : 'Pay attention!', // TODO: i18n
-              message: _getXcmUnstableWarning(originChainInfo, destChainInfo, assetSlug),
-              completeBtnTitle: 'Continue',
-              customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
-              onCompleteModal: () => {
-                doSubmit(values, options);
-                confirmModal.hideConfirmModal();
-              },
-              onCancelModal: () => {
-                checkTransferAllRef.current = false;
-                setLoading(false);
-                confirmModal.hideConfirmModal();
-              },
-            });
-            return;
-          }
+        if (_isXcmTransferUnstable(originChainInfo, destChainInfo, assetSlug)) {
+          confirmModal.setConfirmModal({
+            visible: true,
+            title: isMythosFromHydrationToMythos ? 'High fee alert!' : 'Pay attention!', // TODO: i18n
+            message: _getXcmUnstableWarning(originChainInfo, destChainInfo, assetSlug),
+            completeBtnTitle: 'Continue',
+            customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+            onCompleteModal: () => {
+              doSubmit(values);
+              confirmModal.hideConfirmModal();
+            },
+            onCancelModal: () => {
+              setLoading(false);
+              confirmModal.hideConfirmModal();
+            },
+          });
+          return;
         }
       }
 
-      if (isTransferAll && !checkTransferAllRef.current) {
+      if (isTransferAll) {
         setForceTransferAll(true);
         forceTransferAllRef.current = true;
-        checkTransferAllRef.current = true;
 
         return;
       }
 
-      doSubmit(values, options);
+      doSubmit(values);
     },
     [isTransferAll, doSubmit, chainValue, destChainValue, chainInfoMap, confirmModal, theme.colorWarning],
   );
@@ -750,7 +731,6 @@ export const SendFund = ({
                 confirmModal.hideConfirmModal();
               },
               onCancelModal: () => {
-                checkTransferAllRef.current = false;
                 setLoading(false);
                 confirmModal.hideConfirmModal();
               },
@@ -1023,7 +1003,6 @@ export const SendFund = ({
           {
             text: i18n.buttonTitles.cancel,
             onPress: () => {
-              checkTransferAllRef.current = false;
               setForceTransferAll(false);
             },
           },
@@ -1033,7 +1012,7 @@ export const SendFund = ({
               let currentValues = getValues();
               setForceTransferAll(false);
               setLoading(true);
-              onSubmit(currentValues);
+              doSubmit(currentValues);
             },
           },
         ],
@@ -1048,7 +1027,6 @@ export const SendFund = ({
     nativeTokenBalance.decimals,
     nativeTokenBalance.symbol,
     nativeTokenSlug,
-    onSubmit,
     tokenBalance.decimals,
     tokenBalance.symbol,
   ]);

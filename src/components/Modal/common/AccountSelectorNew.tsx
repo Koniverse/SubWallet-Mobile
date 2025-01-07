@@ -139,6 +139,18 @@ export const AccountProxySelector = ({
     onSelectItem && onSelectItem(item);
   };
 
+  const searchFunc = useCallback((_items: AccountProxyItem[], searchString: string) => {
+    const lowerCaseSearchString = searchString.toLowerCase();
+
+    return _items.filter(acc => {
+      const isValidSearchByAddress = acc.accounts.some(ac => {
+        return ac.address.toLowerCase().includes(searchString.toLowerCase());
+      });
+
+      return (acc.name && acc.name.toLowerCase().includes(lowerCaseSearchString)) || isValidSearchByAddress;
+    });
+  }, []);
+
   return (
     <FullSizeSelectModal
       items={listItems}
@@ -146,6 +158,7 @@ export const AccountProxySelector = ({
       onSelectItem={_onSelectItem}
       selectModalType={'single'}
       selectModalItemType={'account-proxy'}
+      searchFunc={searchFunc}
       disabled={disabled}
       renderSelected={renderSelected}
       placeholder={i18n.placeholder.accountName}

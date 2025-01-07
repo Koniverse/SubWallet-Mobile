@@ -58,7 +58,7 @@ const ConfirmModal: React.FC<Props> = ({
               {cancelBtnTitle || i18n.common.cancel}
             </Button>
             <Button
-              externalTextStyle={{ flex: 1, textAlign: 'center' }}
+              externalTextStyle={{ flexShrink: 1 }}
               style={{ flex: 1 }}
               icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}
               type="primary"

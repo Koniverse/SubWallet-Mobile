@@ -349,14 +349,6 @@ export const AccountsScreen = ({
               }}
             />
           )}
-          {/*<Button*/}
-          {/*  shape={'circle'}*/}
-          {/*  style={{ backgroundColor: 'rgba(0, 75, 255, 0.1)' }}*/}
-          {/*  type={'ghost'}*/}
-          {/*  icon={<Icon phosphorIcon={QrCode} size={'sm'} iconColor={theme.colorPrimary} />}*/}
-          {/*  size={'xs'}*/}
-          {/*  onPress={() => {}}*/}
-          {/*/>*/}
           <Button
             shape={'circle'}
             style={{ backgroundColor: 'rgba(191, 22, 22, 0.1)' }}
