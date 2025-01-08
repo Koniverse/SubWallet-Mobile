@@ -290,8 +290,8 @@
   "importAccount": {
     "importFromSeedPhrase": "从助记词导入",
     "importFromSeedPhraseMessage": "如需导入已存在的钱包，请输入助记词",
-    "importFromJson": "从Polkadot.{js}导入",
-    "importByMetaMaskPrivateKey": "通过MetaMask私钥导入",
+    "importFromJson": "Import from JSON file",
+    "importFromPrivateKey": "Import from private key",
     "importByQRCode": "通过二维码导入",
     "selectAccountType": "选择账户类型",
     "substrateAccount": "Substrate账户",

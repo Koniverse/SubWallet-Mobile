@@ -234,6 +234,7 @@ export const ExportAllAccount = () => {
       if (isAllAccount) {
         return (
           <SelectAccountAllItem
+            showUnSelectedIcon
             isSelected={selectedValueMap[item.id]}
             onPress={() => {
               onSelectAccount(item, !selectedValueMap[item.id]);

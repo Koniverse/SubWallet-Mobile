@@ -290,8 +290,8 @@
   "importAccount": {
     "importFromSeedPhrase": "Nhập từ seed phrase",
     "importFromSeedPhraseMessage": "Để nhập một tài khoản có sẵn, vui lòng nhập seed phrase",
-    "importFromJson": "Nhập từ Polkadot.{js}",
-    "importByMetaMaskPrivateKey": "Nhập bằng private key của MetaMask",
+    "importFromJson": "Import from JSON file",
+    "importFromPrivateKey": "Nhập bằng private key",
     "importByQRCode": "Nhập bằng mã QR",
     "selectAccountType": "Chọn loại tài khoản",
     "substrateAccount": "Tài khoản Substrate",

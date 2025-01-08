@@ -290,8 +290,8 @@
   "importAccount": {
     "importFromSeedPhrase": "シードフレーズからのインポート",
     "importFromSeedPhraseMessage": "既存のアカウントをインポートするには、シードフレーズを入力してください",
-    "importFromJson": "Polkadot.js からのインポート",
-    "importByMetaMaskPrivateKey": "メタマスク秘密鍵によるインポート",
+    "importFromJson": "Import from JSON file",
+    "importFromPrivateKey": "Import from private key",
     "importByQRCode": "QRコードでインポート",
     "selectAccountType": "アカウントタイプを選択",
     "substrateAccount": "Substrateアカウント",

@@ -290,8 +290,8 @@
   "importAccount": {
     "importFromSeedPhrase": "Импорт из сид-фразы",
     "importFromSeedPhraseMessage": "Чтобы импорт существующий аккаунт, введите сид-фразу",
-    "importFromJson": "Импорт из Polkadot.{js}",
-    "importByMetaMaskPrivateKey": "Импорт через приватный ключ MetaMask\n\n\n\n\n",
+    "importFromJson": "Import from JSON file",
+    "importFromPrivateKey": "Import from private key",
     "importByQRCode": "Импорт по QR-коду",
     "selectAccountType": "Выбрать тип аккаунта",
     "substrateAccount": "Аккаунт Substrate",

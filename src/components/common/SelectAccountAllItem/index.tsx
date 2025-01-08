@@ -32,7 +32,7 @@ export const SelectAccountAllItem = ({ isSelected, accountProxies, showUnSelecte
           <View style={styles.checkedIconWrapper}>
             <Icon
               phosphorIcon={CheckCircle}
-              iconColor={isSelected ? theme.colorSuccess : theme.colorTextLight4}
+              iconColor={isSelected ? theme.colorSuccess : theme['gray-5']}
               size={'sm'}
               weight={'fill'}
             />

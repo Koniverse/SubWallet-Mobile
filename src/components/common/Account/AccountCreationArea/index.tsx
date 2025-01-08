@@ -51,7 +51,7 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
       key: 'privateKey',
       backgroundColor: '#4D4D4D',
       icon: Wallet,
-      label: i18n.importAccount.importByMetaMaskPrivateKey,
+      label: i18n.importAccount.importFromPrivateKey,
     },
     {
       key: 'qrCode',

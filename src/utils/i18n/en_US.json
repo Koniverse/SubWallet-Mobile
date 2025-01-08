@@ -290,8 +290,8 @@
   "importAccount": {
     "importFromSeedPhrase": "Import from seed phrase",
     "importFromSeedPhraseMessage": "To import an existing account, please enter seed phrase",
-    "importFromJson": "Import from Polkadot.{js}",
-    "importByMetaMaskPrivateKey": "Import by MetaMask private key",
+    "importFromJson": "Import from JSON file",
+    "importFromPrivateKey": "Import from private key",
     "importByQRCode": "Import by QR code",
     "selectAccountType": "Select account type",
     "substrateAccount": "Substrate account",
