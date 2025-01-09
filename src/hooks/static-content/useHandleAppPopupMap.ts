@@ -77,11 +77,14 @@ export const useHandleAppPopupMap = () => {
           const appVersion = getVersion();
           validConditionArr.push(satisfies(appVersion, app_version_range));
         }
-
         if (comparison_operator === 'AND') {
           return validConditionArr.every(c => c);
         } else {
-          return validConditionArr.some(c => c);
+          if (validConditionArr.length) {
+            return validConditionArr.some(c => c);
+          } else {
+            return true;
+          }
         }
       },
     );

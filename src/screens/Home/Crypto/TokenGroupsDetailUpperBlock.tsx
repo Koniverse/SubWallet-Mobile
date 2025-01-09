@@ -49,6 +49,7 @@ export const TokenGroupsDetailUpperBlock = ({
   const { tokens } = useSelector((state: RootState) => state.buyService);
   const _style = createStyleSheet(theme);
   const allowedChains = useGetChainSlugsByAccount();
+  const extendAllowedChains = useMemo(() => allowedChains.filter(item => item !== 'bittensor'), [allowedChains]); //TODO: remove this after support swap TAO
   const fromAndToTokenMap = useMemo<Record<string, string[]>>(() => {
     const result: Record<string, string[]> = {};
 
@@ -67,13 +68,13 @@ export const TokenGroupsDetailUpperBlock = ({
     return Object.keys(fromAndToTokenMap).some(tokenSlug => {
       const chainAsset = assetRegistryMap[tokenSlug];
 
-      if (chainAsset && !allowedChains.includes(_getAssetOriginChain(chainAsset))) {
+      if (chainAsset && !extendAllowedChains.includes(_getAssetOriginChain(chainAsset))) {
         return false;
       }
 
       return chainAsset.slug === tokenGroupSlug || chainAsset.multiChainAsset === tokenGroupSlug;
     });
-  }, [allowedChains, assetRegistryMap, fromAndToTokenMap, tokenGroupSlug]);
+  }, [extendAllowedChains, assetRegistryMap, fromAndToTokenMap, tokenGroupSlug]);
 
   const buyInfos = useMemo(() => {
     const groupSlug = tokenGroupSlug || '';
@@ -81,7 +82,7 @@ export const TokenGroupsDetailUpperBlock = ({
     const result: BuyTokenInfo[] = [];
 
     Object.values(tokens).forEach(item => {
-      if (!allowedChains.includes(item.network) || !groupSlugs.includes(item.slug)) {
+      if (!extendAllowedChains.includes(item.network) || !groupSlugs.includes(item.slug)) {
         return;
       }
 
@@ -89,7 +90,7 @@ export const TokenGroupsDetailUpperBlock = ({
     });
 
     return result;
-  }, [allowedChains, tokenGroupMap, tokenGroupSlug, tokens]);
+  }, [extendAllowedChains, tokenGroupMap, tokenGroupSlug, tokens]);
 
   const onOpenBuyTokens = useCallback(() => {
     let symbol = '';

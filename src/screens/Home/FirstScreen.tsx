@@ -1,6 +1,6 @@
 import { Images } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View, Linking } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
@@ -19,8 +19,6 @@ import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import { mmkvStore } from 'utils/storage';
 import { Image } from 'components/design-system-ui';
 import { SelectLanguageModal } from 'components/Modal/SelectLanguageModal';
-import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
-import { getPoolSlug } from 'utils/earn';
 import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
 import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
 
@@ -67,8 +65,6 @@ const firstScreenNotificationStyle: StyleProp<any> = {
   ...FontMedium,
 };
 
-type EarningDataInfo = { chain: string; type: YieldPoolType; target: string; isNoAccount: boolean };
-
 export const firstScreenDeepLink: { current: string | undefined } = { current: undefined };
 
 export function setFirstScreenDeepLink(value?: string) {
@@ -87,31 +83,7 @@ export const FirstScreen = () => {
   const [selectedActionType, setSelectedActionType] = useState<SelectedActionType>('createAcc');
   const setSelectedMnemonicType = useSetSelectedMnemonicType(false);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
-  const [previewModalVisible, setPreviewModalVisible] = useState<boolean>(false);
   const isFocused = useIsFocused();
-  const onlinePoolInfoMap = useMemo(() => {
-    try {
-      return JSON.parse(mmkvStore.getString('poolInfoMap') || '') as Record<string, YieldPoolInfo>;
-    } catch (e) {
-      return {};
-    }
-  }, []);
-  const previewModalVisibleRef = useRef<boolean>(previewModalVisible);
-  previewModalVisibleRef.current = previewModalVisible;
-
-  const getSelectedSlug = useCallback(
-    (data: string) => {
-      const dataMap: EarningDataInfo = data.split('&').reduce((obj, cur) => {
-        const splitCur = cur.split('=');
-        // @ts-ignore
-        obj[splitCur[0]] = splitCur[1];
-        return obj;
-      }, {} as EarningDataInfo);
-
-      return getPoolSlug(onlinePoolInfoMap, dataMap.chain, dataMap.type);
-    },
-    [onlinePoolInfoMap],
-  );
 
   useEffect(() => {
     if (isFocused) {
@@ -127,15 +99,12 @@ export const FirstScreen = () => {
           _url = `${url}&isNoAccount=true`;
           setFirstScreenDeepLink(_url);
           Linking.openURL(_url);
-
-          return;
         }
-        !previewModalVisibleRef.current && setPreviewModalVisible(true);
       }
     });
 
     return () => unsubscribe.remove();
-  }, [getSelectedSlug]);
+  }, []);
 
   useEffect(() => {
     if (isHandleDeeplinkPromise.current && isFocused) {

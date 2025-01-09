@@ -89,7 +89,11 @@ export const useHandleAppBannerMap = () => {
         if (comparison_operator === 'AND') {
           return validConditionArr.every(c => c);
         } else {
-          return validConditionArr.some(c => c);
+          if (validConditionArr.length) {
+            return validConditionArr.some(c => c);
+          } else {
+            return true;
+          }
         }
       },
     );

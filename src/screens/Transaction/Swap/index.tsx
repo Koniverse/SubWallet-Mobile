@@ -269,8 +269,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
       rawTokenSlugs.forEach(rts => {
         const assetInfo = assetRegistryMap[rts];
-
-        if (!assetInfo) {
+        if (!assetInfo || assetInfo.originChain === 'bittensor') {
           return;
         }
 

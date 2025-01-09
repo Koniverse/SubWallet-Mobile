@@ -35,7 +35,6 @@ import { Warning } from 'phosphor-react-native';
 import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
-import { useGetEarningPoolData } from 'hooks/static-content/useGetEarningPoolData';
 import { AppOnlineContentContextProvider } from 'providers/AppOnlineContentProvider';
 import { GlobalModalContextProvider } from 'providers/GlobalModalContext';
 import { useGetAppInstructionData } from 'hooks/static-content/useGetAppInstructionData';
@@ -172,7 +171,6 @@ export const App = () => {
   const isI18nReady = useSetupI18n().isI18nReady;
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
-  const { getPoolInfoMap } = useGetEarningPoolData();
   const { getConfig } = useGetConfig();
   const { getBrowserConfig } = useGetBrowserConfig();
   const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
@@ -214,7 +212,8 @@ export const App = () => {
       SplashScreen.hide();
     }, 100);
     checkIsShowBuyToken();
-    getPoolInfoMap();
+    // getPoolInfoMap();
+    mmkvStore.delete('poolInfoMap'); // remove unused mmkvStore
     getDAppsData();
     getConfig();
     getBrowserConfig();
