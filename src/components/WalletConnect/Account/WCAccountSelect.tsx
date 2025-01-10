@@ -10,23 +10,24 @@ import AccountItemWithName from 'components/common/Account/Item/AccountItemWithN
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { CheckCircle } from 'phosphor-react-native';
 import { ModalRef } from 'types/modalRef';
-import { AccountJson } from '@subwallet/extension-base/types';
+import { AccountChainType, AccountJson } from '@subwallet/extension-base/types';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 
 interface Props {
   selectedAccounts: string[];
   appliedAccounts: string[];
   availableAccounts: AccountJson[];
+  accountType: AccountChainType;
   onSelectAccount: (account: string, applyImmediately?: boolean) => VoidFunction;
   useModal: boolean;
   onApply: () => void;
   onCancel: () => void;
-  namespace: string;
 }
 
 const renderButtonIcon = (color: string) => <Icon phosphorIcon={CheckCircle} weight={'fill'} iconColor={color} />;
 
 export const WCAccountSelect = ({
+  accountType,
   appliedAccounts,
   availableAccounts,
   onApply,
@@ -34,7 +35,6 @@ export const WCAccountSelect = ({
   onSelectAccount,
   selectedAccounts,
   useModal,
-  namespace,
 }: Props) => {
   const modalRef = useRef<ModalRef>();
 
@@ -72,26 +72,26 @@ export const WCAccountSelect = ({
   );
 
   const noAccountTitle = useMemo(() => {
-    switch (namespace) {
-      case 'polkadot':
+    switch (accountType) {
+      case AccountChainType.SUBSTRATE:
         return i18n.formatString(i18n.common.noAvailableAccount, 'Substrate') as string;
-      case 'eip155':
+      case AccountChainType.ETHEREUM:
         return i18n.formatString(i18n.common.noAvailableAccount, 'EVM') as string;
       default:
         return i18n.formatString(i18n.common.noAvailableAccount, '') as string;
     }
-  }, [namespace]);
+  }, [accountType]);
 
   const noAccountDescription = useMemo(() => {
-    switch (namespace) {
-      case 'polkadot':
+    switch (accountType) {
+      case AccountChainType.SUBSTRATE:
         return i18n.formatString(i18n.common.youDonotHaveAnyAcc, 'Substrate') as string;
-      case 'eip155':
+      case AccountChainType.ETHEREUM:
         return i18n.formatString(i18n.common.youDonotHaveAnyAcc, 'EVM') as string;
       default:
         return i18n.formatString(i18n.common.youDonotHaveAnyAcc, '') as string;
     }
-  }, [namespace]);
+  }, [accountType]);
 
   return (
     <View style={{ width: '100%' }}>

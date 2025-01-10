@@ -32,6 +32,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AddNetworkWCModal } from 'components/WalletConnect/Network/AddNetworkWCModal';
 import { detectChanInfo } from 'utils/fetchNetworkByChainId';
 import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
+import { AccountChainType } from '@subwallet/extension-base/types';
 
 interface Props {
   request: WalletConnectSessionRequest;
@@ -56,10 +57,10 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
   const toast = useToast();
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
-  const nameSpaceNameMap = useMemo(
+  const accountTypeNameMap = useMemo(
     (): Record<string, string> => ({
-      [WALLET_CONNECT_EIP155_NAMESPACE]: i18n.common.evmNetworks,
-      [WALLET_CONNECT_POLKADOT_NAMESPACE]: i18n.common.substrateNetworks,
+      [AccountChainType.ETHEREUM]: i18n.common.evmAccounts,
+      [AccountChainType.SUBSTRATE]: i18n.common.substrateAccounts,
     }),
     [],
   );
@@ -80,8 +81,8 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
     onApplyAccounts,
     onCancelSelectAccounts,
     onSelectAccount,
+    supportOneAccountType,
     supportOneChain,
-    supportOneNamespace,
     supportedChains,
   } = useSelectWalletConnectAccount(params);
 
@@ -150,9 +151,9 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
 
   const onConfirm = useCallback(() => {
     setLoading(true);
-    const selectedAccounts = Object.values(namespaceAccounts)
-      .map(({ appliedAccounts }) => appliedAccounts)
-      .flat();
+    const selectedAccounts = Object.values(namespaceAccounts).flatMap(({ appliedAccounts, networks }) => {
+      return networks.flatMap(({ wcChain }) => appliedAccounts.map(address => `${wcChain}:${address}`));
+    });
 
     handleConfirm(request, selectedAccounts)
       .then(() => {
@@ -244,31 +245,31 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
         {isSupportCase && !blockAddNetwork && (
           <View style={{ gap: theme.padding }}>
             {Object.entries(namespaceAccounts).map(([namespace, value]) => {
-              const { appliedAccounts, availableAccounts, networks, selectedAccounts } = value;
+              const { accountType, appliedAccounts, availableAccounts, networks, selectedAccounts } = value;
 
               return (
                 <View key={namespace}>
                   {!supportOneChain && (
                     <>
                       <Typography.Text style={styles.text}>
-                        {supportOneNamespace ? i18n.common.networks : nameSpaceNameMap[namespace]}
+                        {supportOneAccountType ? i18n.common.networks : accountTypeNameMap[namespace]}
                       </Typography.Text>
                       <WCNetworkSelected networks={networks} />
                     </>
                   )}
-                  {supportOneNamespace && (
+                  {supportOneAccountType && (
                     <Typography.Text style={styles.text}>{i18n.common.chooseAccount}</Typography.Text>
                   )}
 
                   <WCAccountSelect
+                    accountType={accountType}
                     selectedAccounts={selectedAccounts}
                     appliedAccounts={appliedAccounts}
                     availableAccounts={availableAccounts}
-                    useModal={!supportOneNamespace}
+                    useModal={!supportOneAccountType}
                     onApply={onApplyModal(namespace)}
                     onCancel={onCancelModal(namespace)}
                     onSelectAccount={_onSelectAccount(namespace)}
-                    namespace={namespace}
                   />
                 </View>
               );

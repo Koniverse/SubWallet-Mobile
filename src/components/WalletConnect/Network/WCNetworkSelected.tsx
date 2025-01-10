@@ -33,9 +33,10 @@ export const WCNetworkSelected = ({ networks }: Props) => {
             name:
               unSupportNetworks.length <= 1
                 ? i18n.message.unknownNetwork
-                : i18n.formatString(i18n.message.unknownNetworks, unSupportNetworks.length),
+                : (i18n.formatString(i18n.message.unknownNetworks, unSupportNetworks.length) as string),
           },
           slug: '',
+          wcChain: '',
         }
       : null;
 

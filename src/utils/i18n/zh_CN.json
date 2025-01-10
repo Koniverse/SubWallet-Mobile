@@ -201,6 +201,8 @@
     "nominate": "提名",
     "evmNetworks": "EVM网络",
     "substrateNetworks": "Substrate网络",
+    "evmAccounts": "EVM accounts",
+    "substrateAccounts": "Substrate accounts",
     "networks": "网络",
     "ledgerAccount": "Ledger账本账户",
     "normalAccount": "普通账户",

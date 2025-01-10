@@ -429,6 +429,7 @@ export const SubstrateSignArea = (props: Props) => {
             showQuoteExpired ||
             loadingChain ||
             hashLoading ||
+            loading ||
             (isMessage ? !modeCanSignMessage.includes(signMode) : alertData?.type === 'error')
           }
           icon={getButtonIcon(approveIcon)}

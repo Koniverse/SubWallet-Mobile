@@ -1,5 +1,6 @@
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import {
+  _chainInfoToChainType,
   findChainInfoByChainId,
   findChainInfoByHalfGenesisHash,
 } from '@subwallet/extension-base/services/chain-service/utils';
@@ -29,6 +30,8 @@ export const chainsToWalletConnectChainInfos = (
         chainInfo,
         slug: chainInfo?.slug || chain,
         supported: !!chainInfo,
+        accountType: chainInfo ? _chainInfoToChainType(chainInfo) : undefined,
+        wcChain: chain,
       };
     } else if (namespace === WALLET_CONNECT_POLKADOT_NAMESPACE) {
       const chainInfo = findChainInfoByHalfGenesisHash(chainMap, info);
@@ -37,12 +40,15 @@ export const chainsToWalletConnectChainInfos = (
         chainInfo,
         slug: chainInfo?.slug || chain,
         supported: !!chainInfo,
+        accountType: chainInfo ? _chainInfoToChainType(chainInfo) : undefined,
+        wcChain: chain,
       };
     } else {
       return {
         chainInfo: null,
         slug: chain,
         supported: false,
+        wcChain: chain,
       };
     }
   });

@@ -201,6 +201,8 @@
     "nominate": "Номинировать",
     "evmNetworks": "EVM networks",
     "substrateNetworks": "Substrate networks",
+    "evmAccounts": "EVM accounts",
+    "substrateAccounts": "Substrate accounts",
     "networks": "Сеты",
     "ledgerAccount": "Аккаунт Ledger",
     "normalAccount": "Обычный аккаунт",

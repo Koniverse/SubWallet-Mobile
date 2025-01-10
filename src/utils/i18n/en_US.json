@@ -201,6 +201,8 @@
     "nominate": "Nominate",
     "evmNetworks": "EVM networks",
     "substrateNetworks": "Substrate networks",
+    "evmAccounts": "EVM accounts",
+    "substrateAccounts": "Substrate accounts",
     "networks": "Networks",
     "ledgerAccount": "Ledger account",
     "normalAccount": "Normal account",

@@ -201,6 +201,8 @@
     "nominate": "ノミネート",
     "evmNetworks": "EVM ネットワーク",
     "substrateNetworks": "Substrate ネットワーク",
+    "evmAccounts": "EVM accounts",
+    "substrateAccounts": "Substrate accounts",
     "networks": "ネットワーク",
     "ledgerAccount": "Ledger アカウント",
     "normalAccount": "通常のアカウント",
