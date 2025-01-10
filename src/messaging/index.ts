@@ -61,3 +61,4 @@ export * from './manta-pay';
 export * from './domain';
 export * from './metadata';
 export * from './campaigns';
+export * from './database';

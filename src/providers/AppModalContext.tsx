@@ -23,6 +23,7 @@ export type ConfirmModalInfo = {
   onCompleteModal?: () => void | undefined;
   disabledOnPressBackDrop?: boolean;
   isAllowSwipeDown?: boolean;
+  isShowCancelButton?: boolean;
 };
 
 export type AddressQrModalInfo = {
@@ -144,6 +145,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         cancelBtnTitle={confirmModal.cancelBtnTitle}
         isAllowSwipeDown={confirmModal.isAllowSwipeDown}
         disabledOnPressBackDrop={confirmModal.disabledOnPressBackDrop}
+        isShowCancelButton={confirmModal.isShowCancelButton}
       />
 
       {addressQrModalState.visible && (

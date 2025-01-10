@@ -32,7 +32,7 @@ import { mmkvStore } from 'utils/storage';
 import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import { TermAndCondition } from 'constants/termAndCondition';
 import { RemindBackupModal } from 'components/Modal/RemindBackupModal';
-import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import { ALL_ACCOUNT_KEY, UPGRADE_DUPLICATE_ACCOUNT_NAME } from '@subwallet/extension-base/constants';
 import { useIsFocused } from '@react-navigation/native';
 import { updateMktCampaignStatus } from 'stores/AppState';
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
@@ -40,6 +40,9 @@ import { computeStatus } from 'utils/missionPools';
 import { MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
 import withPageWrapper from 'components/pageWrapper';
 import { NoticeModal } from 'components/Modal/NoticeModal';
+import { RemindDuplicateAccountNameModal } from 'components/Modal/RemindDuplicateAccountNameModal';
+import { getValueLocalStorageWS } from 'messaging/database';
+import { noop } from 'utils/function';
 
 interface tabbarIconColor {
   color: string;
@@ -274,6 +277,7 @@ export const Home = ({ navigation }: Props) => {
   const lastTimeLogin = mmkvStore.getNumber('lastTimeLogin');
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [noticeModalVisible, setNoticeModalVisible] = useState<boolean>(false);
+  const [duplicateModalVisible, setDuplicateModalVisible] = useState<boolean>(false);
   const isOpenedNoticeModal = mmkvStore.getBoolean('isOpenedNoticeModal');
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
@@ -318,16 +322,26 @@ export const Home = ({ navigation }: Props) => {
 
   useEffect(() => {
     const isNeedShowNoticeModal = Platform.OS === 'ios' && parseFloat(Platform.Version) < 16.4;
-    if (!isLocked && lastTimeLogin && storedRemindBackupTimeout) {
-      if (Date.now() - lastTimeLogin > storedRemindBackupTimeout) {
-        setModalVisible(true);
-        dispatch(updateMktCampaignStatus(false));
-      } else if (isNeedShowNoticeModal) {
-        setNoticeModalVisible(true);
-        dispatch(updateMktCampaignStatus(false));
-      } else {
-        dispatch(updateMktCampaignStatus(true));
-      }
+    if (!isLocked) {
+      getValueLocalStorageWS(UPGRADE_DUPLICATE_ACCOUNT_NAME)
+        .then(value => {
+          if (value === 'true') {
+            setDuplicateModalVisible(true);
+          } else {
+            if (lastTimeLogin && storedRemindBackupTimeout) {
+              if (Date.now() - lastTimeLogin > storedRemindBackupTimeout) {
+                setModalVisible(true);
+                dispatch(updateMktCampaignStatus(false));
+              } else if (isNeedShowNoticeModal) {
+                setNoticeModalVisible(true);
+                dispatch(updateMktCampaignStatus(false));
+              } else {
+                dispatch(updateMktCampaignStatus(true));
+              }
+            }
+          }
+        })
+        .catch(noop);
     }
   }, [dispatch, isLocked, lastTimeLogin, storedRemindBackupTimeout]);
 
@@ -358,11 +372,15 @@ export const Home = ({ navigation }: Props) => {
         />
       )}
       {!isEmptyAccounts && !needMigrate && isFocused && (
+        <RemindDuplicateAccountNameModal modalVisible={duplicateModalVisible} setVisible={setDuplicateModalVisible} />
+      )}
+
+      {!isEmptyAccounts && !needMigrate && isFocused && (
         <RemindBackupModal modalVisible={modalVisible} setVisible={setModalVisible} />
       )}
 
       {!isEmptyAccounts && !isOpenedNoticeModal && !needMigrate && isFocused && !isShowRemindBackupModal.current && (
-        <NoticeModal modalVisible={noticeModalVisible} setVisible={setNoticeModalVisible} />
+        <NoticeModal modalVisible={noticeModalVisible} setVisible={setNoticeModalVisible} /> // Consider deleting this modal
       )}
     </>
   );

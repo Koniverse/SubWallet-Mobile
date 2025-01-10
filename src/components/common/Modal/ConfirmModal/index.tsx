@@ -20,6 +20,7 @@ interface Props {
   cancelBtnTitle?: string;
   disabledOnPressBackDrop?: boolean;
   isAllowSwipeDown?: boolean;
+  isShowCancelButton?: boolean;
 }
 
 const ConfirmModal: React.FC<Props> = ({
@@ -34,6 +35,7 @@ const ConfirmModal: React.FC<Props> = ({
   cancelBtnTitle,
   isAllowSwipeDown,
   disabledOnPressBackDrop,
+  isShowCancelButton = true,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -50,13 +52,15 @@ const ConfirmModal: React.FC<Props> = ({
       footer={
         <>
           <View style={styles.footerModalStyle}>
-            <Button
-              type="secondary"
-              style={{ flex: 1, marginRight: 12 }}
-              onPress={onCancelModal}
-              icon={<Icon phosphorIcon={XCircle} size={'lg'} weight={'fill'} />}>
-              {cancelBtnTitle || i18n.common.cancel}
-            </Button>
+            {!!isShowCancelButton && (
+              <Button
+                type="secondary"
+                style={{ flex: 1, marginRight: 12 }}
+                onPress={onCancelModal}
+                icon={<Icon phosphorIcon={XCircle} size={'lg'} weight={'fill'} />}>
+                {cancelBtnTitle || i18n.common.cancel}
+              </Button>
+            )}
             <Button
               externalTextStyle={{ flexShrink: 1 }}
               style={{ flex: 1 }}

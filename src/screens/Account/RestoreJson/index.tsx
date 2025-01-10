@@ -305,6 +305,7 @@ export const RestoreJson = () => {
         onCancelModal: confirmModal.hideConfirmModal,
         completeBtnTitle: 'I understand',
         cancelBtnTitle: 'Cancel',
+        isShowCancelButton: false,
       });
     },
     [confirmModal, onImportFinal, theme.colorPrimary, theme.colorWarning],
