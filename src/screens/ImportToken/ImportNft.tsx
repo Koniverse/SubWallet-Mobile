@@ -171,11 +171,19 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     })
       .then(resp => {
         if (resp) {
-          toast.hideAll();
-          toast.show(i18n.common.addNftSuccess, { type: 'success' });
-          onBack();
-          if (reload) {
-            reload();
+          if (resp.error === 'incompatibleNFT') {
+            toast.hideAll();
+            toast.show('Failed to import. Incompatible NFT', { type: 'danger' });
+          } else if (resp.success) {
+            toast.hideAll();
+            toast.show(i18n.common.addNftSuccess, { type: 'success' });
+            onBack();
+            if (reload) {
+              reload();
+            }
+          } else {
+            toast.hideAll();
+            toast.show(i18n.errorMessage.occurredError, { type: 'danger' });
           }
         } else {
           toast.hideAll();

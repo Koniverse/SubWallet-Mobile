@@ -1,7 +1,6 @@
-import React, { ComponentType, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ComponentType, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EarningScreen from 'screens/Home/Earning';
-
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, Globe, Parachute, Vault, Wallet } from 'phosphor-react-native';
@@ -43,6 +42,7 @@ import { NoticeModal } from 'components/Modal/NoticeModal';
 import { RemindDuplicateAccountNameModal } from 'components/Modal/RemindDuplicateAccountNameModal';
 import { getValueLocalStorageWS } from 'messaging/database';
 import { noop } from 'utils/function';
+import { WebRunnerContext } from 'providers/contexts';
 
 interface tabbarIconColor {
   color: string;
@@ -279,6 +279,7 @@ export const Home = ({ navigation }: Props) => {
   const [noticeModalVisible, setNoticeModalVisible] = useState<boolean>(false);
   const [duplicateModalVisible, setDuplicateModalVisible] = useState<boolean>(false);
   const isOpenedNoticeModal = mmkvStore.getBoolean('isOpenedNoticeModal');
+  const { isReady: isWebRunnerReady } = useContext(WebRunnerContext);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const needMigrate = useMemo(
@@ -290,10 +291,10 @@ export const Home = ({ navigation }: Props) => {
   );
 
   useEffect(() => {
-    if (isReady && isLoading) {
+    if (isReady && isLoading && isWebRunnerReady) {
       setTimeout(() => setLoading(false), 1500);
     }
-  }, [isReady, isLoading]);
+  }, [isReady, isLoading, isWebRunnerReady]);
 
   useEffect(() => {
     const readyHandleDeeplink =
