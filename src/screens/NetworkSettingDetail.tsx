@@ -360,6 +360,9 @@ export const NetworkSettingDetail = ({
                 text={addressPrefix.toString()}
               />
             )}
+            {!isPureTonChain && (
+              <TextField outerStyle={{ flex: 1 }} text={chainTypeString()} placeholder={'Network type'} />
+            )}
           </View>
 
           <InputText
