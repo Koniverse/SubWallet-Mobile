@@ -323,27 +323,25 @@ export const Home = ({ navigation }: Props) => {
 
   useEffect(() => {
     const isNeedShowNoticeModal = Platform.OS === 'ios' && parseFloat(Platform.Version) < 16.4;
-    if (!isLocked) {
-      getValueLocalStorageWS(UPGRADE_DUPLICATE_ACCOUNT_NAME)
-        .then(value => {
-          if (value === 'true') {
-            setDuplicateModalVisible(true);
-          } else {
-            if (lastTimeLogin && storedRemindBackupTimeout) {
-              if (Date.now() - lastTimeLogin > storedRemindBackupTimeout) {
-                setModalVisible(true);
-                dispatch(updateMktCampaignStatus(false));
-              } else if (isNeedShowNoticeModal) {
-                setNoticeModalVisible(true);
-                dispatch(updateMktCampaignStatus(false));
-              } else {
-                dispatch(updateMktCampaignStatus(true));
-              }
+    getValueLocalStorageWS(UPGRADE_DUPLICATE_ACCOUNT_NAME)
+      .then(value => {
+        if (value === 'true') {
+          setDuplicateModalVisible(true);
+        } else {
+          if (lastTimeLogin && storedRemindBackupTimeout) {
+            if (Date.now() - lastTimeLogin > storedRemindBackupTimeout) {
+              setModalVisible(true);
+              dispatch(updateMktCampaignStatus(false));
+            } else if (isNeedShowNoticeModal) {
+              setNoticeModalVisible(true);
+              dispatch(updateMktCampaignStatus(false));
+            } else {
+              dispatch(updateMktCampaignStatus(true));
             }
           }
-        })
-        .catch(noop);
-    }
+        }
+      })
+      .catch(noop);
   }, [dispatch, isLocked, lastTimeLogin, storedRemindBackupTimeout]);
 
   const onPressAcceptBtn = () => {

@@ -87,6 +87,7 @@ export const GlobalModalContextProvider = ({ children }: GlobalModalContextProvi
 
   const modalVisible = useMemo(() => {
     if (globalModal?.type === 'popup') {
+      console.log('run to this');
       return isShowedPopupModalRef.current && !!globalModal.visible && !!isDisplayMktCampaign;
     } else {
       return !!globalModal.visible;
