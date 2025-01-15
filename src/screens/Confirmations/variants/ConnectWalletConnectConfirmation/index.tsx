@@ -251,7 +251,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
                 <View key={namespace}>
                   {!supportOneChain && (
                     <>
-                      <Typography.Text style={styles.text}>
+                      <Typography.Text style={[styles.text, { textTransform: 'uppercase' }]}>
                         {supportOneAccountType ? i18n.common.networks : accountTypeNameMap[namespace]}
                       </Typography.Text>
                       <WCNetworkSelected networks={networks} />
