@@ -47,14 +47,12 @@ jobs:
 
     - name: Use Node.js 18
       uses: actions/setup-node@v4
-      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       with:
         node-version: 18
         cache: 'yarn'
 
     - name: Cache Yarn dependencies
       uses: actions/cache@v3
-      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       id: yarn-cache # optional, but allows referencing the step
       with:
         path: |
@@ -69,7 +67,6 @@ jobs:
 
     - name: Restore Pods Cache
       uses: actions/cache@v3
-      if: ${{ runner.name != 'Dos-Mac-mini' && runner.name != 'Mac-x86' }}
       with:
         path: |
           ios/Pods
@@ -87,14 +84,14 @@ jobs:
 
     # Build IPA file
     - name: iOS Build Action
-      uses: yukiarrr/ios-build-action@v1.12.0
+      uses: yukiarrr/ios-build-action@v1.11.2
       with:
-        project-path: ./ios/SubWalletMobile.xcodeproj
+        project-path: SubWalletMobile.xcodeproj
         p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
         mobileprovision-base64: ${{ secrets.BUILD_ADHOC_PROVISION_PROFILE_BASE64 }}
         code-signing-identity: 'Apple Distribution: CDM SOFTWARE DEVELOPMENT COMPANY LIMITED (ZUZ7T3GQMT)'
         team-id: ${{ secrets.APPLE_TEAM_ID }}
-        workspace-path: ./ios/SubWalletMobile.xcworkspace
+        workspace-path: SubWalletMobile.xcworkspace
         export-method: 'ad-hoc'
         configuration: Debug
         certificate-password: ${{ secrets.P12_PASSWORD }}
