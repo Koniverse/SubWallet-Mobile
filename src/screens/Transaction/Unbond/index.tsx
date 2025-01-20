@@ -1,4 +1,9 @@
-import { AccountProxy, YieldPoolType, YieldPositionInfo } from '@subwallet/extension-base/types';
+import {
+  AccountProxy,
+  SpecialYieldPoolMetadata,
+  YieldPoolType,
+  YieldPositionInfo,
+} from '@subwallet/extension-base/types';
 import { RequestYieldLeave } from '@subwallet/extension-base/types/yield/actions/others';
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import InputCheckBox from 'components/Input/InputCheckBox';
@@ -39,7 +44,11 @@ import { isActionFromValidator } from '@subwallet/extension-base/services/earnin
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { mmkvStore } from 'utils/storage';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
-import { UNSTAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
+import {
+  UNSTAKE_ALERT_DATA,
+  UNSTAKE_BIFROST_ALERT_DATA,
+  UNSTAKE_BITTENSOR_ALERT_DATA,
+} from 'constants/earning/EarningDataRaw';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
@@ -155,6 +164,8 @@ export const Unbond = ({
   const bondedAsset = useGetChainAssetInfo(bondedSlug || poolInfo?.metadata.inputAsset);
   const decimals = bondedAsset?.decimals || 0;
   const symbol = bondedAsset?.symbol || '';
+  const altAsset = useGetChainAssetInfo((poolInfo?.metadata as SpecialYieldPoolMetadata)?.altInputAssets);
+  const altSymbol = altAsset?.symbol || '';
 
   const selectedValidator = useMemo((): NominationInfo | undefined => {
     if (positionInfo) {
@@ -372,6 +383,13 @@ export const Unbond = ({
     }
   }, [accountList, fromValue, setFrom]);
 
+  const unstakeAlertData =
+    poolChain === 'bifrost_dot'
+      ? UNSTAKE_BIFROST_ALERT_DATA[0]
+      : poolChain === 'bittensor'
+      ? UNSTAKE_BITTENSOR_ALERT_DATA[0]
+      : unstakeDataRaw;
+
   const exType = useMemo(() => {
     if (poolType === YieldPoolType.NOMINATION_POOL || poolType === YieldPoolType.NATIVE_STAKING) {
       return ExtrinsicType.STAKING_UNBOND;
@@ -482,14 +500,14 @@ export const Unbond = ({
               {!fastLeave || !showFastLeave ? (
                 poolType !== YieldPoolType.LENDING ? (
                   <>
-                    {!!unstakeDataRaw.instructions.length && (
+                    {!!unstakeAlertData.instructions.length && (
                       <View
                         style={{
                           gap: theme.sizeSM,
                           marginTop: mustChooseValidator ? theme.marginSM : 0,
                           marginBottom: theme.marginSM,
                         }}>
-                        {unstakeDataRaw.instructions.map((_props, index) => {
+                        {unstakeAlertData.instructions.map((_props, index) => {
                           return (
                             <AlertBoxBase
                               key={index}
@@ -513,7 +531,11 @@ export const Unbond = ({
               ) : (
                 <AlertBox
                   title={'Fast unstake'}
-                  description={'With fast unstake, you will receive your funds immediately with a higher fee'}
+                  description={
+                    poolChain === 'bifrost_dot'
+                      ? `In this mode, ${symbol} will be directly exchanged for ${altSymbol} at the market price without waiting for the unstaking period`
+                      : 'With fast unstake, you will receive your funds immediately with a higher fee'
+                  }
                   type={'info'}
                 />
               )}

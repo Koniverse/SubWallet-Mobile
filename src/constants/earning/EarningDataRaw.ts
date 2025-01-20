@@ -219,6 +219,8 @@ export const UNSTAKE_ALERT_DATA: StaticDataProps[] = [
     id: '1',
     group: 'earning',
     slug: 'UNSTAKE_INFO',
+    title: '',
+    media: '',
     instructions: [
       {
         title: 'Wait time',
@@ -239,5 +241,43 @@ export const UNSTAKE_ALERT_DATA: StaticDataProps[] = [
         icon_color: '#aada62',
       },
     ],
+  },
+];
+
+export const UNSTAKE_BIFROST_ALERT_DATA: StaticDataProps[] = [
+  {
+    id: '1',
+    group: 'earning',
+    slug: 'UNSTAKE_INFO',
+    title: '',
+    media: '',
+    instructions: UNSTAKE_ALERT_DATA[0].instructions.map((item, index) => ({
+      ...item,
+      title: index === 2 ? 'Automatic withdrawal' : item.title,
+      description:
+        index === 0
+          ? 'Once unstaked, your funds will become available within {unBondedTime}'
+          : index === 1
+          ? 'During the unstaking period, your tokens produce no rewards'
+          : index === 2
+          ? 'The funds will be automatically withdrawn to your account once the wait time is over'
+          : item.description,
+    })),
+  },
+];
+
+export const UNSTAKE_BITTENSOR_ALERT_DATA: StaticDataProps[] = [
+  {
+    id: '1',
+    group: 'earning',
+    slug: 'UNSTAKE_INFO',
+    title: '',
+    media: '',
+    instructions: UNSTAKE_ALERT_DATA[0].instructions.map((item, index) => ({
+      ...item,
+      title: index === 2 ? 'Instant withdrawal' : item.title,
+      description:
+        index === 2 ? 'Once unstaked, the funds will be instantly withdrawn to your account' : item.description,
+    })),
   },
 ];
