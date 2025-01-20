@@ -18,6 +18,7 @@ import { _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
 import {
   _getTokenTypesSupportedByChain,
   _isChainTestNet,
+  _parseMetadataForAssetId,
   _parseMetadataForSmartContractAsset,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { Button, Icon } from 'components/design-system-ui';
@@ -40,18 +41,23 @@ import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import InputText from 'components/Input/InputText';
 import useGetFungibleContractSupportedChains from 'hooks/screen/ImportNft/useGetFungibleContractSupportedChains';
 
-interface ImportTokenFormValues extends TransactionFormValues {
+export interface ImportTokenFormValues extends TransactionFormValues {
   selectedTokenType: string;
   symbol: string;
   decimals: string;
   tokenName: string;
   priceId: string;
   contractAddress: string;
+  assetId?: string;
 }
 
 interface TokenTypeOption {
   label: string;
   value: _AssetType;
+}
+
+function isAssetHubChain(chainslug: string) {
+  return ['statemint', 'statemine'].includes(chainslug);
 }
 
 function getTokenTypeSupported(chainInfo: _ChainInfo) {
@@ -102,6 +108,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
   const [isValidContract, setIsValidContract] = useState<boolean>(true);
+  const [isValidAssetId, setIsValidAssetId] = useState<boolean>(true);
   const {
     title,
     form: {
@@ -136,6 +143,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     decimals,
     tokenName,
     priceId,
+    assetId,
   } = {
     ...useWatch<ImportTokenFormValues>({ control }),
     ...getValues(),
@@ -190,6 +198,40 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
         toast.show(i18n.errorMessage.occurredError, { type: 'danger' });
         setBusy(false);
       });
+  };
+
+  const onSubmitAssetHub = () => {
+    if (assetId) {
+      setBusy(true);
+
+      upsertCustomToken({
+        originChain: chain,
+        slug: '',
+        name: tokenName || symbol,
+        symbol,
+        decimals: parseInt(decimals),
+        priceId: priceId || null,
+        minAmount: null,
+        assetType: selectedTokenTypeData as _AssetType,
+        metadata: _parseMetadataForAssetId(assetId),
+        multiChainAsset: null,
+        hasValue: _isChainTestNet(chainInfoMap[chain]),
+        icon: '',
+      })
+        .then(resp => {
+          if (resp) {
+            toast.show(i18n.notificationMessage.addTokenSuccessfully, { type: 'success' });
+            _goBack();
+          } else {
+            toast.show(i18n.errorMessage.occurredError, { type: 'danger' });
+            setBusy(false);
+          }
+        })
+        .catch(() => {
+          toast.show(i18n.errorMessage.occurredError, { type: 'danger' });
+          setBusy(false);
+        });
+    }
   };
 
   const tokenTypeRef = useRef<ModalRef>();
@@ -266,6 +308,42 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     [selectedTokenTypeData, chainNetworkPrefix, chain, setValue],
   );
 
+  const assetIdRules = useMemo(
+    () => ({
+      validate: (value: string): Promise<ValidateResult> => {
+        return validateCustomToken({
+          originChain: chain,
+          type: selectedTokenTypeData as _AssetType,
+          assetId: value,
+        })
+          .then(resp => {
+            if (resp.isExist) {
+              setIsValidAssetId(false);
+              return Promise.resolve('Existed token');
+            }
+
+            if (resp.contractError) {
+              setIsValidAssetId(false);
+              return Promise.resolve('Invalid asset ID');
+            }
+
+            if (!resp.isExist && !resp.contractError) {
+              setValue('tokenName', resp.name);
+              setValue('decimals', String(resp.decimals));
+              setValue('symbol', resp.symbol);
+              setIsValidAssetId(true);
+              return Promise.resolve(undefined);
+            }
+          })
+          .catch(() => {
+            setIsValidAssetId(false);
+            return Promise.resolve('Error validating this token');
+          });
+      },
+    }),
+    [chain, selectedTokenTypeData, setValue],
+  );
+
   const onSelectTokenType = useCallback(
     (item: AssetTypeOption) => {
       setValue('selectedTokenType', item.value);
@@ -286,25 +364,45 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   };
 
   useEffect(() => {
-    if (chain && dirtyFields.contractAddress) {
-      addLazy(
-        'trigger-validate-import-token',
-        () => {
-          trigger('contractAddress');
-        },
-        100,
-      );
+    if (chain) {
+      if (!isAssetHubChain(chain)) {
+        dirtyFields.contractAddress &&
+          addLazy(
+            'trigger-validate-import-token',
+            () => {
+              trigger('contractAddress');
+            },
+            100,
+          );
+      } else {
+        dirtyFields.assetId &&
+          addLazy(
+            'trigger-validate-import-token',
+            () => {
+              trigger('assetId');
+            },
+            100,
+          );
+      }
     }
 
     return () => {
       removeLazy('trigger-validate-import-token');
     };
-  }, [chain, dirtyFields.contractAddress, trigger]);
+  }, [chain, dirtyFields.assetId, dirtyFields.contractAddress, trigger]);
 
-  const reValidate = () => trigger('contractAddress');
+  const reValidateContractAddress = () => trigger('contractAddress');
+  const reValidateAssetId = () => trigger('assetId');
 
   const addTokenButtonDisabled =
-    !contractAddress || !!errors.contractAddress || !symbol || !decimals || !isNetConnected || !isReady || isBusy;
+    !contractAddress ||
+    !!errors.contractAddress ||
+    !symbol ||
+    !decimals ||
+    !isNetConnected ||
+    !isReady ||
+    isBusy ||
+    !!errors.assetId;
 
   return (
     <ContainerWithSubHeader onPressBack={_goBack} title={title} disabled={isBusy}>
@@ -318,6 +416,8 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
               setChain(item.slug);
               setValue('selectedTokenType', getTokenType(item.slug, chainInfoMap));
               setValue('tokenName', '');
+              setValue('assetId', '');
+              setValue('contractAddress', '');
               chainSelectorRef && chainSelectorRef.current?.onCloseModal();
             }}
             renderSelected={() => (
@@ -339,25 +439,49 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             renderSelected={() => <TokenTypeSelectField value={selectedTokenTypeData} showIcon />}
           />
 
-          <FormItem
-            style={{ marginBottom: 8 }}
-            control={control}
-            rules={contractAddressRules}
-            render={({ field: { value, onChange, ref, onBlur } }) => (
-              <InputAddress
-                ref={ref}
-                label={isSelectGearToken ? 'Program ID' : i18n.importToken.contractAddress}
-                value={value}
-                onChangeText={onChange}
-                placeholder={i18n.placeholder.typeOrPasteContractAddress}
-                disabled={!chain}
-                isValidValue={isValidContract}
-                reValidate={reValidate}
-                onSideEffectChange={onBlur}
-              />
-            )}
-            name={'contractAddress'}
-          />
+          {!isAssetHubChain(chain) && (
+            <FormItem
+              style={{ marginBottom: 8 }}
+              control={control}
+              rules={contractAddressRules}
+              render={({ field: { value, onChange, ref, onBlur } }) => (
+                <InputAddress
+                  ref={ref}
+                  label={isSelectGearToken ? 'Program ID' : i18n.importToken.contractAddress}
+                  value={value}
+                  onChangeText={onChange}
+                  placeholder={i18n.placeholder.typeOrPasteContractAddress}
+                  disabled={!chain}
+                  isValidValue={isValidContract}
+                  reValidate={reValidateContractAddress}
+                  onSideEffectChange={onBlur}
+                />
+              )}
+              name={'contractAddress'}
+            />
+          )}
+
+          {isAssetHubChain(chain) && (
+            <FormItem
+              style={{ marginBottom: 8 }}
+              control={control}
+              rules={assetIdRules}
+              render={({ field: { value, onChange, ref, onBlur } }) => (
+                <InputAddress
+                  ref={ref}
+                  label={'Asset ID'}
+                  value={value}
+                  onChangeText={onChange}
+                  placeholder={'Please type or paste an asset'}
+                  disabled={!selectedTokenTypeData}
+                  isValidValue={isValidAssetId}
+                  reValidate={reValidateAssetId}
+                  onSideEffectChange={onBlur}
+                />
+              )}
+              name={'assetId'}
+            />
+          )}
 
           <View style={styles.row}>
             <TextField outerStyle={{ flex: 1, marginBottom: 0 }} placeholder={i18n.placeholder.symbol} text={symbol} />
@@ -366,7 +490,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
               outerStyle={{ flex: 1, marginBottom: 0 }}
               placeholder={i18n.placeholder.decimals}
               disabled={true}
-              text={decimals}
+              text={decimals === '-1' ? '' : decimals}
             />
           </View>
 
@@ -425,7 +549,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             disabled={addTokenButtonDisabled}
             loading={isBusy}
             style={{ flex: 1, marginLeft: 6 }}
-            onPress={onSubmit}>
+            onPress={!isAssetHubChain(chain) ? onSubmit : onSubmitAssetHub}>
             {i18n.common.addToken}
           </Button>
         </View>

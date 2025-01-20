@@ -5,6 +5,9 @@ import {
   BrowserConfirmationType,
   CurrencyType,
   LanguageType,
+  RequestSaveAppConfig,
+  RequestSaveBrowserConfig,
+  RequestSaveOSConfig,
   RequestSettingsType,
   RequestSubscribeBalancesVisibility,
   ThemeNames,
@@ -73,4 +76,16 @@ export async function saveShowBalance(value: boolean): Promise<boolean> {
 
 export async function saveUnlockType(value: WalletUnlockType): Promise<boolean> {
   return sendMessage('pri(settings.saveUnlockType)', { unlockType: value });
+}
+
+export function saveAppConfig(request: RequestSaveAppConfig): Promise<boolean> {
+  return sendMessage('pri(settings.saveAppConfig)', request);
+}
+
+export function saveBrowserConfig(request: RequestSaveBrowserConfig): Promise<boolean> {
+  return sendMessage('pri(settings.saveBrowserConfig)', request);
+}
+
+export function saveOSConfig(request: RequestSaveOSConfig): Promise<boolean> {
+  return sendMessage('pri(settings.saveOSConfig)', request);
 }

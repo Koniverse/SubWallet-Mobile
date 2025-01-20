@@ -9,6 +9,7 @@ import { TextField } from 'components/Field/Text';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import {
   _getContractAddressOfToken,
+  _isAssetHubToken,
   _isCustomAsset,
   _isSmartContractToken,
 } from '@subwallet/extension-base/services/chain-service/utils';
@@ -167,7 +168,10 @@ export const ConfigureToken = ({
       disabled={isBusy}
       rightIcon={Trash}
       onPressRightIcon={onPressDelete}
-      disableRightButton={!tokenInfo || !(_isCustomAsset(tokenInfo?.slug || '') && _isSmartContractToken(tokenInfo))}>
+      disableRightButton={
+        !tokenInfo ||
+        !(_isCustomAsset(tokenInfo?.slug || '') && (_isSmartContractToken(tokenInfo) || _isAssetHubToken(tokenInfo)))
+      }>
       <View style={{ flex: 1, ...ContainerHorizontalPadding }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
           <View style={styles.logoWrapper}>{getTokenLogo(tokenInfo?.slug || '', undefined, 112)}</View>

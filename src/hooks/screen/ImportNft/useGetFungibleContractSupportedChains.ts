@@ -3,6 +3,7 @@
 
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import {
+  _isAssetHubChain,
   _isChainSupportEvmERC20,
   _isChainSupportVFT,
   _isChainSupportWasmPSP22,
@@ -14,7 +15,12 @@ function filterNftContractTypes(chainInfoMap: Record<string, _ChainInfo>) {
   const filteredChainInfoMap: Record<string, _ChainInfo> = {};
 
   Object.values(chainInfoMap).forEach(chainInfo => {
-    if (_isChainSupportEvmERC20(chainInfo) || _isChainSupportWasmPSP22(chainInfo) || _isChainSupportVFT(chainInfo)) {
+    if (
+      _isChainSupportEvmERC20(chainInfo) ||
+      _isChainSupportWasmPSP22(chainInfo) ||
+      _isChainSupportVFT(chainInfo) ||
+      _isAssetHubChain(chainInfo)
+    ) {
       filteredChainInfoMap[chainInfo.slug] = chainInfo;
     }
   });
