@@ -748,6 +748,19 @@ export const subscribeSwapPairs = lazySubscribeMessage(
   updateSwapPairs,
 );
 
+/* Ledger */
+export const updateLedgerGenericAllowNetworks = (data: string[]) => {
+  store.dispatch({ type: 'chainStore/updateLedgerGenericAllowNetworks', payload: data });
+};
+
+export const subscribeLedgerGenericAllowNetworks = lazySubscribeMessage(
+  'pri(ledger.generic.allow)',
+  null,
+  updateLedgerGenericAllowNetworks,
+  updateLedgerGenericAllowNetworks,
+);
+/* Ledger */
+
 export const updateCampaignPopupData = (data: AppPopupData[]) => {
   store.dispatch({ type: 'staticContent/updateAppPopupData', payload: data });
 };

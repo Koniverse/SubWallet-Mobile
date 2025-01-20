@@ -27,6 +27,7 @@ export const ImageLogosMap = {
   chain_flip_testnet: require('./chainflip-mainnet.png'),
   hydradx_mainnet: require('./hydradx_main.png'),
   hydradx_testnet: require('./hydradx_main.png'),
+  simple_swap: require('./simple-swap.png'),
   currency_brl: require('./CurrencyBRL.png'),
   currency_cny: require('./CurrencyCNY.png'),
   currency_hkd: require('./CurrencyHKD.png'),

@@ -170,6 +170,7 @@ export const SwapQuoteDetailModal = ({
                       alignItems: 'center',
                       marginTop: theme.marginXXS,
                       marginBottom: theme.margin,
+                      justifyContent: 'space-between',
                     }}>
                     <QuoteResetTime quoteAliveUntilValue={quoteAliveUntil} />
                     {renderSlippage()}

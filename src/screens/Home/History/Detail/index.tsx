@@ -11,12 +11,12 @@ import { ArrowSquareUpRight } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { Linking, View } from 'react-native';
 import {
-  getChainflipExplorerLink,
   getExplorerLink,
+  getSimpleSwapExplorerLink,
 } from '@subwallet/extension-base/services/transaction-service/utils';
 import { ExtrinsicType, TransactionAdditionalInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { ChainflipSwapTxData, SwapProviderId, SwapTxData } from '@subwallet/extension-base/types/swap';
+import { SimpleSwapTxData, SwapProviderId, SwapTxData } from '@subwallet/extension-base/types/swap';
 
 type Props = {
   onChangeModalVisible: () => void;
@@ -68,11 +68,10 @@ export function HistoryDetailModal({
     if (extrinsicType === ExtrinsicType.SWAP) {
       const additionalInfo = data.additionalInfo as SwapTxData;
 
-      if ([SwapProviderId.CHAIN_FLIP_TESTNET, SwapProviderId.CHAIN_FLIP_MAINNET].includes(additionalInfo.provider.id)) {
-        link = getChainflipExplorerLink(additionalInfo as ChainflipSwapTxData, originChainInfo);
+      if ([SwapProviderId.SIMPLE_SWAP].includes(additionalInfo.provider.id)) {
+        link = getSimpleSwapExplorerLink(additionalInfo as SimpleSwapTxData);
       }
     }
-
     if (link) {
       return (
         <View style={{ alignSelf: 'stretch' }}>

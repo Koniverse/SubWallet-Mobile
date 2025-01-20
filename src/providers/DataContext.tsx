@@ -50,6 +50,7 @@ import {
   subscribeCampaignBannerData,
   subscribeCampaignConfirmationData,
   subscribeConfirmationRequestsTon,
+  subscribeLedgerGenericAllowNetworks,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -259,6 +260,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
         _DataContext.addHandler({
           ...subscribeChainInfoMap,
           name: 'subscribeChainInfoMap',
+          relatedStores: ['chainStore'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeLedgerGenericAllowNetworks,
+          name: 'subscribeLedgerGenericAllowNetworks',
           relatedStores: ['chainStore'],
           isStartImmediately: true,
         });
