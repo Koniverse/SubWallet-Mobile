@@ -802,3 +802,15 @@ export const subscribeCampaignConfirmationData = lazySubscribeMessage(
 // };
 //
 // export const subscribeChainValidators = lazySubscribeMessage('pri(bonding.getBondingOptions)', null, updateChainValidators, updateChainValidators);
+/* Notification service */
+export const updateUnreadNotificationCountMap = (data: Record<string, number>) => {
+  store.dispatch({ type: 'notification/updateUnreadNotificationCountMap', payload: data });
+};
+
+export const subscribeUnreadNotificationCount = lazySubscribeMessage(
+  'pri(inappNotification.subscribeUnreadNotificationCountMap)',
+  null,
+  updateUnreadNotificationCountMap,
+  updateUnreadNotificationCountMap,
+);
+/* Notification service */

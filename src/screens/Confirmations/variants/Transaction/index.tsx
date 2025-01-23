@@ -29,6 +29,7 @@ import {
   WithdrawTransactionConfirmation,
   TokenApproveConfirmation,
   SwapTransactionConfirmation,
+  ClaimBridgeTransactionConfirmation,
 } from './variants';
 import { SwapTxData } from '@subwallet/extension-base/types/swap';
 
@@ -80,6 +81,8 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
     case ExtrinsicType.UNSTAKE_STDOT:
     case ExtrinsicType.UNSTAKE_VMANTA:
       return DefaultWithdrawTransactionConfirmation;
+    case ExtrinsicType.CLAIM_BRIDGE:
+      return ClaimBridgeTransactionConfirmation;
     case ExtrinsicType.TOKEN_SPENDING_APPROVAL:
       return TokenApproveConfirmation;
     case ExtrinsicType.SWAP:

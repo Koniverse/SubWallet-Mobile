@@ -1,8 +1,8 @@
-import { QrCode } from 'phosphor-react-native';
-import React, { useCallback, useState } from 'react';
+import { BellRinging, QrCode } from 'phosphor-react-native';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, StyleProp, View } from 'react-native';
 import { SpaceStyle } from 'styles/space';
-import { Button, Icon } from 'components/design-system-ui';
+import { Badge, Button, Icon } from 'components/design-system-ui';
 import AccountSelectField from 'components/common/Account/AccountSelectField';
 import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from 'routes/index';
@@ -16,6 +16,8 @@ import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import useCheckCamera from 'hooks/common/useCheckCamera';
 import { isAddress } from '@subwallet/keyring';
+import { RootState } from 'stores/index';
+import { useSelector } from 'react-redux';
 
 export interface HeaderProps {
   rightComponent?: JSX.Element;
@@ -33,6 +35,11 @@ const headerWrapper: StyleProp<any> = {
 
 export const Header = ({ rightComponent, disabled }: HeaderProps) => {
   const [isScanning, setIsScanning] = useState<boolean>(false);
+  const { currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const {
+    notificationSetup: { isEnabled: notiEnable },
+  } = useSelector((state: RootState) => state.settings);
+  const { unreadNotificationCountMap } = useSelector((state: RootState) => state.notification);
   const [error, setError] = useState<string | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const drawerNavigation = useNavigation<DrawerNavigationProp<RootStackParamList>>();
@@ -46,6 +53,20 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
 
     checkCamera(undefined, openScannerScreen)();
   }, [checkCamera]);
+
+  const onPressNotificationBtn = useCallback(() => {
+    navigation.navigate('Notification');
+  }, [navigation]);
+
+  const unreadNotificationCount = useMemo(() => {
+    if (!currentAccountProxy || !unreadNotificationCountMap) {
+      return 0;
+    }
+
+    return isAllAccount
+      ? Object.values(unreadNotificationCountMap).reduce((acc, val) => acc + val, 0)
+      : unreadNotificationCountMap[currentAccountProxy.id] || 0;
+  }, [currentAccountProxy, isAllAccount, unreadNotificationCountMap]);
 
   const onScanAddress = useCallback(
     (data: string) => {
@@ -99,14 +120,34 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
 
       <View style={{ flexDirection: 'row', position: 'absolute', right: 16 }}>
         {rightComponent || (
-          <Button
-            disabled={disabled}
-            style={[{ marginRight: -8 }, disabled && DisabledStyle]}
-            size={'xs'}
-            type={'ghost'}
-            icon={<Icon phosphorIcon={QrCode} weight={'bold'} />}
-            onPress={onPressQrButton}
-          />
+          <View style={{ flexDirection: 'row' }}>
+            <View>
+              <Button
+                disabled={disabled}
+                style={[disabled && DisabledStyle]}
+                size={'xs'}
+                type={'ghost'}
+                icon={<Icon phosphorIcon={BellRinging} weight={'bold'} size={'md'} />}
+                onPress={onPressNotificationBtn}
+              />
+              {notiEnable && !!unreadNotificationCount && (
+                <Badge
+                  value={unreadNotificationCount}
+                  containerStyle={{ height: 12, paddingHorizontal: 2, position: 'absolute', bottom: 8, right: 8 }}
+                  textStyle={{ fontSize: 7, lineHeight: 12, fontWeight: '600' }}
+                />
+              )}
+            </View>
+
+            <Button
+              disabled={disabled}
+              style={[{ marginRight: -8 }, disabled && DisabledStyle]}
+              size={'xs'}
+              type={'ghost'}
+              icon={<Icon phosphorIcon={QrCode} weight={'bold'} size={'md'} />}
+              onPress={onPressQrButton}
+            />
+          </View>
         )}
       </View>
 

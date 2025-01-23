@@ -12,8 +12,9 @@ export type TransactionActionStackParamList = {
   Earning: { slug: string; target?: string; redirectFromPreview?: boolean };
   Swap: { slug?: string };
   Unbond: { slug: string };
-  Withdraw: { slug: string };
-  ClaimReward: { slug: string };
+  Withdraw: { slug: string; chain: string; from: string };
+  ClaimReward: { slug: string; chain: string; from: string };
+  ClaimBridge: { asset: string; chain: string; notificationId: string; from: string };
   CancelUnstake: { slug: string };
 };
 
@@ -25,6 +26,7 @@ export type SendNFTProps = NativeStackScreenProps<TransactionActionStackParamLis
 export type StakeProps = NativeStackScreenProps<TransactionActionStackParamList, 'Stake'>;
 export type UnbondProps = NativeStackScreenProps<TransactionActionStackParamList, 'Unbond'>;
 export type ClaimRewardProps = NativeStackScreenProps<TransactionActionStackParamList, 'ClaimReward'>;
+export type ClaimBridgeProps = NativeStackScreenProps<TransactionActionStackParamList, 'ClaimBridge'>;
 export type WithdrawProps = NativeStackScreenProps<TransactionActionStackParamList, 'Withdraw'>;
 export type CancelUnstakeProps = NativeStackScreenProps<TransactionActionStackParamList, 'CancelUnstake'>;
 export type EarningProps = NativeStackScreenProps<TransactionActionStackParamList, 'Earning'>;

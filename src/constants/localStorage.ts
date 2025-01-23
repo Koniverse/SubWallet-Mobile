@@ -12,6 +12,7 @@ export const UN_STAKE_TRANSACTION = 'transaction.un-stake';
 export const CANCEL_UN_STAKE_TRANSACTION = 'transaction.cancel-un-stake';
 export const WITHDRAW_TRANSACTION = 'transaction.withdraw';
 export const CLAIM_REWARD_TRANSACTION = 'transaction.claim-reward';
+export const CLAIM_BRIDGE_TRANSACTION = 'transaction.claim-bridge';
 export const IMPORT_NFT = 'import.nft';
 export const IMPORT_TOKEN = 'import.token';
 export const CLAIM_AVAIL_BRIDGE_TRANSACTION = 'transaction.claim-avail-bridge';

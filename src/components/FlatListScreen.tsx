@@ -65,6 +65,8 @@ interface Props<T> {
   extraData?: any;
   keyExtractor?: (item: T, index: number) => string;
   removeClippedSubviews?: boolean;
+  isShowCustomContent?: boolean;
+  renderCustomContent?: () => JSX.Element | JSX.Element[];
 }
 
 export function FlatListScreen<T>({
@@ -107,6 +109,8 @@ export function FlatListScreen<T>({
   extraData,
   keyExtractor,
   removeClippedSubviews,
+  isShowCustomContent,
+  renderCustomContent,
 }: Props<T>) {
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
   const searchRef = useRef<TextInput>(null);
@@ -227,7 +231,7 @@ export function FlatListScreen<T>({
       rightIconColor={rightIconOption?.color}
       isShowMainHeader={isShowMainHeader}
       androidKeyboardVerticalOffset={androidKeyboardVerticalOffset}>
-      {renderContent()}
+      {!isShowCustomContent ? renderContent() : renderCustomContent ? renderCustomContent() : <></>}
     </ContainerWithSubHeader>
   );
 }

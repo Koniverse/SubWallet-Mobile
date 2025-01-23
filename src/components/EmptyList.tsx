@@ -12,6 +12,7 @@ interface Props {
   title: string;
   message?: string;
   isRefresh?: boolean;
+  addBtnLoading?: boolean;
   onPressReload?: () => void;
   addBtnLabel?: string;
   onPressAddBtn?: () => void;
@@ -24,6 +25,7 @@ export const EmptyList = ({
   message,
   onPressReload,
   isRefresh,
+  addBtnLoading,
   addBtnLabel,
   onPressAddBtn,
   iconButton = PlusCircle,
@@ -74,6 +76,7 @@ export const EmptyList = ({
           <Button
             style={{ marginTop: theme.margin }}
             shape={'round'}
+            loading={addBtnLoading}
             icon={<Icon phosphorIcon={iconButton} weight={'fill'} size={'sm'} />}
             size={'xs'}
             onPress={onPressAddBtn}>

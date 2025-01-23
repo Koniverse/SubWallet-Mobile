@@ -95,6 +95,8 @@ import { ExportAllAccount } from 'screens/Account/ExportAllAccount';
 import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 import { AccountJson } from '@subwallet/extension-base/types';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/types';
+import { Notification } from 'screens/Settings/Notifications/Notification';
+import { NotificationSetting } from 'screens/Settings/Notifications/NotificationSetting';
 
 interface Props {
   isAppReady: boolean;
@@ -642,6 +644,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
+                <Stack.Screen name="Notification" component={Notification} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="EarningPreview" component={EarningPreview} options={{ gestureEnabled: false }} />
                 <Stack.Screen
@@ -652,6 +655,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
                 <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
+                <Stack.Screen name="NotificationSetting" component={NotificationSetting} />
                 <Stack.Screen name="History" component={HistoryScreen} />
                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                 <Stack.Screen name="ConnectList" component={ConnectionListScreen} />

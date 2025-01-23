@@ -92,7 +92,7 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
         <ActionSelectItem
           key={selectItem.key}
           item={item}
-          onSelectItem={onSelectItem}
+          onSelectItem={selectItem.onPress ? selectItem.onPress : onSelectItem}
           selectedValueMap={selectedValueMap}
         />
       );

@@ -14,6 +14,7 @@ import {
   UiSettings,
   WalletUnlockType,
 } from '@subwallet/extension-base/background/KoniTypes';
+import { NotificationSetup } from '@subwallet/extension-base/services/inapp-notification-service/interfaces';
 import { sendMessage } from '..';
 
 export async function toggleBalancesVisibility(): Promise<boolean> {
@@ -54,9 +55,9 @@ export async function saveEnableChainPatrol(value: boolean): Promise<boolean> {
   return sendMessage('pri(settings.saveEnableChainPatrol)', { enable: value });
 }
 
-// export async function saveNotificationSetup(request: NotificationSetup): Promise<boolean> {
-//   return sendMessage('pri(settings.saveNotificationSetup)', request);
-// }
+export async function saveNotificationSetup(request: NotificationSetup): Promise<boolean> {
+  return sendMessage('pri(settings.saveNotificationSetup)', request);
+}
 
 export async function saveLanguage(lang: LanguageType): Promise<boolean> {
   return sendMessage('pri(settings.saveLanguage)', { language: lang });

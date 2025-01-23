@@ -6,6 +6,7 @@ import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { removeStorage } from '../common';
 import {
   CANCEL_UN_STAKE_TRANSACTION,
+  CLAIM_BRIDGE_TRANSACTION,
   CLAIM_REWARD_TRANSACTION,
   EARN_TRANSACTION,
   NFT_TRANSACTION,
@@ -46,8 +47,8 @@ export const detectTransactionPersistKey = (type?: ExtrinsicTypeMobile): string 
       return ExtraExtrinsicType.IMPORT_NFT;
     case ExtraExtrinsicType.IMPORT_TOKEN:
       return ExtraExtrinsicType.IMPORT_TOKEN;
-    // case ExtrinsicType.CLAIM_AVAIL_BRIDGE:
-    //   return CLAIM_AVAIL_BRIDGE_TRANSACTION;
+    case ExtrinsicType.CLAIM_BRIDGE:
+      return CLAIM_BRIDGE_TRANSACTION;
     default:
       return '';
   }

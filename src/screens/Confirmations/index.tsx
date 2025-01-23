@@ -165,6 +165,8 @@ export const Confirmations = () => {
           return i18n.header.tokenApprove;
         case ExtrinsicType.SWAP:
           return 'Swap confirmation';
+        case ExtrinsicType.CLAIM_BRIDGE:
+          return 'Claim confirmation';
 
         default:
           return i18n.header.transactionConfirmation;

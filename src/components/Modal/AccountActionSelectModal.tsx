@@ -15,6 +15,7 @@ export type ActionItemType = {
   icon: React.ElementType<IconProps>;
   label: string;
   disabled?: boolean;
+  onPress?: () => void;
 };
 
 export interface AccountActionSelectModalProps {
