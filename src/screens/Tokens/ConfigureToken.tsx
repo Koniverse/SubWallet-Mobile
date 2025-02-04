@@ -189,12 +189,14 @@ export const ConfigureToken = ({
               outerStyle={{ marginBottom: theme.marginSM }}
             />
           )}
-          <NetworkField
-            disabled
-            label={i18n.inputLabel.network}
-            networkKey={tokenInfo?.originChain || ''}
-            outerStyle={{ marginBottom: theme.marginSM }}
-          />
+          {!!tokenInfo && (
+            <NetworkField
+              disabled
+              label={i18n.inputLabel.network}
+              networkKey={tokenInfo?.originChain || ''}
+              outerStyle={{ marginBottom: theme.marginSM }}
+            />
+          )}
           {!!tokenInfo && !tokenInfo.assetType && (
             <InputText
               ref={formState.refs.tokenName}

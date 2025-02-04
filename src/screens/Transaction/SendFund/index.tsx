@@ -895,7 +895,7 @@ export const SendFund = ({
     if (fromValue && assetValue) {
       getMaxTransfer({
         address: fromValue,
-        networkKey: assetRegistry[assetValue].originChain,
+        networkKey: assetRegistry[assetValue]?.originChain,
         token: assetValue,
         isXcmTransfer: chainValue !== destChainValue,
         destChain: destChainValue,
