@@ -256,6 +256,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
       }
       const buyInfo = tokens[selectedTokenSlug];
       const serviceInfo = buyInfo.serviceInfo[selectedService];
+      console.log('serviceInfo', serviceInfo);
       if (!serviceInfo) {
         console.warn('no serviceInfo');
         return;
@@ -266,14 +267,18 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
       const walletAddress = reformatAddress(selectedAddress, networkPrefix === undefined ? -1 : networkPrefix);
       try {
         const url = await urlPromise(symbol, walletAddress, serviceNetwork, walletReference);
-        if (await InAppBrowser.isAvailable()) {
-          // A delay to change the StatusBar when the browser is opened
-          isOpenInAppBrowser.current = true;
-          await InAppBrowser.open(currentUrl || url, BrowserOptions);
-
-          isOpenInAppBrowser.current = false;
-        } else {
+        if (Platform.OS === 'android' && selectedService === 'coinbase') {
           Linking.openURL(currentUrl || url);
+        } else {
+          if (await InAppBrowser.isAvailable()) {
+            // A delay to change the StatusBar when the browser is opened
+            isOpenInAppBrowser.current = true;
+            await InAppBrowser.open(currentUrl || url, BrowserOptions);
+
+            isOpenInAppBrowser.current = false;
+          } else {
+            Linking.openURL(currentUrl || url);
+          }
         }
       } catch (error) {
         await sleep(50);
