@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { View } from 'react-native';
 import { Button, PageIcon, Typography } from 'components/design-system-ui';
@@ -15,25 +15,38 @@ import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { mmkvStore } from 'utils/storage';
 import InAppReview from 'react-native-in-app-review';
 import { reformatAddress } from '@subwallet/extension-base/utils';
+import { SHOW_REVIEW_APP_SCREENS } from 'constants/index';
 
 interface Props {
   transactionDoneInfo: TransactionDoneInfo;
   extrinsicType?: ExtrinsicType;
 }
 
-const SHOW_RATE_APP_SCREENS = [ExtrinsicType.STAKING_WITHDRAW];
-
 export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) => {
   const { id, path, chain, address } = transactionDoneInfo;
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const _style = TransactionDoneStyle(theme);
+  const showReviewAppScreen = useMemo(() => {
+    try {
+      const storedData = JSON.parse(mmkvStore.getString('show-review-popup-screen') || '[]') as string[];
+
+      if (storedData?.length) {
+        return storedData;
+      } else {
+        return SHOW_REVIEW_APP_SCREENS;
+      }
+    } catch (e) {
+      return SHOW_REVIEW_APP_SCREENS;
+    }
+  }, []);
+
   useHandlerHardwareBackPress(true);
   const isShowRateAppNoti = mmkvStore.getBoolean('isShowRateAppNoti');
   useEffect(() => {
     if (
       extrinsicType &&
-      SHOW_RATE_APP_SCREENS.includes(extrinsicType) &&
+      showReviewAppScreen.includes(extrinsicType) &&
       !isShowRateAppNoti &&
       InAppReview.isAvailable()
     ) {
@@ -43,7 +56,7 @@ export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) =
         }
       });
     }
-  }, [extrinsicType, isShowRateAppNoti]);
+  }, [extrinsicType, isShowRateAppNoti, showReviewAppScreen]);
 
   const viewTransaction = useCallback(() => {
     if (chain && id && address) {
