@@ -394,15 +394,32 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const reValidateContractAddress = () => trigger('contractAddress');
   const reValidateAssetId = () => trigger('assetId');
 
-  const addTokenButtonDisabled =
-    !contractAddress ||
-    !!errors.contractAddress ||
-    !symbol ||
-    !decimals ||
-    !isNetConnected ||
-    !isReady ||
-    isBusy ||
-    !!errors.assetId;
+  const addTokenButtonDisabled = useMemo(() => {
+    if (isAssetHubChain(chain)) {
+      return !symbol || !decimals || !isNetConnected || !isReady || isBusy || !!errors.assetId;
+    } else {
+      return (
+        !contractAddress ||
+        !!errors.contractAddress ||
+        !symbol ||
+        !decimals ||
+        !isNetConnected ||
+        !isReady ||
+        isBusy ||
+        !!errors.assetId
+      );
+    }
+  }, [
+    chain,
+    contractAddress,
+    decimals,
+    errors.assetId,
+    errors.contractAddress,
+    isBusy,
+    isNetConnected,
+    isReady,
+    symbol,
+  ]);
 
   return (
     <ContainerWithSubHeader onPressBack={_goBack} title={title} disabled={isBusy}>
