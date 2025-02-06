@@ -350,6 +350,7 @@ function History({
       [ExtrinsicType.TOKEN_SPENDING_APPROVAL]: i18n.historyScreen.title.tokenApproveTransaction,
       [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.title.evmTransaction,
       [ExtrinsicType.SWAP]: 'Swap transaction',
+      [ExtrinsicType.CLAIM_BRIDGE]: 'Claim token transaction',
     }),
     [],
   );

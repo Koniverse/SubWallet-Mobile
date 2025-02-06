@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
-import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
+import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
 import { ThemeNames, UiSettings } from '@subwallet/extension-base/background/KoniTypes';
 import { AppSettings, ReduxStatus } from 'stores/types';
 import { RootRouteProps } from 'routes/index';
+import { DEFAULT_NOTIFICATION_SETUP } from '@subwallet/extension-base/services/setting-service/constants';
 
-const initialState = {
+const initialState: AppSettings = {
   // UI settings
   isShowBalance: false,
   isShowZeroBalance: false,
@@ -16,7 +17,7 @@ const initialState = {
   language: 'en',
   browserConfirmationType: 'extension',
   currentRoute: undefined,
-
+  notificationSetup: DEFAULT_NOTIFICATION_SETUP,
   // AuthUrls
   authUrls: {},
 
@@ -44,6 +45,7 @@ const settingsSlice = createSlice({
         browserConfirmationType: payload.browserConfirmationType,
         isShowBalance: payload.isShowBalance,
         accountAllLogo: payload.accountAllLogo,
+        notificationSetup: payload.notificationSetup,
         reduxStatus: ReduxStatus.READY,
       };
     },

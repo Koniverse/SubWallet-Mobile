@@ -1,5 +1,6 @@
 import {
   ExtrinsicStatus,
+  ExtrinsicType,
   TransactionDirection,
   TransactionHistoryItem,
 } from '@subwallet/extension-base/background/KoniTypes';
@@ -13,6 +14,11 @@ import { HistoryStatusMap } from 'screens/Home/History/shared';
 import { ThemeTypes } from 'styles/themes';
 import { TransactionHistoryDisplayItem } from 'types/history';
 import HistoryItemStyles from './style';
+import { RequestClaimBridge } from '@subwallet/extension-base/types/bridge';
+import {
+  ClaimPolygonBridgeNotificationMetadata,
+  NotificationActionType,
+} from '@subwallet/extension-base/services/inapp-notification-service/interfaces';
 
 interface Props {
   item: TransactionHistoryDisplayItem;
@@ -36,6 +42,18 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const displayData = item.displayData;
   const _style = HistoryItemStyles(theme);
+
+  let amountValue = item?.amount?.value;
+
+  if (item.type === ExtrinsicType.CLAIM_BRIDGE) {
+    const additionalInfo = item.additionalInfo as RequestClaimBridge;
+
+    if (additionalInfo.notification.actionType === NotificationActionType.CLAIM_POLYGON_BRIDGE) {
+      const metadata = additionalInfo.notification.metadata as ClaimPolygonBridgeNotificationMetadata;
+
+      amountValue = metadata.amounts[0];
+    }
+  }
 
   return (
     <>
@@ -70,7 +88,7 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
                   intOpacity={1}
                   decimalOpacity={0.45}
                   suffix={item?.amount?.symbol}
-                  value={item?.amount?.value || '0'}
+                  value={amountValue || '0'}
                   textStyle={_style.upperText}
                 />
                 {isAbleToShowFee(item) ? (

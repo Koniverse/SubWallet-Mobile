@@ -39,6 +39,7 @@ import MantaPayReducer from './feature/MantaPay';
 import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
 import SwapReducer from './feature/Swap';
+import NotificationReducer from './feature/Notification';
 import LogoMap from 'stores/base/LogoMap';
 import { getDevMode, mmkvReduxStore } from 'utils/storage';
 import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
@@ -99,6 +100,7 @@ const rootReducer = combineReducers({
     { key: 'chainInfoMap', storage: mmkvReduxStore } as PersistConfig<ChainStore['chainInfoMap']>,
     ChainInfoMapReducer,
   ),
+  notification: NotificationReducer,
 
   // Base
   requestState: RequestStateReducer,

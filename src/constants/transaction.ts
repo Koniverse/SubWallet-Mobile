@@ -62,6 +62,7 @@ export const TRANSACTION_TITLE_MAP = (): Record<ExtrinsicTypeMobile, string> => 
   [ExtrinsicType.EVM_EXECUTE]: 'Execute',
   [ExtrinsicType.UNKNOWN]: 'Unknown',
   [ExtrinsicType.SWAP]: 'Swap',
+  [ExtrinsicType.CLAIM_BRIDGE]: 'Claim tokens',
 });
 
 export const ALL_STAKING_ACTIONS: ExtrinsicType[] = [

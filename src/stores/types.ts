@@ -302,3 +302,7 @@ export interface MantaPayStore {
   needManualSync?: boolean;
   reduxStatus: ReduxStatus;
 }
+
+export interface NotificationStore extends BaseReduxStore {
+  unreadNotificationCountMap: Record<string, number>;
+}

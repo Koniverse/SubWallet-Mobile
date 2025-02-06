@@ -33,6 +33,7 @@ export type RootStackParamList = {
   CreateAccount: { isBack?: boolean };
   QrScanner: undefined;
   AccountsScreen: { pathName?: string };
+  Notification: undefined;
   EditAccount: {
     address: string;
     name: string;
@@ -44,6 +45,7 @@ export type RootStackParamList = {
   ExportPrivateKey: { address: string };
   Settings: undefined;
   GeneralSettings: undefined;
+  NotificationSetting: undefined;
   NetworkSelect: undefined;
   ImportSecretPhrase: undefined;
   ImportPrivateKey: undefined;

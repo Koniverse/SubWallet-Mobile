@@ -9,6 +9,11 @@ import { BN_TEN } from 'utils/number';
 import { isPoolLeave, isTypeMint, isTypeStaking } from 'utils/transaction/detectType';
 import i18n from 'utils/i18n/i18n';
 import PoolLeaveAmount from './PoolLeaveAmount';
+import { RequestClaimBridge } from '@subwallet/extension-base/types/bridge';
+import {
+  ClaimPolygonBridgeNotificationMetadata,
+  NotificationActionType,
+} from '@subwallet/extension-base/services/inapp-notification-service/interfaces';
 
 interface Props {
   data: TransactionHistoryDisplayItem;
@@ -79,6 +84,18 @@ const HistoryDetailAmount: React.FC<Props> = (props: Props) => {
     return <PoolLeaveAmount data={data} />;
   }
 
+  let amountValue = amount?.value;
+
+  if (data.type === ExtrinsicType.CLAIM_BRIDGE) {
+    const _additionalInfo = data.additionalInfo as RequestClaimBridge;
+
+    if (_additionalInfo.notification.actionType === NotificationActionType.CLAIM_POLYGON_BRIDGE) {
+      const metadata = _additionalInfo.notification.metadata as ClaimPolygonBridgeNotificationMetadata;
+
+      amountValue = metadata.amounts[0];
+    }
+  }
+
   return (
     <>
       {(isStaking || isCrowdloan || amount) && (
@@ -86,7 +103,7 @@ const HistoryDetailAmount: React.FC<Props> = (props: Props) => {
           decimals={amount?.decimals || undefined}
           label={amountLabel}
           suffix={amount?.symbol || undefined}
-          value={amount?.value || '0'}
+          value={amountValue || '0'}
         />
       )}
       {isMint && amountDerivative && (

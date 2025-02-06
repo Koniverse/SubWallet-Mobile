@@ -48,6 +48,7 @@ export const StakingTypeNameMap = (): Record<string, string> => ({
   [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.extrinsicType.evmExecute,
   [ExtrinsicType.TOKEN_SPENDING_APPROVAL]: i18n.historyScreen.extrinsicType.tokenApprove,
   [ExtrinsicType.SWAP]: 'Swap',
+  [ExtrinsicType.CLAIM_BRIDGE]: 'Claim token',
 });
 
 export const TxTypeNameMap = (): Record<string, string> => ({

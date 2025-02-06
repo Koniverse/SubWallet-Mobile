@@ -5,7 +5,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import StakingTabStyle from './style';
 import { DisabledStyle } from 'styles/sharedStyles';
 import { TokenDetailsTab } from 'screens/Home/Crypto/TokenDetailModal';
-import { Typography } from 'components/design-system-ui';
+import { Divider, Typography } from 'components/design-system-ui';
 
 export interface TabItem {
   label: string;
@@ -23,6 +23,7 @@ interface Props {
   selectedStyle?: ViewStyle;
   textStyle?: TextStyle;
   selectedTextStyle?: TextStyle;
+  isShowDivider?: boolean;
 }
 
 export function SwTab({
@@ -34,6 +35,7 @@ export function SwTab({
   itemStyle,
   textStyle,
   selectedTextStyle,
+  isShowDivider,
 }: Props) {
   const theme = useSubWalletTheme().swThemes;
   const _style = StakingTabStyle(theme);
@@ -63,6 +65,14 @@ export function SwTab({
               style={[{ ..._style.itemText, ...textStyle }, selectedValue === _item.value && selectedTextStyle]}>
               {_item.label}
             </Typography.Text>
+
+            {isShowDivider && (
+              <Divider
+                type={'horizontal'}
+                color={selectedValue === _item.value ? theme.colorSecondary : 'transparent'}
+                style={{ paddingTop: 6 }}
+              />
+            )}
           </TouchableOpacity>
         );
       })}

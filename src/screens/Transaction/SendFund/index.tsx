@@ -90,7 +90,10 @@ import { AppModalContext } from 'providers/AppModalContext';
 import { CommonActionType, commonProcessReducer, DEFAULT_COMMON_PROCESS } from 'reducers/transaction-process';
 import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMultiTransaction';
 import { CommonStepType } from '@subwallet/extension-base/types/service-base';
-import { getSnowBridgeGatewayContract } from '@subwallet/extension-base/koni/api/contract-handler/utils';
+import {
+  getAvailBridgeGatewayContract,
+  getSnowBridgeGatewayContract,
+} from '@subwallet/extension-base/koni/api/contract-handler/utils';
 import useFetchChainAssetInfo from 'hooks/screen/useFetchChainAssetInfo';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
@@ -103,6 +106,12 @@ import { ActionType } from '@subwallet/extension-base/core/types';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 import { FreeBalance } from '../parts/FreeBalance';
+import { isAvailChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/availBridge';
+import { _isPolygonChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/polygonBridge';
+import {
+  _isPosChainBridge,
+  _isPosChainL2Bridge,
+} from '@subwallet/extension-base/services/balance-service/transfer/xcm/posBridge';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -225,7 +234,9 @@ export const SendFund = ({
     ...getValues(),
   };
 
-  const { chainInfoMap, chainStatusMap } = useSelector((root: RootState) => root.chainStore);
+  const { chainInfoMap, chainStatusMap, ledgerGenericAllowNetworks } = useSelector(
+    (root: RootState) => root.chainStore,
+  );
   const { xcmRefMap } = useSelector((root: RootState) => root.assetRegistry);
   const assetRegistry = useChainAssets().chainAssetRegistry;
   const { accountProxies, accounts, isAllAccount, currentAccountProxy } = useSelector(
@@ -359,6 +370,10 @@ export const SendFund = ({
   const hideMaxButton = useMemo(() => {
     const _chainInfo = chainInfoMap[chainValue];
 
+    if (_isPolygonChainBridge(chainValue, destChainValue) || _isPosChainBridge(chainValue, destChainValue)) {
+      return true;
+    }
+
     return (
       !!_chainInfo &&
       !!assetInfo &&
@@ -367,6 +382,14 @@ export const SendFund = ({
       _isNativeToken(assetInfo)
     );
   }, [chainInfoMap, chainValue, assetInfo, destChainValue]);
+
+  const disabledToAddressInput = useMemo(() => {
+    if (_isPosChainL2Bridge(chainValue, destChainValue)) {
+      return true;
+    }
+
+    return false;
+  }, [chainValue, destChainValue]);
 
   const tokenItems = useMemo<TokenItemType[]>(() => {
     return currentAccountProxy
@@ -390,10 +413,11 @@ export const SendFund = ({
           account,
           actionType: ActionType.SEND_FUND,
           autoFormatValue: false,
+          allowLedgerGenerics: ledgerGenericAllowNetworks,
         });
       },
     }),
-    [accounts, chainInfoMap],
+    [accounts, chainInfoMap, ledgerGenericAllowNetworks],
   );
 
   const amountRules = useMemo(
@@ -546,14 +570,18 @@ export const SendFund = ({
     [isTransferAll, isTransferBounceable],
   );
 
-  const handleSnowBridgeSpendingApproval = useCallback(
+  const handleBridgeSpendingApproval = useCallback(
     (values: TransferFormValues): Promise<SWTransactionResponse> => {
+      const isAvailBridge = isAvailChainBridge(values.destChain);
+
       const tokenInfo = assetRegistry[values.asset];
 
       return approveSpending({
         amount: values.value,
         contractAddress: _getContractAddressOfToken(tokenInfo),
-        spenderAddress: getSnowBridgeGatewayContract(values.chain),
+        spenderAddress: isAvailBridge
+          ? getAvailBridgeGatewayContract(values.chain)
+          : getSnowBridgeGatewayContract(values.chain),
         chain: values.chain,
         owner: values.from,
       });
@@ -611,7 +639,7 @@ export const SendFund = ({
             const stepType = processState.steps[step].type;
             const submitPromise: Promise<SWTransactionResponse> | undefined =
               stepType === CommonStepType.TOKEN_APPROVAL
-                ? handleSnowBridgeSpendingApproval(values)
+                ? handleBridgeSpendingApproval(values)
                 : handleBasicSubmit(values);
 
             const rs = await submitPromise;
@@ -643,7 +671,7 @@ export const SendFund = ({
     },
     [
       handleBasicSubmit,
-      handleSnowBridgeSpendingApproval,
+      handleBridgeSpendingApproval,
       isShowWarningOnSubmit,
       onError,
       onSuccess,
@@ -983,6 +1011,13 @@ export const SendFund = ({
   }, [assetValue, chainValue, destChainValue, fromValue, transferAmount]);
 
   useEffect(() => {
+    if (disabledToAddressInput) {
+      setValue('to', fromValue);
+      // TODO: update this useEffect when update autocomplete
+    }
+  }, [disabledToAddressInput, fromValue, setValue]);
+
+  useEffect(() => {
     if (forceTransferAllRef.current && forceTransferAll) {
       forceTransferAllRef.current = false;
       let maxTransferDisplay: string;
@@ -1178,7 +1213,7 @@ export const SendFund = ({
                             onBlur={onBlur}
                             onSideEffectChange={onBlur}
                             placeholder={i18n.placeholder.accountAddress}
-                            disabled={loading}
+                            disabled={loading || disabledToAddressInput}
                             chain={destChainValue}
                             fitNetwork
                             showAddressBook
