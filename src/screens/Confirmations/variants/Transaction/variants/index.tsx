@@ -14,4 +14,4 @@ export { default as TransferBlock } from './TransferBlock';
 export { default as UnbondTransactionConfirmation } from './Unbond';
 export { default as WithdrawTransactionConfirmation } from './Withdraw';
 export { default as SwapTransactionConfirmation } from './Swap';
-export { default as ClaimBridgeTransactionConfirmation } from './Swap';
+export { default as ClaimBridgeTransactionConfirmation } from './ClaimBridge';

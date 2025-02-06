@@ -78,8 +78,8 @@ const InputCheckBox = ({
   }, [labelStyle]);
 
   const checkBoxWrapperStyle = useMemo(() => {
-    return [WrapperStyle, wrapperStyle];
-  }, [wrapperStyle]);
+    return [WrapperStyle, wrapperStyle, disable && { opacity: 0.4 }];
+  }, [disable, wrapperStyle]);
 
   return (
     <View style={containerStyle}>

@@ -101,6 +101,11 @@ export const NotificationDetailModal = ({
       });
   }, [_onCancel, isTrigger, notificationItem, readNotification, setTrigger]);
 
+  const _onPressAction = useCallback(() => {
+    onPressAction();
+    _onCancel();
+  }, [_onCancel, onPressAction]);
+
   const items = useMemo(() => {
     return [
       {
@@ -108,21 +113,21 @@ export const NotificationDetailModal = ({
         backgroundColor: handleNotificationInfo.backgroundColor,
         icon: handleNotificationInfo.leftIcon,
         label: handleNotificationInfo.title,
-        onPress: onPressAction,
+        onPress: _onPressAction,
       },
       {
         key: '2',
         backgroundColor: readNotification ? theme['gray-3'] : theme['green-6'],
         icon: readNotification ? Checks : X,
-        label: i18n.createAccount.deriveFromAnExistingAcc,
+        label: readNotification ? i18n.notification.markAsUnread : i18n.notification.markAsRead,
         onPress: onPressReadButton,
       },
     ];
   }, [
+    _onPressAction,
     handleNotificationInfo.backgroundColor,
     handleNotificationInfo.leftIcon,
     handleNotificationInfo.title,
-    onPressAction,
     onPressReadButton,
     readNotification,
     theme,

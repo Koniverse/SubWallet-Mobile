@@ -1321,5 +1321,9 @@
     "buttonRead": "Learn how to back up",
     "buttonCancel": "Remind me later",
     "buttonReject": "Don't show again"
+  },
+  "notification": {
+    "markAsRead": "Mark as read",
+    "markAsUnread": "Mark as unread"
   }
 }

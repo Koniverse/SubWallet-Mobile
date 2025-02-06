@@ -53,7 +53,7 @@ import { SwTab, TabItem } from 'components/design-system-ui/tab';
 import { saveNotificationSetup } from 'messaging/settings';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { NotificationDetailModal } from 'components/Modal/NotificationDetailModal';
-import { StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 
@@ -186,7 +186,8 @@ export const Notification = () => {
 
   const onPressMore = useCallback((item: NotificationInfoItem) => {
     return () => {
-      setViewDetailItem(item);
+      Keyboard.dismiss();
+      setTimeout(() => setViewDetailItem(item), 300);
       setDetailModalVisible(true);
     };
   }, []);
@@ -242,6 +243,7 @@ export const Notification = () => {
   const onPressItem = useCallback(
     (item: NotificationInfoItem) => {
       return () => {
+        Keyboard.dismiss();
         const slug = (item.metadata as WithdrawClaimNotificationMetadata).stakingSlug;
         const totalWithdrawable = getTotalWidrawable(
           slug,
@@ -543,9 +545,16 @@ export const Notification = () => {
           isShowDivider={true}
         />
         <Button
-          icon={<Icon phosphorIcon={Checks} size={'sm'} />}
+          icon={
+            <Icon
+              phosphorIcon={Checks}
+              size={'sm'}
+              iconColor={!enableNotification ? theme.colorTextLight4 : theme.colorWhite}
+            />
+          }
           type={'ghost'}
           size={'xs'}
+          disabled={!enableNotification}
           onPress={markAllRead}
           externalTextStyle={styles.markAllReadTextStyle}>
           {'Mark all as read'}
@@ -553,6 +562,7 @@ export const Notification = () => {
       </View>
     );
   }, [
+    enableNotification,
     filterTabItems,
     markAllRead,
     selectedFilterTab,
@@ -563,6 +573,8 @@ export const Notification = () => {
     styles.tabSelectedStyle,
     styles.tabTextSelectedStyle,
     styles.tabTextStyle,
+    theme.colorTextLight4,
+    theme.colorWhite,
   ]);
 
   return (
@@ -597,6 +609,7 @@ export const Notification = () => {
           setTrigger={setTrigger}
           modalVisible={detailModalVisible}
           setModalVisible={setDetailModalVisible}
+          onCancel={() => setViewDetailItem(undefined)}
         />
       )}
     </>

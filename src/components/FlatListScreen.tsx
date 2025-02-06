@@ -134,65 +134,74 @@ export function FlatListScreen<T>({
     <View style={{ flex: 1 }}>
       {beforeListItem}
 
-      {withSearchInput && (
-        <Search
-          autoFocus={false}
-          placeholder={placeholder}
-          onClearSearchString={() => setSearchString('')}
-          onSearch={setSearchString}
-          searchText={searchString}
-          style={{ marginBottom: searchMarginBottom, marginTop: 8, marginHorizontal: 16 }}
-          searchRef={searchRef}
-          isShowFilterBtn={isShowFilterBtn}
-          onPressFilterBtn={openFilterModal}
-          isHasSelectedFilter={!!selectedFilters.length}
-        />
-      )}
-      {isNetConnected ? (
-        !isLoadingData &&
-        (grouping ? (
-          <LazySectionList
-            items={items}
-            searchString={searchString}
-            listStyle={flatListStyle}
-            renderItem={renderItem}
-            renderListEmptyComponent={renderListEmptyComponent}
-            refreshControl={refreshControl}
-            searchFunction={searchFunction}
-            filterFunction={filterFunction}
-            selectedFilters={selectedFilters}
-            sortItemFunction={sortFunction}
-            sortSectionFunction={grouping.sortSection}
-            loading={loading}
-            groupBy={grouping.groupBy}
-            renderSectionHeader={grouping.renderSectionHeader}
-            estimatedItemSize={estimatedItemSize}
-            stickyHeader={false}
-          />
-        ) : (
-          <LazyFlatList
-            items={items}
-            searchString={searchString}
-            flatListStyle={flatListStyle}
-            renderItem={renderItem}
-            renderListEmptyComponent={renderListEmptyComponent}
-            refreshControl={refreshControl}
-            searchFunction={searchFunction}
-            filterFunction={filterFunction}
-            selectedFilters={selectedFilters}
-            sortFunction={sortFunction}
-            loading={loading}
-            numberColumns={numberColumns}
-            isShowListWrapper={isShowListWrapper}
-            estimatedItemSize={estimatedItemSize}
-            extraData={extraData}
-            keyExtractor={keyExtractor}
-            removeClippedSubviews={removeClippedSubviews}
-          />
-        ))
+      {!isShowCustomContent ? (
+        <>
+          {withSearchInput && (
+            <Search
+              autoFocus={false}
+              placeholder={placeholder}
+              onClearSearchString={() => setSearchString('')}
+              onSearch={setSearchString}
+              searchText={searchString}
+              style={{ marginBottom: searchMarginBottom, marginTop: 8, marginHorizontal: 16 }}
+              searchRef={searchRef}
+              isShowFilterBtn={isShowFilterBtn}
+              onPressFilterBtn={openFilterModal}
+              isHasSelectedFilter={!!selectedFilters.length}
+            />
+          )}
+          {isNetConnected ? (
+            !isLoadingData &&
+            (grouping ? (
+              <LazySectionList
+                items={items}
+                searchString={searchString}
+                listStyle={flatListStyle}
+                renderItem={renderItem}
+                renderListEmptyComponent={renderListEmptyComponent}
+                refreshControl={refreshControl}
+                searchFunction={searchFunction}
+                filterFunction={filterFunction}
+                selectedFilters={selectedFilters}
+                sortItemFunction={sortFunction}
+                sortSectionFunction={grouping.sortSection}
+                loading={loading}
+                groupBy={grouping.groupBy}
+                renderSectionHeader={grouping.renderSectionHeader}
+                estimatedItemSize={estimatedItemSize}
+                stickyHeader={false}
+              />
+            ) : (
+              <LazyFlatList
+                items={items}
+                searchString={searchString}
+                flatListStyle={flatListStyle}
+                renderItem={renderItem}
+                renderListEmptyComponent={renderListEmptyComponent}
+                refreshControl={refreshControl}
+                searchFunction={searchFunction}
+                filterFunction={filterFunction}
+                selectedFilters={selectedFilters}
+                sortFunction={sortFunction}
+                loading={loading}
+                numberColumns={numberColumns}
+                isShowListWrapper={isShowListWrapper}
+                estimatedItemSize={estimatedItemSize}
+                extraData={extraData}
+                keyExtractor={keyExtractor}
+                removeClippedSubviews={removeClippedSubviews}
+              />
+            ))
+          ) : (
+            <NoInternetScreen />
+          )}
+        </>
+      ) : renderCustomContent ? (
+        renderCustomContent()
       ) : (
-        <NoInternetScreen />
+        <></>
       )}
+
       {afterListItem}
 
       {!!(filterOptions && filterOptions.length && filterSelectionMap) && (
@@ -231,7 +240,7 @@ export function FlatListScreen<T>({
       rightIconColor={rightIconOption?.color}
       isShowMainHeader={isShowMainHeader}
       androidKeyboardVerticalOffset={androidKeyboardVerticalOffset}>
-      {!isShowCustomContent ? renderContent() : renderCustomContent ? renderCustomContent() : <></>}
+      {renderContent()}
     </ContainerWithSubHeader>
   );
 }
