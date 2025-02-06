@@ -43,6 +43,7 @@ import { RemindDuplicateAccountNameModal } from 'components/Modal/RemindDuplicat
 import { getValueLocalStorageWS } from 'messaging/database';
 import { noop } from 'utils/function';
 import { WebRunnerContext } from 'providers/contexts';
+import { saveOSConfig } from 'messaging/settings';
 
 interface tabbarIconColor {
   color: string;
@@ -292,6 +293,8 @@ export const Home = ({ navigation }: Props) => {
 
   useEffect(() => {
     if (isReady && isLoading && isWebRunnerReady) {
+      const osConfig = { type: Platform.OS.toLowerCase(), version: Platform.Version.toString() };
+      saveOSConfig({ osConfig });
       setTimeout(() => setLoading(false), 1500);
     }
   }, [isReady, isLoading, isWebRunnerReady]);
