@@ -45,7 +45,7 @@ const settingsSlice = createSlice({
         browserConfirmationType: payload.browserConfirmationType,
         isShowBalance: payload.isShowBalance,
         accountAllLogo: payload.accountAllLogo,
-        notificationSetup: payload.notificationSetup,
+        notificationSetup: { ...payload.notificationSetup, isEnabled: false }, //change later
         reduxStatus: ReduxStatus.READY,
       };
     },

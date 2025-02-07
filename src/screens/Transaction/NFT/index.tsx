@@ -84,7 +84,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
   },
 }: SendNFTProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { chainInfoMap, ledgerGenericAllowNetworks } = useSelector((state: RootState) => state.chainStore);
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const { accounts } = useSelector((state: RootState) => state.accountState);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
@@ -105,10 +105,11 @@ const SendNFT: React.FC<SendNFTProps> = ({
           account,
           actionType: ActionType.SEND_NFT,
           autoFormatValue: false,
+          allowLedgerGenerics: ledgerGenericAllowNetworks,
         });
       },
     }),
-    [accounts, chainInfoMap],
+    [accounts, chainInfoMap, ledgerGenericAllowNetworks],
   );
 
   const nftItem = useMemo(
