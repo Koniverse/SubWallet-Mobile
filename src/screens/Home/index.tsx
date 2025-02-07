@@ -44,6 +44,7 @@ import { getValueLocalStorageWS } from 'messaging/database';
 import { noop } from 'utils/function';
 import { WebRunnerContext } from 'providers/contexts';
 import { saveOSConfig } from 'messaging/settings';
+import DeviceInfo from 'react-native-device-info';
 
 interface tabbarIconColor {
   color: string;
@@ -293,7 +294,7 @@ export const Home = ({ navigation }: Props) => {
 
   useEffect(() => {
     if (isReady && isLoading && isWebRunnerReady) {
-      const osConfig = { type: Platform.OS.toLowerCase(), version: Platform.Version.toString() };
+      const osConfig = { type: Platform.OS.toLowerCase(), version: DeviceInfo.getSystemVersion() };
       saveOSConfig({ osConfig });
       setTimeout(() => setLoading(false), 1500);
     }
