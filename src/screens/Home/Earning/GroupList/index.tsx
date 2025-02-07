@@ -242,9 +242,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
               const assetInfo = chainAsset[originChainAsset];
               const minJoinPoolBalanceValue = getBalanceValue(minJoinPool, _getAssetDecimals(assetInfo));
 
-              if (!availableBalance) {
-                isHiddenPool = true;
-              } else if (
+              if (
                 _STAKING_CHAIN_GROUP.relay.includes(poolInfo.chain) &&
                 minJoinPoolBalanceValue.isGreaterThan(availableBalance)
               ) {

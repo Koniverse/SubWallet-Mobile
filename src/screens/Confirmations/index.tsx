@@ -115,11 +115,13 @@ export const Confirmations = () => {
           return i18n.header.nftTransferConfirmation;
         case ExtrinsicType.STAKING_JOIN_POOL:
         case ExtrinsicType.STAKING_BOND:
+        case ExtrinsicType.JOIN_YIELD_POOL:
           return i18n.header.addToBondConfirm;
         case ExtrinsicType.STAKING_LEAVE_POOL:
         case ExtrinsicType.STAKING_UNBOND:
           return i18n.header.unbondConfirmation;
         case ExtrinsicType.STAKING_WITHDRAW:
+        case ExtrinsicType.STAKING_POOL_WITHDRAW:
           return i18n.header.withdrawalConfirm;
         case ExtrinsicType.STAKING_CLAIM_REWARD:
           return i18n.header.claimRewardsConfirmation;
