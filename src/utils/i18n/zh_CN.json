@@ -1230,6 +1230,7 @@
     "scanAgain": "很抱歉，我们遇到了问题。\n请重新扫描",
     "occurredError": "发生了问题。请稍后重试",
     "invalidEvmContractAddress": "EVM合约地址无效",
+    "invalidContractAddress": "Invalid contract address",
     "tokenAlreadyAdded": "此通证添加过",
     "invalidContractForSelectedChain": "所选链的合约无效",
     "unknownError": "遇到错误，请重试。",

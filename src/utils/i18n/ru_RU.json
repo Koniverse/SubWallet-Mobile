@@ -1230,6 +1230,7 @@
     "scanAgain": "Извините, у нас возникла проблема\nПожалуйста, отсканируйте снова",
     "occurredError": "Произошла ошибка. Пожалуйста, повторите попытку позже",
     "invalidEvmContractAddress": "Неверный адрес контракта EVM",
+    "invalidContractAddress": "Invalid contract address",
     "tokenAlreadyAdded": "Этот токен уже добавлен",
     "invalidContractForSelectedChain": "Неверный контракт для выбранной сети",
     "unknownError": "Произошла ошибка, попробуйте еще раз.",

@@ -52,9 +52,9 @@ export const GeneralSettings = () => {
     navigation.navigate('Languages');
   };
 
-  // const openNotificationSetting = useCallback(() => {
-  //   navigation.navigate('NotificationSetting');
-  // }, [navigation]);
+  const openNotificationSetting = useCallback(() => {
+    navigation.navigate('NotificationSetting');
+  }, [navigation]);
 
   const onGoback = () => {
     navigation.dispatch(DrawerActions.openDrawer());
@@ -152,7 +152,7 @@ export const GeneralSettings = () => {
           icon={BellSimpleRinging}
           backgroundColor={theme['magenta-7']}
           label={'In-app notifications'}
-          onPress={showComingSoon}
+          onPress={openNotificationSetting}
           rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
         />
       </View>

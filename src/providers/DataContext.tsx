@@ -51,6 +51,7 @@ import {
   subscribeCampaignConfirmationData,
   subscribeConfirmationRequestsTon,
   subscribeLedgerGenericAllowNetworks,
+  subscribeUnreadNotificationCount,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -534,12 +535,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           isStartImmediately: true,
         });
         // Notification
-        // _DataContext.addHandler({
-        //   ...subscribeUnreadNotificationCount,
-        //   name: 'subscribeUnreadNotificationCount',
-        //   relatedStores: ['notification'],
-        //   isStartImmediately: true,
-        // });
+        _DataContext.addHandler({
+          ...subscribeUnreadNotificationCount,
+          name: 'subscribeUnreadNotificationCount',
+          relatedStores: ['notification'],
+          isStartImmediately: true,
+        });
 
         readyFlag.current.isStart = false;
       }

@@ -1,4 +1,4 @@
-import { isEthereumAddress } from '@polkadot/util-crypto';
+import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import InputText from 'components/Input/InputText';
@@ -35,6 +35,7 @@ import { FormItem } from 'components/common/FormItem';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import useGetNftContractSupportedChains from 'hooks/screen/ImportNft/useGetNftContractSupportedChains';
+import { reformatContractAddress } from 'utils/account/reformatContractAddress';
 
 interface ImportNftFormValues extends TransactionFormValues {
   smartContract: string;
@@ -207,8 +208,15 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
 
   const smartContractInputRules = useMemo(
     () => ({
+      onChange: (event: { target: { value: string } }) => {
+        return reformatContractAddress(chain, event.target.value);
+      },
       validate: (value: string): Promise<ValidateResult> => {
         if (value !== '') {
+          if (!isAddress(value)) {
+            return Promise.resolve(i18n.errorMessage.invalidContractAddress);
+          }
+
           const isValidEvmContract =
             [_AssetType.ERC721].includes(selectedNftType as _AssetType) && isEthereumAddress(value);
           const isValidWasmContract =

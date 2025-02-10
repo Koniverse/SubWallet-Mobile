@@ -1230,6 +1230,7 @@
     "scanAgain": "Sorry, we've run into a problem.\nPlease scan again",
     "occurredError": "An error has occurred. Please try again later",
     "invalidEvmContractAddress": "Invalid EVM contract address",
+    "invalidContractAddress": "Invalid contract address",
     "tokenAlreadyAdded": "This token has already been added",
     "invalidContractForSelectedChain": "Invalid contract for the selected chain",
     "unknownError": "Encountered an error, please try again.",

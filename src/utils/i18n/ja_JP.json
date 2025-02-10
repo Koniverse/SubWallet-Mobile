@@ -1230,6 +1230,7 @@
     "scanAgain": "申し訳ありませんが、問題が発生しました。\nもう一度スキャンしてください。",
     "occurredError": "エラーが発生しました。後でもう一度やり直してください",
     "invalidEvmContractAddress": "無効なEVMコントラクトアドレス",
+    "invalidContractAddress": "Invalid contract address",
     "tokenAlreadyAdded": "このトークンはすでに追加されています",
     "invalidContractForSelectedChain": "選択したチェーンの無効なコントラクト",
     "unknownError": "エラーが発生しました。もう一度やり直してください。",

@@ -1230,6 +1230,7 @@
     "scanAgain": "Có lỗi xảy ra. Vui lòng quét lại.",
     "occurredError": "Có lỗi xảy ra. Vui lòng thử lại sau",
     "invalidEvmContractAddress": "Địa chỉ EVM contract không hợp lệ",
+    "invalidContractAddress": "Địa chỉ contract không hợp lệ",
     "tokenAlreadyAdded": "Token này đã được thêm",
     "invalidContractForSelectedChain": "Contract không hợp lệ với mạng đã chọn",
     "unknownError": "Có lỗi, vui lòng thử lại.",
