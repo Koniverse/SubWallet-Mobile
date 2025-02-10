@@ -87,7 +87,7 @@ function getNftType(chain: string, chainInfoMap: Record<string, _ChainInfo>): st
   return '';
 }
 
-const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
+export const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useGetNftContractSupportedChains();
   const payload = routeParams?.payload;
@@ -209,7 +209,8 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const smartContractInputRules = useMemo(
     () => ({
       onChange: (event: { target: { value: string } }) => {
-        return reformatContractAddress(chain, event.target.value);
+        const transformValue = reformatContractAddress(chain, event.target.value);
+        setValue('smartContract', transformValue);
       },
       validate: (value: string): Promise<ValidateResult> => {
         if (value !== '') {
@@ -416,5 +417,3 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     </ContainerWithSubHeader>
   );
 };
-
-export default React.memo(ImportNft);

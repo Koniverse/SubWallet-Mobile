@@ -40,6 +40,7 @@ import { FormItem } from 'components/common/FormItem';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import InputText from 'components/Input/InputText';
 import useGetFungibleContractSupportedChains from 'hooks/screen/ImportNft/useGetFungibleContractSupportedChains';
+import { reformatContractAddress } from 'utils/account/reformatContractAddress';
 
 export interface ImportTokenFormValues extends TransactionFormValues {
   selectedTokenType: string;
@@ -247,6 +248,10 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
   const contractAddressRules = useMemo(
     () => ({
+      onChange: (event: { target: { value: string } }) => {
+        const transformValue = reformatContractAddress(chain, event.target.value);
+        setValue('contractAddress', transformValue);
+      },
       validate: (value: string): Promise<ValidateResult> => {
         const isValidEvmContract =
           [_AssetType.ERC20].includes(selectedTokenTypeData as _AssetType) && isEthereumAddress(value);

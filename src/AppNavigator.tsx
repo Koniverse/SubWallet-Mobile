@@ -25,7 +25,6 @@ import { AccountExport } from 'screens/Account/AccountExport';
 import { CustomTokenSetting } from 'screens/Tokens';
 import { ConfigureToken } from 'screens/Tokens/ConfigureToken';
 import { ImportToken } from 'screens/ImportToken/ImportToken';
-import ImportNft from 'screens/ImportToken/ImportNft';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import SigningScreen from 'screens/Signing/SigningScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
@@ -97,6 +96,7 @@ import { AccountJson } from '@subwallet/extension-base/types';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/types';
 import { Notification } from 'screens/Settings/Notifications/Notification';
 import { NotificationSetting } from 'screens/Settings/Notifications/NotificationSetting';
+import { ImportNft } from 'screens/ImportToken/ImportNft';
 
 interface Props {
   isAppReady: boolean;

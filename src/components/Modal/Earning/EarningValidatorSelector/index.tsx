@@ -31,6 +31,8 @@ import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 import { YieldPoolType } from '@subwallet/extension-base/types';
 import DotBadge from 'components/design-system-ui/badge/DotBadge';
 import { autoSelectValidatorOptimally } from 'utils/earning';
+import { fetchStaticData } from 'utils/fetchStaticData';
+import { ChainRecommendValidator } from '@subwallet/extension-base/constants';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -73,9 +75,6 @@ export interface ValidatorSelectorRef {
   resetValue: () => void;
   onOpenModal: () => void;
 }
-
-const AVAIL_CHAIN = 'avail_mainnet';
-const AVAIL_VALIDATOR = '5FjdibsxmNFas5HWcT2i1AXbpfgiNfWqezzo88H2tskxWdt2';
 
 export const EarningValidatorSelector = forwardRef(
   (
@@ -174,7 +173,7 @@ export const EarningValidatorSelector = forwardRef(
     const [detailItem, setDetailItem] = useState<ValidatorDataType | undefined>(undefined);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     const [autoValidator, setAutoValidator] = useState('');
-
+    const [defaultPoolMap, setDefaultPoolMap] = useState<Record<string, ChainRecommendValidator>>({});
     const OFFSET_BOTTOM = useMemo(
       () =>
         deviceHeight -
@@ -291,18 +290,35 @@ export const EarningValidatorSelector = forwardRef(
     }, [defaultValidatorAddress, resultList]);
 
     useEffect(() => {
-      if (chain === AVAIL_CHAIN) {
+      fetchStaticData<Record<string, ChainRecommendValidator>>('direct-nomination-validator')
+        .then(earningPoolRecommendation => {
+          setDefaultPoolMap(earningPoolRecommendation);
+        })
+        .catch(console.error);
+    }, []);
+
+    useEffect(() => {
+      const recommendValidator = defaultPoolMap[chain];
+
+      if (recommendValidator) {
         setAutoValidator(old => {
           if (old) {
             return old;
           } else {
-            const _selectedValidator = autoSelectValidatorOptimally(items, 16, true, AVAIL_VALIDATOR);
+            const _selectedValidator = autoSelectValidatorOptimally(
+              items,
+              recommendValidator.maxCount,
+              true,
+              recommendValidator.preSelectValidators,
+            );
 
             return _selectedValidator.map(item => getValidatorKey(item.address, item.identity)).join(',');
           }
         });
+      } else {
+        setAutoValidator('');
       }
-    }, [chain, items]);
+    }, [chain, defaultPoolMap, items]);
 
     useEffect(() => {
       const _default =
