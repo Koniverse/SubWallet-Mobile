@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { TRANSACTION_TITLE_MAP } from 'constants/transaction';
 import { useSelector } from 'react-redux';
@@ -9,7 +9,7 @@ import { ExtraExtrinsicType, ExtrinsicTypeMobile } from 'types/transaction';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { AppModalContext } from 'providers/AppModalContext';
 import { FieldValues, UseFormProps } from 'react-hook-form/dist/types';
-import { FieldPath, useForm } from 'react-hook-form';
+import { FieldPath, useForm, useWatch } from 'react-hook-form';
 import { FieldPathValue } from 'react-hook-form/dist/types/path';
 import i18n from 'utils/i18n/i18n';
 import { AccountProxy } from '@subwallet/extension-base/types';
@@ -119,7 +119,12 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     address: '',
   });
 
-  const { getValues, setValue } = form;
+  const { getValues, setValue, control } = form;
+
+  const { chain: chainValue } = {
+    ...useWatch({ control }),
+    ...getValues(),
+  };
 
   const onTransactionDone = useCallback(
     (id: string) => {
@@ -190,6 +195,10 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     },
     [setValue],
   );
+
+  useEffect(() => {
+    chainValue && showPopupEnableChain(chainValue);
+  }, [chainValue, showPopupEnableChain]);
 
   return {
     title,

@@ -4,7 +4,7 @@ import { RootNavigationProps } from 'routes/index';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { View } from 'react-native';
 import { ToggleItem } from 'components/ToggleItem';
-import { Scan } from 'phosphor-react-native';
+import { BellSimpleRinging } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { RootState } from 'stores/index';
@@ -104,7 +104,7 @@ export const NotificationSetting = () => {
       <View style={{ ...sharedStyles.layoutContainer, paddingVertical: 16 }}>
         <View style={{ flex: 1 }}>
           <ToggleItem
-            backgroundIcon={Scan}
+            backgroundIcon={BellSimpleRinging}
             backgroundIconColor={theme['magenta-7']}
             style={{ marginBottom: 16 }}
             label={'Enable notification'}

@@ -88,7 +88,7 @@ export const Notification = () => {
   const theme = useSubWalletTheme().swThemes;
   const chainsByAccountType = useGetChainSlugsByAccount();
   const { confirmModal } = useContext(AppModalContext);
-  const { turnOnChain, checkChainConnected } = useChainChecker();
+  const { turnOnChain } = useChainChecker();
   const { notificationSetup } = useSelector((state: RootState) => state.settings);
   const { accounts, currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { earningRewards, poolInfoMap, yieldPositions } = useSelector((state: RootState) => state.earning);
@@ -198,31 +198,32 @@ export const Notification = () => {
 
   const showActiveChainModal = useCallback(
     (chainSlug: string, action: NotificationActionType.WITHDRAW | NotificationActionType.CLAIM) => {
-      const isConnected = checkChainConnected(chainSlug);
-      if (isConnected) {
-        const chainInfo = chainInfoMap[chainSlug];
-        const networkName = chainInfo?.name || chainSlug;
-        const actionText = action === NotificationActionType.WITHDRAW ? 'withdrawing' : 'claiming';
-        const content = `${networkName} network is currently disabled. Enable the network and then re-click the notification to start ${actionText} your funds`;
-        setTimeout(() => {
-          confirmModal.setConfirmModal({
-            visible: true,
-            completeBtnTitle: i18n.buttonTitles.enable,
-            message: content,
-            title: i18n.common.enableChain,
-            onCancelModal: () => {
+      const chainInfo = chainInfoMap[chainSlug];
+      const networkName = chainInfo?.name || chainSlug;
+      const actionText = action === NotificationActionType.WITHDRAW ? 'withdrawing' : 'claiming';
+      const content = `${networkName} network is currently disabled. Enable the network and then re-click the notification to start ${actionText} your funds`;
+      setTimeout(() => {
+        confirmModal.setConfirmModal({
+          visible: true,
+          completeBtnTitle: i18n.buttonTitles.enable,
+          message: content,
+          title: i18n.common.enableChain,
+          onCancelModal: () => {
+            setViewDetailItem(undefined);
+            confirmModal.hideConfirmModal();
+          },
+          onCompleteModal: () => {
+            turnOnChain(chainSlug);
+            setTimeout(() => {
+              setViewDetailItem(undefined);
               confirmModal.hideConfirmModal();
-            },
-            onCompleteModal: () => {
-              turnOnChain(chainSlug);
-              setTimeout(() => confirmModal.hideConfirmModal(), 300);
-            },
-            messageIcon: chainSlug,
-          });
-        }, 700);
-      }
+            }, 300);
+          },
+          messageIcon: chainSlug,
+        });
+      }, 700);
     },
-    [chainInfoMap, checkChainConnected, confirmModal, turnOnChain],
+    [chainInfoMap, confirmModal, turnOnChain],
   );
 
   const showWarningModal = useCallback(
@@ -233,8 +234,15 @@ export const Notification = () => {
         isShowCancelButton: false,
         completeBtnTitle: i18n.buttonTitles.iUnderstand,
         visible: true,
-        onCompleteModal: confirmModal.hideConfirmModal,
+        onCompleteModal: () => {
+          setViewDetailItem(undefined);
+          confirmModal.hideConfirmModal();
+        },
         customIcon: <PageIcon icon={Info} color={theme.colorInfo} />,
+        onCancelModal: () => {
+          setViewDetailItem(undefined);
+          confirmModal.hideConfirmModal();
+        },
       });
     },
     [confirmModal, theme.colorInfo],
@@ -244,6 +252,7 @@ export const Notification = () => {
     (item: NotificationInfoItem) => {
       return () => {
         Keyboard.dismiss();
+        setViewDetailItem(item);
         const slug = (item.metadata as WithdrawClaimNotificationMetadata).stakingSlug;
         const totalWithdrawable = getTotalWidrawable(
           slug,
@@ -265,8 +274,13 @@ export const Notification = () => {
             const metadata = item.metadata as WithdrawClaimNotificationMetadata;
 
             const chainSlug = metadata.stakingSlug.split('___')[2];
-            showActiveChainModal(chainSlug, item.actionType);
-            break;
+            if (chainStateMap[chainSlug]?.active) {
+              break;
+            } else {
+              showActiveChainModal(chainSlug, item.actionType);
+
+              return;
+            }
           }
         }
 
@@ -594,6 +608,7 @@ export const Notification = () => {
         isShowCustomContent={!enableNotification}
         renderCustomContent={renderEnableNotifications}
         estimatedItemSize={88}
+        extraData={JSON.stringify(viewDetailItem)}
         rightIconOption={{ icon: Gear, onPress: openNotificationSetting }}
         flatListStyle={{
           paddingHorizontal: theme.padding,
