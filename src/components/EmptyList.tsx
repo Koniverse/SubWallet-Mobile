@@ -17,6 +17,7 @@ interface Props {
   addBtnLabel?: string;
   onPressAddBtn?: () => void;
   iconButton?: React.ElementType<IconProps>;
+  children?: React.ReactNode;
 }
 
 export const EmptyList = ({
@@ -29,6 +30,7 @@ export const EmptyList = ({
   addBtnLabel,
   onPressAddBtn,
   iconButton = PlusCircle,
+  children,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
@@ -83,6 +85,7 @@ export const EmptyList = ({
             {addBtnLabel}
           </Button>
         )}
+        {children}
       </View>
     </ScrollView>
   );

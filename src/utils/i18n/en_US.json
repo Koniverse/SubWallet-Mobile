@@ -654,7 +654,7 @@
     "deleteNftMessage": "You are about to delete this NFT collection",
     "unBondMessage": "Once unbonded, your funds would be available for withdrawal after {0}.",
     "commission": "Commission: {0}%",
-    "apy": " - APY: ",
+    "apy": "APY: ",
     "selectedXValidator": "Selected {0} validators",
     "bonded": "Bonded: ",
     "poolId": "Pool #{0}",

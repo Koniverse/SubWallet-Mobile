@@ -654,7 +654,7 @@
     "deleteNftMessage": "你即将删除此NFT收集",
     "unBondMessage": "一旦解除捆定，你的资金将在{0}后即可提款。",
     "commission": "佣金: {0}%",
-    "apy": "- APY：",
+    "apy": "APY：",
     "selectedXValidator": "已选择{0}位验证者",
     "bonded": "已捆定：",
     "poolId": "#{0}矿池",

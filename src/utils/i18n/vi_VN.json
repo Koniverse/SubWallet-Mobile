@@ -654,7 +654,7 @@
     "deleteNftMessage": "Bạn muốn xóa bộ sưu tập NFT này?",
     "unBondMessage": "Bạn có thể rút token sau {0} kể từ khi unstake.",
     "commission": "Hoa hồng: {0}%",
-    "apy": "- APY:",
+    "apy": "APY:",
     "selectedXValidator": "Validator {0} đã chọn",
     "bonded": "Đang stake:",
     "poolId": "Pool #{0}",

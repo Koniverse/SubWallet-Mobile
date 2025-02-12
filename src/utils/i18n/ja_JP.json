@@ -654,7 +654,7 @@
     "deleteNftMessage": "このNFTコレクションを削除しようとしています",
     "unBondMessage": "アンボンドされると、あなたの資金は{0}後に引き出すことができます。",
     "commission": "コミッション：{0}％",
-    "apy": "- APY：",
+    "apy": "APY：",
     "selectedXValidator": "選択された{0} バリデーター",
     "bonded": "ボンドされた数：",
     "poolId": "プール#{0}",

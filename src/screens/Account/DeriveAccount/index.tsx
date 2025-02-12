@@ -78,11 +78,12 @@ export const DeriveAccount = () => {
   };
 
   const searchFunction = useCallback((items: AccountProxy[], searchString: string) => {
-    return items.filter(
-      acc =>
-        (acc.name && acc.name.toLowerCase().includes(searchString.toLowerCase())) ||
-        acc.id.toLowerCase().includes(searchString.toLowerCase()),
-    );
+    return items.filter(acc => {
+      const isValidSearchByAddress = acc.accounts.some(account => {
+        return account.address.toLowerCase().includes(searchString.toLowerCase());
+      });
+      return acc.name?.toLowerCase().includes(searchString.toLowerCase()) || isValidSearchByAddress;
+    });
   }, []);
 
   return (

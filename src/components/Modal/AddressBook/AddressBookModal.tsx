@@ -50,7 +50,7 @@ function searchFunction(items: AccountItem[], searchText: string) {
 
   return items.filter(item => {
     return (
-      item.address.toLowerCase().includes(searchTextLowerCase) ||
+      item.formatedAddress.toLowerCase().includes(searchTextLowerCase) ||
       (item.name ? item.name.toLowerCase().includes(searchTextLowerCase) : false)
     );
   });
