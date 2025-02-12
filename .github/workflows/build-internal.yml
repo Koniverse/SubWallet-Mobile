@@ -83,14 +83,13 @@ jobs:
     - name: iOS Build Action
       uses: yukiarrr/ios-build-action@v1.11.2
       with:
-        project-path: SubWalletMobile.xcodeproj
+        project-path: ios/SubWalletMobile.xcodeproj
         p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
         mobileprovision-base64: ${{ secrets.BUILD_ADHOC_PROVISION_PROFILE_BASE64 }}
         code-signing-identity: 'Apple Distribution: CDM SOFTWARE DEVELOPMENT COMPANY LIMITED (ZUZ7T3GQMT)'
         team-id: ${{ secrets.APPLE_TEAM_ID }}
         workspace-path: ios/SubWalletMobile.xcworkspace
         export-method: 'ad-hoc'
-        configuration: Debug
         certificate-password: ${{ secrets.P12_PASSWORD }}
         scheme: SubWalletMobile-Production
 
