@@ -93,12 +93,13 @@ jobs:
         certificate-password: ${{ secrets.P12_PASSWORD }}
         scheme: SubWalletMobile-Production
 
-    - name: Upload iOS to Diawi
-      id: upload-diawi-ios
-      uses: rnkdsh/action-upload-diawi@v1.5.4
+    - name: Upload IPA to Telegram
+      uses: appleboy/telegram-action@master
       with:
-        token: ${{ secrets.DIAWI_TOKEN }}
-        file: output.ipa
+        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        to: ${{ secrets.TELEGRAM_CHAT_ID }}
+        document: output.ipa
+        message: '🚀 New iOS Build Uploaded!'
 
     # Notify Discord
     - name: Notify to Discord
