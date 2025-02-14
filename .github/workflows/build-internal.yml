@@ -93,13 +93,12 @@ jobs:
         certificate-password: ${{ secrets.P12_PASSWORD }}
         scheme: SubWalletMobile-Production
 
-    - name: Upload IPA to Telegram
-      uses: appleboy/telegram-action@master
-      with:
-        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        to: ${{ secrets.TELEGRAM_CHAT_ID }}
-        document: output.ipa
-        message: '🚀 New iOS Build Uploaded!'
+    - name: Send IPA to Telegram
+      run: |
+        curl -F "to=${{ secrets.TELEGRAM_CHAT_ID }}" \
+             -F document=output.ipa \
+             -F "message=🚀 New iOS Build Uploaded! Download now!" \
+             https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
 
     # Notify Discord
     - name: Notify to Discord
