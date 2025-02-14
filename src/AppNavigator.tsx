@@ -285,6 +285,10 @@ const CrowdloanListScreen = (props: JSX.IntrinsicAttributes) => {
   return withPageWrapper(CrowdloansScreen as ComponentType, ['crowdloan'])(props);
 };
 
+const NotificationScreen = (props: JSX.IntrinsicAttributes) => {
+  return withPageWrapper(Notification as ComponentType, ['earning'])(props);
+};
+
 type DeepLinkSubscriptionType = {
   url: string;
 };
@@ -644,7 +648,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
-                <Stack.Screen name="Notification" component={Notification} />
+                <Stack.Screen name="Notification" component={NotificationScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="EarningPreview" component={EarningPreview} options={{ gestureEnabled: false }} />
                 <Stack.Screen
