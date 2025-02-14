@@ -22,8 +22,6 @@ jobs:
       IOS_CODEPUSH_KEY: ${{ secrets.IOS_CODEPUSH_STAGING_KEY }}DISABLED
       ANDROID_CODEPUSH_KEY: ${{ secrets.ANDROID_CODEPUSH_STAGING_KEY }}DISABLED
       BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
     steps:
     - uses: actions/checkout@v4
       with:
@@ -95,13 +93,16 @@ jobs:
         certificate-password: ${{ secrets.P12_PASSWORD }}
         scheme: SubWalletMobile-Production
 
+    - name: List Files in Build Directory
+      run: ls -R
+
     - name: Send IPA to Telegram
       run: |
         curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
           -H "Content-Type: multipart/form-data" \
           -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-          -F "document=output.ipa" \
-          -F "caption=🚀 New iOS Build Uploaded! Download now!"
+          -F "document=@${{ steps.build.outputs.ipaPath }}" \
+          -F "caption=New iOS Build Uploaded! Download now!"
 
     # Notify Discord
     - name: Notify to Discord
