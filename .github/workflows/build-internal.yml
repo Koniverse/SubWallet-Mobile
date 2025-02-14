@@ -98,7 +98,7 @@ jobs:
     - name: Send IPA to Telegram
       run: |
         curl -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-             -F document=output.ipa \
+             -F document=@${{ steps.build.outputs.ipaPath }} \
              -F "caption=🚀 New iOS Build Uploaded! Download now!" \
              https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
 
