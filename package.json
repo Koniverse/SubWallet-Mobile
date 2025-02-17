@@ -41,7 +41,6 @@
     "@fortawesome/react-native-fontawesome": "^0.3.0",
     "@gear-js/api": "^0.37.2",
     "@gorhom/portal": "^1.0.14",
-    "@notifee/react-native": "^9.1.8",
     "@polkadot/api": "^12.0.2",
     "@polkadot/react-qr": "^3.5.1",
     "@polkadot/reactnative-identicon": "^3.5.1",
