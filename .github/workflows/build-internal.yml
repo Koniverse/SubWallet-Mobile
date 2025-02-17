@@ -79,21 +79,17 @@ jobs:
     - name: Install Pods
       run: cd ios && pod update hermes-engine --no-repo-update && cd ..
 
-    - name: Select Xcode version
-      run: sudo xcode-select -s '/Applications/Xcode_16.1.app'
-
     # Build IPA file
     - name: iOS Build Action
       uses: yukiarrr/ios-build-action@v1.11.2
       with:
-        project-path: SubWalletMobile.xcodeproj
+        project-path: ios/SubWalletMobile.xcodeproj
         p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
         mobileprovision-base64: ${{ secrets.BUILD_ADHOC_PROVISION_PROFILE_BASE64 }}
         code-signing-identity: 'Apple Distribution: CDM SOFTWARE DEVELOPMENT COMPANY LIMITED (ZUZ7T3GQMT)'
         team-id: ${{ secrets.APPLE_TEAM_ID }}
-        workspace-path: SubWalletMobile.xcworkspace
+        workspace-path: ios/SubWalletMobile.xcworkspace
         export-method: 'ad-hoc'
-        configuration: Debug
         certificate-password: ${{ secrets.P12_PASSWORD }}
         scheme: SubWalletMobile-Production
 
@@ -208,14 +204,25 @@ jobs:
     # Build APK file
     - name: Generate App APK
       run: |
-        cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
+        cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a,armeabi-v7a -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
 
-    - name: Upload Android to Diawi
-      id: upload-diawi-android
-      uses: rnkdsh/action-upload-diawi@v1.5.4
-      with:
-        token: ${{ secrets.DIAWI_TOKEN }}
-        file: ./android/app/build/outputs/apk/release/app-release.apk
+#    - name: Upload Android to Diawi
+#      id: upload-diawi-android
+#      uses: rnkdsh/action-upload-diawi@v1.5.4
+#      with:
+#        token: ${{ secrets.DIAWI_TOKEN }}
+#        file: ./android/app/build/outputs/apk/release/app-release.apk
+
+    - name: Zip APK
+      run: |
+        cd android/app/build/outputs/apk/release
+        zip -r app-release.zip app-release.apk
+
+    - name: Upload APK to Telegram
+      run: |
+        curl -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+             -F "document=@./android/app/build/outputs/apk/release/app-release.zip" \
+             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument"
 
     # Notify to Discord
     - name: Notify to Discord
