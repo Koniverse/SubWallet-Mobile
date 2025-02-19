@@ -331,7 +331,7 @@ const ClaimReward = ({
           </>
         </TransactionLayout>
       ) : (
-        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} extrinsicType={ExtrinsicType.STAKING_CLAIM_REWARD} />
       )}
     </>
   );

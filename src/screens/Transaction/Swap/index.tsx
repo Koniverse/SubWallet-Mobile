@@ -52,7 +52,7 @@ import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { findAccountByAddress, getReformatedAddressRelatedToChain } from 'utils/account';
 import { getLatestSwapQuote, handleSwapRequest, handleSwapStep, validateSwapProcess } from 'messaging/swap';
-import { DEFAULT_COMMON_PROCESS, CommonActionType, commonProcessReducer } from 'reducers/transaction-process';
+import { CommonActionType, commonProcessReducer, DEFAULT_COMMON_PROCESS } from 'reducers/transaction-process';
 import { FormItem } from 'components/common/FormItem';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { useToast } from 'react-native-toast-notifications';
@@ -1523,7 +1523,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
           </TransactionLayout>
         </UserInactivity>
       ) : (
-        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} extrinsicType={ExtrinsicType.SWAP} />
       )}
     </>
   );

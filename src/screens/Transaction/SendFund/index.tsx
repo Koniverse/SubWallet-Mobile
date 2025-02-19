@@ -1298,7 +1298,7 @@ export const SendFund = ({
           </ScreenContainer>
         </KeyboardAvoidingView>
       ) : (
-        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} extrinsicType={extrinsicType} />
       )}
     </>
   );
