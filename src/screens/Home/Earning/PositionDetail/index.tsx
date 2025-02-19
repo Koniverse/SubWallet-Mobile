@@ -226,7 +226,9 @@ const Component: React.FC<Props> = (props: Props) => {
           'Open Taostats Dashboard and connect your SubWallet account to unstake your funds. This feature will come back to SubWallet soon!',
         completeBtnTitle: 'Open dApp',
         onCompleteModal: () => {
-          Linking.openURL('https://dash.taostats.io/stake').then(() => confirmModal.hideConfirmModal());
+          Linking.openURL('subwallet://browser?url=https://dash.taostats.io/stake').then(() =>
+            confirmModal.hideConfirmModal(),
+          );
         },
         cancelBtnTitle: 'Cancel',
         onCancelModal: confirmModal.hideConfirmModal,

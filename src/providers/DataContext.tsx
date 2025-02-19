@@ -275,7 +275,6 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribePriorityTokens,
           name: 'subscribePriorityTokens',
           relatedStores: ['chainStore'],
-          isStartImmediately: false,
         });
         /* Chains */
 
