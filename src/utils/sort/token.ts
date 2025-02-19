@@ -64,8 +64,8 @@ export function sortTokensByStandard(
   priorityTokenGroups: TokenPriorityDetails,
   isTokenGroup = false,
 ) {
-  const priorityTokenGroupKeys = Object.keys(priorityTokenGroups.tokenGroup);
-  const priorityTokenKeys = Object.keys(priorityTokenGroups.token);
+  const priorityTokenGroupKeys = Object.keys(priorityTokenGroups ? priorityTokenGroups.tokenGroup : {});
+  const priorityTokenKeys = Object.keys(priorityTokenGroups ? priorityTokenGroups.token : {});
 
   targetTokens.sort((a, b) => {
     const aHasBalance = a.total && (a.total.convertedValue.toNumber() !== 0 || a.total.value.toNumber() !== 0);
