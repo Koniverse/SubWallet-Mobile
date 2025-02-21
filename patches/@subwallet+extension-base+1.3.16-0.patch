@@ -5,7 +5,7 @@ index d28a90a..397599a 100644
 @@ -1,437 +1,22 @@
  // Copyright 2019-2022 @subwallet/extension-base
  // SPDX-License-Identifier: Apache-2.0
-
+ 
 -import { SwapSDK } from '@chainflip/sdk/swap';
 -import { COMMON_ASSETS } from '@subwallet/chain-list';
 -import { SwapError } from '@subwallet/extension-base/background/errors/SwapError';
@@ -451,13 +451,13 @@ index d28a90a..397599a 100644
  }
 \ No newline at end of file
 diff --git a/node_modules/@subwallet/extension-base/services/swap-service/utils.js b/node_modules/@subwallet/extension-base/services/swap-service/utils.js
-index 7657ca1..6f2d031 100644
+index 7657ca1..c8b3fb5 100644
 --- a/node_modules/@subwallet/extension-base/services/swap-service/utils.js
 +++ b/node_modules/@subwallet/extension-base/services/swap-service/utils.js
 @@ -1,7 +1,6 @@
  // Copyright 2019-2022 @subwallet/extension-base
  // SPDX-License-Identifier: Apache-2.0
-
+ 
 -import { Assets, Chains } from '@chainflip/sdk/swap';
  import { COMMON_ASSETS, COMMON_CHAIN_SLUGS } from '@subwallet/chain-list';
  import { _getAssetDecimals } from '@subwallet/extension-base/services/chain-service/utils';
