@@ -9,7 +9,7 @@ export function useGetShowReviewPopupScreen() {
     axios
       .get(`${STATIC_DATA_DOMAIN}/show-review-popup-screen/${dataByDevModeStatus}.json`)
       .then(res => {
-        mmkvStore.set('show-review-popup-screen', res.data);
+        mmkvStore.set('show-review-popup-screen', JSON.stringify(res.data));
       })
       .catch(() => {
         const data = mmkvStore.getString('show-review-popup-screen');
