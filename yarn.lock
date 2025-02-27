@@ -5022,15 +5022,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@notifee/react-native@npm:^9.1.8":
-  version: 9.1.8
-  resolution: "@notifee/react-native@npm:9.1.8"
-  peerDependencies:
-    react-native: "*"
-  checksum: a144f7c5aa54a7e774c95b3a91341653865dfa4c8540b34ead3f281edd733830975c4f86bdfe422467d18ae97879b75be09ca25bb1818ba2ecfc56808cb570b1
-  languageName: node
-  linkType: hard
-
 "@npmcli/agent@npm:^3.0.0":
   version: 3.0.0
   resolution: "@npmcli/agent@npm:3.0.0"
@@ -7166,7 +7157,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-async-storage/async-storage@npm:^1.13.4, @react-native-async-storage/async-storage@npm:^1.17.11":
+"@react-native-async-storage/async-storage@npm:^1.13.4":
   version: 1.21.0
   resolution: "@react-native-async-storage/async-storage@npm:1.21.0"
   dependencies:
@@ -7174,6 +7165,17 @@ __metadata:
   peerDependencies:
     react-native: ^0.0.0-0 || >=0.60 <1.0
   checksum: 969cdeb444a037087b1897553082e148e25c8331055dd0dc142f76deeb4aadd9ed5ec26926ae990b3e9ff088396e74ab557148a2dd2a7db86058051b774f2619
+  languageName: node
+  linkType: hard
+
+"@react-native-async-storage/async-storage@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@react-native-async-storage/async-storage@npm:2.1.1"
+  dependencies:
+    merge-options: ^3.0.4
+  peerDependencies:
+    react-native: ^0.0.0-0 || >=0.65 <1.0
+  checksum: 51f3c89ddc32afee7969af61621a989c766504da6d8310b9ab2fe6c807f3c3c9d7f409ad85036b8f4c433fed4689f57380d603755491825c28b75be34b45d58c
   languageName: node
   linkType: hard
 
@@ -8309,17 +8311,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/gradle-plugin@npm:0.77.1":
+"@react-native/gradle-plugin@npm:0.77.1, @react-native/gradle-plugin@npm:^0.77.1":
   version: 0.77.1
   resolution: "@react-native/gradle-plugin@npm:0.77.1"
   checksum: a4b97818cd36320bcb31e1000318d80fb47c1ff6f5cebccf2d1b251afb14a8843160229926a62ee195544115e011d6832ff5ee5d95ff483172ec4a9ac9ddc63f
-  languageName: node
-  linkType: hard
-
-"@react-native/gradle-plugin@npm:^0.75.2":
-  version: 0.75.5
-  resolution: "@react-native/gradle-plugin@npm:0.75.5"
-  checksum: 5c85e758fd4f85055cd92c467a1a702c455235f04939f4adbfb0df39fb84d05d1b62fc96140b2053b50731e080a356085b505a91d88c3ef0c0161adc42ec7fed
   languageName: node
   linkType: hard
 
@@ -11675,7 +11670,6 @@ __metadata:
     "@fortawesome/react-native-fontawesome": ^0.3.0
     "@gear-js/api": ^0.37.2
     "@gorhom/portal": ^1.0.14
-    "@notifee/react-native": ^9.1.8
     "@polkadot/api": ^12.0.2
     "@polkadot/react-qr": ^3.5.1
     "@polkadot/reactnative-identicon": ^3.5.1
@@ -11684,7 +11678,7 @@ __metadata:
     "@polkadot/ui-settings": ^3.5.1
     "@polkadot/util-crypto": ^12.6.2
     "@polkadot/wasm-crypto": ^7.2.1
-    "@react-native-async-storage/async-storage": ^1.17.11
+    "@react-native-async-storage/async-storage": ^2.1.1
     "@react-native-camera-roll/camera-roll": ^7.9.0
     "@react-native-clipboard/clipboard": ^1.11.1
     "@react-native-community/cli": 15.0.1
@@ -11696,7 +11690,7 @@ __metadata:
     "@react-native-masked-view/masked-view": ^0.2.9
     "@react-native/babel-preset": 0.77.1
     "@react-native/eslint-config": ^0.77.1
-    "@react-native/gradle-plugin": ^0.75.2
+    "@react-native/gradle-plugin": ^0.77.1
     "@react-native/metro-config": ^0.77.1
     "@react-native/typescript-config": 0.77.1
     "@react-navigation/bottom-tabs": ^6.5.3
@@ -11820,7 +11814,7 @@ __metadata:
     react-native-video: ^6.10.2
     react-native-view-shot: ^3.5.0
     react-native-walkthrough-tooltip: ^1.6.0
-    react-native-webview: ^13.6.2
+    react-native-webview: ^13.13.2
     react-native-windows: ^0.77.2
     react-redux: ^8.0.5
     react-test-renderer: ^18.3.1
@@ -16299,17 +16293,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"escape-string-regexp@npm:2.0.0, escape-string-regexp@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "escape-string-regexp@npm:2.0.0"
-  checksum: 9f8a2d5743677c16e85c810e3024d54f0c8dea6424fad3c79ef6666e81dd0846f7437f5e729dfcdac8981bc9e5294c39b4580814d114076b8d36318f46ae4395
-  languageName: node
-  linkType: hard
-
 "escape-string-regexp@npm:^1.0.2, escape-string-regexp@npm:^1.0.5":
   version: 1.0.5
   resolution: "escape-string-regexp@npm:1.0.5"
   checksum: 6092fda75c63b110c706b6a9bfde8a612ad595b628f0bd2147eea1d3406723020810e591effc7db1da91d80a71a737a313567c5abb3813e8d9c71f4aa595b410
+  languageName: node
+  linkType: hard
+
+"escape-string-regexp@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "escape-string-regexp@npm:2.0.0"
+  checksum: 9f8a2d5743677c16e85c810e3024d54f0c8dea6424fad3c79ef6666e81dd0846f7437f5e729dfcdac8981bc9e5294c39b4580814d114076b8d36318f46ae4395
   languageName: node
   linkType: hard
 
@@ -26686,16 +26680,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-webview@npm:^13.6.2":
-  version: 13.7.1
-  resolution: "react-native-webview@npm:13.7.1"
+"react-native-webview@npm:^13.13.2":
+  version: 13.13.2
+  resolution: "react-native-webview@npm:13.13.2"
   dependencies:
-    escape-string-regexp: 2.0.0
+    escape-string-regexp: ^4.0.0
     invariant: 2.2.4
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 3ea255936329f5c1b1c4b62c8bd600f9c8680189c8dd90010060e1d2027741eeb40c8f4e3ec98dfaf7724f79526817a8090909ecdef934b93b379b511b6c268d
+  checksum: 034b1ac22b32f3c9c66c1be96ec71078657b569ddd0970639a90ddf2f3849fa31bc010cff19e5b9b315ce836b9061926b196a156a72b9438f5cee24512ebc33a
   languageName: node
   linkType: hard
 

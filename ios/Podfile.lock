@@ -1560,7 +1560,7 @@ PODS:
     - Yoga
   - react-native-view-shot (3.8.0):
     - React-Core
-  - react-native-webview (13.7.1):
+  - react-native-webview (13.13.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1874,7 +1874,7 @@ PODS:
     - React-Core
   - rn-fetch-blob (0.13.0-beta.2):
     - React-Core
-  - RNCAsyncStorage (1.21.0):
+  - RNCAsyncStorage (2.1.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1991,11 +1991,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNNotifee (9.1.8):
-    - React-Core
-    - RNNotifee/NotifeeCore (= 9.1.8)
-  - RNNotifee/NotifeeCore (9.1.8):
-    - React-Core
   - RNPermissions (3.10.1):
     - DoubleConversion
     - glog
@@ -2335,7 +2330,6 @@ DEPENDENCIES:
   - RNInAppBrowser (from `../node_modules/react-native-inappbrowser-reborn`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLocalize (from `../node_modules/react-native-localize`)
-  - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNQrGenerator (from `../node_modules/rn-qr-generator`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -2565,8 +2559,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-keychain"
   RNLocalize:
     :path: "../node_modules/react-native-localize"
-  RNNotifee:
-    :path: "../node_modules/@notifee/react-native"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
   RNQrGenerator:
@@ -2649,7 +2641,7 @@ SPEC CHECKSUMS:
   react-native-static-server: 72bb8982cb9d80f7c685ab2112d6be9a0b2307ce
   react-native-video: 80b56ba42f736957ee5865b60a34486c24931fa2
   react-native-view-shot: d1a701eb0719c6dccbd20b4bb43b1069f304cb70
-  react-native-webview: 12b35b4f8d5dd602c3c069d03de84fef4bf2db2b
+  react-native-webview: 449c3f27cdb926086a5eff7993421fd096cc5ae3
   React-nativeconfig: cb207ebba7cafce30657c7ad9f1587a8f32e4564
   React-NativeModulesApple: 8411d548b1ad9d2b3e597beb9348e715c8020e0c
   React-perflogger: c4c3b7c18f8a50cdbe2bcdd2f15705ba029a5a02
@@ -2681,7 +2673,7 @@ SPEC CHECKSUMS:
   ReactCommon: 08f4808f02ff115884e870e5cfea689703ff759a
   ReactNativeLocalization: 79b100588f6d7a68852b982ccbe57e329e8bb5a7
   rn-fetch-blob: 13834702ae4c003d643eaf5cca9857a4b50b6a7e
-  RNCAsyncStorage: cc571c0695f14c5f0064cbb0256edff285f19358
+  RNCAsyncStorage: a025c661a88f7db9d59d451d495decb375bb1b53
   RNCClipboard: a531cf48c449a06113ab6e48153084f1d98e2ca8
   RNCMaskedView: 4b5b12efdee55966f1d68f32d4b3401c2acf05c2
   RNDeviceInfo: 81b791f8cb90c0f7e371b67a273a74c6ef3d1110
@@ -2691,7 +2683,6 @@ SPEC CHECKSUMS:
   RNInAppBrowser: 6d3eb68d471b9834335c664704719b8be1bfdb20
   RNKeychain: df33ae4d27df06622fc14190b790ba8749f6be76
   RNLocalize: 22c9512d077379783fb41a4b47761ebe7cf87265
-  RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNPermissions: fcead40583bcb2fb8eb74a08b73ba1082a638f07
   RNQrGenerator: 60eab4f7c9e3f09db78029636fe356dca5cb585f
   RNReanimated: 8a4ea733f88a33379150eb2e73b375e14de81e84
