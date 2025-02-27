@@ -178,6 +178,7 @@ const NftItemList = ({
             params: { screen: 'NFTs', params: { screen: 'CollectionList' } },
           })
         }
+        isShowBottomSafeArea={false}
         isShowMainHeader
         autoFocus={false}
         showLeftBtn={true}

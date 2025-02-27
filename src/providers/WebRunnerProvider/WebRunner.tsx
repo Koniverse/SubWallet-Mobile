@@ -1,19 +1,20 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
-import { AppState, DeviceEventEmitter, NativeSyntheticEvent, Platform, View } from 'react-native';
+import {AppState, DeviceEventEmitter, NativeSyntheticEvent, Platform, View} from 'react-native';
 import EventEmitter from 'eventemitter3';
-import React, { useEffect, useReducer } from 'react';
+import React, {useEffect, useReducer} from 'react';
 import WebView from 'react-native-webview';
-import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
-import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
-import StaticServer from 'react-native-static-server';
-import { listenMessage, restartAllHandlers } from 'messaging/base';
-import { Message } from '@subwallet/extension-base/types';
-import RNFS from 'react-native-fs';
-import { getVersion, getBuildNumber } from 'react-native-device-info';
-import { getId } from '@subwallet/extension-base/utils/getId';
-import { backupStorageData, getDevMode, mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
-import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
-import { WEBVIEW_ANDROID_SYSTEM_MIN_VERSION } from 'constants/index';
+import {WebViewMessage} from 'react-native-webview/lib/WebViewTypes';
+import {WebRunnerState, WebRunnerStatus} from 'providers/contexts';
+// import StaticServer from 'react-native-static-server';
+import {listenMessage, restartAllHandlers} from 'messaging/base';
+import {Message} from '@subwallet/extension-base/types';
+import * as RNFS from '@dr.pogodin/react-native-fs';
+import {getBuildNumber, getVersion} from 'react-native-device-info';
+import {getId} from '@subwallet/extension-base/utils/getId';
+import {backupStorageData, getDevMode, mmkvStore, restoreStorageData, triggerBackupOnInit} from 'utils/storage';
+import {notifyUnstable} from 'providers/WebRunnerProvider/nofifyUnstable';
+import {WEBVIEW_ANDROID_SYSTEM_MIN_VERSION} from 'constants/index';
+import Server, {STATES} from '@dr.pogodin/react-native-static-server';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 360000; //6*60*1000
@@ -69,7 +70,7 @@ export const getMajorVersionIOS = (): number => {
 class WebRunnerHandler {
   eventEmitter?: EventEmitter;
   webRef?: React.RefObject<WebView<{}>>;
-  server?: StaticServer;
+  server?: Server;
   state?: WebRunnerGlobalState;
   runnerState: WebRunnerState = {};
   lastTimeResponse?: number;
@@ -157,12 +158,11 @@ class WebRunnerHandler {
   }
 
   async serverReady() {
-    // No need server for android => this logic is same with isAndroid
     if (!this.server) {
       return true;
     }
 
-    const isRunning = await this.server.isRunning();
+    const isRunning = this.server.state === STATES.ACTIVE;
     if (!isRunning) {
       await this.server.start();
     }
@@ -309,14 +309,22 @@ class WebRunnerHandler {
           );
           this.reload();
         })();
-        this.server = new StaticServer(WEB_SERVER_PORT, ANDROID_BUNDLE_PATH, { localOnly: true });
+        this.server = new Server({
+          fileDir: ANDROID_BUNDLE_PATH,
+          port: WEB_SERVER_PORT,
+          nonLocal: false
+        });
       }
     } else {
       let target = isDevMode ? '/DevModeWeb.bundle' : '/Web.bundle';
       if (needFallBack) {
         target = '/Fallback.bundle';
       }
-      this.server = new StaticServer(WEB_SERVER_PORT, RNFS.MainBundlePath + target, { localOnly: true });
+      this.server = new Server({
+        fileDir: RNFS.MainBundlePath + target,
+        port: WEB_SERVER_PORT,
+        nonLocal: false
+      });
     }
     AppState.addEventListener('change', (state: string) => {
       const now = new Date().getTime();

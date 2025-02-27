@@ -2,6 +2,7 @@ import { Platform, StyleProp, StyleSheet } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { ColorMap } from 'styles/color';
 
+
 export const STATUS_BAR_HEIGHT = getStatusBarHeight();
 export const STATUS_BAR_LIGHT_CONTENT = 'light-content';
 export const STATUS_BAR_DARK_CONTENT = 'dark-content';
@@ -92,7 +93,6 @@ const blockContent = {
 
 const container = {
   flex: 1,
-  paddingTop: STATUS_BAR_HEIGHT,
 };
 
 const layoutContainer = {

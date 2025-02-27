@@ -3,7 +3,7 @@ import { Platform, View } from 'react-native';
 import { Button, Icon, Typography } from '../../design-system-ui';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { House, Share } from 'phosphor-react-native';
 import ErrorStyles from './style';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -25,7 +25,8 @@ const bundleVersion =
 
 const ErrorFallbackScreen: React.FC<FallbackComponentProps> = ({ error, resetError }) => {
   const theme = useSubWalletTheme().swThemes;
-  const styles = ErrorStyles(theme);
+  const insets = useSafeAreaInsets();
+  const styles = ErrorStyles(theme, insets);
   const [isUploading, setIsUploading] = useState(false);
   const navigation = useNavigation();
   const routes = navigation?.getState()?.routes;
@@ -58,7 +59,7 @@ const ErrorFallbackScreen: React.FC<FallbackComponentProps> = ({ error, resetErr
       locations={[0, 0.5]}
       colors={['rgba(234, 76, 76, 0.15)', 'rgba(217, 217, 217, 0)']}
       style={styles.gradientContainer}>
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <SubHeader title="Unknown error" showLeftBtn={false} backgroundColor="transparent" />
         <View style={styles.content}>
           <FastImage source={Images.circleRobot} style={styles.logo} />
@@ -83,7 +84,7 @@ const ErrorFallbackScreen: React.FC<FallbackComponentProps> = ({ error, resetErr
           icon={<Icon phosphorIcon={House} size="md" weight="fill" />}>
           Back to home
         </Button>
-      </SafeAreaView>
+      </View>
     </LinearGradient>
   );
 };

@@ -19,9 +19,9 @@ const BaseDetailModal: React.FC<Props> = (props: Props) => {
   const styles = useMemo(() => createStyle(theme), [theme]);
 
   const [open, setOpen] = useState(false);
-
+  console.log('open', open);
   const onOpen = useCallback(() => {
-    setOpen(true);
+    setTimeout(() => setOpen(true), 300);
   }, []);
 
   const onClose = useCallback(() => {
@@ -36,23 +36,25 @@ const BaseDetailModal: React.FC<Props> = (props: Props) => {
         icon={<Icon phosphorIcon={ArrowCircleUpRight} iconColor={theme['gray-4']} />}>
         {i18n.common.viewDetail}
       </Button>
-      <SwModal
-        setVisible={setOpen}
-        modalVisible={open}
-        modalTitle={title}
-        onChangeModalVisible={onClose}
-        modalStyle={{ maxHeight: 600 }}
-        isUseForceHidden={false}
-        onBackButtonPress={onClose}>
-        <View style={{ maxHeight: 400, width: '100%' }}>
-          <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <TouchableOpacity activeOpacity={1}>{children}</TouchableOpacity>
-          </ScrollView>
-          <Button style={{ marginTop: 16 }} onPress={onClose} icon={<Icon phosphorIcon={XCircle} weight="fill" />}>
-            {i18n.common.close}
-          </Button>
-        </View>
-      </SwModal>
+      {open && (
+        <SwModal
+          setVisible={setOpen}
+          modalVisible={open}
+          modalTitle={title}
+          onChangeModalVisible={onClose}
+          modalStyle={{maxHeight: 600}}
+          isUseForceHidden={false}
+          onBackButtonPress={onClose}>
+          <View style={{maxHeight: 400, width: '100%'}}>
+            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+              <TouchableOpacity activeOpacity={1}>{children}</TouchableOpacity>
+            </ScrollView>
+            <Button style={{marginTop: 16}} onPress={onClose} icon={<Icon phosphorIcon={XCircle} weight="fill"/>}>
+              {i18n.common.close}
+            </Button>
+          </View>
+        </SwModal>
+      )}
     </View>
   );
 };

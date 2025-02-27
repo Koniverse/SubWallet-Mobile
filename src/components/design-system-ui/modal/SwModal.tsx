@@ -14,7 +14,7 @@ import Typography from '../typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ModalBaseV2, { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { Portal } from '@gorhom/portal';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 import Button from '../button';
 import { Icon } from 'components/design-system-ui';
@@ -60,6 +60,7 @@ const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> 
     paddingTop: 8,
     // paddingHorizontal: 16,
     flex: isFullHeight ? 1 : undefined,
+
   };
 };
 
@@ -223,7 +224,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
                 {children}
 
                 {footer}
-                {isUseSafeAreaView && <SafeAreaView edges={['bottom']} style={{ marginBottom: theme.margin }} />}
+                {isUseSafeAreaView && <View style={{ marginBottom: theme.margin + insets.bottom }} />}
               </View>
             </ModalBaseV2>
           </Portal>
@@ -264,7 +265,6 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
               </View>
 
               {footer}
-              <SafeAreaView edges={['bottom']} />
             </View>
           </ModalBase>
         )}

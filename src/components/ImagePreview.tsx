@@ -155,7 +155,11 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
           style={ImageStyle}
           source={{ uri: url !== '' ? url : undefined }}
           onLoad={handleOnLoad}
-          onError={handleImageError}
+          onError={(e) => {
+            if (e.nativeEvent.error !== 'The file “SubWallet” couldn’t be opened.') {
+              handleImageError();
+            }
+          }}
         />
       ) : !imageError ? (
         <Video

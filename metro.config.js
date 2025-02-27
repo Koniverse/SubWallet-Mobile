@@ -17,7 +17,7 @@ const config = {
     sourceExts: [...sourceExts, 'svg'],
     extraNodeModules: {
       // Override fs with react-native-fs
-      fs: require.resolve('react-native-fs'),
+      fs: require.resolve('@dr.pogodin/react-native-fs'),
       path: require.resolve('react-native-path'),
       crypto: require.resolve('react-native-crypto'),
       stream: require.resolve('stream-browserify'),

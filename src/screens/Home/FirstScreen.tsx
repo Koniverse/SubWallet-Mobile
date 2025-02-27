@@ -1,7 +1,7 @@
 import { Images } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View, Linking } from 'react-native';
+import { ImageBackground, StatusBar, StyleProp, View, Linking } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -21,13 +21,13 @@ import { Image } from 'components/design-system-ui';
 import { SelectLanguageModal } from 'components/Modal/SelectLanguageModal';
 import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
 import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
   justifyContent: 'flex-end',
   alignItems: 'center',
   paddingHorizontal: 16,
-  paddingBottom: Platform.OS === 'ios' ? 56 : 20,
   position: 'relative',
 };
 
@@ -84,6 +84,7 @@ export const FirstScreen = () => {
   const setSelectedMnemonicType = useSetSelectedMnemonicType(false);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
   const isFocused = useIsFocused();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (isFocused) {
@@ -210,52 +211,52 @@ export const FirstScreen = () => {
     <View style={{ width: '100%', flex: 1 }}>
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={imageBackgroundStyle}>
-        <SafeAreaView />
-        <View style={logoStyle}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              marginBottom: 16,
-              paddingTop: 40,
-              alignItems: 'center',
-            }}>
-            <Image src={Images.SubWalletLogoGradient} style={{ width: 66, height: 100 }} />
-            <Text style={logoTextStyle}>SubWallet</Text>
-            <Text style={logoSubTextStyle}>{i18n.title.slogan}</Text>
-            <SelectLanguageModal setShowLanguageModal={setShowLanguageModal} showLanguageModal={showLanguageModal} />
+        <View style={{ width: '100%', flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom + 13 }}>
+          <View style={logoStyle}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                marginBottom: 16,
+                paddingTop: 40,
+                alignItems: 'center',
+              }}>
+              <Image src={Images.SubWalletLogoGradient} style={{ width: 66, height: 100 }} />
+              <Text style={logoTextStyle}>SubWallet</Text>
+              <Text style={logoSubTextStyle}>{i18n.title.slogan}</Text>
+              <SelectLanguageModal setShowLanguageModal={setShowLanguageModal} showLanguageModal={showLanguageModal} />
+            </View>
+
+            <View style={{ width: '100%' }}>
+              {actionList.map(item => (
+                <AccountActionButton key={item.key} item={item} />
+              ))}
+            </View>
           </View>
 
-          <View style={{ width: '100%' }}>
-            {actionList.map(item => (
-              <AccountActionButton key={item.key} item={item} />
-            ))}
-          </View>
+          <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessagePart1}</Text>
+          <Text style={firstScreenNotificationStyle}>
+            <Text onPress={onPressTermsCondition} style={{ color: theme.colorTextLight1 }}>
+              {i18n.common.termAndConditions}
+            </Text>
+            <Text>{i18n.common.and}</Text>
+            <Text onPress={onPressPolicy} style={{ color: theme.colorTextLight1 }}>
+              {i18n.common.privacyPolicy}
+            </Text>
+          </Text>
+
+          <AccountCreationArea
+            createAccountRef={createAccountRef}
+            importAccountRef={importAccountRef}
+            attachAccountRef={attachAccountRef}
+            allowToShowSelectType={true}
+          />
+          <GeneralTermModal
+            modalVisible={generalTermVisible}
+            setVisible={setGeneralTermVisible}
+            onPressAcceptBtn={onPressAcceptBtn}
+          />
         </View>
-
-        <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessagePart1}</Text>
-        <Text style={firstScreenNotificationStyle}>
-          <Text onPress={onPressTermsCondition} style={{ color: theme.colorTextLight1 }}>
-            {i18n.common.termAndConditions}
-          </Text>
-          <Text>{i18n.common.and}</Text>
-          <Text onPress={onPressPolicy} style={{ color: theme.colorTextLight1 }}>
-            {i18n.common.privacyPolicy}
-          </Text>
-        </Text>
-
-        <AccountCreationArea
-          createAccountRef={createAccountRef}
-          importAccountRef={importAccountRef}
-          attachAccountRef={attachAccountRef}
-          allowToShowSelectType={true}
-        />
-        <GeneralTermModal
-          modalVisible={generalTermVisible}
-          setVisible={setGeneralTermVisible}
-          onPressAcceptBtn={onPressAcceptBtn}
-        />
-        <SafeAreaView />
       </ImageBackground>
     </View>
   );

@@ -11,7 +11,7 @@ import React, {
 } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import { Linking, NativeSyntheticEvent, Platform, SafeAreaView, Share, TouchableOpacity, View } from 'react-native';
+import { Linking, NativeSyntheticEvent, Platform, Share, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -33,7 +33,7 @@ import {
   WebViewNavigationEvent,
   WebViewProgressEvent,
 } from 'react-native-webview/lib/WebViewTypes';
-import * as RNFS from 'react-native-fs';
+import * as RNFS from '@dr.pogodin/react-native-fs';
 import { DEVICE, regex } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
@@ -59,6 +59,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import { transformUniversalToNative } from 'utils/deeplink';
 import { useGetDesktopMode } from 'hooks/screen/Home/Browser/DesktopMode/useGetDesktopMode';
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -178,6 +179,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   const toast = useToast();
   const dispatch = useDispatch();
   const { desktopMode, addToDesktopMode, removeFromDesktopMode } = useGetDesktopMode(initWebViewSource || '');
+  const insets = useSafeAreaInsets();
 
   const clearCurrentBrowserSv = () => {
     browserSv.current?.onDisconnect();
@@ -632,7 +634,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
 
       <View style={stylesheet.footer}>{bottomButtonList.map(renderBrowserTabBar)}</View>
 
-      <SafeAreaView style={stylesheet.footerAfter} />
+      <View style={[stylesheet.footerAfter, { paddingBottom: insets.bottom }]} />
 
       <BrowserOptionModal
         ref={browserOptionModalRef}

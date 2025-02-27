@@ -298,6 +298,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         flatListStyle={styles.container}
         filterOptions={FILTER_OPTIONS}
         filterFunction={filterFunction}
+        isShowBottomSafeArea={false}
         renderItem={renderItem}
         onPressBack={onBack}
         estimatedItemSize={113}

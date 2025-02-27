@@ -12,7 +12,7 @@ import i18n from 'utils/i18n/i18n';
 
 import createStyle from './styles';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   children: JSX.Element;
@@ -37,7 +37,7 @@ const DisplayPayloadModal: React.FC<Props> = (props: Props) => {
       modalVisible={visible}
       isUseForceHidden={false}
       onBackButtonPress={onClose}>
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
           width: '100%',
@@ -54,7 +54,7 @@ const DisplayPayloadModal: React.FC<Props> = (props: Props) => {
             {i18n.common.scanQr}
           </Button>
         </View>
-      </SafeAreaView>
+      </View>
     </SwFullSizeModal>
   );
 };

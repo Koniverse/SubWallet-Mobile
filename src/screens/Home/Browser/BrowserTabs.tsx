@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { FlatList, Image, ListRenderItemInfo, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, ListRenderItemInfo, TouchableOpacity, View } from 'react-native';
 import { Browsers, House, Plus, X } from 'phosphor-react-native';
 import { closeAllTab, closeTab } from 'stores/updater';
 import { getHostName } from 'utils/browser';
@@ -13,6 +13,7 @@ import { EmptyList } from 'components/EmptyList';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './styles/BrowserTabs';
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface Props {
   activeTab: BrowserSlice['activeTab'];
@@ -26,6 +27,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const isEmptyTabs = !tabs.length;
+  const insets = useSafeAreaInsets();
 
   const onPressSearchBar = useCallback(() => {
     if (isEmptyTabs) {
@@ -143,7 +145,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
             {i18n.common.done}
           </Button>
         </View>
-        <SafeAreaView style={{ backgroundColor: theme.colorBgSecondary }} />
+        <View style={{ backgroundColor: theme.colorBgSecondary, paddingBottom: insets.bottom }} />
       </>
     </ScreenContainer>
   );

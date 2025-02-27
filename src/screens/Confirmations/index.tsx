@@ -31,7 +31,7 @@ import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from '@gorhom/portal';
 import { findAccountByAddress, getSignMode } from 'utils/account';
 import { AccountSignMode } from 'types/signer';
@@ -69,6 +69,7 @@ export const Confirmations = () => {
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
   const [index, setIndex] = useState(0);
   const confirmation = confirmationQueue[index] || null;
+  const insets = useSafeAreaInsets();
   useHandlerHardwareBackPress(true);
   const isDevMode = getDevMode();
   const titleMap = useMemo(
@@ -340,7 +341,7 @@ export const Confirmations = () => {
           isFullHeight={confirmation && confirmation.item.isInternal}
         />
         {content}
-        <SafeAreaView edges={['bottom']} />
+        <View style={{ paddingBottom: insets.bottom }} />
       </View>
     </View>
   );

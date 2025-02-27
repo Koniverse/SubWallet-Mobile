@@ -57,6 +57,7 @@ interface Props<T> {
     sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
   isShowMainHeader?: boolean;
+  isShowBottomSafeArea?: boolean;
   defaultSearchString?: string;
   defaultSelectionMap?: Record<string, boolean>;
   androidKeyboardVerticalOffset?: number;
@@ -101,6 +102,7 @@ export function FlatListScreen<T>({
   beforeListItem,
   grouping,
   isShowMainHeader,
+  isShowBottomSafeArea,
   defaultSearchString,
   defaultSelectionMap,
   androidKeyboardVerticalOffset,
@@ -239,6 +241,7 @@ export function FlatListScreen<T>({
       disableRightButton={rightIconOption?.disabled}
       rightIconColor={rightIconOption?.color}
       isShowMainHeader={isShowMainHeader}
+      isShowBottomSafeArea={isShowBottomSafeArea}
       androidKeyboardVerticalOffset={androidKeyboardVerticalOffset}>
       {renderContent()}
     </ContainerWithSubHeader>

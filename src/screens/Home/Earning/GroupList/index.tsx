@@ -363,6 +363,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         renderItem={renderItem}
         onPressBack={onBack}
         estimatedItemSize={74}
+        isShowBottomSafeArea={false}
         isShowFilterBtn
         isShowMainHeader
         refreshControl={

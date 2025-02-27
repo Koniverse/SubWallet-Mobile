@@ -1,6 +1,7 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ImageStyle } from 'react-native-fast-image';
 import { ThemeTypes } from 'styles/themes';
+import { EdgeInsets } from 'react-native-safe-area-context';
 export interface ButtonStyles {
   buttonSubmit: ViewStyle;
   container: ViewStyle;
@@ -11,9 +12,9 @@ export interface ButtonStyles {
   textContent: TextStyle;
 }
 
-export default (theme: ThemeTypes) =>
+export default (theme: ThemeTypes, insets: EdgeInsets) =>
   StyleSheet.create<ButtonStyles>({
-    container: { height: '100%', paddingBottom: theme.paddingXL, paddingHorizontal: theme.padding },
+    container: { height: '100%', paddingTop: insets.top, paddingBottom: theme.paddingXL + insets.bottom, paddingHorizontal: theme.padding },
     gradientContainer: { flex: 1, backgroundColor: 'black' },
     content: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     logo: { width: 112, height: 112, marginBottom: 32 },

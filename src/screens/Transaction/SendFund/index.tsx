@@ -49,7 +49,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
   View,
@@ -112,6 +111,7 @@ import {
   _isPosChainBridge,
   _isPosChainL2Bridge,
 } from '@subwallet/extension-base/services/balance-service/transfer/xcm/posBridge';
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -204,6 +204,7 @@ export const SendFund = ({
   const accountSelectorRef = useRef<ModalRef>();
   const tokenSelectorRef = useRef<ModalRef>();
   const chainSelectorRef = useRef<ModalRef>();
+  const insets = useSafeAreaInsets();
 
   const {
     title,
@@ -1292,7 +1293,7 @@ export const SendFund = ({
                     </>
                   )}
                 </View>
-                <SafeAreaView />
+                <View style={{ paddingBottom: insets.bottom }} />
               </>
             </>
           </ScreenContainer>

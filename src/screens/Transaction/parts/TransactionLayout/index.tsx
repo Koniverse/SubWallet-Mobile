@@ -1,9 +1,10 @@
 import React from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
+import {KeyboardAvoidingView, Platform, View} from 'react-native';
 import { ScreenContainer } from 'components/ScreenContainer';
 import TransactionHeader from 'screens/Transaction/parts/TransactionHeader';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 interface Props {
   title: string;
@@ -27,6 +28,7 @@ export const TransactionLayout = ({
   onPressBack,
 }: Props) => {
   const navigation = useNavigation<StakingScreenNavigationProps>();
+  const insets = useSafeAreaInsets();
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
@@ -44,7 +46,7 @@ export const TransactionLayout = ({
           />
 
           {children}
-          <SafeAreaView />
+          <View style={{ paddingBottom: insets.bottom }} />
         </>
       </ScreenContainer>
     </KeyboardAvoidingView>

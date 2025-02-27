@@ -16,7 +16,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
@@ -81,7 +81,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const scrollRef = useRef<ScrollView>(null);
   const checkRef = useRef<number>(Date.now());
-
+  const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { poolInfoMap: _poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
@@ -418,11 +418,13 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       modalVisible={modalVisible}
       setVisible={!redirectFromFirstScreen ? setVisible : noop}
       onChangeModalVisible={noop}>
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
           width: '100%',
           marginBottom: theme.padding,
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom
         }}>
         <View style={styles.wrapper}>
           <View>
@@ -555,7 +557,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             </Button>
           )}
         </View>
-      </SafeAreaView>
+      </View>
     </SwFullSizeModal>
   );
 };

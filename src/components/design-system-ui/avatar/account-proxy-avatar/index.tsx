@@ -1,5 +1,5 @@
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import React from 'react';
+import React, {Suspense} from 'react';
 import { StyleSheet, View } from 'react-native';
 import Avatar from 'react-native-boring-avatars';
 import { Image } from 'components/design-system-ui';
@@ -23,12 +23,14 @@ export const AccountProxyAvatar = (props: Props) => {
         { width: size, height: size, minWidth: size, borderWidth: size * 0.05, borderRadius: size },
       ]}>
       {value ? (
-        <Avatar
-          colors={['#004BFF', '#4CEAAC', '#0C0C0C', '#1A1A1A', '#FFFFFF']}
-          name={value}
-          size={size * 0.7}
-          variant="bauhaus"
-        />
+        <Suspense>
+          <Avatar
+            colors={['#004BFF', '#4CEAAC', '#0C0C0C', '#1A1A1A', '#FFFFFF']}
+            name={value}
+            size={size * 0.7}
+            variant="bauhaus"
+          />
+        </Suspense>
       ) : (
         <Image style={{ width: size * 0.7, height: size * 0.7 }} src={Images.avatarPlaceholder} />
       )}

@@ -8,7 +8,7 @@ import usePayloadScanner from 'hooks/qr/usePayloadScanner';
 import { ArrowLeft } from 'phosphor-react-native';
 import { ScannerContext } from 'providers/ScannerContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar, StyleProp, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StatusBar, StyleProp, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Bar as ProgressBar } from 'react-native-progress';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RootNavigationProps } from 'routes/index';
@@ -20,6 +20,7 @@ import { convertHexColorToRGBA } from 'utils/color';
 import i18n from 'utils/i18n/i18n';
 import { Button } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -75,7 +76,7 @@ const SigningScanPayload = () => {
     state: { totalFrameCount, completedFramesCount, step },
     clearMultipartProgress,
   } = useContext(ScannerContext);
-
+  const insets = useSafeAreaInsets();
   const [error, setError] = useState('');
 
   const onScan = usePayloadScanner(setError);
@@ -97,7 +98,7 @@ const SigningScanPayload = () => {
 
   return (
     <View style={WrapperStyle}>
-      <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
+      <View style={[ScannerStyles.SafeAreaStyle, { paddingTop: insets.top, paddingBottom: insets.bottom }]} />
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={theme.colorBgSecondary} translucent={true} />
       <QRCodeScanner
         reactivate={true}

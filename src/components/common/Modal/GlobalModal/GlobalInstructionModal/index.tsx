@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { Button, Icon, SwFullSizeModal, Typography } from 'components/design-system-ui';
 import { noop } from 'utils/function';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { BoxProps } from 'components/Modal/Earning/EarningPoolDetailModal';
@@ -46,6 +46,7 @@ export const GlobalInstructionModal = ({
 }: Props) => {
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
+  const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyle(theme), [theme]);
   const [showScrollEnd, setShowScrollEnd] = useState(false);
   const [isScrollEnd, setIsScrollEnd] = useState(false);
@@ -88,11 +89,12 @@ export const GlobalInstructionModal = ({
       isUseModalV2
       level={3}
       modalBaseV2Ref={modalBaseV2Ref}>
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
           width: '100%',
-          marginBottom: theme.padding,
+          marginBottom: theme.padding + insets.bottom,
+          paddingTop: insets.top,
         }}>
         <View
           style={{
@@ -178,7 +180,7 @@ export const GlobalInstructionModal = ({
             </View>
           </View>
         </View>
-      </SafeAreaView>
+      </View>
     </SwFullSizeModal>
   );
 };

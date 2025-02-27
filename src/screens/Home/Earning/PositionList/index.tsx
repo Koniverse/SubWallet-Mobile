@@ -341,6 +341,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
       renderItem={renderItem}
       rightIconOption={rightIconOption}
       estimatedItemSize={76}
+      isShowBottomSafeArea={false}
       keyExtractor={item => item.slug}
       isShowFilterBtn
       isShowMainHeader

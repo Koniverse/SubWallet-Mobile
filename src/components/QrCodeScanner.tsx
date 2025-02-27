@@ -11,7 +11,7 @@ import { Warning } from 'components/Warning';
 import { Button, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { BarCodeReadEvent } from 'react-native-camera';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CancelButtonStyle: StyleProp<ViewStyle> = {
   position: 'absolute',
@@ -39,6 +39,8 @@ interface Props {
 
 export const QrCodeScanner = ({ error, onPressLibraryBtn, onPressCancel, onSuccess }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const insets = useSafeAreaInsets();
+
   return (
     <QRCodeScanner
       reactivate={true}
@@ -53,7 +55,7 @@ export const QrCodeScanner = ({ error, onPressLibraryBtn, onPressCancel, onSucce
       customMarker={
         <View style={ScannerStyles.RectangleContainerStyle}>
           <View style={ScannerStyles.TopOverlayStyle}>
-            <SafeAreaView edges={['top']} />
+            <View style={{ paddingTop: insets.top }} />
             <View style={[ScannerStyles.HeaderStyle]}>
               <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanQrCode}</Text>
               <IconButton icon={CaretLeft} size={24} style={CancelButtonStyle} onPress={onPressCancel} />

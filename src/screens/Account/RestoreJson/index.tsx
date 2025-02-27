@@ -7,7 +7,7 @@ import { InputFile } from 'components/common/Field/InputFile';
 import type { KeyringPair$Json } from '@subwallet/keyring/types';
 import type { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
-import * as RNFS from 'react-native-fs';
+import * as RNFS from '@dr.pogodin/react-native-fs';
 import { isKeyringPairs$Json } from 'types/typeGuards';
 import { batchRestoreV2, jsonRestoreV2, parseBatchSingleJson, parseInfoSingleJson } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';

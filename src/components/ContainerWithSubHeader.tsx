@@ -1,5 +1,5 @@
 import React from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleProp, View } from 'react-native';
 import { SubHeader, SubHeaderProps } from 'components/SubHeader';
 import { Header } from 'components/Header';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   style?: StyleProp<any>;
   isShowMainHeader?: boolean;
   isShowPlaceHolder?: boolean;
+  isShowBottomSafeArea?: boolean;
   androidKeyboardVerticalOffset?: number;
   disabledMainHeader?: boolean;
 }
@@ -32,6 +33,7 @@ export const ContainerWithSubHeader = ({
   androidKeyboardVerticalOffset,
   titleTextAlign,
   disabledMainHeader,
+  isShowBottomSafeArea = true,
   ...subHeaderProps
 }: ContainerWithSubHeaderProps) => {
   const insets = useSafeAreaInsets();
@@ -47,7 +49,7 @@ export const ContainerWithSubHeader = ({
       )}
       <SubHeader {...subHeaderProps} titleTextAlign={titleTextAlign} />
       {children}
-      <SafeAreaView />
+      {isShowBottomSafeArea && <View style={{paddingBottom: insets.bottom}}/>}
     </KeyboardAvoidingView>
   );
 };

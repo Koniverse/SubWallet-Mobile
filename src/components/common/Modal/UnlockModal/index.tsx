@@ -19,7 +19,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStyle from './style';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, RootStackParamList, UnlockModalProps } from 'routes/index';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import { useSelector } from 'react-redux';
@@ -58,6 +58,7 @@ async function handleUnlockPassword(
 export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
   const { isUpdateBiometric } = params;
   const { isUseBiometric } = useSelector((state: RootState) => state.mobileSettings);
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { isKeyboardVisible } = useKeyboardVisible();
@@ -207,7 +208,7 @@ export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
               </Button>
             )}
           </View>
-          {!isKeyboardVisible && <SafeAreaView edges={['bottom']} />}
+          {!isKeyboardVisible && <View style={{ paddingBottom: insets.bottom }} />}
         </View>
       </View>
     </View>

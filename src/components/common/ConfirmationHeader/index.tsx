@@ -1,7 +1,8 @@
 import React from 'react';
 import { SubHeader } from 'components/SubHeader';
 import { CaretRight } from 'phosphor-react-native';
-import { SafeAreaView } from 'react-native';
+import { View } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 interface Props {
   index: number;
@@ -20,9 +21,10 @@ export const ConfirmationHeader = ({
   index,
   isFullHeight,
 }: Props) => {
+  const insets = useSafeAreaInsets();
   return (
     <>
-      {isFullHeight && <SafeAreaView />}
+      {isFullHeight && <View style={{ paddingTop: insets.top }} />}
       <SubHeader
         onPressBack={onPressPrev}
         title={title}
