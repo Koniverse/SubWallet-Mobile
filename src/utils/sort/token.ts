@@ -64,7 +64,6 @@ export function sortTokensByStandard(
   priorityTokenGroups: TokenPriorityDetails,
   isTokenGroup = false,
 ) {
-  console.log('priorityTok}enGroups', priorityTokenGroups);
   const priorityTokenGroupKeys = Object.keys(
     priorityTokenGroups && priorityTokenGroups.tokenGroup ? priorityTokenGroups.tokenGroup : {},
   );
