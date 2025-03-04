@@ -3,7 +3,7 @@ package app.subwallet.mobile
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import android.os.Bundle
-import org.devio.rn.splashscreen.SplashScreen
+import com.zoontek.rnbootsplash.RNBootSplash
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 
@@ -11,7 +11,7 @@ class MainActivity : ReactActivity() {
     // Add this method.
    override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
-        SplashScreen.show(this)
+        RNBootSplash.init(this, R.style.BootTheme)
         super.onCreate(null)
     }
 

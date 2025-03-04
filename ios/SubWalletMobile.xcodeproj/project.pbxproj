@@ -17,6 +17,8 @@
 		81AB9BB82455601600AC10FF /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72455601600AC10FF /* SplashScreen.storyboard */; };
 		F1554EF9292D4F5B00302F08 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8292D4F5B00302F08 /* Images-2.xcassets */; };
 		F1F1508728C6028D004B2C94 /* PageJs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F1F1508628C6028D004B2C94 /* PageJs.bundle */; };
+		99707CF8C4A6451189C450E5 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5646D8299D3E41EBA4335AD4 /* BootSplash.storyboard */; };
+		29241D84F53340F3A72810AA /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3AE3ACC9119042C3A5C4D2F9 /* Colors.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +39,8 @@
 		F1554EF8292D4F5B00302F08 /* Images-2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Images-2.xcassets"; path = "SubWalletMobile/Images-2.xcassets"; sourceTree = "<group>"; };
 		F1F1508628C6028D004B2C94 /* PageJs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = PageJs.bundle; path = ../html/PageJs.bundle; sourceTree = "<group>"; };
 		FA81F600080F24C22A559041 /* Pods-SubWalletMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.release.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.release.xcconfig"; sourceTree = "<group>"; };
+		5646D8299D3E41EBA4335AD4 /* BootSplash.storyboard */ = {isa = PBXFileReference; name = "BootSplash.storyboard"; path = "SubWalletMobile/BootSplash.storyboard"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3AE3ACC9119042C3A5C4D2F9 /* Colors.xcassets */ = {isa = PBXFileReference; name = "Colors.xcassets"; path = "SubWalletMobile/Colors.xcassets"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = folder.assetcatalog; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +65,8 @@
 				81AB9BB72455601600AC10FF /* SplashScreen.storyboard */,
 				F1554EF8292D4F5B00302F08 /* Images-2.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
+				5646D8299D3E41EBA4335AD4 /* BootSplash.storyboard */,
+				3AE3ACC9119042C3A5C4D2F9 /* Colors.xcassets */,
 			);
 			name = SubWalletMobile;
 			sourceTree = "<group>";
@@ -216,6 +222,8 @@
 				F1F1508728C6028D004B2C94 /* PageJs.bundle in Resources */,
 				F1554EF9292D4F5B00302F08 /* Images-2.xcassets in Resources */,
 				19875627C27936297704FB58 /* PrivacyInfo.xcprivacy in Resources */,
+				99707CF8C4A6451189C450E5 /* BootSplash.storyboard in Resources */,
+				29241D84F53340F3A72810AA /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

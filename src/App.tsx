@@ -13,7 +13,7 @@ import { RootState } from 'stores/index';
 import useAppLock from 'hooks/useAppLock';
 import useCryptoReady from 'hooks/init/useCryptoReady';
 import useSetupI18n from 'hooks/init/useSetupI18n';
-import SplashScreen from 'react-native-splash-screen';
+import RNBootSplash from "react-native-bootsplash";
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
@@ -180,7 +180,7 @@ export const App = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      SplashScreen.hide();
+      RNBootSplash.hide({ fade: true });
     }, 100);
     checkIsShowBuyToken();
     // getPoolInfoMap();
