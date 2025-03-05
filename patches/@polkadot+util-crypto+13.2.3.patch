@@ -1,0 +1,12 @@
+diff --git a/node_modules/@polkadot/util-crypto/packageInfo.js b/node_modules/@polkadot/util-crypto/packageInfo.js
+index 6ea9177..271d7c7 100644
+--- a/node_modules/@polkadot/util-crypto/packageInfo.js
++++ b/node_modules/@polkadot/util-crypto/packageInfo.js
+@@ -1 +1,6 @@
+-export const packageInfo = { name: '@polkadot/util-crypto', path: (import.meta && import.meta.url) ? new URL(import.meta.url).pathname.substring(0, new URL(import.meta.url).pathname.lastIndexOf('/') + 1) : 'auto', type: 'esm', version: '13.2.3' };
++export const packageInfo = {
++    name: '@polkadot/util-crypto',
++    path: 'auto',
++    type: 'cjs',
++    version: '13.2.3'
++};

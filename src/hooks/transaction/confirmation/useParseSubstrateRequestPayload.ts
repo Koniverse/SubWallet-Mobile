@@ -8,6 +8,7 @@ import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHa
 import { Chain } from '@subwallet/extension-chains/types';
 import { SignerPayloadJSON } from '@polkadot/types/types';
 import { getMetadataHash } from 'messaging/index';
+import { HexString } from '@polkadot/util/types';
 
 const registry = new TypeRegistry();
 
@@ -73,10 +74,9 @@ const useParseSubstrateRequestPayload = (chain: Chain | null, request?: RequestS
 
         if (metadataHash) {
           __payload.mode = 1;
-          __payload.metadataHash = `0x${metadataHash}`;
+          __payload.metadataHash = metadataHash as HexString;
         }
-
-        return _registry.createType('ExtrinsicPayload', __payload, { version: _payload.version });
+        return _registry.createType('ExtrinsicPayload', __payload, { version: __payload.version });
       }
     }
   }, [chain, metadataHash, request]);

@@ -1,0 +1,25 @@
+diff --git a/node_modules/@polkadot/util/cjs/detectPackage.js b/node_modules/@polkadot/util/cjs/detectPackage.js
+index c6ffc8f..df543f0 100644
+--- a/node_modules/@polkadot/util/cjs/detectPackage.js
++++ b/node_modules/@polkadot/util/cjs/detectPackage.js
+@@ -76,7 +76,7 @@ function warn(pre, all, fmt) {
+  * @description A `@polkadot/*` version detection utility, checking for one occurrence of a package in addition to checking for dependency versions.
+  */
+ function detectPackage({ name, path, type, version }, pathOrFn, deps = []) {
+-    if (!name.startsWith('@polkadot')) {
++    if (!name.startsWith('@polkadot') && !name.startsWith('@subwallet')) {
+         throw new Error(`Invalid package descriptor ${name}`);
+     }
+     const entry = getEntry(name);
+diff --git a/node_modules/@polkadot/util/packageInfo.js b/node_modules/@polkadot/util/packageInfo.js
+index c9cc8c6..2589f8d 100644
+--- a/node_modules/@polkadot/util/packageInfo.js
++++ b/node_modules/@polkadot/util/packageInfo.js
+@@ -1 +1,6 @@
+-export const packageInfo = { name: '@polkadot/util', path: (import.meta && import.meta.url) ? new URL(import.meta.url).pathname.substring(0, new URL(import.meta.url).pathname.lastIndexOf('/') + 1) : 'auto', type: 'esm', version: '13.2.3' };
++export const packageInfo = {
++    name: '@polkadot/util',
++    path: 'auto',
++    type: 'cjs',
++    version: '13.2.3'
++};

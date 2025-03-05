@@ -3,13 +3,19 @@ import { RequestOptimalTransferProcess } from '@subwallet/extension-base/service
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import {
   RequestCrossChainTransfer,
-  RequestTransfer,
+  RequestGetTokensCanPayFee,
   TokenSpendingApprovalParams,
 } from '@subwallet/extension-base/types';
 import { CommonOptimalPath } from '@subwallet/extension-base/types/service-base';
 import { sendMessage } from '..';
+import {
+  RequestSubmitTransfer,
+  RequestSubscribeTransfer,
+  ResponseSubscribeTransfer,
+} from '@subwallet/extension-base/types/balance/transfer';
+import { TokenHasBalanceInfo } from '@subwallet/extension-base/services/fee-service/interfaces';
 
-export async function makeTransfer(request: RequestTransfer): Promise<SWTransactionResponse> {
+export async function makeTransfer(request: RequestSubmitTransfer): Promise<SWTransactionResponse> {
   return sendMessage('pri(accounts.transfer)', request);
 }
 
@@ -23,6 +29,18 @@ export async function approveSpending(request: TokenSpendingApprovalParams): Pro
 
 export async function getMaxTransfer(request: RequestMaxTransferable): Promise<AmountData> {
   return sendMessage('pri(transfer.getMaxTransferable)', request);
+}
+
+export async function subscribeMaxTransfer(
+  request: RequestSubscribeTransfer,
+  callback: (data: ResponseSubscribeTransfer) => void,
+): Promise<ResponseSubscribeTransfer> {
+  return sendMessage('pri(transfer.subscribe)', request, callback);
+}
+
+export async function getTokensCanPayFee(request: RequestGetTokensCanPayFee): Promise<TokenHasBalanceInfo[]> {
+  // can set a default fee to ED of native token
+  return sendMessage('pri(customFee.getTokensCanPayFee)', request);
 }
 
 export async function getOptimalTransferProcess(request: RequestOptimalTransferProcess): Promise<CommonOptimalPath> {

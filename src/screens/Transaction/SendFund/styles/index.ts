@@ -18,8 +18,9 @@ export default (theme: ThemeTypes) =>
       marginBottom: -theme.margin,
     },
     max: {
-      padding: theme.padding,
-      marginRight: -theme.margin,
+      width: 40,
+      justifyContent: 'flex-end',
+      alignItems: 'flex-end',
     },
     maxText: {
       color: theme.colorSuccess,
@@ -62,7 +63,8 @@ export default (theme: ThemeTypes) =>
       flex: 1,
     },
     balanceStep2: {
-      paddingTop: theme.padding,
+      paddingTop: 16,
       flex: 1,
+      marginBottom: 0,
     },
   });
