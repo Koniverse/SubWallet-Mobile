@@ -31,6 +31,7 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const account = useGetAccountByAddress(recipientAddress);
   const theme = useSubWalletTheme().swThemes;
 
+  console.log('data', data);
   const toAssetInfo = useMemo(() => {
     return assetRegistryMap[data.quote.pair.to] || undefined;
   }, [assetRegistryMap, data.quote.pair.to]);
@@ -135,6 +136,13 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
         <AlertBox
           description={'Swap quote expired. Cancel to get a new quote.'}
           title={'Pay attention!'}
+          type={'warning'}
+        />
+      )}
+      {data && (
+        <AlertBox
+          description={`id: ${data.id}, address: ${data.address}`}
+          title={'Data log (will delete)'}
           type={'warning'}
         />
       )}
