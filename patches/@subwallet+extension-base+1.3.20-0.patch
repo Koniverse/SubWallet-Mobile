@@ -1,8 +1,8 @@
 diff --git a/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js b/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js
-index d28a90a..397599a 100644
+index 67d6f86..2ef49f8 100644
 --- a/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js
 +++ b/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js
-@@ -1,437 +1,22 @@
+@@ -1,458 +1,22 @@
  // Copyright 2019-2022 @subwallet/extension-base
  // SPDX-License-Identifier: Apache-2.0
 
@@ -20,6 +20,7 @@ index d28a90a..397599a 100644
 -import { BasicTxErrorType } from '@subwallet/extension-base/types';
 -import { CommonStepType } from '@subwallet/extension-base/types/service-base';
 -import { SwapErrorType, SwapFeeType, SwapProviderId, SwapStepType } from '@subwallet/extension-base/types/swap';
+-import { getId } from '@subwallet/extension-base/utils/getId';
 -import BigNumber from 'bignumber.js';
 -var ChainflipFeeType;
 -(function (ChainflipFeeType) {
@@ -40,14 +41,16 @@ index d28a90a..397599a 100644
 -  CHAINFLIP_QUOTE_ERROR["InsufficientIngress"] = "amount is lower than estimated ingress fee";
 -})(CHAINFLIP_QUOTE_ERROR || (CHAINFLIP_QUOTE_ERROR = {}));
  export class ChainflipSwapHandler {
-   constructor(chainService, balanceService, isTestnet = true) {
+-  constructor(chainService, balanceService, feeService, isTestnet = true) {
 -    this.swapBaseHandler = new SwapBaseHandler({
 -      chainService,
 -      balanceService,
+-      feeService,
 -      providerName: isTestnet ? 'Chainflip Testnet' : 'Chainflip',
 -      providerSlug: isTestnet ? SwapProviderId.CHAIN_FLIP_TESTNET : SwapProviderId.CHAIN_FLIP_MAINNET
 -    });
 -    this.isTestnet = isTestnet;
++  constructor(chainService, balanceService, isTestnet = true) {
      this.providerSlug = isTestnet ? SwapProviderId.CHAIN_FLIP_TESTNET : SwapProviderId.CHAIN_FLIP_MAINNET;
 -
 -    // @ts-ignore
@@ -394,11 +397,30 @@ index d28a90a..397599a 100644
 -      });
 -      extrinsic = submittableExtrinsic;
 -    } else {
+-      const id = getId();
+-      const feeInfo = await this.swapBaseHandler.feeService.subscribeChainFee(id, chainInfo.slug, 'evm');
 -      if (_isNativeToken(fromAsset)) {
--        const [transactionConfig] = await getEVMTransactionObject(chainInfo, address, depositAddressResponse.depositAddress, quote.fromAmount, false, this.chainService.getEvmApi(chainInfo.slug));
+-        const [transactionConfig] = await getEVMTransactionObject({
+-          chain: chainInfo.slug,
+-          evmApi: this.chainService.getEvmApi(chainInfo.slug),
+-          from: address,
+-          to: depositAddressResponse.depositAddress,
+-          value: quote.fromAmount,
+-          feeInfo,
+-          transferAll: false
+-        });
 -        extrinsic = transactionConfig;
 -      } else {
--        const [transactionConfig] = await getERC20TransactionObject(_getContractAddressOfToken(fromAsset), chainInfo, address, depositAddressResponse.depositAddress, quote.fromAmount, false, this.chainService.getEvmApi(chainInfo.slug));
+-        const [transactionConfig] = await getERC20TransactionObject({
+-          assetAddress: _getContractAddressOfToken(fromAsset),
+-          chain: chainInfo.slug,
+-          evmApi: this.chainService.getEvmApi(chainInfo.slug),
+-          from: address,
+-          to: depositAddressResponse.depositAddress,
+-          value: quote.fromAmount,
+-          feeInfo,
+-          transferAll: false
+-        });
 -        extrinsic = transactionConfig;
 -      }
 -    }
@@ -444,14 +466,13 @@ index d28a90a..397599a 100644
 +    return Promise.resolve([]);
    }
 -  generateOptimalProcess(params) {
--    return this.swapBaseHandler.generateOptimalProcess(params, [this.getSubmitStep]);
+-    return this.swapBaseHandler.generateOptimalProcess(params, [this.getSubmitStep.bind(this)]);
 +  validateSwapRequest(request) {
 +    throw new Error('Not implemented');
    }
  }
-\ No newline at end of file
 diff --git a/node_modules/@subwallet/extension-base/services/swap-service/utils.js b/node_modules/@subwallet/extension-base/services/swap-service/utils.js
-index 7657ca1..6f2d031 100644
+index 7657ca1..3944fd0 100644
 --- a/node_modules/@subwallet/extension-base/services/swap-service/utils.js
 +++ b/node_modules/@subwallet/extension-base/services/swap-service/utils.js
 @@ -1,7 +1,6 @@
@@ -471,13 +492,13 @@ index 7657ca1..6f2d031 100644
 -  [COMMON_CHAIN_SLUGS.ARBITRUM]: Chains.Arbitrum
 +  [COMMON_CHAIN_SLUGS.POLKADOT]: 'Polkadot',
 +  [COMMON_CHAIN_SLUGS.ETHEREUM]: 'Ethereum',
-+  [COMMON_CHAIN_SLUGS.ARBITRUM]: 'Arbitrum',
++  [COMMON_CHAIN_SLUGS.ARBITRUM]: 'Arbitrum'
  };
  export const CHAIN_FLIP_SUPPORTED_TESTNET_MAPPING = {
 -  [COMMON_CHAIN_SLUGS.ETHEREUM_SEPOLIA]: Chains.Ethereum,
 -  [COMMON_CHAIN_SLUGS.CHAINFLIP_POLKADOT]: Chains.Polkadot
 +  [COMMON_CHAIN_SLUGS.ETHEREUM_SEPOLIA]: 'Ethereum',
-+  [COMMON_CHAIN_SLUGS.CHAINFLIP_POLKADOT]: 'Polkadot',
++  [COMMON_CHAIN_SLUGS.CHAINFLIP_POLKADOT]: 'Polkadot'
  };
  export const CHAIN_FLIP_SUPPORTED_MAINNET_ASSET_MAPPING = {
 -  [COMMON_ASSETS.DOT]: Assets.DOT,
