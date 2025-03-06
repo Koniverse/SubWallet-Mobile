@@ -3,7 +3,7 @@ import { FeeChainType, FeeDetail, TransactionFee } from '@subwallet/extension-ba
 import { TokenHasBalanceInfo } from '@subwallet/extension-base/services/fee-service/interfaces';
 import { VoidFunction } from 'types/index';
 import BigN from 'bignumber.js';
-import { Keyboard, View } from 'react-native';
+import { Keyboard, Platform, StatusBar, View } from 'react-native';
 import { ActivityIndicator, Typography, Number, Button, Icon } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { PencilSimpleLine } from 'phosphor-react-native';
@@ -19,7 +19,8 @@ import { RootState } from 'stores/index';
 import { BN_TEN, BN_ZERO } from '@subwallet/extension-base/utils';
 import { ChooseFeeTokenModal } from 'components/Modal/TransactionFee/FeeEditor/ChooseFeeTokenModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { FontMedium } from 'styles/sharedStyles';
+import Tooltip from 'react-native-walkthrough-tooltip';
 
 export type RenderFieldNodeParams = {
   isLoading: boolean;
@@ -78,6 +79,7 @@ const FeeEditor = ({
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
 
   const [chooseFeeModalVisible, setChooseFeeModalVisible] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
   const tokenAsset = (() => {
     return assetRegistry[tokenPayFeeSlug] || undefined;
   })();
@@ -117,8 +119,36 @@ const FeeEditor = ({
       .toNumber();
   }, [estimateFee, isDataReady, nativeTokenDecimals, priceNativeValue]);
 
+  // const onSelectTransactionFee = useCallback(
+  //   (fee: TransactionFee) => {
+  //     onSelect?.(fee);
+  //   },
+  //   [onSelect],
+  // );
+
+  const isXcm = useMemo(() => {
+    return chainValue && destChainValue && chainValue !== destChainValue;
+  }, [chainValue, destChainValue]);
+
+  const isEditButton = useMemo(() => {
+    return (
+      !!(
+        chainValue &&
+        ASSET_HUB_CHAIN_SLUGS.includes(chainValue) &&
+        feeType === 'substrate' &&
+        listTokensCanPayFee.length
+      ) && !isXcm
+    );
+  }, [isXcm, chainValue, feeType, listTokensCanPayFee.length]);
+
   const onPressEdit = useCallback(() => {
     Keyboard.dismiss();
+
+    if (!isEditButton) {
+      setTooltipVisible(true);
+
+      return;
+    }
 
     if (chainValue && ASSET_HUB_CHAIN_SLUGS.includes(chainValue)) {
       setTimeout(() => {
@@ -129,14 +159,7 @@ const FeeEditor = ({
         setModalVisible(true);
       }, 100);
     }
-  }, [chainValue, setModalVisible]);
-
-  // const onSelectTransactionFee = useCallback(
-  //   (fee: TransactionFee) => {
-  //     onSelect?.(fee);
-  //   },
-  //   [onSelect],
-  // );
+  }, [chainValue, isEditButton, setModalVisible]);
 
   const customFieldNode = useMemo(() => {
     if (!renderFieldNode) {
@@ -155,21 +178,6 @@ const FeeEditor = ({
       onPressEdit,
     });
   }, [decimals, feeValue, isLoadingFee, onPressEdit, renderFieldNode, symbol, feePriceValue]);
-
-  const isXcm = useMemo(() => {
-    return chainValue && destChainValue && chainValue !== destChainValue;
-  }, [chainValue, destChainValue]);
-
-  const isEditButton = useMemo(() => {
-    return (
-      !!(
-        chainValue &&
-        ASSET_HUB_CHAIN_SLUGS.includes(chainValue) &&
-        feeType === 'substrate' &&
-        listTokensCanPayFee.length
-      ) && !isXcm
-    );
-  }, [isXcm, chainValue, feeType, listTokensCanPayFee.length]);
 
   const rateValue = useMemo(() => {
     const selectedToken = listTokensCanPayFee.find(item => item.slug === tokenPayFeeSlug);
@@ -197,14 +205,17 @@ const FeeEditor = ({
             </Typography.Text>
             <View>
               {!isDataReady ? (
-                <ActivityIndicator size={20} />
+                <ActivityIndicator size={20} indicatorColor={theme.colorTextLight4} />
               ) : (
                 <Number
                   size={14}
-                  textStyle={{ color: theme.colorTextLight4, ...FontSemiBold }}
+                  // textStyle={{ color: theme.colorTextLight4, ...FontSemiBold }}
                   value={isNativeTokenValue ? estimateFee : convertedEstimatedFee}
                   suffix={isNativeTokenValue ? nativeTokenSymbol : symbol}
                   decimal={isNativeTokenValue ? nativeTokenDecimals : decimals}
+                  unitColor={theme.colorTextLight4}
+                  decimalColor={theme.colorTextLight4}
+                  intColor={theme.colorTextLight4}
                 />
               )}
             </View>
@@ -212,22 +223,34 @@ const FeeEditor = ({
           {feeType !== 'ton' && (
             <View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Number
-                  size={14}
-                  textStyle={{ ...FontSemiBold }}
-                  value={convertedFeeValueToUSD}
-                  decimal={0}
-                  prefix={'~ $'}
-                />
-                <Button
-                  size={'xs'}
-                  type={'ghost'}
-                  icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme.colorSuccess} />}
-                  style={{ marginRight: -10 }}
-                  disabled={!isDataReady}
-                  loading={isLoadingToken}
-                  onPress={onPressEdit}
-                />
+                <Number size={14} value={convertedFeeValueToUSD} decimal={0} prefix={'~ $'} />
+                <Tooltip
+                  isVisible={tooltipVisible}
+                  disableShadow={true}
+                  placement={'top'}
+                  displayInsets={{ right: 0, top: 0, bottom: 0, left: 0 }}
+                  showChildInTooltip={false}
+                  topAdjustment={
+                    Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0
+                  }
+                  contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
+                  closeOnBackgroundInteraction={true}
+                  onClose={() => setTooltipVisible(false)}
+                  content={
+                    <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
+                      {'Coming soon!'}
+                    </Typography.Text>
+                  }>
+                  <Button
+                    size={'xs'}
+                    type={'ghost'}
+                    icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />}
+                    style={{ marginRight: -10 }}
+                    disabled={!isDataReady}
+                    loading={isLoadingToken}
+                    onPress={onPressEdit}
+                  />
+                </Tooltip>
               </View>
             </View>
           )}
