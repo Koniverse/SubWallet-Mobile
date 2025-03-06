@@ -256,7 +256,6 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
       }
       const buyInfo = tokens[selectedTokenSlug];
       const serviceInfo = buyInfo.serviceInfo[selectedService];
-      console.log('serviceInfo', serviceInfo);
       if (!serviceInfo) {
         console.warn('no serviceInfo');
         return;

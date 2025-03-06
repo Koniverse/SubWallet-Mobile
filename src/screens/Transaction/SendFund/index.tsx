@@ -26,12 +26,14 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import {
   approveSpending,
-  getMaxTransfer,
+  cancelSubscription,
   getOptimalTransferProcess,
+  getTokensCanPayFee,
   isTonBounceableAddress,
   makeCrossChainTransfer,
   makeTransfer,
   saveRecentAccount,
+  subscribeMaxTransfer,
 } from 'messaging/index';
 import { findAccountByAddress, getReformatedAddressRelatedToChain } from 'utils/account';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
@@ -97,7 +99,7 @@ import {
 import useFetchChainAssetInfo from 'hooks/screen/useFetchChainAssetInfo';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
-import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
+import { AccountProxy, AccountProxyType, TransactionFee } from '@subwallet/extension-base/types';
 import { AccountAddressItemType } from 'types/account';
 import { getChainsByAccountType } from 'utils/chain';
 import { getChainsByAccountAll } from 'utils/index';
@@ -112,6 +114,9 @@ import {
   _isPosChainBridge,
   _isPosChainL2Bridge,
 } from '@subwallet/extension-base/services/balance-service/transfer/xcm/posBridge';
+import { FeeEditor } from 'components/Modal/TransactionFee';
+import { ResponseSubscribeTransfer } from '@subwallet/extension-base/types/balance/transfer';
+import { TokenHasBalanceInfo } from '@subwallet/extension-base/services/fee-service/interfaces';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -234,15 +239,12 @@ export const SendFund = ({
     ...getValues(),
   };
 
-  const { chainInfoMap, chainStatusMap, ledgerGenericAllowNetworks } = useSelector(
-    (root: RootState) => root.chainStore,
-  );
+  const { chainInfoMap, ledgerGenericAllowNetworks } = useSelector((root: RootState) => root.chainStore);
   const { xcmRefMap } = useSelector((root: RootState) => root.assetRegistry);
   const assetRegistry = useChainAssets().chainAssetRegistry;
   const { accountProxies, accounts, isAllAccount, currentAccountProxy } = useSelector(
     (state: RootState) => state.accountState,
   );
-  const [maxTransfer, setMaxTransfer] = useState<string>('0');
   const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('send-fund');
   const checkAction = usePreCheckAction(
     fromValue,
@@ -255,13 +257,18 @@ export const SendFund = ({
   const [, update] = useState({});
   const [isBalanceReady, setIsBalanceReady] = useState(true);
   const [forceUpdateValue, setForceUpdateValue] = useState<{ value: string | null } | undefined>(undefined);
+  const [transferInfo, setTransferInfo] = useState<ResponseSubscribeTransfer | undefined>();
+  const [isFetchingInfo, setIsFetchingInfo] = useState(false);
+  const [isFetchingListFeeToken, setIsFetchingListFeeToken] = useState(false);
   const forceTransferAllRef = useRef<boolean>(false);
   const [forceTransferAll, setForceTransferAll] = useState<boolean>(false);
-  const [isFetchingMaxValue, setIsFetchingMaxValue] = useState(false);
-  const chainStatus = useMemo(() => chainStatusMap[chainValue]?.connectionStatus, [chainStatusMap, chainValue]);
+  const estimatedNativeFee = useMemo((): string => transferInfo?.feeOptions.estimatedFee || '0', [transferInfo]);
   const { confirmModal } = useContext(AppModalContext);
   const globalAppModalContext = useContext(GlobalModalContext);
   const assetInfo = useFetchChainAssetInfo(assetValue);
+  const [listTokensCanPayFee, setListTokensCanPayFee] = useState<TokenHasBalanceInfo[]>([]);
+  const [currentNonNativeTokenPayFee, setCurrentNonNativeTokenPayFee] = useState<string | undefined>(undefined);
+  const [selectedTransactionFee, setSelectedTransactionFee] = useState<TransactionFee | undefined>();
 
   const currentConfirmations = useMemo(() => {
     if (chainValue && destChainValue) {
@@ -423,6 +430,8 @@ export const SendFund = ({
   const amountRules = useMemo(
     () => ({
       validate: (amount: string): Promise<ValidateResult> => {
+        const maxTransfer = transferInfo?.maxTransferable || '0';
+
         if (isInvalidAmountValue(amount)) {
           return Promise.resolve(i18n.errorMessage.invalidAmount);
         }
@@ -444,7 +453,7 @@ export const SendFund = ({
         return Promise.resolve(undefined);
       },
     }),
-    [decimals, maxTransfer],
+    [decimals, transferInfo?.maxTransferable],
   );
 
   const _onChangeFrom = (item: AccountAddressItemType) => {
@@ -538,18 +547,23 @@ export const SendFund = ({
       const { asset, chain, destChain, from: _from, to, value } = values;
 
       let sendPromise: Promise<SWTransactionResponse>;
+      const nonNativeTokenPayFeeSlug =
+        currentNonNativeTokenPayFee !== nativeTokenSlug ? currentNonNativeTokenPayFee : undefined;
       const from = _from;
 
       if (chain === destChain) {
         // Transfer token or send fund
         sendPromise = makeTransfer({
           from,
-          networkKey: chain,
+          chain: chain,
           to: to,
           tokenSlug: asset,
           value: value,
           transferAll: isTransferAll,
           transferBounceable: isTransferBounceable,
+          feeOption: selectedTransactionFee?.feeOption,
+          feeCustom: selectedTransactionFee?.feeCustom,
+          nonNativeTokenPayFeeSlug: nonNativeTokenPayFeeSlug,
         });
       } else {
         // Make cross chain transfer
@@ -562,12 +576,22 @@ export const SendFund = ({
           value,
           transferAll: isTransferAll,
           transferBounceable: isTransferBounceable,
+          feeOption: selectedTransactionFee?.feeOption,
+          feeCustom: selectedTransactionFee?.feeCustom,
+          nonNativeTokenPayFeeSlug: nonNativeTokenPayFeeSlug,
         });
       }
 
       return sendPromise;
     },
-    [isTransferAll, isTransferBounceable],
+    [
+      currentNonNativeTokenPayFee,
+      isTransferAll,
+      isTransferBounceable,
+      nativeTokenSlug,
+      selectedTransactionFee?.feeCustom,
+      selectedTransactionFee?.feeOption,
+    ],
   );
 
   const handleBridgeSpendingApproval = useCallback(
@@ -593,10 +617,10 @@ export const SendFund = ({
     (value: boolean) => {
       setForceTransferAll(value);
       setIsTransferAll(true);
-      setForceUpdateValue({ value: maxTransfer });
+      setForceUpdateValue({ value: transferInfo?.maxTransferable || '0' });
       forceTransferAllRef.current = true;
     },
-    [maxTransfer],
+    [transferInfo?.maxTransferable],
   );
 
   const { onError, onSuccess } = useHandleSubmitMultiTransaction(
@@ -682,13 +706,20 @@ export const SendFund = ({
 
   const onSetMaxTransferable = useCallback(() => {
     setFocus('value');
-    setForceUpdateValue({ value: maxTransfer });
-    const bnMaxTransfer = new BN(maxTransfer);
+    setForceUpdateValue({ value: transferInfo?.maxTransferable || '0' });
+    const bnMaxTransfer = new BN(transferInfo?.maxTransferable || '0');
 
     if (!bnMaxTransfer.isZero()) {
       setIsTransferAll(true);
     }
-  }, [maxTransfer, setFocus]);
+  }, [setFocus, transferInfo?.maxTransferable]);
+
+  const onSetTokenPayFee = useCallback(
+    (slug: string) => {
+      setCurrentNonNativeTokenPayFee(slug);
+    },
+    [setCurrentNonNativeTokenPayFee],
+  );
 
   const onSubmit = useCallback(
     async (values: TransferFormValues) => {
@@ -807,7 +838,7 @@ export const SendFund = ({
   );
 
   const isSubmitButtonDisable = (() => {
-    return !isBalanceReady || loading || (isTransferAll ? !isFetchingMaxValue : false);
+    return !isBalanceReady || loading || (isTransferAll ? isFetchingInfo : false);
   })();
 
   const onInputChangeAmount = useCallback(() => {
@@ -919,53 +950,81 @@ export const SendFund = ({
   // Get max transfer value
   useEffect(() => {
     let cancel = false;
-    setIsFetchingMaxValue(false);
+    let id = '';
+    // setIsFetchingMaxValue(false);
+    setIsFetchingInfo(true);
+
+    const validate = () => {
+      if (transferAmount) {
+        setTimeout(() => {
+          trigger('value').finally(() => update({}));
+        }, 100);
+      }
+    };
+
+    const callback = (_transferInfo: ResponseSubscribeTransfer) => {
+      if (!cancel) {
+        setTransferInfo(_transferInfo);
+
+        id = _transferInfo.id;
+
+        validate();
+      } else {
+        cancelSubscription(_transferInfo.id).catch(console.error);
+      }
+    };
+
     if (fromValue && assetValue) {
-      getMaxTransfer({
-        address: fromValue,
-        networkKey: assetRegistry[assetValue]?.originChain,
-        token: assetValue,
-        isXcmTransfer: chainValue !== destChainValue,
-        destChain: destChainValue,
-      })
-        .then(balance => {
-          if (!cancel) {
-            setMaxTransfer(balance.value);
-            setIsFetchingMaxValue(true);
-          }
-        })
-        .catch(() => {
-          if (!cancel) {
-            setMaxTransfer('0');
-            setIsFetchingMaxValue(true);
-          }
+      subscribeMaxTransfer(
+        {
+          address: fromValue,
+          chain: assetRegistry[assetValue].originChain,
+          token: assetValue,
+          destChain: destChainValue,
+          feeOption: selectedTransactionFee?.feeOption,
+          feeCustom: selectedTransactionFee?.feeCustom,
+          nonNativeTokenPayFeeSlug:
+            currentNonNativeTokenPayFee !== nativeTokenSlug ? currentNonNativeTokenPayFee : undefined,
+        },
+        callback,
+      )
+        .then(callback)
+        .catch(e => {
+          console.error('Error in subscribeMaxTransfer:', e);
+
+          setTransferInfo(undefined);
+          validate();
         })
         .finally(() => {
-          if (!cancel) {
-            const value = getValues('value');
-
-            if (value) {
-              setTimeout(() => {
-                trigger('value').finally(() => update({}));
-              }, 100);
-            }
-          }
+          setIsFetchingInfo(false);
         });
     }
 
     return () => {
       cancel = true;
+      id && cancelSubscription(id).catch(console.error);
     };
-  }, [assetValue, assetRegistry, chainStatus, chainValue, destChainValue, fromValue, getValues, trigger]);
+  }, [
+    assetRegistry,
+    assetValue,
+    currentNonNativeTokenPayFee,
+    destChainValue,
+    fromValue,
+    nativeTokenSlug,
+    selectedTransactionFee?.feeCustom,
+    selectedTransactionFee?.feeOption,
+    transferAmount,
+    trigger,
+  ]);
 
   useEffect(() => {
     const bnTransferAmount = new BN(isInvalidAmountValue(transferAmount) ? '0' : transferAmount || '0');
-    const bnMaxTransfer = new BN(maxTransfer || '0');
+    const bnMaxTransfer = new BN(transferInfo?.maxTransferable || '0');
 
     if (bnTransferAmount.gt(BN_ZERO) && bnTransferAmount.eq(bnMaxTransfer)) {
       setIsTransferAll(true);
     }
-  }, [maxTransfer, transferAmount]);
+  }, [transferAmount, transferInfo?.maxTransferable]);
 
   //TODO re-check and remove this useEffect
   useEffect(() => {
@@ -1018,17 +1077,59 @@ export const SendFund = ({
   }, [disabledToAddressInput, fromValue, setValue]);
 
   useEffect(() => {
+    let cancel = false;
+
+    const fetchTokens = async () => {
+      setIsFetchingListFeeToken(true);
+      setListTokensCanPayFee([]);
+
+      try {
+        const _response = await getTokensCanPayFee({
+          chain: chainValue,
+          address: fromValue,
+        });
+
+        const response = _response.filter(item => item !== null && item !== undefined);
+
+        if (!cancel) {
+          setListTokensCanPayFee(response);
+          setIsFetchingListFeeToken(false);
+        }
+      } catch (error) {
+        if (!cancel) {
+          setListTokensCanPayFee([]);
+          setIsFetchingListFeeToken(false);
+        }
+
+        console.error('Error fetching tokens:', error);
+      }
+    };
+
+    fetchTokens().catch(error => {
+      console.error('Unhandled error in fetchTokens:', error);
+    });
+
+    return () => {
+      cancel = true;
+    };
+  }, [chainValue, fromValue, nativeTokenBalance, nativeTokenSlug]);
+
+  useEffect(() => {
     if (forceTransferAllRef.current && forceTransferAll) {
       forceTransferAllRef.current = false;
       let maxTransferDisplay: string;
       if (assetValue === nativeTokenSlug) {
-        maxTransferDisplay = `${formatNumber(maxTransfer, nativeTokenBalance.decimals, balanceFormatter)} ${
-          nativeTokenBalance.symbol
-        }`;
+        maxTransferDisplay = `${formatNumber(
+          transferInfo?.maxTransferable || '0',
+          nativeTokenBalance.decimals,
+          balanceFormatter,
+        )} ${nativeTokenBalance.symbol}`;
       } else {
-        maxTransferDisplay = `${formatNumber(maxTransfer, tokenBalance.decimals, balanceFormatter)} ${
-          tokenBalance.symbol
-        }`;
+        maxTransferDisplay = `${formatNumber(
+          transferInfo?.maxTransferable || '0',
+          tokenBalance.decimals,
+          balanceFormatter,
+        )} ${tokenBalance.symbol}`;
       }
 
       Alert.alert(
@@ -1058,13 +1159,18 @@ export const SendFund = ({
     doSubmit,
     forceTransferAll,
     getValues,
-    maxTransfer,
     nativeTokenBalance.decimals,
     nativeTokenBalance.symbol,
     nativeTokenSlug,
     tokenBalance.decimals,
     tokenBalance.symbol,
+    transferInfo?.maxTransferable,
   ]);
+
+  const isShowFeeEditor = useMemo(
+    () => !TON_CHAINS.includes(chainValue) && !!toValue && !!transferAmount && !!nativeTokenSlug,
+    [chainValue, nativeTokenSlug, toValue, transferAmount],
+  );
 
   return (
     <>
@@ -1264,7 +1370,7 @@ export const SendFund = ({
                     <>
                       <View style={stylesheet.footerBalanceWrapper}>
                         <Divider />
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={{ flexDirection: 'row', paddingBottom: isShowFeeEditor ? 0 : theme.padding }}>
                           <FreeBalance
                             address={fromValue}
                             chain={chainValue}
@@ -1280,6 +1386,32 @@ export const SendFund = ({
                             </TouchableOpacity>
                           )}
                         </View>
+                        {viewStep === 2 && (
+                          <View>
+                            {!TON_CHAINS.includes(chainValue) && !!toValue && !!transferAmount && !!nativeTokenSlug && (
+                              <FeeEditor
+                                chainValue={chainValue}
+                                currentTokenPayFee={currentNonNativeTokenPayFee}
+                                destChainValue={destChainValue}
+                                estimateFee={estimatedNativeFee}
+                                feeOptionsInfo={transferInfo?.feeOptions}
+                                feePercentageSpecialCase={transferInfo?.feePercentageSpecialCase}
+                                feeType={transferInfo?.feeType}
+                                isLoadingFee={isFetchingInfo}
+                                isLoadingToken={isFetchingListFeeToken}
+                                listTokensCanPayFee={listTokensCanPayFee}
+                                nativeTokenSlug={nativeTokenSlug}
+                                onSelect={setSelectedTransactionFee}
+                                onSetTokenPayFee={onSetTokenPayFee}
+                                selectedFeeOption={selectedTransactionFee}
+                                tokenPayFeeSlug={currentNonNativeTokenPayFee || nativeTokenSlug}
+                                tokenSlug={assetValue}
+                                modalVisible={false}
+                                setModalVisible={() => {}}
+                              />
+                            )}
+                          </View>
+                        )}
                       </View>
                       <Button
                         disabled={isSubmitButtonDisable}

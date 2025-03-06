@@ -34,7 +34,8 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
     }
   }, [transaction.chain, xcmData]);
 
-  const { decimals: chainDecimals, symbol: chainSymbol } = useGetNativeTokenBasicInfo(transaction.chain);
+  const { decimals: nativeTokenDecimals, symbol: nativeTokenSymbol } = useGetNativeTokenBasicInfo(transaction.chain);
+  const feeInfo = transaction.estimateFee;
   const senderPrefix = useGetChainPrefixBySlug(transaction.chain);
   const network = useMemo(() => chainInfoMap[transaction.chain], [chainInfoMap, transaction.chain]);
   const receiverPrefix = useGetChainPrefixBySlug(receiveChain);
@@ -68,10 +69,10 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
         />
 
         <MetaInfo.Number
-          decimals={chainDecimals}
+          decimals={feeInfo ? feeInfo.decimals : nativeTokenDecimals}
           label={i18n.inputLabel.estimatedFee}
-          suffix={chainSymbol}
-          value={transaction.estimateFee?.value || 0}
+          suffix={feeInfo ? feeInfo.symbol : nativeTokenSymbol}
+          value={feeInfo ? feeInfo.value : 0}
         />
       </MetaInfo>
       {!!transaction.estimateFee?.tooHigh && (
