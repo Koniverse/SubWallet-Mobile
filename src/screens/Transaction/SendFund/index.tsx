@@ -238,7 +238,7 @@ export const SendFund = ({
     ...useWatch<TransferFormValues>({ control }),
     ...getValues(),
   };
-
+  const scrollViewRef = useRef<ScrollView>(null);
   const { chainInfoMap, ledgerGenericAllowNetworks } = useSelector((root: RootState) => root.chainStore);
   const { xcmRefMap } = useSelector((root: RootState) => root.assetRegistry);
   const assetRegistry = useChainAssets().chainAssetRegistry;
@@ -433,18 +433,22 @@ export const SendFund = ({
         const maxTransfer = transferInfo?.maxTransferable || '0';
 
         if (isInvalidAmountValue(amount)) {
+          scrollToBottom();
           return Promise.resolve(i18n.errorMessage.invalidAmount);
         }
 
         if (!amount) {
+          scrollToBottom();
           return Promise.resolve(i18n.errorMessage.amountRequiredError);
         }
 
         if (new BigN(amount).eq(new BigN(0))) {
+          scrollToBottom();
           return Promise.resolve(i18n.errorMessage.amountMustBeGreaterThanZero);
         }
 
         if (new BigN(amount).gt(new BigN(maxTransfer))) {
+          scrollToBottom();
           const maxString = formatBalance(maxTransfer, decimals);
 
           return Promise.resolve(i18n.formatString(i18n.errorMessage.amountMustBeEqualOrLessThan, maxString));
@@ -1172,6 +1176,10 @@ export const SendFund = ({
     [chainValue, nativeTokenSlug, toValue, transferAmount],
   );
 
+  const scrollToBottom = () => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  };
+
   return (
     <>
       {!transactionDone ? (
@@ -1191,6 +1199,7 @@ export const SendFund = ({
 
               <>
                 <ScrollView
+                  ref={scrollViewRef}
                   style={stylesheet.scrollView}
                   contentContainerStyle={stylesheet.scrollViewContentContainer}
                   keyboardShouldPersistTaps={'handled'}>

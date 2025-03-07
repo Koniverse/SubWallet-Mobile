@@ -96,7 +96,7 @@ export const ChooseFeeTokenModal = ({
       modalBaseV2Ref={modalBaseV2Ref}
       isAllowSwipeDown={false}
       isUseModalV2={true}>
-      <ScrollView style={{ maxHeight: deviceHeight * 0.6 }}>
+      <ScrollView style={{ maxHeight: deviceHeight * 0.6 }} showsVerticalScrollIndicator={false}>
         <View style={{ alignItems: 'center', gap: theme.size, marginBottom: theme.sizeLG }}>
           <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Estimated fee'}</Typography.Text>
           <Number

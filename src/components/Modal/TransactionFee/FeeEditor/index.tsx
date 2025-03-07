@@ -106,7 +106,7 @@ const FeeEditor = ({
     return BN_ZERO;
   }, []);
 
-  const isDataReady = !isLoadingFee && !isLoadingFee && !!feeOptionsInfo;
+  const isDataReady = !isLoadingFee && !isLoadingFee && !isLoadingToken && !!feeOptionsInfo;
 
   const convertedFeeValueToUSD = useMemo(() => {
     if (!isDataReady) {
