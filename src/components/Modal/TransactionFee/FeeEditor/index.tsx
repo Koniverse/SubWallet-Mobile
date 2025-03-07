@@ -145,7 +145,9 @@ const FeeEditor = ({
     Keyboard.dismiss();
 
     if (!isEditButton) {
-      setTooltipVisible(true);
+      setTimeout(() => {
+        setTooltipVisible(true);
+      }, 500);
 
       return;
     }

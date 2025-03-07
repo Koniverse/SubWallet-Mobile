@@ -14,7 +14,6 @@ export default (theme: ThemeTypes) =>
       ...MarginBottomForSubmitButton,
     },
     footerBalanceWrapper: {
-      marginTop: -theme.margin,
       marginBottom: -theme.margin,
     },
     max: {

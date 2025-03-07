@@ -1097,7 +1097,7 @@ export const SendFund = ({
 
         if (!cancel) {
           setListTokensCanPayFee(response);
-          setIsFetchingListFeeToken(false);
+          setTimeout(() => setIsFetchingListFeeToken(false), 300);
         }
       } catch (error) {
         if (!cancel) {
