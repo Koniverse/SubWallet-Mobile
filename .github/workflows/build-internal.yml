@@ -204,6 +204,7 @@ jobs:
     # Build APK file
     - name: Generate App APK
       run: |
+        export NODE_OPTIONS="--max-old-space-size=4096"
         cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
 
     - name: Upload Android to Diawi
