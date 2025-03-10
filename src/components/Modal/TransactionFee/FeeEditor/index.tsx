@@ -76,7 +76,7 @@ const FeeEditor = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const priceMap = useSelector((state: RootState) => state.price.priceMap);
+  const { priceMap, currencyData } = useSelector((state: RootState) => state.price);
 
   const [chooseFeeModalVisible, setChooseFeeModalVisible] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -200,8 +200,8 @@ const FeeEditor = ({
   return (
     <>
       {customFieldNode || (
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 6 }}>
-          <View style={{ flexDirection: 'row', flex: 1, gap: theme.sizeXXS, alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center', paddingBottom: 6 }}>
+          <View style={{ flexDirection: 'row', flex: 1, gap: theme.sizeXXS, alignItems: 'center', flexWrap: 'wrap' }}>
             <Typography.Text style={{ color: theme.colorTextLight4, ...FontMedium }}>
               {`${i18n.inputLabel.estimatedFee}:`}
             </Typography.Text>
@@ -211,7 +211,6 @@ const FeeEditor = ({
               ) : (
                 <Number
                   size={14}
-                  // textStyle={{ color: theme.colorTextLight4, ...FontSemiBold }}
                   value={isNativeTokenValue ? estimateFee : convertedEstimatedFee}
                   suffix={isNativeTokenValue ? nativeTokenSymbol : symbol}
                   decimal={isNativeTokenValue ? nativeTokenDecimals : decimals}
@@ -223,37 +222,33 @@ const FeeEditor = ({
             </View>
           </View>
           {feeType !== 'ton' && (
-            <View>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Number size={14} value={convertedFeeValueToUSD} decimal={0} prefix={'~ $'} />
-                <Tooltip
-                  isVisible={tooltipVisible}
-                  disableShadow={true}
-                  placement={'top'}
-                  displayInsets={{ right: 0, top: 0, bottom: 0, left: 0 }}
-                  showChildInTooltip={false}
-                  topAdjustment={
-                    Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0
-                  }
-                  contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
-                  closeOnBackgroundInteraction={true}
-                  onClose={() => setTooltipVisible(false)}
-                  content={
-                    <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
-                      {'Coming soon!'}
-                    </Typography.Text>
-                  }>
-                  <Button
-                    size={'xs'}
-                    type={'ghost'}
-                    icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />}
-                    style={{ marginRight: -10 }}
-                    disabled={!isDataReady}
-                    loading={isLoadingToken}
-                    onPress={onPressEdit}
-                  />
-                </Tooltip>
-              </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+              <Number size={14} value={convertedFeeValueToUSD} decimal={0} prefix={`~ ${currencyData.symbol}`} />
+              <Tooltip
+                isVisible={tooltipVisible}
+                disableShadow={true}
+                placement={'top'}
+                displayInsets={{ right: 0, top: 0, bottom: 0, left: 0 }}
+                showChildInTooltip={false}
+                topAdjustment={Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0}
+                contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
+                closeOnBackgroundInteraction={true}
+                onClose={() => setTooltipVisible(false)}
+                content={
+                  <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
+                    {'Coming soon!'}
+                  </Typography.Text>
+                }>
+                <Button
+                  size={'xs'}
+                  type={'ghost'}
+                  icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />}
+                  style={{ marginRight: -10 }}
+                  disabled={!isDataReady}
+                  loading={isLoadingToken}
+                  onPress={onPressEdit}
+                />
+              </Tooltip>
             </View>
           )}
         </View>

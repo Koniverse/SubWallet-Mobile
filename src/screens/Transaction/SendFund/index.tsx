@@ -475,6 +475,7 @@ export const SendFund = ({
     setValue('destChain', item.originChain);
     tokenSelectorRef?.current?.onCloseModal();
     setForceUpdateValue(undefined);
+    setCurrentNonNativeTokenPayFee(undefined);
     setIsTransferAll(false);
   };
 
@@ -959,7 +960,9 @@ export const SendFund = ({
     setIsFetchingInfo(true);
 
     const validate = () => {
-      if (transferAmount) {
+      const currentTransferValue = getValues('value');
+
+      if (currentTransferValue) {
         setTimeout(() => {
           trigger('value').finally(() => update({}));
         }, 100);
@@ -1014,10 +1017,10 @@ export const SendFund = ({
     currentNonNativeTokenPayFee,
     destChainValue,
     fromValue,
+    getValues,
     nativeTokenSlug,
     selectedTransactionFee?.feeCustom,
     selectedTransactionFee?.feeOption,
-    transferAmount,
     trigger,
   ]);
 
@@ -1396,7 +1399,7 @@ export const SendFund = ({
                           )}
                         </View>
                         {viewStep === 2 && (
-                          <View>
+                          <>
                             {!TON_CHAINS.includes(chainValue) && !!toValue && !!transferAmount && !!nativeTokenSlug && (
                               <FeeEditor
                                 chainValue={chainValue}
@@ -1419,7 +1422,7 @@ export const SendFund = ({
                                 setModalVisible={() => {}}
                               />
                             )}
-                          </View>
+                          </>
                         )}
                       </View>
                       <Button

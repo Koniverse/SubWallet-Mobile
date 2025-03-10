@@ -60,7 +60,7 @@ export const ChooseFeeItem = ({ amountToPay, slug, selected, onSelect, balance, 
           </View>
           <View style={{ flexDirection: 'row' }}>
             <Typography.Text size={'sm'} style={{ color: theme.colorTextTertiary }}>
-              {'Available balance:'}
+              {'Available balance: '}
             </Typography.Text>
             <Number
               size={12}
