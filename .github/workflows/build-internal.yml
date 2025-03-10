@@ -204,25 +204,15 @@ jobs:
     # Build APK file
     - name: Generate App APK
       run: |
-        cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a,armeabi-v7a -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
+        export NODE_OPTIONS="--max-old-space-size=4096"
+        cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
 
-#    - name: Upload Android to Diawi
-#      id: upload-diawi-android
-#      uses: rnkdsh/action-upload-diawi@v1.5.4
-#      with:
-#        token: ${{ secrets.DIAWI_TOKEN }}
-#        file: ./android/app/build/outputs/apk/release/app-release.apk
-
-    - name: Zip APK
-      run: |
-        cd android/app/build/outputs/apk/release
-        zip -r app-release.zip app-release.apk
-
-    - name: Upload APK to Telegram
-      run: |
-        curl -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-             -F "document=@./android/app/build/outputs/apk/release/app-release.zip" \
-             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument"
+    - name: Upload Android to Diawi
+      id: upload-diawi-android
+      uses: rnkdsh/action-upload-diawi@v1.5.4
+      with:
+        token: ${{ secrets.DIAWI_TOKEN }}
+        file: ./android/app/build/outputs/apk/release/app-release.apk
 
     # Notify to Discord
     - name: Notify to Discord

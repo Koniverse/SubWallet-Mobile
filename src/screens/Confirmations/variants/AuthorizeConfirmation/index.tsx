@@ -165,6 +165,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
       types = DEFAULT_ACCOUNT_TYPES;
     }
     console.log('types', types);
+
     setSelectedMnemonicType('general');
     navigation.replace('CreateAccount', { isBack: true });
   }, [accountAuthTypes, navigation, setSelectedMnemonicType]);
