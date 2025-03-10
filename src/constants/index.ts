@@ -4,6 +4,7 @@ import { getBrand } from 'react-native-device-info';
 import env from 'react-native-config';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { KeypairType } from '@subwallet/keyring/types';
+import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 
 type DeviceInfo = {
   isIos: boolean;
@@ -72,3 +73,4 @@ export const regex: RegexType = {
 };
 export const WEBVIEW_ANDROID_SYSTEM_MIN_VERSION = 113;
 export const ALL_ACCOUNT_AUTH_TYPES: AccountAuthType[] = ['evm', 'substrate', 'ton'];
+export const SHOW_REVIEW_APP_SCREENS = [ExtrinsicType.STAKING_WITHDRAW, ExtrinsicType.SWAP];

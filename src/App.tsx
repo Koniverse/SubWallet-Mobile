@@ -45,6 +45,7 @@ import { useGetBrowserConfig } from 'hooks/static-content/useGetBrowserConfig';
 import RNRestart from 'react-native-restart';
 import { ImageLogosMap } from 'assets/logo';
 import { GlobalInstructionModalContextProvider } from 'providers/GlobalInstructionModalContext';
+import { useGetShowReviewPopupScreen } from 'hooks/static-content/useGetShowReviewPopupScreen';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -171,6 +172,7 @@ export const App = () => {
   const isI18nReady = useSetupI18n().isI18nReady;
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
+  const { getShowReviewPopupScreen } = useGetShowReviewPopupScreen();
   const { getConfig } = useGetConfig();
   const { getBrowserConfig } = useGetBrowserConfig();
   const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
@@ -218,6 +220,7 @@ export const App = () => {
     getConfig();
     getBrowserConfig();
     getAppInstructionData();
+    getShowReviewPopupScreen();
 
     DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {
       setNeedUpdateChrome(data);

@@ -276,7 +276,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
           </TouchableWithoutFeedback>
         </ContainerWithSubHeader>
       ) : (
-        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} extrinsicType={ExtrinsicType.SEND_NFT} />
       )}
     </>
   );

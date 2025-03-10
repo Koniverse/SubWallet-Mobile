@@ -216,7 +216,7 @@ const Component = ({
           </>
         </TransactionLayout>
       ) : (
-        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} extrinsicType={ExtrinsicType.CLAIM_BRIDGE} />
       )}
     </>
   );

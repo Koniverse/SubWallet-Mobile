@@ -1406,7 +1406,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           </>
         </TransactionLayout>
       ) : (
-        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} extrinsicType={ExtrinsicType.JOIN_YIELD_POOL} />
       )}
     </>
   );

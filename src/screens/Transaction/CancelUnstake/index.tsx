@@ -241,7 +241,10 @@ export const CancelUnstake = ({
           </>
         </TransactionLayout>
       ) : (
-        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+        <TransactionDone
+          transactionDoneInfo={transactionDoneInfo}
+          extrinsicType={ExtrinsicType.STAKING_CANCEL_UNSTAKE}
+        />
       )}
     </>
   );
