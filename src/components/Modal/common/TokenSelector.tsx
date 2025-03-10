@@ -94,11 +94,27 @@ export const TokenSelector = ({
     (_items: TokenItemType[], searchString: string) => {
       const lowerCaseSearchString = searchString.toLowerCase();
 
-      return (_items as TokenItemType[]).filter(
+      const filteredList = (_items as TokenItemType[]).filter(
         ({ symbol, originChain }) =>
           symbol.toLowerCase().includes(lowerCaseSearchString) ||
           chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
       );
+
+      if (lowerCaseSearchString === 'ton') {
+        const tonItemIndex = filteredList.findIndex(item => item.slug === 'ton-NATIVE-TON');
+
+        if (tonItemIndex !== -1) {
+          const [tonItem] = filteredList.splice(tonItemIndex, 1);
+
+          if (tonItem) {
+            filteredList.unshift(tonItem);
+          }
+        }
+
+        return filteredList;
+      } else {
+        return filteredList;
+      }
     },
     [chainInfoMap],
   );

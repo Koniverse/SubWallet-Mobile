@@ -25,7 +25,23 @@ interface Props {
 
 const searchFunction = (items: TokenBalanceItemType[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
-  return items.filter(({ symbol }) => symbol.toLowerCase().includes(lowerCaseSearchString));
+  const filteredList = items.filter(({ symbol }) => symbol.toLowerCase().includes(lowerCaseSearchString));
+
+  if (lowerCaseSearchString === 'ton') {
+    const tonItemIndex = filteredList.findIndex(item => item.slug === 'ton-NATIVE-TON');
+
+    if (tonItemIndex !== -1) {
+      const [tonItem] = filteredList.splice(tonItemIndex, 1);
+
+      if (tonItem) {
+        filteredList.unshift(tonItem);
+      }
+    }
+
+    return filteredList;
+  } else {
+    return filteredList;
+  }
 };
 
 function getTokenBalances(
