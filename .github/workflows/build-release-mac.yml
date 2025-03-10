@@ -208,6 +208,7 @@ jobs:
     # Build AAB file
     - name: Generate App AAB
       run: |
+        export NODE_OPTIONS="--max-old-space-size=4096"
         cd android && export ENVFILE=.env.production && ./gradlew bundleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
 
     - name: Upload to Play Store Internal Testing
