@@ -37,11 +37,12 @@ const renderListEmptyComponent = () => {
 };
 
 const searchFunc = (items: AccountProxy[], searchText: string) => {
-  return items.filter(
-    acc =>
-      (acc.name && acc.name.toLowerCase().includes(searchText.toLowerCase())) ||
-      acc.id.toLowerCase().includes(searchText.toLowerCase()),
-  );
+  return items.filter(acc => {
+    const isValidSearchByAddress = acc.accounts.some(account => {
+      return account.address.toLowerCase().includes(searchText.toLowerCase());
+    });
+    return acc.name?.toLowerCase().includes(searchText.toLowerCase()) || isValidSearchByAddress;
+  });
 };
 
 const filterOptions = [

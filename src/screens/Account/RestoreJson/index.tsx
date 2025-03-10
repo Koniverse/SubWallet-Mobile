@@ -196,8 +196,10 @@ export const RestoreJson = () => {
           .then(({ accountProxies: _accountProxies }) => {
             setAccountProxies(_accountProxies);
             setPasswordValidateState({ status: 'success' });
+            console.log('run to 3');
           })
           .catch((e: Error) => {
+            console.log('run to 4', e);
             onFail(e);
           })
           .finally(() => {
@@ -266,6 +268,7 @@ export const RestoreJson = () => {
           });
         })
         .catch(e => {
+          console.log('eee', e);
           setSubmitting(false);
           setPasswordValidateState({
             message: e.message,
@@ -353,8 +356,10 @@ export const RestoreJson = () => {
       }
 
       if (!isRequirePassword(formState.data.file)) {
+        console.log('run to 1');
         onImport(jsonFile, password);
       } else {
+        console.log('run to 2');
         onValidatePassword(jsonFile, password);
       }
     },

@@ -52,20 +52,19 @@ export const StakingValidatorItem = ({
         </View>
 
         <View style={_style.contentWrapper}>
-          <Text style={_style.subTextStyle}>{i18n.formatString(i18n.message.commission, commission)}</Text>
+          <Text style={_style.subTextStyle}>{`${i18n.formatString(i18n.message.commission, commission)}`}</Text>
 
           {!!expectedReturnValue && expectedReturnValue !== '0' && (
             <>
-              <Text style={_style.subTextStyle}>{i18n.message.apy}</Text>
+              <Text style={_style.subTextStyle}>{' - '}</Text>
+              <Text style={[_style.subTextStyle, { color: theme.colorSecondary }]}>{i18n.message.apy}</Text>
               <Number
                 decimal={0}
                 suffix="%"
                 size={12}
                 value={expectedReturn?.toString() || '0'}
-                textStyle={{ ...FontMedium }}
-                decimalOpacity={0.45}
-                intOpacity={0.45}
-                unitOpacity={0.45}
+                textStyle={{ ...FontMedium, color: theme.colorSecondary }}
+                unitColor={theme.colorSecondary}
               />
             </>
           )}

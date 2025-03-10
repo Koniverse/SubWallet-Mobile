@@ -55,6 +55,9 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
+      const isValidSearchByAddress = item.accounts.some(account => {
+        return account.address.toLowerCase().includes(searchString.toLowerCase());
+      });
       if (item.accounts.length === 1) {
         return (
           item.name.toLowerCase().includes(searchString.toLowerCase()) ||
@@ -62,7 +65,7 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
         );
       }
 
-      return item.name.toLowerCase().includes(searchString.toLowerCase());
+      return item.name.toLowerCase().includes(searchString.toLowerCase()) || isValidSearchByAddress;
     });
   }, [items, searchString]);
 

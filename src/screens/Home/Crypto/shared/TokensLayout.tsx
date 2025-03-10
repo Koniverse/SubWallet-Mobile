@@ -181,24 +181,7 @@ export const TokensLayout = ({
     return renderItem(data);
   };
 
-  if (loading) {
-    return (
-      <View style={[style, { flex: 1, marginTop: 0 }]}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size={40} indicatorColor={theme.colorWhite} />
-        </View>
-      </View>
-    );
-  }
-
-  const onEndReached = () => {
-    const maxPage = Math.ceil(tokenBalanceItems.length / PAGE_SIZE);
-    if (pageNumber > maxPage) {
-      return;
-    }
-    setPageNumber(prev => prev + 1);
-  };
-  const handledTokenListData = () => {
+  const transformTokenListData = useMemo(() => {
     if (listActions) {
       if (beforeListNode) {
         return [{ slug: null }, { slug: 'tonWarning' }, ...tokenListData];
@@ -220,6 +203,28 @@ export const TokensLayout = ({
 
       return tokenListData;
     }
+  }, [banners, beforeListNode, listActions, tokenListData]);
+
+  const filteredTransformTokenListData = useMemo(() => {
+    return transformTokenListData.filter(item => item.slug !== null && item.slug !== 'tonWarning');
+  }, [transformTokenListData]);
+
+  if (loading) {
+    return (
+      <View style={[style, { flex: 1, marginTop: 0 }]}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size={40} indicatorColor={theme.colorWhite} />
+        </View>
+      </View>
+    );
+  }
+
+  const onEndReached = () => {
+    const maxPage = Math.ceil(tokenBalanceItems.length / PAGE_SIZE);
+    if (pageNumber > maxPage) {
+      return;
+    }
+    setPageNumber(prev => prev + 1);
   };
 
   // TODO: Move these codes to style folder in next refactor
@@ -263,15 +268,14 @@ export const TokensLayout = ({
           {listActions}
         </Animated.View>
       )}
-
-      {handledTokenListData().length ? (
+      {filteredTransformTokenListData.length ? (
         <Animated.FlatList
           onScroll={onScrollHandler}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps={'handled'}
           ListHeaderComponent={renderHeaderComponent}
           contentContainerStyle={listContainerStyle}
-          data={handledTokenListData()}
+          data={transformTokenListData}
           renderItem={customRenderItem}
           ListFooterComponent={layoutFooter}
           maxToRenderPerBatch={12}
@@ -298,9 +302,9 @@ export const TokensLayout = ({
               <EmptyList
                 icon={Coins}
                 title={i18n.emptyScreen.tokenEmptyTitle}
-                message={i18n.emptyScreen.tokenEmptyMessageV2}
-              />
-              {layoutFooter}
+                message={i18n.emptyScreen.tokenEmptyMessageV2}>
+                {layoutFooter}
+              </EmptyList>
             </>
           </ScrollView>
         </View>
