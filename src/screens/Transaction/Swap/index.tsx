@@ -854,14 +854,13 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                   }
                 }
               }
-
               const submitPromise: Promise<SWTransactionResponse> = handleSwapStep({
                 process: currentOptimalSwapPath,
                 currentStep: step,
                 quote: latestOptimalQuote,
                 address: from,
                 slippage: slippage,
-                recipient,
+                recipient: recipient || undefined,
               });
 
               const rs = await submitPromise;
@@ -979,6 +978,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
               setSwapError(undefined);
               setIsFormInvalid(false);
               setShowQuoteArea(true);
+              console.log('recipientValue || undefined', recipientValue || undefined);
 
               const currentRequest: SwapRequest = {
                 address: fromValue,
