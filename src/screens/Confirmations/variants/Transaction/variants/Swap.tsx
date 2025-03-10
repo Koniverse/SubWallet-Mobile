@@ -18,6 +18,7 @@ import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapTransactionBlock } from 'components/Swap/SwapTransactionBlock';
 import { SwapRoute } from 'components/Swap/SwapRoute';
+import { getDevMode } from 'utils/storage';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -30,6 +31,7 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const recipientAddress = data.recipient || data.address;
   const account = useGetAccountByAddress(recipientAddress);
   const theme = useSubWalletTheme().swThemes;
+  const isDevMode = getDevMode();
 
   const toAssetInfo = useMemo(() => {
     return assetRegistryMap[data.quote.pair.to] || undefined;
@@ -137,6 +139,12 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
           title={'Pay attention!'}
           type={'warning'}
         />
+      )}
+      {isDevMode && data && (
+        <>
+          <Typography.Text style={{ color: theme.colorTextTertiary }}>{`address: ${data.address}`}</Typography.Text>
+          <Typography.Text style={{ color: theme.colorTextTertiary }}>{`id: ${data.id}`}</Typography.Text>
+        </>
       )}
     </ConfirmationContent>
   );
