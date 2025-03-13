@@ -54,6 +54,7 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
   // const [showDetail, setShowDetail] = useState(false);
 
   const isDAppStaking = useMemo(() => _STAKING_CHAIN_GROUP.astar.includes(poolInfo?.chain), [poolInfo?.chain]);
+  const isMythosStaking = useMemo(() => _STAKING_CHAIN_GROUP.mythos.includes(compound.chain), [compound.chain]);
 
   const canClaim = useMemo((): boolean => {
     switch (type) {
@@ -61,15 +62,11 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
       case YieldPoolType.LIQUID_STAKING:
         return false;
       case YieldPoolType.NATIVE_STAKING:
-        if (isDAppStaking) {
-          return true;
-        } else {
-          return false;
-        }
+        return isDAppStaking || isMythosStaking;
       case YieldPoolType.NOMINATION_POOL:
         return true;
     }
-  }, [isDAppStaking, type]);
+  }, [isDAppStaking, isMythosStaking, type]);
 
   const earningStatus = useMemo(() => {
     const stakingStatusUi = StakingStatusUi();
@@ -147,10 +144,11 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
         valueColorSchema={earningStatus.schema}
       />
 
-      {(type === YieldPoolType.NOMINATION_POOL || (type === YieldPoolType.NATIVE_STAKING && isDAppStaking)) && (
+      {(type === YieldPoolType.NOMINATION_POOL ||
+        (type === YieldPoolType.NATIVE_STAKING && (isDAppStaking || isMythosStaking))) && (
         <>
           <View style={styles.withdrawButtonContainer}>
-            {type === YieldPoolType.NOMINATION_POOL ? (
+            {type === YieldPoolType.NOMINATION_POOL || isMythosStaking ? (
               <>
                 {isShowBalance ? (
                   total ? (

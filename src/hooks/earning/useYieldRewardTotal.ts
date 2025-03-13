@@ -9,6 +9,7 @@ import { BN_ZERO } from 'utils/chainBalances';
 import { findAccountByAddress } from 'utils/index';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { isSameAddress } from '@subwallet/extension-base/utils';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 
 const useYieldRewardTotal = (slug: string): string | undefined => {
   const { poolInfoMap, earningRewards } = useSelector((state: RootState) => state.earning);
@@ -29,7 +30,7 @@ const useYieldRewardTotal = (slug: string): string | undefined => {
     const poolInfo = poolInfoMap[slug];
 
     if (poolInfo) {
-      if (poolInfo.type !== YieldPoolType.NOMINATION_POOL) {
+      if (poolInfo.type !== YieldPoolType.NOMINATION_POOL && !_STAKING_CHAIN_GROUP.mythos.includes(poolInfo.chain)) {
         return '0';
       } else {
         if (earningRewards.length) {

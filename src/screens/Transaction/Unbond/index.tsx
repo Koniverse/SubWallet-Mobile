@@ -55,6 +55,8 @@ import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationB
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { AccountAddressItemType } from 'types/account';
 import { getReformatedAddressRelatedToChain } from 'utils/account';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { getEarningTimeText } from 'utils/earning';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -127,6 +129,7 @@ export const Unbond = ({
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
   const onPreCheck = usePreCheckAction(fromValue);
   const globalAppModalContext = useContext(GlobalModalContext);
+  const isMythosStaking = useMemo(() => _STAKING_CHAIN_GROUP.mythos.includes(poolChain), [poolChain]);
 
   const currentConfirmations = useMemo(() => {
     if (slug) {
@@ -219,14 +222,7 @@ export const Unbond = ({
     ) {
       const time = poolInfo?.statistic.unstakingPeriod;
 
-      if (time >= 24) {
-        const days = Math.floor(time / 24);
-        const hours = time - days * 24;
-
-        return `${days} days${hours ? ` ${hours} ${i18n.common.hours}` : ''}`;
-      } else {
-        return `${time} ${i18n.common.hours}`;
-      }
+      return getEarningTimeText(time);
     } else {
       return 'unknown time';
     }
@@ -360,6 +356,12 @@ export const Unbond = ({
     },
     [setValue, formTrigger],
   );
+
+  useEffect(() => {
+    if (isMythosStaking) {
+      setValue('value', bondedValue);
+    }
+  }, [bondedValue, isMythosStaking, setValue]);
 
   useEffect(() => {
     if (poolInfo?.metadata.availableMethod.defaultUnstake && poolInfo?.metadata.availableMethod.fastUnstake) {

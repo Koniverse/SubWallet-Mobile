@@ -6,6 +6,7 @@ import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning
 import { BoxProps, StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { getEarningTimeText } from 'utils/earning';
 
 export const useGetEarningPoolDetailModalData = (earningStaticData: StaticDataProps[], poolInfo?: YieldPoolInfo) => {
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
@@ -21,24 +22,14 @@ export const useGetEarningPoolDetailModalData = (earningStaticData: StaticDataPr
     }
   }, []);
 
-  const convertTime = useCallback((_number?: number): string => {
-    if (_number !== undefined) {
-      const isDay = _number > 24;
-      const time = isDay ? Math.floor(_number / 24) : _number;
-      const unit = isDay ? (time === 1 ? 'day' : 'days') : time === 1 ? 'hour' : 'hours';
-      return [time, unit].join(' ');
-    } else {
-      return 'unknown time';
-    }
-  }, []);
-
   const unBondedTime = useMemo((): string => {
     let time: number | undefined;
     if (poolInfo?.statistic && 'unstakingPeriod' in poolInfo?.statistic) {
       time = poolInfo?.statistic.unstakingPeriod;
     }
-    return convertTime(time);
-  }, [poolInfo?.statistic, convertTime]);
+
+    return getEarningTimeText(time);
+  }, [poolInfo?.statistic]);
 
   const data: BoxProps[] = useMemo(() => {
     if (!poolInfo) {
@@ -71,6 +62,7 @@ export const useGetEarningPoolDetailModalData = (earningStaticData: StaticDataPr
             replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
             if (paidOut !== undefined) {
               replaceEarningValue(_item, '{paidOut}', paidOut.toString());
+              replaceEarningValue(_item, '{paidOutTimeUnit}', paidOut > 1 ? 'hours' : 'hour');
             }
 
             return _item;
@@ -105,6 +97,7 @@ export const useGetEarningPoolDetailModalData = (earningStaticData: StaticDataPr
 
               if (paidOut !== undefined) {
                 replaceEarningValue(_item, '{paidOut}', paidOut.toString());
+                replaceEarningValue(_item, '{paidOutTimeUnit}', paidOut > 1 ? 'hours' : 'hour');
               }
 
               return _item;
@@ -121,7 +114,12 @@ export const useGetEarningPoolDetailModalData = (earningStaticData: StaticDataPr
             replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
             replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
             if (paidOut !== undefined) {
-              replaceEarningValue(_item, '{paidOut}', paidOut.toString());
+              replaceEarningValue(_item, '{paidOut}', paidOut >= 1 ? paidOut.toString() : (paidOut * 60).toString());
+              replaceEarningValue(
+                _item,
+                '{paidOutTimeUnit}',
+                paidOut > 1 ? 'hours' : paidOut === 1 ? 'hour' : 'minutes',
+              );
             }
             return _item;
           });

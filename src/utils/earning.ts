@@ -108,3 +108,27 @@ export function autoSelectValidatorOptimally(
 
   return result;
 }
+
+export const getEarningTimeText = (hours?: number) => {
+  if (hours !== undefined) {
+    const isDay = hours > 24;
+    const isHour = hours >= 1 && !isDay;
+
+    let time, unit;
+
+    if (isDay) {
+      time = Math.floor(hours / 24);
+      unit = time > 1 ? 'days' : 'day';
+    } else if (isHour) {
+      time = hours;
+      unit = time > 1 ? 'hours' : 'hour';
+    } else {
+      time = hours * 60;
+      unit = time > 1 ? 'minutes' : 'minute';
+    }
+
+    return [time, unit].join(' ');
+  } else {
+    return 'unknown time';
+  }
+};

@@ -82,11 +82,13 @@ const filterAccount = (
     const reward = rewardList.find(value => account.accounts.some(ac => isSameAddress(value.address, ac.address)));
 
     const isAstarNetwork = _STAKING_CHAIN_GROUP.astar.includes(_poolChain);
+    const isMythosNetwork = _STAKING_CHAIN_GROUP.mythos.includes(_poolChain);
     const isAmplitudeNetwork = _STAKING_CHAIN_GROUP.amplitude.includes(_poolChain);
     const bnUnclaimedReward = new BigN(reward?.unclaimedReward || '0');
 
     return (
-      ((poolType === YieldPoolType.NOMINATION_POOL || isAmplitudeNetwork) && bnUnclaimedReward.gt(BN_ZERO)) ||
+      ((poolType === YieldPoolType.NOMINATION_POOL || isAmplitudeNetwork || isMythosNetwork) &&
+        bnUnclaimedReward.gt(BN_ZERO)) ||
       isAstarNetwork
     );
   };
@@ -149,6 +151,7 @@ const ClaimReward = ({
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chainValue);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
+  const isMythosStaking = useMemo(() => _STAKING_CHAIN_GROUP.mythos.includes(poolChain), [poolChain]);
   const handleDataForInsufficientAlert = useCallback(
     (estimateFee: AmountData) => {
       return {
@@ -280,19 +283,21 @@ const ClaimReward = ({
                 )}
               </MetaInfo>
 
-              <InputCheckBox
-                checked={!!bondReward}
-                label={i18n.inputLabel.bondRewardAfterClaim}
-                disable={loading}
-                onPress={() => {
-                  if (!bondReward) {
-                    onChangeBondReward('1');
-                  } else {
-                    onChangeBondReward('');
-                  }
-                }}
-                checkBoxSize={20}
-              />
+              {!isMythosStaking && (
+                <InputCheckBox
+                  checked={!!bondReward}
+                  label={i18n.inputLabel.bondRewardAfterClaim}
+                  disable={loading}
+                  onPress={() => {
+                    if (!bondReward) {
+                      onChangeBondReward('1');
+                    } else {
+                      onChangeBondReward('');
+                    }
+                  }}
+                  checkBoxSize={20}
+                />
+              )}
             </ScrollView>
 
             <View style={{ padding: 16, flexDirection: 'row' }}>

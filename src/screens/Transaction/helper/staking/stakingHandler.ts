@@ -11,6 +11,12 @@ export function getUnstakingPeriod(unstakingPeriod?: number) {
     const days = unstakingPeriod / 24;
 
     if (days < 1) {
+      if (unstakingPeriod < 1) {
+        const minutes = unstakingPeriod * 60;
+
+        return `${minutes} minutes`;
+      }
+
       return `${unstakingPeriod} ${i18n.common.hours}`;
     } else {
       return `${days} ${i18n.common.days}`;

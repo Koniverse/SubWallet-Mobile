@@ -13,9 +13,9 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CaretDown, CaretUp } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { getUnstakingPeriod } from 'screens/Transaction/helper/staking';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
+import { getEarningTimeText } from 'utils/earning';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -96,7 +96,7 @@ const EarningPoolInfo: React.FC<Props> = (props: Props) => {
           />
           {unstakePeriod !== undefined && (
             <MetaInfo.Default label={i18n.inputLabel.unstakingPeriod}>
-              {`${poolInfo?.type === YieldPoolType.LIQUID_STAKING ? 'Up to ' : ''}${getUnstakingPeriod(unstakePeriod)}`}
+              {`${poolInfo?.type === YieldPoolType.LIQUID_STAKING ? 'Up to ' : ''}${getEarningTimeText(unstakePeriod)}`}
             </MetaInfo.Default>
           )}
         </MetaInfo>
