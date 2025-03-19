@@ -465,21 +465,23 @@ export const Unbond = ({
                 </>
               )}
 
-              <FormItem
-                control={control}
-                render={({ field: { onChange, value, ref } }) => (
-                  <InputAmount
-                    ref={ref}
-                    value={value}
-                    maxValue={bondedValue}
-                    onChangeValue={onChange}
-                    decimals={decimals}
-                    disable={loading}
-                    showMaxButton={!!fromValue}
-                  />
-                )}
-                name={'value'}
-              />
+              {!isMythosStaking && (
+                <FormItem
+                  control={control}
+                  render={({ field: { onChange, value, ref } }) => (
+                    <InputAmount
+                      ref={ref}
+                      value={value}
+                      maxValue={bondedValue}
+                      onChangeValue={onChange}
+                      decimals={decimals}
+                      disable={loading}
+                      showMaxButton={!!fromValue}
+                    />
+                  )}
+                  name={'value'}
+                />
+              )}
 
               {!mustChooseValidator && renderBounded()}
 
@@ -506,7 +508,7 @@ export const Unbond = ({
                       <View
                         style={{
                           gap: theme.sizeSM,
-                          marginTop: mustChooseValidator ? theme.marginSM : 0,
+                          marginTop: mustChooseValidator && !isMythosStaking ? theme.marginSM : 0,
                           marginBottom: theme.marginSM,
                         }}>
                         {unstakeAlertData.instructions.map((_props, index) => {
