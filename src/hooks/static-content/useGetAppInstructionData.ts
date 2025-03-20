@@ -1,16 +1,17 @@
 import { useCallback } from 'react';
 import axios from 'axios';
 import { STATIC_DATA_DOMAIN } from 'constants/index';
-import { mmkvStore } from 'utils/storage';
+import { getStaticContentByDevMode, mmkvStore } from 'utils/storage';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { EARNING_POOL_DETAIL_DATA, UNSTAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
 
-// const dataByDevModeStatus = getStaticContentByDevMode(); add this when data is ready
+const dataByDevModeStatus = getStaticContentByDevMode();
 
 export const useGetAppInstructionData = (language: string) => {
+  console.log('dataByDevModeStatus', dataByDevModeStatus);
   const getAppInstructionData = useCallback(async () => {
     axios
-      .get(`${STATIC_DATA_DOMAIN}/instructions/preview-${language}.json`)
+      .get(`${STATIC_DATA_DOMAIN}/instruction-news/${dataByDevModeStatus}-${language}.json`)
       .then(({ data }) => {
         const earningDetailData: StaticDataProps[] = [];
         const unstakeStaticData: StaticDataProps[] = [];
