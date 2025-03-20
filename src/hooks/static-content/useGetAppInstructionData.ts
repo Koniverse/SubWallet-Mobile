@@ -8,7 +8,6 @@ import { EARNING_POOL_DETAIL_DATA, UNSTAKE_ALERT_DATA } from 'constants/earning/
 const dataByDevModeStatus = getStaticContentByDevMode();
 
 export const useGetAppInstructionData = (language: string) => {
-  console.log('dataByDevModeStatus', dataByDevModeStatus);
   const getAppInstructionData = useCallback(async () => {
     axios
       .get(`${STATIC_DATA_DOMAIN}/instruction-news/${dataByDevModeStatus}-${language}.json`)

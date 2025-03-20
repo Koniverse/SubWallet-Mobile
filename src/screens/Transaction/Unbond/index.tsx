@@ -340,13 +340,16 @@ export const Unbond = ({
     return [];
   }, [fromValue, positionInfo?.nominations]);
 
-  const onChangeNominator = (value: string) => {
-    setValue('nomination', value);
-  };
+  const onChangeNominator = useCallback(
+    (value: string) => {
+      setValue('nomination', value);
+    },
+    [setValue],
+  );
 
   const isDisableSubmitBtn = useMemo(
-    () => !!errors.value || !currentValue || !fromValue || loading || !isBalanceReady,
-    [currentValue, errors.value, fromValue, isBalanceReady, loading],
+    () => !!errors.value || !currentValue || !fromValue || loading || !isBalanceReady || !currentValidator,
+    [currentValidator, currentValue, errors.value, fromValue, isBalanceReady, loading],
   );
 
   const onChangeFastLeave = useCallback(
@@ -384,6 +387,12 @@ export const Unbond = ({
       setFrom(accountList[0].address);
     }
   }, [accountList, fromValue, setFrom]);
+
+  useEffect(() => {
+    if (nominators && nominators.length === 1) {
+      onChangeNominator(nominators[0].validatorAddress);
+    }
+  }, [nominators, onChangeNominator]);
 
   const unstakeAlertData =
     poolChain === 'bifrost_dot'

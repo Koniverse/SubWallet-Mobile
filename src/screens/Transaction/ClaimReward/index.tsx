@@ -66,14 +66,12 @@ const filterAccount = (
     }
 
     const isEvmChain = _isChainEvmCompatible(chain);
-    if (!account.accounts.some(ac => isEvmChain !== isEthereumAddress(ac.address))) {
+    if (account.accounts.every(ac => isEvmChain !== isEthereumAddress(ac.address))) {
       return false;
     }
 
     const nominatorMetadata = yieldPositions.find(value =>
-      account.accounts.some(ac => {
-        return isSameAddress(value.address, ac.address);
-      }),
+      account.accounts.some(ac => isSameAddress(value.address, ac.address)),
     );
 
     if (!nominatorMetadata) {
