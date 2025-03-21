@@ -348,8 +348,14 @@ export const Unbond = ({
   );
 
   const isDisableSubmitBtn = useMemo(
-    () => !!errors.value || !currentValue || !fromValue || loading || !isBalanceReady || !currentValidator,
-    [currentValidator, currentValue, errors.value, fromValue, isBalanceReady, loading],
+    () =>
+      !!errors.value ||
+      !currentValue ||
+      !fromValue ||
+      loading ||
+      !isBalanceReady ||
+      (isMythosStaking && !currentValidator),
+    [currentValidator, currentValue, errors.value, fromValue, isBalanceReady, isMythosStaking, loading],
   );
 
   const onChangeFastLeave = useCallback(
