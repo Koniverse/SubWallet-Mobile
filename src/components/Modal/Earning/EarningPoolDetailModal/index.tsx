@@ -142,6 +142,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
     const getOrigin = () => {
       switch (type) {
+        case 'SUBNET_STAKING':
         case YieldPoolType.NOMINATION_POOL:
         case YieldPoolType.NATIVE_STAKING:
         case YieldPoolType.LIQUID_STAKING:
@@ -212,6 +213,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
     const { type } = poolInfo;
     switch (type) {
+      case 'SUBNET_STAKING':
       case YieldPoolType.NOMINATION_POOL:
       case YieldPoolType.NATIVE_STAKING:
       case YieldPoolType.LIQUID_STAKING:

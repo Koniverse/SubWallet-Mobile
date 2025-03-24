@@ -54,8 +54,9 @@ export const createEarningTypeTags = (theme: ThemeTypes, chain: string): Record<
     ['SUBNET_STAKING']: {
       label: 'Subnet staking',
       icon: CirclesThreePlus,
-      color: 'blue',
+      color: theme['blue-6'],
       weight: 'fill',
+      bgColor: convertHexColorToRGBA(theme['blue-6'], 0.1),
     },
   };
 };
