@@ -16,9 +16,7 @@ type Props = {
 
 const EarningTypeTag: React.FC<Props> = (props: Props) => {
   const { type, comingSoon, chain, textMaxWidth } = props;
-
   const theme = useSubWalletTheme().swThemes;
-
   const earningTagTypes: Record<YieldPoolType, EarningTagType> = useMemo(() => {
     return createEarningTypeTags(theme, chain);
   }, [chain, theme]);

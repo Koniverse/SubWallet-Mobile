@@ -1,6 +1,6 @@
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { YieldPoolType } from '@subwallet/extension-base/types';
-import { Database, HandsClapping, Leaf, User, Users } from 'phosphor-react-native';
+import { CirclesThreePlus, Database, HandsClapping, Leaf, User, Users } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import { EarningTagType } from 'types/earning';
 import { convertHexColorToRGBA } from 'utils/color';
@@ -49,6 +49,12 @@ export const createEarningTypeTags = (theme: ThemeTypes, chain: string): Record<
       icon: Database,
       bgColor: convertHexColorToRGBA(theme['gold-6'], 0.1),
       color: theme['gold-6'],
+      weight: 'fill',
+    },
+    ['SUBNET_STAKING']: {
+      label: 'Subnet staking',
+      icon: CirclesThreePlus,
+      color: 'blue',
       weight: 'fill',
     },
   };
