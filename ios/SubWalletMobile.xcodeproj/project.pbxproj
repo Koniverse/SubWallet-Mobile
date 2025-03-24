@@ -15,7 +15,7 @@
 		354402E42CBE8391002D4A91 /* Web.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 354622E32CBE8391002D4A91 /* Web.bundle */; };
 		356488AD2C64FC7B00440F84 /* DevModeWeb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 356488AC2C64FC7B00462F84 /* DevModeWeb.bundle */; };
 		4627831F29CEA0080046230D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4627831E29CEA0080046230D /* fonts */; };
-		462FCA172A72462100B46279 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 462FCA152A72462100B46279 /* RCTMinimizer.m */; };
+		462FCA1.2.72462100B46279 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 462FCA1.2.72462100B46279 /* RCTMinimizer.m */; };
 		7699B88040F8A987B510C191 /* libPods-SubWalletMobile-SubWalletMobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */; };
 		81AB9BB82462601600AC10FF /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72462601600AC10FF /* SplashScreen.storyboard */; };
 		F1554EF9292D4F5B00302F08 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8292D4F5B00302F08 /* Images-2.xcassets */; };
@@ -48,8 +48,8 @@
 		356488AC2C64FC7B00462F84 /* DevModeWeb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = DevModeWeb.bundle; path = ../html/DevModeWeb.bundle; sourceTree = "<group>"; };
 		3B4624A12AC88292D35C810B /* Pods-SubWalletMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.debug.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		4627831E29CEA0080046230D /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
-		462FCA152A72462100B46279 /* RCTMinimizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTMinimizer.m; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.m; sourceTree = "<group>"; };
-		462FCA162A72462100B46279 /* RCTMinimizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTMinimizer.h; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.h; sourceTree = "<group>"; };
+		462FCA1.2.72462100B46279 /* RCTMinimizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTMinimizer.m; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.m; sourceTree = "<group>"; };
+		462FCA1.2.72462100B46279 /* RCTMinimizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTMinimizer.h; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.h; sourceTree = "<group>"; };
 		5709B34CF0A7D64626082F79 /* Pods-SubWalletMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.release.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9462499542E8C5724F5 /* Pods-SubWalletMobile-SubWalletMobileTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile-SubWalletMobileTests.debug.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile-SubWalletMobileTests/Pods-SubWalletMobile-SubWalletMobileTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC462A6C60F78 /* libPods-SubWalletMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -102,7 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */,
-				462FCA132A7236F000B46279 /* NativeModules */,
+				462FCA1.2.7236F000B46279 /* NativeModules */,
 				990CC4AB2A46246200AB6D8B /* SubWalletMobile.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -132,19 +132,19 @@
 			name = "Recovered References";
 			sourceTree = "<group>";
 		};
-		462FCA132A7236F000B46279 /* NativeModules */ = {
+		462FCA1.2.7236F000B46279 /* NativeModules */ = {
 			isa = PBXGroup;
 			children = (
-				462FCA142A72462630B46279 /* RCTMinimizer */,
+				462FCA1.2.72462630B46279 /* RCTMinimizer */,
 			);
 			name = NativeModules;
 			sourceTree = "<group>";
 		};
-		462FCA142A72462630B46279 /* RCTMinimizer */ = {
+		462FCA1.2.72462630B46279 /* RCTMinimizer */ = {
 			isa = PBXGroup;
 			children = (
-				462FCA162A72462100B46279 /* RCTMinimizer.h */,
-				462FCA152A72462100B46279 /* RCTMinimizer.m */,
+				462FCA1.2.72462100B46279 /* RCTMinimizer.h */,
+				462FCA1.2.72462100B46279 /* RCTMinimizer.m */,
 			);
 			name = RCTMinimizer;
 			sourceTree = "<group>";
@@ -474,7 +474,7 @@
 			buildActionMask = 8;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
-				462FCA172A72462100B46279 /* RCTMinimizer.m in Sources */,
+				462FCA1.2.72462100B46279 /* RCTMinimizer.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -553,7 +553,7 @@
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 463;
+				CURRENT_PROJECT_VERSION = 464;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
@@ -589,7 +589,7 @@
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 463;
+				CURRENT_PROJECT_VERSION = 464;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SubWallet;
