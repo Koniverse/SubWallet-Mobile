@@ -1,4 +1,4 @@
-import React, { ComponentType, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ComponentType, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EarningScreen from 'screens/Home/Earning';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -45,6 +45,9 @@ import { noop } from 'utils/function';
 import { WebRunnerContext } from 'providers/contexts';
 import { saveOSConfig } from 'messaging/settings';
 import DeviceInfo from 'react-native-device-info';
+import FloatingBubble from 'components/FloatingBubble';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StepStatus } from '@subwallet/extension-base/types';
 
 interface tabbarIconColor {
   color: string;
@@ -268,6 +271,7 @@ export function setIsShowRemindBackupModal(value: boolean) {
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasMasterPassword, isReady, isLocked, accounts } = useSelector((state: RootState) => state.accountState);
+  const aliveProcessMap = useSelector((state: RootState) => state.requestState.aliveProcess);
   const { currentRoute } = useSelector((state: RootState) => state.settings);
   const [isLoading, setLoading] = useState(true);
   const [generalTermVisible, setGeneralTermVisible] = useState<boolean>(false);
@@ -291,6 +295,16 @@ export const Home = ({ navigation }: Props) => {
         .filter(acc => !acc.isMasterPassword).length || currentRoute?.name === 'MigratePassword',
     [accounts, currentRoute?.name],
   );
+
+  const processIds = useMemo(() => {
+    const aliveProcesses = Object.values(aliveProcessMap).filter(p => ![StepStatus.QUEUED].includes(p.status));
+
+    return aliveProcesses.map(p => p.id);
+  }, [aliveProcessMap]);
+
+  const lastProcessId = useMemo<string | undefined>(() => {
+    return processIds.sort((a, b) => b.localeCompare(a))[0];
+  }, [processIds]);
 
   useEffect(() => {
     if (isReady && isLoading && isWebRunnerReady) {
@@ -353,6 +367,17 @@ export const Home = ({ navigation }: Props) => {
     setGeneralTermVisible(false);
   };
 
+  const navigateToNotification = useCallback(
+    (processId: string) => {
+      return () => {
+        navigation.navigate('Notification', {
+          transactionProcess: { processId: processId, triggerTime: `${Date.now()}` },
+        });
+      };
+    },
+    [navigation],
+  );
+
   if (isLoading) {
     return (
       <View style={styles.indicatorWrapper}>
@@ -362,9 +387,9 @@ export const Home = ({ navigation }: Props) => {
   }
 
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1, position: 'relative' }}>
+      {lastProcessId && <FloatingBubble navigateToNotification={navigateToNotification(lastProcessId)} />}
       <Wrapper />
-
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
       {!isLocked && !isOpenGeneralTermFirstTime && !needMigrate && (
         <GeneralTermModal
@@ -385,7 +410,7 @@ export const Home = ({ navigation }: Props) => {
       {!isEmptyAccounts && !isOpenedNoticeModal && !needMigrate && isFocused && !isShowRemindBackupModal.current && (
         <NoticeModal modalVisible={noticeModalVisible} setVisible={setNoticeModalVisible} /> // Consider deleting this modal
       )}
-    </>
+    </GestureHandlerRootView>
   );
 };
 

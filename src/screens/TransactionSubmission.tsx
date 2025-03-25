@@ -1,4 +1,4 @@
-import { ProcessTransactionData, ResponseSubscribeProcessById } from '@subwallet/extension-base/types';
+import { ProcessTransactionData, ProcessType, ResponseSubscribeProcessById } from '@subwallet/extension-base/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, TransactionSubmissionProps } from 'routes/index';
@@ -14,6 +14,8 @@ import i18n from 'utils/i18n/i18n';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { SwapBaseTxData } from '@subwallet/extension-base/types/swap';
+import { SwapTransactionBlock } from 'components/Swap/SwapTransactionBlock';
 
 export const TransactionSubmission = ({ route: { params } }: TransactionSubmissionProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -21,6 +23,8 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
   const [processData, setProcessData] = useState<ProcessTransactionData | undefined>();
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyle(theme);
+  const swapData = processData?.combineInfo as SwapBaseTxData | undefined;
+
   const viewProgress = useCallback(() => {
     navigation.navigate('Notification', {
       transactionProcess: { processId: transactionProcessId, triggerTime: `${Date.now()}` },
@@ -104,7 +108,7 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
   }, [navigation]);
 
   return (
-    <ContainerWithSubHeader onPressBack={goHome} title={'Submitted'}>
+    <ContainerWithSubHeader onPressBack={goHome} title={'Do not close the app!'}>
       <View style={styles.transactionSubmissionContainer}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <PageIcon icon={icon} weight={'fill'} color={iconColor} />
@@ -115,6 +119,9 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
               ? 'View transaction progress in the History tab or go back to home'
               : 'View transaction progress in the Notifications screen or go back to home'}
           </Typography.Text>
+          {processData && processData.type === ProcessType.SWAP && swapData && (
+            <SwapTransactionBlock quote={swapData.quote} logoSize={36} />
+          )}
         </View>
 
         <View style={{ width: '100%', ...MarginBottomForSubmitButton, gap: theme.padding }}>
@@ -150,7 +157,7 @@ function createStyle(theme: ThemeTypes) {
       ...FontMedium,
       textAlign: 'center',
       paddingHorizontal: 40,
-      paddingBottom: 32,
+      paddingBottom: 16,
     },
   });
 }
