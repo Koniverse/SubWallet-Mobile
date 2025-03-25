@@ -5,3 +5,5 @@ export * from './nft';
 export * from './swap';
 export * from './stake';
 export * from './notification';
+export * from './multi';
+export * from './multi';

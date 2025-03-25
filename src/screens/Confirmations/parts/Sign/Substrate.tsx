@@ -7,7 +7,6 @@ import { approveSignPasswordV2, approveSignSignature, cancelSignRequest } from '
 import { useDispatch, useSelector } from 'react-redux';
 import { DisplayPayloadModal, SubstrateQr } from 'screens/Confirmations/parts/Qr/DisplayPayload';
 import { RootState } from 'stores/index';
-import { AccountSignMode } from 'types/signer';
 import { SigData } from 'types/signer';
 import { getSignMode } from 'utils/account';
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';
@@ -34,6 +33,7 @@ import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { FontMedium } from 'styles/sharedStyles';
 import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import { AccountSignMode } from '@subwallet/extension-base/types';
 
 interface Props {
   id: string;

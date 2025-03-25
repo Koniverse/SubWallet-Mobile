@@ -12,8 +12,9 @@ export interface SWIconProps {
   iconColor?: string;
   phosphorIcon?: React.ElementType<IconProps>;
   size?: 'xxs' | SizeType;
-  type?: 'fontAwesome' | 'phosphor';
+  type?: 'fontAwesome' | 'phosphor' | 'customIcon';
   weight?: IconWeight;
+  customIcon?: React.ReactNode;
 }
 
 const Icon: React.FC<SWIconProps> = ({
@@ -24,6 +25,7 @@ const Icon: React.FC<SWIconProps> = ({
   size,
   type = 'phosphor',
   weight,
+  customIcon,
 }) => {
   const theme = useSubWalletTheme().swThemes;
 
@@ -64,6 +66,10 @@ const Icon: React.FC<SWIconProps> = ({
 
   if (type === 'phosphor' && PhosphorIcon) {
     return <PhosphorIcon size={customSize || getIconSize()} color={iconColor || theme.colorWhite} weight={weight} />;
+  }
+
+  if (type === 'customIcon' && customIcon) {
+    return customIcon;
   }
 
   return <></>;

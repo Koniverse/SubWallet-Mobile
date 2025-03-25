@@ -4,7 +4,7 @@ import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/ex
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
 import { NEED_SIGN_CONFIRMATION } from 'constants/transaction';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { RootStackParamList } from 'routes/index';
 import { ConfirmationType } from 'stores/base/RequestState';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
@@ -34,12 +34,12 @@ import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Portal } from '@gorhom/portal';
 import { findAccountByAddress, getSignMode } from 'utils/account';
-import { AccountSignMode } from 'types/signer';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { getDevMode } from 'utils/storage';
-import { AccountJson } from '@subwallet/extension-base/types';
+import { AccountJson, AccountSignMode, ProcessType } from '@subwallet/extension-base/types';
 import { SignerPayloadJSON } from '@polkadot/types/types';
 import { _isRuntimeUpdated } from '@subwallet/extension-base/utils';
+import { AppModalContext } from 'providers/AppModalContext';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
   return {
@@ -69,6 +69,9 @@ export const Confirmations = () => {
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
   const [index, setIndex] = useState(0);
   const confirmation = confirmationQueue[index] || null;
+  const {
+    confirmModal: { setConfirmModal, hideConfirmModal },
+  } = useContext(AppModalContext);
   useHandlerHardwareBackPress(true);
   const isDevMode = getDevMode();
   const titleMap = useMemo(
@@ -104,6 +107,16 @@ export const Confirmations = () => {
 
       if (!transaction) {
         return titleMap[confirmation.type] || '';
+      }
+
+      if (transaction.process) {
+        switch (transaction.process.type) {
+          case ProcessType.SWAP:
+            return 'Swap confirmation';
+          case ProcessType.EARNING:
+            // TODO: Replace message
+            return 'Earning confirmation';
+        }
       }
 
       switch (transaction.extrinsicType) {
@@ -231,7 +244,6 @@ export const Confirmations = () => {
       const isEvm = isEthereumAddress(account?.address);
       const notSupport =
         signMode === AccountSignMode.READ_ONLY ||
-        signMode === AccountSignMode.LEDGER ||
         signMode === AccountSignMode.GENERIC_LEDGER ||
         signMode === AccountSignMode.LEGACY_LEDGER ||
         signMode === AccountSignMode.UNKNOWN ||
@@ -251,7 +263,14 @@ export const Confirmations = () => {
     }
 
     if (confirmation.item.isInternal && confirmation.type !== 'connectWCRequest') {
-      return <TransactionConfirmation confirmation={confirmation} navigation={navigation} />;
+      return (
+        <TransactionConfirmation
+          openAlert={setConfirmModal}
+          closeAlert={hideConfirmModal}
+          confirmation={confirmation}
+          navigation={navigation}
+        />
+      );
     }
 
     switch (confirmation.type) {
@@ -301,7 +320,7 @@ export const Confirmations = () => {
     }
 
     return null;
-  }, [accounts, confirmation, isDevMode, navigation]);
+  }, [accounts, confirmation, hideConfirmModal, isDevMode, navigation, setConfirmModal]);
 
   useEffect(() => {
     if (numberOfConfirmations) {

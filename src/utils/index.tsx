@@ -9,7 +9,7 @@ import { ColorMap } from 'styles/color';
 import { IconProps } from 'phosphor-react-native';
 import { _ChainInfo, _ChainStatus } from '@subwallet/chain-list/types';
 import { Logo as SWLogo } from 'components/design-system-ui';
-import { DEFAULT_ACCOUNT_TYPES, EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { DEFAULT_ACCOUNT_TYPES, EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE, TON_ACCOUNT_TYPE } from 'constants/index';
 import { AccountChainType, AccountJson, AccountProxy } from '@subwallet/extension-base/types';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
 import { KeypairType } from '@subwallet/keyring/types';
@@ -326,8 +326,8 @@ export const convertKeyTypes = (authTypes: AccountAuthType[]): KeypairType[] => 
       result.push(EVM_ACCOUNT_TYPE);
     } else if (authType === 'substrate') {
       result.push(SUBSTRATE_ACCOUNT_TYPE);
-    } else if (authType === 'both') {
-      result.push(SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE);
+    } else if (authType === 'ton') {
+      result.push(TON_ACCOUNT_TYPE);
     }
   }
 

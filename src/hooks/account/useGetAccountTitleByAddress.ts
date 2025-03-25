@@ -3,9 +3,9 @@
 
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
 import { useMemo } from 'react';
-import { AccountSignMode } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import { AccountSignMode } from '@subwallet/extension-base/types';
 
 const useGetAccountTitleByAddress = (address?: string): string => {
   const signMode = useGetAccountSignModeByAddress(address);

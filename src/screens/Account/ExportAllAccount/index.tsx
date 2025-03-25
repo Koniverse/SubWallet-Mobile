@@ -21,9 +21,8 @@ import { RootState } from 'stores/index';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
+import { AccountProxy, AccountProxyType, AccountSignMode } from '@subwallet/extension-base/types';
 import { exportAccountBatch } from 'messaging/accounts';
-import { AccountSignMode } from 'types/signer';
 import { SelectAccountAllItem } from 'components/common/SelectAccountAllItem';
 
 const renderListEmptyComponent = () => {

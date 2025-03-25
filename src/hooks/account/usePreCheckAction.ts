@@ -7,12 +7,11 @@ import { useCallback } from 'react';
 import { VoidFunction } from 'types/index';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { getSignMode } from 'utils/account';
-import { AccountSignMode } from 'types/signer';
 import { ALL_STAKING_ACTIONS } from 'constants/transaction';
 import { useToast } from 'react-native-toast-notifications';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { getDevMode } from 'utils/storage';
-import { AccountJson } from '@subwallet/extension-base/types';
+import { AccountJson, AccountSignMode } from '@subwallet/extension-base/types';
 
 //todo: i18n
 //todo: solve error

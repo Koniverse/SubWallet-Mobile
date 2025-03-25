@@ -72,7 +72,7 @@ import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMu
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountAddressItemType } from 'types/account';
-import { AccountProxyType } from '@subwallet/extension-base/types';
+import { AccountProxyType, ProcessType } from '@subwallet/extension-base/types';
 import { isTokenCompatibleWithAccountChainTypes } from 'utils/chainAndAsset';
 import { getChainsByAccountAll } from 'utils/index';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
@@ -80,6 +80,9 @@ import { validateRecipientAddress } from 'utils/core/logic-validation/recipientA
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { CHAINFLIP_SLIPPAGE } from 'types/swap';
 import Tooltip from 'react-native-walkthrough-tooltip';
+import { submitProcess } from 'messaging/index';
+import useOneSignProcess from 'hooks/account/useOneSignProcess';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -174,6 +177,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   const [processState, dispatchProcessState] = useReducer(commonProcessReducer, DEFAULT_COMMON_PROCESS);
   const { onError, onSuccess } = useHandleSubmitMultiTransaction(onDone, setTransactionDone, dispatchProcessState);
   const onPreCheck = usePreCheckAction(fromValue);
+  const oneSign = useOneSignProcess(fromValue);
   const accountSelectorRef = useRef<ModalRef>();
   const [showQuoteArea, setShowQuoteArea] = useState<boolean>(false);
   const [quoteOptions, setQuoteOptions] = useState<SwapQuote[]>([]);
@@ -801,16 +805,21 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
         setSubmitLoading(true);
 
         const { from, recipient } = values;
+        let processId = processState.processId;
 
         const submitData = async (step: number): Promise<boolean> => {
-          dispatchProcessState({
-            type: CommonActionType.STEP_SUBMIT,
-            payload: null,
-          });
-
           const isFirstStep = step === 0;
           const isLastStep = step === processState.steps.length - 1;
           const needRollback = step === 1;
+
+          if (isFirstStep) {
+            processId = getId();
+          }
+
+          dispatchProcessState({
+            type: CommonActionType.STEP_SUBMIT,
+            payload: isFirstStep ? { processId } : null,
+          });
 
           try {
             if (isFirstStep) {
@@ -854,22 +863,45 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                   }
                 }
               }
-              const submitPromise: Promise<SWTransactionResponse> = handleSwapStep({
-                process: currentOptimalSwapPath,
-                currentStep: step,
-                quote: latestOptimalQuote,
-                address: from,
-                slippage: slippage,
-                recipient: recipient || undefined,
-              });
 
-              const rs = await submitPromise;
-              const success = onSuccess(isLastStep, needRollback)(rs);
+              if (oneSign && currentOptimalSwapPath.steps.length > 2) {
+                const submitPromise: Promise<SWTransactionResponse> = submitProcess({
+                  address: from,
+                  id: processId,
+                  type: ProcessType.SWAP,
+                  request: {
+                    process: currentOptimalSwapPath,
+                    currentStep: step,
+                    quote: latestOptimalQuote,
+                    address: from,
+                    slippage: slippage,
+                    recipient,
+                  },
+                });
 
-              if (success) {
-                return await submitData(step + 1);
+                const rs = await submitPromise;
+
+                onSuccess(true, needRollback)(rs);
+
+                return true;
               } else {
-                return false;
+                const submitPromise: Promise<SWTransactionResponse> = handleSwapStep({
+                  process: currentOptimalSwapPath,
+                  currentStep: step,
+                  quote: latestOptimalQuote,
+                  address: from,
+                  slippage: slippage,
+                  recipient: recipient || undefined,
+                });
+
+                const rs = await submitPromise;
+                const success = onSuccess(isLastStep, needRollback)(rs);
+
+                if (success) {
+                  return await submitData(step + 1);
+                } else {
+                  return false;
+                }
               }
             }
           } catch (e) {
@@ -917,7 +949,9 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       hideAll,
       onError,
       onSuccess,
+      oneSign,
       processState.currentStep,
+      processState.processId,
       processState.steps.length,
       show,
       slippage,
@@ -978,7 +1012,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
               setSwapError(undefined);
               setIsFormInvalid(false);
               setShowQuoteArea(true);
-              console.log('recipientValue || undefined', recipientValue || undefined);
 
               const currentRequest: SwapRequest = {
                 address: fromValue,

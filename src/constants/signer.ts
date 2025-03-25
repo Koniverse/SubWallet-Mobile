@@ -1,4 +1,4 @@
-import { AccountSignMode } from 'types/signer';
+import { AccountSignMode } from '@subwallet/extension-base/types';
 
 export const MODE_CAN_SIGN: AccountSignMode[] = [AccountSignMode.PASSWORD, AccountSignMode.QR];
 

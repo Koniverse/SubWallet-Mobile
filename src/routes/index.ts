@@ -33,7 +33,7 @@ export type RootStackParamList = {
   CreateAccount: { isBack?: boolean };
   QrScanner: undefined;
   AccountsScreen: { pathName?: string };
-  Notification: undefined;
+  Notification: { transactionProcess?: { processId: string; triggerTime: string } };
   EditAccount: {
     address: string;
     name: string;
@@ -95,6 +95,7 @@ export type RootStackParamList = {
   ManageAddressBook: undefined;
   DeriveAccount: undefined;
   Crowdloans: undefined;
+  TransactionSubmission: { transactionProcessId?: string };
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -131,3 +132,5 @@ export type AddProviderProps = NativeStackScreenProps<RootStackParamList, 'AddPr
 export type TransactionActionProps = NativeStackScreenProps<RootStackParamList, 'TransactionAction'>;
 export type HistoryProps = NativeStackScreenProps<RootStackParamList, 'History'>;
 export type NetworksSettingProps = NativeStackScreenProps<RootStackParamList, 'NetworksSetting'>;
+export type NotificationProps = NativeStackScreenProps<RootStackParamList, 'Notification'>;
+export type TransactionSubmissionProps = NativeStackScreenProps<RootStackParamList, 'TransactionSubmission'>;

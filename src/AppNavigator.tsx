@@ -97,6 +97,7 @@ import { CurrentAccountInfo } from '@subwallet/extension-base/background/types';
 import { Notification } from 'screens/Settings/Notifications/Notification';
 import { NotificationSetting } from 'screens/Settings/Notifications/NotificationSetting';
 import { ImportNft } from 'screens/ImportToken/ImportNft';
+import { TransactionSubmission } from 'screens/TransactionSubmission';
 
 interface Props {
   isAppReady: boolean;
@@ -286,7 +287,7 @@ const CrowdloanListScreen = (props: JSX.IntrinsicAttributes) => {
 };
 
 const NotificationScreen = (props: JSX.IntrinsicAttributes) => {
-  return withPageWrapper(Notification as ComponentType, ['earning'])(props);
+  return withPageWrapper(Notification as ComponentType, ['earning', 'price'])(props);
 };
 
 type DeepLinkSubscriptionType = {
@@ -651,6 +652,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="Notification" component={NotificationScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="EarningPreview" component={EarningPreview} options={{ gestureEnabled: false }} />
+                <Stack.Screen
+                  name="TransactionSubmission"
+                  component={TransactionSubmission}
+                  options={{ gestureEnabled: false }}
+                />
                 <Stack.Screen
                   name="EarningPreviewPools"
                   component={EarningPreviewPools}

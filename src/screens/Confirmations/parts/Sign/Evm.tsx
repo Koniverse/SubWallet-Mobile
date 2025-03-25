@@ -10,7 +10,6 @@ import { completeConfirmation } from 'messaging/index';
 import { ConfirmationDefinitions, ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
 import { SigData } from 'types/signer';
 import { getSignMode } from 'utils/account';
-import { AccountSignMode } from 'types/signer';
 import { isEvmMessage } from 'utils/confirmation/confirmation';
 import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
@@ -27,6 +26,7 @@ import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInter
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import { AccountSignMode } from '@subwallet/extension-base/types';
 
 interface Props {
   id: string;

@@ -6,7 +6,7 @@ import { CryptoStackParamList } from 'routes/home';
 import withPageWrapper from 'components/pageWrapper';
 
 const TokenGroupsScreen = (props: JSX.IntrinsicAttributes) => {
-  return withPageWrapper(TokenGroups as ComponentType, ['chainStore'])(props);
+  return withPageWrapper(TokenGroups as ComponentType, ['chainStore', 'swap'])(props);
 };
 
 const TokenGroupsDetailScreen = (props: JSX.IntrinsicAttributes) => {

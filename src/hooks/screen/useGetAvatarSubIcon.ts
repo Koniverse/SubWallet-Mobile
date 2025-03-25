@@ -1,7 +1,7 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
+import { AccountSignMode } from '@subwallet/extension-base/types';
 import { Eye, HardDrives, QrCode } from 'phosphor-react-native';
 import { useMemo } from 'react';
-import { AccountSignMode } from 'types/signer';
 import { AvatarSubIcon } from 'types/ui-types';
 import { getSignMode } from 'utils/account';
 

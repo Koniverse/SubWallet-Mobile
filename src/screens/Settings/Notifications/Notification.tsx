@@ -1,10 +1,12 @@
 import {
+  ArrowsLeftRight,
   ArrowSquareDownLeft,
   ArrowSquareUpRight,
   BellSimpleRinging,
   BellSimpleSlash,
   Checks,
   Coins,
+  Database,
   DownloadSimple,
   Gear,
   Gift,
@@ -20,6 +22,7 @@ import {
   NotificationActionType,
   NotificationSetup,
   NotificationTab,
+  ProcessNotificationMetadata,
   WithdrawClaimNotificationMetadata,
 } from '@subwallet/extension-base/services/inapp-notification-service/interfaces';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -47,7 +50,7 @@ import { COMMON_CHAIN_SLUGS } from '@subwallet/chain-list';
 import { AppModalContext } from 'providers/AppModalContext';
 import { Button, Icon, PageIcon } from 'components/design-system-ui';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { NotificationProps, RootNavigationProps } from 'routes/index';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { SwTab, TabItem } from 'components/design-system-ui/tab';
 import { saveNotificationSetup } from 'messaging/settings';
@@ -71,6 +74,8 @@ export enum NotificationIconBackgroundColorMap {
   CLAIM_AVAIL_BRIDGE_ON_AVAIL = 'yellow-7', // temporary set
   CLAIM_AVAIL_BRIDGE_ON_ETHEREUM = 'yellow-7',
   CLAIM_POLYGON_BRIDGE = 'yellow-7',
+  SWAP = 'blue-8',
+  EARNING = 'blue-8',
 }
 
 export const NotificationIconMap = {
@@ -81,13 +86,17 @@ export const NotificationIconMap = {
   CLAIM_AVAIL_BRIDGE_ON_AVAIL: Coins, // temporary set
   CLAIM_AVAIL_BRIDGE_ON_ETHEREUM: Coins,
   CLAIM_POLYGON_BRIDGE: Coins,
+  SWAP: ArrowsLeftRight,
+  EARNING: Database,
 };
 
-export const Notification = () => {
+export const Notification = ({ route: { params } }: NotificationProps) => {
   const navigation = useNavigation<RootNavigationProps>();
+  const paramTransactionProcess = params?.transactionProcess;
+  const paramTransactionProcessId = paramTransactionProcess?.processId;
   const theme = useSubWalletTheme().swThemes;
   const chainsByAccountType = useGetChainSlugsByAccount();
-  const { confirmModal } = useContext(AppModalContext);
+  const { confirmModal, transactionProcessDetailModal } = useContext(AppModalContext);
   const { turnOnChain } = useChainChecker();
   const { notificationSetup } = useSelector((state: RootState) => state.settings);
   const { accounts, currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
@@ -427,6 +436,19 @@ export const Notification = () => {
 
             break;
           }
+          case NotificationActionType.EARNING:
+
+          // eslint-disable-next-line no-fallthrough
+          case NotificationActionType.SWAP: {
+            const metadata = item.metadata as ProcessNotificationMetadata;
+
+            transactionProcessDetailModal.setTransactionProcessDetailModalState({
+              visible: true,
+              transactionProcessId: metadata.processId,
+            });
+
+            break;
+          }
         }
 
         if (!item.isRead) {
@@ -438,6 +460,7 @@ export const Notification = () => {
         }
       };
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       accounts,
       chainStateMap,
@@ -543,6 +566,18 @@ export const Notification = () => {
       clearInterval(timer);
     };
   }, []);
+
+  useEffect(() => {
+    // todo: may have more conditions
+    if (paramTransactionProcessId) {
+      transactionProcessDetailModal.setTransactionProcessDetailModalState({
+        visible: true,
+        transactionProcessId: paramTransactionProcessId,
+      });
+    }
+    // need paramTransactionProcess?.triggerTime to re-run this useEffect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramTransactionProcessId, paramTransactionProcess?.triggerTime]);
 
   const renderBeforeList = useCallback(() => {
     return (

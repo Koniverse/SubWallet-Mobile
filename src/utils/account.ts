@@ -6,7 +6,6 @@ import {
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { isAccountAll, reformatAddress } from '@subwallet/extension-base/utils';
 import { MODE_CAN_SIGN } from 'constants/signer';
-import { AccountSignMode } from 'types/signer';
 import { AccountAddressType } from 'types/index';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { Recoded } from 'types/ui-types';
@@ -15,7 +14,7 @@ import { Alert } from 'react-native';
 import i18n from './i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
-import { AbstractAddressJson, AccountChainType, AccountJson } from '@subwallet/extension-base/types';
+import { AbstractAddressJson, AccountChainType, AccountJson, AccountSignMode } from '@subwallet/extension-base/types';
 import { decodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { isAddress } from '@subwallet/keyring';
 

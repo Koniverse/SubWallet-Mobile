@@ -46,6 +46,7 @@ const settingsSlice = createSlice({
         isShowBalance: payload.isShowBalance,
         accountAllLogo: payload.accountAllLogo,
         notificationSetup: payload.notificationSetup,
+        allowOneSign: payload.allowOneSign,
         reduxStatus: ReduxStatus.READY,
       };
     },

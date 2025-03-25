@@ -50,6 +50,7 @@ import {
   BuyTokenInfo,
   EarningRewardHistoryItem,
   EarningRewardJson,
+  ResponseSubscribeProcessAlive,
   YieldPoolInfo,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
@@ -828,3 +829,16 @@ export const subscribePriorityTokens = lazySubscribeMessage(
   updatePriorityTokens,
 );
 /* Priority tokens */
+
+/* Process multi steps */
+export const updateAliveProcess = (data: ResponseSubscribeProcessAlive) => {
+  store.dispatch({ type: 'requestState/updateAliveProcess', payload: data.processes });
+};
+
+export const subscribeAliveProcess = lazySubscribeMessage(
+  'pri(process.subscribe.alive)',
+  null,
+  updateAliveProcess,
+  updateAliveProcess,
+);
+/* Process multi steps */

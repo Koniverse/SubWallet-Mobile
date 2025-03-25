@@ -15,6 +15,7 @@ import {
   WalletConnectNotSupportRequest,
   WalletConnectSessionRequest,
 } from '@subwallet/extension-base/services/wallet-connect-service/types';
+import { ProcessTransactionData } from '@subwallet/extension-base/types';
 
 const initialState: RequestState = {
   authorizeRequest: {},
@@ -34,6 +35,7 @@ const initialState: RequestState = {
   tonSignatureRequest: {},
   tonWatchTransactionRequest: {},
   tonSendTransactionRequest: {},
+  aliveProcess: {},
   // Summary Info
   reduxStatus: ReduxStatus.INIT,
   hasConfirmations: false,
@@ -100,6 +102,9 @@ const requestStateSlice = createSlice({
   initialState,
   name: 'requestState',
   reducers: {
+    updateAliveProcess(state, { payload }: PayloadAction<Record<string, ProcessTransactionData>>) {
+      state.aliveProcess = payload;
+    },
     updateAuthorizeRequests(state, { payload }: PayloadAction<Record<string, AuthorizeRequest>>) {
       state.authorizeRequest = payload;
       readyMap.updateAuthorizeRequests = true;

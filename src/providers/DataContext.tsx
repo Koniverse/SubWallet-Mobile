@@ -53,6 +53,7 @@ import {
   subscribeLedgerGenericAllowNetworks,
   subscribeUnreadNotificationCount,
   subscribePriorityTokens,
+  subscribeAliveProcess,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -384,6 +385,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
         _DataContext.addHandler({
           ...subscribeConnectWCRequests,
           name: 'subscribeConnectWCRequests',
+          relatedStores: ['requestState'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeAliveProcess,
+          name: 'subscribeAliveProcess',
           relatedStores: ['requestState'],
           isStartImmediately: true,
         });

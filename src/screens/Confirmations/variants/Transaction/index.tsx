@@ -30,13 +30,32 @@ import {
   TokenApproveConfirmation,
   SwapTransactionConfirmation,
   ClaimBridgeTransactionConfirmation,
+  SwapProcessConfirmation,
+  EarnProcessConfirmation,
 } from './variants';
-import { SwapTxData } from '@subwallet/extension-base/types/swap';
+import { SwapBaseTxData, SwapTxData } from '@subwallet/extension-base/types/swap';
+import { ProcessType } from '@subwallet/extension-base/types';
+import BaseProcessConfirmation from 'screens/Confirmations/variants/Transaction/variants/Process/Base';
+import { VoidFunction } from 'types/index';
+import { ConfirmModalInfo } from 'providers/AppModalContext';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
   navigation: NativeStackNavigationProp<RootStackParamList>;
+  openAlert: React.Dispatch<React.SetStateAction<ConfirmModalInfo>>;
+  closeAlert: VoidFunction;
 }
+
+const getProcessComponent = (processType: ProcessType): typeof BaseProcessConfirmation => {
+  switch (processType) {
+    case ProcessType.SWAP:
+      return SwapProcessConfirmation;
+    case ProcessType.EARNING:
+      return EarnProcessConfirmation;
+    default:
+      return BaseProcessConfirmation;
+  }
+};
 
 const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTransactionConfirmation => {
   switch (extrinsicType) {
@@ -98,20 +117,30 @@ export const TransactionConfirmation = (props: Props) => {
   const {
     confirmation: { item, type },
     navigation,
+    openAlert,
+    closeAlert,
   } = props;
   const { id } = item;
 
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
-
   const _transaction = useMemo(() => transactionRequest[id], [transactionRequest, id]);
 
-  const renderContent = useCallback((transaction: SWTransactionResult): React.ReactNode => {
-    const { extrinsicType } = transaction;
+  const renderContent = useCallback(
+    (transaction: SWTransactionResult): React.ReactNode => {
+      const { extrinsicType, process } = transaction;
 
-    const Component = getTransactionComponent(extrinsicType);
+      if (process) {
+        const Component = getProcessComponent(process.type);
 
-    return <Component transaction={transaction} />;
-  }, []);
+        return <Component closeAlert={closeAlert} openAlert={openAlert} transaction={transaction} />;
+      }
+
+      const Component = getTransactionComponent(extrinsicType);
+
+      return <Component closeAlert={closeAlert} openAlert={openAlert} transaction={transaction} />;
+    },
+    [closeAlert, openAlert],
+  );
 
   const txExpirationTime = useMemo((): number | undefined => {
     // transaction might only be valid for a certain period of time
@@ -120,10 +149,14 @@ export const TransactionConfirmation = (props: Props) => {
 
       return data.quote.aliveUntil;
     }
-    // todo: there might be more types of extrinsic
+    if (_transaction.process && _transaction.process.type === ProcessType.SWAP) {
+      const data = _transaction.process.combineInfo as SwapBaseTxData;
+
+      return data.quote.aliveUntil;
+    }
 
     return undefined;
-  }, [_transaction.data, _transaction.extrinsicType]);
+  }, [_transaction.data, _transaction.extrinsicType, _transaction.process]);
 
   return (
     <>

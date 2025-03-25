@@ -96,7 +96,7 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
 
   return (
     <ConfirmationContent isFullHeight>
-      <SwapTransactionBlock data={data} />
+      <SwapTransactionBlock quote={data.quote} />
       <MetaInfo style={{ paddingHorizontal: theme.paddingXS }}>
         <MetaInfo.Account
           address={recipientAddress}

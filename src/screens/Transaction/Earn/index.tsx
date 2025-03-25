@@ -5,6 +5,7 @@ import {
   EarningStatus,
   NominationPoolInfo,
   OptimalYieldPathParams,
+  ProcessType,
   ValidatorInfo,
   YieldPoolType,
   YieldStepType,
@@ -36,6 +37,7 @@ import {
   fetchPoolTarget,
   getOptimalYieldPath,
   submitJoinYieldPool,
+  submitProcess,
   unlockDotCheckCanMint,
   validateYieldProcess,
 } from 'messaging/index';
@@ -79,6 +81,8 @@ import { getReformatedAddressRelatedToChain } from 'utils/account';
 import useGetYieldPositionForSpecificAccount from 'hooks/earning/useGetYieldPositionForSpecificAccount';
 import { VoidFunction } from 'types/index';
 import { reformatAddress } from '@subwallet/extension-base/utils';
+import { getId } from '@subwallet/extension-base/utils/getId';
+import useOneSignProcess from 'hooks/account/useOneSignProcess';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -149,6 +153,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const fromRef = useRef<string>(currentFrom);
   const isPressInfoBtnRef = useRef<boolean>(false);
   const isShowNoPoolInfoPopupRef = useRef<boolean>(false);
+  const oneSign = useOneSignProcess(currentFrom);
   const nativeTokenSlug = useGetNativeTokenSlug(chain);
 
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
@@ -410,6 +415,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     return chainStakingInBoth;
   }, [specificList, poolType, chain]);
 
+  const onHandleOneSignConfirmation = useCallback(
+    (transactionProcessId: string) => {
+      navigation.navigate('TransactionSubmission', { transactionProcessId: transactionProcessId });
+    },
+    [navigation],
+  );
+
   const handleOpenDetailModal = useCallback((): void => {
     Keyboard.dismiss();
     isPressInfoBtnRef.current = true;
@@ -491,7 +503,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const onSuccess = useCallback(
     (lastStep: boolean, needRollback: boolean): ((rs: SWTransactionResponse) => boolean) => {
       return (rs: SWTransactionResponse): boolean => {
-        const { errors: _errors, id, warnings } = rs;
+        const { errors: _errors, id, processId, warnings } = rs;
         if (_errors.length || warnings.length) {
           const error = _errors[0]; // we only handle the first error for now
 
@@ -524,8 +536,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           });
 
           if (lastStep) {
-            onDone(id);
-            setTransactionDone(true);
+            processId ? onHandleOneSignConfirmation(processId) : onDone(id);
+            processId && setTransactionDone(true);
             return false;
           }
           return true;
@@ -534,7 +546,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         }
       };
     },
-    [hideAll, onDone, onError, show],
+    [hideAll, onDone, onError, onHandleOneSignConfirmation, show],
   );
 
   const onChangeTarget = useCallback(
@@ -667,6 +679,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     setSubmitLoading(true);
     const values = getValues();
     const { from, value: _currentAmount } = values;
+    let processId = processState.processId;
     const getData = (submitStep: number): SubmitYieldJoinData => {
       if ([YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo?.type) && poolTarget) {
         const targets = getTargetedPool;
@@ -695,14 +708,19 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       totalFee: processState.feeStructure,
     };
     const submitData = async (step: number): Promise<boolean> => {
-      dispatchProcessState({
-        type: EarningActionType.STEP_SUBMIT,
-        payload: null,
-      });
       const isFirstStep = step === 0;
       const isLastStep = step === processState.steps.length - 1;
       const needRollback = step === 1;
       const data = getData(step);
+
+      if (isFirstStep) {
+        processId = getId();
+      }
+
+      dispatchProcessState({
+        type: EarningActionType.STEP_SUBMIT,
+        payload: isFirstStep ? { processId } : null,
+      });
 
       try {
         if (isFirstStep) {
@@ -730,18 +748,38 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             return await submitData(step + 1);
           }
         } else {
-          const submitPromise: Promise<SWTransactionResponse> = submitJoinYieldPool({
-            path: path,
-            data: data,
-            currentStep: step,
-          });
+          if (oneSign && path.steps.length > 2) {
+            const submitPromise: Promise<SWTransactionResponse> = submitProcess({
+              address: from,
+              id: processId,
+              type: ProcessType.EARNING,
+              request: {
+                path: path,
+                data: data,
+                currentStep: step,
+              },
+            });
 
-          const rs = await submitPromise;
-          const success = onSuccess(isLastStep, needRollback)(rs);
-          if (success) {
-            return await submitData(step + 1);
+            const rs = await submitPromise;
+
+            onSuccess(true, needRollback)(rs);
+
+            return true;
           } else {
-            return false;
+            const submitPromise: Promise<SWTransactionResponse> = submitJoinYieldPool({
+              path: path,
+              data: data,
+              currentStep: step,
+            });
+
+            const rs = await submitPromise;
+            const success = onSuccess(isLastStep, needRollback)(rs);
+
+            if (success) {
+              return await submitData(step + 1);
+            } else {
+              return false;
+            }
           }
         }
       } catch (e) {
@@ -779,9 +817,11 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     getValues,
     onError,
     onSuccess,
+    oneSign,
     poolInfo,
     poolTarget,
     processState.feeStructure,
+    processState.processId,
     processState.steps,
     showValidatorMaxCountWarning,
     slug,

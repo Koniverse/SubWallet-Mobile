@@ -11,6 +11,7 @@ import {
   TotalItem,
   TransferItem,
   TextItem,
+  TransactionProcessItem,
 } from './parts';
 import { InfoItemGeneralProps } from 'components/MetaInfo/types';
 import { StyleProp, View } from 'react-native';
@@ -87,6 +88,7 @@ type CompoundedComponent = React.ForwardRefExoticComponent<Props> & {
   Text: typeof TextItem;
   Total: typeof TotalItem;
   Default: typeof DefaultItem;
+  TransactionProcess: typeof TransactionProcessItem;
 };
 
 const MetaInfo = _MetaInfo as unknown as CompoundedComponent;
@@ -102,5 +104,6 @@ MetaInfo.Number = NumberItem;
 MetaInfo.Text = TextItem;
 MetaInfo.Total = TotalItem;
 MetaInfo.Default = DefaultItem;
+MetaInfo.TransactionProcess = TransactionProcessItem;
 
 export default MetaInfo;

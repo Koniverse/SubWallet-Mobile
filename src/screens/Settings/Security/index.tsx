@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ToggleItem } from 'components/ToggleItem';
 import { View } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
-import { CaretRight, Key, Scan, ShieldCheck } from 'phosphor-react-native';
+import { CaretRight, Key, PenNib, Scan, ShieldCheck } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime, updateUseBiometric } from 'stores/MobileSettings';
@@ -16,7 +16,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import useUnlockModal, { OnCompleteType } from 'hooks/modal/useUnlockModal';
 import { createKeychainPassword, getSupportedBiometryType, resetKeychainPassword } from 'utils/account';
-import { keyringLock, saveAutoLockTime } from 'messaging/index';
+import { keyringLock, saveAllowOneSign, saveAutoLockTime } from 'messaging/index';
 import { requestFaceIDPermission } from 'utils/permission/biometric';
 import { LockTimeout } from 'stores/types';
 
@@ -24,7 +24,9 @@ export const Security = () => {
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
   const { timeAutoLock, isUseBiometric } = useSelector((state: RootState) => state.mobileSettings);
+  const { allowOneSign } = useSelector((state: RootState) => state.settings);
   const [iShowAutoLockModal, setIsShowAutoLockModal] = useState<boolean>(false);
+  const [loadingSignOnce, setLoadingSignOnce] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
   const dispatch = useDispatch();
   const modalRef = useRef<SWModalRefProps>(null);
@@ -109,6 +111,18 @@ export const Security = () => {
     modalRef?.current?.close();
   };
 
+  const updateSignOneStatus = useCallback((currentValue: boolean) => {
+    return () => {
+      setLoadingSignOnce(true);
+
+      saveAllowOneSign(!currentValue)
+        .catch(console.error)
+        .finally(() => {
+          setLoadingSignOnce(false);
+        });
+    };
+  }, []);
+
   return (
     <SubScreenContainer
       title={i18n.header.securitySettings}
@@ -148,6 +162,15 @@ export const Security = () => {
             label={i18n.settings.appLock}
             onPress={() => setIsShowAutoLockModal(true)}
             rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
+          />
+          <ToggleItem
+            backgroundIcon={PenNib}
+            backgroundIconColor={theme['purple-8']}
+            label={'Sign for multiple transactions'}
+            isEnabled={allowOneSign}
+            onValueChange={updateSignOneStatus(allowOneSign)}
+            disabled={loadingSignOnce}
+            description={'Allow signing once for multiple transactions'}
           />
         </View>
 

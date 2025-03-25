@@ -9,3 +9,4 @@ export { default as TextItem } from './TextItem';
 export { default as StatusItem } from './StatusItem';
 export { default as TotalItem } from './TotalItem';
 export { default as TransferItem } from './TransferItem';
+export { default as TransactionProcessItem } from './TransactionProcessItem';

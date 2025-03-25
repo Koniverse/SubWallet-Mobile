@@ -55,7 +55,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
   }, [checkCamera]);
 
   const onPressNotificationBtn = useCallback(() => {
-    navigation.navigate('Notification');
+    navigation.navigate('Notification', {});
   }, [navigation]);
 
   const unreadNotificationCount = useMemo(() => {

@@ -52,7 +52,7 @@ export const SwapLayout = ({ data }: Props) => {
 
   return (
     <MetaInfo>
-      <SwapTransactionBlock data={swapInfo} />
+      <SwapTransactionBlock quote={swapInfo.quote} />
       {_getAssetOriginChain(assetFrom) === _getAssetOriginChain(assetTo) ? (
         <>
           <MetaInfo.Account address={data.from} label={'Sender'} name={data.fromName} />

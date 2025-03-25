@@ -2,6 +2,8 @@ import { SWTransactionResponse } from '@subwallet/extension-base/services/transa
 import { useCallback, useMemo } from 'react';
 import { CommonActionType, CommonProcessAction } from 'reducers/transaction-process';
 import { useToast } from 'react-native-toast-notifications';
+import { RootNavigationProps } from 'routes/index';
+import { useNavigation } from '@react-navigation/native';
 
 const useHandleSubmitMultiTransaction = (
   onDone: (id: string) => void,
@@ -10,6 +12,7 @@ const useHandleSubmitMultiTransaction = (
   triggerOnChangeValue?: () => void,
   setIgnoreWarnings?: (value: boolean) => void,
 ) => {
+  const navigation = useNavigation<RootNavigationProps>();
   const { hideAll, show } = useToast();
   const onError = useCallback(
     (error: Error) => {
@@ -27,10 +30,17 @@ const useHandleSubmitMultiTransaction = (
     [dispatchProcessState, hideAll, show],
   );
 
+  const onHandleOneSignConfirmation = useCallback(
+    (transactionProcessId: string) => {
+      navigation.navigate('TransactionSubmission', { transactionProcessId: transactionProcessId });
+    },
+    [navigation],
+  );
+
   const onSuccess = useCallback(
     (lastStep: boolean, needRollback: boolean): ((rs: SWTransactionResponse) => boolean) => {
       return (rs: SWTransactionResponse): boolean => {
-        const { errors: _errors, id, warnings } = rs;
+        const { errors: _errors, id, processId, warnings } = rs;
         if (_errors.length || warnings.length) {
           if (_errors[0]?.message !== 'Rejected by user') {
             let currentErrorMessage = '';
@@ -83,8 +93,8 @@ const useHandleSubmitMultiTransaction = (
           });
 
           if (lastStep) {
+            processId ? onHandleOneSignConfirmation(processId) : onDone(id);
             setTransactionDone(true);
-            onDone(id);
 
             return false;
           }
@@ -95,7 +105,17 @@ const useHandleSubmitMultiTransaction = (
         return false;
       };
     },
-    [dispatchProcessState, hideAll, onDone, onError, setIgnoreWarnings, setTransactionDone, show, triggerOnChangeValue],
+    [
+      dispatchProcessState,
+      hideAll,
+      onDone,
+      onError,
+      onHandleOneSignConfirmation,
+      setIgnoreWarnings,
+      setTransactionDone,
+      show,
+      triggerOnChangeValue,
+    ],
   );
 
   return useMemo(

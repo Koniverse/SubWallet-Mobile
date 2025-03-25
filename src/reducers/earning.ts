@@ -23,6 +23,7 @@ export interface YieldProcessState {
   feeStructure: YieldTokenBaseInfo[]; // estimate fee
   currentStep: number; // Current step
   stepResults: Record<number, StepResult>;
+  processId: string;
 }
 
 export enum EarningActionType {
@@ -46,6 +47,7 @@ export const DEFAULT_YIELD_PROCESS: YieldProcessState = {
   feeStructure: [],
   currentStep: 0,
   stepResults: {},
+  processId: '',
 };
 
 interface InitAction extends AbstractEarningAction {
@@ -97,15 +99,19 @@ const handleStepCreateAction: ActionHandler<StepCreateAction> = (oldState, { pay
 
 interface StepSubmitAction extends AbstractEarningAction {
   type: EarningActionType.STEP_SUBMIT;
-  payload: null;
+  payload: { processId: string } | null;
 }
 
-const handleStepSubmitAction: ActionHandler<StepSubmitAction> = oldState => {
+const handleStepSubmitAction: ActionHandler<StepSubmitAction> = (oldState, { payload }) => {
   const result: YieldProcessState = { ...oldState };
   const currentStep = oldState.currentStep;
 
   result.stepResults = { ...oldState.stepResults };
   result.stepResults[currentStep].status = EarningStepStatus.SUBMITTING;
+
+  if (payload?.processId) {
+    result.processId = payload.processId;
+  }
 
   return result;
 };

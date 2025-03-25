@@ -7,9 +7,9 @@ import { CheckCircle, Eye, IconProps, QrCode, Swatches } from 'phosphor-react-na
 
 import { AccountItemProps } from 'components/design-system-ui';
 import { KeypairType } from '@polkadot/util-crypto/types';
-import { AccountSignMode } from 'types/signer';
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
 import { View } from 'react-native';
+import { AccountSignMode } from '@subwallet/extension-base/types';
 
 export interface AccountItemBaseProps extends AccountItemProps {
   genesisHash?: string | null;

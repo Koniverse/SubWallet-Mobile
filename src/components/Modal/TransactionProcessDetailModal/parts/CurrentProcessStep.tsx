@@ -1,0 +1,164 @@
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { ThemeTypes } from 'styles/themes';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import {
+  BaseStepType,
+  ProcessStep,
+  ProcessTransactionData,
+  StepStatus,
+  SwapStepType,
+  YieldStepType,
+} from '@subwallet/extension-base/types';
+import { Icon, Typography } from 'components/design-system-ui';
+import { SWIconProps } from 'components/design-system-ui/icon';
+import { CheckCircle, ProhibitInset, Spinner } from 'phosphor-react-native';
+import { CommonStepType } from '@subwallet/extension-base/types/service-base';
+import { isStepCompleted, isStepFailed } from 'utils/transaction';
+import { convertHexColorToRGBA } from 'utils/color';
+import { FontSemiBold } from 'styles/sharedStyles';
+
+interface Props {
+  processData: ProcessTransactionData;
+}
+
+const CurrentProcessStep: React.FC<Props> = (props: Props) => {
+  const { processData } = props;
+  const theme = useSubWalletTheme().swThemes;
+  const textColor = useMemo(() => {
+    if (isStepCompleted(processData.status)) {
+      return theme.colorSuccess;
+    } else if (isStepFailed(processData.status)) {
+      return theme.colorError;
+    }
+
+    return '#D9A33E';
+  }, [processData.status, theme.colorError, theme.colorSuccess]);
+  const styles = useMemo(() => createStyle(theme, textColor), [textColor, theme]);
+
+  const iconProp = useMemo<SWIconProps>(() => {
+    const iconInfo: SWIconProps = (() => {
+      if (isStepCompleted(processData.status)) {
+        return {
+          phosphorIcon: CheckCircle,
+          weight: 'fill',
+          iconColor: theme.colorSuccess,
+        };
+      } else if (isStepFailed(processData.status)) {
+        return {
+          phosphorIcon: ProhibitInset,
+          weight: 'fill',
+          iconColor: theme.colorError,
+        };
+      }
+
+      return {
+        phosphorIcon: Spinner,
+        iconColor: '#D9A33E',
+      };
+    })();
+
+    return {
+      ...iconInfo,
+      size: 'md',
+    };
+  }, [processData.status, theme.colorError, theme.colorSuccess]);
+
+  const currentStep: ProcessStep | undefined = useMemo(() => {
+    const first = processData.steps.find(s => s.id === processData.currentStepId);
+
+    if (first) {
+      return first;
+    }
+
+    const second = processData.steps
+      .slice()
+      .reverse()
+      .find(s => [StepStatus.COMPLETE, StepStatus.FAILED, StepStatus.TIMEOUT, StepStatus.CANCELLED].includes(s.status));
+
+    if (second) {
+      return second;
+    }
+
+    return processData.steps[0];
+  }, [processData.currentStepId, processData.steps]);
+
+  const title = useMemo(() => {
+    if (isStepCompleted(processData.status)) {
+      return 'Success';
+    }
+
+    if (isStepFailed(processData.status)) {
+      return 'Failed';
+    }
+
+    if (!currentStep) {
+      return '';
+    }
+
+    if (([CommonStepType.XCM, YieldStepType.XCM] as BaseStepType[]).includes(currentStep.type)) {
+      return 'Transfer token cross-chain';
+    }
+
+    if (currentStep.type === SwapStepType.SWAP) {
+      return 'Swap token';
+    }
+
+    if (([CommonStepType.TOKEN_APPROVAL, YieldStepType.TOKEN_APPROVAL] as BaseStepType[]).includes(currentStep.type)) {
+      return 'Approve token';
+    }
+
+    if (
+      (
+        [
+          YieldStepType.NOMINATE,
+          YieldStepType.JOIN_NOMINATION_POOL,
+          YieldStepType.MINT_VDOT,
+          YieldStepType.MINT_VMANTA,
+          YieldStepType.MINT_LDOT,
+          YieldStepType.MINT_QDOT,
+          YieldStepType.MINT_SDOT,
+          YieldStepType.MINT_STDOT,
+        ] as BaseStepType[]
+      ).includes(currentStep.type)
+    ) {
+      return 'Stake token';
+    }
+
+    return '';
+  }, [currentStep, processData.status]);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.iconWrapper}>
+        <Icon {...iconProp} />
+      </View>
+
+      <Typography.Text style={styles.stepText}>{title}</Typography.Text>
+    </View>
+  );
+};
+
+function createStyle(theme: ThemeTypes, textColor: string) {
+  return StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      gap: theme.sizeSM,
+      flexDirection: 'row',
+    },
+    iconWrapper: {
+      minWidth: 32,
+      height: 32,
+      borderRadius: 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: convertHexColorToRGBA(textColor, 0.1),
+    },
+    stepText: {
+      color: textColor,
+      ...FontSemiBold,
+    },
+  });
+}
+
+export default CurrentProcessStep;

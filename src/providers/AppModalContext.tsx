@@ -6,6 +6,10 @@ import { VoidFunction } from 'types/index';
 import { DeriveAccountActionModal } from 'components/common/Modal/DeriveAccountModal';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
+import TransactionProcessDetailModal from 'components/Modal/TransactionProcessDetailModal';
+import TransactionStepsModal from 'components/Modal/TransactionStepsModal';
+import { ProcessType } from '@subwallet/extension-base/types';
+import { ProcessStepItemType } from 'components/ProcessStepItem';
 
 interface AppModalContextProviderProps {
   children?: React.ReactElement;
@@ -41,6 +45,17 @@ export type DeriveModalInfo = {
   navigation?: NativeStackNavigationProp<RootStackParamList>;
 };
 
+export type TransactionProcessDetailInfo = {
+  visible?: boolean;
+  transactionProcessId?: string;
+};
+
+export type TransactionStepsInfo = {
+  visible?: boolean;
+  type?: ProcessType;
+  items?: ProcessStepItemType[];
+};
+
 export interface AppModal {
   confirmModal: {
     setConfirmModal: React.Dispatch<React.SetStateAction<ConfirmModalInfo>>;
@@ -56,6 +71,16 @@ export interface AppModal {
     setDeriveModalState: React.Dispatch<React.SetStateAction<DeriveModalInfo>>;
     hideDeriveModal: () => void;
   };
+  transactionStepsModal: {
+    transactionStepsModalState: TransactionStepsInfo;
+    setTransactionStepsModalState: React.Dispatch<React.SetStateAction<TransactionStepsInfo>>;
+    hideTransactionStepsModal: () => void;
+  };
+  transactionProcessDetailModal: {
+    transactionProcessDetailModalState: TransactionProcessDetailInfo;
+    setTransactionProcessDetailModalState: React.Dispatch<React.SetStateAction<TransactionProcessDetailInfo>>;
+    hideTransactionProcessDetailModal: () => void;
+  };
 }
 
 export const AppModalContext = React.createContext({} as AppModal);
@@ -64,6 +89,9 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
   const [confirmModal, setConfirmModal] = useState<ConfirmModalInfo>({});
   const [addressQrModalState, setAddressQrModal] = useState<AddressQrModalInfo>({});
   const [deriveModalState, setDeriveModalState] = useState<DeriveModalInfo>({});
+  const [transactionStepsModalState, setTransactionStepsModalState] = useState<TransactionStepsInfo>({});
+  const [transactionProcessDetailModalState, setTransactionProcessDetailModalState] =
+    useState<TransactionProcessDetailInfo>({});
 
   const hideConfirmModal = useCallback(() => {
     setConfirmModal(prevState => ({ ...prevState, visible: false }));
@@ -110,6 +138,30 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
     );
   }, []);
 
+  const hideTransactionStepsModal = useCallback(() => {
+    setTransactionStepsModalState(prevState => ({ ...prevState, visible: false }));
+    setTimeout(
+      () =>
+        setTransactionStepsModalState(prevState => ({
+          ...prevState,
+          transactionProcessId: '',
+        })),
+      300,
+    );
+  }, []);
+
+  const hideTransactionProcessDetailModal = useCallback(() => {
+    setTransactionProcessDetailModalState(prevState => ({ ...prevState, visible: false }));
+    setTimeout(
+      () =>
+        setTransactionProcessDetailModalState(prevState => ({
+          ...prevState,
+          transactionProcessId: '',
+        })),
+      300,
+    );
+  }, []);
+
   const contextValue: AppModal = useMemo(
     () => ({
       confirmModal: {
@@ -126,8 +178,28 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         setDeriveModalState,
         hideDeriveModal,
       },
+      transactionStepsModal: {
+        transactionStepsModalState: transactionStepsModalState,
+        setTransactionStepsModalState: setTransactionStepsModalState,
+        hideTransactionStepsModal,
+      },
+      transactionProcessDetailModal: {
+        transactionProcessDetailModalState: transactionProcessDetailModalState,
+        setTransactionProcessDetailModalState: setTransactionProcessDetailModalState,
+        hideTransactionProcessDetailModal,
+      },
     }),
-    [addressQrModalState, deriveModalState, hideAddressQrModal, hideConfirmModal, hideDeriveModal],
+    [
+      addressQrModalState,
+      deriveModalState,
+      hideAddressQrModal,
+      hideConfirmModal,
+      hideDeriveModal,
+      hideTransactionProcessDetailModal,
+      hideTransactionStepsModal,
+      transactionProcessDetailModalState,
+      transactionStepsModalState,
+    ],
   );
   // TODO: Add back and cancel
   return (
@@ -172,6 +244,28 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           navigation={deriveModalState.navigation}
         />
       )}
+
+      {transactionProcessDetailModalState.visible && transactionProcessDetailModalState.transactionProcessId && (
+        <TransactionProcessDetailModal
+          modalVisible={transactionProcessDetailModalState.visible}
+          setModalVisible={noop}
+          processId={transactionProcessDetailModalState.transactionProcessId}
+          onCancel={hideTransactionProcessDetailModal}
+        />
+      )}
+
+      {transactionStepsModalState.visible &&
+        transactionStepsModalState.type &&
+        transactionStepsModalState.items &&
+        transactionStepsModalState.items.length && (
+          <TransactionStepsModal
+            modalVisible={transactionStepsModalState.visible}
+            setModalVisible={noop}
+            items={transactionStepsModalState.items}
+            onCancel={hideTransactionStepsModal}
+            type={transactionStepsModalState.type}
+          />
+        )}
     </AppModalContext.Provider>
   );
 };
