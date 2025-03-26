@@ -570,10 +570,13 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
   useEffect(() => {
     // todo: may have more conditions
     if (paramTransactionProcessId) {
-      transactionProcessDetailModal.setTransactionProcessDetailModalState({
-        visible: true,
-        transactionProcessId: paramTransactionProcessId,
-      });
+      Keyboard.dismiss();
+      setTimeout(() => {
+        transactionProcessDetailModal.setTransactionProcessDetailModalState({
+          visible: true,
+          transactionProcessId: paramTransactionProcessId,
+        });
+      }, 300);
     }
     // need paramTransactionProcess?.triggerTime to re-run this useEffect
     // eslint-disable-next-line react-hooks/exhaustive-deps

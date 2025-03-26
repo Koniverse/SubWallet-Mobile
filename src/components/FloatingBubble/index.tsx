@@ -21,7 +21,7 @@ interface Props {
 
 const FloatingBubble = ({ navigateToNotification }: Props) => {
   const { isLocked } = useSelector((state: RootState) => state.accountState);
-  const translateX = useSharedValue(16);
+  const translateX = useSharedValue(10);
   const translateY = useSharedValue(height / 3);
   const opacity = useSharedValue(1); // Control text visibility
   const bubbleWidth = useSharedValue(368);

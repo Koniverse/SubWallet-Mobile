@@ -110,7 +110,7 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
   return (
     <ContainerWithSubHeader onPressBack={goHome} title={'Do not close the app!'}>
       <View style={styles.transactionSubmissionContainer}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
           <PageIcon icon={icon} weight={'fill'} color={iconColor} />
 
           <Typography.Title style={styles.transactionSubmissionTitle}>{'Transaction submitted!'}</Typography.Title>
@@ -120,7 +120,9 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
               : 'View transaction progress in the Notifications screen or go back to home'}
           </Typography.Text>
           {processData && processData.type === ProcessType.SWAP && swapData && (
-            <SwapTransactionBlock quote={swapData.quote} logoSize={36} />
+            <View style={{ width: '100%' }}>
+              <SwapTransactionBlock quote={swapData.quote} logoSize={36} />
+            </View>
           )}
         </View>
 
