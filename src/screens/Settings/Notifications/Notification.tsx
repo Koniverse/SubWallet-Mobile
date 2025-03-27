@@ -640,6 +640,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
         renderItem={renderItem}
         placeholder={'Search notification'}
         loading={loading}
+        autoFocus={!paramTransactionProcessId}
         isShowMainHeader={false}
         onPressBack={onPressBack}
         searchFunction={searchFunction}

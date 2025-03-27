@@ -537,7 +537,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
           if (lastStep) {
             processId ? onHandleOneSignConfirmation(processId) : onDone(id);
-            processId && setTransactionDone(true);
+            !processId && setTransactionDone(true);
             return false;
           }
           return true;

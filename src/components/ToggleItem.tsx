@@ -74,7 +74,6 @@ function createStyle(theme: ThemeTypes, isHaveDescription: boolean) {
       borderRadius: theme.borderRadiusLG,
       paddingHorizontal: theme.paddingSM,
       marginBottom: theme.marginXS,
-      width: '100%',
     },
     contentContainer: {
       flex: 1,
