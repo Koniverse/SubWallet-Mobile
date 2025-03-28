@@ -11,7 +11,6 @@ export interface TransactionDoneStyle {
   transactionDoneContainer: ViewStyle;
   transactionDoneTitle: TextStyle;
   transactionDoneMessage: TextStyle;
-  transactionDoneText: TextStyle;
 }
 
 export default (theme: ThemeTypes) =>
@@ -49,31 +48,25 @@ export default (theme: ThemeTypes) =>
     },
     transactionDoneContainer: {
       flex: 1,
-      paddingTop: theme.padding,
+      paddingTop: theme.paddingXL + 4,
       alignItems: 'center',
       paddingHorizontal: theme.padding,
     },
     transactionDoneTitle: {
-      paddingVertical: 16,
+      paddingTop: theme.paddingXL + 4,
+      paddingBottom: theme.padding,
       fontSize: theme.fontSizeHeading3,
       lineHeight: theme.fontSizeHeading3 * theme.lineHeightHeading3,
-      color: theme.colorTextLight2,
+      color: theme.colorTextLight1,
       ...FontSemiBold,
     },
     transactionDoneMessage: {
-      fontSize: theme.fontSizeLG,
-      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
-      color: theme.colorTextLight3,
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      color: theme.colorTextLight4,
       ...FontMedium,
       textAlign: 'center',
       paddingHorizontal: 40,
       paddingBottom: 32,
-    },
-    transactionDoneText: {
-      fontSize: theme.fontSizeLG,
-      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
-      color: theme.colorTextLight3,
-      ...FontMedium,
-      textAlign: 'center',
     },
   });

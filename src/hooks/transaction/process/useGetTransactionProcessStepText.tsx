@@ -14,14 +14,16 @@ import {
   YieldPoolType,
   YieldStepType,
 } from '@subwallet/extension-base/types';
-import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useCallback } from 'react';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { toDisplayNumber } from 'utils/common/number';
+import { Image, Typography } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 const useGetTransactionProcessStepText = () => {
-  const { t } = useTranslation();
+  const theme = useSubWalletTheme().swThemes;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const assetRegistry = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
 
@@ -38,6 +40,7 @@ const useGetTransactionProcessStepText = () => {
 
             return {
               tokenValue: toDisplayNumber(sendingValue, originTokenInfo.decimals || 0),
+              tokenLogo: originTokenInfo.icon,
               tokenSymbol: _getAssetSymbol(originTokenInfo),
               chainName: _getChainName(chainInfoMap[originTokenInfo.originChain]),
               destChainName: _getChainName(chainInfoMap[destinationTokenInfo.originChain]),
@@ -47,6 +50,7 @@ const useGetTransactionProcessStepText = () => {
 
             return {
               tokenValue: '',
+              tokenLogo: '',
               tokenSymbol: '',
               chainName: '',
               destChainName: '',
@@ -56,7 +60,18 @@ const useGetTransactionProcessStepText = () => {
 
         const _analysisMetadata = analysisMetadata();
 
-        return `Transfer ${_analysisMetadata.tokenValue} ${_analysisMetadata.tokenSymbol} from ${_analysisMetadata.chainName} to ${_analysisMetadata.destChainName}`;
+        return (
+          <Typography.Text style={{ color: theme.colorTextTertiary, alignItems: 'center' }}>
+            {'Transfer '}
+            <Image src={_analysisMetadata.tokenLogo} style={{ width: 16, height: 16 }} />
+            <Typography.Text
+              style={{
+                color: theme.colorWhite,
+                ...FontSemiBold,
+              }}>{` ${_analysisMetadata.tokenValue} ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
+            {` from ${_analysisMetadata.chainName} to ${_analysisMetadata.destChainName}`}
+          </Typography.Text>
+        );
       }
 
       if (processStep.type === SwapStepType.SWAP) {
@@ -69,8 +84,10 @@ const useGetTransactionProcessStepText = () => {
             return {
               fromTokenValue: toDisplayNumber(fromAmount, _getAssetDecimals(fromAsset)),
               fromTokenSymbol: _getAssetSymbol(fromAsset),
+              fromTokenLogo: fromAsset.icon,
               toTokenValue: toDisplayNumber(toAmount, _getAssetDecimals(toAsset)),
               toTokenSymbol: _getAssetSymbol(toAsset),
+              toTokenLogo: toAsset.icon,
             };
           } catch (e) {
             console.log('analysisMetadata error', e);
@@ -78,15 +95,34 @@ const useGetTransactionProcessStepText = () => {
             return {
               fromTokenValue: '',
               fromTokenSymbol: '',
+              fromTokenLogo: '',
               toTokenValue: '',
               toTokenSymbol: '',
+              toTokenLogo: '',
             };
           }
         };
 
         const _analysisMetadata = analysisMetadata();
 
-        return `Swap ${_analysisMetadata.fromTokenValue} ${_analysisMetadata.fromTokenSymbol} for ${_analysisMetadata.toTokenValue} ${_analysisMetadata.toTokenSymbol}`;
+        return (
+          <Typography.Text style={{ color: theme.colorTextTertiary, alignItems: 'center' }}>
+            {'Swap '}
+            <Image src={_analysisMetadata.fromTokenLogo} style={{ width: 16, height: 16 }} />
+            <Typography.Text
+              style={{
+                color: theme.colorWhite,
+                ...FontSemiBold,
+              }}>{` ${_analysisMetadata.fromTokenValue} ${_analysisMetadata.fromTokenSymbol}`}</Typography.Text>
+            {' for '}
+            <Image src={_analysisMetadata.toTokenLogo} style={{ width: 16, height: 16 }} />
+            <Typography.Text
+              style={{
+                color: theme.colorWhite,
+                ...FontSemiBold,
+              }}>{` ${_analysisMetadata.toTokenValue} ${_analysisMetadata.toTokenSymbol}`}</Typography.Text>
+          </Typography.Text>
+        );
       }
 
       if (
@@ -102,6 +138,7 @@ const useGetTransactionProcessStepText = () => {
 
             return {
               tokenSymbol: _getAssetSymbol(asset),
+              tokenIcon: asset.icon,
               chainName: _getChainName(chainInfoMap[asset.originChain]),
             };
           } catch (e) {
@@ -109,13 +146,27 @@ const useGetTransactionProcessStepText = () => {
 
             return {
               tokenSymbol: '',
+              tokenIcon: '',
               chainName: '',
             };
           }
         };
 
         const _analysisMetadata = analysisMetadata();
-        return `Approve ${_analysisMetadata.tokenSymbol} on ${_analysisMetadata.chainName} for transfer`;
+
+        return (
+          <Typography.Text style={{ color: theme.colorTextTertiary, alignItems: 'center' }}>
+            {'Approve '}
+            <Image src={_analysisMetadata.tokenIcon} style={{ width: 16, height: 16 }} />
+            <Typography.Text
+              style={{
+                color: theme.colorWhite,
+                ...FontSemiBold,
+              }}>{` ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
+            {' on'}
+            {` ${_analysisMetadata.chainName} for transfer`}
+          </Typography.Text>
+        );
       }
 
       if (
@@ -139,17 +190,18 @@ const useGetTransactionProcessStepText = () => {
             const asset = assetRegistry[brief.token];
 
             const earnMethodMap: Record<string, string> = {
-              [`${YieldPoolType.NOMINATION_POOL}`]: t('Nomination pool'),
-              [`${YieldPoolType.NATIVE_STAKING}`]: t('Direct nomination'),
-              [`${YieldPoolType.LIQUID_STAKING}`]: t('Liquid staking'),
-              [`${YieldPoolType.LENDING}`]: t('Lending'),
-              [`${YieldPoolType.PARACHAIN_STAKING}`]: t('Parachain staking'),
-              [`${YieldPoolType.SINGLE_FARMING}`]: t('Single farming'),
+              [`${YieldPoolType.NOMINATION_POOL}`]: 'Nomination pool',
+              [`${YieldPoolType.NATIVE_STAKING}`]: 'Direct nomination',
+              [`${YieldPoolType.LIQUID_STAKING}`]: 'Liquid staking',
+              [`${YieldPoolType.LENDING}`]: 'Lending',
+              [`${YieldPoolType.PARACHAIN_STAKING}`]: 'Parachain staking',
+              [`${YieldPoolType.SINGLE_FARMING}`]: 'Single farming',
             };
 
             return {
               tokenValue: toDisplayNumber(brief.amount, _getAssetDecimals(asset)),
               tokenSymbol: _getAssetSymbol(asset),
+              tokenIcon: asset.icon,
               earnMethod: earnMethodMap[brief.method],
             };
           } catch (e) {
@@ -158,6 +210,7 @@ const useGetTransactionProcessStepText = () => {
             return {
               tokenValue: '',
               tokenSymbol: '',
+              tokenIcon: '',
               earnMethod: '',
             };
           }
@@ -165,12 +218,28 @@ const useGetTransactionProcessStepText = () => {
 
         const _analysisMetadata = analysisMetadata();
 
-        return `Stake ${_analysisMetadata.tokenValue} ${_analysisMetadata.tokenSymbol} via ${_analysisMetadata.earnMethod}`;
+        return (
+          <Typography.Text style={{ color: theme.colorTextTertiary, alignItems: 'center' }}>
+            {'Stake '}
+            <Image src={_analysisMetadata.tokenIcon} style={{ width: 16, height: 16 }} />
+            <Typography.Text
+              style={{
+                color: theme.colorWhite,
+                ...FontSemiBold,
+              }}>{` ${_analysisMetadata.tokenValue} ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
+            {' via'}
+            <Typography.Text
+              style={{
+                color: theme.colorWhite,
+                ...FontSemiBold,
+              }}>{` ${_analysisMetadata.earnMethod}`}</Typography.Text>
+          </Typography.Text>
+        );
       }
 
       return '';
     },
-    [assetRegistry, chainInfoMap, t],
+    [assetRegistry, chainInfoMap, theme.colorTextTertiary, theme.colorWhite],
   );
 };
 

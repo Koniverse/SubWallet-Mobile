@@ -87,9 +87,9 @@ export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) =
   }, [navigation, path]);
 
   return (
-    <ContainerWithSubHeader onPressBack={goHome} title={i18n.message.submitted}>
+    <ContainerWithSubHeader showLeftBtn={false} title={i18n.message.submitted}>
       <View style={_style.transactionDoneContainer}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ flex: 1, alignItems: 'center' }}>
           <PageIcon icon={CheckCircle} color={theme.colorSuccess} />
           <Typography.Title style={_style.transactionDoneTitle}>{i18n.message.transactionSubmit}</Typography.Title>
 
@@ -98,12 +98,12 @@ export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) =
           </Typography.Text>
         </View>
 
-        <View style={{ width: '100%', ...MarginBottomForSubmitButton }}>
-          <Button onPress={viewTransaction} style={{ marginBottom: 16 }} type={'secondary'}>
-            {i18n.buttonTitles.viewTransaction}
-          </Button>
+        <View style={{ width: '100%', ...MarginBottomForSubmitButton, gap: theme.size }}>
+          <Button onPress={viewTransaction}>{i18n.buttonTitles.viewTransaction}</Button>
 
-          <Button onPress={goHome}>{i18n.buttonTitles.backToHome}</Button>
+          <Button type={'secondary'} onPress={goHome}>
+            {i18n.buttonTitles.backToHome}
+          </Button>
         </View>
       </View>
     </ContainerWithSubHeader>

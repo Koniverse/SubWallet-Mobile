@@ -2,12 +2,12 @@ import { ProcessTransactionData, ProcessType, ResponseSubscribeProcessById } fro
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, TransactionSubmissionProps } from 'routes/index';
-import { CheckCircle, IconProps, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
+import { CheckCircle, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
 import { cancelSubscription } from 'messaging/base';
 import { subscribeProcess } from 'messaging/transaction';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { StyleSheet, View } from 'react-native';
-import { Button, PageIcon, Typography } from 'components/design-system-ui';
+import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
 import { isStepCompleted, isStepFailed } from 'utils/transaction';
 import { FontMedium, FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -16,6 +16,7 @@ import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapBaseTxData } from '@subwallet/extension-base/types/swap';
 import { SwapTransactionBlock } from 'components/Swap/SwapTransactionBlock';
+import { RollingIcon } from 'components/RollingIcon';
 
 export const TransactionSubmission = ({ route: { params } }: TransactionSubmissionProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -47,29 +48,44 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
     return isStepCompleted(processData?.status) || isStepFailed(processData?.status);
   }, [processData]);
 
-  const icon = useMemo<React.ElementType<IconProps>>(() => {
+  const icon = useMemo<React.ReactNode>(() => {
     if (isStepCompleted(processData?.status)) {
-      return CheckCircle;
+      return <PageIcon icon={CheckCircle} weight={'fill'} color={theme.colorSuccess} />;
     }
 
     if (isStepFailed(processData?.status)) {
-      return ProhibitInset;
+      return <PageIcon icon={ProhibitInset} weight={'fill'} color={theme.colorError} />;
     }
 
-    return SpinnerGap;
-  }, [processData?.status]);
-
-  const iconColor = useMemo(() => {
-    if (isStepCompleted(processData?.status)) {
-      return theme.colorSuccess;
-    }
-
-    if (isStepFailed(processData?.status)) {
-      return theme.colorError;
-    }
-
-    return '#D9A33E';
+    return (
+      <PageIcon
+        customIcon={
+          <RollingIcon
+            icon={<Icon phosphorIcon={SpinnerGap} weight={'fill'} iconColor={'#D9A33E'} customSize={64} />}
+          />
+        }
+        color={''}
+      />
+    );
   }, [processData?.status, theme.colorError, theme.colorSuccess]);
+
+  const messages = useMemo<string[]>(() => {
+    return [
+      'Transaction in process. Hit "View process" to view step-by-step details',
+      'Hanging in there...',
+      'Pro tip: You can hit "View process" to view step-by-step details of your transaction',
+    ];
+  }, []);
+
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex(prevIndex => (prevIndex + 1) % messages.length);
+    }, 2000); // 10s đổi message
+
+    return () => clearInterval(interval); // Cleanup interval khi component unmount
+  }, [messages.length]);
 
   useEffect(() => {
     let cancel = false;
@@ -100,6 +116,11 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
     };
   }, [transactionProcessId]);
 
+  const isShowSwapInfoBlock = useMemo(
+    () => processData && processData.type === ProcessType.SWAP && !isFinal,
+    [isFinal, processData],
+  );
+
   const goHome = useCallback(() => {
     navigation.reset({
       index: 0,
@@ -108,18 +129,23 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
   }, [navigation]);
 
   return (
-    <ContainerWithSubHeader onPressBack={goHome} title={'Do not close the app!'}>
+    <ContainerWithSubHeader title={'Submitted'} showLeftBtn={false}>
       <View style={styles.transactionSubmissionContainer}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-          <PageIcon icon={icon} weight={'fill'} color={iconColor} />
+        <View style={{ flex: 1, alignItems: 'center', width: '100%' }}>
+          {icon}
 
-          <Typography.Title style={styles.transactionSubmissionTitle}>{'Transaction submitted!'}</Typography.Title>
-          <Typography.Text style={styles.transactionSubmissionMessage}>
-            {isFinal
-              ? 'View transaction progress in the History tab or go back to home'
-              : 'View transaction progress in the Notifications screen or go back to home'}
-          </Typography.Text>
-          {processData && processData.type === ProcessType.SWAP && swapData && (
+          <Typography.Title style={styles.transactionSubmissionTitle}>
+            {isFinal ? 'Transaction submitted!' : 'Do not close the app!'}
+          </Typography.Title>
+          <View style={{ minHeight: 44, width: '100%', paddingHorizontal: 40, marginBottom: 16 }}>
+            <Typography.Text style={styles.transactionSubmissionMessage}>
+              {isFinal
+                ? 'Track transaction progress by clicking “View transaction” or go back to home'
+                : messages[index]}
+            </Typography.Text>
+          </View>
+
+          {isShowSwapInfoBlock && swapData && (
             <View style={{ width: '100%' }}>
               <SwapTransactionBlock quote={swapData.quote} logoSize={36} />
             </View>
@@ -127,9 +153,11 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
         </View>
 
         <View style={{ width: '100%', ...MarginBottomForSubmitButton, gap: theme.padding }}>
-          <Button onPress={goHome}>{i18n.buttonTitles.backToHome}</Button>
-          <Button onPress={isFinal ? viewInHistory : viewProgress} style={{ marginBottom: 16 }} type={'secondary'}>
+          <Button onPress={isFinal ? viewInHistory : viewProgress}>
             {isFinal ? i18n.buttonTitles.viewTransaction : 'View progress'}
+          </Button>
+          <Button type={'secondary'} onPress={goHome}>
+            {i18n.buttonTitles.backToHome}
           </Button>
         </View>
       </View>
@@ -141,25 +169,24 @@ function createStyle(theme: ThemeTypes) {
   return StyleSheet.create({
     transactionSubmissionContainer: {
       flex: 1,
-      paddingTop: theme.padding,
+      paddingTop: theme.paddingXL + 4,
       alignItems: 'center',
       paddingHorizontal: theme.padding,
     },
     transactionSubmissionTitle: {
-      paddingVertical: 16,
+      paddingTop: theme.paddingXL + 4,
+      paddingBottom: 16,
       fontSize: theme.fontSizeHeading3,
       lineHeight: theme.fontSizeHeading3 * theme.lineHeightHeading3,
-      color: theme.colorTextLight2,
+      color: theme.colorTextLight1,
       ...FontSemiBold,
     },
     transactionSubmissionMessage: {
-      fontSize: theme.fontSizeLG,
-      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
-      color: theme.colorTextLight3,
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      color: theme.colorTextLight4,
       ...FontMedium,
       textAlign: 'center',
-      paddingHorizontal: 40,
-      paddingBottom: 16,
     },
   });
 }
