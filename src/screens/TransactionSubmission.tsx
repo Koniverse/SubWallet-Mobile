@@ -82,7 +82,7 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex(prevIndex => (prevIndex + 1) % messages.length);
-    }, 2000); // 10s đổi message
+    }, 10000); // 10s đổi message
 
     return () => clearInterval(interval); // Cleanup interval khi component unmount
   }, [messages.length]);

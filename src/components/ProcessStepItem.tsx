@@ -100,7 +100,7 @@ const ProcessStepItem: React.FC<Props> = (props: Props) => {
           const { height } = event.nativeEvent.layout;
           setTextHeight(height);
         }}>
-        <Typography.Text style={styles.text}>{text}</Typography.Text>
+        {text}
       </View>
     </TouchableOpacity>
   );

@@ -11,7 +11,7 @@ import { FontMedium } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { VoidFunction } from 'types/index';
-import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
+import { BUTTON_ACTIVE_OPACITY, deviceWidth } from 'constants/index';
 
 const { width, height } = Dimensions.get('window'); // Get screen width
 
@@ -61,7 +61,7 @@ const FloatingBubble = ({ navigateToNotification }: Props) => {
     <PanGestureHandler onGestureEvent={onGestureEvent} onEnded={onGestureEnd}>
       <Animated.View style={[styles.bubble, animatedStyle]}>
         <TouchableOpacity
-          style={{ flexDirection: 'row', alignItems: 'center' }}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXS, overflow: 'hidden' }}
           activeOpacity={BUTTON_ACTIVE_OPACITY}
           onPress={navigateToNotification}>
           <View
@@ -98,7 +98,7 @@ function createStyle(theme: ThemeTypes) {
       position: 'absolute',
       justifyContent: 'center',
       zIndex: 1,
-      maxWidth: 368,
+      maxWidth: deviceWidth - 20,
     },
     image: {
       width: 40,
@@ -107,9 +107,10 @@ function createStyle(theme: ThemeTypes) {
     },
     text: {
       color: theme.colorWarning,
-      marginHorizontal: 8,
       fontSize: theme.fontSize,
       lineHeight: theme.fontSize * theme.lineHeight,
+      maxWidth: deviceWidth - 76,
+      flexGrow: 1,
       ...FontMedium,
     },
   });

@@ -21,6 +21,7 @@ import { toDisplayNumber } from 'utils/common/number';
 import { Image, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { View } from 'react-native';
 
 const useGetTransactionProcessStepText = () => {
   const theme = useSubWalletTheme().swThemes;
@@ -61,16 +62,19 @@ const useGetTransactionProcessStepText = () => {
         const _analysisMetadata = analysisMetadata();
 
         return (
-          <Typography.Text style={{ color: theme.colorTextTertiary, alignItems: 'center' }}>
-            {'Transfer '}
+          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Transfer '}</Typography.Text>
             <Image src={_analysisMetadata.tokenLogo} style={{ width: 16, height: 16 }} />
             <Typography.Text
               style={{
                 color: theme.colorWhite,
                 ...FontSemiBold,
               }}>{` ${_analysisMetadata.tokenValue} ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
-            {` from ${_analysisMetadata.chainName} to ${_analysisMetadata.destChainName}`}
-          </Typography.Text>
+            <Typography.Text
+              style={{
+                color: theme.colorTextTertiary,
+              }}>{` from ${_analysisMetadata.chainName} to ${_analysisMetadata.destChainName}`}</Typography.Text>
+          </View>
         );
       }
 
@@ -80,14 +84,18 @@ const useGetTransactionProcessStepText = () => {
             const { fromAmount, pair, toAmount } = processStep.metadata as unknown as BriefSwapStep;
             const fromAsset = assetRegistry[pair.from];
             const toAsset = assetRegistry[pair.to];
+            const fromChain = chainInfoMap[fromAsset.originChain];
+            const toChain = chainInfoMap[toAsset.originChain];
 
             return {
               fromTokenValue: toDisplayNumber(fromAmount, _getAssetDecimals(fromAsset)),
               fromTokenSymbol: _getAssetSymbol(fromAsset),
               fromTokenLogo: fromAsset.icon,
+              fromChainName: fromChain.name,
               toTokenValue: toDisplayNumber(toAmount, _getAssetDecimals(toAsset)),
               toTokenSymbol: _getAssetSymbol(toAsset),
               toTokenLogo: toAsset.icon,
+              toChainName: toChain.name,
             };
           } catch (e) {
             console.log('analysisMetadata error', e);
@@ -96,9 +104,11 @@ const useGetTransactionProcessStepText = () => {
               fromTokenValue: '',
               fromTokenSymbol: '',
               fromTokenLogo: '',
+              fromChainName: '',
               toTokenValue: '',
               toTokenSymbol: '',
               toTokenLogo: '',
+              toChainName: '',
             };
           }
         };
@@ -106,22 +116,26 @@ const useGetTransactionProcessStepText = () => {
         const _analysisMetadata = analysisMetadata();
 
         return (
-          <Typography.Text style={{ color: theme.colorTextTertiary, alignItems: 'center' }}>
-            {'Swap '}
+          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Swap '}</Typography.Text>
             <Image src={_analysisMetadata.fromTokenLogo} style={{ width: 16, height: 16 }} />
             <Typography.Text
               style={{
                 color: theme.colorWhite,
                 ...FontSemiBold,
               }}>{` ${_analysisMetadata.fromTokenValue} ${_analysisMetadata.fromTokenSymbol}`}</Typography.Text>
-            {' for '}
+            <Typography.Text
+              style={{ color: theme.colorTextTertiary }}>{` on ${_analysisMetadata.fromChainName}`}</Typography.Text>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{' for '}</Typography.Text>
             <Image src={_analysisMetadata.toTokenLogo} style={{ width: 16, height: 16 }} />
             <Typography.Text
               style={{
                 color: theme.colorWhite,
                 ...FontSemiBold,
               }}>{` ${_analysisMetadata.toTokenValue} ${_analysisMetadata.toTokenSymbol}`}</Typography.Text>
-          </Typography.Text>
+            <Typography.Text
+              style={{ color: theme.colorTextTertiary }}>{` on ${_analysisMetadata.toChainName}`}</Typography.Text>
+          </View>
         );
       }
 
@@ -155,17 +169,20 @@ const useGetTransactionProcessStepText = () => {
         const _analysisMetadata = analysisMetadata();
 
         return (
-          <Typography.Text style={{ color: theme.colorTextTertiary, alignItems: 'center' }}>
-            {'Approve '}
+          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Approve '}</Typography.Text>
             <Image src={_analysisMetadata.tokenIcon} style={{ width: 16, height: 16 }} />
             <Typography.Text
               style={{
                 color: theme.colorWhite,
                 ...FontSemiBold,
               }}>{` ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
-            {' on'}
-            {` ${_analysisMetadata.chainName} for transfer`}
-          </Typography.Text>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{' on'}</Typography.Text>
+            <Typography.Text
+              style={{
+                color: theme.colorTextTertiary,
+              }}>{` ${_analysisMetadata.chainName} for transfer`}</Typography.Text>
+          </View>
         );
       }
 
@@ -219,21 +236,21 @@ const useGetTransactionProcessStepText = () => {
         const _analysisMetadata = analysisMetadata();
 
         return (
-          <Typography.Text style={{ color: theme.colorTextTertiary, alignItems: 'center' }}>
-            {'Stake '}
+          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Stake '}</Typography.Text>
             <Image src={_analysisMetadata.tokenIcon} style={{ width: 16, height: 16 }} />
             <Typography.Text
               style={{
                 color: theme.colorWhite,
                 ...FontSemiBold,
               }}>{` ${_analysisMetadata.tokenValue} ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
-            {' via'}
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{' via'}</Typography.Text>
             <Typography.Text
               style={{
                 color: theme.colorWhite,
                 ...FontSemiBold,
               }}>{` ${_analysisMetadata.earnMethod}`}</Typography.Text>
-          </Typography.Text>
+          </View>
         );
       }
 
