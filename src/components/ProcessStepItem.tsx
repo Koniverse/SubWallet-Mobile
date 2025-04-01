@@ -10,7 +10,7 @@ import { RollingIcon } from 'components/RollingIcon';
 
 export type ProcessStepItemType = {
   status: StepStatus;
-  text: string;
+  text: React.JSX.Element | '';
   index: number;
   isLastItem?: boolean;
   isFirstItem?: boolean;

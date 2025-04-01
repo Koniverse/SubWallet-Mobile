@@ -53,7 +53,7 @@ const YieldProcessConfirmation: React.FC<Props> = (props: Props) => {
   }, [assetRegistryMap, priceMap, processData.steps]);
 
   return (
-    <MetaInfo hasBackgroundWrapper spaceSize={'xs'} labelColorScheme={'gray'} valueColorScheme={'light'}>
+    <MetaInfo style={{ paddingHorizontal: 12 }} spaceSize={'xs'} labelColorScheme={'gray'} valueColorScheme={'light'}>
       <CommonTransactionInfo address={txParams.address} network={combineInfo.brief.chain} onlyReturnInnerContent />
 
       <MetaInfo.Number
