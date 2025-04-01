@@ -1256,7 +1256,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
           />
         )}
 
-        {isSwapXCM && fromAssetName && toAssetName && !isFormInvalid && (
+        {isSwapXCM && fromAssetName && toAssetName && !isFormInvalid && !oneSign && (
           <AlertBox
             description={`The amount you entered is higher than your available balance on ${toAssetName} network. You need to first transfer cross-chain from ${fromAssetName} network to ${toAssetName} network to continue swapping`}
             title={'Action needed'}
@@ -1272,6 +1272,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     isSwapAssetHub,
     isSwapXCM,
     multiChainAssetMap,
+    oneSign,
     theme.sizeXS,
     toAssetInfo?.originChain,
   ]);

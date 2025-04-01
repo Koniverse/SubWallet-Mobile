@@ -3,10 +3,10 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StepStatus } from '@subwallet/extension-base/types';
-import { SWIconProps } from 'components/design-system-ui/icon';
-import { CheckCircle, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
+import { CheckCircle, ClockCounterClockwise, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
 import { Icon, Typography } from 'components/design-system-ui';
-import { isStepCompleted, isStepFailed, isStepPending, isStepProcessing } from 'utils/transaction';
+import { isStepCompleted, isStepFailed, isStepPending, isStepProcessing, isStepTimeout } from 'utils/transaction';
+import { RollingIcon } from 'components/RollingIcon';
 
 export type ProcessStepItemType = {
   status: StepStatus;
@@ -39,57 +39,39 @@ const ProcessStepItem: React.FC<Props> = (props: Props) => {
       return theme.colorError;
     }
 
+    if (isStepTimeout(status)) {
+      return theme.gold;
+    }
+
     return 'transparent'; // can be change later
-  }, [status, theme.colorError, theme.colorSuccess, theme.colorTextLight7]);
+  }, [status, theme.colorError, theme.colorSuccess, theme.colorTextLight7, theme.gold]);
   const styles = useMemo(
     () => createStyle(theme, color, !!isLastItem, !!isFirstItem, textHeight),
     [color, isFirstItem, isLastItem, textHeight, theme],
   );
 
-  const iconProp = useMemo<SWIconProps>(() => {
-    const iconInfo: SWIconProps = (() => {
-      if (isStepCompleted(status)) {
-        return {
-          phosphorIcon: CheckCircle,
-          weight: 'fill',
-          iconColor: theme.colorSuccess,
-        };
-      } else if (isStepFailed(status)) {
-        return {
-          phosphorIcon: ProhibitInset,
-          weight: 'fill',
-          iconColor: theme.colorError,
-        };
-      } else if (isStepProcessing(status)) {
-        return {
-          phosphorIcon: SpinnerGap,
-          weight: 'fill',
-          iconColor: '#D9A33E',
-        };
-      }
+  const icon = useMemo(() => {
+    if (isStepCompleted(status)) {
+      return <Icon size={'xs'} phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} weight={'fill'} />;
+    } else if (isStepFailed(status)) {
+      return <Icon phosphorIcon={ProhibitInset} size={'xs'} iconColor={theme.colorError} weight={'fill'} />;
+    } else if (isStepProcessing(status)) {
+      return <RollingIcon icon={<Icon phosphorIcon={SpinnerGap} size={'xs'} iconColor={'#D9A33E'} />} />;
+    } else if (isStepTimeout(status)) {
+      return <Icon phosphorIcon={ClockCounterClockwise} size={'xs'} iconColor={theme.gold} weight={'fill'} />;
+    }
 
-      return {
-        type: 'customIcon',
-        customIcon: (
-          <View style={styles.stepOrdinalWrapper}>
-            <Typography.Text style={styles.stepOrdinal}>{index + 1}</Typography.Text>
-          </View>
-        ),
-      };
-    })();
-
-    return {
-      ...iconInfo,
-      size: 'xs',
-    };
-  }, [index, status, styles.stepOrdinal, styles.stepOrdinalWrapper, theme.colorError, theme.colorSuccess]);
+    return (
+      <View style={styles.stepOrdinalWrapper}>
+        <Typography.Text style={styles.stepOrdinal}>{index + 1}</Typography.Text>
+      </View>
+    );
+  }, [index, status, styles.stepOrdinal, styles.stepOrdinalWrapper, theme.colorError, theme.colorSuccess, theme.gold]);
 
   return (
     <TouchableOpacity style={[styles.container]}>
       <View style={{ alignItems: 'center', gap: theme.sizeXXS }}>
-        <View style={styles.iconWrapper}>
-          <Icon {...iconProp} />
-        </View>
+        <View style={styles.iconWrapper}>{icon}</View>
 
         {!isLastItem && <View style={styles.line} />}
       </View>

@@ -202,7 +202,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
   }, []);
 
   const onPressBack = useCallback(() => {
-    navigation.goBack();
+    navigation.navigate('Home');
   }, [navigation]);
 
   const showActiveChainModal = useCallback(
@@ -441,6 +441,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
           // eslint-disable-next-line no-fallthrough
           case NotificationActionType.SWAP: {
             const metadata = item.metadata as ProcessNotificationMetadata;
+            console.log('metadata', metadata);
 
             transactionProcessDetailModal.setTransactionProcessDetailModalState({
               visible: true,

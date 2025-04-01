@@ -1,17 +1,17 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ToggleItem } from 'components/ToggleItem';
 import { View } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
-import { CaretRight, Key, PenNib, Scan, ShieldCheck } from 'phosphor-react-native';
+import { CaretRight, Key, PenNib, Scan, ShieldCheck, Warning, X } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime, updateUseBiometric } from 'stores/MobileSettings';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Icon, SelectItem, SwModal } from 'components/design-system-ui';
+import { Icon, PageIcon, SelectItem, SwModal } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import useUnlockModal, { OnCompleteType } from 'hooks/modal/useUnlockModal';
@@ -19,6 +19,7 @@ import { createKeychainPassword, getSupportedBiometryType, resetKeychainPassword
 import { keyringLock, saveAllowOneSign, saveAutoLockTime } from 'messaging/index';
 import { requestFaceIDPermission } from 'utils/permission/biometric';
 import { LockTimeout } from 'stores/types';
+import { AppModalContext } from 'providers/AppModalContext';
 
 export const Security = () => {
   const theme = useSubWalletTheme().swThemes;
@@ -30,6 +31,7 @@ export const Security = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const dispatch = useDispatch();
   const modalRef = useRef<SWModalRefProps>(null);
+  const { confirmModal } = useContext(AppModalContext);
 
   const AUTO_LOCK_LIST: { text: string; value: number }[] = [
     {
@@ -103,25 +105,70 @@ export const Security = () => {
     }
   };
 
-  const onChangeAutoLockTime = (value: number) => {
-    if (value === LockTimeout.NEVER) {
-      toast.show(i18n.notificationMessage.warningNeverRequirePassword, { type: 'warning', duration: 3500 });
-    }
-    saveAutoLockTime(value).then(() => dispatch(updateAutoLockTime(value)));
-    modalRef?.current?.close();
-  };
+  const onChangeAutoLockTime = useCallback(
+    (value: number) => {
+      const _saveAutoLock = () => {
+        saveAutoLockTime(value).then(() => dispatch(updateAutoLockTime(value)));
+        modalRef?.current?.close();
+      };
 
-  const updateSignOneStatus = useCallback((currentValue: boolean) => {
-    return () => {
-      setLoadingSignOnce(true);
+      if (value === LockTimeout.NEVER) {
+        toast.show(i18n.notificationMessage.warningNeverRequirePassword, { type: 'warning', duration: 3500 });
+      }
 
-      saveAllowOneSign(!currentValue)
-        .catch(console.error)
-        .finally(() => {
-          setLoadingSignOnce(false);
+      if (value === LockTimeout.ALWAYS && allowOneSign) {
+        confirmModal.setConfirmModal({
+          visible: true,
+          title: 'Warning',
+          message: 'Changing this will also disable the signing once for multiple transactions feature. Are you sure?',
+          customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+          cancelBtnTitle: i18n.buttonTitles.cancel,
+          completeBtnTitle: i18n.buttonTitles.confirm,
+          onCancelModal: confirmModal.hideConfirmModal,
+          onCompleteModal: () => {
+            _saveAutoLock();
+            confirmModal.hideConfirmModal();
+          },
         });
-    };
-  }, []);
+
+        return;
+      }
+
+      _saveAutoLock();
+    },
+    [allowOneSign, confirmModal, dispatch, theme.colorWarning, toast],
+  );
+
+  const updateSignOneStatus = useCallback(
+    (currentValue: boolean) => {
+      return () => {
+        setLoadingSignOnce(true);
+        if (timeAutoLock === LockTimeout.ALWAYS && !currentValue) {
+          setLoadingSignOnce(false);
+          confirmModal.setConfirmModal({
+            visible: true,
+            title: 'Change unlock time first!',
+            message:
+              'This feature can’t be enabled while the "Require unlock" time is set to “Always”. Change your settings and try again',
+            customIcon: <PageIcon icon={X} color={theme.colorError} />,
+            completeBtnTitle: i18n.buttonTitles.iUnderstand,
+            onCompleteModal: confirmModal.hideConfirmModal,
+            isShowCancelButton: false,
+            onCancelModal: confirmModal.hideConfirmModal,
+          });
+
+          return;
+        }
+
+        saveAllowOneSign(!currentValue)
+          .catch(console.error)
+          .finally(() => {
+            setLoadingSignOnce(false);
+          });
+      };
+    },
+    [confirmModal, theme.colorError, timeAutoLock],
+  );
 
   return (
     <SubScreenContainer

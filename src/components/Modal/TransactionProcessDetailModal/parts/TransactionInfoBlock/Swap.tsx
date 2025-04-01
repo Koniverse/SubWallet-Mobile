@@ -49,23 +49,27 @@ const Swap: React.FC<Props> = (props: Props) => {
   }, [data.quote.rate, fromAssetInfo, theme.colorWhite, toAssetInfo]);
 
   return (
-    <MetaInfo hasBackgroundWrapper spaceSize={'xs'} labelColorScheme={'gray'} valueColorScheme={'light'}>
-      <SwapTransactionBlock quote={data.quote} logoSize={36} />
-      <MetaInfo.Account
-        address={recipientAddress}
-        label={i18n.inputLabel.recipient}
-        name={recipient?.name}
-        networkPrefix={networkPrefix}
-      />
-      <MetaInfo.Default label={'Quote rate'}>{renderRateConfirmInfo()}</MetaInfo.Default>
-      <MetaInfo.Number
-        decimals={0}
-        label={i18n.inputLabel.estimateFee}
-        prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-        suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
-        value={estimatedFeeValue}
-      />
-    </MetaInfo>
+    <>
+      <MetaInfo hasBackgroundWrapper spaceSize={'xs'} labelColorScheme={'gray'} valueColorScheme={'light'}>
+        <SwapTransactionBlock quote={data.quote} logoSize={36} />
+      </MetaInfo>
+      <MetaInfo style={{ paddingHorizontal: 12 }} spaceSize={'xs'} labelColorScheme={'gray'} valueColorScheme={'light'}>
+        <MetaInfo.Account
+          address={recipientAddress}
+          label={i18n.inputLabel.recipient}
+          name={recipient?.name}
+          networkPrefix={networkPrefix}
+        />
+        <MetaInfo.Default label={'Quote rate'}>{renderRateConfirmInfo()}</MetaInfo.Default>
+        <MetaInfo.Number
+          decimals={0}
+          label={i18n.inputLabel.estimateFee}
+          prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+          suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+          value={estimatedFeeValue}
+        />
+      </MetaInfo>
+    </>
   );
 };
 

@@ -3,7 +3,7 @@ import { ScrollView, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ProcessTransactionData, ProcessType, ResponseSubscribeProcessById } from '@subwallet/extension-base/types';
 import { cancelSubscription, subscribeProcess } from '../../../messaging';
-import { Button, SwModal } from '../../design-system-ui';
+import { Button, Divider, SwModal } from '../../design-system-ui';
 import CurrentProcessStep from 'components/Modal/TransactionProcessDetailModal/parts/CurrentProcessStep';
 import TransactionInfoBlock from 'components/Modal/TransactionProcessDetailModal/parts/TransactionInfoBlock';
 import ProcessStepList from 'components/Modal/TransactionProcessDetailModal/parts/ProcessStepList';
@@ -59,7 +59,9 @@ const TransactionProcessDetailModal: React.FC<Props> = (props: Props) => {
         }
       };
 
-      subscribeProcess({ processId }, updateProcess).then(updateProcess).catch(console.error);
+      subscribeProcess({ processId }, updateProcess)
+        .then(updateProcess)
+        .catch(e => console.log('e', e));
     }
 
     return () => {
@@ -92,9 +94,10 @@ const TransactionProcessDetailModal: React.FC<Props> = (props: Props) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps={'handled'}
-        contentContainerStyle={{ gap: theme.sizeSM }}>
+        contentContainerStyle={{ gap: theme.size }}>
         <CurrentProcessStep processData={processData} />
         <TransactionInfoBlock processData={processData} />
+        <Divider color={theme.colorBgInput} style={{ width: '100%' }} />
         <ProcessStepList processData={processData} />
       </ScrollView>
     </SwModal>

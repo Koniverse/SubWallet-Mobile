@@ -63,13 +63,15 @@ const useGetTransactionProcessStepText = () => {
 
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Transfer '}</Typography.Text>
-            <Image src={_analysisMetadata.tokenLogo} style={{ width: 16, height: 16 }} />
-            <Typography.Text
-              style={{
-                color: theme.colorWhite,
-                ...FontSemiBold,
-              }}>{` ${_analysisMetadata.tokenValue} ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Transfer'}</Typography.Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image src={_analysisMetadata.tokenLogo} style={{ width: 16, height: 16, marginHorizontal: 2 }} />
+              <Typography.Text
+                style={{
+                  color: theme.colorWhite,
+                  ...FontSemiBold,
+                }}>{`${_analysisMetadata.tokenValue} ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
+            </View>
             <Typography.Text
               style={{
                 color: theme.colorTextTertiary,
@@ -117,22 +119,26 @@ const useGetTransactionProcessStepText = () => {
 
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Swap '}</Typography.Text>
-            <Image src={_analysisMetadata.fromTokenLogo} style={{ width: 16, height: 16 }} />
-            <Typography.Text
-              style={{
-                color: theme.colorWhite,
-                ...FontSemiBold,
-              }}>{` ${_analysisMetadata.fromTokenValue} ${_analysisMetadata.fromTokenSymbol}`}</Typography.Text>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Swap'}</Typography.Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image src={_analysisMetadata.fromTokenLogo} style={{ width: 16, height: 16, marginHorizontal: 2 }} />
+              <Typography.Text
+                style={{
+                  color: theme.colorWhite,
+                  ...FontSemiBold,
+                }}>{`${_analysisMetadata.fromTokenValue} ${_analysisMetadata.fromTokenSymbol}`}</Typography.Text>
+            </View>
             <Typography.Text
               style={{ color: theme.colorTextTertiary }}>{` on ${_analysisMetadata.fromChainName}`}</Typography.Text>
-            <Typography.Text style={{ color: theme.colorTextTertiary }}>{' for '}</Typography.Text>
-            <Image src={_analysisMetadata.toTokenLogo} style={{ width: 16, height: 16 }} />
-            <Typography.Text
-              style={{
-                color: theme.colorWhite,
-                ...FontSemiBold,
-              }}>{` ${_analysisMetadata.toTokenValue} ${_analysisMetadata.toTokenSymbol}`}</Typography.Text>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{' for'}</Typography.Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image src={_analysisMetadata.toTokenLogo} style={{ width: 16, height: 16, marginHorizontal: 2 }} />
+              <Typography.Text
+                style={{
+                  color: theme.colorWhite,
+                  ...FontSemiBold,
+                }}>{`${_analysisMetadata.toTokenValue} ${_analysisMetadata.toTokenSymbol}`}</Typography.Text>
+            </View>
             <Typography.Text
               style={{ color: theme.colorTextTertiary }}>{` on ${_analysisMetadata.toChainName}`}</Typography.Text>
           </View>
@@ -170,13 +176,15 @@ const useGetTransactionProcessStepText = () => {
 
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Approve '}</Typography.Text>
-            <Image src={_analysisMetadata.tokenIcon} style={{ width: 16, height: 16 }} />
-            <Typography.Text
-              style={{
-                color: theme.colorWhite,
-                ...FontSemiBold,
-              }}>{` ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Approve'}</Typography.Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image src={_analysisMetadata.tokenIcon} style={{ width: 16, height: 16, marginHorizontal: 2 }} />
+              <Typography.Text
+                style={{
+                  color: theme.colorWhite,
+                  ...FontSemiBold,
+                }}>{`${_analysisMetadata.tokenSymbol}`}</Typography.Text>
+            </View>
             <Typography.Text style={{ color: theme.colorTextTertiary }}>{' on'}</Typography.Text>
             <Typography.Text
               style={{
@@ -237,13 +245,16 @@ const useGetTransactionProcessStepText = () => {
 
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Stake '}</Typography.Text>
-            <Image src={_analysisMetadata.tokenIcon} style={{ width: 16, height: 16 }} />
-            <Typography.Text
-              style={{
-                color: theme.colorWhite,
-                ...FontSemiBold,
-              }}>{` ${_analysisMetadata.tokenValue} ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Stake'}</Typography.Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image src={_analysisMetadata.tokenIcon} style={{ width: 16, height: 16, marginHorizontal: 2 }} />
+              <Typography.Text
+                style={{
+                  color: theme.colorWhite,
+                  ...FontSemiBold,
+                }}>{`${_analysisMetadata.tokenValue} ${_analysisMetadata.tokenSymbol}`}</Typography.Text>
+            </View>
+
             <Typography.Text style={{ color: theme.colorTextTertiary }}>{' via'}</Typography.Text>
             <Typography.Text
               style={{

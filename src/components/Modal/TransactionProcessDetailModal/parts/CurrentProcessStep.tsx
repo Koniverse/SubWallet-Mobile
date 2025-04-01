@@ -6,17 +6,18 @@ import {
   BaseStepType,
   ProcessStep,
   ProcessTransactionData,
+  ProcessType,
   StepStatus,
   SwapStepType,
   YieldStepType,
 } from '@subwallet/extension-base/types';
 import { Icon, Typography } from 'components/design-system-ui';
-import { SWIconProps } from 'components/design-system-ui/icon';
-import { CheckCircle, ProhibitInset, Spinner } from 'phosphor-react-native';
+import { CheckCircle, ClockCounterClockwise, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
 import { CommonStepType } from '@subwallet/extension-base/types/service-base';
-import { isStepCompleted, isStepFailed } from 'utils/transaction';
+import { isStepCompleted, isStepFailed, isStepTimeout } from 'utils/transaction';
 import { convertHexColorToRGBA } from 'utils/color';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { RollingIcon } from 'components/RollingIcon';
 
 interface Props {
   processData: ProcessTransactionData;
@@ -30,39 +31,25 @@ const CurrentProcessStep: React.FC<Props> = (props: Props) => {
       return theme.colorSuccess;
     } else if (isStepFailed(processData.status)) {
       return theme.colorError;
+    } else if (isStepTimeout(processData.status)) {
+      return theme.gold;
     }
 
     return '#D9A33E';
-  }, [processData.status, theme.colorError, theme.colorSuccess]);
+  }, [processData.status, theme.colorError, theme.colorSuccess, theme.gold]);
   const styles = useMemo(() => createStyle(theme, textColor), [textColor, theme]);
 
-  const iconProp = useMemo<SWIconProps>(() => {
-    const iconInfo: SWIconProps = (() => {
-      if (isStepCompleted(processData.status)) {
-        return {
-          phosphorIcon: CheckCircle,
-          weight: 'fill',
-          iconColor: theme.colorSuccess,
-        };
-      } else if (isStepFailed(processData.status)) {
-        return {
-          phosphorIcon: ProhibitInset,
-          weight: 'fill',
-          iconColor: theme.colorError,
-        };
-      }
+  const icon = useMemo(() => {
+    if (isStepCompleted(processData.status)) {
+      return <Icon phosphorIcon={CheckCircle} weight={'fill'} iconColor={theme.colorSuccess} />;
+    } else if (isStepFailed(processData.status)) {
+      return <Icon size={'md'} phosphorIcon={ProhibitInset} weight={'fill'} iconColor={theme.colorError} />;
+    } else if (isStepTimeout(processData.status)) {
+      return <Icon phosphorIcon={ClockCounterClockwise} iconColor={theme.gold} weight={'fill'} />;
+    }
 
-      return {
-        phosphorIcon: Spinner,
-        iconColor: '#D9A33E',
-      };
-    })();
-
-    return {
-      ...iconInfo,
-      size: 'md',
-    };
-  }, [processData.status, theme.colorError, theme.colorSuccess]);
+    return <RollingIcon icon={<Icon phosphorIcon={SpinnerGap} iconColor={'#D9A33E'} />} />;
+  }, [processData.status, theme.colorError, theme.colorSuccess, theme.gold]);
 
   const currentStep: ProcessStep | undefined = useMemo(() => {
     const first = processData.steps.find(s => s.id === processData.currentStepId);
@@ -85,11 +72,27 @@ const CurrentProcessStep: React.FC<Props> = (props: Props) => {
 
   const title = useMemo(() => {
     if (isStepCompleted(processData.status)) {
+      if (processData.type === ProcessType.SWAP) {
+        return 'Swap success';
+      } else if (processData.type === ProcessType.EARNING) {
+        return 'Stake success';
+      }
+
       return 'Success';
     }
 
     if (isStepFailed(processData.status)) {
+      if (processData.type === ProcessType.SWAP) {
+        return 'Swap failed';
+      } else if (processData.type === ProcessType.EARNING) {
+        return 'Stake failed';
+      }
+
       return 'Failed';
+    }
+
+    if (isStepTimeout(processData.status)) {
+      return 'Transaction timeout';
     }
 
     if (!currentStep) {
@@ -126,13 +129,11 @@ const CurrentProcessStep: React.FC<Props> = (props: Props) => {
     }
 
     return '';
-  }, [currentStep, processData.status]);
+  }, [currentStep, processData.status, processData.type]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.iconWrapper}>
-        <Icon {...iconProp} />
-      </View>
+      <View style={styles.iconWrapper}>{icon}</View>
 
       <Typography.Text style={styles.stepText}>{title}</Typography.Text>
     </View>
@@ -145,6 +146,7 @@ function createStyle(theme: ThemeTypes, textColor: string) {
       alignItems: 'center',
       gap: theme.sizeSM,
       flexDirection: 'row',
+      paddingTop: 8,
     },
     iconWrapper: {
       minWidth: 32,

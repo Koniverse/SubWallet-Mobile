@@ -2,13 +2,13 @@ import { ProcessTransactionData, ProcessType, ResponseSubscribeProcessById } fro
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, TransactionSubmissionProps } from 'routes/index';
-import { CheckCircle, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
+import { CheckCircle, ClockCounterClockwise, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
 import { cancelSubscription } from 'messaging/base';
 import { subscribeProcess } from 'messaging/transaction';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { StyleSheet, View } from 'react-native';
 import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
-import { isStepCompleted, isStepFailed } from 'utils/transaction';
+import { isStepCompleted, isStepFailed, isStepTimeout } from 'utils/transaction';
 import { FontMedium, FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { reformatAddress } from '@subwallet/extension-base/utils';
@@ -57,6 +57,10 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
       return <PageIcon icon={ProhibitInset} weight={'fill'} color={theme.colorError} />;
     }
 
+    if (isStepTimeout(processData?.status)) {
+      return <PageIcon icon={ClockCounterClockwise} weight={'fill'} color={theme.gold} />;
+    }
+
     return (
       <PageIcon
         customIcon={
@@ -67,7 +71,7 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
         color={''}
       />
     );
-  }, [processData?.status, theme.colorError, theme.colorSuccess]);
+  }, [processData?.status, theme.colorError, theme.colorSuccess, theme.gold]);
 
   const messages = useMemo<string[]>(() => {
     return [

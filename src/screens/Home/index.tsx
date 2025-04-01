@@ -43,11 +43,12 @@ import { RemindDuplicateAccountNameModal } from 'components/Modal/RemindDuplicat
 import { getValueLocalStorageWS } from 'messaging/database';
 import { noop } from 'utils/function';
 import { WebRunnerContext } from 'providers/contexts';
-import { saveOSConfig } from 'messaging/settings';
+import { saveAllowOneSign, saveOSConfig } from 'messaging/settings';
 import DeviceInfo from 'react-native-device-info';
 import FloatingBubble from 'components/FloatingBubble';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StepStatus } from '@subwallet/extension-base/types';
+import { LockTimeout } from 'stores/types';
 
 interface tabbarIconColor {
   color: string;
@@ -271,6 +272,7 @@ export function setIsShowRemindBackupModal(value: boolean) {
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasMasterPassword, isReady, isLocked, accounts } = useSelector((state: RootState) => state.accountState);
+  const { timeAutoLock } = useSelector((state: RootState) => state.mobileSettings);
   const aliveProcessMap = useSelector((state: RootState) => state.requestState.aliveProcess);
   const { currentRoute } = useSelector((state: RootState) => state.settings);
   const [isLoading, setLoading] = useState(true);
@@ -361,6 +363,12 @@ export const Home = ({ navigation }: Props) => {
       })
       .catch(noop);
   }, [dispatch, isLocked, lastTimeLogin, storedRemindBackupTimeout]);
+
+  useEffect(() => {
+    if (timeAutoLock === LockTimeout.ALWAYS) {
+      saveAllowOneSign(false).catch(console.error);
+    }
+  }, [timeAutoLock]); // disable one sign when user using require unlock = Always
 
   const onPressAcceptBtn = () => {
     mmkvStore.set('isOpenGeneralTermFirstTime', true);

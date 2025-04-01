@@ -5,6 +5,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ProcessTransactionData } from '@subwallet/extension-base/types';
 import { Typography } from 'components/design-system-ui';
 import Item from 'components/Modal/TransactionProcessDetailModal/parts/ProcessStepList/item';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 interface Props {
   processData: ProcessTransactionData;
@@ -37,13 +38,12 @@ const ProcessStepList: React.FC<Props> = (props: Props) => {
 function createStyle(theme: ThemeTypes) {
   return StyleSheet.create({
     heading: {
-      fontSize: theme.fontSizeHeading5,
-      lineHeight: theme.fontSizeHeading5 * theme.lineHeightHeading5,
       color: theme.colorWhite,
+      ...FontSemiBold,
       marginBottom: theme.marginLG,
     },
     stepListContainer: {
-      paddingLeft: theme.padding,
+      paddingHorizontal: theme.padding,
     },
   });
 }
