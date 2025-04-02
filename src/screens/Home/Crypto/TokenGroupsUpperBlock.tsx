@@ -173,7 +173,7 @@ export const TokenGroupsUpperBlock = ({
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
         />
-        {true && (
+        {isShowBuyToken && (
           <ActionButton
             disabled={!isEnableSwapButton}
             label={i18n.cryptoScreen.swap}
