@@ -1,4 +1,4 @@
-import { EarningProcessType, ProcessTransactionData, SummaryEarningProcessData } from '@subwallet/extension-base/types';
+import { EarningProcessType, SummaryEarningProcessData } from '@subwallet/extension-base/types';
 import React, { useMemo } from 'react';
 import { BaseProcessConfirmationProps } from '../Base';
 import NativeStakingProcessConfirmation from 'screens/Confirmations/variants/Transaction/variants/Process/Earn/Bond';
@@ -8,12 +8,9 @@ import YieldProcessConfirmation from 'screens/Confirmations/variants/Transaction
 type Props = BaseProcessConfirmationProps;
 
 const EarnProcessConfirmation = (props: Props) => {
-  const { transaction } = props;
+  const { process } = props;
 
-  const type = useMemo(
-    () => ((transaction.process as ProcessTransactionData).combineInfo as SummaryEarningProcessData).type,
-    [transaction.process],
-  );
+  const type = useMemo(() => (process.combineInfo as SummaryEarningProcessData).type, [process]);
 
   if (type === EarningProcessType.NATIVE_STAKING) {
     return <NativeStakingProcessConfirmation {...props} />;

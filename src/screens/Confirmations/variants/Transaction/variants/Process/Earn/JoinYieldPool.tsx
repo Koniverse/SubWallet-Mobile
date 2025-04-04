@@ -1,9 +1,5 @@
 import { _getAssetDecimals, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
-import {
-  ProcessTransactionData,
-  SubmitYieldStepData,
-  SummaryEarningProcessData,
-} from '@subwallet/extension-base/types';
+import { SubmitYieldStepData, SummaryEarningProcessData } from '@subwallet/extension-base/types';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -16,12 +12,10 @@ import { useGetTransactionProcessSteps } from 'hooks/transaction/process';
 
 type Props = BaseProcessConfirmationProps;
 
-export const YieldProcessConfirmation = ({ transaction }: Props) => {
-  const process = useMemo(() => transaction.process as ProcessTransactionData, [transaction.process]);
-  const txParams = useMemo(
-    () => (process.combineInfo as SummaryEarningProcessData).data as unknown as SubmitYieldStepData,
-    [process.combineInfo],
-  );
+export const YieldProcessConfirmation = ({ process }: Props) => {
+  const combinedInfo = useMemo(() => process.combineInfo as SummaryEarningProcessData, [process.combineInfo]);
+  const chain = useMemo(() => combinedInfo.brief.chain, [combinedInfo.brief.chain]);
+  const txParams = useMemo(() => combinedInfo.data as unknown as SubmitYieldStepData, [combinedInfo]);
 
   const { assetRegistry: tokenInfoMap } = useSelector((state: RootState) => state.assetRegistry);
 
@@ -68,7 +62,7 @@ export const YieldProcessConfirmation = ({ transaction }: Props) => {
 
   return (
     <ConfirmationContent isFullHeight>
-      <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
+      <CommonTransactionInfo address={process.address} network={chain} />
 
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Number
@@ -91,7 +85,7 @@ export const YieldProcessConfirmation = ({ transaction }: Props) => {
           decimals={feeTokenDecimals}
           label={i18n.inputLabel.estimatedFee}
           suffix={feeTokenSymbol}
-          value={transaction.estimateFee?.value || 0}
+          value={0}
         />
 
         <MetaInfo.TransactionProcess items={stepItems} type={process.type} />

@@ -26,6 +26,7 @@ import {
   TransactionConfirmation,
   SignConfirmation,
   NetworkConnectionErrorConfirmation,
+  EvmSignatureWithProcess,
 } from './variants';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -106,6 +107,17 @@ export const Confirmations = () => {
       const transaction = transactionRequest[confirmation.item.id];
 
       if (!transaction) {
+        if (confirmation.type === 'evmSignatureRequest') {
+          const request = confirmation.item as ConfirmationDefinitions['evmSignatureRequest'][0];
+
+          /**
+           * TODO: REFACTOR THIS TO SCALE
+           * */
+          if (request.payload.processId) {
+            return 'Swap confirmation';
+          }
+        }
+
         return titleMap[confirmation.type] || '';
       }
 
@@ -262,7 +274,11 @@ export const Confirmations = () => {
       }
     }
 
-    if (confirmation.item.isInternal && confirmation.type !== 'connectWCRequest') {
+    if (
+      confirmation.item.isInternal &&
+      confirmation.type !== 'connectWCRequest' &&
+      confirmation.type !== 'evmSignatureRequest'
+    ) {
       return (
         <TransactionConfirmation
           openAlert={setConfirmModal}
@@ -271,6 +287,21 @@ export const Confirmations = () => {
           navigation={navigation}
         />
       );
+    }
+
+    if (confirmation.item.isInternal && confirmation.type === 'evmSignatureRequest') {
+      const request = confirmation.item as ConfirmationDefinitions['evmSignatureRequest'][0];
+
+      if (request.payload.processId) {
+        return (
+          <EvmSignatureWithProcess
+            closeAlert={hideConfirmModal}
+            openAlert={setConfirmModal}
+            request={request}
+            navigation={navigation}
+          />
+        );
+      }
     }
 
     switch (confirmation.type) {

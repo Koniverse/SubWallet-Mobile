@@ -132,7 +132,7 @@ export const TransactionConfirmation = (props: Props) => {
       if (process) {
         const Component = getProcessComponent(process.type);
 
-        return <Component closeAlert={closeAlert} openAlert={openAlert} transaction={transaction} />;
+        return <Component closeAlert={closeAlert} openAlert={openAlert} process={process} />;
       }
 
       const Component = getTransactionComponent(extrinsicType);

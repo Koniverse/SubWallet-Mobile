@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { BaseProcessConfirmationProps } from '../Base';
-import { ProcessTransactionData, SummaryEarningProcessData } from '@subwallet/extension-base/types';
+import { SummaryEarningProcessData } from '@subwallet/extension-base/types';
 import { RequestBondingSubmit, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
@@ -12,18 +12,16 @@ import { useGetTransactionProcessSteps } from 'hooks/transaction/process';
 
 type Props = BaseProcessConfirmationProps;
 
-const NativeStakingProcessConfirmation = ({ transaction }: Props) => {
-  const process = useMemo(() => transaction.process as ProcessTransactionData, [transaction.process]);
-  const data = useMemo(
-    () => (process.combineInfo as SummaryEarningProcessData).data as unknown as RequestBondingSubmit,
-    [process.combineInfo],
-  );
+const NativeStakingProcessConfirmation = ({ process }: Props) => {
+  const combinedInfo = useMemo(() => process.combineInfo as SummaryEarningProcessData, [process.combineInfo]);
+  const chain = useMemo(() => combinedInfo.brief.chain, [combinedInfo.brief.chain]);
+  const data = useMemo(() => combinedInfo.data as unknown as RequestBondingSubmit, [combinedInfo]);
 
   const handleValidatorLabel = useMemo(() => {
-    return getValidatorLabel(transaction.chain);
-  }, [transaction.chain]);
+    return getValidatorLabel(chain);
+  }, [chain]);
 
-  const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
+  const { decimals, symbol } = useGetNativeTokenBasicInfo(chain);
   const addressList = data.selectedValidators.map(validator => validator.address);
   const getTransactionProcessSteps = useGetTransactionProcessSteps();
 
@@ -33,7 +31,7 @@ const NativeStakingProcessConfirmation = ({ transaction }: Props) => {
 
   return (
     <ConfirmationContent isFullHeight>
-      <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
+      <CommonTransactionInfo address={data.address} network={chain} />
 
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.AccountGroup
@@ -44,12 +42,10 @@ const NativeStakingProcessConfirmation = ({ transaction }: Props) => {
 
         <MetaInfo.Number decimals={decimals} label={i18n.inputLabel.amount} suffix={symbol} value={data.amount} />
 
-        <MetaInfo.Number
-          decimals={decimals}
-          label={i18n.inputLabel.estimatedFee}
-          suffix={symbol}
-          value={transaction.estimateFee?.value || 0}
-        />
+        {/**
+         * TODO: Convert value from steps' fee
+         * */}
+        <MetaInfo.Number decimals={decimals} label={i18n.inputLabel.estimatedFee} suffix={symbol} value={0} />
 
         <MetaInfo.TransactionProcess items={stepItems} type={process.type} />
       </MetaInfo>

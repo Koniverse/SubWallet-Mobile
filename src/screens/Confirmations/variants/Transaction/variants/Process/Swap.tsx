@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BaseProcessConfirmationProps } from './Base';
 import { RootState } from 'stores/index';
-import { ProcessTransactionData } from '@subwallet/extension-base/types';
 import { SwapBaseTxData } from '@subwallet/extension-base/types/swap';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
@@ -22,13 +21,11 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 type Props = BaseProcessConfirmationProps;
 
-export const SwapProcessConfirmation = ({ transaction }: Props) => {
+export const SwapProcessConfirmation = ({ process }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
-
-  const process = useMemo(() => transaction.process as ProcessTransactionData, [transaction.process]);
   const data = process.combineInfo as SwapBaseTxData;
 
   const recipientAddress = data.recipient || data.address;
