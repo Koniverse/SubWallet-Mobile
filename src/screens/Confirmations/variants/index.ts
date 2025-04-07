@@ -8,3 +8,4 @@ export { default as NotSupportConfirmation } from './NotSupportConfirmation';
 export { default as SignConfirmation } from './SignConfirmation';
 export * from './Error';
 export * from './Transaction';
+export * from './Message';

@@ -441,7 +441,6 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
           // eslint-disable-next-line no-fallthrough
           case NotificationActionType.SWAP: {
             const metadata = item.metadata as ProcessNotificationMetadata;
-            console.log('metadata', metadata);
 
             transactionProcessDetailModal.setTransactionProcessDetailModalState({
               visible: true,

@@ -1,14 +1,16 @@
-import React, { useCallback, useRef } from 'react';
-import { SwModal } from 'components/design-system-ui';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { SwapQuotesItem } from 'components/Item/Swap/SwapQuotesItem';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { _getAssetDecimals, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapQuote } from '@subwallet/extension-base/types/swap';
 import { deviceHeight } from 'constants/index';
+import { CheckCircle } from 'phosphor-react-native';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   modalVisible: boolean;
@@ -17,6 +19,8 @@ interface Props {
   onSelectItem: (quote: SwapQuote) => void;
   selectedItem?: SwapQuote;
   optimalQuoteItem?: SwapQuote;
+  loading: boolean;
+  onConfirmationItem: (quote: SwapQuote) => Promise<void>;
 }
 
 export const SwapQuotesSelectorModal = ({
@@ -26,6 +30,8 @@ export const SwapQuotesSelectorModal = ({
   optimalQuoteItem,
   selectedItem,
   onSelectItem,
+  loading,
+  onConfirmationItem,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -37,6 +43,14 @@ export const SwapQuotesSelectorModal = ({
     },
     [assetRegistryMap],
   );
+
+  const handleApplySlippage = useCallback(() => {
+    if (selectedItem) {
+      onConfirmationItem(selectedItem).catch(error => {
+        console.error('Error when confirm swap quote:', error);
+      });
+    }
+  }, [onConfirmationItem, selectedItem]);
 
   const renderItems = useCallback(
     (_items: SwapQuote[]) => {
@@ -60,6 +74,19 @@ export const SwapQuotesSelectorModal = ({
     [getToAssetInfo, onSelectItem, optimalQuoteItem?.provider.id, selectedItem?.provider.id],
   );
 
+  const footer = useMemo(() => {
+    return (
+      <View style={{ paddingTop: theme.padding }}>
+        <Button
+          loading={loading}
+          onPress={handleApplySlippage}
+          icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}>
+          {i18n.buttonTitles.confirm}
+        </Button>
+      </View>
+    );
+  }, [handleApplySlippage, loading, theme.padding]);
+
   return (
     <SwModal
       isUseModalV2
@@ -67,6 +94,7 @@ export const SwapQuotesSelectorModal = ({
       modalVisible={modalVisible}
       setVisible={setModalVisible}
       modalTitle={'Swap quote'}
+      footer={footer}
       modalBaseV2Ref={modalBaseV2Ref}>
       <ScrollView style={{ maxHeight: deviceHeight * 0.6 }} contentContainerStyle={{ gap: theme.sizeXS }}>
         {!!items && !!items.length && renderItems(items)}

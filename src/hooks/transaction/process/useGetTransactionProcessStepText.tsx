@@ -174,6 +174,32 @@ const useGetTransactionProcessStepText = () => {
 
         const _analysisMetadata = analysisMetadata();
 
+        /**
+         * TODO: Improve check process type
+         * At the moment, only swap use `CommonStepType.TOKEN_APPROVAL`.
+         * So simple check with this type is enough
+         * */
+        if (processStep.type === CommonStepType.TOKEN_APPROVAL) {
+          return (
+            <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Approve'}</Typography.Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image src={_analysisMetadata.tokenIcon} style={{ width: 16, height: 16, marginHorizontal: 2 }} />
+                <Typography.Text
+                  style={{
+                    color: theme.colorWhite,
+                    ...FontSemiBold,
+                  }}>{`${_analysisMetadata.tokenSymbol}`}</Typography.Text>
+              </View>
+              <Typography.Text style={{ color: theme.colorTextTertiary }}>{' on'}</Typography.Text>
+              <Typography.Text
+                style={{
+                  color: theme.colorTextTertiary,
+                }}>{` ${_analysisMetadata.chainName} for swap`}</Typography.Text>
+            </View>
+          );
+        }
+
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
             <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Approve'}</Typography.Text>
@@ -262,6 +288,14 @@ const useGetTransactionProcessStepText = () => {
                 ...FontSemiBold,
               }}>{` ${_analysisMetadata.earnMethod}`}</Typography.Text>
           </View>
+        );
+      }
+
+      if (processStep.type === SwapStepType.PERMIT) {
+        return (
+          <Typography.Text style={{ color: theme.colorTextTertiary }}>
+            {'Sign message to authorize provider'}
+          </Typography.Text>
         );
       }
 

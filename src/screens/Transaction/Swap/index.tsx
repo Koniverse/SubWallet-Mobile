@@ -80,7 +80,7 @@ import { validateRecipientAddress } from 'utils/core/logic-validation/recipientA
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { CHAINFLIP_SLIPPAGE } from 'types/swap';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import { submitProcess } from 'messaging/index';
+import { generateOptimalProcess, submitProcess } from 'messaging/index';
 import useOneSignProcess from 'hooks/account/useOneSignProcess';
 import { getId } from '@subwallet/extension-base/utils/getId';
 
@@ -182,6 +182,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   const [showQuoteArea, setShowQuoteArea] = useState<boolean>(false);
   const [quoteOptions, setQuoteOptions] = useState<SwapQuote[]>([]);
   const [currentQuote, setCurrentQuote] = useState<SwapQuote | undefined>(undefined);
+  const [tempQuote, setTempQuote] = useState<SwapQuote | undefined>(undefined);
   const [quoteAliveUntil, setQuoteAliveUntil] = useState<number | undefined>(undefined);
   const [currentQuoteRequest, setCurrentQuoteRequest] = useState<SwapRequest | undefined>(undefined);
   const [isFormInvalid, setIsFormInvalid] = useState<boolean>(false);
@@ -206,6 +207,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   const scrollRef = useRef<ScrollView>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [isScrollEnd, setIsScrollEnd] = useState<boolean>(false);
+  const [confirmQuoteLoading, setConfirmQuoteLoading] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const accountAddressItems = useMemo(() => {
     const chainInfo = chainValue ? chainInfoMap[chainValue] : undefined;
@@ -636,21 +638,73 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   }, []);
 
   const onSelectQuote = useCallback((quote: SwapQuote) => {
-    setCurrentQuote(quote);
-    setFeeOptions(quote.feeInfo.feeOptions);
-    setCurrentFeeOption(quote.feeInfo.feeOptions?.[0]);
-    setCurrentQuoteRequest(oldRequest => {
-      if (!oldRequest) {
-        return undefined;
+    setTempQuote(quote);
+  }, []);
+
+  const handleGenerateOptimalProcess = useCallback(
+    async (quote: SwapQuote) => {
+      try {
+        const currentRequest: SwapRequest = {
+          address: fromValue,
+          pair: quote.pair,
+          fromAmount: quote.fromAmount,
+          slippage: currentSlippage.slippage.toNumber(),
+          recipient: recipientValue || undefined,
+          currentQuote: quote.provider,
+        };
+
+        const optimalRequest = {
+          request: currentRequest,
+          selectedQuote: quote,
+        };
+
+        return await generateOptimalProcess(optimalRequest);
+      } catch (error) {
+        console.error('generateOptimalProcess failed:', error);
+
+        return null;
+      }
+    },
+    [fromValue, currentSlippage.slippage, recipientValue],
+  );
+
+  const onConfirmationItem = useCallback(
+    async (quote: SwapQuote) => {
+      setConfirmQuoteLoading(true);
+      const processResult = await handleGenerateOptimalProcess(quote);
+      if (!processResult) {
+        return;
       }
 
-      return {
-        ...oldRequest,
-        currentQuote: quote.provider,
-      };
-    });
-    setSwapQuoteSelectorModalVisible(false);
-  }, []);
+      setOptimalSwapPath(processResult);
+      dispatchProcessState({
+        payload: {
+          steps: processResult.steps,
+          feeStructure: processResult.totalFee,
+        },
+        type: CommonActionType.STEP_CREATE,
+      });
+
+      setCurrentQuote(quote);
+      setFeeOptions(quote.feeInfo.feeOptions);
+      setCurrentFeeOption(quote.feeInfo.feeOptions?.[0]);
+
+      setCurrentQuoteRequest(oldRequest => {
+        if (!oldRequest) {
+          return undefined;
+        }
+
+        return {
+          ...oldRequest,
+          currentQuote: quote.provider,
+        };
+      });
+
+      setConfirmQuoteLoading(false);
+      setSwapQuoteSelectorModalVisible(false);
+    },
+    [handleGenerateOptimalProcess],
+  );
 
   const openChooseFeeToken = useCallback(() => {
     setChooseFeeModalVisible(true);
@@ -870,6 +924,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                   id: processId,
                   type: ProcessType.SWAP,
                   request: {
+                    cacheProcessId: processId,
                     process: currentOptimalSwapPath,
                     currentStep: step,
                     quote: latestOptimalQuote,
@@ -886,6 +941,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                 return true;
               } else {
                 const submitPromise: Promise<SWTransactionResponse> = handleSwapStep({
+                  cacheProcessId: processId,
                   process: currentOptimalSwapPath,
                   currentStep: step,
                   quote: latestOptimalQuote,
@@ -1041,6 +1097,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
                     setQuoteOptions(result.quote.quotes);
                     setCurrentQuote(result.quote.optimalQuote);
+                    setTempQuote(result.quote.optimalQuote);
                     setQuoteAliveUntil(result.quote.aliveUntil);
                     setFeeOptions(result.quote.optimalQuote?.feeInfo?.feeOptions || []);
                     setCurrentFeeOption(result.quote.optimalQuote?.feeInfo?.feeOptions?.[0]);
@@ -1535,8 +1592,10 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
               setModalVisible={setSwapQuoteSelectorModalVisible}
               items={quoteOptions}
               onSelectItem={onSelectQuote}
-              selectedItem={currentQuote}
+              selectedItem={tempQuote}
               optimalQuoteItem={optimalQuoteRef.current}
+              loading={confirmQuoteLoading}
+              onConfirmationItem={onConfirmationItem}
             />
 
             <ChooseFeeTokenModal

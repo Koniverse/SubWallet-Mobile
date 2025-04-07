@@ -16,4 +16,3 @@ export { default as WithdrawTransactionConfirmation } from './Withdraw';
 export { default as SwapTransactionConfirmation } from './Swap';
 export { default as ClaimBridgeTransactionConfirmation } from './ClaimBridge';
 export * from './Process';
-export * from './Process';
