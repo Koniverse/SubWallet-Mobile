@@ -78,6 +78,7 @@ export const SwapQuotesSelectorModal = ({
     return (
       <View style={{ paddingTop: theme.padding }}>
         <Button
+          disabled={loading}
           loading={loading}
           onPress={handleApplySlippage}
           icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}>
