@@ -291,11 +291,13 @@ const useGetTransactionProcessStepText = () => {
         );
       }
 
-      if (processStep.type === SwapStepType.PERMIT) {
+      if (processStep.type === 'PERMIT') {
         return (
-          <Typography.Text style={{ color: theme.colorTextTertiary }}>
-            {'Sign message to authorize provider'}
-          </Typography.Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Typography.Text style={{ color: theme.colorTextTertiary }}>
+              {'Sign message to authorize provider'}
+            </Typography.Text>
+          </View>
         );
       }
 

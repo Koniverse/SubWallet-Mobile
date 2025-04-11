@@ -27,6 +27,7 @@ const settingsSlice = createSlice({
       payload[SwapProviderId.POLKADOT_ASSET_HUB.toLowerCase()] = ImageLogosMap.polkadot_assethub;
       payload[SwapProviderId.KUSAMA_ASSET_HUB.toLowerCase()] = ImageLogosMap.kusama_assethub;
       payload[SwapProviderId.ROCOCO_ASSET_HUB.toLowerCase()] = ImageLogosMap.rococo_assethub;
+      payload.uniswap = ImageLogosMap.rococo_assethub; // TODO: change later
       return {
         ...state,
         chainLogoMap: payload,
