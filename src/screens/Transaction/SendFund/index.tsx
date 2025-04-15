@@ -27,6 +27,7 @@ import { RootState } from 'stores/index';
 import {
   approveSpending,
   cancelSubscription,
+  getOptimalTransferProcess,
   getTokensCanPayFee,
   isTonBounceableAddress,
   makeCrossChainTransfer,
@@ -90,12 +91,7 @@ import {
 import { AppModalContext } from 'providers/AppModalContext';
 import { CommonActionType, commonProcessReducer, DEFAULT_COMMON_PROCESS } from 'reducers/transaction-process';
 import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMultiTransaction';
-import {
-  CommonOptimalPath,
-  CommonStepType,
-  DEFAULT_FIRST_STEP,
-  MOCK_STEP_FEE,
-} from '@subwallet/extension-base/types/service-base';
+import { CommonStepType } from '@subwallet/extension-base/types/service-base';
 import {
   getAvailBridgeGatewayContract,
   getSnowBridgeGatewayContract,
@@ -1059,26 +1055,26 @@ export const SendFund = ({
   }, [setFocus, viewStep]);
 
   useEffect(() => {
-    const result: CommonOptimalPath = {
-      totalFee: [MOCK_STEP_FEE, MOCK_STEP_FEE],
-      steps: [
-        DEFAULT_FIRST_STEP,
-        {
-          id: 1,
-          type: CommonStepType.TRANSFER,
-          name: 'Transfer',
-        },
-      ],
-    };
-
-    dispatchProcessState({
-      payload: {
-        steps: result.steps,
-        feeStructure: result.totalFee,
-      },
-      type: CommonActionType.STEP_CREATE,
-    });
-  }, []);
+    getOptimalTransferProcess({
+      amount: transferAmount,
+      address: fromValue,
+      originChain: chainValue,
+      tokenSlug: assetValue,
+      destChain: destChainValue,
+    })
+      .then(result => {
+        dispatchProcessState({
+          payload: {
+            steps: result.steps,
+            feeStructure: result.totalFee,
+          },
+          type: CommonActionType.STEP_CREATE,
+        });
+      })
+      .catch(e => {
+        console.log('error', e);
+      });
+  }, [assetValue, chainValue, destChainValue, fromValue, transferAmount]);
 
   useEffect(() => {
     if (disabledToAddressInput) {

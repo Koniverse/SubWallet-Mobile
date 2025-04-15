@@ -70,10 +70,12 @@ const ProcessStepItem: React.FC<Props> = (props: Props) => {
 
   return (
     <TouchableOpacity style={[styles.container]}>
-      <View style={{ alignItems: 'center', gap: theme.sizeXXS }}>
-        <View style={styles.iconWrapper}>{icon}</View>
+      <View style={{ alignItems: 'center', gap: theme.sizeXXS, height: textHeight + 8, justifyContent: 'center' }}>
+        <View style={{ position: 'relative' }}>
+          <View style={styles.iconWrapper}>{icon}</View>
 
-        {!isLastItem && <View style={styles.line} />}
+          {!isLastItem && <View style={styles.line} />}
+        </View>
       </View>
 
       <View
@@ -123,15 +125,18 @@ function createStyle(theme: ThemeTypes, color: string, isLastItem: boolean, isFi
       backgroundColor: color,
       marginTop: 2,
       marginBottom: 2,
-      flexGrow: 1,
+      position: 'absolute',
+      height: textHeight - 24,
+      bottom: -textHeight + 18,
+      left: 11.5,
     },
     textWrapper: {
       backgroundColor: theme.colorBgSecondary,
       borderRadius: theme.borderRadiusLG,
       paddingHorizontal: theme.padding,
       paddingVertical: theme.paddingXS + 2,
-      marginBottom: !isLastItem ? 12 : 0,
-      marginTop: !isLastItem ? -(textHeight - 24) / 2 : 0,
+      // marginBottom: !isLastItem ? 12 : 0,
+      // marginTop: !isLastItem ? -(textHeight - 24) / 2 : 0,
       flex: 1,
     },
     text: {
