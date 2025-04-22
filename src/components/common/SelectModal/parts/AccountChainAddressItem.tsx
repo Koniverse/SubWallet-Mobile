@@ -6,16 +6,25 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Icon, Logo, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
-import { Copy, QrCode } from 'phosphor-react-native';
+import { Copy, Info, QrCode } from 'phosphor-react-native';
 
 interface Props {
   item: AccountChainAddress;
   onPress?: VoidFunction;
   onPressCopyButton?: VoidFunction;
   onPressQrButton?: VoidFunction;
+  onPressInfoButton?: VoidFunction;
+  isShowInfoButton?: boolean;
 }
 
-export const AccountChainAddressItem = ({ item, onPress, onPressCopyButton, onPressQrButton }: Props) => {
+export const AccountChainAddressItem = ({
+  item,
+  onPress,
+  onPressCopyButton,
+  onPressQrButton,
+  onPressInfoButton,
+  isShowInfoButton,
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyle(theme);
   return (
@@ -30,12 +39,22 @@ export const AccountChainAddressItem = ({ item, onPress, onPressCopyButton, onPr
       </View>
 
       <View style={styles.rightPart}>
-        <Button
-          type={'ghost'}
-          size={'xs'}
-          icon={<Icon phosphorIcon={QrCode} size={'sm'} iconColor={theme['gray-5']} />}
-          onPress={onPressQrButton}
-        />
+        {!isShowInfoButton ? (
+          <Button
+            type={'ghost'}
+            size={'xs'}
+            icon={<Icon phosphorIcon={QrCode} size={'sm'} iconColor={theme['gray-5']} />}
+            onPress={onPressQrButton}
+          />
+        ) : (
+          <Button
+            type={'ghost'}
+            size={'xs'}
+            icon={<Icon phosphorIcon={Info} size={'sm'} iconColor={theme['gray-5']} weight={'fill'} />}
+            onPress={onPressInfoButton}
+          />
+        )}
+
         <Button
           type={'ghost'}
           size={'xs'}

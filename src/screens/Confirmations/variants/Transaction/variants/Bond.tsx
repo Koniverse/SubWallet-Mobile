@@ -21,7 +21,7 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
   const addressList = data.selectedValidators.map(validator => validator.address);
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
 
       <MetaInfo hasBackgroundWrapper>

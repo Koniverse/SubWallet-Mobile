@@ -36,14 +36,10 @@ const convertToWords = (seedPhrase: string): Array<Array<SeedWordDataType>> => {
 
 const WordPhrase: React.FC<Props> = (props: Props) => {
   const { seedPhrase } = props;
-
   const theme = useSubWalletTheme().swThemes;
-
   const styles = useMemo(() => createStyles(theme), [theme]);
-
   const seedItems = useMemo(() => convertToWords(seedPhrase), [seedPhrase]);
-
-  const onCopy = useCopyClipboard(seedPhrase);
+  const { copyToClipboard } = useCopyClipboard();
 
   return (
     <React.Fragment>
@@ -71,7 +67,7 @@ const WordPhrase: React.FC<Props> = (props: Props) => {
           type={'ghost'}
           size={'xs'}
           icon={<Icon phosphorIcon={CopySimple} size={'lg'} iconColor={theme.colorTextLight4} />}
-          onPress={onCopy}>
+          onPress={copyToClipboard(seedPhrase)}>
           <Text style={styles.copyText}>{i18n.common.copyToClipboard}</Text>
         </Button>
       </View>

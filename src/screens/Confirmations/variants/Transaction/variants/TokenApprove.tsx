@@ -23,7 +23,7 @@ const TokenApproveConfirmation: React.FC<Props> = (props: Props) => {
   );
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Account address={txParams.contractAddress} label={'Contract'} />

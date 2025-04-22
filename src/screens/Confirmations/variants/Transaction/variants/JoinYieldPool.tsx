@@ -58,7 +58,7 @@ const JoinYieldPoolConfirmation: React.FC<Props> = (props: Props) => {
   }, [txParams.amount, txParams.exchangeRate]);
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Number

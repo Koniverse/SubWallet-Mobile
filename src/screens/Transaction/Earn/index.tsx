@@ -77,12 +77,12 @@ import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationB
 import { GlobalModalContext } from 'providers/GlobalModalContext';
 import { AppModalContext } from 'providers/AppModalContext';
 import { AccountAddressItemType } from 'types/account';
-import { getReformatedAddressRelatedToChain } from 'utils/account';
 import useGetYieldPositionForSpecificAccount from 'hooks/earning/useGetYieldPositionForSpecificAccount';
 import { VoidFunction } from 'types/index';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import useOneSignProcess from 'hooks/account/useOneSignProcess';
+import useReformatAddress from 'hooks/common/useReformatAddress';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -155,6 +155,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const isShowNoPoolInfoPopupRef = useRef<boolean>(false);
   const oneSign = useOneSignProcess(currentFrom);
   const nativeTokenSlug = useGetNativeTokenSlug(chain);
+  const getReformatAddress = useReformatAddress();
 
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
 
@@ -186,7 +187,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       }
 
       ap.accounts.forEach(a => {
-        const address = getReformatedAddressRelatedToChain(a, chainInfo);
+        const address = getReformatAddress(a, chainInfo);
 
         if (address) {
           result.push({
@@ -201,7 +202,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     });
 
     return result;
-  }, [accountProxies, chainInfoMap, defaultValues.fromAccountProxy, poolChain]);
+  }, [accountProxies, chainInfoMap, defaultValues.fromAccountProxy, getReformatAddress, poolChain]);
 
   const accountInfo = useMemo(() => {
     if (!currentFrom) {

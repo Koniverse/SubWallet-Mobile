@@ -3,15 +3,14 @@ import { Linking, Platform, Share, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { getNetworkLogo, toShort } from 'utils/index';
-import { CopySimple, GlobeHemisphereWest, Share as ShareIcon } from 'phosphor-react-native';
+import { CopySimple, GlobeHemisphereWest, House, Share as ShareIcon } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
-import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
-import { Button, Icon, QRCode, SwModal, Typography } from 'components/design-system-ui';
+import { Button, Icon, QRCode, SwModal, Tag, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,7 +20,8 @@ import Svg from 'react-native-svg';
 import { TonWalletContractSelectorModal } from 'components/Modal/TonWalletContractSelectorModal';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { AccountActions } from '@subwallet/extension-base/types';
-import { reformatAddress } from '@subwallet/extension-base/utils';
+import { RootStackParamList } from 'routes/index';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 interface Props {
   modalVisible: boolean;
@@ -32,6 +32,8 @@ interface Props {
   isUseModalV2?: boolean;
   level?: number;
   isOpenFromAccountDetailScreen?: boolean;
+  isNewFormat?: boolean;
+  navigation?: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const receiveModalContentWrapper: StyleProp<any> = {
@@ -48,6 +50,8 @@ export const ReceiveModal = ({
   isUseModalV2,
   level,
   isOpenFromAccountDetailScreen,
+  isNewFormat,
+  navigation,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const toastRef = useRef<ToastContainer>(null);
@@ -75,20 +79,9 @@ export const ReceiveModal = ({
     };
   };
 
-  const formattedAddress = useMemo(() => {
-    if (chainInfo) {
-      const isEvmChain = !!chainInfo.evmInfo;
-      const networkPrefix = _getChainSubstrateAddressPrefix(chainInfo);
-
-      return reformatAddress(address || '', networkPrefix, isEvmChain);
-    } else {
-      return address || '';
-    }
-  }, [address, chainInfo]);
-
   const scanExplorerAddressUrl = useMemo(() => {
-    return getExplorerLink(chainInfo, formattedAddress, 'account');
-  }, [formattedAddress, chainInfo]);
+    return getExplorerLink(chainInfo, address || '', 'account');
+  }, [address, chainInfo]);
 
   const onShareImg = () => {
     if (!chainInfo?.slug) {
@@ -98,7 +91,7 @@ export const ReceiveModal = ({
     svg?.toDataURL(data => {
       const shareImageBase64 = {
         title: 'QR',
-        message: `My Public Address to Receive ${chainInfo?.slug.toUpperCase()}: ${formattedAddress}`,
+        message: `My Public Address to Receive ${chainInfo?.slug.toUpperCase()}: ${address}`,
         url: `data:image/png;base64,${data}`,
       };
       Share.share(shareImageBase64);
@@ -117,6 +110,7 @@ export const ReceiveModal = ({
     setTonWalletContractVisible(true);
   };
 
+  // @ts-ignore
   return (
     <SwModal
       modalBaseV2Ref={modalRef}
@@ -133,8 +127,8 @@ export const ReceiveModal = ({
       onBackButtonPress={_onCancel}>
       <View style={receiveModalContentWrapper}>
         <View style={{ paddingTop: 16 }}>
-          {formattedAddress && (
-            <QRCode width={264} height={264} QRSize={264 / 41} qrRef={(ref?) => (svg = ref)} value={formattedAddress} />
+          {address && (
+            <QRCode width={264} height={264} QRSize={264 / 41} qrRef={(ref?) => (svg = ref)} value={address} />
           )}
         </View>
 
@@ -157,14 +151,20 @@ export const ReceiveModal = ({
               color: theme.colorTextLight4,
               ...FontMedium,
             }}>
-            {toShort(formattedAddress, 7, 7)}
+            {toShort(address || '', 7, 7)}
           </Typography.Text>
+
+          {isNewFormat !== undefined && (
+            <Tag bgType={'default'} color={isNewFormat ? 'success' : 'gold'}>
+              {isNewFormat ? 'New' : 'Legacy'}
+            </Tag>
+          )}
 
           <Button
             icon={<Icon phosphorIcon={CopySimple} weight={'bold'} size={'sm'} iconColor={theme.colorTextLight4} />}
             type={'ghost'}
             size={'xs'}
-            onPress={copyToClipboard(formattedAddress)}
+            onPress={copyToClipboard(address || '')}
           />
         </View>
 
@@ -179,26 +179,48 @@ export const ReceiveModal = ({
             borderTopWidth: 2,
             borderStyle: 'solid',
           }}>
-          <Button
-            style={{ flex: 1 }}
-            disabled={!scanExplorerAddressUrl}
-            icon={(iconColor: string) => (
-              <Icon phosphorIcon={GlobeHemisphereWest} weight={'fill'} size={'lg'} iconColor={iconColor} />
-            )}
-            type={'secondary'}
-            onPress={() => {
-              !!scanExplorerAddressUrl && Linking.openURL(scanExplorerAddressUrl);
-            }}>
-            {i18n.common.explorer}
-          </Button>
+          {isNewFormat === undefined || isNewFormat ? (
+            <Button
+              style={{ flex: 1 }}
+              disabled={!scanExplorerAddressUrl}
+              icon={(iconColor: string) => (
+                <Icon phosphorIcon={GlobeHemisphereWest} weight={'fill'} size={'lg'} iconColor={iconColor} />
+              )}
+              type={'secondary'}
+              onPress={() => {
+                !!scanExplorerAddressUrl && Linking.openURL(scanExplorerAddressUrl);
+              }}>
+              {i18n.common.explorer}
+            </Button>
+          ) : (
+            <Button
+              style={{ flex: 1 }}
+              disabled={!scanExplorerAddressUrl}
+              icon={(iconColor: string) => (
+                <Icon phosphorIcon={House} weight={'fill'} size={'lg'} iconColor={iconColor} />
+              )}
+              type={'secondary'}
+              onPress={() => {
+                onBack ? onBack() : modalRef?.current?.close();
+                navigation &&
+                  navigation.navigate('Home', {
+                    screen: 'Main',
+                    params: { screen: 'Tokens', params: { screen: 'TokenGroups' } },
+                  });
+              }}>
+              {i18n.common.backToHome}
+            </Button>
+          )}
 
-          <Button
-            style={{ flex: 1 }}
-            disabled={!chainInfo?.slug}
-            icon={<Icon phosphorIcon={ShareIcon} weight={'fill'} size={'lg'} />}
-            onPress={onShareImg}>
-            {i18n.common.share}
-          </Button>
+          {(isNewFormat === undefined || isNewFormat) && (
+            <Button
+              style={{ flex: 1 }}
+              disabled={!chainInfo?.slug}
+              icon={<Icon phosphorIcon={ShareIcon} weight={'fill'} size={'lg'} />}
+              onPress={onShareImg}>
+              {i18n.common.share}
+            </Button>
+          )}
         </View>
         {isRelatedToTon && tonWalletContractVisible && (
           <TonWalletContractSelectorModal
@@ -218,6 +240,8 @@ export const ReceiveModal = ({
             ref={toastRef}
             placement={'bottom'}
             offsetBottom={OFFSET_BOTTOM}
+            textStyle={{ textAlign: 'center', ...FontMedium }}
+            style={{ borderRadius: 8 }}
           />
         }
       </View>

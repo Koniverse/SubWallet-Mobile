@@ -54,6 +54,7 @@ import {
   subscribeUnreadNotificationCount,
   subscribePriorityTokens,
   subscribeAliveProcess,
+  getOldChainPrefixData,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -466,6 +467,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...getMissionPoolData,
           name: 'getMissionPoolData',
           relatedStores: ['missionPool'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...getOldChainPrefixData,
+          name: 'getOldPrefixData',
+          relatedStores: ['chainStore'],
           isStartImmediately: true,
         });
 

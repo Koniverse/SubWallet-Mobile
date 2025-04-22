@@ -1,7 +1,6 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { getReformatedAddressRelatedToChain } from 'utils/account';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { ModalRef } from 'types/modalRef';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
@@ -18,6 +17,7 @@ import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import useAssetChecker from 'hooks/chain/useAssetChecker';
 import { reformatAddress } from '@subwallet/extension-base/utils';
+import useReformatAddress from 'hooks/common/useReformatAddress';
 
 const convertChainActivePriority = (active?: boolean) => (active ? 1 : 0);
 
@@ -30,6 +30,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
   const { services, tokens } = useSelector((state: RootState) => state.buyService);
   const checkAsset = useAssetChecker();
   const allowedChains = useGetChainSlugsByAccount();
+  const getReformatAddress = useReformatAddress();
   const fixedTokenSlug = useMemo((): string | undefined => {
     if (currentSymbol) {
       return Object.values(tokens).filter(value => value.slug === currentSymbol || value.symbol === currentSymbol)[0]
@@ -108,7 +109,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
 
     const updateResult = (ap: AccountProxy) => {
       ap.accounts.forEach(a => {
-        const address = getReformatedAddressRelatedToChain(a, chainInfo);
+        const address = getReformatAddress(a, chainInfo);
 
         if (address) {
           result.push({
@@ -135,7 +136,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
     }
 
     return result;
-  }, [accountProxies, chainInfoMap, currentAccountProxy, formState.data.tokenSlug]);
+  }, [accountProxies, chainInfoMap, currentAccountProxy, formState.data.tokenSlug, getReformatAddress]);
 
   const tokenItems = useMemo<TokenItemType[]>(() => {
     const result: TokenItemType[] = [];

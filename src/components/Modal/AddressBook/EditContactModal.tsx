@@ -20,7 +20,7 @@ import createStylesheet from './style/EditContactModal';
 import Toast from 'react-native-toast-notifications';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import { ColorMap } from 'styles/color';
-import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { TextInputProps } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
@@ -220,6 +220,8 @@ export const EditContactModal = ({ modalVisible, addressJson, setModalVisible }:
           ref={toastRef}
           placement={'bottom'}
           offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - (Platform.OS === 'android' ? 80 : 120)}
+          textStyle={{ textAlign: 'center', ...FontMedium }}
+          style={{ borderRadius: 8 }}
         />
       </SwModal>
     </>

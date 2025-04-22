@@ -50,7 +50,7 @@ import { CommonFeeComponent, CommonOptimalPath, CommonStepType } from '@subwalle
 import { formatNumberString, isSameAddress, swapCustomFormatter } from '@subwallet/extension-base/utils';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
-import { findAccountByAddress, getReformatedAddressRelatedToChain } from 'utils/account';
+import { findAccountByAddress } from 'utils/account';
 import { getLatestSwapQuote, handleSwapRequest, handleSwapStep, validateSwapProcess } from 'messaging/swap';
 import { CommonActionType, commonProcessReducer, DEFAULT_COMMON_PROCESS } from 'reducers/transaction-process';
 import { FormItem } from 'components/common/FormItem';
@@ -83,6 +83,7 @@ import Tooltip from 'react-native-walkthrough-tooltip';
 import { generateOptimalProcess, submitProcess } from 'messaging/index';
 import useOneSignProcess from 'hooks/account/useOneSignProcess';
 import { getId } from '@subwallet/extension-base/utils/getId';
+import useReformatAddress from 'hooks/common/useReformatAddress';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -178,6 +179,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   const { onError, onSuccess } = useHandleSubmitMultiTransaction(onDone, setTransactionDone, dispatchProcessState);
   const onPreCheck = usePreCheckAction(fromValue);
   const oneSign = useOneSignProcess(fromValue);
+  const getReformatAddress = useReformatAddress();
   const accountSelectorRef = useRef<ModalRef>();
   const [showQuoteArea, setShowQuoteArea] = useState<boolean>(false);
   const [quoteOptions, setQuoteOptions] = useState<SwapQuote[]>([]);
@@ -228,7 +230,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       }
 
       ap.accounts.forEach(a => {
-        const address = getReformatedAddressRelatedToChain(a, chainInfo);
+        const address = getReformatAddress(a, chainInfo);
 
         if (address) {
           result.push({
@@ -243,7 +245,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     });
 
     return result;
-  }, [accountProxies, chainInfoMap, chainValue, currentAccountProxy]);
+  }, [accountProxies, chainInfoMap, chainValue, currentAccountProxy, getReformatAddress]);
   const fromAndToTokenMap = useMemo<Record<string, string[]>>(() => {
     const result: Record<string, string[]> = {};
 

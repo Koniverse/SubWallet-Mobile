@@ -41,7 +41,7 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
   const receiverPrefix = useGetChainPrefixBySlug(receiveChain);
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Account address={data.from} label={i18n.inputLabel.sendFrom} networkPrefix={senderPrefix} />
 

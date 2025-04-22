@@ -15,7 +15,7 @@ export const BaseTransactionConfirmation: React.FC<BaseTransactionConfirmationPr
   transaction,
 }: BaseTransactionConfirmationProps) => {
   return (
-    <ConfirmationContent>
+    <ConfirmationContent isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
     </ConfirmationContent>
   );

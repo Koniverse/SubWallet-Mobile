@@ -10,6 +10,7 @@ import TransactionProcessDetailModal from 'components/Modal/TransactionProcessDe
 import TransactionStepsModal from 'components/Modal/TransactionStepsModal';
 import { ProcessType } from '@subwallet/extension-base/types';
 import { ProcessStepItemType } from 'components/ProcessStepItem';
+import SelectAddressFormatModal from 'components/Modal/SelectAddressFormatModal';
 
 interface AppModalContextProviderProps {
   children?: React.ReactElement;
@@ -34,8 +35,10 @@ export type AddressQrModalInfo = {
   visible?: boolean;
   address?: string;
   selectNetwork?: string;
+  isNewFormat?: boolean;
   onBack?: VoidFunction;
   isOpenFromAccountDetailScreen?: boolean;
+  navigation?: NativeStackNavigationProp<RootStackParamList>;
 };
 
 export type DeriveModalInfo = {
@@ -48,6 +51,15 @@ export type DeriveModalInfo = {
 export type TransactionProcessDetailInfo = {
   visible?: boolean;
   transactionProcessId?: string;
+};
+
+export type SelectAddressFormatModalState = {
+  visible?: boolean;
+  name?: string;
+  address?: string;
+  chainSlug?: string;
+  onBack?: VoidFunction;
+  navigation?: NativeStackNavigationProp<RootStackParamList>;
 };
 
 export type TransactionStepsInfo = {
@@ -81,6 +93,11 @@ export interface AppModal {
     setTransactionProcessDetailModalState: React.Dispatch<React.SetStateAction<TransactionProcessDetailInfo>>;
     hideTransactionProcessDetailModal: () => void;
   };
+  selectAddressFormatModal: {
+    selectAddressFormatModalState: SelectAddressFormatModalState;
+    setSelectAddressFormatModalState: React.Dispatch<React.SetStateAction<SelectAddressFormatModalState>>;
+    hideSelectAddressFormatModal: () => void;
+  };
 }
 
 export const AppModalContext = React.createContext({} as AppModal);
@@ -92,6 +109,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
   const [transactionStepsModalState, setTransactionStepsModalState] = useState<TransactionStepsInfo>({});
   const [transactionProcessDetailModalState, setTransactionProcessDetailModalState] =
     useState<TransactionProcessDetailInfo>({});
+  const [selectAddressFormatModalState, setSelectAddressFormatModalState] = useState<SelectAddressFormatModalState>({});
 
   const hideConfirmModal = useCallback(() => {
     setConfirmModal(prevState => ({ ...prevState, visible: false }));
@@ -119,6 +137,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           address: '',
           selectNetwork: '',
           onBack: undefined,
+          navigation: undefined,
         })),
       300,
     );
@@ -162,6 +181,21 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
     );
   }, []);
 
+  const hideSelectAddressFormatModal = useCallback(() => {
+    setSelectAddressFormatModalState(prevState => ({ ...prevState, visible: false }));
+    setTimeout(
+      () =>
+        setSelectAddressFormatModalState(prevState => ({
+          ...prevState,
+          address: '',
+          chainSlug: '',
+          name: '',
+          navigation: undefined,
+        })),
+      300,
+    );
+  }, []);
+
   const contextValue: AppModal = useMemo(
     () => ({
       confirmModal: {
@@ -188,6 +222,11 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         setTransactionProcessDetailModalState: setTransactionProcessDetailModalState,
         hideTransactionProcessDetailModal,
       },
+      selectAddressFormatModal: {
+        selectAddressFormatModalState: selectAddressFormatModalState,
+        setSelectAddressFormatModalState: setSelectAddressFormatModalState,
+        hideSelectAddressFormatModal,
+      },
     }),
     [
       addressQrModalState,
@@ -195,8 +234,10 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
       hideAddressQrModal,
       hideConfirmModal,
       hideDeriveModal,
+      hideSelectAddressFormatModal,
       hideTransactionProcessDetailModal,
       hideTransactionStepsModal,
+      selectAddressFormatModalState,
       transactionProcessDetailModalState,
       transactionStepsModalState,
     ],
@@ -229,6 +270,8 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           onBack={addressQrModalState.onBack}
           isUseModalV2={false}
           isOpenFromAccountDetailScreen={addressQrModalState.isOpenFromAccountDetailScreen}
+          isNewFormat={addressQrModalState.isNewFormat}
+          navigation={addressQrModalState.navigation}
         />
       )}
 
@@ -264,6 +307,21 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
             items={transactionStepsModalState.items}
             onCancel={hideTransactionStepsModal}
             type={transactionStepsModalState.type}
+          />
+        )}
+
+      {selectAddressFormatModalState.visible &&
+        selectAddressFormatModalState.address &&
+        selectAddressFormatModalState.name &&
+        selectAddressFormatModalState.chainSlug && (
+          <SelectAddressFormatModal
+            visible={selectAddressFormatModalState.visible}
+            setVisible={noop}
+            address={selectAddressFormatModalState.address}
+            name={selectAddressFormatModalState.name}
+            onCancel={hideSelectAddressFormatModal}
+            chainSlug={selectAddressFormatModalState.chainSlug}
+            navigation={selectAddressFormatModalState.navigation}
           />
         )}
     </AppModalContext.Provider>

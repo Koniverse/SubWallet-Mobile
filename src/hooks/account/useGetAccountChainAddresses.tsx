@@ -7,12 +7,13 @@ import { AccountChainAddress } from 'types/account';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getChainsByAccountType } from 'utils/chain';
-import { getReformatedAddressRelatedToChain } from 'utils/account';
+import useReformatAddress from 'hooks/common/useReformatAddress';
 
 // todo:
 //  - order the result
 const useGetAccountChainAddresses = (accountProxy: AccountProxy): AccountChainAddress[] => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const getReformatAddress = useReformatAddress();
 
   return useMemo(() => {
     const result: AccountChainAddress[] = [];
@@ -21,7 +22,7 @@ const useGetAccountChainAddresses = (accountProxy: AccountProxy): AccountChainAd
     accountProxy.accounts.forEach(a => {
       for (const chain of chains) {
         const chainInfo = chainInfoMap[chain];
-        const reformatedAddress = getReformatedAddressRelatedToChain(a, chainInfo);
+        const reformatedAddress = getReformatAddress(a, chainInfo);
 
         if (reformatedAddress) {
           result.push({
@@ -35,7 +36,7 @@ const useGetAccountChainAddresses = (accountProxy: AccountProxy): AccountChainAd
     });
 
     return result;
-  }, [accountProxy, chainInfoMap]);
+  }, [accountProxy.accounts, accountProxy.chainTypes, accountProxy.specialChain, chainInfoMap, getReformatAddress]);
 };
 
 export default useGetAccountChainAddresses;

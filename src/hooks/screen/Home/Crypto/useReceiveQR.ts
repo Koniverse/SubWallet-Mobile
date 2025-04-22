@@ -5,7 +5,6 @@ import { _getAssetOriginChain, _getMultiChainAsset } from '@subwallet/extension-
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { getReformatedAddressRelatedToChain } from 'utils/account';
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { _ChainAsset } from '@subwallet/chain-list/types';
@@ -17,8 +16,13 @@ import { AppModalContext } from 'providers/AppModalContext';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 import { AccountActions, AccountProxyType } from '@subwallet/extension-base/types';
 import { VoidFunction } from 'types/index';
+import useReformatAddress from 'hooks/common/useReformatAddress';
+import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 export default function useReceiveQR(tokenGroupSlug?: string) {
+  const navigation = useNavigation<RootNavigationProps>();
   const { accountProxies, currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { chainAssets } = useChainAssets();
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
@@ -26,7 +30,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   const [selectedChain, setSelectedChain] = useState<string | undefined>();
   const [selectedAccountAddressItem, setSelectedAccountAddressItem] = useState<AccountAddressItemType | undefined>();
   const chainSupported = useGetChainSlugsByAccount();
-  const { addressQrModal } = useContext(AppModalContext);
+  const { addressQrModal, selectAddressFormatModal } = useContext(AppModalContext);
   const accountRef = useRef<ModalRef>();
   const tokenRef = useRef<ModalRef>();
   const chainRef = useRef<ModalRef>();
@@ -41,6 +45,9 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     tokenRef && tokenRef.current?.closeModal?.();
     accountRef && accountRef.current?.closeModal?.();
   });
+
+  const getReformatAddress = useReformatAddress();
+  const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
 
   const openAddressQrModal = useCallback(
     (
@@ -59,13 +66,35 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
             addressQrModal.hideAddressQrModal();
             closeCallback?.();
           },
+          navigation: navigation,
         });
       };
       onHandleTonAccountWarning(accountType, () => {
         processFunction();
       });
     },
-    [addressQrModal, onHandleTonAccountWarning],
+    [addressQrModal, navigation, onHandleTonAccountWarning],
+  );
+
+  const openAddressFormatModal = useCallback(
+    (name: string, address: string, chainSlug: string, closeCallback?: VoidFunction) => {
+      const processFunction = () => {
+        selectAddressFormatModal.setSelectAddressFormatModalState({
+          visible: true,
+          name: name,
+          address: address,
+          chainSlug: chainSlug,
+          onBack: () => {
+            selectAddressFormatModal.hideSelectAddressFormatModal();
+            closeCallback?.();
+          },
+          navigation: navigation,
+        });
+      };
+
+      processFunction();
+    },
+    [navigation, selectAddressFormatModal],
   );
 
   /* --- token Selector */
@@ -106,8 +135,10 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
         return;
       }
 
+      const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(chainSlug);
+
       for (const accountJson of currentAccountProxy.accounts) {
-        const reformatedAddress = getReformatedAddressRelatedToChain(accountJson, chainInfo);
+        const reformatedAddress = getReformatAddress(accountJson, chainInfo);
 
         if (reformatedAddress) {
           const accountAddressItem: AccountAddressItemType = {
@@ -120,15 +151,28 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
           tokenRef && tokenRef.current?.onCloseModal();
           setSelectedAccountAddressItem(accountAddressItem);
-          openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chainSlug, () => {
-            setSelectedAccountAddressItem(undefined);
-          });
-
+          if (isPolkadotUnifiedChain) {
+            openAddressFormatModal(chainInfo.name, reformatedAddress, chainSlug, () => {
+              setSelectedAccountAddressItem(undefined);
+            });
+          } else {
+            openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chainSlug, () => {
+              setSelectedAccountAddressItem(undefined);
+            });
+          }
           break;
         }
       }
     },
-    [chainInfoMap, currentAccountProxy, isAllAccount, openAddressQrModal],
+    [
+      chainInfoMap,
+      checkIsPolkadotUnifiedChain,
+      currentAccountProxy,
+      getReformatAddress,
+      isAllAccount,
+      openAddressFormatModal,
+      openAddressQrModal,
+    ],
   );
   /* token Selector --- */
 
@@ -145,7 +189,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
     accountProxies.forEach(ap => {
       ap.accounts.forEach(a => {
-        const reformatedAddress = getReformatedAddressRelatedToChain(a, chainInfo);
+        const reformatedAddress = getReformatAddress(a, chainInfo);
 
         if (reformatedAddress) {
           result.push({
@@ -161,7 +205,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     });
 
     return result;
-  }, [accountProxies, chainInfoMap, selectedChain, specificChain]);
+  }, [accountProxies, chainInfoMap, getReformatAddress, selectedChain, specificChain]);
 
   const onCloseAccountSelector = useCallback(() => {
     accountRef && accountRef.current?.onCloseModal();
@@ -178,12 +222,27 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
         return;
       }
 
+      const chainInfo = chainInfoMap[targetChain];
+
       setSelectedAccountAddressItem(item);
       tokenRef && tokenRef.current?.onCloseModal();
       accountRef && accountRef.current?.onCloseModal();
-      openAddressQrModal(item.address, item.accountType, item.accountProxyId, targetChain);
+      const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(targetChain);
+
+      if (isPolkadotUnifiedChain) {
+        openAddressFormatModal(chainInfo.name, item.address, targetChain);
+      } else {
+        openAddressQrModal(item.address, item.accountType, item.accountProxyId, targetChain);
+      }
     },
-    [openAddressQrModal, selectedChain, specificChain],
+    [
+      chainInfoMap,
+      checkIsPolkadotUnifiedChain,
+      openAddressFormatModal,
+      openAddressQrModal,
+      selectedChain,
+      specificChain,
+    ],
   );
   /* account Selector --- */
 
@@ -199,8 +258,10 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
         return;
       }
 
+      const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(chain);
+
       for (const accountJson of currentAccountProxy.accounts) {
-        const reformatedAddress = getReformatedAddressRelatedToChain(accountJson, chainInfo);
+        const reformatedAddress = getReformatAddress(accountJson, chainInfo);
 
         if (reformatedAddress) {
           const accountAddressItem: AccountAddressItemType = {
@@ -213,9 +274,15 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
           setSelectedAccountAddressItem(accountAddressItem);
 
-          openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chain, () => {
-            setSelectedAccountAddressItem(undefined);
-          });
+          if (isPolkadotUnifiedChain) {
+            openAddressFormatModal(chainInfo.name, reformatedAddress, chain, () => {
+              setSelectedAccountAddressItem(undefined);
+            });
+          } else {
+            openAddressQrModal(reformatedAddress, accountJson.type, currentAccountProxy.id, chain, () => {
+              setSelectedAccountAddressItem(undefined);
+            });
+          }
 
           break;
         }
@@ -260,8 +327,11 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   }, [
     chainInfoMap,
     chainSupported,
+    checkIsPolkadotUnifiedChain,
     currentAccountProxy,
+    getReformatAddress,
     isAllAccount,
+    openAddressFormatModal,
     openAddressQrModal,
     specificChain,
     tokenGroupSlug,

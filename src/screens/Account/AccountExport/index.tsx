@@ -181,7 +181,7 @@ export const AccountExport = ({
     [accountProxy, address, exportSingle, onExportJson, selectedTypes],
   );
 
-  const copyPrivateKey = useCopyClipboard(privateKey);
+  const { copyToClipboard } = useCopyClipboard();
 
   const onPressDone = () => {
     navigation.goBack();
@@ -240,7 +240,7 @@ export const AccountExport = ({
                     <Button
                       type="ghost"
                       size="xs"
-                      onPress={copyPrivateKey}
+                      onPress={copyToClipboard(privateKey)}
                       icon={<Icon phosphorIcon={CopySimple} size="md" iconColor={theme.colorTextLight4} />}>
                       {i18n.common.copyToClipboard}
                     </Button>

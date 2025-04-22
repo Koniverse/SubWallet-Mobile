@@ -16,7 +16,7 @@ const SendNftTransactionConfirmation = ({ transaction }: Props) => {
   const networkPrefix = useGetChainPrefixBySlug(transaction.chain);
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Account address={data.senderAddress} label={i18n.inputLabel.sendFrom} networkPrefix={networkPrefix} />
 

@@ -55,7 +55,7 @@ const FastWithdrawTransactionConfirmation: React.FC<Props> = (props: Props) => {
   }, [minAmountPercentMap, yieldPoolInfo.slug]);
 
   return (
-    <ConfirmationContent isFullHeight={true}>
+    <ConfirmationContent isFullHeight={true} isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Number decimals={assetInfo.decimals || 0} label={'Amount'} suffix={assetInfo.symbol} value={amount} />

@@ -35,7 +35,7 @@ import {
   saveRecentAccount,
   subscribeMaxTransfer,
 } from 'messaging/index';
-import { findAccountByAddress, getReformatedAddressRelatedToChain } from 'utils/account';
+import { findAccountByAddress } from 'utils/account';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { balanceFormatter, formatBalance, formatNumber } from 'utils/number';
 import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
@@ -117,6 +117,9 @@ import {
 import { FeeEditor } from 'components/Modal/TransactionFee';
 import { ResponseSubscribeTransfer } from '@subwallet/extension-base/types/balance/transfer';
 import { TokenHasBalanceInfo } from '@subwallet/extension-base/services/fee-service/interfaces';
+import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
+import useReformatAddress from 'hooks/common/useReformatAddress';
+import AlertBoxInstant from 'components/design-system-ui/alert-box/instant';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -266,9 +269,12 @@ export const SendFund = ({
   const { confirmModal } = useContext(AppModalContext);
   const globalAppModalContext = useContext(GlobalModalContext);
   const assetInfo = useFetchChainAssetInfo(assetValue);
+  const getReformatAddress = useReformatAddress();
   const [listTokensCanPayFee, setListTokensCanPayFee] = useState<TokenHasBalanceInfo[]>([]);
   const [currentNonNativeTokenPayFee, setCurrentNonNativeTokenPayFee] = useState<string | undefined>(undefined);
   const [selectedTransactionFee, setSelectedTransactionFee] = useState<TransactionFee | undefined>();
+  const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
+  const isShowAddressFormatInfoBox = checkIsPolkadotUnifiedChain(chainValue);
 
   const currentConfirmations = useMemo(() => {
     if (chainValue && destChainValue) {
@@ -295,7 +301,7 @@ export const SendFund = ({
 
     const updateResult = (ap: AccountProxy) => {
       ap.accounts.forEach(a => {
-        const address = getReformatedAddressRelatedToChain(a, chainInfo);
+        const address = getReformatAddress(a, chainInfo);
 
         if (address) {
           result.push({
@@ -326,7 +332,7 @@ export const SendFund = ({
     }
 
     return result;
-  }, [accountProxies, chainInfoMap, chainValue, currentAccountProxy]);
+  }, [accountProxies, chainInfoMap, chainValue, currentAccountProxy, getReformatAddress]);
 
   const senderAccountName = useMemo(() => {
     if (!fromValue) {
@@ -769,44 +775,49 @@ export const SendFund = ({
   );
 
   const onPressNextStep = useCallback(async () => {
-    trigger('to').then(async pass => {
-      if (pass) {
-        if (TON_CHAINS.includes(chainValue)) {
-          const isShowTonBouncealbeModal = await isTonBounceableAddress({ address: toValue, chain: chainValue });
-          const chainInfo = chainInfoMap[destChainValue];
-          if (isShowTonBouncealbeModal && !isTransferBounceable) {
-            const bounceableAddressPrefix = toValue.substring(0, 2);
-            const formattedAddress = _reformatAddressWithChain(toValue, chainInfo);
-            const formattedAddressPrefix = formattedAddress.substring(0, 2);
+    Keyboard.dismiss();
+    setTimeout(
+      () =>
+        trigger('to').then(async pass => {
+          if (pass) {
+            if (TON_CHAINS.includes(chainValue)) {
+              const isShowTonBouncealbeModal = await isTonBounceableAddress({ address: toValue, chain: chainValue });
+              const chainInfo = chainInfoMap[destChainValue];
+              if (isShowTonBouncealbeModal && !isTransferBounceable) {
+                const bounceableAddressPrefix = toValue.substring(0, 2);
+                const formattedAddress = _reformatAddressWithChain(toValue, chainInfo);
+                const formattedAddressPrefix = formattedAddress.substring(0, 2);
 
-            confirmModal.setConfirmModal({
-              visible: true,
-              title: 'Unsupported address',
-              message: `Transferring to an ${bounceableAddressPrefix} address is not supported. Continuing will result in a transfer to the corresponding ${formattedAddressPrefix} address (same seed phrase)`,
-              customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
-              completeBtnTitle: 'Continue',
-              onCompleteModal: () => {
-                setValue('to', formattedAddress, {
-                  shouldDirty: true,
-                  shouldTouch: true,
+                confirmModal.setConfirmModal({
+                  visible: true,
+                  title: 'Unsupported address',
+                  message: `Transferring to an ${bounceableAddressPrefix} address is not supported. Continuing will result in a transfer to the corresponding ${formattedAddressPrefix} address (same seed phrase)`,
+                  customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+                  completeBtnTitle: 'Continue',
+                  onCompleteModal: () => {
+                    setValue('to', formattedAddress, {
+                      shouldDirty: true,
+                      shouldTouch: true,
+                    });
+                    setTransferBounceable(true);
+                    setViewStep(2);
+                    confirmModal.hideConfirmModal();
+                  },
+                  onCancelModal: () => {
+                    setLoading(false);
+                    confirmModal.hideConfirmModal();
+                  },
                 });
-                setTransferBounceable(true);
-                setViewStep(2);
-                confirmModal.hideConfirmModal();
-              },
-              onCancelModal: () => {
-                setLoading(false);
-                confirmModal.hideConfirmModal();
-              },
-            });
 
-            return;
+                return;
+              }
+            }
+
+            setViewStep(2);
           }
-        }
-
-        setViewStep(2);
-      }
-    });
+        }),
+      200,
+    );
   }, [
     chainInfoMap,
     chainValue,
@@ -1364,6 +1375,10 @@ export const SendFund = ({
                           description={i18n.warningMessage.crossChainTransferWarningMessage}
                           type={'warning'}
                         />
+                      )}
+
+                      {!(chainValue !== destChainValue) && isShowAddressFormatInfoBox && (
+                        <AlertBoxInstant type={'new-address-format'} />
                       )}
                     </View>
                   )}

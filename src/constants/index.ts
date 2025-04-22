@@ -74,3 +74,5 @@ export const regex: RegexType = {
 export const WEBVIEW_ANDROID_SYSTEM_MIN_VERSION = 113;
 export const ALL_ACCOUNT_AUTH_TYPES: AccountAuthType[] = ['evm', 'substrate', 'ton'];
 export const SHOW_REVIEW_APP_SCREENS = [ExtrinsicType.STAKING_WITHDRAW, ExtrinsicType.SWAP];
+export const FAQ_URL =
+  'https://docs.subwallet.app/main/extension-user-guide/faqs#the-transfer-confirmation-screen-displayed-a-different-recipient-address-than-the-address-i-entered';

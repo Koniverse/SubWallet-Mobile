@@ -43,7 +43,7 @@ const ClaimBridgeTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const claimToken = useGetChainAssetInfo(metadata.tokenSlug);
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
 
       <MetaInfo hasBackgroundWrapper>

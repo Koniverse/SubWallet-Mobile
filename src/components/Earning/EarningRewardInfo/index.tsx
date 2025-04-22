@@ -25,8 +25,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { HideBalanceItem } from 'components/HideBalanceItem';
-import { getReformatedAddressRelatedToChain } from 'utils/account';
 import { isSameAddress } from '@subwallet/extension-base/utils';
+import useReformatAddress from 'hooks/common/useReformatAddress';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -46,6 +46,7 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const total = useYieldRewardTotal(slug);
+  const getReformatAddress = useReformatAddress();
   const [showDetail, setShowDetail] = useState(false);
 
   const toggleDetail = useCallback(() => {
@@ -127,13 +128,13 @@ const EarningRewardInfo: React.FC<Props> = (props: Props) => {
         return;
       }
 
-      const formatAddress = getReformatedAddressRelatedToChain(accountJson, chainInfoMap[compound.chain]);
+      const formatAddress = getReformatAddress(accountJson, chainInfoMap[compound.chain]);
 
       if (formatAddress) {
         Linking.openURL(`https://${subscanSlug}.subscan.io/account/${formatAddress}?tab=reward`);
       }
     }
-  }, [chainInfoMap, compound.address, compound.chain, currentAccountProxy]);
+  }, [chainInfoMap, compound.address, compound.chain, currentAccountProxy, getReformatAddress]);
 
   return (
     <MetaInfo hasBackgroundWrapper={true} labelColorScheme="gray" style={styles.wrapper}>

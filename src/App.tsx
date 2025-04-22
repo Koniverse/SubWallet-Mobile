@@ -257,6 +257,7 @@ export const App = () => {
               duration={TOAST_DURATION}
               renderToast={toast => <CustomToast toast={toast} />}
               placement="top"
+              style={{ borderRadius: 8 }}
               normalColor={theme.colors.notification}
               textStyle={{ textAlign: 'center', ...FontMedium }}
               successColor={theme.colors.primary}

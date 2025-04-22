@@ -19,11 +19,12 @@ import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import useCheckCamera from 'hooks/common/useCheckCamera';
 import { isAddress } from '@subwallet/keyring';
-import { _reformatAddressWithChain } from '@subwallet/extension-base/utils';
+import { _reformatAddressWithChain, reformatAddress } from '@subwallet/extension-base/utils';
 import HorizontalInput from 'components/design-system-ui/input/HorizontalInput';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { deviceWidth } from 'constants/index';
 import useFetchChainInfo from 'hooks/common/useFetchChainInfo';
+import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
 
 interface Props extends InputProps {
   chain?: string;
@@ -66,6 +67,7 @@ const Component = (
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
+  const [selectedOption, setSelectedOption] = useState<string | undefined>();
   const isAddressValid = isValidValue !== undefined ? isValidValue : true;
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -74,6 +76,8 @@ const Component = (
   const chainInfo = useFetchChainInfo(chain || '');
   const hasLabel = !!inputProps.label;
   const isInputVisible = !isAddressValid || !value || !isInputBlur;
+  const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
+  const chainOldPrefixMap = useSelector((state: RootState) => state.chainStore.chainOldPrefixMap);
   const stylesheet = createStylesheet(
     theme,
     isInputVisible,
@@ -87,8 +91,23 @@ const Component = (
 
   useEffect(() => setAdjustResize(), []);
 
+  const isOldSubstrateAddress = useCallback(
+    (address: string) => {
+      const isValidAddress = isAddress(address);
+      if (!(chain && checkIsPolkadotUnifiedChain(chain) && isValidAddress)) {
+        return false;
+      }
+
+      const oldPrefix = chainOldPrefixMap[chain];
+
+      return reformatAddress(address, oldPrefix) === address;
+    },
+    [chain, chainOldPrefixMap, checkIsPolkadotUnifiedChain],
+  );
+
   const onChangeInputText = useCallback(
     (rawText: string) => {
+      setSelectedOption(undefined);
       const text = rawText.trim();
 
       if (inputProps.onChangeText) {
@@ -145,10 +164,14 @@ const Component = (
   const _contacts = useMemo(() => [...accounts, ...contacts], [accounts, contacts]);
 
   const accountName = useMemo(() => {
-    const account = findContactByAddress(_contacts, value);
+    const _value = selectedOption || '';
+    if (isOldSubstrateAddress(_value)) {
+      return toShort(_value, 3, 4);
+    }
+    const account = findContactByAddress(_contacts, _value);
 
     return account?.name;
-  }, [_contacts, value]);
+  }, [_contacts, isOldSubstrateAddress, selectedOption]);
 
   const formattedAddress = useMemo((): string => {
     const _value = value || '';
@@ -262,6 +285,8 @@ const Component = (
         setError(undefined);
         setIsShowQrModalVisible(false);
         onChangeInputText(data);
+        inputRef.current?.focus();
+        inputRef.current?.blur();
         onSideEffectChange?.();
       } else {
         setError(i18n.errorMessage.isNotAnAddress);
@@ -275,14 +300,30 @@ const Component = (
     inputProps.onFocus && inputProps.onFocus(e);
   };
 
-  const onInputBlur = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
-    setInputBlur(true);
-    inputProps.onBlur && inputProps.onBlur(e);
-  };
+  const onInputBlur = useCallback(
+    (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+      setInputBlur(true);
+      const isValidAddress = isAddress(value);
+      const shouldReformatAddress = isOldSubstrateAddress(value) && isValidAddress && chainInfo && !selectedOption;
+
+      if (shouldReformatAddress) {
+        const reformattedInputValue = _reformatAddressWithChain(value, chainInfo);
+
+        if (value !== reformattedInputValue && inputProps.onChangeText) {
+          setSelectedOption(value);
+
+          inputProps.onChangeText(reformattedInputValue);
+        }
+      }
+      inputProps.onBlur && inputProps.onBlur(e);
+    },
+    [chainInfo, inputProps, isOldSubstrateAddress, selectedOption, value],
+  );
 
   const onSelectAddressBook = useCallback(
     (_value: string) => {
       onChangeInputText(_value);
+      setSelectedOption(_value);
       onSideEffectChange?.();
     },
     [onChangeInputText, onSideEffectChange],

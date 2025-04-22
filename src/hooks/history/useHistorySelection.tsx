@@ -7,13 +7,14 @@ import useChainInfoWithState from 'hooks/chain/useChainInfoWithState';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { ChainItemType } from 'types/index';
 import { AccountAddressItemType } from 'types/account';
-import { getReformatedAddressRelatedToChain } from 'utils/account';
+import useReformatAddress from 'hooks/common/useReformatAddress';
 
 export default function useHistorySelection(initialChain?: string, initialAddress?: string) {
   const { accountProxies, currentAccountProxy } = useSelector((root: RootState) => root.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const chainInfoList = useChainInfoWithState();
   const allowedChains = useGetChainSlugsByAccount();
+  const getReformatAddress = useReformatAddress();
   const [selectedAddress, setSelectedAddress] = useState<string>(initialAddress || '');
   const [selectedChain, setSelectedChain] = useState<string>(initialChain || '');
 
@@ -49,7 +50,7 @@ export default function useHistorySelection(initialChain?: string, initialAddres
       ap.accounts.forEach(a => {
         // TODO: This is a temporary validation method.
         //  Find a more efficient way to get isValid.
-        const isValid = getReformatedAddressRelatedToChain(a, chainInfo);
+        const isValid = getReformatAddress(a, chainInfo);
 
         if (isValid) {
           result.push({
@@ -76,7 +77,7 @@ export default function useHistorySelection(initialChain?: string, initialAddres
     }
 
     return result;
-  }, [accountProxies, chainInfoMap, currentAccountProxy, selectedChain]);
+  }, [accountProxies, chainInfoMap, currentAccountProxy, getReformatAddress, selectedChain]);
 
   useEffect(() => {
     if (chainItems.length) {

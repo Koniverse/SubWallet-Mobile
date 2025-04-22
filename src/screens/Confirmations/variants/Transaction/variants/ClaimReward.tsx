@@ -48,7 +48,7 @@ const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
   }, [data.unclaimedReward, transaction.estimateFee?.value]);
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
       <MetaInfo hasBackgroundWrapper>
         {data.unclaimedReward && (

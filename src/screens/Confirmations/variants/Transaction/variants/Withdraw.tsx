@@ -33,7 +33,7 @@ const WithdrawTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const amountSymbol = inputAsset?.symbol || '';
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Number

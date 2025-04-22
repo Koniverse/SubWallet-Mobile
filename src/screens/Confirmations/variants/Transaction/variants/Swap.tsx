@@ -95,7 +95,7 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
   }, [data.quote.aliveUntil]);
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <SwapTransactionBlock quote={data.quote} />
       <MetaInfo style={{ paddingHorizontal: theme.paddingXS }}>
         <MetaInfo.Account

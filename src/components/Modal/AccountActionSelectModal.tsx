@@ -3,7 +3,7 @@ import { IconProps } from 'phosphor-react-native';
 import Toast from 'react-native-toast-notifications';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import { ColorMap } from 'styles/color';
-import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import ToastContainer from 'react-native-toast-notifications';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { ModalRef } from 'types/modalRef';
@@ -55,6 +55,8 @@ export const AccountActionSelectModal = ({
             ref={toastRef}
             placement={'bottom'}
             offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - (Platform.OS === 'android' ? 80 : 120)}
+            textStyle={{ textAlign: 'center', ...FontMedium }}
+            style={{ borderRadius: 8 }}
           />
         </>
       </BasicSelectModal>

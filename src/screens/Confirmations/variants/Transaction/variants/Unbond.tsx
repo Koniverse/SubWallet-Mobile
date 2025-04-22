@@ -14,7 +14,7 @@ const UnbondTransactionConfirmation = ({ transaction }: Props) => {
   const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
 
       <MetaInfo style={{ marginTop: 12 }} hasBackgroundWrapper>

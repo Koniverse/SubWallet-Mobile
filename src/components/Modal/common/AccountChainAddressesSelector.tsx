@@ -14,6 +14,9 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
+import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
+import { RootNavigationProps } from 'routes/index';
+import { useNavigation } from '@react-navigation/native';
 
 interface Props {
   accountProxy: AccountProxy;
@@ -38,52 +41,94 @@ export const AccountChainAddressesSelector = ({
   isShowContent,
   isShowInput,
   children,
+  onCancel: _onCancel,
 }: Props) => {
+  const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const items: AccountChainAddress[] = useGetAccountChainAddresses(accountProxy);
   const onHandleTonAccountWarning = useHandleTonAccountWarning(() => {
     accountSelectorRef?.current?.closeModal?.();
   });
-  const { addressQrModal } = useContext(AppModalContext);
+  const { addressQrModal, selectAddressFormatModal } = useContext(AppModalContext);
   const toast = useToast();
+  const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
+
+  const openSelectAddressFormatModal = useCallback(
+    (item: AccountChainAddress) => {
+      selectAddressFormatModal.setSelectAddressFormatModalState({
+        visible: true,
+        name: item.name,
+        address: item.address,
+        chainSlug: item.slug,
+        onBack: selectAddressFormatModal.hideSelectAddressFormatModal,
+        navigation: navigation,
+      });
+    },
+    [navigation, selectAddressFormatModal],
+  );
 
   const onShowQr = useCallback(
     (item: AccountChainAddress) => {
       return () => {
         Keyboard.dismiss();
+        const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(item.slug);
         const processFunction = () => {
           addressQrModal.setAddressQrModal({
             visible: true,
             address: item.address,
             selectNetwork: item.slug,
             onBack: addressQrModal.hideAddressQrModal,
+            navigation: navigation,
           });
         };
 
-        setTimeout(() => {
-          onHandleTonAccountWarning(item.accountType, processFunction);
-        }, 300);
+        if (isPolkadotUnifiedChain) {
+          openSelectAddressFormatModal(item);
+        } else {
+          setTimeout(() => {
+            onHandleTonAccountWarning(item.accountType, processFunction);
+          }, 300);
+        }
       };
     },
-    [addressQrModal, onHandleTonAccountWarning],
+    [addressQrModal, checkIsPolkadotUnifiedChain, navigation, onHandleTonAccountWarning, openSelectAddressFormatModal],
   );
 
   const onPressCopyBtn = useCallback(
     (item: AccountChainAddress) => {
       return () => {
+        Keyboard.dismiss();
+        const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(item.slug);
+
         const processFunction = () => {
           toast.hideAll();
           toast.show(i18n.common.copiedToClipboard);
           Clipboard.setString(item.address);
         };
 
-        onHandleTonAccountWarning(item.accountType, processFunction);
+        if (isPolkadotUnifiedChain) {
+          openSelectAddressFormatModal(item);
+        } else {
+          onHandleTonAccountWarning(item.accountType, processFunction);
+        }
       };
     },
-    [onHandleTonAccountWarning, toast],
+    [checkIsPolkadotUnifiedChain, onHandleTonAccountWarning, openSelectAddressFormatModal, toast],
+  );
+
+  const onPressInfoButton = useCallback(
+    (item: AccountChainAddress) => {
+      return () => {
+        Keyboard.dismiss();
+        setTimeout(() => openSelectAddressFormatModal(item), 100);
+      };
+    },
+    [openSelectAddressFormatModal],
   );
 
   const renderCustomItem = ({ item }: ListRenderItemInfo<AccountChainAddress>) => {
+    const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(item.slug);
+
     return (
       <AccountChainAddressItem
         key={item.slug}
@@ -91,6 +136,8 @@ export const AccountChainAddressesSelector = ({
         onPressQrButton={onShowQr(item)}
         onPressCopyButton={onPressCopyBtn(item)}
         onPress={onShowQr(item)}
+        isShowInfoButton={isPolkadotUnifiedChain}
+        onPressInfoButton={onPressInfoButton(item)}
       />
     );
   };

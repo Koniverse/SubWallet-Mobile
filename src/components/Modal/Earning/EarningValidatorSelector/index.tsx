@@ -1,7 +1,7 @@
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { useGetPoolTargetList, useYieldPositionDetail } from 'hooks/earning';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
 import { Keyboard, ListRenderItemInfo, Platform } from 'react-native';
@@ -538,6 +538,8 @@ export const EarningValidatorSelector = forwardRef(
             ref={toastRef}
             placement={'bottom'}
             offsetBottom={OFFSET_BOTTOM}
+            textStyle={{ textAlign: 'center', ...FontMedium }}
+            style={{ borderRadius: 8 }}
           />
         </>
       </FullSizeSelectModal>

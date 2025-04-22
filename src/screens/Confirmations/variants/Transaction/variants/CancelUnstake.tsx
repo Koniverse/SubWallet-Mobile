@@ -20,7 +20,7 @@ const CancelUnstakeTransactionConfirmation: React.FC<Props> = (props: Props) => 
   const { decimals, symbol } = useGetNativeTokenBasicInfo(data.selectedUnstaking.chain);
 
   return (
-    <ConfirmationContent isFullHeight>
+    <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Number

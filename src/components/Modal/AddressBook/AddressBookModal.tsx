@@ -18,8 +18,8 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AbstractAddressJson } from '@subwallet/extension-base/types';
 import { _reformatAddressWithChain } from '@subwallet/extension-base/utils';
-import { getReformatedAddressRelatedToChain } from 'utils/account';
 import useChainInfo from 'hooks/chain/useChainInfo';
+import useReformatAddress from 'hooks/common/useReformatAddress';
 
 interface Props {
   modalVisible: boolean;
@@ -112,6 +112,7 @@ const sortFunction = (a: AccountItem, b: AccountItem) => {
 export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = '', setVisible }: Props) => {
   const { accountProxies, contacts, recent } = useSelector((state: RootState) => state.accountState);
   const chainInfo = useChainInfo(chainSlug);
+  const getReformatAddress = useReformatAddress();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -184,7 +185,7 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
       // todo: recheck with ledger
 
       ap.accounts.forEach(acc => {
-        const formatedAddress = getReformatedAddressRelatedToChain(acc, chainInfo);
+        const formatedAddress = getReformatAddress(acc, chainInfo);
 
         if (formatedAddress) {
           result.push({ ...acc, address: acc.address, formatedAddress, proxyId: ap.id, group: AccountGroup.WALLET });
@@ -193,7 +194,7 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
     });
 
     return result;
-  }, [accountProxies, chainInfo, chainSlug, contacts, recent]);
+  }, [accountProxies, chainInfo, chainSlug, contacts, getReformatAddress, recent]);
 
   const onSelectItem = useCallback(
     (item: AccountItem) => {

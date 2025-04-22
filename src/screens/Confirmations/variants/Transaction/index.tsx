@@ -124,7 +124,6 @@ export const TransactionConfirmation = (props: Props) => {
 
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
   const _transaction = useMemo(() => transactionRequest[id], [transactionRequest, id]);
-
   const renderContent = useCallback(
     (transaction: SWTransactionResult): React.ReactNode => {
       const { extrinsicType, process } = transaction;
