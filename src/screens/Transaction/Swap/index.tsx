@@ -641,6 +641,11 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     setTempQuote(quote);
   }, []);
 
+  const notifyNoQuote = useCallback(() => {
+    hideAll();
+    show('No swap quote found. Please try again later', { type: 'danger' });
+  }, [hideAll, show]);
+
   const handleGenerateOptimalProcess = useCallback(
     async (quote: SwapQuote) => {
       try {
@@ -1110,6 +1115,14 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                   console.log('handleSwapRequest error', e);
 
                   if (sync) {
+                    console.log('e.message.toLowerCase()', e.message.toLowerCase());
+                    if (
+                      e.message.toLowerCase().startsWith('failed to fetch swap quote') ||
+                      e.message.toLowerCase().startsWith('swap pair is not found')
+                    ) {
+                      notifyNoQuote();
+                    }
+
                     setHandleRequestLoading(false);
                   }
                 });
@@ -1144,6 +1157,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     fromAmountValue,
     fromTokenSlugValue,
     fromValue,
+    notifyNoQuote,
     reValidateField,
     recipientValue,
     toTokenSlugValue,
