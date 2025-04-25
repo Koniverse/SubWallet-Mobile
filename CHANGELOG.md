@@ -1,3 +1,6 @@
+## 1.2.12 (472)
+
+
 ## 1.2.11 (471)
 - Support Uniswap (#1936)
 - Support Uniswap (#1936)
