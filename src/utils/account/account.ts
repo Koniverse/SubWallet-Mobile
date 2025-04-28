@@ -1,5 +1,6 @@
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
+import { AccountChainType } from '@subwallet/extension-base/types';
 import { isSubstrateAddress, isTonAddress } from '@subwallet/keyring';
 
 export const isAddressAllowedWithAuthType = (address: string, authAccountTypes?: AccountAuthType[]) => {
@@ -17,3 +18,13 @@ export const isAddressAllowedWithAuthType = (address: string, authAccountTypes?:
 
   return false;
 };
+
+export function getChainTypeLogoMap(): Record<string, string> {
+  return {
+    [AccountChainType.SUBSTRATE]: 'polkadot',
+    [AccountChainType.ETHEREUM]: 'ethereum',
+    [AccountChainType.BITCOIN]: 'bitcoin',
+    [AccountChainType.TON]: 'ton',
+    [AccountChainType.CARDANO]: 'cardano',
+  };
+}

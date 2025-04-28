@@ -2,8 +2,8 @@ import React, { useMemo, useState } from 'react';
 import AccountItemBase from 'components/common/Account/Item/AccountItemBase';
 import { Platform, StatusBar, View } from 'react-native';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
-import { Button, Icon, Logo, Typography } from 'components/design-system-ui';
-import { AccountChainType, AccountProxyType } from '@subwallet/extension-base/types';
+import { Button, Icon, Typography } from 'components/design-system-ui';
+import { AccountProxyType } from '@subwallet/extension-base/types';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import {
   CheckCircle,
@@ -21,6 +21,7 @@ import { AccountProxyTypeIcon } from 'components/common/SelectAccountItem';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { VoidFunction } from 'types/index';
 import { AccountProxyExtra_ } from 'screens/Account/RestoreJson';
+import { AccountChainTypeLogos } from 'components/AccountProxy/AccountChainTypeLogos';
 
 interface Props {
   accountProxy: AccountProxyExtra_;
@@ -33,14 +34,6 @@ export const ImportJsonAccountItem = (props: Props) => {
   const { accountProxy, isSelected, onPress, disabled } = props;
   const theme = useSubWalletTheme().swThemes;
   const [tooltipVisible, setTooltipVisible] = useState(false);
-  const chainTypeLogoMap = useMemo(() => {
-    return {
-      [AccountChainType.SUBSTRATE]: 'polkadot',
-      [AccountChainType.ETHEREUM]: 'ethereum',
-      [AccountChainType.BITCOIN]: 'bitcoin',
-      [AccountChainType.TON]: 'ton',
-    };
-  }, []);
 
   const accountProxyTypeIconProps = ((): AccountProxyTypeIcon | null => {
     if (accountProxy.accountType === AccountProxyType.UNIFIED) {
@@ -150,16 +143,10 @@ export const ImportJsonAccountItem = (props: Props) => {
           {accountProxy.name}
         </Typography.Text>
 
-        <View style={{ height: 20, alignItems: 'center', flexDirection: 'row' }}>
-          {accountProxy.chainTypes.map((nt, index) => (
-            <View style={index !== 0 && { marginLeft: -4 }}>
-              <Logo network={chainTypeLogoMap[nt]} size={16} shape={'circle'} />
-            </View>
-          ))}
-        </View>
+        <AccountChainTypeLogos chainTypes={accountProxy.chainTypes} />
       </View>
     ),
-    [accountProxy.chainTypes, accountProxy.name, chainTypeLogoMap, theme.colorWhite, theme.paddingXS],
+    [accountProxy.chainTypes, accountProxy.name, theme.colorWhite, theme.paddingXS],
   );
 
   const rightItems = useMemo(() => {

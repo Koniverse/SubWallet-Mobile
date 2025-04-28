@@ -62,3 +62,4 @@ export * from './domain';
 export * from './metadata';
 export * from './campaigns';
 export * from './database';
+export * from './migrate-unified-account';

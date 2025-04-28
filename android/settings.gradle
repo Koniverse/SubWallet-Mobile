@@ -11,3 +11,5 @@ project(':react-native-code-push').projectDir = new File(rootProject.projectDir,
 
 include ':react-native-fs'
 project(':react-native-fs').projectDir = new File(settingsDir, '../node_modules/react-native-fs/android')
+include ':emurgo_csl-mobile-bridge'
+project(':emurgo_csl-mobile-bridge').projectDir = new File(rootDir, '../node_modules/@emurgo/csl-mobile-bridge/android')

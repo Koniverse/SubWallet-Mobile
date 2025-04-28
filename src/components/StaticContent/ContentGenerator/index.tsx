@@ -25,7 +25,7 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
       return (
         <RenderHtml
           key={node.key}
-          contentWidth={deviceWidth}
+          contentWidth={deviceWidth - 32}
           systemFonts={['PlusJakartaSans-Medium']}
           source={{ html: `${node.content}` }}
         />
@@ -35,7 +35,7 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
     html_inline: (node: { content: any; key: React.Key | null | undefined }) => (
       <RenderHtml
         key={node.key}
-        contentWidth={deviceWidth}
+        contentWidth={deviceWidth - 32}
         systemFonts={['PlusJakartaSans-Medium']}
         source={{ html: `${node.content}` }}
       />

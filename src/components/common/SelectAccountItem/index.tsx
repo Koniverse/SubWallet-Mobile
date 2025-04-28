@@ -133,6 +133,7 @@ export const SelectAccountItem = ({
       [AccountChainType.ETHEREUM]: 'ethereum',
       [AccountChainType.BITCOIN]: 'bitcoin',
       [AccountChainType.TON]: 'ton',
+      [AccountChainType.CARDANO]: 'cardano',
     };
   }, []);
 

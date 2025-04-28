@@ -98,6 +98,8 @@ import { Notification } from 'screens/Settings/Notifications/Notification';
 import { NotificationSetting } from 'screens/Settings/Notifications/NotificationSetting';
 import { ImportNft } from 'screens/ImportToken/ImportNft';
 import { TransactionSubmission } from 'screens/TransactionSubmission';
+import MigrateAccount from 'screens/MigrateAccount';
+import AccountSettings from 'screens/Settings/Account';
 
 interface Props {
   isAppReady: boolean;
@@ -652,6 +654,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="Notification" component={NotificationScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="EarningPreview" component={EarningPreview} options={{ gestureEnabled: false }} />
+                <Stack.Screen name="MigrateAccount" component={MigrateAccount} options={{ gestureEnabled: false }} />
                 <Stack.Screen
                   name="TransactionSubmission"
                   component={TransactionSubmission}
@@ -665,6 +668,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
                 <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
+                <Stack.Screen name="AccountSettings" component={AccountSettings} />
                 <Stack.Screen name="NotificationSetting" component={NotificationSetting} />
                 <Stack.Screen name="History" component={HistoryScreen} />
                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />

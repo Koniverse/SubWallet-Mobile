@@ -7,7 +7,7 @@
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const defaultConfig = getDefaultConfig(__dirname);
 const { assetExts, sourceExts } = defaultConfig.resolver;
-
+const path = require('path');
 const config = {
   transformer: {
     babelTransformerPath: require.resolve('react-native-svg-transformer'),
@@ -27,6 +27,7 @@ const config = {
       url: require.resolve('react-native-url-polyfill'),
       'expo-crypto': require.resolve('react-native-expo-crypto'),
       'tiny-secp256k1': require.resolve('@bitcoinerlab/secp256k1'),
+      '@emurgo/cardano-serialization-lib-nodejs': require.resolve('@emurgo/csl-mobile-bridge'),
     },
   },
 };

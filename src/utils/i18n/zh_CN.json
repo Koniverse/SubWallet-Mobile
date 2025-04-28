@@ -796,6 +796,7 @@
     "walletTheme": "钱包主题",
     "notificationType": "通知类型",
     "securitySettings": "安全设置",
+    "accountSettings": "Account settings",
     "changePassword": "更改密码",
     "manageWebsiteAccess": "管理网站访问",
     "websiteAccess": "网站访问",
@@ -1128,6 +1129,7 @@
   "settings": {
     "generalSettings": "通用设置",
     "securitySettings": "安全设置",
+    "accountSettings": "Account settings",
     "aboutSubWallet": "About SubWallet",
     "requestAFeature": "Request a feature",
     "contactSupport": "Contact support",

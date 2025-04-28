@@ -47,6 +47,8 @@ const settingsSlice = createSlice({
         accountAllLogo: payload.accountAllLogo,
         notificationSetup: payload.notificationSetup,
         allowOneSign: payload.allowOneSign,
+        isAcknowledgedUnifiedAccountMigration: payload.isAcknowledgedUnifiedAccountMigration,
+        isUnifiedAccountMigrationInProgress: payload.isUnifiedAccountMigrationInProgress,
         reduxStatus: ReduxStatus.READY,
       };
     },
