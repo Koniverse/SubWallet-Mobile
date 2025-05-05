@@ -1,3 +1,7 @@
+## 1.2.12 (474)
+- Update link for "Contact support" action (#1956)
+- fix bug show Share screen on some dApp on android (#1958)
+
 ## 1.2.12 (473)
 
 
