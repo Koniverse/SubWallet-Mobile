@@ -72,11 +72,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
   const [hiddenCount, setHiddenCount] = useState(0);
 
   const onPressContactSupport = useCallback(() => {
-    if (Platform.OS === 'ios') {
-      Linking.openURL('mailto:support@subwallet.app?subject=%5BMobile%20-%20In-app%20support%5D');
-    } else {
-      Linking.openURL('mailto:agent@subwallet.app?subject=%5BMobile%20-%20In-app%20support%5D');
-    }
+    Linking.openURL('subwallet://browser?url=https://support.subwallet.app/');
   }, []);
 
   const settingList: settingItemType[][] = useMemo(
