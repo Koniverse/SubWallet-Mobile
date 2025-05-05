@@ -234,7 +234,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   const onWebviewMessage = useCallback(
     (eventData: NativeSyntheticEvent<WebViewMessage>) => {
       const content = eventData.nativeEvent.data;
-      if (!isJsonString(content)) {
+      if (!isJsonString(content) && Platform.OS === 'ios') {
         Share.share({ title: 'Seed phrase', message: content }).then(() => webviewRef.current?.goBack());
         return;
       }
