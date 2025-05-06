@@ -796,6 +796,7 @@
     "walletTheme": "ウォレットのテーマ",
     "notificationType": "通知タイプ",
     "securitySettings": "セキュリティ設定",
+    "accountSettings": "Account settings",
     "changePassword": "パスワードを変更",
     "manageWebsiteAccess": "ウェブサイトへのアクセスを管理",
     "websiteAccess": "ウェブサイトへのアクセス",
@@ -1128,6 +1129,7 @@
   "settings": {
     "generalSettings": "一般設定",
     "securitySettings": "セキュリティ設定",
+    "accountSettings": "Account settings",
     "aboutSubWallet": "About SubWallet",
     "requestAFeature": "Request a feature",
     "contactSupport": "Contact support",

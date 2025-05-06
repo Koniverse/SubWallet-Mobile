@@ -796,6 +796,7 @@
     "walletTheme": "Wallet theme",
     "notificationType": "Notification type",
     "securitySettings": "Security settings",
+    "accountSettings": "Account settings",
     "changePassword": "Change password",
     "manageWebsiteAccess": "Manage website access",
     "websiteAccess": "Website access",
@@ -1128,6 +1129,7 @@
   "settings": {
     "generalSettings": "General settings",
     "securitySettings": "Security settings",
+    "accountSettings": "Account settings",
     "aboutSubWallet": "About SubWallet",
     "requestAFeature": "Request a feature",
     "contactSupport": "Contact support",

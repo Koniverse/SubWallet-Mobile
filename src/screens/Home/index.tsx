@@ -272,6 +272,12 @@ export function setIsShowRemindBackupModal(value: boolean) {
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasMasterPassword, isReady, isLocked, accounts } = useSelector((state: RootState) => state.accountState);
+  // const isAcknowledgedUnifiedAccountMigration = useSelector(
+  //   (state: RootState) => state.settings.isAcknowledgedUnifiedAccountMigration,
+  // );
+  // const isUnifiedAccountMigrationInProgress = useSelector(
+  //   (state: RootState) => state.settings.isUnifiedAccountMigrationInProgress,
+  // );
   const { timeAutoLock } = useSelector((state: RootState) => state.mobileSettings);
   const aliveProcessMap = useSelector((state: RootState) => state.requestState.aliveProcess);
   const { currentRoute } = useSelector((state: RootState) => state.settings);
@@ -297,6 +303,18 @@ export const Home = ({ navigation }: Props) => {
         .filter(acc => !acc.isMasterPassword).length || currentRoute?.name === 'MigratePassword',
     [accounts, currentRoute?.name],
   );
+
+  // const activePriorityPath = useMemo(() => {
+  //   if (!isAcknowledgedUnifiedAccountMigration) {
+  //     return { isNotice: true };
+  //   }
+  //
+  //   if (isUnifiedAccountMigrationInProgress) {
+  //     return { isForceAccMigration: true };
+  //   }
+  //
+  //   return undefined;
+  // }, [isAcknowledgedUnifiedAccountMigration, isUnifiedAccountMigrationInProgress]);
 
   const processIds = useMemo(() => {
     const aliveProcesses = Object.values(aliveProcessMap).filter(p => ![StepStatus.QUEUED].includes(p.status));
@@ -348,6 +366,11 @@ export const Home = ({ navigation }: Props) => {
         if (value === 'true') {
           setDuplicateModalVisible(true);
         } else {
+          // if (!!activePriorityPath && !isEmptyAccounts) {
+          //   navigation.navigate('MigrateAccount', activePriorityPath);
+          //   return;
+          // }
+
           if (lastTimeLogin && storedRemindBackupTimeout) {
             if (Date.now() - lastTimeLogin > storedRemindBackupTimeout) {
               setModalVisible(true);

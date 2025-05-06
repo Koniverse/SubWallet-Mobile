@@ -7,7 +7,9 @@ import {
   LanguageType,
   RequestSaveAppConfig,
   RequestSaveBrowserConfig,
+  RequestSaveMigrationAcknowledgedStatus,
   RequestSaveOSConfig,
+  RequestSaveUnifiedAccountMigrationInProgress,
   RequestSettingsType,
   RequestSubscribeBalancesVisibility,
   ThemeNames,
@@ -57,6 +59,22 @@ export async function saveEnableChainPatrol(value: boolean): Promise<boolean> {
 
 export async function saveNotificationSetup(request: NotificationSetup): Promise<boolean> {
   return sendMessage('pri(settings.saveNotificationSetup)', request);
+}
+
+export async function saveUnifiedAccountMigrationInProgress(
+  request: RequestSaveUnifiedAccountMigrationInProgress,
+): Promise<boolean> {
+  return sendMessage('pri(settings.saveUnifiedAccountMigrationInProgress)', request);
+}
+
+export async function pingUnifiedAccountMigrationDone(): Promise<boolean> {
+  return sendMessage('pri(settings.pingUnifiedAccountMigrationDone)');
+}
+
+export async function saveMigrationAcknowledgedStatus(
+  request: RequestSaveMigrationAcknowledgedStatus,
+): Promise<boolean> {
+  return sendMessage('pri(settings.saveMigrationAcknowledgedStatus)', request);
 }
 
 export async function saveLanguage(lang: LanguageType): Promise<boolean> {

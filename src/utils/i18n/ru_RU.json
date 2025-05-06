@@ -796,6 +796,7 @@
     "walletTheme": "Тема кошелька",
     "notificationType": "Тип уведомления",
     "securitySettings": "Настройки безопасности",
+    "accountSettings": "Account settings",
     "changePassword": "Изменить пароль",
     "manageWebsiteAccess": "Управление доступом к веб-сайту",
     "websiteAccess": "Доступ к веб-сайту",
@@ -1128,6 +1129,7 @@
   "settings": {
     "generalSettings": "Общие настройки",
     "securitySettings": "Настройки безопасности",
+    "accountSettings": "Account settings",
     "aboutSubWallet": "About SubWallet",
     "requestAFeature": "Request a feature",
     "contactSupport": "Contact support",

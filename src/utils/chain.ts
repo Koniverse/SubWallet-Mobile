@@ -2,6 +2,7 @@ import { _ChainInfo, _ChainStatus } from '@subwallet/chain-list/types';
 import {
   _getSubstrateGenesisHash,
   _isChainBitcoinCompatible,
+  _isChainCardanoCompatible,
   _isChainEvmCompatible,
   _isChainTonCompatible,
   _isPureSubstrateChain,
@@ -54,6 +55,10 @@ export const isChainInfoAccordantAccountChainType = (chainInfo: _ChainInfo, chai
 
   if (chainType === AccountChainType.BITCOIN) {
     return _isChainBitcoinCompatible(chainInfo);
+  }
+
+  if (chainType === AccountChainType.CARDANO) {
+    return _isChainCardanoCompatible(chainInfo);
   }
 
   return false;

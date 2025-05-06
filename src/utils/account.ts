@@ -266,6 +266,8 @@ export function getReformatedAddressRelatedToChain(
     return accountJson.address;
   } else if (accountJson.chainType === AccountChainType.TON && chainInfo.tonInfo) {
     return reformatAddress(accountJson.address, chainInfo.isTestnet ? 0 : 1);
+  } else if (accountJson.chainType === AccountChainType.CARDANO && chainInfo.cardanoInfo) {
+    return reformatAddress(accountJson.address, chainInfo.isTestnet ? 0 : 1);
   }
 
   return undefined;

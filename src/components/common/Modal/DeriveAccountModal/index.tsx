@@ -28,7 +28,11 @@ interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
-const alertTypes: DerivePathInfo['type'][] = ['unified', 'ton', 'ethereum'];
+const alertTypes: DerivePathInfo['type'][] = ['unified', 'ton', 'ethereum', 'cardano'];
+
+const normalizeApostrophes = (input: string) => {
+  return input.replace(/[\u2018\u2019]/g, "'"); // U+2018 (LEFT) and U+2019 (RIGHT) single quotation marks
+};
 
 export const DeriveAccountActionModal = ({
   proxyId,
@@ -86,7 +90,7 @@ export const DeriveAccountActionModal = ({
             suri,
             proxyId,
           });
-
+          console.log('rs', rs);
           if (rs.error) {
             result = [rs.error.message];
           } else {
@@ -183,12 +187,21 @@ export const DeriveAccountActionModal = ({
       'bittest-44': 'bitcoin',
       'bittest-84': 'bitcoin',
       'bittest-86': 'bitcoin',
+      cardano: 'cardano',
     };
   }, []);
 
   const { formState, onChangeValue, onUpdateErrors, onSubmitField, focus } = useFormControl(formConfig, {
     onSubmitForm: onPressSubmit(onSubmit),
   });
+
+  const onChangeSuri = useCallback(
+    (t: string) => {
+      const transformText = normalizeApostrophes(t);
+      onChangeValue('suri')(transformText);
+    },
+    [onChangeValue],
+  );
 
   const onChangeAccountName = (value: string) => {
     if (!value) {
@@ -222,7 +235,7 @@ export const DeriveAccountActionModal = ({
                 setValidating(false);
               }
             });
-        }, 500);
+        }, 1000);
       } else {
         setValidating(false);
       }
@@ -340,7 +353,7 @@ export const DeriveAccountActionModal = ({
         ref={formState.refs.suri}
         label={'Derivation path'}
         placeholder={'Derivation path'}
-        onChangeText={onChangeValue('suri')}
+        onChangeText={onChangeSuri}
         value={formState.data.suri}
         errorMessages={formState.errors.suri}
       />

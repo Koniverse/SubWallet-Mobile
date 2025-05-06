@@ -270,6 +270,8 @@ export const AccountExport = ({
                   )}
                   <View style={styles.qrArea}>
                     <QRCode
+                      width={276}
+                      height={276}
                       errorLevel={'Q'}
                       value={qrData}
                       QRSize={4}

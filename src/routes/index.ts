@@ -30,6 +30,7 @@ export type RootStackParamList = {
   ConnectDetail: { topic: string; isLastItem: boolean };
   ConnectWalletConnect: undefined;
   MigratePassword: undefined;
+  MigrateAccount: { isNotice?: boolean; isForceAccMigration?: boolean };
   CreateAccount: { isBack?: boolean };
   QrScanner: undefined;
   AccountsScreen: { pathName?: string };
@@ -45,6 +46,7 @@ export type RootStackParamList = {
   ExportPrivateKey: { address: string };
   Settings: undefined;
   GeneralSettings: undefined;
+  AccountSettings: undefined;
   NotificationSetting: undefined;
   NetworkSelect: undefined;
   ImportSecretPhrase: undefined;
@@ -102,6 +104,7 @@ export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
 export type RootNavigationProps = NavigationProps['navigation'];
 export type RootRouteProps = NavigationProps['route'];
 export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'CreateAccount'>;
+export type MigrateAccountProps = NativeStackScreenProps<RootStackParamList, 'MigrateAccount'>;
 export type CreatePasswordProps = NativeStackScreenProps<RootStackParamList, 'CreatePassword'>;
 export type EarningPreviewProps = NativeStackScreenProps<RootStackParamList, 'EarningPreview'>;
 export type EarningPreviewPoolsProps = NativeStackScreenProps<RootStackParamList, 'EarningPreviewPools'>;

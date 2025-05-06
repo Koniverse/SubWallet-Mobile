@@ -27,6 +27,8 @@ export interface SWQRCodeProps {
   innerEyesRadius?: number;
   onRefresh?: () => void;
   qrRef?: Ref<Svg> | undefined;
+  width: number;
+  height: number;
 }
 
 const QRCode: React.FC<SWQRCodeProps> = ({
@@ -38,6 +40,8 @@ const QRCode: React.FC<SWQRCodeProps> = ({
   outerEyesRadius = 20,
   innerEyesRadius = 9,
   qrRef,
+  width,
+  height,
 }) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = QRCodeStyles(theme);
@@ -68,7 +72,10 @@ const QRCode: React.FC<SWQRCodeProps> = ({
         errorCorrectionLevel={errorLevel}
         outerEyesOptions={outerEyesOptions}
         innerEyesOptions={innerEyesOptions}
+        width={width}
+        height={height}
       />
+
       {status === 'loading' && (
         <View style={_style.expired}>
           <ActivityIndicator size={12} indicatorColor="black" />
