@@ -1,3 +1,7 @@
+## 1.2.14 (476)
+- Unified address format integration (#1939)
+- update WR 1.3.23 (#1935)
+
 ## 1.2.13 (475)
 
 
