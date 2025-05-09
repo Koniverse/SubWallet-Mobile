@@ -19,7 +19,6 @@ import {
   Rocket,
   ShareNetwork,
   ShieldCheck,
-  UserCircleGear,
   X,
 } from 'phosphor-react-native';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
@@ -93,13 +92,13 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           onPress: () => navigation.navigate('Security'),
           backgroundColor: '#2DA73F',
         },
-        {
-          icon: UserCircleGear,
-          title: i18n.settings.accountSettings,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
-          onPress: () => navigation.navigate('AccountSettings'),
-          backgroundColor: '#B44EF2',
-        },
+        // {
+        //   icon: UserCircleGear,
+        //   title: i18n.settings.accountSettings,
+        //   rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+        //   onPress: () => navigation.navigate('AccountSettings'),
+        //   backgroundColor: '#B44EF2',
+        // },
         {
           icon: Clock,
           title: i18n.title.history,

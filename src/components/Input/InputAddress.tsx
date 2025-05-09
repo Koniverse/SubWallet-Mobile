@@ -67,7 +67,7 @@ const Component = (
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
-  const [selectedOption, setSelectedOption] = useState<string | undefined>();
+  const [selectedOption, setSelectedOption] = useState<string | undefined>(value);
   const isAddressValid = isValidValue !== undefined ? isValidValue : true;
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -107,6 +107,7 @@ const Component = (
 
   const onChangeInputText = useCallback(
     (rawText: string) => {
+      console.log('run to 1');
       setSelectedOption(undefined);
       const text = rawText.trim();
 
@@ -310,6 +311,7 @@ const Component = (
         const reformattedInputValue = _reformatAddressWithChain(value, chainInfo);
 
         if (value !== reformattedInputValue && inputProps.onChangeText) {
+          console.log('run to 2');
           setSelectedOption(value);
 
           inputProps.onChangeText(reformattedInputValue);
@@ -323,6 +325,7 @@ const Component = (
   const onSelectAddressBook = useCallback(
     (_value: string) => {
       onChangeInputText(_value);
+      console.log('run to 3');
       setSelectedOption(_value);
       onSideEffectChange?.();
     },
