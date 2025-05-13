@@ -259,6 +259,7 @@ jobs:
         track: internal
         status: completed
         whatsNewDirectory: whatsNewDirectory
+        changesNotSentForReview: true
 
     # Notify to Discord
     - name: Notify to Discord
