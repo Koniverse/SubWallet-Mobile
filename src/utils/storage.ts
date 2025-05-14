@@ -77,6 +77,8 @@ export const BACKUP_WHITELIST: string[] = [
   'pri(settings.saveLanguage)',
   'pri(settings.saveShowZeroBalance)',
   'pri(settings.saveShowBalance)',
+  'pri(settings.saveNotificationSetup)',
+  'pri(settings.update.allowOneSign)',
 
   // Confirmation events
   'pri(confirmations.complete)',
