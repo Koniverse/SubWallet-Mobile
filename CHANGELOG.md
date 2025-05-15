@@ -1,3 +1,6 @@
+## 1.2.16 (479)
+- Fix losing the "Manage website access" list when reopening the app (#1967)
+
 ## 1.2.15 (478)
 
 
