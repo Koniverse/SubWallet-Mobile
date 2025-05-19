@@ -7,7 +7,7 @@ import { Keyboard, Platform, StatusBar, View } from 'react-native';
 import { ActivityIndicator, Typography, Number, Button, Icon } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { PencilSimpleLine } from 'phosphor-react-native';
-import { ASSET_HUB_CHAIN_SLUGS } from '@subwallet/extension-base/constants';
+import { _SUPPORT_TOKEN_PAY_FEE_GROUP, isChainSupportTokenPayFee } from '@subwallet/extension-base/constants';
 import {
   _getAssetDecimals,
   _getAssetPriceId,
@@ -21,6 +21,7 @@ import { ChooseFeeTokenModal } from 'components/Modal/TransactionFee/FeeEditor/C
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import Tooltip from 'react-native-walkthrough-tooltip';
+import { FeeEditorModal } from 'components/Modal/TransactionFee/FeeEditor/FeeEditorModal';
 
 export type RenderFieldNodeParams = {
   isLoading: boolean;
@@ -52,9 +53,9 @@ interface Props {
   destChainValue?: string;
   selectedFeeOption?: TransactionFee;
   nativeTokenSlug: string;
-  modalVisible: boolean;
-  setModalVisible: (visible: boolean) => void;
 }
+
+const FEE_TYPES_CAN_SHOW: Array<FeeChainType | undefined> = ['substrate', 'evm'];
 
 const FeeEditor = ({
   chainValue,
@@ -71,14 +72,16 @@ const FeeEditor = ({
   onSetTokenPayFee,
   renderFieldNode,
   tokenPayFeeSlug,
+  selectedFeeOption,
   tokenSlug,
-  setModalVisible,
+  onSelect,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const { priceMap, currencyData } = useSelector((state: RootState) => state.price);
 
   const [chooseFeeModalVisible, setChooseFeeModalVisible] = useState(false);
+  const [feeEditorModalVisible, setFeeEditorModalVisible] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const tokenAsset = (() => {
     return assetRegistry[tokenPayFeeSlug] || undefined;
@@ -89,9 +92,8 @@ const FeeEditor = ({
   })();
 
   const decimals = _getAssetDecimals(tokenAsset);
-  // @ts-ignore
-  // const priceId = _getAssetPriceId(tokenAsset);
-  // const priceValue = priceMap[priceId] || 0;
+  const priceId = _getAssetPriceId(tokenAsset);
+  const priceValue = priceMap[priceId] || 0;
   const symbol = _getAssetSymbol(tokenAsset);
   const priceNativeId = _getAssetPriceId(nativeAsset);
   const priceNativeValue = priceMap[priceNativeId] || 0;
@@ -119,26 +121,27 @@ const FeeEditor = ({
       .toNumber();
   }, [estimateFee, isDataReady, nativeTokenDecimals, priceNativeValue]);
 
-  // const onSelectTransactionFee = useCallback(
-  //   (fee: TransactionFee) => {
-  //     onSelect?.(fee);
-  //   },
-  //   [onSelect],
-  // );
+  const onSelectTransactionFee = useCallback(
+    (fee: TransactionFee) => {
+      onSelect?.(fee);
+    },
+    [onSelect],
+  );
 
   const isXcm = useMemo(() => {
     return chainValue && destChainValue && chainValue !== destChainValue;
   }, [chainValue, destChainValue]);
 
   const isEditButton = useMemo(() => {
-    return (
-      !!(
-        chainValue &&
-        ASSET_HUB_CHAIN_SLUGS.includes(chainValue) &&
-        feeType === 'substrate' &&
-        listTokensCanPayFee.length
-      ) && !isXcm
+    const isSubstrateSupport = !!(
+      chainValue &&
+      feeType === 'substrate' &&
+      listTokensCanPayFee.length &&
+      isChainSupportTokenPayFee(chainValue)
     );
+    const isEvmSupport = !!(chainValue && feeType === 'evm');
+
+    return (isSubstrateSupport || isEvmSupport) && !isXcm;
   }, [isXcm, chainValue, feeType, listTokensCanPayFee.length]);
 
   const onPressEdit = useCallback(() => {
@@ -152,16 +155,20 @@ const FeeEditor = ({
       return;
     }
 
-    if (chainValue && ASSET_HUB_CHAIN_SLUGS.includes(chainValue)) {
+    if (
+      chainValue &&
+      (_SUPPORT_TOKEN_PAY_FEE_GROUP.assetHub.includes(chainValue) ||
+        _SUPPORT_TOKEN_PAY_FEE_GROUP.hydration.includes(chainValue))
+    ) {
       setTimeout(() => {
         setChooseFeeModalVisible(true);
       }, 300);
     } else {
       setTimeout(() => {
-        setModalVisible(true);
+        setFeeEditorModalVisible(true);
       }, 100);
     }
-  }, [chainValue, isEditButton, setModalVisible]);
+  }, [chainValue, isEditButton, setFeeEditorModalVisible]);
 
   const customFieldNode = useMemo(() => {
     if (!renderFieldNode) {
@@ -221,9 +228,15 @@ const FeeEditor = ({
               )}
             </View>
           </View>
-          {feeType !== 'ton' && (
+          {FEE_TYPES_CAN_SHOW.includes(feeType) && (
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-              <Number size={14} value={convertedFeeValueToUSD} decimal={0} prefix={`~ ${currencyData.symbol}`} />
+              <Number
+                size={14}
+                value={convertedFeeValueToUSD}
+                decimal={0}
+                prefix={`~ ${(currencyData.isPrefix && currencyData.symbol) || ''}`}
+                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+              />
               <Tooltip
                 isVisible={tooltipVisible}
                 disableShadow={true}
@@ -266,6 +279,25 @@ const FeeEditor = ({
         modalVisible={chooseFeeModalVisible}
         setModalVisible={setChooseFeeModalVisible}
       />
+
+      {feeEditorModalVisible && (
+        <FeeEditorModal
+          modalVisible={feeEditorModalVisible}
+          setModalVisible={setFeeEditorModalVisible}
+          tokenSlug={tokenPayFeeSlug}
+          decimals={decimals}
+          symbol={symbol}
+          onSetTokenPayFee={onSetTokenPayFee}
+          currentTokenPayFee={currentTokenPayFee}
+          feeType={feeType}
+          chainValue={chainValue}
+          priceValue={priceValue}
+          listTokensCanPayFee={listTokensCanPayFee}
+          feeOptionsInfo={feeOptionsInfo}
+          selectedFeeOption={selectedFeeOption}
+          onSelectOption={onSelectTransactionFee}
+        />
+      )}
     </>
   );
 };

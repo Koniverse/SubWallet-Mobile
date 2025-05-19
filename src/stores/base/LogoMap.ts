@@ -28,6 +28,11 @@ const settingsSlice = createSlice({
       payload[SwapProviderId.KUSAMA_ASSET_HUB.toLowerCase()] = ImageLogosMap.kusama_assethub;
       payload[SwapProviderId.ROCOCO_ASSET_HUB.toLowerCase()] = ImageLogosMap.rococo_assethub;
       payload.uniswap = ImageLogosMap.rococo_assethub; // TODO: change later
+      for (let i = 0; i < 86; i++) {
+        // @ts-ignore
+        payload[`subnet-${i}`] = ImageLogosMap[`subnet-${i}`];
+      }
+
       return {
         ...state,
         chainLogoMap: payload,

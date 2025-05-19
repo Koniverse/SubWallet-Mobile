@@ -7,7 +7,7 @@ import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
 import { ServiceItem, baseServiceItems } from 'screens/Home/Crypto/ServiceModal';
 import { BuyServiceInfo, CreateBuyOrderFunction, SupportService } from 'types/buy';
-import { BrowserOptions, createBanxaOrder, createCoinbaseOrder, createTransakOrder } from 'utils/buy';
+import { BrowserOptions, createBanxaOrder, createCoinbaseOrder, createMeldOrder, createTransakOrder } from 'utils/buy';
 import { isAccountAll } from 'utils/accountAll';
 import useAppLock from 'hooks/useAppLock';
 import { _getOriginChainOfAsset, _isAssetFungibleToken } from '@subwallet/extension-base/services/chain-service/utils';
@@ -249,6 +249,9 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
           break;
         case 'coinbase':
           urlPromise = createCoinbaseOrder;
+          break;
+        case 'meld':
+          urlPromise = createMeldOrder;
           break;
       }
       if (!urlPromise) {

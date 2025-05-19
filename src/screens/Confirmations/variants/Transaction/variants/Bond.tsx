@@ -20,6 +20,10 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
   const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
   const addressList = data.selectedValidators.map(validator => validator.address);
 
+  const isBittensorChain = useMemo(() => {
+    return data.poolPosition?.chain === 'bittensor' || data.poolPosition?.chain === 'bittensor_testnet';
+  }, [data.poolPosition?.chain]);
+
   return (
     <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
@@ -47,6 +51,16 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
         }
         type={'warning'}
       />
+
+      {isBittensorChain && (
+        <AlertBox
+          title={'TAO unstaking fee'}
+          description={
+            'An unstaking fee of 0.00005 TAO will be deducted from your unstaked amount once the transaction is complete'
+          }
+          type={'info'}
+        />
+      )}
     </ConfirmationContent>
   );
 };

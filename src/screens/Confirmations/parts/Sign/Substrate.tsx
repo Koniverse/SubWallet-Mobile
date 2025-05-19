@@ -81,12 +81,30 @@ export const SubstrateSignArea = (props: Props) => {
     () => signMode === AccountSignMode.LEGACY_LEDGER || signMode === AccountSignMode.GENERIC_LEDGER,
     [signMode],
   );
+  const isRuntimeUpdated = useMemo(() => {
+    const _payload = request.payload;
+
+    if (isRawPayload(_payload)) {
+      return false;
+    } else {
+      return _isRuntimeUpdated(_payload.signedExtensions);
+    }
+  }, [request.payload]);
+  const requireSpecVersion = useMemo((): number | undefined => {
+    const _payload = request.payload;
+
+    if (isRawPayload(_payload)) {
+      return undefined;
+    } else {
+      return Number(_payload.specVersion);
+    }
+  }, [request.payload]);
 
   const { hideAll, show } = useToast();
   const [loading, setLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [isShowQr, setIsShowQr] = useState(false);
-  const { chain, loadingChain } = useMetadata(genesisHash);
+  const { chain, loadingChain } = useMetadata(genesisHash, requireSpecVersion);
   const chainInfo = useGetChainInfoByGenesisHash(genesisHash);
   const theme = useSubWalletTheme().swThemes;
   const { addExtraData, hashLoading, isMissingData, payload } = useParseSubstrateRequestPayload(
@@ -101,15 +119,6 @@ export const SubstrateSignArea = (props: Props) => {
     () => chainInfo?.name || chain?.name || toShort(genesisHash),
     [chainInfo, genesisHash, chain],
   );
-  const isRuntimeUpdated = useMemo(() => {
-    const _payload = request.payload;
-
-    if (isRawPayload(_payload)) {
-      return false;
-    } else {
-      return _isRuntimeUpdated(_payload.signedExtensions);
-    }
-  }, [request.payload]);
   // const requireMetadata = useMemo(
   //   () =>
   //     signMode === AccountSignMode.GENERIC_LEDGER || (signMode === AccountSignMode.LEGACY_LEDGER && isRuntimeUpdated),

@@ -6,6 +6,7 @@ import { StakingNominationItem } from 'components/common/StakingNominationItem';
 import { NominationSelectorField } from 'components/Field/NominationSelector';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
+import { YieldPoolInfo } from '@subwallet/extension-base/types';
 
 interface Props {
   nominators: NominationInfo[];
@@ -13,6 +14,7 @@ interface Props {
   onSelectItem: (value: string) => void;
   disabled?: boolean;
   label: string;
+  poolInfo: YieldPoolInfo;
 }
 
 const searchFunction = (items: NominationInfo[], searchString: string) => {
@@ -26,7 +28,7 @@ const searchFunction = (items: NominationInfo[], searchString: string) => {
   });
 };
 
-export const NominationSelector = ({ nominators, selectedValue, onSelectItem, disabled, label }: Props) => {
+export const NominationSelector = ({ nominators, selectedValue, onSelectItem, disabled, label, poolInfo }: Props) => {
   const collatorRef = useRef<ModalRef>();
   const selectedCollator = useMemo(() => {
     return nominators.find(item => item.validatorAddress === selectedValue);
@@ -42,10 +44,11 @@ export const NominationSelector = ({ nominators, selectedValue, onSelectItem, di
             onSelectItem(value);
             collatorRef?.current?.onCloseModal();
           }}
+          poolInfo={poolInfo}
         />
       );
     },
-    [onSelectItem, selectedValue],
+    [onSelectItem, poolInfo, selectedValue],
   );
 
   return (

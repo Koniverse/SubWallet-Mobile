@@ -9,6 +9,7 @@ import {
   LiquidYieldPositionInfo,
   NativeYieldPositionInfo,
   NominationYieldPositionInfo,
+  SubnetYieldPositionInfo,
   YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
@@ -76,6 +77,7 @@ const useYieldPositionDetail = (slug: string, address?: string): Result => {
           status: EarningStatus.NOT_STAKING, // TODO
           unstakings: [],
           isBondedBefore: false,
+          subnetData: positionInfo.subnetData,
         };
 
         let rs: YieldPositionInfo;
@@ -102,6 +104,11 @@ const useYieldPositionDetail = (slug: string, address?: string): Result => {
             rs = {
               ...base,
             } as NominationYieldPositionInfo;
+            break;
+          case YieldPoolType.SUBNET_STAKING:
+            rs = {
+              ...base,
+            } as SubnetYieldPositionInfo;
             break;
         }
 

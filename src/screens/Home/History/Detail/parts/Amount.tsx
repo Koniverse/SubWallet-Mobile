@@ -96,13 +96,23 @@ const HistoryDetailAmount: React.FC<Props> = (props: Props) => {
     }
   }
 
+  let symbol = amount?.symbol;
+
+  if (data.type === ExtrinsicType.STAKING_UNBOND) {
+    const _additionalInfo = data.additionalInfo as RequestClaimBridge;
+
+    if (_additionalInfo?.symbol) {
+      symbol = _additionalInfo.symbol;
+    }
+  }
+
   return (
     <>
       {(isStaking || isCrowdloan || amount) && (
         <MetaInfo.Number
           decimals={amount?.decimals || undefined}
           label={amountLabel}
-          suffix={amount?.symbol || undefined}
+          suffix={symbol || undefined}
           value={amountValue || '0'}
         />
       )}

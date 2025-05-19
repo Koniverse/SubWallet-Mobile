@@ -13,7 +13,7 @@ import {
   RequestSubscribeTransfer,
   ResponseSubscribeTransfer,
 } from '@subwallet/extension-base/types/balance/transfer';
-import { TokenHasBalanceInfo } from '@subwallet/extension-base/services/fee-service/interfaces';
+import { TokenPayFeeInfo } from '@subwallet/extension-base/services/fee-service/interfaces';
 
 export async function makeTransfer(request: RequestSubmitTransfer): Promise<SWTransactionResponse> {
   return sendMessage('pri(accounts.transfer)', request);
@@ -38,7 +38,7 @@ export async function subscribeMaxTransfer(
   return sendMessage('pri(transfer.subscribe)', request, callback);
 }
 
-export async function getTokensCanPayFee(request: RequestGetTokensCanPayFee): Promise<TokenHasBalanceInfo[]> {
+export async function getTokensCanPayFee(request: RequestGetTokensCanPayFee): Promise<TokenPayFeeInfo> {
   // can set a default fee to ED of native token
   return sendMessage('pri(customFee.getTokensCanPayFee)', request);
 }

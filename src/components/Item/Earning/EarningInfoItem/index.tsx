@@ -4,15 +4,16 @@ import { Icon, Number, Tag, Typography } from 'components/design-system-ui';
 import EarningTypeTag from 'components/Tag/EarningTypeTag';
 import { CaretRight, Moon, Sun } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { FontBold, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { ExtraYieldPositionInfo } from 'types/earning';
-import { getTokenLogo } from 'utils/index';
+import { getNetworkLogo, getTokenLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import { BN_TEN } from 'utils/number';
+import { ImageLogosMap } from 'assets/logo';
 
 interface Props {
   positionInfo: ExtraYieldPositionInfo;
@@ -31,10 +32,6 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
   const isTempEarningCondition = ['ASTR___native_staking___astar', 'SDN___native_staking___shiden'].includes(
     positionInfo.slug,
   );
-
-  const showSubLogo = useMemo(() => {
-    return ![YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(type);
-  }, [type]);
 
   const poolName = useMemo(() => {
     return (multiChainAssetMap[group] || assetRegistry[group]).symbol;
@@ -82,14 +79,33 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
     return chainInfoMap[positionInfo.chain].isTestnet;
   }, [chainInfoMap, positionInfo.chain]);
 
+  const subnetShortName = useMemo(() => {
+    return positionInfo.subnetData?.subnetShortName ? `(${positionInfo.subnetData.subnetShortName})` : '';
+  }, [positionInfo.subnetData?.subnetShortName]);
+
+  const isSubnetStaking = useMemo(
+    () => [YieldPoolType.SUBNET_STAKING].includes(poolInfo.type) && !poolInfo.slug.includes('testnet'),
+    [poolInfo.slug, poolInfo.type],
+  );
+
   return (
     <TouchableOpacity style={styleSheet.infoContainer} activeOpacity={0.5} onPress={onPress(positionInfo)}>
-      {getTokenLogo(balanceToken, showSubLogo ? poolInfo?.metadata?.logo || poolInfo?.chain : undefined, 40)}
+      {!isSubnetStaking || !ImageLogosMap[`subnet-${poolInfo.metadata.subnetData?.netuid || 0}`]
+        ? getTokenLogo(balanceToken, poolInfo.metadata.logo || poolInfo.chain, 40)
+        : getNetworkLogo(`subnet-${poolInfo.metadata.subnetData?.netuid || 0}`, 40)}
       <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>
         <View style={styleSheet.balanceInfoRow}>
-          <Text style={styleSheet.networkName} numberOfLines={1} ellipsizeMode={'tail'}>
-            {poolName}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, overflow: 'hidden', gap: theme.sizeXXS }}>
+            <View style={{ flexShrink: 1 }}>
+              <Typography.Text ellipsis={true} style={styleSheet.networkName} numberOfLines={1}>
+                {poolName}
+              </Typography.Text>
+            </View>
+
+            <Typography.Text ellipsis={true} style={styleSheet.networkShortName} numberOfLines={1}>
+              {subnetShortName}
+            </Typography.Text>
+          </View>
 
           {!isTempEarningCondition &&
             (isShowBalance ? (
@@ -200,7 +216,14 @@ function createStyleSheet(theme: ThemeTypes) {
       lineHeight: theme.fontSizeLG * theme.lineHeightLG,
       ...FontSemiBold,
       color: theme.colorTextLight1,
-      flex: 1,
+      // flex: 1,
+      width: '100%',
+    },
+    networkShortName: {
+      fontSize: theme.fontSizeLG,
+      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+      ...FontSemiBold,
+      color: theme.colorTextTertiary,
     },
 
     iconWrapper: {

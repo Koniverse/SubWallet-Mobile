@@ -44,6 +44,7 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
   const _style = HistoryItemStyles(theme);
 
   let amountValue = item?.amount?.value;
+  let symbol = item?.amount?.symbol;
 
   if (item.type === ExtrinsicType.CLAIM_BRIDGE) {
     const additionalInfo = item.additionalInfo as RequestClaimBridge;
@@ -52,6 +53,14 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
       const metadata = additionalInfo.notification.metadata as ClaimPolygonBridgeNotificationMetadata;
 
       amountValue = metadata.amounts[0];
+    }
+  }
+
+  if (item.type === ExtrinsicType.STAKING_UNBOND) {
+    const additionalInfo = item.additionalInfo as RequestClaimBridge;
+
+    if (additionalInfo?.symbol) {
+      symbol = additionalInfo.symbol;
     }
   }
 
@@ -87,7 +96,7 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
                   decimal={item?.amount?.decimals || 0}
                   intOpacity={1}
                   decimalOpacity={0.45}
-                  suffix={item?.amount?.symbol}
+                  suffix={symbol}
                   value={amountValue || '0'}
                   textStyle={_style.upperText}
                 />

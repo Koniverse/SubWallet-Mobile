@@ -105,7 +105,6 @@ const MigrateAccount = ({
           onClosePasswordModal();
         })
         .catch(err => {
-          console.log('err.message', err.message);
           setErrorArr([err.message]);
         })
         .finally(() => {

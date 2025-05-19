@@ -90,7 +90,7 @@ export const DeriveAccountActionModal = ({
             suri,
             proxyId,
           });
-          console.log('rs', rs);
+
           if (rs.error) {
             result = [rs.error.message];
           } else {

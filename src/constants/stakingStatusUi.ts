@@ -1,39 +1,38 @@
 import { InfoItemBase } from 'components/MetaInfo/types';
-import React from 'react';
-import { CheckCircle, IconProps, ListChecks, XCircle } from 'phosphor-react-native';
+import { CheckCircle, ListChecks, XCircle } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { EarningStatusUiProps, NominationPoolState } from 'types/earning';
+import { EarningStatus } from '@subwallet/extension-base/types';
 
 export type StakingStatusType = 'active' | 'inactive' | 'partialEarning' | 'waiting';
 
-interface StakingStatusUiProps {
-  schema: InfoItemBase['valueColorSchema'];
-  icon: React.ElementType<IconProps>;
-  name: string;
-}
-
-export const StakingStatusUi = (): Record<StakingStatusType, StakingStatusUiProps> => ({
-  active: {
+export const EarningStatusUi: Record<EarningStatus, EarningStatusUiProps> = {
+  [EarningStatus.EARNING_REWARD]: {
     schema: 'success' as InfoItemBase['valueColorSchema'],
     icon: CheckCircle,
     name: i18n.stakingScreen.earningReward,
   },
-  partialEarning: {
+  [EarningStatus.PARTIALLY_EARNING]: {
     schema: 'warning' as InfoItemBase['valueColorSchema'],
     icon: ListChecks,
     name: i18n.stakingScreen.earningReward,
   },
-  inactive: {
+  [EarningStatus.NOT_EARNING]: {
     schema: 'danger' as InfoItemBase['valueColorSchema'],
     icon: XCircle,
     name: i18n.stakingScreen.notEarning,
   },
-  waiting: {
+  [EarningStatus.WAITING]: {
     schema: 'success' as InfoItemBase['valueColorSchema'],
     icon: CheckCircle,
     name: i18n.inputLabel.waiting,
   },
-});
+  [EarningStatus.NOT_STAKING]: {
+    schema: 'danger' as InfoItemBase['valueColorSchema'],
+    icon: XCircle,
+    name: i18n.stakingScreen.notEarning,
+  },
+};
 
 export const NominationPoolsEarningStatusUi: Record<NominationPoolState['state'], EarningStatusUiProps> = {
   Open: {

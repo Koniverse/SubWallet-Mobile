@@ -4,6 +4,7 @@ import { ColorMap } from 'styles/color';
 export { createBanxaOrder } from './banxa';
 export { createCoinbaseOrder } from './coinbase';
 export { createTransakOrder } from './transak';
+export { createMeldOrder } from './meld';
 
 export const BrowserOptions: InAppBrowserOptions = {
   // iOS Properties

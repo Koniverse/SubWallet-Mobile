@@ -46,39 +46,8 @@ const filterFunction = (items: ExtraYieldPositionInfo[], filters: string[]) => {
       return true;
     }
 
-    for (const filter of filters) {
-      if (filter === '') {
-        return true;
-      }
-
-      if (filter === YieldPoolType.NOMINATION_POOL) {
-        if (item.type === YieldPoolType.NOMINATION_POOL) {
-          return true;
-        }
-      } else if (filter === YieldPoolType.NATIVE_STAKING) {
-        if (item.type === YieldPoolType.NATIVE_STAKING) {
-          return true;
-        }
-      } else if (filter === YieldPoolType.LIQUID_STAKING) {
-        if (item.type === YieldPoolType.LIQUID_STAKING) {
-          return true;
-        }
-      } else if (filter === YieldPoolType.LENDING) {
-        if (item.type === YieldPoolType.LENDING) {
-          return true;
-        }
-        // } else if (filter === YieldPoolType.PARACHAIN_STAKING) {
-        //   if (item.type === YieldPoolType.PARACHAIN_STAKING) {
-        //     return true;
-        //   }
-        // } else if (filter === YieldPoolType.SINGLE_FARMING) {
-        //   if (item.type === YieldPoolType.SINGLE_FARMING) {
-        //     return true;
-        //   }
-      }
-    }
-
-    return false;
+    const filterMap: Record<string, boolean> = Object.fromEntries(filters.map(filter => [filter, true]));
+    return !filters.length || filterMap[item.type] || false;
   });
 };
 
@@ -89,6 +58,7 @@ const FILTER_OPTIONS = [
   { label: i18n.filterOptions.lending, value: YieldPoolType.LENDING },
   { label: i18n.filterOptions.parachainStaking, value: YieldPoolType.PARACHAIN_STAKING },
   { label: i18n.filterOptions.singleFarming, value: YieldPoolType.SINGLE_FARMING },
+  { label: i18n.filterOptions.subnetStaking, value: YieldPoolType.SUBNET_STAKING },
 ];
 
 export const PositionList = ({ setStep, loading }: Props) => {
@@ -262,12 +232,14 @@ export const PositionList = ({ setStep, loading }: Props) => {
 
   const searchFunction = useCallback(
     (_items: ExtraYieldPositionInfo[], searchString: string) => {
-      return _items.filter(({ chain: _chain, asset }) => {
+      return _items.filter(({ chain: _chain, asset, subnetData }) => {
         const chainInfo = chainInfoMap[_chain];
-        return (
-          chainInfo?.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase()) ||
-          asset?.symbol.toLowerCase().includes(searchString.toLowerCase())
-        );
+
+        return [
+          chainInfo?.name.replace(' Relay Chain', '').toLowerCase(),
+          asset?.symbol.toLowerCase(),
+          subnetData?.subnetShortName?.toLowerCase(),
+        ].some(value => value?.includes(searchString.toLowerCase()));
       });
     },
     [chainInfoMap],

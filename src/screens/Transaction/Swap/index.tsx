@@ -720,6 +720,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   const onChangeAmount = useCallback(
     (value: string) => {
       setIsUserActive(true);
+      console.log('run to this');
       setValue('fromAmount', value);
     },
     [setValue],

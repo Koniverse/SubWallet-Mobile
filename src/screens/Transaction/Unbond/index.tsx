@@ -1,6 +1,7 @@
 import {
   AccountProxy,
   SpecialYieldPoolMetadata,
+  SubnetYieldPositionInfo,
   YieldPoolType,
   YieldPositionInfo,
 } from '@subwallet/extension-base/types';
@@ -18,7 +19,7 @@ import { AmountData, ExtrinsicType, NominationInfo } from '@subwallet/extension-
 import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
-import { Keyboard, ScrollView, View } from 'react-native';
+import { findNodeHandle, Keyboard, ScrollView, UIManager, View } from 'react-native';
 import { MinusCircle } from 'phosphor-react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
@@ -27,9 +28,9 @@ import { InputAmount } from 'components/Input/InputAmount';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { BN_ZERO } from 'utils/chainBalances';
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import { Button, Icon } from 'components/design-system-ui';
+import { Button, Icon, Typography, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { yieldSubmitLeavePool } from 'messaging/index';
+import { getEarningSlippage, yieldSubmitLeavePool } from 'messaging/index';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { UnbondProps } from 'routes/transaction/transactionAction';
@@ -57,6 +58,9 @@ import { AccountAddressItemType } from 'types/account';
 import { getReformatedAddressRelatedToChain } from 'utils/account';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { getEarningTimeText } from 'utils/earning';
+import { SlippageType } from '@subwallet/extension-base/types/swap';
+import MetaInfo from 'components/MetaInfo';
+import BigNumber from 'bignumber.js';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -164,11 +168,136 @@ export const Unbond = ({
     }
   }, [poolInfo, poolType]);
 
-  const bondedAsset = useGetChainAssetInfo(bondedSlug || poolInfo?.metadata.inputAsset);
+  const bondedAsset = useGetChainAssetInfo(bondedSlug || poolInfo.metadata.inputAsset);
   const decimals = bondedAsset?.decimals || 0;
-  const symbol = bondedAsset?.symbol || '';
+  const symbol = (positionInfo as SubnetYieldPositionInfo).subnetData?.subnetSymbol || bondedAsset?.symbol || '';
   const altAsset = useGetChainAssetInfo((poolInfo?.metadata as SpecialYieldPoolMetadata)?.altInputAssets);
   const altSymbol = altAsset?.symbol || '';
+
+  // For subnet staking
+
+  const isSubnetStaking = useMemo(() => [YieldPoolType.SUBNET_STAKING].includes(poolType), [poolType]);
+  const [earningSlippage, setEarningSlippage] = useState<number>(0);
+  const [maxSlippage, setMaxSlippage] = useState<SlippageType>({ slippage: new BigN(0.005), isCustomType: true });
+  const [earningRate, setEarningRate] = useState<number>(0);
+  const debounce = useRef<NodeJS.Timeout | null>(null);
+
+  const isDisabledSubnetContent = useMemo(
+    () => !isSubnetStaking || !currentValue,
+
+    [isSubnetStaking, currentValue],
+  );
+
+  useEffect(() => {
+    if (!isDisabledSubnetContent) {
+      return;
+    }
+
+    if (debounce.current) {
+      clearTimeout(debounce.current);
+    }
+
+    debounce.current = setTimeout(() => {
+      const netuid = poolInfo.metadata.subnetData?.netuid || 0;
+      const data = {
+        slug: poolInfo.slug,
+        value: currentValue,
+        netuid: netuid,
+        type: ExtrinsicType.STAKING_UNBOND,
+      };
+
+      getEarningSlippage(data)
+        .then(result => {
+          console.log('Actual stake slippage:', result.slippage * 100);
+          setEarningSlippage(result.slippage);
+          setEarningRate(result.rate);
+        })
+        .catch(error => {
+          console.error('Error fetching earning slippage:', error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }, 200);
+
+    return () => {
+      if (debounce.current) {
+        clearTimeout(debounce.current);
+      }
+    };
+  }, [currentValue, isDisabledSubnetContent, isSubnetStaking, poolInfo.metadata.subnetData?.netuid, poolInfo.slug]);
+
+  const isSlippageAcceptable = useMemo(() => {
+    if (earningSlippage === null || !currentValue) {
+      return true;
+    }
+
+    return earningSlippage <= maxSlippage.slippage.toNumber();
+  }, [currentValue, earningSlippage, maxSlippage]);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const alertBoxRef = useRef<View>(null);
+  const [hasScrolled, setHasScrolled] = useState<boolean>(false);
+
+  const scrollToAlertBox = useCallback(() => {
+    if (alertBoxRef.current && scrollViewRef.current) {
+      const handle = findNodeHandle(alertBoxRef.current);
+      if (handle) {
+        UIManager.measureLayout(
+          handle,
+          findNodeHandle(scrollViewRef.current)!,
+          () => console.warn('measureLayout failed'),
+          (x, y) => {
+            scrollViewRef.current?.scrollTo({ y, animated: true });
+          },
+        );
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isSlippageAcceptable && !hasScrolled) {
+      scrollToAlertBox();
+      setHasScrolled(true);
+    }
+  }, [isSlippageAcceptable, hasScrolled, scrollToAlertBox]);
+
+  const renderRate = useCallback(() => {
+    return (
+      <MetaInfo
+        labelColorScheme={'gray'}
+        spaceSize={'sm'}
+        valueColorScheme={'gray'}
+        style={{ marginTop: theme.sizeSM }}>
+        <MetaInfo.Number
+          decimals={decimals}
+          label={'Expected TAO to receive'}
+          suffix={bondedAsset?.symbol || ''}
+          value={BigNumber(currentValue).multipliedBy(earningRate)}
+          unitColor={theme['gray-5']}
+          decimalColor={theme['gray-5']}
+          intColor={theme['gray-5']}
+        />
+        <MetaInfo.Default label={'Conversion rate'}>
+          <View style={{ flexDirection: 'row' }}>
+            <Typography.Text style={{ color: '#A6A6A6' }}>{`1 ${bondedAsset?.symbol || ''} = `}</Typography.Text>
+            <Number
+              size={14}
+              intColor={theme['gray-5']}
+              decimalColor={theme['gray-5']}
+              unitColor={theme['gray-5']}
+              decimal={decimals}
+              suffix={poolInfo.metadata?.subnetData?.subnetSymbol || ''}
+              value={BigN(1)
+                .multipliedBy(10 ** decimals)
+                .multipliedBy(1 / earningRate)}
+            />
+          </View>
+        </MetaInfo.Default>
+      </MetaInfo>
+    );
+  }, [decimals, bondedAsset?.symbol, currentValue, earningRate, theme, poolInfo.metadata?.subnetData?.subnetSymbol]);
+
+  // For subnet staking
 
   const selectedValidator = useMemo((): NominationInfo | undefined => {
     if (positionInfo) {
@@ -199,6 +328,9 @@ export const Unbond = ({
         const exchaneRate = poolInfo?.statistic?.assetEarning.find(item => item.slug === input)?.exchangeRate || 1;
 
         return new BigN(positionInfo?.activeStake || '0').multipliedBy(exchaneRate).toFixed(0);
+      }
+      case YieldPoolType.SUBNET_STAKING: {
+        return selectedValidator?.activeStake || '0';
       }
       case YieldPoolType.LIQUID_STAKING:
       case YieldPoolType.NOMINATION_POOL:
@@ -259,8 +391,18 @@ export const Unbond = ({
   }, [accountProxies, allPositions, chainInfoMap, poolChain, poolType]);
 
   const renderBounded = useCallback(() => {
-    return <BondedBalance bondedBalance={bondedValue} decimals={decimals} symbol={symbol} />;
-  }, [bondedValue, decimals, symbol]);
+    return (
+      <BondedBalance
+        bondedBalance={bondedValue}
+        decimals={decimals}
+        symbol={symbol}
+        isSlippageAcceptable={isSlippageAcceptable}
+        isSubnetStaking={isSubnetStaking}
+        maxSlippage={maxSlippage}
+        setMaxSlippage={setMaxSlippage}
+      />
+    );
+  }, [bondedValue, decimals, isSlippageAcceptable, isSubnetStaking, maxSlippage, symbol]);
 
   const handleDataForInsufficientAlert = useCallback(
     (estimateFee: AmountData) => {
@@ -292,6 +434,7 @@ export const Unbond = ({
       fastLeave: !!_fastLeave,
       slug: slug,
       poolInfo: poolInfo,
+      slippage: maxSlippage.slippage.toNumber(),
     };
 
     if (mustChooseValidator) {
@@ -310,7 +453,17 @@ export const Unbond = ({
           setLoading(false);
         });
     }, 300);
-  }, [positionInfo, getValues, slug, poolInfo, mustChooseValidator, currentValidator, onSuccess, onError]);
+  }, [
+    positionInfo,
+    getValues,
+    slug,
+    poolInfo,
+    maxSlippage.slippage,
+    mustChooseValidator,
+    currentValidator,
+    onSuccess,
+    onError,
+  ]);
 
   const onPressSubmit = useCallback(() => {
     Keyboard.dismiss();
@@ -354,8 +507,18 @@ export const Unbond = ({
       !fromValue ||
       loading ||
       !isBalanceReady ||
+      !isSlippageAcceptable ||
       (isMythosStaking && !currentValidator),
-    [currentValidator, currentValue, errors.value, fromValue, isBalanceReady, isMythosStaking, loading],
+    [
+      currentValidator,
+      currentValue,
+      errors.value,
+      fromValue,
+      isBalanceReady,
+      isMythosStaking,
+      isSlippageAcceptable,
+      loading,
+    ],
   );
 
   const onChangeFastLeave = useCallback(
@@ -403,12 +566,16 @@ export const Unbond = ({
   const unstakeAlertData =
     poolChain === 'bifrost_dot'
       ? UNSTAKE_BIFROST_ALERT_DATA[0]
-      : poolChain === 'bittensor'
+      : poolChain.startsWith('bittensor')
       ? UNSTAKE_BITTENSOR_ALERT_DATA[0]
       : unstakeDataRaw;
 
   const exType = useMemo(() => {
-    if (poolType === YieldPoolType.NOMINATION_POOL || poolType === YieldPoolType.NATIVE_STAKING) {
+    if (
+      poolType === YieldPoolType.NOMINATION_POOL ||
+      poolType === YieldPoolType.NATIVE_STAKING ||
+      poolType === YieldPoolType.SUBNET_STAKING
+    ) {
       return ExtrinsicType.STAKING_UNBOND;
     }
 
@@ -436,6 +603,7 @@ export const Unbond = ({
           disableMainHeader={loading}>
           <>
             <ScrollView
+              ref={scrollViewRef}
               style={{ flex: 1, paddingHorizontal: 16 }}
               contentContainerStyle={{ paddingTop: 16 }}
               keyboardShouldPersistTaps="handled">
@@ -475,6 +643,7 @@ export const Unbond = ({
                           : getValidatorLabel(chainValue).toLowerCase(),
                       ) as string
                     }
+                    poolInfo={poolInfo}
                   />
                   {renderBounded()}
                 </>
@@ -497,6 +666,8 @@ export const Unbond = ({
                   name={'value'}
                 />
               )}
+
+              {!isDisabledSubnetContent && earningRate > 0 && <>{renderRate()}</>}
 
               {!mustChooseValidator && renderBounded()}
 
@@ -557,6 +728,18 @@ export const Unbond = ({
                   }
                   type={'info'}
                 />
+              )}
+
+              {!isSlippageAcceptable && (
+                <View ref={alertBoxRef}>
+                  <AlertBox
+                    title={'Slippage too high!'}
+                    description={`Unable to stake due to a slippage of ${(earningSlippage * 100).toFixed(
+                      2,
+                    )}%, which exceeds the maximum allowed. Lower your stake amount and try again`}
+                    type={'error'}
+                  />
+                </View>
               )}
             </ScrollView>
 

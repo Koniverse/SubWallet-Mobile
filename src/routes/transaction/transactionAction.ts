@@ -15,7 +15,7 @@ export type TransactionActionStackParamList = {
   Withdraw: { slug: string; chain: string; from: string };
   ClaimReward: { slug: string; chain: string; from: string };
   ClaimBridge: { asset: string; chain: string; notificationId: string; from: string };
-  CancelUnstake: { slug: string };
+  CancelUnstake: { slug: string; chain: string; from: string };
 };
 
 export type NavigationProps = NativeStackScreenProps<TransactionActionStackParamList>;

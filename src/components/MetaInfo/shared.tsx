@@ -6,7 +6,7 @@ import { ThemeTypes } from 'styles/themes';
 
 export function getSchemaColor(schema: SchemeColor, theme: ThemeTypes) {
   if (schema === 'gray') {
-    return theme.colorTextLight4;
+    return theme['gray-5'];
   }
 
   if (schema === 'success') {

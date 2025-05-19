@@ -11,6 +11,7 @@ import { BalanceValueInfo } from 'types/balance';
 import { YieldGroupInfo } from 'types/earning';
 import { BN_ZERO } from '@subwallet/extension-base/utils';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import { YieldPoolType } from '@subwallet/extension-base/types';
 
 const useYieldGroupInfo = (): YieldGroupInfo[] => {
   const poolInfoMap = useSelector((state: RootState) => state.earning.poolInfoMap);
@@ -45,7 +46,13 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
           }
 
           if (apy !== undefined) {
-            exists.maxApy = Math.max(exists.maxApy || 0, apy);
+            if (pool.chain === 'bittensor' || pool.chain === 'bittensor_testnet') {
+              if (pool.type === YieldPoolType.SUBNET_STAKING) {
+                exists.maxApy = Math.max(exists.maxApy || 0, 0);
+              }
+            } else {
+              exists.maxApy = Math.max(exists.maxApy || 0, apy);
+            }
           }
 
           exists.isTestnet = exists.isTestnet || chainInfo.isTestnet;

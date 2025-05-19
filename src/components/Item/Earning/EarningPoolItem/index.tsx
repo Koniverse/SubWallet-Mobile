@@ -1,5 +1,5 @@
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
-import { YieldPoolInfo } from '@subwallet/extension-base/types';
+import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { Number, Typography } from 'components/design-system-ui';
 import EarningTypeTag from 'components/Tag/EarningTypeTag';
@@ -15,6 +15,7 @@ import { ThemeTypes } from 'styles/themes';
 import { BN_TEN } from 'utils/number';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
+import { ImageLogosMap } from 'assets/logo';
 
 interface Props {
   poolInfo: YieldPoolInfo;
@@ -69,10 +70,15 @@ const EarningPoolItem = (props: Props) => {
     }
   }, [asset, priceMap, tvl]);
 
+  const isSubnetStaking = useMemo(() => [YieldPoolType.SUBNET_STAKING].includes(poolInfo.type), [poolInfo.type]);
+  const isBittensor = useMemo(() => poolInfo.chain === 'bittensor', [poolInfo.chain]);
+
   return (
     <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={() => onStakeMore(slug)}>
       <View style={styleSheet.infoContainer}>
-        {getNetworkLogo(logo || chain, 40)}
+        {!isSubnetStaking || !ImageLogosMap[`subnet-${poolInfo.metadata.subnetData?.netuid || 0}`]
+          ? getNetworkLogo(logo || chain, 40)
+          : getNetworkLogo(`subnet-${poolInfo.metadata.subnetData?.netuid || 0}`, 40)}
         <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>
           <View style={styleSheet.containerRow}>
             <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>
@@ -91,7 +97,7 @@ const EarningPoolItem = (props: Props) => {
                     lineHeight: theme.lineHeightSM * theme.fontSizeSM,
                     color: theme.colorTextLight4,
                   }}>
-                  Rewards:&nbsp;
+                  {`${isSubnetStaking ? 'Emission' : isBittensor ? 'Max APY' : 'Rewards'}: `}
                 </Typography.Text>
                 <Number
                   value={apy}

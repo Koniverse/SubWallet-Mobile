@@ -10,18 +10,21 @@ import { CheckCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import StakingNominationItemStyle from './style';
 import i18n from 'utils/i18n/i18n';
+import { YieldPoolInfo } from '@subwallet/extension-base/types';
 
 interface Props {
   nominationInfo: NominationInfo;
   isSelected?: boolean;
   onSelectItem?: (value: string) => void;
+  poolInfo: YieldPoolInfo;
 }
 
-export const StakingNominationItem = ({ nominationInfo, isSelected, onSelectItem }: Props) => {
+export const StakingNominationItem = ({ nominationInfo, isSelected, onSelectItem, poolInfo }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = StakingNominationItemStyle(theme);
   const { activeStake, chain, validatorAddress, validatorIdentity } = nominationInfo;
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chain);
+  const subnetSymbol = poolInfo.metadata.subnetData?.subnetSymbol;
 
   return (
     <TouchableOpacity
@@ -46,7 +49,7 @@ export const StakingNominationItem = ({ nominationInfo, isSelected, onSelectItem
           <Text style={_style.bondedAmountLabelTextStyle}>{i18n.message.bonded}</Text>
           <Number
             decimal={decimals}
-            suffix={symbol}
+            suffix={subnetSymbol || symbol}
             size={12}
             value={activeStake}
             textStyle={{ ...FontMedium }}

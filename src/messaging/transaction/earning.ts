@@ -20,6 +20,7 @@ import {
   ValidateYieldProcessParams,
   ValidatorInfo,
   YieldPoolInfo,
+  RequestEarningSlippage,
 } from '@subwallet/extension-base/types';
 import { sendMessage } from '..';
 
@@ -73,4 +74,8 @@ export async function yieldSubmitNominationPoolUnstaking(data: RequestStakePooli
 
 export async function yieldSubmitRedeem(data: RequestYieldFastWithdrawal) {
   return sendMessage('pri(yield.submitRedeem)', data);
+}
+
+export async function getEarningSlippage(data: RequestEarningSlippage) {
+  return sendMessage('pri(yield.getEarningSlippage)', data);
 }

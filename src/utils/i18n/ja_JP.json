@@ -728,6 +728,7 @@
     "lending": "Lending",
     "parachainStaking": "Parachain staking",
     "singleFarming": "Single farming",
+    "subnetStaking": "Subnet staking",
     "mainnet": "Mainnet",
     "testnet": "Testnet"
   },

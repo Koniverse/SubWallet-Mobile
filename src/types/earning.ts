@@ -17,6 +17,11 @@ export type ExtraYieldPositionInfo = YieldPositionInfo & {
   asset: _ChainAsset;
   price: number;
   currency?: CurrencyJson;
+  subnetData?: {
+    // for Subnet staking
+    subnetSymbol: string;
+    subnetShortName: string;
+  };
   // exchangeRate: number;
 };
 

@@ -3,12 +3,13 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { SwModal, Number, Typography } from 'components/design-system-ui';
 import { View } from 'react-native';
 import MetaInfo from 'components/MetaInfo';
-import { NominationPoolsEarningStatusUi, StakingStatusType, StakingStatusUi } from 'constants/stakingStatusUi';
+import { NominationPoolsEarningStatusUi, EarningStatusUi } from 'constants/stakingStatusUi';
 import i18n from 'utils/i18n/i18n';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { getSchemaColor } from 'components/MetaInfo/shared';
 import { NominationPoolDataType } from 'types/earning';
+import { EarningStatus } from '@subwallet/extension-base/types';
 
 interface Props {
   detailModalVisible: boolean;
@@ -19,12 +20,11 @@ interface Props {
 
 export const PoolSelectorDetailModal = ({ detailModalVisible, detailItem, setVisible, maxPoolMembersValue }: Props) => {
   const { address = '', bondedAmount, memberCounter = 0, name, state, symbol, decimals, isProfitable } = detailItem;
-  const stakingStatusUi = StakingStatusUi();
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
 
-  const earningStatus: StakingStatusType = useMemo(() => {
-    return isProfitable ? 'active' : 'inactive';
+  const earningStatus: EarningStatus = useMemo(() => {
+    return isProfitable ? EarningStatus.EARNING_REWARD : EarningStatus.NOT_EARNING;
   }, [isProfitable]);
 
   const ratePercent = useMemo(() => {
@@ -65,9 +65,9 @@ export const PoolSelectorDetailModal = ({ detailModalVisible, detailItem, setVis
           />
           <MetaInfo.Status
             label={i18n.inputLabel.stakingStatus}
-            statusIcon={stakingStatusUi[earningStatus].icon}
-            statusName={stakingStatusUi[earningStatus].name}
-            valueColorSchema={stakingStatusUi[earningStatus].schema}
+            statusIcon={EarningStatusUi[earningStatus].icon}
+            statusName={EarningStatusUi[earningStatus].name}
+            valueColorSchema={EarningStatusUi[earningStatus].schema}
           />
 
           <MetaInfo.Number

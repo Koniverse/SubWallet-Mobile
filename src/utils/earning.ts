@@ -51,7 +51,7 @@ export const createEarningTypeTags = (theme: ThemeTypes, chain: string): Record<
       color: theme['gold-6'],
       weight: 'fill',
     },
-    ['SUBNET_STAKING']: {
+    [YieldPoolType.SUBNET_STAKING]: {
       label: 'Subnet staking',
       icon: CirclesThreePlus,
       color: theme['blue-6'],

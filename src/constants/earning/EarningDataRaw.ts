@@ -206,6 +206,48 @@ export const EARNING_POOL_DETAIL_DATA: StaticDataProps[] = [
       },
     ],
   },
+  {
+    id: '6',
+    group: 'earning',
+    slug: YieldPoolType.SUBNET_STAKING,
+    instructions: [
+      {
+        icon: 'ThumbsUp',
+        title: 'Select {validatorNumber} {validatorType}',
+        description:
+          'It is recommended that you select {validatorNumber} {validatorType} to optimize your staking rewards',
+        icon_color: '#aada62',
+      },
+      {
+        icon: 'Coins',
+        title: 'Unstake and withdraw',
+        description:
+          'Once staked, your funds will be locked. Unstake your funds anytime and they will be <strong>automatically withdrawn</strong> to your account. Keep in mind that the unstaking action will incur network fees',
+        icon_color: '#e6dc25',
+      },
+      {
+        icon: 'CheckCircle',
+        title: 'Keep your transferable balance',
+        description:
+          'Ensure that your transferable balance includes <strong>a minimum of {maintainBalance} {maintainSymbol}</strong> to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals',
+        icon_color: '#4cd9ac',
+      },
+      {
+        icon: 'Wallet',
+        title: 'Check your rewards',
+        description:
+          'Your staking rewards will be paid out every {paidOut} {paidOutTimeUnit} and will be automatically compounded to your stake',
+        icon_color: '#51BC5E',
+      },
+      {
+        icon: 'Eye',
+        title: 'Manage your stake',
+        description:
+          'You need to monitor your stake constantly and change {validatorType} when needed as staking status can fluctuate over time',
+        icon_color: '#008dff',
+      },
+    ],
+  },
 ];
 
 export const STAKE_ALERT_DATA = {

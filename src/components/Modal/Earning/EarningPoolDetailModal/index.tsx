@@ -142,7 +142,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
     const getOrigin = () => {
       switch (type) {
-        case 'SUBNET_STAKING':
+        case YieldPoolType.SUBNET_STAKING:
         case YieldPoolType.NOMINATION_POOL:
         case YieldPoolType.NATIVE_STAKING:
         case YieldPoolType.LIQUID_STAKING:
@@ -213,7 +213,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
 
     const { type } = poolInfo;
     switch (type) {
-      case 'SUBNET_STAKING':
+      case YieldPoolType.SUBNET_STAKING:
       case YieldPoolType.NOMINATION_POOL:
       case YieldPoolType.NATIVE_STAKING:
       case YieldPoolType.LIQUID_STAKING:
@@ -363,6 +363,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             }, 300);
           } else {
             const message = rs.errorMessage || '';
+            console.log('message 1', message);
             onError(message);
           }
         }
@@ -370,6 +371,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       .catch(e => {
         if (isValid()) {
           const message = (e as Error).message || '';
+          console.log('message 2', message);
           onError(message);
         }
       })

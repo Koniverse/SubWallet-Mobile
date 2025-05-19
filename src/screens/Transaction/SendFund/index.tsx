@@ -271,7 +271,8 @@ export const SendFund = ({
   const assetInfo = useFetchChainAssetInfo(assetValue);
   const getReformatAddress = useReformatAddress();
   const [listTokensCanPayFee, setListTokensCanPayFee] = useState<TokenHasBalanceInfo[]>([]);
-  const [currentNonNativeTokenPayFee, setCurrentNonNativeTokenPayFee] = useState<string | undefined>(undefined);
+  const [defaultTokenPayFee, setDefaultTokenPayFee] = useState<string | undefined>(undefined);
+  const [currentTokenPayFee, setCurrentTokenPayFee] = useState<string | undefined>(undefined);
   const [selectedTransactionFee, setSelectedTransactionFee] = useState<TransactionFee | undefined>();
   const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
   const isShowAddressFormatInfoBox = checkIsPolkadotUnifiedChain(chainValue);
@@ -471,17 +472,19 @@ export const SendFund = ({
     accountSelectorRef?.current?.onCloseModal();
     resetField('asset');
     setForceUpdateValue(undefined);
+    setSelectedTransactionFee(undefined);
     setIsTransferAll(false);
   };
 
   const _onChangeAsset = (item: TokenItemType) => {
+    const chain = assetRegistry[item.slug].originChain;
     setAsset(item.slug);
     setValue('to', '');
     clearErrors('to');
     setValue('destChain', item.originChain);
     tokenSelectorRef?.current?.onCloseModal();
     setForceUpdateValue(undefined);
-    setCurrentNonNativeTokenPayFee(undefined);
+    setCurrentTokenPayFee(chainValue === chain ? defaultTokenPayFee : undefined);
     setIsTransferAll(false);
   };
 
@@ -558,8 +561,6 @@ export const SendFund = ({
       const { asset, chain, destChain, from: _from, to, value } = values;
 
       let sendPromise: Promise<SWTransactionResponse>;
-      const nonNativeTokenPayFeeSlug =
-        currentNonNativeTokenPayFee !== nativeTokenSlug ? currentNonNativeTokenPayFee : undefined;
       const from = _from;
 
       if (chain === destChain) {
@@ -574,7 +575,7 @@ export const SendFund = ({
           transferBounceable: isTransferBounceable,
           feeOption: selectedTransactionFee?.feeOption,
           feeCustom: selectedTransactionFee?.feeCustom,
-          nonNativeTokenPayFeeSlug: nonNativeTokenPayFeeSlug,
+          tokenPayFeeSlug: currentTokenPayFee,
         });
       } else {
         // Make cross chain transfer
@@ -589,17 +590,16 @@ export const SendFund = ({
           transferBounceable: isTransferBounceable,
           feeOption: selectedTransactionFee?.feeOption,
           feeCustom: selectedTransactionFee?.feeCustom,
-          nonNativeTokenPayFeeSlug: nonNativeTokenPayFeeSlug,
+          tokenPayFeeSlug: undefined, // todo: support pay local fee for xcm later
         });
       }
 
       return sendPromise;
     },
     [
-      currentNonNativeTokenPayFee,
+      currentTokenPayFee,
       isTransferAll,
       isTransferBounceable,
-      nativeTokenSlug,
       selectedTransactionFee?.feeCustom,
       selectedTransactionFee?.feeOption,
     ],
@@ -727,9 +727,9 @@ export const SendFund = ({
 
   const onSetTokenPayFee = useCallback(
     (slug: string) => {
-      setCurrentNonNativeTokenPayFee(slug);
+      setCurrentTokenPayFee(slug);
     },
-    [setCurrentNonNativeTokenPayFee],
+    [setCurrentTokenPayFee],
   );
 
   const onSubmit = useCallback(
@@ -854,7 +854,7 @@ export const SendFund = ({
   );
 
   const isSubmitButtonDisable = (() => {
-    return !isBalanceReady || loading || (isTransferAll ? isFetchingInfo : false);
+    return !isBalanceReady || loading || isFetchingListFeeToken || (isTransferAll ? isFetchingInfo : false);
   })();
 
   const onInputChangeAmount = useCallback(() => {
@@ -967,7 +967,6 @@ export const SendFund = ({
   useEffect(() => {
     let cancel = false;
     let id = '';
-    // setIsFetchingMaxValue(false);
     setIsFetchingInfo(true);
 
     const validate = () => {
@@ -1001,8 +1000,7 @@ export const SendFund = ({
           destChain: destChainValue,
           feeOption: selectedTransactionFee?.feeOption,
           feeCustom: selectedTransactionFee?.feeCustom,
-          nonNativeTokenPayFeeSlug:
-            currentNonNativeTokenPayFee !== nativeTokenSlug ? currentNonNativeTokenPayFee : undefined,
+          tokenPayFeeSlug: currentTokenPayFee,
         },
         callback,
       )
@@ -1025,7 +1023,7 @@ export const SendFund = ({
   }, [
     assetRegistry,
     assetValue,
-    currentNonNativeTokenPayFee,
+    currentTokenPayFee,
     destChainValue,
     fromValue,
     getValues,
@@ -1107,11 +1105,14 @@ export const SendFund = ({
           address: fromValue,
         });
 
-        const response = _response.filter(item => item !== null && item !== undefined);
+        const tokensCanPayFee = _response.tokensCanPayFee.filter(item => item !== null && item !== undefined);
+        const defaultTokenSlug = _response.defaultTokenSlug;
 
         if (!cancel) {
-          setListTokensCanPayFee(response);
-          setTimeout(() => setIsFetchingListFeeToken(false), 300);
+          setDefaultTokenPayFee(defaultTokenSlug);
+          setCurrentTokenPayFee(defaultTokenSlug);
+          setListTokensCanPayFee(tokensCanPayFee);
+          setIsFetchingListFeeToken(false);
         }
       } catch (error) {
         if (!cancel) {
@@ -1130,7 +1131,7 @@ export const SendFund = ({
     return () => {
       cancel = true;
     };
-  }, [chainValue, fromValue, nativeTokenBalance, nativeTokenSlug]);
+  }, [chainValue, fromValue, nativeTokenSlug]);
 
   useEffect(() => {
     if (forceTransferAllRef.current && forceTransferAll) {
@@ -1418,7 +1419,7 @@ export const SendFund = ({
                             {!TON_CHAINS.includes(chainValue) && !!toValue && !!transferAmount && !!nativeTokenSlug && (
                               <FeeEditor
                                 chainValue={chainValue}
-                                currentTokenPayFee={currentNonNativeTokenPayFee}
+                                currentTokenPayFee={currentTokenPayFee}
                                 destChainValue={destChainValue}
                                 estimateFee={estimatedNativeFee}
                                 feeOptionsInfo={transferInfo?.feeOptions}
@@ -1431,10 +1432,8 @@ export const SendFund = ({
                                 onSelect={setSelectedTransactionFee}
                                 onSetTokenPayFee={onSetTokenPayFee}
                                 selectedFeeOption={selectedTransactionFee}
-                                tokenPayFeeSlug={currentNonNativeTokenPayFee || nativeTokenSlug}
+                                tokenPayFeeSlug={currentTokenPayFee || nativeTokenSlug}
                                 tokenSlug={assetValue}
-                                modalVisible={false}
-                                setModalVisible={() => {}}
                               />
                             )}
                           </>

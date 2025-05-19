@@ -108,7 +108,7 @@ export const SwapFromField = ({
           />
         </View>
 
-        <View style={{ flex: 2, alignItems: 'flex-end', paddingRight: theme.paddingSM }}>
+        <View style={{ flex: 2, paddingRight: theme.paddingSM }}>
           <InputAmount
             value={amountValue || ''}
             maxValue={'1'} // TODO

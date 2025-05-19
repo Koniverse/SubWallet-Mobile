@@ -19,7 +19,16 @@ import {
 import { addLazy } from '@subwallet/extension-base/utils/lazy';
 import BigN from 'bignumber.js';
 import { FormItem } from 'components/common/FormItem';
-import { ActivityIndicator, Button, Divider, Icon, Number, PageIcon, Typography } from 'components/design-system-ui';
+import {
+  ActivityIndicator,
+  Button,
+  Divider,
+  Icon,
+  Logo,
+  Number,
+  PageIcon,
+  Typography,
+} from 'components/design-system-ui';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import { getInputValuesFromString, InputAmount } from 'components/Input/InputAmount';
 import EarningProcessItem from 'components/Item/Earning/EarningProcessItem';
@@ -35,16 +44,28 @@ import useGetNativeTokenSlug from 'hooks/useGetNativeTokenSlug';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import {
   fetchPoolTarget,
+  getEarningSlippage,
   getOptimalYieldPath,
   submitJoinYieldPool,
   submitProcess,
   unlockDotCheckCanMint,
   validateYieldProcess,
 } from 'messaging/index';
-import { PlusCircle, Warning } from 'phosphor-react-native';
+import { Info, PencilSimpleLine, PlusCircle, Warning } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
-import { Alert, Keyboard, Linking, ScrollView, View } from 'react-native';
+import {
+  Alert,
+  findNodeHandle,
+  Keyboard,
+  Linking,
+  Platform,
+  ScrollView,
+  StatusBar,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { DEFAULT_YIELD_PROCESS, EarningActionType, earningReducer } from 'reducers/earning';
@@ -54,7 +75,7 @@ import FreeBalanceToYield from 'screens/Transaction/parts/FreeBalanceToEarn';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { RootState, store } from 'stores/index';
-import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ModalRef } from 'types/modalRef';
 import i18n from 'utils/i18n/i18n';
 import { parseNominations } from 'utils/transaction/stake';
@@ -83,6 +104,11 @@ import { reformatAddress } from '@subwallet/extension-base/utils';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import useOneSignProcess from 'hooks/account/useOneSignProcess';
 import useReformatAddress from 'hooks/common/useReformatAddress';
+import { ImageLogosMap } from 'assets/logo';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { SlippageType } from '@subwallet/extension-base/types/swap';
+import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -213,7 +239,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [accountAddressItems, currentFrom]);
 
   const mustChooseTarget = useMemo(
-    () => [YieldPoolType.NATIVE_STAKING, YieldPoolType.NOMINATION_POOL].includes(poolType),
+    () =>
+      [YieldPoolType.NATIVE_STAKING, YieldPoolType.SUBNET_STAKING, YieldPoolType.NOMINATION_POOL].includes(poolType),
     [poolType],
   );
 
@@ -252,6 +279,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [forceFetchValidator, setForceFetchValidator] = useState(false);
   const [targetLoading, setTargetLoading] = useState(true);
   const [stepLoading, setStepLoading] = useState<boolean>(true);
+  const [tooltipVisible, setTooltipVisible] = useState<boolean>(false);
   const [submitString, setSubmitString] = useState<string | undefined>();
   const [connectionError, setConnectionError] = useState<string>();
   const [, setCanMint] = useState(false);
@@ -264,30 +292,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [checkValidAccountLoading, setCheckValidAccountLoading] = useState<boolean>(redirectFromPreviewRef.current);
   const globalAppModalContext = useContext(GlobalModalContext);
   const { confirmModal } = useContext(AppModalContext);
-  const isDisabledButton = useMemo(
-    () =>
-      checkMintLoading ||
-      stepLoading ||
-      !!connectionError ||
-      !currentAmount ||
-      !isBalanceReady ||
-      !!errors.value ||
-      submitLoading ||
-      targetLoading ||
-      (mustChooseTarget && !poolTarget),
-    [
-      checkMintLoading,
-      stepLoading,
-      connectionError,
-      currentAmount,
-      isBalanceReady,
-      errors.value,
-      submitLoading,
-      targetLoading,
-      mustChooseTarget,
-      poolTarget,
-    ],
-  );
 
   const inputAsset = useMemo(
     () => chainAsset[poolInfo?.metadata?.inputAsset],
@@ -333,22 +337,22 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     return `${getInputValuesFromString(maintainBalance, maintainAsset.decimals || 0)} ${maintainAsset.symbol}`;
   }, [chainAsset, poolInfo]);
 
-  const getTargetedPool = useMemo(() => {
+  const poolTargets = useMemo(() => {
     const _poolTargets = poolTargetsMap[slug];
     if (!_poolTargets) {
       return [];
     } else {
       if (YieldPoolType.NOMINATION_POOL === poolType) {
-        const poolTargets = _poolTargets as NominationPoolInfo[];
+        const __poolTargets = _poolTargets as NominationPoolInfo[];
 
-        for (const pool of poolTargets) {
+        for (const pool of __poolTargets) {
           if (String(pool.id) === poolTarget) {
             return [pool];
           }
         }
 
         return [];
-      } else if (YieldPoolType.NATIVE_STAKING === poolType) {
+      } else if (YieldPoolType.NATIVE_STAKING === poolType || YieldPoolType.SUBNET_STAKING === poolType) {
         const validatorList = _poolTargets as ValidatorInfo[];
 
         if (!validatorList) {
@@ -449,6 +453,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const onError = useCallback(
     (error: Error) => {
+      console.log('error', error);
       const { chain: _chain, isXCM, minJoinPool, symbol } = handleDataForInsufficientAlert();
       const balanceDisplayInfo = _handleDisplayInsufficientEarningError(
         error,
@@ -507,6 +512,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         const { errors: _errors, id, processId, warnings } = rs;
         if (_errors.length || warnings.length) {
           const error = _errors[0]; // we only handle the first error for now
+          console.log('error', error);
 
           if (_errors[0]?.message !== 'Rejected by user') {
             const displayInfo = _handleDisplayForEarningError(error);
@@ -557,6 +563,244 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     [setValue],
   );
 
+  const isSubnetStaking = useMemo(() => [YieldPoolType.SUBNET_STAKING].includes(poolType), [poolType]);
+
+  const networkKey = useMemo(() => {
+    const _netuid = poolInfo.metadata.subnetData?.netuid || 0;
+
+    // @ts-ignore
+    return ImageLogosMap[`subnet-${_netuid}`] ? `subnet-${_netuid}` : 'subnet-0';
+  }, [poolInfo.metadata.subnetData?.netuid]);
+
+  // For subnet staking
+  const [earningSlippage, setEarningSlippage] = useState<number>(0);
+  const [maxSlippage, setMaxSlippage] = useState<SlippageType>({ slippage: new BigN(0.005), isCustomType: true });
+  const [earningRate, setEarningRate] = useState<number>(0);
+  const [slippageModalVisible, setSlippageModalVisible] = useState<boolean>(false);
+  const debounce = useRef<NodeJS.Timeout | null>(null);
+
+  const isDisabledSubnetContent = useMemo(
+    () => !isSubnetStaking || !currentAmount,
+
+    [isSubnetStaking, currentAmount],
+  );
+
+  useEffect(() => {
+    if (isDisabledSubnetContent) {
+      return;
+    }
+
+    setSubmitLoading(true);
+
+    if (debounce.current) {
+      clearTimeout(debounce.current);
+    }
+
+    debounce.current = setTimeout(() => {
+      const netuid = poolInfo.metadata.subnetData?.netuid || 0;
+      const data = {
+        slug: poolInfo.slug,
+        value: currentAmount,
+        netuid: netuid,
+        type: ExtrinsicType.STAKING_UNBOND,
+      };
+
+      getEarningSlippage(data)
+        .then(result => {
+          console.log('Actual stake slippage:', result.slippage * 100);
+          setEarningSlippage(result.slippage);
+          setEarningRate(result.rate);
+        })
+        .catch(error => {
+          console.error('Error fetching earning slippage:', error);
+        })
+        .finally(() => {
+          setSubmitLoading(false);
+        });
+    }, 200);
+
+    return () => {
+      if (debounce.current) {
+        clearTimeout(debounce.current);
+      }
+    };
+  }, [
+    currentAmount,
+    isDisabledSubnetContent,
+    isSubnetStaking,
+    mustChooseTarget,
+    poolInfo.metadata.subnetData?.netuid,
+    poolInfo.slug,
+    poolTarget,
+  ]);
+
+  const isSlippageAcceptable = useMemo(() => {
+    if (earningSlippage === null || !currentAmount) {
+      return true;
+    }
+
+    return earningSlippage <= maxSlippage.slippage.toNumber();
+  }, [earningSlippage, maxSlippage, currentAmount]);
+
+  const scrollViewRef = useRef<ScrollView>(null);
+  const alertBoxRef = useRef<View>(null);
+  const [hasScrolled, setHasScrolled] = useState<boolean>(false);
+
+  const scrollToAlertBox = useCallback(() => {
+    if (alertBoxRef.current && scrollViewRef.current) {
+      const handle = findNodeHandle(alertBoxRef.current);
+      if (handle) {
+        UIManager.measureLayout(
+          handle,
+          findNodeHandle(scrollViewRef.current)!,
+          () => console.warn('measureLayout failed'),
+          (x, y) => {
+            scrollViewRef.current?.scrollTo({ y, animated: true });
+          },
+        );
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isSlippageAcceptable && !hasScrolled) {
+      scrollToAlertBox();
+      setHasScrolled(true);
+    }
+  }, [isSlippageAcceptable, hasScrolled, scrollToAlertBox]);
+
+  const onSelectSlippage = useCallback((slippage: SlippageType) => {
+    setMaxSlippage(slippage);
+  }, []);
+
+  const onOpenSlippageModal = useCallback(() => {
+    setSlippageModalVisible(true);
+  }, []);
+
+  const renderSubnetStaking = useCallback(() => {
+    return (
+      <>
+        <MetaInfo.Default
+          label={<Typography.Text style={{ color: theme['gray-5'], ...FontSemiBold }}>{'Subnet'}</Typography.Text>}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
+            <Logo size={24} isShowSubLogo={false} network={networkKey} shape={'circle'} />
+            <Typography.Text style={{ color: theme['gray-5'] }}>{poolInfo.metadata.shortName}</Typography.Text>
+          </View>
+        </MetaInfo.Default>
+
+        {!isDisabledSubnetContent && earningRate > 0 && (
+          <>
+            <MetaInfo.Number
+              intColor={theme['gray-5']}
+              decimalColor={theme['gray-5']}
+              unitColor={theme['gray-5']}
+              decimals={assetDecimals}
+              value={BigN(currentAmount).multipliedBy(1 / earningRate)}
+              suffix={poolInfo.metadata?.subnetData?.subnetSymbol || ''}
+              label={'Expected alpha amount'}
+            />
+
+            <MetaInfo.Default label={'Conversion rate'}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Typography.Text style={{ color: theme['gray-5'] }}>{`1 ${inputAsset.symbol} = `}</Typography.Text>
+                <Number
+                  size={14}
+                  intColor={theme['gray-5']}
+                  decimalColor={theme['gray-5']}
+                  unitColor={theme['gray-5']}
+                  decimal={assetDecimals}
+                  suffix={poolInfo.metadata?.subnetData?.subnetSymbol || ''}
+                  value={BigN(1)
+                    .multipliedBy(10 ** assetDecimals)
+                    .multipliedBy(1 / earningRate)}
+                />
+              </View>
+            </MetaInfo.Default>
+          </>
+        )}
+
+        <MetaInfo.Default
+          label={
+            <Tooltip
+              isVisible={tooltipVisible}
+              disableShadow={true}
+              placement={'top'}
+              showChildInTooltip={false}
+              topAdjustment={Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0}
+              contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
+              closeOnBackgroundInteraction={true}
+              onClose={() => setTooltipVisible(false)}
+              content={
+                <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
+                  {'If slippage exceeds this limit, transaction will not be executed'}
+                </Typography.Text>
+              }>
+              <TouchableOpacity
+                activeOpacity={BUTTON_ACTIVE_OPACITY}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}
+                onPress={() => setTooltipVisible(true)}>
+                <Typography.Text style={{ color: theme['gray-5'] }}>{'Max slippage'}</Typography.Text>
+                <Icon phosphorIcon={Info} size="xs" iconColor={theme['gray-5']} weight={'bold'} />
+              </TouchableOpacity>
+            </Tooltip>
+          }>
+          <TouchableOpacity
+            activeOpacity={BUTTON_ACTIVE_OPACITY}
+            onPress={onOpenSlippageModal}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
+            <Typography.Text style={{ color: isSlippageAcceptable ? theme['gray-5'] : theme.colorError }}>
+              {+(maxSlippage.slippage.toNumber() * 100).toFixed(10)}%
+            </Typography.Text>
+            <Icon phosphorIcon={PencilSimpleLine} iconColor={theme['gray-5']} size={'xs'} />
+          </TouchableOpacity>
+        </MetaInfo.Default>
+      </>
+    );
+  }, [
+    assetDecimals,
+    currentAmount,
+    earningRate,
+    inputAsset.symbol,
+    isDisabledSubnetContent,
+    isSlippageAcceptable,
+    maxSlippage.slippage,
+    networkKey,
+    onOpenSlippageModal,
+    poolInfo.metadata.shortName,
+    poolInfo.metadata?.subnetData?.subnetSymbol,
+    theme,
+    tooltipVisible,
+  ]);
+
+  // For subnet staking
+
+  const isDisabledButton = useMemo(
+    () =>
+      checkMintLoading ||
+      stepLoading ||
+      !!connectionError ||
+      !currentAmount ||
+      !isBalanceReady ||
+      !!errors.value ||
+      submitLoading ||
+      targetLoading ||
+      !isSlippageAcceptable ||
+      (mustChooseTarget && !poolTarget),
+    [
+      checkMintLoading,
+      stepLoading,
+      connectionError,
+      currentAmount,
+      isBalanceReady,
+      errors.value,
+      submitLoading,
+      targetLoading,
+      isSlippageAcceptable,
+      mustChooseTarget,
+      poolTarget,
+    ],
+  );
+
   const renderMetaInfo = useCallback(() => {
     if (!poolInfo && !isShowNoPoolInfoPopupRef.current) {
       isShowNoPoolInfoPopupRef.current = true;
@@ -575,7 +819,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
     if (poolInfo?.statistic) {
       const minPoolJoin = poolInfo?.statistic.earningThreshold.join;
-      const targeted = getTargetedPool?.[0];
+      const targeted = poolTargets[0];
 
       if (targeted) {
         if ('minBond' in targeted) {
@@ -604,6 +848,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             return (
               <MetaInfo.Number
                 decimals={0}
+                intColor={theme['gray-5']}
+                decimalColor={theme['gray-5']}
+                unitColor={theme['gray-5']}
                 key={item.slug}
                 label={"You'll receive"}
                 suffix={_getAssetSymbol(derivativeAssetInfo)}
@@ -614,13 +861,16 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         {minJoinPool && (
           <MetaInfo.Number
             decimals={assetDecimals}
+            intColor={theme['gray-5']}
+            decimalColor={theme['gray-5']}
+            unitColor={theme['gray-5']}
             label={'Minimum active stake'}
             suffix={assetSymbol}
             value={minJoinPool}
           />
         )}
 
-        <MetaInfo.Chain chain={chain ? chainInfoMap[chain].slug : ''} label={i18n.inputLabel.network} />
+        {!isSubnetStaking ? <MetaInfo.Chain chain={chain} label={i18n.inputLabel.network} /> : renderSubnetStaking()}
 
         {showFee && (
           <MetaInfo.Number
@@ -637,11 +887,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     currentAmount,
     assetDecimals,
     inputAsset,
+    theme,
+    isSubnetStaking,
     chain,
-    chainInfoMap,
+    renderSubnetStaking,
     currencyData?.symbol,
     estimatedFee,
-    getTargetedPool,
+    poolTargets,
     chainAsset,
   ]);
 
@@ -672,6 +924,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     [],
   );
 
+  const netuid = useMemo(() => poolInfo.metadata.subnetData?.netuid, [poolInfo.metadata.subnetData]);
+
   const onSubmit = useCallback(() => {
     if (!poolInfo) {
       Alert.alert('Unable to get earning data', 'Please, go back and try again later');
@@ -682,15 +936,23 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     const { from, value: _currentAmount } = values;
     let processId = processState.processId;
     const getData = (submitStep: number): SubmitYieldJoinData => {
-      if ([YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo?.type) && poolTarget) {
-        const targets = getTargetedPool;
-        if (poolInfo?.type === YieldPoolType.NOMINATION_POOL) {
+      if (
+        [YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING, YieldPoolType.SUBNET_STAKING].includes(
+          poolInfo.type,
+        ) &&
+        poolTarget
+      ) {
+        const targets = poolTargets;
+
+        if (poolInfo.type === YieldPoolType.NOMINATION_POOL) {
           const selectedPool = targets[0];
+
           return {
             slug: slug,
             address: from,
             amount: _currentAmount,
             selectedPool,
+            selectedValidators: targets,
           } as SubmitJoinNominationPool;
         } else {
           return {
@@ -698,6 +960,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             address: from,
             amount: _currentAmount,
             selectedValidators: targets,
+            subnetData: {
+              netuid: netuid,
+              slippage: maxSlippage?.slippage.toNumber(),
+            },
           } as SubmitJoinNativeStaking;
         }
       } else {
@@ -791,10 +1057,12 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     const maxCount = poolInfo?.statistic?.maxCandidatePerFarmer ?? 1;
     const userSelectedPoolCount = poolTarget.split(',').length ?? 1;
     const label = getValidatorLabel(chain);
+
     if (
       userSelectedPoolCount < maxCount &&
       label === 'Validator' &&
-      !DO_NOT_SHOW_VALIDATOR_ALERT_CASES.includes(slug)
+      !DO_NOT_SHOW_VALIDATOR_ALERT_CASES.includes(slug) &&
+      !slug.startsWith('TAO___subnet_staking___bittensor')
     ) {
       showValidatorMaxCountWarning(maxCount, userSelectedPoolCount, () => {
         submitData(currentStep)
@@ -814,13 +1082,15 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   }, [
     chain,
     currentStep,
-    getTargetedPool,
     getValues,
+    maxSlippage?.slippage,
+    netuid,
     onError,
     onSuccess,
     oneSign,
     poolInfo,
     poolTarget,
+    poolTargets,
     processState.feeStructure,
     processState.processId,
     processState.steps,
@@ -986,7 +1256,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         address: currentFrom,
         amount: currentAmount,
         slug: slug,
-        targets: poolTarget ? getTargetedPool : undefined,
+        targets: poolTarget ? poolTargets : undefined,
+        netuid: netuid,
       };
 
       const newData = JSON.stringify(submitData);
@@ -1040,7 +1311,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     hideAll,
     show,
     poolTarget,
-    getTargetedPool,
+    poolTargets,
+    netuid,
   ]);
 
   useEffect(() => {
@@ -1276,6 +1548,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             {!isLoading && !checkValidAccountLoading && (
               <>
                 <ScrollView
+                  ref={scrollViewRef}
                   showsVerticalScrollIndicator={false}
                   style={{ flex: 1, paddingHorizontal: 16, marginTop: 16 }}
                   keyboardShouldPersistTaps={'handled'}>
@@ -1379,7 +1652,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       />
                     )}
 
-                    {poolType === YieldPoolType.NATIVE_STAKING && (
+                    {(poolType === YieldPoolType.NATIVE_STAKING || poolType === YieldPoolType.SUBNET_STAKING) && (
                       <EarningValidatorSelector
                         from={currentFrom}
                         chain={chain}
@@ -1402,6 +1675,18 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       title={STAKE_ALERT_DATA.title}
                       description={STAKE_ALERT_DATA.description.replace('{tokenAmount}', maintainString)}
                     />
+
+                    {!isSlippageAcceptable && (
+                      <View ref={alertBoxRef}>
+                        <AlertBox
+                          title={'Slippage too high!'}
+                          description={`Unable to stake due to a slippage of ${(earningSlippage * 100).toFixed(
+                            2,
+                          )}%, which exceeds the maximum allowed. Lower your stake amount and try again`}
+                          type={'error'}
+                        />
+                      </View>
+                    )}
                   </View>
                 </ScrollView>
                 <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
@@ -1420,6 +1705,13 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                     {i18n.buttonTitles.stake}
                   </Button>
                 </View>
+
+                <SlippageModal
+                  onApplySlippage={onSelectSlippage}
+                  slippageValue={maxSlippage}
+                  modalVisible={slippageModalVisible}
+                  setModalVisible={setSlippageModalVisible}
+                />
 
                 <EarningPoolDetailModal
                   modalVisible={detailModalVisible}

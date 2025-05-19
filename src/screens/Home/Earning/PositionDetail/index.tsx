@@ -9,13 +9,13 @@ import {
 } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { Button, Icon, Number, PageIcon, Typography } from 'components/design-system-ui';
-import { EarningBaseInfo, EarningPoolInfo, EarningRewardInfo, EarningWithdrawMeta } from 'components/Earning';
+import { Button, Icon, Number, Typography } from 'components/design-system-ui';
+import { EarningInfoPart, RewardInfoPart, WithdrawInfoPart, AccountAndNominationInfoPart } from 'components/Earning';
 import { useYieldPositionDetail } from 'hooks/earning';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Info, MinusCircle, Plus, PlusCircle } from 'phosphor-react-native';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Linking, ScrollView, View } from 'react-native';
+import { MinusCircle, Plus, PlusCircle } from 'phosphor-react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { EarningPositionDetailProps } from 'routes/earning';
 import { RootNavigationProps } from 'routes/index';
@@ -34,7 +34,6 @@ import { GettingDataModal } from 'components/Modal/GettingDataModal';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
-import { AppModalContext } from 'providers/AppModalContext';
 
 interface Props {
   compound: YieldPositionInfo;
@@ -46,7 +45,6 @@ interface Props {
 const Component: React.FC<Props> = (props: Props) => {
   const { list, poolInfo, compound, rewardHistories } = props;
   const navigation = useNavigation<RootNavigationProps>();
-  const { confirmModal } = useContext(AppModalContext);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
@@ -198,10 +196,6 @@ const Component: React.FC<Props> = (props: Props) => {
     return BN_ZERO.eq(activeStake);
   }, [activeStake]);
 
-  const isBittensorStake = useMemo(() => {
-    return poolInfo.chain === 'bittensor';
-  }, [poolInfo.chain]);
-
   const onLeavePool = useCallback(() => {
     if (isActiveStakeZero) {
       // todo: i18n this
@@ -218,32 +212,12 @@ const Component: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    if (isBittensorStake) {
-      confirmModal.setConfirmModal({
-        visible: true,
-        title: 'Open dApp to unstake',
-        message:
-          'Open Taostats Dashboard and connect your SubWallet account to unstake your funds. This feature will come back to SubWallet soon!',
-        completeBtnTitle: 'Open dApp',
-        onCompleteModal: () => {
-          Linking.openURL('subwallet://browser?url=https://dash.taostats.io/stake').then(() =>
-            confirmModal.hideConfirmModal(),
-          );
-        },
-        cancelBtnTitle: 'Cancel',
-        onCancelModal: confirmModal.hideConfirmModal,
-        customIcon: <PageIcon icon={Info} color={theme.colorInfo} />,
-      });
-
-      return;
-    }
-
     navigation.navigate('Drawer', {
       screen: 'TransactionAction',
       params: { screen: 'Unbond', params: { slug: poolInfo?.slug } },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActiveStakeZero, isBittensorStake, navigation, poolInfo?.slug, theme.colorInfo]);
+  }, [isActiveStakeZero, navigation, poolInfo?.slug, theme.colorInfo]);
 
   const onEarnMore = useCallback(() => {
     const altChain = getAltChain();
@@ -254,6 +228,14 @@ const Component: React.FC<Props> = (props: Props) => {
       navigateToEarnScreen();
     }
   }, [checkChainConnected, getAltChain, navigateToEarnScreen, turnOnChain]);
+
+  const transactionFromValue = useMemo(() => {
+    return targetAddress ? (isAccountAll(targetAddress) ? '' : targetAddress) : '';
+  }, [targetAddress]);
+
+  const transactionChainValue = useMemo(() => {
+    return compound.chain || poolInfo.chain || '';
+  }, [compound.chain, poolInfo.chain]);
 
   return (
     <ContainerWithSubHeader
@@ -291,12 +273,13 @@ const Component: React.FC<Props> = (props: Props) => {
           )}
         </View>
         <View style={styles.infoContainer}>
-          <EarningRewardInfo
+          <RewardInfoPart
             inputAsset={inputAsset}
             compound={compound}
-            poolInfo={poolInfo}
             isShowBalance={isShowBalance}
             rewardHistories={filteredRewardHistories}
+            transactionChainValue={transactionChainValue}
+            transactionFromValue={transactionFromValue}
           />
           <View style={styles.buttonContainer}>
             <Button
@@ -322,9 +305,15 @@ const Component: React.FC<Props> = (props: Props) => {
               {poolInfo?.type === YieldPoolType.LENDING ? 'Supply more' : i18n.buttonTitles.stakeMore}
             </Button>
           </View>
-          <EarningWithdrawMeta inputAsset={inputAsset} unstakings={compound.unstakings} poolInfo={poolInfo} />
-          <EarningBaseInfo inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} list={list} />
-          <EarningPoolInfo inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} />
+          <WithdrawInfoPart
+            inputAsset={inputAsset}
+            unstakings={compound.unstakings}
+            poolInfo={poolInfo}
+            transactionChainValue={transactionChainValue}
+            transactionFromValue={transactionFromValue}
+          />
+          <AccountAndNominationInfoPart inputAsset={inputAsset} compound={compound} poolInfo={poolInfo} list={list} />
+          <EarningInfoPart inputAsset={inputAsset} poolInfo={poolInfo} />
         </View>
       </ScrollView>
 

@@ -24,6 +24,8 @@ export interface NumberInfoItem extends Omit<InfoItemBase, 'valueColorSchema'> {
   customFormatter?: SwNumberProps['customFormatter'];
   formatType?: SwNumberProps['formatType'];
   unitColor?: SwNumberProps['unitColor'];
+  intColor?: SwNumberProps['intColor'];
+  decimalColor?: SwNumberProps['decimalColor'];
 }
 
 const NumberItem: React.FC<NumberInfoItem> = ({

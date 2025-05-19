@@ -70,6 +70,10 @@ const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
         //   if (item.type === YieldPoolType.SINGLE_FARMING) {
         //     return true;
         //   }
+      } else if (filter === YieldPoolType.SUBNET_STAKING) {
+        if (item.type === YieldPoolType.SUBNET_STAKING) {
+          return true;
+        }
       }
     }
 
@@ -84,6 +88,7 @@ const FILTER_OPTIONS = [
   { label: i18n.filterOptions.lending, value: YieldPoolType.LENDING },
   { label: i18n.filterOptions.parachainStaking, value: YieldPoolType.PARACHAIN_STAKING },
   { label: i18n.filterOptions.singleFarming, value: YieldPoolType.SINGLE_FARMING },
+  { label: i18n.filterOptions.subnetStaking, value: YieldPoolType.SUBNET_STAKING },
 ];
 
 export const PoolList: React.FC<EarningPoolListProps> = ({

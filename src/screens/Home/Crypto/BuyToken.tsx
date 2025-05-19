@@ -58,6 +58,7 @@ export const BuyToken = ({
     onramper: false,
     moonpay: false,
     coinbase: false,
+    meld: false,
   });
   const [isVisible, setVisible] = useState(false);
   const { isAllAccount } = useSelector((state: RootState) => state.accountState);
