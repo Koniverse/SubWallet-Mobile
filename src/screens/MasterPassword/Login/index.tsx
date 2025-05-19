@@ -184,7 +184,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
       if (!password) {
         throw 'Biometry is not available';
       }
-      onUnlock(password);
+      setTimeout(() => onUnlock(password), 100);
     } catch (e) {
       console.warn(e);
       if (JSON.stringify(e).indexOf('Biometry is not available') !== -1) {
