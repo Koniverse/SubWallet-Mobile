@@ -1,3 +1,6 @@
+## 1.2.17 (481)
+
+
 ## 1.2.17 (480)
 - Update WR 1.3.26 (#1961)
 - Fix bug cannot open the app when accessing from the link support konistudio (#1947)
