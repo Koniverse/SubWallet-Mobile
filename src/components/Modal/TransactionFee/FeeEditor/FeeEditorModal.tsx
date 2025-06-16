@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Button, Icon, Logo, SwModal, Typography, Number } from 'components/design-system-ui';
 import { SwTab, TabItem } from 'components/design-system-ui/tab';
-import { ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { PencilSimpleLine } from 'phosphor-react-native';
 import { FeeOptionItem } from 'components/Modal/TransactionFee/FeeEditor/FeeOptionItem';
 import BigN from 'bignumber.js';
@@ -443,6 +443,7 @@ export const FeeEditorModal = ({
       onChangeModalVisible={() => {
         setModalVisible(false);
       }}
+      isAllowSwipeDown={Platform.OS === 'ios'}
       modalTitle={'Edit fee'}
       titleTextAlign={'center'}
       isUseModalV2
