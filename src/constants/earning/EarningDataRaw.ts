@@ -315,11 +315,14 @@ export const UNSTAKE_BITTENSOR_ALERT_DATA: StaticDataProps[] = [
     slug: 'UNSTAKE_INFO',
     title: '',
     media: '',
-    instructions: UNSTAKE_ALERT_DATA[0].instructions.map((item, index) => ({
-      ...item,
-      title: index === 2 ? 'Instant withdrawal' : item.title,
-      description:
-        index === 2 ? 'Once unstaked, the funds will be instantly withdrawn to your account' : item.description,
-    })),
+    instructions: UNSTAKE_ALERT_DATA[0].instructions
+      .filter((_, index) => index === 2)
+      .map(item => ({
+        ...item,
+        title: 'Automatic withdrawal',
+        icon: 'Coins',
+        description: 'Once unstaked, the funds will be automatically withdrawn to your account',
+        icon_color: '#e6dc25',
+      })),
   },
 ];

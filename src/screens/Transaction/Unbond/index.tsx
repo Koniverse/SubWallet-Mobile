@@ -530,6 +530,15 @@ export const Unbond = ({
   );
 
   useEffect(() => {
+    if (!currentValidator) {
+      if (nominators[0]?.validatorAddress) {
+        console.log('nominators[0]', nominators[0]);
+        setValue('nomination', nominators[0].validatorAddress);
+      }
+    }
+  }, [currentValidator, nominators, setValue]);
+
+  useEffect(() => {
     if (isMythosStaking) {
       setValue('value', bondedValue);
     }

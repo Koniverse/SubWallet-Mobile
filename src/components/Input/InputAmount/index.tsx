@@ -99,7 +99,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<TextInput>) => {
       <Button
         disabled={disable}
         type={'ghost'}
-        externalTextStyle={{ color: theme.colorSuccess }}
+        externalTextStyle={{ color: theme.colorSuccess, paddingHorizontal: 0, marginHorizontal: 0 }}
         size={'xs'}
         onPress={_onPressMaxBtn}>
         {i18n.common.max}
