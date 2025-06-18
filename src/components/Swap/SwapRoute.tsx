@@ -2,7 +2,6 @@ import { SwapRoute as SwapRouteType } from '@subwallet/extension-base/types/swap
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import React, { useMemo } from 'react';
-import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { View } from 'react-native';
 import { Logo, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -11,12 +10,18 @@ interface Props {
   swapRoute: SwapRouteType;
 }
 
+type SwapRouteItem = {
+  originChain: string;
+  slug: string;
+  symbol: string;
+};
+
 export const SwapRoute = ({ swapRoute }: Props) => {
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const theme = useSubWalletTheme().swThemes;
 
   const getSwapRoute = useMemo(() => {
-    const results: TokenItemType[] = [];
+    const results: SwapRouteItem[] = [];
 
     swapRoute.path.forEach(slug => {
       const asset = assetRegistryMap[slug];
@@ -26,7 +31,6 @@ export const SwapRoute = ({ swapRoute }: Props) => {
           originChain: asset.originChain,
           slug,
           symbol: asset.symbol,
-          name: asset.name,
         });
       }
     });

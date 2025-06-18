@@ -18,6 +18,7 @@ interface Props {
   isSubscribe?: boolean;
   showNetwork?: boolean;
   extrinsicType?: ExtrinsicType;
+  labelTooltip?: string;
 }
 
 export const FreeBalance = ({
@@ -31,6 +32,7 @@ export const FreeBalance = ({
   isSubscribe,
   showNetwork,
   extrinsicType,
+  labelTooltip,
 }: Props) => {
   const { error, isLoading, nativeTokenBalance, nativeTokenSlug, tokenBalance, chainInfo } = useGetBalance(
     chain,
@@ -71,6 +73,7 @@ export const FreeBalance = ({
       hidden={hidden}
       chainName={chainInfo?.name}
       showNetwork={showNetwork}
+      labelTooltip={labelTooltip}
     />
   );
 };

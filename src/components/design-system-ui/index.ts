@@ -20,4 +20,5 @@ export { default as QRCode } from './qr-code';
 export { default as Input } from './input';
 export { default as Badge } from './badge';
 export { default as Field } from './field';
+export { default as NumberDisplay } from './number-display';
 export * from './web3-block';

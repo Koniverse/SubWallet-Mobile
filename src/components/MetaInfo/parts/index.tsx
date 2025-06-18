@@ -1,6 +1,7 @@
 export { default as AccountGroupItem } from './AccountGroupItem';
 export { default as AccountItem } from './AccountItem';
 export { default as ChainItem } from './ChainItem';
+export { default as NetworkGroup } from './NetworkGroup';
 export { default as DataItem } from './DataItem';
 export { default as DefaultItem } from './DefaultItem';
 export { default as DisplayTypeItem } from './DisplayTypeItem';

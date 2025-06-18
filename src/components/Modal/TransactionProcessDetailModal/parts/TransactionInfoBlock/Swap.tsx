@@ -13,6 +13,7 @@ import { SwapTransactionBlock } from 'components/Swap/SwapTransactionBlock';
 import MetaInfo from 'components/MetaInfo';
 import i18n from 'utils/i18n/i18n';
 import { getCurrentCurrencyTotalFee } from 'utils/common/balance';
+import { getTokenPairFromStep } from '@subwallet/extension-base/services/swap-service/utils';
 
 type Props = TransactionInfoBlockProps;
 
@@ -48,10 +49,20 @@ const Swap: React.FC<Props> = (props: Props) => {
     );
   }, [data.quote.rate, fromAssetInfo, theme.colorWhite, toAssetInfo]);
 
+  const originSwapPair = useMemo(() => {
+    return getTokenPairFromStep(data.process.steps);
+  }, [data.process.steps]);
+
   return (
     <>
       <MetaInfo hasBackgroundWrapper spaceSize={'xs'} labelColorScheme={'gray'} valueColorScheme={'light'}>
-        <SwapTransactionBlock quote={data.quote} logoSize={36} />
+        <SwapTransactionBlock
+          fromAmount={data.quote.fromAmount}
+          fromAssetSlug={originSwapPair?.from}
+          logoSize={36}
+          toAmount={data.quote.toAmount}
+          toAssetSlug={originSwapPair?.to}
+        />
       </MetaInfo>
       <MetaInfo style={{ paddingHorizontal: 12 }} spaceSize={'xs'} labelColorScheme={'gray'} valueColorScheme={'light'}>
         <MetaInfo.Account

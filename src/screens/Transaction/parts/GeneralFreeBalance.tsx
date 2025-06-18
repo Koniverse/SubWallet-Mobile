@@ -43,7 +43,7 @@ export const GeneralFreeBalance = ({ address, chain, onBalanceReady, tokenSlug, 
 
   return (
     <FreeBalanceDisplay
-      label={`${i18n.inputLabel.availableBalance}:`}
+      label={`${i18n.inputLabel.availableBalance}`}
       error={error}
       isLoading={isLoading}
       nativeTokenSlug={nativeTokenSlug}

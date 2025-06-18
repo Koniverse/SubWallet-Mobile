@@ -36,9 +36,8 @@ import {
   subscribeMaxTransfer,
 } from 'messaging/index';
 import { findAccountByAddress } from 'utils/account';
-import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { balanceFormatter, formatBalance, formatNumber } from 'utils/number';
-import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
+import { TokenItemType, TokenSelector, TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { isAccountAll } from 'utils/accountAll';
 import { ChainInfo, ChainItemType } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -78,7 +77,7 @@ import { getButtonIcon } from 'utils/button';
 import { UseControllerReturn } from 'react-hook-form/dist/types';
 import { AmountValueConverter } from 'screens/Transaction/SendFund/AmountValueConverter';
 import createStylesheet from './styles';
-import { useGetBalance } from 'hooks/balance';
+import { useGetAccountTokenBalance, useGetBalance } from 'hooks/balance';
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
@@ -120,6 +119,8 @@ import { TokenHasBalanceInfo } from '@subwallet/extension-base/services/fee-serv
 import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
 import useReformatAddress from 'hooks/common/useReformatAddress';
 import AlertBoxInstant from 'components/design-system-ui/alert-box/instant';
+import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
+import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -129,13 +130,15 @@ interface TransferFormValues extends TransactionFormValues {
 
 type ViewStep = 1 | 2;
 
+type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
+
 function getTokenItems(
   accountProxy: AccountProxy,
   accountProxies: AccountProxy[],
   chainInfoMap: Record<string, _ChainInfo>,
   assetRegistry: Record<string, _ChainAsset>,
   tokenGroupSlug?: string, // is ether a token slug or a multiChainAsset slug
-): TokenItemType[] {
+): TokenSelectorItemType[] {
   let allowedChains: string[];
 
   if (!isAccountAll(accountProxy.id)) {
@@ -144,7 +147,7 @@ function getTokenItems(
     allowedChains = getChainsByAccountAll(accountProxy, accountProxies, chainInfoMap);
   }
 
-  const items: TokenItemType[] = [];
+  const items: TokenSelectorItemType[] = [];
 
   Object.values(assetRegistry).forEach(chainAsset => {
     const originChain = _getAssetOriginChain(chainAsset);
@@ -242,7 +245,9 @@ export const SendFund = ({
     ...getValues(),
   };
   const scrollViewRef = useRef<ScrollView>(null);
-  const { chainInfoMap, ledgerGenericAllowNetworks } = useSelector((root: RootState) => root.chainStore);
+  const { chainInfoMap, ledgerGenericAllowNetworks, priorityTokens, chainStateMap } = useSelector(
+    (root: RootState) => root.chainStore,
+  );
   const { xcmRefMap } = useSelector((root: RootState) => root.assetRegistry);
   const assetRegistry = useChainAssets().chainAssetRegistry;
   const { accountProxies, accounts, isAllAccount, currentAccountProxy } = useSelector(
@@ -276,6 +281,7 @@ export const SendFund = ({
   const [selectedTransactionFee, setSelectedTransactionFee] = useState<TransactionFee | undefined>();
   const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
   const isShowAddressFormatInfoBox = checkIsPolkadotUnifiedChain(chainValue);
+  const getAccountTokenBalance = useGetAccountTokenBalance();
 
   const currentConfirmations = useMemo(() => {
     if (chainValue && destChainValue) {
@@ -334,6 +340,70 @@ export const SendFund = ({
 
     return result;
   }, [accountProxies, chainInfoMap, chainValue, currentAccountProxy, getReformatAddress]);
+
+  const targetAccountProxyIdForGetBalance = useMemo(() => {
+    if (!currentAccountProxy) {
+      return '';
+    }
+
+    if (!isAccountAll(currentAccountProxy.id) || !fromValue) {
+      return currentAccountProxy.id;
+    }
+
+    const accountProxyByFromValue = accountAddressItems.find(a => a.address === fromValue);
+
+    return accountProxyByFromValue?.accountProxyId || currentAccountProxy.id;
+  }, [currentAccountProxy, fromValue, accountAddressItems]);
+
+  const tokenItems = useMemo<SortableTokenSelectorItemType[]>(() => {
+    if (!currentAccountProxy) {
+      return [];
+    }
+
+    const items = getTokenItems(currentAccountProxy, accountProxies, chainInfoMap, assetRegistry, sendFundSlug);
+
+    const tokenBalanceMap = getAccountTokenBalance(
+      items.map(item => item.slug),
+      targetAccountProxyIdForGetBalance,
+    );
+
+    const tokenItemsSorted = items.map<SortableTokenSelectorItemType>(item => {
+      const tokenBalanceInfo = tokenBalanceMap[item.slug];
+      const balanceInfo =
+        tokenBalanceInfo && chainStateMap[item.originChain]?.active
+          ? {
+              isReady: tokenBalanceInfo.isReady,
+              isNotSupport: tokenBalanceInfo.isNotSupport,
+              free: tokenBalanceInfo.free,
+              locked: tokenBalanceInfo.locked,
+              total: tokenBalanceInfo.total,
+              currency: tokenBalanceInfo.currency,
+              isTestnet: tokenBalanceInfo.isTestnet,
+            }
+          : undefined;
+
+      return {
+        ...item,
+        balanceInfo,
+        isTestnet: !!balanceInfo?.isTestnet,
+        total: balanceInfo?.isReady && !balanceInfo?.isNotSupport ? balanceInfo?.free : undefined,
+      };
+    });
+
+    sortTokensByBalanceInSelector(tokenItemsSorted, priorityTokens);
+
+    return tokenItemsSorted;
+  }, [
+    accountProxies,
+    assetRegistry,
+    chainInfoMap,
+    chainStateMap,
+    currentAccountProxy,
+    getAccountTokenBalance,
+    priorityTokens,
+    sendFundSlug,
+    targetAccountProxyIdForGetBalance,
+  ]);
 
   const senderAccountName = useMemo(() => {
     if (!fromValue) {
@@ -404,12 +474,6 @@ export const SendFund = ({
 
     return false;
   }, [chainValue, destChainValue]);
-
-  const tokenItems = useMemo<TokenItemType[]>(() => {
-    return currentAccountProxy
-      ? getTokenItems(currentAccountProxy, accountProxies, chainInfoMap, assetRegistry, sendFundSlug)
-      : [];
-  }, [accountProxies, assetRegistry, chainInfoMap, sendFundSlug, currentAccountProxy]);
 
   const recipientAddressRules = useMemo(
     () => ({
@@ -853,6 +917,10 @@ export const SendFund = ({
     [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons],
   );
 
+  const isNextButtonDisable = (() => {
+    return !isBalanceReady || loading || (isTransferAll ? isFetchingInfo : false);
+  })();
+
   const isSubmitButtonDisable = (() => {
     return !isBalanceReady || loading || isFetchingListFeeToken || (isTransferAll ? isFetchingInfo : false);
   })();
@@ -902,6 +970,7 @@ export const SendFund = ({
     }
   }, [scanRecipient, setValue]);
 
+  // use to update asset value, chain value, destChainValue
   useEffect(() => {
     const { asset, from } = getValues();
 
@@ -1236,6 +1305,7 @@ export const SendFund = ({
                               showIcon
                             />
                           )}
+                          selectedValue={currentChainAsset?.slug || ''}
                           disabled={!tokenItems.length || loading}
                         />
                       </View>
@@ -1366,7 +1436,7 @@ export const SendFund = ({
                         chain={chainValue}
                         tokenSlug={assetValue}
                         extrinsicType={extrinsicType}
-                        label={`${i18n.inputLabel.availableBalance}:`}
+                        label={`${i18n.inputLabel.availableBalance}`}
                         style={stylesheet.balance}
                       />
 
@@ -1388,7 +1458,7 @@ export const SendFund = ({
                 <View style={stylesheet.footer}>
                   {viewStep === 1 && (
                     <Button
-                      disabled={isSubmitButtonDisable}
+                      disabled={isNextButtonDisable}
                       icon={getButtonIcon(ArrowCircleRight)}
                       onPress={onPressNextStep}>
                       {i18n.buttonTitles.next}
@@ -1404,7 +1474,7 @@ export const SendFund = ({
                             chain={chainValue}
                             tokenSlug={assetValue}
                             extrinsicType={extrinsicType}
-                            label={`${i18n.inputLabel.availableBalance}:`}
+                            label={`${i18n.inputLabel.availableBalance}`}
                             style={stylesheet.balanceStep2}
                           />
 

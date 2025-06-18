@@ -3,7 +3,7 @@ import { FeeChainType, FeeDetail, TransactionFee } from '@subwallet/extension-ba
 import { TokenHasBalanceInfo } from '@subwallet/extension-base/services/fee-service/interfaces';
 import { VoidFunction } from 'types/index';
 import BigN from 'bignumber.js';
-import { Keyboard, Platform, StatusBar, View } from 'react-native';
+import { Keyboard, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Typography, Number, Button, Icon } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { PencilSimpleLine } from 'phosphor-react-native';
@@ -22,6 +22,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { FeeEditorModal } from 'components/Modal/TransactionFee/FeeEditor/FeeEditorModal';
+import { ThemeTypes } from 'styles/themes';
 
 export type RenderFieldNodeParams = {
   isLoading: boolean;
@@ -77,6 +78,7 @@ const FeeEditor = ({
   onSelect,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const styles = createStyles(theme);
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const { priceMap, currencyData } = useSelector((state: RootState) => state.price);
 
@@ -207,11 +209,9 @@ const FeeEditor = ({
   return (
     <>
       {customFieldNode || (
-        <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center', paddingBottom: 6 }}>
-          <View style={{ flexDirection: 'row', flex: 1, gap: theme.sizeXXS, alignItems: 'center', flexWrap: 'wrap' }}>
-            <Typography.Text style={{ color: theme.colorTextLight4, ...FontMedium }}>
-              {`${i18n.inputLabel.estimatedFee}:`}
-            </Typography.Text>
+        <View style={styles.container}>
+          <View style={styles.leftArea}>
+            <Typography.Text style={styles.label}>{`${i18n.inputLabel.estimatedFee}:`}</Typography.Text>
             <View>
               {!isDataReady ? (
                 <ActivityIndicator size={20} indicatorColor={theme.colorTextLight4} />
@@ -221,15 +221,15 @@ const FeeEditor = ({
                   value={isNativeTokenValue ? estimateFee : convertedEstimatedFee}
                   suffix={isNativeTokenValue ? nativeTokenSymbol : symbol}
                   decimal={isNativeTokenValue ? nativeTokenDecimals : decimals}
-                  unitColor={theme.colorTextLight4}
-                  decimalColor={theme.colorTextLight4}
-                  intColor={theme.colorTextLight4}
+                  unitColor={theme['gray-5']}
+                  decimalColor={theme['gray-5']}
+                  intColor={theme['gray-5']}
                 />
               )}
             </View>
           </View>
           {FEE_TYPES_CAN_SHOW.includes(feeType) && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <View style={styles.rightArea}>
               <Number
                 size={14}
                 value={convertedFeeValueToUSD}
@@ -301,5 +301,14 @@ const FeeEditor = ({
     </>
   );
 };
+
+function createStyles(theme: ThemeTypes) {
+  return StyleSheet.create({
+    container: { flexDirection: 'row', width: '100%', alignItems: 'center', paddingBottom: 6 },
+    leftArea: { flexDirection: 'row', flex: 1, gap: theme.sizeXXS, alignItems: 'center', flexWrap: 'wrap' },
+    label: { color: theme['gray-5'], ...FontMedium },
+    rightArea: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' },
+  });
+}
 
 export default FeeEditor;

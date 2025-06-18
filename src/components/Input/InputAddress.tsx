@@ -1,5 +1,14 @@
 import { InputProps } from 'components/design-system-ui/input';
-import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Button, Icon, Input, Typography } from 'components/design-system-ui';
@@ -10,7 +19,13 @@ import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventType
 import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressScanner';
 import { CHAINS_SUPPORTED_DOMAIN, isAzeroDomain } from '@subwallet/extension-base/koni/api/dotsama/domain';
-import { saveRecentAccount, resolveAddressToDomain, resolveDomainToAddress } from 'messaging/index';
+import {
+  saveRecentAccount,
+  resolveAddressToDomain,
+  resolveDomainToAddress,
+  subscribeAccountsInputAddress,
+  cancelSubscription,
+} from 'messaging/index';
 import createStylesheet from './style/InputAddress';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -25,6 +40,8 @@ import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-p
 import { deviceWidth } from 'constants/index';
 import useFetchChainInfo from 'hooks/common/useFetchChainInfo';
 import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
+import { AnalyzeAddress, ResponseInputAccountSubscribe } from '@subwallet/extension-base/types';
+import { useForwardFieldRef } from 'hooks/useForwardFieldRef';
 
 interface Props extends InputProps {
   chain?: string;
@@ -44,6 +61,12 @@ interface Props extends InputProps {
 
 const addressLength = 9;
 
+export interface AddressInputRef {
+  setInputValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setSelectedOption: React.Dispatch<React.SetStateAction<string | undefined>>;
+  ready: boolean;
+}
+
 const Component = (
   {
     chain,
@@ -59,14 +82,16 @@ const Component = (
     horizontal,
     ...inputProps
   }: Props,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ref: ForwardedRef<TextInput>,
+
+  ref: ForwardedRef<AddressInputRef>,
 ) => {
   const theme = useSubWalletTheme().swThemes;
   const [domainName, setDomainName] = useState<string | undefined>(undefined);
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
+  const [responseOptions, setResponseOptions] = useState<AnalyzeAddress[]>([]);
+  console.log('responseOptions', responseOptions);
   const [selectedOption, setSelectedOption] = useState<string | undefined>(value);
   const isAddressValid = isValidValue !== undefined ? isValidValue : true;
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
@@ -78,6 +103,9 @@ const Component = (
   const isInputVisible = !isAddressValid || !value || !isInputBlur;
   const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
   const chainOldPrefixMap = useSelector((state: RootState) => state.chainStore.chainOldPrefixMap);
+  const fieldRef = useForwardFieldRef<AddressInputRef>(ref);
+  const fieldRefCurrent = fieldRef.current;
+  const [inputValue, setInputValue] = useState<string | undefined>(value);
   const stylesheet = createStylesheet(
     theme,
     isInputVisible,
@@ -90,6 +118,23 @@ const Component = (
   );
 
   useEffect(() => setAdjustResize(), []);
+
+  useImperativeHandle(ref, () => {
+    if (fieldRefCurrent) {
+      return {
+        ...fieldRefCurrent,
+        setSelectedOption,
+        setInputValue,
+        ready: true,
+      };
+    }
+
+    return {
+      setInputValue,
+      setSelectedOption,
+      ready: false,
+    };
+  });
 
   const isOldSubstrateAddress = useCallback(
     (address: string) => {
@@ -333,6 +378,41 @@ const Component = (
     setError(undefined);
     setIsShowQrModalVisible(false);
   }, []);
+
+  useEffect(() => {
+    let sync = true;
+    let id: string | undefined;
+
+    if (!inputValue || inputValue.length < 2 || !chain) {
+      setResponseOptions([]);
+    } else {
+      const handler = (data: ResponseInputAccountSubscribe) => {
+        id = data.id;
+
+        if (sync) {
+          setResponseOptions(data.options);
+        }
+      };
+
+      subscribeAccountsInputAddress(
+        {
+          data: inputValue,
+          chain: chain,
+        },
+        handler,
+      )
+        .then(handler)
+        .catch(console.error);
+    }
+
+    return () => {
+      sync = false;
+
+      if (id) {
+        cancelSubscription(id).catch(console.log);
+      }
+    };
+  }, [chain, inputValue]);
 
   return (
     <>

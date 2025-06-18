@@ -8,17 +8,19 @@ import { renderColContent } from 'components/MetaInfo/shared';
 import useGeneralStyles from 'components/MetaInfo/hooks/useGeneralStyles';
 import { Icon, Typography } from 'components/design-system-ui';
 import { CaretRight } from 'phosphor-react-native';
-import { ProcessStepItemType } from 'components/ProcessStepItem';
 import { ThemeTypes } from 'styles/themes';
 import TransactionStepsModal from 'components/Modal/TransactionStepsModal';
+import { TransactionProcessPreview } from 'components/TransactionProcess';
+import { TransactionProcessStepItemType } from 'types/component';
 
 export interface TransactionProcessItemType extends Omit<InfoItemBase, 'value'> {
-  items: ProcessStepItemType[];
+  items: TransactionProcessStepItemType[];
+  processChains?: string[];
   type: ProcessType;
 }
 
 const TransactionProcessItem = (props: TransactionProcessItemType) => {
-  const { items, label, type } = props;
+  const { items, label, type, processChains } = props;
   const theme = useSubWalletTheme().swThemes;
   const _style = MetaInfoStyles(theme);
   const { labelGeneralStyle } = useGeneralStyles(theme);
@@ -46,7 +48,11 @@ const TransactionProcessItem = (props: TransactionProcessItemType) => {
       </View>
       <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
         <TouchableOpacity onPress={onOpenModal} style={styles.stepModalTrigger}>
-          <Typography.Text style={{ color: theme.colorWhite }}>{stepText}</Typography.Text>
+          {processChains ? (
+            <TransactionProcessPreview chains={processChains} />
+          ) : (
+            <Typography.Text style={{ color: theme.colorWhite }}>{stepText}</Typography.Text>
+          )}
 
           <Icon phosphorIcon={CaretRight} customSize={20} />
         </TouchableOpacity>

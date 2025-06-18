@@ -28,9 +28,10 @@ import createStyle from './styles';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 import { AccountChainType } from '@subwallet/extension-base/types';
-import { filterAuthorizeAccountProxies } from 'utils/accountProxy';
+import { convertAuthorizeTypeToChainTypes, filterAuthorizeAccountProxies } from 'utils/accountProxy';
 import { KeypairType } from '@subwallet/keyring/types';
 import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
+import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
 
 interface Props {
   request: AuthorizeRequest;
@@ -234,15 +235,13 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
               />
             )}
             {visibleAccountProxies.map(item => (
-              <AccountItemWithName
-                key={item.id}
+              <AccountProxyItem
+                accountProxy={item}
+                chainTypes={convertAuthorizeTypeToChainTypes(accountAuthTypes, item.chainTypes)}
                 isSelected={selectedMap[item.id]}
-                address={item.id}
-                accountName={item.name || ''}
+                key={item.id}
                 onPress={onAccountSelect(item.id)}
-                avatarSize={24}
-                showUnselectIcon={true}
-                showAddress={false}
+                showUnselectIcon
               />
             ))}
           </>

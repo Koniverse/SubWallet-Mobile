@@ -1,5 +1,5 @@
 import React from 'react';
-import { TokenItemType } from 'components/Modal/common/TokenSelector';
+import { TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { TokenSelectItem } from 'components/TokenSelectItem';
@@ -9,11 +9,18 @@ interface Props<T> {
   selectedValueMap: Record<string, boolean>;
   onSelectItem?: (item: T) => void;
   onCloseModal?: () => void;
+  showBalance?: boolean;
 }
 
-export function _TokenSelectItem<T>({ item, selectedValueMap, onSelectItem, onCloseModal }: Props<T>) {
+export function _TokenSelectItem<T>({
+  item,
+  selectedValueMap,
+  onSelectItem,
+  onCloseModal,
+  showBalance = true,
+}: Props<T>) {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const { symbol, originChain, slug, name } = item as TokenItemType;
+  const { symbol, originChain, slug, name, balanceInfo } = item as TokenSelectorItemType;
   return (
     <TokenSelectItem
       key={`${symbol}-${originChain}`}
@@ -23,6 +30,8 @@ export function _TokenSelectItem<T>({ item, selectedValueMap, onSelectItem, onCl
       logoKey={slug.toLowerCase()}
       subLogoKey={originChain}
       isSelected={!!selectedValueMap[slug]}
+      balanceInfo={balanceInfo}
+      showBalance={showBalance}
       onSelectNetwork={() => {
         onSelectItem && onSelectItem(item);
         onCloseModal && onCloseModal();

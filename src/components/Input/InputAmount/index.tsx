@@ -134,6 +134,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<TextInput>) => {
       setTimeout(() => {
         if (amount) {
           onChangeValue(transformVal);
+          // inputRef.current?.blur();
         }
       }, 300);
     }

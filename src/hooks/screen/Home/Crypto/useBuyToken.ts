@@ -1,11 +1,11 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { TokenItemType } from 'components/Modal/common/TokenSelector';
+import { TokenItemType, TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { ModalRef } from 'types/modalRef';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
-import { ServiceItem, baseServiceItems } from 'screens/Home/Crypto/ServiceModal';
+import { baseServiceItems, ServiceItem } from 'screens/Home/Crypto/ServiceModal';
 import { BuyServiceInfo, CreateBuyOrderFunction, SupportService } from 'types/buy';
 import { BrowserOptions, createBanxaOrder, createCoinbaseOrder, createMeldOrder, createTransakOrder } from 'utils/buy';
 import { isAccountAll } from 'utils/accountAll';
@@ -18,16 +18,19 @@ import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import useAssetChecker from 'hooks/chain/useAssetChecker';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import useReformatAddress from 'hooks/common/useReformatAddress';
+import { useGetAccountTokenBalance } from 'hooks/balance';
+import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
 
-const convertChainActivePriority = (active?: boolean) => (active ? 1 : 0);
+type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
 
 export default function useBuyToken(currentAccountProxy: AccountProxy | null, currentSymbol?: string) {
   const { accountProxies } = useSelector((state: RootState) => state.accountState);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { isLocked } = useAppLock();
   const { walletReference } = useSelector((state: RootState) => state.settings);
-  const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
+  const { chainInfoMap, chainStateMap, priorityTokens } = useSelector((state: RootState) => state.chainStore);
   const { services, tokens } = useSelector((state: RootState) => state.buyService);
+  const getAccountTokenBalance = useGetAccountTokenBalance();
   const checkAsset = useAssetChecker();
   const allowedChains = useGetChainSlugsByAccount();
   const getReformatAddress = useReformatAddress();
@@ -138,15 +141,38 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
     return result;
   }, [accountProxies, chainInfoMap, currentAccountProxy, formState.data.tokenSlug, getReformatAddress]);
 
-  const tokenItems = useMemo<TokenItemType[]>(() => {
-    const result: TokenItemType[] = [];
+  const tokenItems = useMemo<SortableTokenSelectorItemType[]>(() => {
+    const result: SortableTokenSelectorItemType[] = [];
 
-    const convertToItem = (info: BuyTokenInfo): TokenItemType => {
+    if (!currentAccountProxy) {
+      return [];
+    }
+
+    const tokenBalanceMap = getAccountTokenBalance(Object.keys(tokens), currentAccountProxy.id);
+
+    const convertToItem = (info: BuyTokenInfo): SortableTokenSelectorItemType => {
+      const tokenBalanceInfo = tokenBalanceMap[info.slug];
+      const balanceInfo =
+        tokenBalanceInfo && chainStateMap[info.network]?.active
+          ? {
+              isReady: tokenBalanceInfo.isReady,
+              isNotSupport: tokenBalanceInfo.isNotSupport,
+              free: tokenBalanceInfo.free,
+              locked: tokenBalanceInfo.locked,
+              total: tokenBalanceInfo.total,
+              currency: tokenBalanceInfo.currency,
+              isTestnet: tokenBalanceInfo.isTestnet,
+            }
+          : undefined;
+
       return {
         name: assetRegistry[info.slug]?.name || info.symbol,
         slug: info.slug,
         symbol: info.symbol,
         originChain: info.network,
+        balanceInfo,
+        isTestnet: !!balanceInfo?.isTestnet,
+        total: balanceInfo?.isReady && !balanceInfo?.isNotSupport ? balanceInfo?.free : undefined,
       };
     };
 
@@ -160,8 +186,19 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
       }
     });
 
+    sortTokensByBalanceInSelector(result, priorityTokens);
+
     return result;
-  }, [allowedChains, assetRegistry, currentSymbol, tokens]);
+  }, [
+    allowedChains,
+    assetRegistry,
+    chainStateMap,
+    currentAccountProxy,
+    currentSymbol,
+    getAccountTokenBalance,
+    priorityTokens,
+    tokens,
+  ]);
 
   const isSupportBuyTokens = useMemo(() => {
     const selectedTokenSlug = formState.data.tokenSlug;
@@ -181,21 +218,12 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
   }, [formState.data.tokenSlug, formState.data.address, formState.data.service, tokens, tokenItems]);
 
   const buyTokenSelectorItems = useMemo<TokenItemType[]>(() => {
-    const raw = tokenItems.filter(item => {
+    return tokenItems.filter(item => {
       const chainAsset = assetRegistry[item.slug];
 
       return chainAsset ? _isAssetFungibleToken(chainAsset) : false;
     });
-
-    raw.sort((a, b) => {
-      return (
-        convertChainActivePriority(chainStateMap[b.originChain]?.active) -
-        convertChainActivePriority(chainStateMap[a.originChain]?.active)
-      );
-    });
-
-    return raw;
-  }, [assetRegistry, chainStateMap, tokenItems]);
+  }, [assetRegistry, tokenItems]);
 
   const openSelectBuyAccount = useCallback(
     (account: AccountAddressItemType) => {

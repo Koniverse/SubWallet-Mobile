@@ -15,7 +15,6 @@ import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
-import { _getAssetOriginChain } from '@subwallet/extension-base/services/chain-service/utils';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { BuyTokenInfo } from '@subwallet/extension-base/types';
 
@@ -43,37 +42,10 @@ export const TokenGroupsDetailUpperBlock = ({
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { currencyData } = useSelector((state: RootState) => state.price);
-  const { assetRegistry: assetRegistryMap } = useSelector((state: RootState) => state.assetRegistry);
-  const swapPairs = useSelector((state: RootState) => state.swap.swapPairs);
   const { isShowBuyToken } = useShowBuyToken();
   const { tokens } = useSelector((state: RootState) => state.buyService);
   const _style = createStyleSheet(theme);
   const allowedChains = useGetChainSlugsByAccount();
-  const fromAndToTokenMap = useMemo<Record<string, string[]>>(() => {
-    const result: Record<string, string[]> = {};
-
-    swapPairs.forEach(pair => {
-      if (!result[pair.from]) {
-        result[pair.from] = [pair.to];
-      } else {
-        result[pair.from].push(pair.to);
-      }
-    });
-
-    return result;
-  }, [swapPairs]);
-
-  const isSupportSwap = useMemo(() => {
-    return Object.keys(fromAndToTokenMap).some(tokenSlug => {
-      const chainAsset = assetRegistryMap[tokenSlug];
-
-      if (chainAsset && !allowedChains.includes(_getAssetOriginChain(chainAsset))) {
-        return false;
-      }
-
-      return chainAsset.slug === tokenGroupSlug || chainAsset.multiChainAsset === tokenGroupSlug;
-    });
-  }, [allowedChains, assetRegistryMap, fromAndToTokenMap, tokenGroupSlug]);
 
   const buyInfos = useMemo(() => {
     const groupSlug = tokenGroupSlug || '';
@@ -142,7 +114,6 @@ export const TokenGroupsDetailUpperBlock = ({
             icon={ButtonIcon.Swap}
             onPress={onOpenSwap}
             buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
-            disabled={!isSupportSwap}
           />
         )}
         {isShowBuyToken && (

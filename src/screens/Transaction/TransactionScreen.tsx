@@ -9,7 +9,7 @@ import { Withdraw } from 'screens/Transaction/Withdraw';
 import { SendFund } from 'screens/Transaction/SendFund';
 import SendNFT from 'screens/Transaction/NFT';
 import withPageWrapper from 'components/pageWrapper';
-import { Swap } from 'screens/Transaction/Swap';
+import Swap from 'screens/Transaction/Swap';
 import { ClaimBridge } from 'screens/Transaction/ClaimBridge';
 
 const TransactionScreen = () => {

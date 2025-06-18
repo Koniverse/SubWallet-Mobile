@@ -14,10 +14,10 @@ import { ButtonPropsType } from 'components/design-system-ui/button/PropsType';
 import createStylesheet from './style/ConnectWebsiteModal';
 import i18n from 'utils/i18n/i18n';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { filterAuthorizeAccountProxies } from 'utils/accountProxy';
-import { SelectAccountItem } from 'components/common/SelectAccountItem';
-import { AccountProxy } from '@subwallet/extension-base/types';
+import { convertAuthorizeTypeToChainTypes, filterAuthorizeAccountProxies } from 'utils/accountProxy';
 import { isAddressAllowedWithAuthType } from 'utils/account/account';
+import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
+import { AccountProxy } from '@subwallet/extension-base/types';
 
 interface Props {
   modalVisible: boolean;
@@ -235,29 +235,23 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
       <>
         <Typography.Text style={stylesheet.connectAccountMessage}>{i18n.confirmation.siteConnected}</Typography.Text>
 
-        <>
+        <View style={{ gap: theme.sizeXS }}>
           {listAccountProxy.map(ap => {
             if (isAccountAll(ap.id)) {
               return null;
             }
 
             return (
-              <SelectAccountItem
-                wrapperStyle={{ marginHorizontal: 0, paddingVertical: theme.paddingSM }}
-                avatarSize={24}
-                accountProxy={ap}
+              <AccountProxyItem
                 key={ap.id}
+                accountProxy={ap}
+                chainTypes={convertAuthorizeTypeToChainTypes(authInfo?.accountAuthTypes, ap.chainTypes)}
                 isSelected={ap.value}
-                isShowMultiCheck={true}
-                isShowCopyBtn={false}
-                isShowEditBtn={false}
-                isShowTypeIcon={false}
-                showBottomPath={false}
-                onSelectAccount={handlerUpdateMap(ap, ap.value)}
+                onPress={handlerUpdateMap(ap, ap.value)}
               />
             );
           })}
-        </>
+        </View>
       </>
     );
   };

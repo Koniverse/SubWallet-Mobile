@@ -19,6 +19,8 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapTransactionBlock } from 'components/Swap/SwapTransactionBlock';
 import { SwapRoute } from 'components/Swap/SwapRoute';
 import { getDevMode } from 'utils/storage';
+import { getTokenPairFromStep } from '@subwallet/extension-base/services/swap-service/utils';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -62,9 +64,21 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const renderRateConfirmInfo = () => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Number decimal={0} suffix={_getAssetSymbol(fromAssetInfo)} value={1} />
-        <Typography.Text style={{ color: theme.colorWhite }}>{' ~ '}</Typography.Text>
-        <Number decimal={0} suffix={_getAssetSymbol(toAssetInfo)} value={data.quote.rate} />
+        <Number
+          textStyle={{ ...FontSemiBold }}
+          size={14}
+          decimal={0}
+          suffix={_getAssetSymbol(fromAssetInfo)}
+          value={1}
+        />
+        <Typography.Text style={{ color: theme.colorWhite, ...FontSemiBold }}>{' ~ '}</Typography.Text>
+        <Number
+          textStyle={{ ...FontSemiBold }}
+          size={14}
+          decimal={0}
+          suffix={_getAssetSymbol(toAssetInfo)}
+          value={data.quote.rate}
+        />
       </View>
     );
   };
@@ -76,6 +90,10 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const getWaitingTime = useMemo(() => {
     return Math.ceil((data.quote.estimatedArrivalTime || 0) / 60);
   }, [data.quote.estimatedArrivalTime]);
+
+  const originSwapPair = useMemo(() => {
+    return getTokenPairFromStep(data.process.steps);
+  }, [data.process.steps]);
 
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
@@ -96,8 +114,13 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
 
   return (
     <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
-      <SwapTransactionBlock quote={data.quote} />
-      <MetaInfo style={{ paddingHorizontal: theme.paddingXS }}>
+      <SwapTransactionBlock
+        fromAmount={data.quote.fromAmount}
+        fromAssetSlug={originSwapPair?.from}
+        toAmount={data.quote.toAmount}
+        toAssetSlug={originSwapPair?.to}
+      />
+      <MetaInfo labelColorScheme={'gray'} style={{ paddingHorizontal: theme.paddingXS }}>
         <MetaInfo.Account
           address={recipientAddress}
           label={'Recipient'}
@@ -144,6 +167,7 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
         <>
           <Typography.Text style={{ color: theme.colorTextTertiary }}>{`address: ${data.address}`}</Typography.Text>
           <Typography.Text style={{ color: theme.colorTextTertiary }}>{`id: ${data.id}`}</Typography.Text>
+          <Typography.Text style={{ color: theme.colorTextTertiary }}>{`id: ${data.depositChannelId}`}</Typography.Text>
         </>
       )}
     </ConfirmationContent>

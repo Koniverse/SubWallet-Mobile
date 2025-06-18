@@ -1,7 +1,8 @@
-import { Typography } from 'components/design-system-ui';
-import React, { useEffect, useState } from 'react';
+import { Icon, Typography } from 'components/design-system-ui';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TextStyle, View } from 'react-native';
+import { Timer } from 'phosphor-react-native';
 
 interface Props {
   quoteAliveUntilValue?: number;
@@ -39,12 +40,20 @@ export const QuoteResetTime = ({ quoteAliveUntilValue, style }: Props) => {
     };
   }, [quoteAliveUntilValue, setQuoteCountdownTime]);
 
+  const textColor = useMemo(() => {
+    if (quoteCountdownTime <= 10) {
+      return theme.colorError;
+    }
+
+    return theme.colorWarning;
+  }, [quoteCountdownTime, theme.colorError, theme.colorWarning]);
+
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Typography.Text style={[{ color: theme.colorWarning }, style]}>{'Quote reset in: '}</Typography.Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
+      <Icon phosphorIcon={Timer} weight={'fill'} iconColor={textColor} size={'xxs'} />
       <Typography.Text
         style={[
-          { color: quoteCountdownTime > 10 ? theme.colorWarning : theme.colorError },
+          { color: textColor, fontSize: theme.sizeSM, lineHeight: theme.fontSizeSM },
           style,
         ]}>{`${quoteCountdownTime}s`}</Typography.Text>
     </View>

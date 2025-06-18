@@ -78,7 +78,7 @@ const CurrentProcessStep: React.FC<Props> = (props: Props) => {
         return 'Stake success';
       }
 
-      return 'Success';
+      return 'Transaction success';
     }
 
     if (isStepFailed(processData.status)) {
@@ -88,7 +88,7 @@ const CurrentProcessStep: React.FC<Props> = (props: Props) => {
         return 'Stake failed';
       }
 
-      return 'Failed';
+      return 'Transaction failed';
     }
 
     if (isStepTimeout(processData.status)) {

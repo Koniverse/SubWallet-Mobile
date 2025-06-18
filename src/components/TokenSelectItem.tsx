@@ -4,10 +4,12 @@ import { getTokenLogo } from 'utils/index';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
-import { CheckCircle } from 'phosphor-react-native';
-import { Icon, Typography } from 'components/design-system-ui';
+import { Typography, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
+import { TokenSelectorItemType } from './Modal/common/TokenSelector';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props extends TouchableOpacityProps {
   symbol: string;
@@ -19,6 +21,8 @@ interface Props extends TouchableOpacityProps {
   onSelectNetwork: () => void;
   defaultItemKey?: string;
   iconSize?: number;
+  balanceInfo?: TokenSelectorItemType['balanceInfo'];
+  showBalance?: boolean;
 }
 
 export const TokenSelectItem = ({
@@ -27,13 +31,15 @@ export const TokenSelectItem = ({
   chain,
   logoKey,
   subLogoKey,
-  isSelected,
   onSelectNetwork,
   defaultItemKey,
   iconSize = 40,
+  balanceInfo,
+  showBalance,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
   return (
     <TouchableOpacity onPress={onSelectNetwork} onPressIn={() => Keyboard.dismiss()}>
@@ -52,9 +58,69 @@ export const TokenSelectItem = ({
           </View>
         </View>
 
-        {isSelected && (
-          <View style={styles.selectedIconWrapper}>
-            <Icon phosphorIcon={CheckCircle} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />
+        {showBalance && (
+          <View>
+            {!!balanceInfo && balanceInfo.isReady && !balanceInfo.isNotSupport ? (
+              <>
+                {isShowBalance ? (
+                  <View style={{ alignItems: 'flex-end' }}>
+                    <Number value={balanceInfo.free.value} decimal={0} decimalOpacity={0.45} />
+                    <Number
+                      decimal={0}
+                      decimalOpacity={0.45}
+                      intOpacity={0.45}
+                      prefix={(balanceInfo.currency?.isPrefix && balanceInfo.currency.symbol) || ''}
+                      suffix={(!balanceInfo.currency?.isPrefix && balanceInfo.currency?.symbol) || ''}
+                      unitOpacity={0.45}
+                      value={balanceInfo.free.convertedValue}
+                      size={theme.fontSizeSM}
+                    />
+                  </View>
+                ) : (
+                  <View>
+                    <Typography.Text
+                      style={{
+                        fontSize: theme.fontSizeLG,
+                        ...FontSemiBold,
+                        lineHeight: theme.lineHeightLG * theme.fontSizeLG,
+                        color: theme.colorTextLight1,
+                      }}>
+                      ******
+                    </Typography.Text>
+                    <Typography.Text
+                      style={{
+                        ...FontMedium,
+                        fontSize: theme.fontSizeSM,
+                        lineHeight: theme.lineHeightSM * theme.fontSizeSM,
+                        color: theme.colorTextLight4,
+                      }}>
+                      ******
+                    </Typography.Text>
+                  </View>
+                )}
+              </>
+            ) : (
+              <View style={{ alignItems: 'flex-end' }}>
+                <Typography.Text
+                  style={{
+                    fontSize: theme.fontSizeLG,
+                    ...FontSemiBold,
+                    lineHeight: theme.lineHeightLG * theme.fontSizeLG,
+                    color: theme.colorTextLight1,
+                  }}>
+                  --
+                </Typography.Text>
+                <Typography.Text
+                  style={{
+                    ...FontMedium,
+                    fontSize: theme.fontSizeSM,
+                    lineHeight: theme.lineHeightSM * theme.fontSizeSM,
+                    color: theme.colorTextLight4,
+                  }}>
+                  --
+                </Typography.Text>
+              </View>
+            )}
           </View>
         )}
       </View>

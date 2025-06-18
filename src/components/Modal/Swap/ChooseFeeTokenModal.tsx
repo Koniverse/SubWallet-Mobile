@@ -10,7 +10,7 @@ import { RootState } from 'stores/index';
 import { _getAssetPriceId, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { deviceHeight } from 'constants/index';
-import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
+import { swapCustomFormatter } from '@subwallet/extension-base/utils';
 
 interface Props {
   modalVisible: boolean;
@@ -19,8 +19,9 @@ interface Props {
   items: string[] | undefined;
   onSelectItem: (slug: string) => void;
   selectedItem?: string;
-  currencyData: CurrencyJson;
 }
+
+const numberMetadata = { maxNumberFormat: 8 };
 
 export const ChooseFeeTokenModal = ({
   modalVisible,
@@ -29,9 +30,9 @@ export const ChooseFeeTokenModal = ({
   selectedItem,
   onSelectItem,
   items,
-  currencyData,
 }: Props) => {
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
+  const { currencyData } = useSelector((state: RootState) => state.price);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const theme = useSubWalletTheme().swThemes;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -83,13 +84,17 @@ export const ChooseFeeTokenModal = ({
         <View style={{ gap: theme.padding, paddingTop: theme.padding, alignItems: 'center' }}>
           <Typography.Text style={{ color: theme.colorTextLight4 }}>{'Estimated fee'}</Typography.Text>
           <Number
-            value={estimatedFee}
+            customFormatter={swapCustomFormatter}
             decimal={0}
-            prefix={currencyData?.symbol}
-            size={38}
-            textStyle={{ ...FontSemiBold, lineHeight: 38 }}
-            subFloatNumber
             decimalOpacity={0.45}
+            formatType={'custom'}
+            value={estimatedFee}
+            metadata={numberMetadata}
+            prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+            size={30}
+            suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+            textStyle={{ ...FontSemiBold, lineHeight: 30 }}
+            subFloatNumber
           />
           <Typography.Text style={{ color: theme.colorTextLight4 }}>{'Pay with token:'}</Typography.Text>
         </View>

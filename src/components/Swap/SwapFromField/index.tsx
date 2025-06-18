@@ -1,6 +1,6 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { View } from 'react-native';
-import { TokenSelector, TokenItemType } from 'components/Modal/common/TokenSelector';
+import { TokenSelector, TokenItemType, TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { ModalRef } from 'types/modalRef';
 import { InputAmount } from 'components/Input/InputAmount';
 import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
@@ -8,6 +8,10 @@ import { _getAssetDecimals, _getChainName } from '@subwallet/extension-base/serv
 import { Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapTokenSelectField } from 'components/Field/SwapTokenSelect';
+import { FontSemiBold } from 'styles/sharedStyles';
+import { OptionType } from 'components/common/FilterModal';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   tokenSelectorItems: TokenItemType[];
@@ -41,6 +45,7 @@ export const SwapFromField = ({
   onChangeInput,
   fromAsset,
 }: Props) => {
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const tokenSelectorRef = useRef<ModalRef>();
   const decimals = _getAssetDecimals(fromAsset);
   const theme = useSubWalletTheme().swThemes;
@@ -54,6 +59,52 @@ export const SwapFromField = ({
     },
     [onChangeInput],
   );
+
+  const filterOptions: OptionType[] = useMemo(() => {
+    const uniqueOriginChains = Array.from(new Set(tokenSelectorItems.map(item => item.originChain)));
+
+    const result = uniqueOriginChains.map(originChain => {
+      return {
+        label: _getChainName(chainInfoMap[originChain]),
+        value: originChain,
+      };
+    });
+
+    result.sort((a, b) => {
+      const priority: Record<string, number> = {
+        polkadot: 0,
+        ethereum: 1,
+      };
+
+      const aPriority = priority[a.value] ?? 2;
+      const bPriority = priority[b.value] ?? 2;
+
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority; // Sort by priority first
+      }
+
+      // If both have same priority (i.e., both are not polkadot/ethereum), sort by label
+      return a.label.localeCompare(b.label);
+    });
+
+    return result;
+  }, [chainInfoMap, tokenSelectorItems]);
+
+  const filterFunction = useCallback((items: TokenSelectorItemType[], filters: string[]) => {
+    return items.filter(item => {
+      if (!filters.length) {
+        return true;
+      }
+
+      for (const filter of filters) {
+        if (item.originChain === filter) {
+          return true;
+        }
+      }
+
+      return false;
+    });
+  }, []);
 
   return (
     <View
@@ -71,14 +122,9 @@ export const SwapFromField = ({
           paddingHorizontal: theme.padding,
           paddingVertical: theme.paddingXS,
         }}>
-        <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
+        <Typography.Text size={'sm'} style={{ color: theme.colorTextLight1, ...FontSemiBold }}>
           {'From'}
         </Typography.Text>
-        {/*<TouchableOpacity>*/}
-        {/*  <Typography.Text size={'sm'} style={{ color: theme.colorSuccess }}>*/}
-        {/*    {'Max'}*/}
-        {/*  </Typography.Text>*/}
-        {/*</TouchableOpacity>*/}
       </View>
 
       <View
@@ -95,6 +141,9 @@ export const SwapFromField = ({
             showAddBtn={false}
             acceptDefaultValue={true}
             tokenSelectorRef={tokenSelectorRef}
+            isShowFilterBtn={true}
+            filterOptions={filterOptions}
+            filterFunction={filterFunction}
             renderSelected={() => (
               <SwapTokenSelectField
                 style={{ marginBottom: 0, marginLeft: 4 }}
@@ -105,6 +154,7 @@ export const SwapFromField = ({
                 showIcon
               />
             )}
+            selectedValue={assetValue}
           />
         </View>
 
