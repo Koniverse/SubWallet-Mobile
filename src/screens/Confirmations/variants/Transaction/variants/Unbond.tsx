@@ -13,6 +13,7 @@ type Props = BaseTransactionConfirmationProps;
 const UnbondTransactionConfirmation = ({ transaction }: Props) => {
   const data = transaction.data as RequestBondingSubmit;
   const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
+  const subnetSymbol = data.poolInfo?.metadata.subnetData?.subnetSymbol;
 
   const isBittensorChain = useMemo(() => {
     return data.poolInfo?.chain === 'bittensor' || data.poolInfo?.chain === 'bittensor_testnet';
@@ -26,7 +27,7 @@ const UnbondTransactionConfirmation = ({ transaction }: Props) => {
         <MetaInfo.Number
           decimals={decimals}
           label={i18n.inputLabel.unstakeAmount}
-          suffix={symbol}
+          suffix={subnetSymbol || symbol}
           value={data.amount}
         />
         <MetaInfo.Number
