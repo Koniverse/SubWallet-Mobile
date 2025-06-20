@@ -189,7 +189,7 @@ export const Unbond = ({
   );
 
   useEffect(() => {
-    if (!isDisabledSubnetContent) {
+    if (isDisabledSubnetContent) {
       return;
     }
 
@@ -208,7 +208,6 @@ export const Unbond = ({
 
       getEarningSlippage(data)
         .then(result => {
-          console.log('Actual stake slippage:', result.slippage * 100);
           setEarningSlippage(result.slippage);
           setEarningRate(result.rate);
         })
@@ -532,7 +531,6 @@ export const Unbond = ({
   useEffect(() => {
     if (!currentValidator) {
       if (nominators[0]?.validatorAddress) {
-        console.log('nominators[0]', nominators[0]);
         setValue('nomination', nominators[0].validatorAddress);
       }
     }

@@ -453,7 +453,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const onError = useCallback(
     (error: Error) => {
-      console.log('error', error);
       const { chain: _chain, isXCM, minJoinPool, symbol } = handleDataForInsufficientAlert();
       const balanceDisplayInfo = _handleDisplayInsufficientEarningError(
         error,
@@ -512,7 +511,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         const { errors: _errors, id, processId, warnings } = rs;
         if (_errors.length || warnings.length) {
           const error = _errors[0]; // we only handle the first error for now
-          console.log('error', error);
 
           if (_errors[0]?.message !== 'Rejected by user') {
             const displayInfo = _handleDisplayForEarningError(error);
@@ -607,7 +605,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
       getEarningSlippage(data)
         .then(result => {
-          console.log('Actual stake slippage:', result.slippage * 100);
           setEarningSlippage(result.slippage);
           setEarningRate(result.rate);
         })
@@ -1292,7 +1289,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
                 setConnectionError(errorNetwork);
               })
-              .catch((e: Error) => console.log('eeee', e.message))
+              .catch((e: Error) => console.log('error when getOptimalYieldPath', e.message))
               .finally(() => setStepLoading(false));
           },
           1000,
@@ -1346,7 +1343,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             store.dispatch({ type: 'earning/updatePoolTargets', payload: result });
           }
         })
-        .catch((e: Error) => console.log('eeee', e.message))
+        .catch((e: Error) => console.log('error when fetchPoolTarget', e.message))
         .finally(() => {
           if (!unmount) {
             setTargetLoading(false);
@@ -1677,7 +1674,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                     />
 
                     {!isSlippageAcceptable && (
-                      <View ref={alertBoxRef}>
+                      <View style={{ marginTop: theme.marginSM }} ref={alertBoxRef}>
                         <AlertBox
                           title={'Slippage too high!'}
                           description={`Unable to stake due to a slippage of ${(earningSlippage * 100).toFixed(
