@@ -161,7 +161,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E462B85C8A /* Frameworks */,
 				BBD78D7AC51CEA462F1C20DB /* Pods */,
-				F898C800E8954624865C0C41 /* Resources */,
+				F898C800E8954624875C0C41 /* Resources */,
 				354622E22CBE82D1002D4A91 /* Recovered References */,
 			);
 			indentWidth = 2;
@@ -196,7 +196,7 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		F898C800E8954624865C0C41 /* Resources */ = {
+		F898C800E8954624875C0C41 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -553,7 +553,7 @@
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 486;
+				CURRENT_PROJECT_VERSION = 487;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
@@ -589,7 +589,7 @@
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 486;
+				CURRENT_PROJECT_VERSION = 487;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SubWallet;

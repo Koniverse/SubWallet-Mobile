@@ -24,6 +24,30 @@ index d7880a3..8c6f948 100644
  var _types = require("@subwallet/chain-list/types");
  var _utils = require("@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils");
  var _subwalletApiSdk = require("@subwallet/subwallet-api-sdk");
+diff --git a/node_modules/@subwallet/extension-base/core/utils.js b/node_modules/@subwallet/extension-base/core/utils.js
+index 8dbf0e8..2be46f8 100644
+--- a/node_modules/@subwallet/extension-base/core/utils.js
++++ b/node_modules/@subwallet/extension-base/core/utils.js
+@@ -57,7 +57,7 @@ export function _isValidAddressForEcosystem(validateRecipientParams) {
+   } = validateRecipientParams;
+   if (!isAddressAndChainCompatible(toAddress, destChainInfo)) {
+     if (_isChainEvmCompatible(destChainInfo) || _isChainSubstrateCompatible(destChainInfo) || _isChainTonCompatible(destChainInfo) || _isChainCardanoCompatible(destChainInfo)) {
+-      return 'Recipient address must be the same type as sender address';
++      return `Recipient address must be a valid ${destChainInfo.name} address`;
+     }
+     return 'Unknown chain type';
+   }
+@@ -70,8 +70,8 @@ export function _isValidSubstrateAddressFormat(validateRecipientParams) {
+     toAddress
+   } = validateRecipientParams;
+   const addressPrefix = (_destChainInfo$substr = destChainInfo === null || destChainInfo === void 0 ? void 0 : (_destChainInfo$substr2 = destChainInfo.substrateInfo) === null || _destChainInfo$substr2 === void 0 ? void 0 : _destChainInfo$substr2.addressPrefix) !== null && _destChainInfo$substr !== void 0 ? _destChainInfo$substr : 42;
+-  const toAddressFormatted = reformatAddress(toAddress, addressPrefix);
+-  if (toAddressFormatted !== toAddress) {
++  const toAddressFormatted = reformatAddress(toAddress, addressPrefix, undefined, false);
++  if (toAddressFormatted && toAddressFormatted !== toAddress) {
+     return `Recipient address must be a valid ${destChainInfo.name} address`;
+   }
+   return '';
 diff --git a/node_modules/@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils.js b/node_modules/@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils.js
 index 26a5f26..15f5343 100644
 --- a/node_modules/@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils.js
@@ -316,3 +340,65 @@ index 1455ff3..2ef49f8 100644
 +    throw new Error('Not implemented');
    }
  }
+diff --git a/node_modules/@subwallet/extension-base/utils/account/common.js b/node_modules/@subwallet/extension-base/utils/account/common.js
+index e36bd82..3015288 100644
+--- a/node_modules/@subwallet/extension-base/utils/account/common.js
++++ b/node_modules/@subwallet/extension-base/utils/account/common.js
+@@ -11,7 +11,7 @@ import { ethereumEncode, isEthereumAddress } from '@polkadot/util-crypto';
+ export function isAccountAll(address) {
+   return address === ALL_ACCOUNT_KEY;
+ }
+-export function reformatAddress(address, networkPrefix = 42, isEthereum = false) {
++export function reformatAddress(address, networkPrefix = 42, isEthereum = false, ignoreError = true) {
+   try {
+     if (!address || address === '') {
+       return '';
+@@ -33,6 +33,11 @@ export function reformatAddress(address, networkPrefix = 42, isEthereum = false)
+     return encodeAddress(publicKey, networkPrefix, type);
+   } catch (e) {
+     console.warn('Get error while reformat address', address, e);
++
++    if (!ignoreError) {
++      return '';
++    }
++
+     return address;
+   }
+ }
+diff --git a/node_modules/@subwallet/extension-base/utils/index.js b/node_modules/@subwallet/extension-base/utils/index.js
+index b57e98b..3502bf2 100644
+--- a/node_modules/@subwallet/extension-base/utils/index.js
++++ b/node_modules/@subwallet/extension-base/utils/index.js
+@@ -3,12 +3,13 @@
+ 
+ import { CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
+ import { getRandomIpfsGateway, SUBWALLET_IPFS } from '@subwallet/extension-base/koni/api/nft/config';
+-import { _isChainCardanoCompatible, _isChainEvmCompatible, _isChainSubstrateCompatible, _isChainTonCompatible } from '@subwallet/extension-base/services/chain-service/utils';
++import { _isChainEvmCompatible, _isPureCardanoChain, _isPureSubstrateChain, _isPureTonChain } from '@subwallet/extension-base/services/chain-service/utils';
+ import { reformatAddress } from '@subwallet/extension-base/utils/account';
+-import { decodeAddress, encodeAddress, isCardanoAddress, isTonAddress } from '@subwallet/keyring';
++import { decodeAddress, encodeAddress, getKeypairTypeByAddress, isTonAddress } from '@subwallet/keyring';
+ import { t } from 'i18next';
+ import { assert, BN, hexToU8a, isHex } from '@polkadot/util';
+ import { ethereumEncode, isEthereumAddress } from '@polkadot/util-crypto';
++import { CardanoKeypairTypes, EthereumKeypairTypes, SubstrateKeypairTypes, TonKeypairTypes } from '@subwallet/keyring/types';
+ export { canDerive } from "./canDerive.js";
+ export * from "./mv3.js";
+ export * from "./fetch.js";
+@@ -251,10 +252,12 @@ export function isSameAddressType(address1, address2) {
+   return isSameEvmAddress || isSameTonAddress || isSameSubstrateAddress;
+ }
+ export function isAddressAndChainCompatible(address, chain) {
+-  const isEvmCompatible = isEthereumAddress(address) && _isChainEvmCompatible(chain);
+-  const isTonCompatible = isTonAddress(address) && _isChainTonCompatible(chain);
+-  const isSubstrateCompatible = !isEthereumAddress(address) && !isTonAddress(address) && _isChainSubstrateCompatible(chain); // todo: need isSubstrateAddress util function to check exactly
+-  const isCardanoCompatible = isCardanoAddress(address) && _isChainCardanoCompatible(chain);
++  const keypairType = getKeypairTypeByAddress(address);
++  const isEvmCompatible = _isChainEvmCompatible(chain) && EthereumKeypairTypes.includes(keypairType); // some chains compatible to substrate and evm, and use evm-address
++  const isTonCompatible = _isPureTonChain(chain) && TonKeypairTypes.includes(keypairType);
++  const isSubstrateCompatible = _isPureSubstrateChain(chain) && SubstrateKeypairTypes.includes(keypairType);
++  const isCardanoCompatible = _isPureCardanoChain(chain) && CardanoKeypairTypes.includes(keypairType);
++
+   return isEvmCompatible || isSubstrateCompatible || isTonCompatible || isCardanoCompatible;
+ }
+ export function getDomainFromUrl(url) {
