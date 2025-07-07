@@ -5,20 +5,19 @@ import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/
 import { SwapFromField } from 'components/Swap/SwapFromField';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { TokenItemType, TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
-import { _ChainAsset } from '@subwallet/chain-list/types';
+import { TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
+import { _ChainAsset, _ChainStatus } from '@subwallet/chain-list/types';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import {
   _getAssetDecimals,
   _getAssetOriginChain,
-  _getAssetSymbol,
-  _getChainNativeTokenSlug,
   _getMultiChainAsset,
   _getOriginChainOfAsset,
+  _isAssetFungibleToken,
   _isChainEvmCompatible,
   _parseAssetRefKey,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { Alert, AppState, Keyboard, Platform, ScrollView, StatusBar, TouchableOpacity, View } from 'react-native';
+import { Alert, AppState, Keyboard, ScrollView, View } from 'react-native';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { SwapToField } from 'components/Swap/SwapToField';
 import BigN from 'bignumber.js';
@@ -27,16 +26,13 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { ModalRef } from 'types/modalRef';
 import { isAccountAll } from 'utils/accountAll';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { InputAddress } from 'components/Input/InputAddress';
+import { AddressInputRef, InputAddress } from 'components/Input/InputAddress';
 import i18n from 'utils/i18n/i18n';
-import { ActivityIndicator, Button, Divider, Icon, Number, Typography } from 'components/design-system-ui';
-import { ArrowsDownUp, CaretRight, Info, PencilSimpleLine } from 'phosphor-react-native';
+import { Button, Icon } from 'components/design-system-ui';
+import { ArrowsDownUp, Book } from 'phosphor-react-native';
 import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
-import MetaInfo from 'components/MetaInfo';
 import { BN_TEN, BN_ZERO } from 'utils/chainBalances';
-import { Warning } from 'components/Warning';
 import { ChooseFeeTokenModal } from 'components/Modal/Swap/ChooseFeeTokenModal';
-import { SwapQuoteDetailModal } from 'components/Modal/Swap/SwapQuoteDetailModal';
 import { SwapQuotesSelectorModal } from 'components/Modal/Swap/SwapQuotesSelectorModal';
 import {
   SIMPLE_SWAP_SLIPPAGE,
@@ -45,13 +41,15 @@ import {
   SwapProviderId,
   SwapQuote,
   SwapRequest,
+  SwapRequestResult,
+  SwapRequestV2,
 } from '@subwallet/extension-base/types/swap';
-import { CommonFeeComponent, CommonOptimalPath, CommonStepType } from '@subwallet/extension-base/types/service-base';
-import { formatNumberString, isSameAddress, swapCustomFormatter } from '@subwallet/extension-base/utils';
+import { CommonOptimalSwapPath } from '@subwallet/extension-base/types/service-base';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { findAccountByAddress } from 'utils/account';
-import { getLatestSwapQuote, handleSwapRequest, handleSwapStep, validateSwapProcess } from 'messaging/swap';
+import { handleSwapStep, validateSwapProcess } from 'messaging/swap';
 import { CommonActionType, commonProcessReducer, DEFAULT_COMMON_PROCESS } from 'reducers/transaction-process';
 import { FormItem } from 'components/common/FormItem';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
@@ -59,9 +57,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { getSwapAlternativeAsset } from '@subwallet/extension-base/services/swap-service/utils';
-import FreeBalanceToYield from 'screens/Transaction/parts/FreeBalanceToEarn';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
-import { QuoteResetTime } from 'components/Swap/QuoteResetTime';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import UserInactivity from 'react-native-user-inactivity';
@@ -72,18 +68,25 @@ import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMu
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountAddressItemType } from 'types/account';
-import { AccountProxyType, ProcessType } from '@subwallet/extension-base/types';
+import { AccountProxy, AccountProxyType, ProcessType } from '@subwallet/extension-base/types';
 import { isTokenCompatibleWithAccountChainTypes } from 'utils/chainAndAsset';
 import { getChainsByAccountAll } from 'utils/index';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { CHAINFLIP_SLIPPAGE } from 'types/swap';
-import Tooltip from 'react-native-walkthrough-tooltip';
-import { generateOptimalProcess, submitProcess } from 'messaging/index';
+import { handleSwapRequestV2, submitProcess } from 'messaging/index';
 import useOneSignProcess from 'hooks/account/useOneSignProcess';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import useReformatAddress from 'hooks/common/useReformatAddress';
+import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
+import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
+import { TokenBalanceItemType } from 'types/balance';
+import { useGetAccountTokenBalance, useGetBalance } from 'hooks/balance';
+import { RootNavigationProps } from 'routes/index';
+import { useNavigation } from '@react-navigation/native';
+import { FontSemiBold } from 'styles/sharedStyles';
+import { QuoteInfoArea } from './QuoteInfoArea';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -92,29 +95,53 @@ interface SwapFormValues extends TransactionFormValues {
   recipient?: string;
 }
 
-function getTokenSelectorItem(tokenSlugs: string[], assetRegistryMap: Record<string, _ChainAsset>): TokenItemType[] {
-  const result: TokenItemType[] = [];
+type ComponentProps = {
+  targetAccountProxy: AccountProxy;
+  defaultSlug?: string;
+};
 
-  tokenSlugs.forEach(slug => {
-    const asset = assetRegistryMap[slug];
+function getTokenSelectorItem(
+  assetItem: _ChainAsset[],
+  tokenBalanceMap: Record<string, TokenBalanceItemType | undefined>,
+  chainState: Record<string, _ChainState>,
+): SortableTokenSelectorItemType[] {
+  const result: SortableTokenSelectorItemType[] = [];
 
-    if (Platform.OS === 'android') {
-      // if (asset && asset.originChain !== 'hydradx_main') {
-      result.push({
-        originChain: asset.originChain,
-        slug,
-        symbol: asset.symbol,
-        name: asset.name,
-      });
-      // }
-    } else {
-      result.push({
-        originChain: asset.originChain,
-        slug,
-        symbol: asset.symbol,
-        name: asset.name,
-      });
-    }
+  assetItem.forEach(asset => {
+    const slug = asset.slug;
+    const originChain = asset.originChain;
+
+    const balanceInfo = (() => {
+      if (!chainState[originChain]?.active) {
+        return undefined;
+      }
+
+      const tokenBalanceInfo = tokenBalanceMap[slug];
+
+      if (!tokenBalanceInfo) {
+        return undefined;
+      }
+
+      return {
+        isReady: tokenBalanceInfo.isReady,
+        isNotSupport: tokenBalanceInfo.isNotSupport,
+        free: tokenBalanceInfo.free,
+        locked: tokenBalanceInfo.locked,
+        total: tokenBalanceInfo.total,
+        currency: tokenBalanceInfo.currency,
+        isTestnet: tokenBalanceInfo.isTestnet,
+      };
+    })();
+
+    result.push({
+      originChain,
+      slug,
+      symbol: asset.symbol,
+      name: asset.name,
+      balanceInfo,
+      showBalance: true,
+      total: balanceInfo?.isReady && !balanceInfo?.isNotSupport ? balanceInfo?.free : undefined,
+    });
   });
 
   return result;
@@ -128,26 +155,25 @@ export interface FeeItem {
   suffix?: string;
 }
 
-const numberMetadata = { maxNumberFormat: 8 };
+type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
 
-export const Swap = ({ route: { params } }: SendFundProps) => {
+const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
   const { show, hideAll } = useToast();
   const theme = useSubWalletTheme().swThemes;
-  const { assetRegistry: assetRegistryMap, multiChainAssetMap } = useSelector(
-    (state: RootState) => state.assetRegistry,
+  const { assetRegistry: assetRegistryMap } = useSelector((state: RootState) => state.assetRegistry);
+  const priorityTokens = useSelector((state: RootState) => state.chainStore.priorityTokens);
+  const { chainInfoMap, chainStateMap, ledgerGenericAllowNetworks } = useSelector(
+    (state: RootState) => state.chainStore,
   );
-  const { chainInfoMap, ledgerGenericAllowNetworks } = useSelector((state: RootState) => state.chainStore);
-  const { accountProxies, accounts, currentAccountProxy, isAllAccount } = useSelector(
-    (state: RootState) => state.accountState,
-  );
+  const { accountProxies, accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const hasInternalConfirmations = useSelector((state: RootState) => state.requestState.hasInternalConfirmations);
-  const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
+  const { priceMap } = useSelector((state: RootState) => state.price);
   const swapPairs = useSelector((state: RootState) => state.swap.swapPairs);
   const confirmTerm = mmkvStore.getBoolean('confirm-swap-term');
   const [termModalVisible, setTermModalVisible] = useState<boolean>(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
-  const tokenGroupSlug = params?.slug;
+  const [swapFromFieldRenderKey, setSwapFromFieldRenderKey] = useState<string>('SwapFromField');
 
   const {
     title,
@@ -166,7 +192,8 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     mode: 'onSubmit',
     reValidateMode: 'onBlur',
   });
-
+  let addressInputRef = useRef<AddressInputRef>(null);
+  const isAddressInputReady = !!addressInputRef.current?.ready;
   const fromValue = useWatch<SwapFormValues>({ name: 'from', control });
   const fromAmountValue = useWatch<SwapFormValues>({ name: 'fromAmount', control });
   const fromTokenSlugValue = useWatch<SwapFormValues>({ name: 'fromTokenSlug', control });
@@ -184,13 +211,11 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   const [showQuoteArea, setShowQuoteArea] = useState<boolean>(false);
   const [quoteOptions, setQuoteOptions] = useState<SwapQuote[]>([]);
   const [currentQuote, setCurrentQuote] = useState<SwapQuote | undefined>(undefined);
-  const [tempQuote, setTempQuote] = useState<SwapQuote | undefined>(undefined);
   const [quoteAliveUntil, setQuoteAliveUntil] = useState<number | undefined>(undefined);
   const [currentQuoteRequest, setCurrentQuoteRequest] = useState<SwapRequest | undefined>(undefined);
   const [isFormInvalid, setIsFormInvalid] = useState<boolean>(false);
-  const [currentOptimalSwapPath, setOptimalSwapPath] = useState<CommonOptimalPath | undefined>(undefined);
+  const [currentOptimalSwapPath, setOptimalSwapPath] = useState<CommonOptimalSwapPath | undefined>(undefined);
   const [slippageModalVisible, setSlippageModalVisible] = useState<boolean>(false);
-  const [swapQuoteModalVisible, setSwapQuoteModalVisible] = useState<boolean>(false);
   const [chooseFeeModalVisible, setChooseFeeModalVisible] = useState<boolean>(false);
   const [warningIdleModalVisible, setWarningIdleModalVisible] = useState<boolean>(false);
   const [isUserActive, setIsUserActive] = useState(true);
@@ -199,18 +224,38 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     slippage: new BigN(0.01),
     isCustomType: true,
   });
+  const [preferredProvider, setPreferredProvider] = useState<SwapProviderId | undefined>(undefined);
   const [handleRequestLoading, setHandleRequestLoading] = useState(true);
   const [swapError, setSwapError] = useState<SwapError | undefined>(undefined);
   const [feeOptions, setFeeOptions] = useState<string[] | undefined>([]);
   const [currentFeeOption, setCurrentFeeOption] = useState<string | undefined>(undefined);
-  const optimalQuoteRef = useRef<SwapQuote | undefined>(undefined);
   const [requestUserInteractToContinue, setRequestUserInteractToContinue] = useState<boolean>(false);
   const continueRefreshQuoteRef = useRef<boolean>(false);
   const scrollRef = useRef<ScrollView>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [isScrollEnd, setIsScrollEnd] = useState<boolean>(false);
-  const [confirmQuoteLoading, setConfirmQuoteLoading] = useState(false);
-  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [isRecipientFieldManuallyVisible, setIsRecipientFieldManuallyVisible] = useState<boolean>(false);
+
+  const availableBalanceHookResult = useGetBalance(chainValue, fromValue, fromTokenSlugValue, true, ExtrinsicType.SWAP);
+
+  const currentFromTokenAvailableBalance = useMemo(() => {
+    if (!fromTokenSlugValue || availableBalanceHookResult.isLoading || !availableBalanceHookResult.nativeTokenSlug) {
+      return undefined;
+    }
+
+    if (availableBalanceHookResult.nativeTokenSlug !== fromTokenSlugValue) {
+      return availableBalanceHookResult.tokenBalance;
+    }
+
+    return availableBalanceHookResult.nativeTokenBalance;
+  }, [
+    availableBalanceHookResult.isLoading,
+    availableBalanceHookResult.nativeTokenBalance,
+    availableBalanceHookResult.nativeTokenSlug,
+    availableBalanceHookResult.tokenBalance,
+    fromTokenSlugValue,
+  ]);
+
   const accountAddressItems = useMemo(() => {
     const chainInfo = chainValue ? chainInfoMap[chainValue] : undefined;
 
@@ -221,7 +266,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     const result: AccountAddressItemType[] = [];
 
     accountProxies.forEach(ap => {
-      if (!currentAccountProxy || !(isAccountAll(currentAccountProxy.id) || ap.id === currentAccountProxy.id)) {
+      if (!(isAccountAll(targetAccountProxy.id) || ap.id === targetAccountProxy.id)) {
         return;
       }
 
@@ -245,91 +290,82 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     });
 
     return result;
-  }, [accountProxies, chainInfoMap, chainValue, currentAccountProxy, getReformatAddress]);
-  const fromAndToTokenMap = useMemo<Record<string, string[]>>(() => {
-    const result: Record<string, string[]> = {};
+  }, [accountProxies, chainInfoMap, chainValue, targetAccountProxy, getReformatAddress]);
 
-    swapPairs.forEach(pair => {
-      if (!result[pair.from]) {
-        result[pair.from] = [pair.to];
-      } else {
-        result[pair.from].push(pair.to);
+  const assetItems = useMemo<_ChainAsset[]>(() => {
+    const result: _ChainAsset[] = [];
+
+    Object.values(assetRegistryMap).forEach(chainAsset => {
+      if (!_isAssetFungibleToken(chainAsset)) {
+        return;
+      }
+
+      const chainSlug = chainAsset.originChain;
+
+      if (chainInfoMap[chainSlug]?.chainStatus === _ChainStatus.ACTIVE) {
+        result.push(chainAsset);
       }
     });
 
     return result;
-  }, [swapPairs]);
+  }, [assetRegistryMap, chainInfoMap]);
+
+  const getAccountTokenBalance = useGetAccountTokenBalance();
+
+  const targetAccountProxyIdForGetBalance = useMemo(() => {
+    if (!isAccountAll(targetAccountProxy.id) || !fromValue) {
+      return targetAccountProxy.id;
+    }
+
+    const accountProxyByFromValue = accountAddressItems.find(a => a.address === fromValue);
+
+    return accountProxyByFromValue?.accountProxyId || targetAccountProxy.id;
+  }, [accountAddressItems, fromValue, targetAccountProxy]);
+
+  const tokenSelectorItems = useMemo<TokenSelectorItemType[]>(() => {
+    const result = getTokenSelectorItem(
+      assetItems,
+      getAccountTokenBalance(assetItems, targetAccountProxyIdForGetBalance),
+      chainStateMap,
+    );
+
+    sortTokensByBalanceInSelector(result, priorityTokens);
+
+    return result;
+  }, [assetItems, chainStateMap, getAccountTokenBalance, priorityTokens, targetAccountProxyIdForGetBalance]);
 
   const fromTokenItems = useMemo<TokenSelectorItemType[]>(() => {
-    if (!currentAccountProxy) {
-      return [];
-    }
+    const allowChainSlugs = isAccountAll(targetAccountProxy.id)
+      ? getChainsByAccountAll(targetAccountProxy, accountProxies, chainInfoMap)
+      : undefined;
 
-    const rawTokenSlugs = Object.keys(fromAndToTokenMap);
-    let targetTokenSlugs: string[] = [];
+    return tokenSelectorItems.filter(item => {
+      const slug = item.slug;
+      const assetInfo = assetRegistryMap[slug];
 
-    (() => {
-      // defaultSlug is just TokenSlug
-      if (tokenGroupSlug && rawTokenSlugs.includes(tokenGroupSlug)) {
-        if (isTokenCompatibleWithAccountChainTypes(tokenGroupSlug, currentAccountProxy.chainTypes, chainInfoMap)) {
-          targetTokenSlugs.push(tokenGroupSlug);
-        }
-
-        return;
+      if (!assetInfo) {
+        return false;
       }
 
-      rawTokenSlugs.forEach(rts => {
-        const assetInfo = assetRegistryMap[rts];
-        if (!assetInfo) {
-          return;
-        }
+      if (allowChainSlugs && !allowChainSlugs.includes(assetInfo.originChain)) {
+        return false;
+      }
 
-        if (tokenGroupSlug) {
-          // defaultSlug is MultiChainAssetSlug
-          if (
-            _getMultiChainAsset(assetInfo) === tokenGroupSlug &&
-            isTokenCompatibleWithAccountChainTypes(rts, currentAccountProxy.chainTypes, chainInfoMap)
-          ) {
-            targetTokenSlugs.push(rts);
-          }
+      if (!isTokenCompatibleWithAccountChainTypes(slug, targetAccountProxy.chainTypes, chainInfoMap)) {
+        return false;
+      }
 
-          return;
-        }
+      if (!defaultSlug) {
+        return true;
+      }
 
-        if (isTokenCompatibleWithAccountChainTypes(rts, currentAccountProxy.chainTypes, chainInfoMap)) {
-          targetTokenSlugs.push(rts);
-        }
+      return defaultSlug === slug || _getMultiChainAsset(assetInfo) === defaultSlug;
+    });
+  }, [accountProxies, assetRegistryMap, chainInfoMap, defaultSlug, targetAccountProxy, tokenSelectorItems]);
 
-        if (isAllAccount) {
-          const allowChainSlug = getChainsByAccountAll(currentAccountProxy, accountProxies, chainInfoMap);
-
-          targetTokenSlugs = targetTokenSlugs.filter(tokenSlug => {
-            const chainSlug = _getOriginChainOfAsset(tokenSlug);
-
-            return allowChainSlug.includes(chainSlug);
-          });
-        }
-      });
-    })();
-
-    if (targetTokenSlugs.length) {
-      return getTokenSelectorItem(targetTokenSlugs, assetRegistryMap);
-    }
-
-    return [];
-  }, [
-    accountProxies,
-    assetRegistryMap,
-    chainInfoMap,
-    tokenGroupSlug,
-    fromAndToTokenMap,
-    isAllAccount,
-    currentAccountProxy,
-  ]);
-
-  const toTokenItems = useMemo<TokenSelectorItemType[]>(() => {
-    return getTokenSelectorItem(fromAndToTokenMap[fromTokenSlugValue] || [], assetRegistryMap);
-  }, [assetRegistryMap, fromAndToTokenMap, fromTokenSlugValue]);
+  const toTokenItems = useMemo(() => {
+    return tokenSelectorItems.filter(item => item.slug !== fromTokenSlugValue);
+  }, [fromTokenSlugValue, tokenSelectorItems]);
 
   const fromAssetInfo = useMemo(() => {
     return assetRegistryMap[fromTokenSlugValue] || undefined;
@@ -341,19 +377,13 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
   const destChainValue = _getAssetOriginChain(toAssetInfo);
 
-  const feeAssetInfo = useMemo(() => {
-    return currentFeeOption ? assetRegistryMap[currentFeeOption] : undefined;
-  }, [assetRegistryMap, currentFeeOption]);
-
-  const toChainValue = useMemo(() => _getAssetOriginChain(toAssetInfo), [toAssetInfo]);
-
   const isSwitchable = useMemo(() => {
-    if (!fromAndToTokenMap[toTokenSlugValue] || !currentAccountProxy) {
+    if (!toTokenSlugValue) {
       return false;
     }
 
-    return isTokenCompatibleWithAccountChainTypes(toTokenSlugValue, currentAccountProxy.chainTypes, chainInfoMap);
-  }, [fromAndToTokenMap, toTokenSlugValue, currentAccountProxy, chainInfoMap]);
+    return isTokenCompatibleWithAccountChainTypes(toTokenSlugValue, targetAccountProxy.chainTypes, chainInfoMap);
+  }, [chainInfoMap, targetAccountProxy.chainTypes, toTokenSlugValue]);
 
   // Unable to use useEffect due to infinity loop caused by conflict setCurrentSlippage and currentQuote
   const slippage = useMemo(() => {
@@ -369,9 +399,32 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       : currentSlippage.slippage.toNumber();
   }, [currentQuote?.provider?.id, currentSlippage.slippage]);
 
+  const isNotShowAccountSelector = !isAllAccount && accountAddressItems.length < 2;
+
+  const isRecipientFieldAllowed = useMemo(() => {
+    if (!fromValue || !destChainValue || !chainInfoMap[destChainValue]) {
+      return false;
+    }
+
+    // todo: convert this find logic to util
+    const fromAccountJson = accounts.find(account => isSameAddress(account.address, fromValue));
+
+    if (!fromAccountJson) {
+      return false;
+    }
+
+    return !isChainInfoAccordantAccountChainType(chainInfoMap[destChainValue], fromAccountJson.chainType);
+  }, [accounts, chainInfoMap, destChainValue, fromValue]);
+
+  const toChainValue = useMemo(() => _getAssetOriginChain(toAssetInfo), [toAssetInfo]);
+
   const recipientAddressRules = useMemo(
     () => ({
       validate: (_recipientAddress: string, { from, chain, toTokenSlug }: SwapFormValues): Promise<ValidateResult> => {
+        if (!isRecipientFieldAllowed) {
+          return Promise.resolve(undefined);
+        }
+
         const destChain = assetRegistryMap[toTokenSlug].originChain;
         const destChainInfo = chainInfoMap[destChain];
         const account = findAccountByAddress(accounts, _recipientAddress);
@@ -388,42 +441,8 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
         });
       },
     }),
-    [accounts, assetRegistryMap, chainInfoMap, ledgerGenericAllowNetworks],
+    [accounts, assetRegistryMap, chainInfoMap, isRecipientFieldAllowed, ledgerGenericAllowNetworks],
   );
-
-  const getConvertedBalance = useCallback(
-    (feeItem: CommonFeeComponent) => {
-      const asset = assetRegistryMap[feeItem.tokenSlug];
-
-      if (asset) {
-        const { decimals, priceId } = asset;
-        const price = priceMap[priceId || ''] || 0;
-
-        return new BigN(feeItem.amount).div(BN_TEN.pow(decimals || 0)).multipliedBy(price);
-      }
-
-      return BN_ZERO;
-    },
-    [assetRegistryMap, priceMap],
-  );
-
-  const notSupportSlippageSelection = useMemo(() => {
-    const unsupportedProviders = [
-      SwapProviderId.CHAIN_FLIP_TESTNET,
-      SwapProviderId.CHAIN_FLIP_MAINNET,
-      SwapProviderId.SIMPLE_SWAP,
-    ];
-
-    return currentQuote?.provider.id ? unsupportedProviders.includes(currentQuote.provider.id) : false;
-  }, [currentQuote?.provider.id]);
-
-  const isSimpleSwapSlippage = useMemo(() => {
-    if (currentQuote?.provider.id === SwapProviderId.SIMPLE_SWAP) {
-      return true;
-    }
-
-    return false;
-  }, [currentQuote?.provider.id]);
 
   const estimatedFeeValue = useMemo(() => {
     let totalBalance = BN_ZERO;
@@ -442,71 +461,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     return totalBalance;
   }, [assetRegistryMap, currentQuote?.feeInfo.feeComponent, priceMap]);
 
-  const minimumReceived = useMemo(() => {
-    const adjustedValue = new BigN(currentQuote?.toAmount || '0')
-      .multipliedBy(new BigN(1).minus(new BigN(slippage)))
-      .integerValue(BigN.ROUND_DOWN);
-
-    const adjustedValueStr = adjustedValue.toString();
-
-    return adjustedValueStr.includes('e') ? formatNumberString(adjustedValueStr) : adjustedValueStr;
-  }, [slippage, currentQuote?.toAmount]);
-
-  const isNotShowAccountSelector = !isAllAccount && accountAddressItems.length < 2;
-
-  const showRecipientField = useMemo(() => {
-    if (!fromValue || !destChainValue || !chainInfoMap[destChainValue]) {
-      return false;
-    }
-
-    const fromAccountJson = accounts.find(account => isSameAddress(account.address, fromValue));
-
-    if (!fromAccountJson) {
-      return false;
-    }
-
-    return !isChainInfoAccordantAccountChainType(chainInfoMap[destChainValue], fromAccountJson.chainType);
-  }, [accounts, chainInfoMap, destChainValue, fromValue]);
-
-  const feeItems = useMemo(() => {
-    const result: FeeItem[] = [];
-    const feeTypeMap: Record<SwapFeeType, FeeItem> = {
-      NETWORK_FEE: {
-        label: 'Network fee',
-        value: new BigN(0),
-        prefix: `${currencyData.symbol}`,
-        type: SwapFeeType.NETWORK_FEE,
-      },
-      PLATFORM_FEE: {
-        label: 'Protocol fee',
-        value: new BigN(0),
-        prefix: `${currencyData.symbol}`,
-        type: SwapFeeType.PLATFORM_FEE,
-      },
-      WALLET_FEE: {
-        label: 'Wallet commission',
-        value: new BigN(0),
-        prefix: `${(currencyData.isPrefix && currencyData.symbol) || ''}`,
-        suffix: `${(!currencyData.isPrefix && currencyData.symbol) || ''}`,
-        type: SwapFeeType.WALLET_FEE,
-      },
-    };
-
-    currentQuote?.feeInfo.feeComponent.forEach(feeItem => {
-      const { feeType } = feeItem;
-
-      feeTypeMap[feeType].value = feeTypeMap[feeType].value.plus(getConvertedBalance(feeItem));
-    });
-
-    Object.values(feeTypeMap).forEach(fee => {
-      if (!fee.value.lte(new BigN(0))) {
-        result.push(fee);
-      }
-    });
-
-    return result;
-  }, [currencyData.isPrefix, currencyData.symbol, currentQuote?.feeInfo.feeComponent, getConvertedBalance]);
-
   const canShowAvailableBalance = useMemo(() => {
     if (fromValue && chainValue && chainInfoMap[chainValue]) {
       return isEthereumAddress(fromValue) === _isChainEvmCompatible(chainInfoMap[chainValue]);
@@ -514,20 +468,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
     return false;
   }, [fromValue, chainValue, chainInfoMap]);
-
-  const isSwapXCM = useMemo(() => {
-    return processState.steps.some(item => item.type === CommonStepType.XCM);
-  }, [processState.steps]);
-
-  const isSwapAssetHub = useMemo(() => {
-    const providerId = currentQuote?.provider?.id;
-
-    return providerId
-      ? [SwapProviderId.KUSAMA_ASSET_HUB, SwapProviderId.POLKADOT_ASSET_HUB, SwapProviderId.ROCOCO_ASSET_HUB].includes(
-          providerId,
-        )
-      : false;
-  }, [currentQuote?.provider?.id]);
 
   const currentPair = useMemo(() => {
     if (fromTokenSlugValue && toTokenSlugValue) {
@@ -538,46 +478,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
     return undefined;
   }, [fromTokenSlugValue, swapPairs, toTokenSlugValue]);
-
-  const xcmBalanceTokens = useMemo(() => {
-    if (!isSwapXCM || !fromAssetInfo || !currentPair) {
-      return [];
-    }
-
-    const result: {
-      token: string;
-      chain: string;
-    }[] = [
-      {
-        token: fromAssetInfo.slug,
-        chain: fromAssetInfo.originChain,
-      },
-    ];
-
-    const chainInfo = chainInfoMap[fromAssetInfo.originChain];
-
-    if (chainInfo) {
-      const _nativeSlug = _getChainNativeTokenSlug(chainInfo);
-
-      if (_nativeSlug !== fromAssetInfo.slug) {
-        result.push({
-          token: _getChainNativeTokenSlug(chainInfo),
-          chain: fromAssetInfo.originChain,
-        });
-      }
-    }
-
-    const alternativeAssetSlug = getSwapAlternativeAsset(currentPair);
-
-    if (alternativeAssetSlug) {
-      result.push({
-        token: alternativeAssetSlug,
-        chain: _getOriginChainOfAsset(alternativeAssetSlug),
-      });
-    }
-
-    return result;
-  }, [chainInfoMap, currentPair, fromAssetInfo, isSwapXCM]);
 
   const altChain = useMemo(() => {
     if (currentPair) {
@@ -590,11 +490,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
     return undefined;
   }, [currentPair]);
-
-  const slippageTitle = isSimpleSwapSlippage ? 'Slippage can be up to 5% due to market conditions' : '';
-  const slippageContent = isSimpleSwapSlippage
-    ? `Up to ${(slippage * 100).toString().toString()}%`
-    : `${(slippage * 100).toString().toString()}%`;
 
   const isNotConnectedAltChain = useMemo(() => {
     if (altChain && !checkChainConnected(altChain)) {
@@ -623,9 +518,9 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   );
 
   const onConfirmStillThere = useCallback(() => {
-    setRequestUserInteractToContinue(false);
     setWarningIdleModalVisible(false);
     setHandleRequestLoading(true);
+    setRequestUserInteractToContinue(false);
     setIsUserActive(true);
     continueRefreshQuoteRef.current = true;
   }, []);
@@ -639,8 +534,10 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     setChooseFeeModalVisible(false);
   }, []);
 
-  const onSelectQuote = useCallback((quote: SwapQuote) => {
-    setTempQuote(quote);
+  const onConfirmSelectedQuote = useCallback(async (quote: SwapQuote) => {
+    setPreferredProvider(quote.provider.id);
+
+    return Promise.resolve();
   }, []);
 
   const notifyNoQuote = useCallback(() => {
@@ -648,95 +545,44 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     show('No swap quote found. Please try again later', { type: 'danger' });
   }, [hideAll, show]);
 
-  const handleGenerateOptimalProcess = useCallback(
-    async (quote: SwapQuote) => {
-      try {
-        const currentRequest: SwapRequest = {
-          address: fromValue,
-          pair: quote.pair,
-          fromAmount: quote.fromAmount,
-          slippage: currentSlippage.slippage.toNumber(),
-          recipient: recipientValue || undefined,
-          currentQuote: quote.provider,
-        };
-
-        const optimalRequest = {
-          request: currentRequest,
-          selectedQuote: quote,
-        };
-
-        return await generateOptimalProcess(optimalRequest);
-      } catch (error) {
-        console.error('generateOptimalProcess failed:', error);
-
-        return null;
-      }
-    },
-    [fromValue, currentSlippage.slippage, recipientValue],
-  );
-
-  const onConfirmationItem = useCallback(
-    async (quote: SwapQuote) => {
-      setConfirmQuoteLoading(true);
-      const processResult = await handleGenerateOptimalProcess(quote);
-      if (!processResult) {
-        return;
-      }
-
-      setOptimalSwapPath(processResult);
-      dispatchProcessState({
-        payload: {
-          steps: processResult.steps,
-          feeStructure: processResult.totalFee,
-        },
-        type: CommonActionType.STEP_CREATE,
-      });
-
-      setCurrentQuote(quote);
-      setFeeOptions(quote.feeInfo.feeOptions);
-      setCurrentFeeOption(quote.feeInfo.feeOptions?.[0]);
-
-      setCurrentQuoteRequest(oldRequest => {
-        if (!oldRequest) {
-          return undefined;
-        }
-
-        return {
-          ...oldRequest,
-          currentQuote: quote.provider,
-        };
-      });
-
-      setConfirmQuoteLoading(false);
-      setSwapQuoteSelectorModalVisible(false);
-    },
-    [handleGenerateOptimalProcess],
-  );
-
-  const openChooseFeeToken = useCallback(() => {
-    setChooseFeeModalVisible(true);
+  const updateSwapStates = useCallback((rs: SwapRequestResult) => {
+    setOptimalSwapPath(rs.process);
+    setQuoteOptions(rs.quote.quotes);
+    setCurrentQuote(rs.quote.optimalQuote);
+    setQuoteAliveUntil(rs.quote.aliveUntil);
+    setFeeOptions(rs.quote.optimalQuote?.feeInfo?.feeOptions || []);
+    setCurrentFeeOption(rs.quote.optimalQuote?.feeInfo?.feeOptions?.[0]);
+    setSwapError(rs.quote.error);
   }, []);
 
   const onChangeAmount = useCallback(
     (value: string) => {
       setIsUserActive(true);
-      console.log('run to this');
       setValue('fromAmount', value);
     },
     [setValue],
   );
 
-  const openSwapSelectorModal = useCallback(() => {
-    setSwapQuoteSelectorModalVisible(true);
-  }, []);
-
-  const onOpenSlippageModal = useCallback(() => {
-    if (!notSupportSlippageSelection) {
-      setSlippageModalVisible(true);
-    } else {
-      setTooltipVisible(true);
+  const onPressMaxAmountButton = useCallback(() => {
+    if (!currentFromTokenAvailableBalance) {
+      return;
     }
-  }, [notSupportSlippageSelection]);
+
+    const result = new BigN(currentFromTokenAvailableBalance.value).multipliedBy(92).dividedToIntegerBy(100).toString();
+    onChangeAmount(result);
+    setSwapFromFieldRenderKey(`SwapFromField-${Date.now()}`);
+  }, [currentFromTokenAvailableBalance, onChangeAmount]);
+
+  const onPressHaftAmountButton = useCallback(() => {
+    if (!currentFromTokenAvailableBalance) {
+      return;
+    }
+
+    const result = new BigN(currentFromTokenAvailableBalance.value).dividedToIntegerBy(2).toString();
+
+    onChangeAmount(result);
+    setSwapFromFieldRenderKey(`SwapFromField-${Date.now()}`);
+  }, [currentFromTokenAvailableBalance, onChangeAmount]);
 
   const reValidateField = useCallback((name: string) => trigger(name), [trigger]);
 
@@ -751,88 +597,13 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     }
   }, [fromTokenSlugValue, setValue, toTokenSlugValue]);
 
-  const renderSlippage = useCallback(() => {
-    return (
-      <Tooltip
-        isVisible={tooltipVisible}
-        disableShadow={true}
-        placement={'bottom'}
-        showChildInTooltip={false}
-        topAdjustment={Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0}
-        contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
-        closeOnBackgroundInteraction={true}
-        onClose={() => setTooltipVisible(false)}
-        content={
-          <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
-            {slippageTitle}
-          </Typography.Text>
-        }>
-        <TouchableOpacity
-          onPress={onOpenSlippageModal}
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            gap: theme.sizeXXS,
-          }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-            <Typography.Text style={{ color: theme.colorSuccess }}>{'Slippage'}</Typography.Text>
-            <View style={{ paddingTop: theme.sizeXXS }}>
-              <Icon phosphorIcon={Info} size={'xs'} iconColor={theme.colorSuccess} weight={'fill'} />
-            </View>
-            <Typography.Text style={{ color: theme.colorSuccess }}>{':'}</Typography.Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
-            <Typography.Text style={{ color: theme.colorSuccess }}>{slippageContent}</Typography.Text>
-            {!notSupportSlippageSelection && (
-              <Icon phosphorIcon={PencilSimpleLine} size={'xs'} iconColor={theme.colorSuccess} weight={'bold'} />
-            )}
-          </View>
-        </TouchableOpacity>
-      </Tooltip>
-    );
-  }, [
-    tooltipVisible,
-    theme.colorBgSpotlight,
-    theme.borderRadiusLG,
-    theme.colorWhite,
-    theme.sizeXXS,
-    theme.colorSuccess,
-    slippageTitle,
-    onOpenSlippageModal,
-    slippageContent,
-    notSupportSlippageSelection,
-  ]);
+  const toggleAddressInputManually = useCallback(() => {
+    setIsRecipientFieldManuallyVisible(true);
+  }, []);
 
-  const renderRateInfo = useCallback(() => {
-    if (!currentQuote) {
-      return null;
-    }
-
-    return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-        <Number
-          size={theme.fontSize}
-          unitColor={theme.colorTextLight4}
-          decimal={0}
-          suffix={_getAssetSymbol(fromAssetInfo)}
-          value={1}
-        />
-        <Typography.Text style={{ color: theme.colorWhite }}>~</Typography.Text>
-        <Number
-          customFormatter={swapCustomFormatter}
-          formatType={'custom'}
-          metadata={numberMetadata}
-          size={theme.fontSize}
-          decimal={0}
-          suffix={_getAssetSymbol(toAssetInfo)}
-          value={currentQuote.rate}
-          unitColor={theme.colorTextLight4}
-        />
-      </View>
-    );
-  }, [currentQuote, fromAssetInfo, theme.colorTextLight4, theme.colorWhite, theme.fontSize, toAssetInfo]);
+  const isChainConnected = useMemo(() => {
+    return checkChainConnected(chainValue);
+  }, [chainValue, checkChainConnected]);
 
   const onSubmit = useCallback(
     (values: SwapFormValues) => {
@@ -850,7 +621,14 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
         return;
       }
 
+      if (isChainConnected && swapError) {
+        hideAll();
+        show(swapError?.message, { type: 'danger', duration: 3000 });
+      }
+
       if (!currentQuote || !currentOptimalSwapPath) {
+        notifyNoQuote();
+
         return;
       }
 
@@ -890,6 +668,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                 process: currentOptimalSwapPath,
                 selectedQuote: currentQuote,
                 recipient,
+                currentStep: 0,
               });
 
               const _errors = await validatePromise;
@@ -911,21 +690,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                 return await submitData(step + 1);
               }
             } else {
-              let latestOptimalQuote = currentQuote;
-
-              if (currentOptimalSwapPath.steps.length > 2 && isLastStep) {
-                if (currentQuoteRequest) {
-                  const latestSwapQuote = await getLatestSwapQuote(currentQuoteRequest);
-
-                  if (latestSwapQuote.optimalQuote) {
-                    latestOptimalQuote = latestSwapQuote.optimalQuote;
-                    setQuoteOptions(latestSwapQuote.quotes);
-                    setCurrentQuote(latestSwapQuote.optimalQuote);
-                    setQuoteAliveUntil(latestSwapQuote.aliveUntil);
-                  }
-                }
-              }
-
               if (oneSign && currentOptimalSwapPath.steps.length > 2) {
                 const submitPromise: Promise<SWTransactionResponse> = submitProcess({
                   address: from,
@@ -935,7 +699,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                     cacheProcessId: processId,
                     process: currentOptimalSwapPath,
                     currentStep: step,
-                    quote: latestOptimalQuote,
+                    quote: currentQuote,
                     address: from,
                     slippage: slippage,
                     recipient,
@@ -952,10 +716,10 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                   cacheProcessId: processId,
                   process: currentOptimalSwapPath,
                   currentStep: step,
-                  quote: latestOptimalQuote,
+                  quote: currentQuote,
                   address: from,
                   slippage: slippage,
-                  recipient: recipient || undefined,
+                  recipient,
                 });
 
                 const rs = await submitPromise;
@@ -1009,8 +773,9 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       checkChainConnected,
       currentOptimalSwapPath,
       currentQuote,
-      currentQuoteRequest,
       hideAll,
+      isChainConnected,
+      notifyNoQuote,
       onError,
       onSuccess,
       oneSign,
@@ -1019,8 +784,66 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       processState.steps.length,
       show,
       slippage,
+      swapError,
     ],
   );
+
+  const recipientAutoFilledInfo = useMemo(() => {
+    if (!isRecipientFieldAllowed || targetAccountProxy.accountType !== AccountProxyType.UNIFIED) {
+      return undefined;
+    }
+
+    const destChainInfo = chainInfoMap[destChainValue];
+
+    if (!destChainInfo) {
+      return undefined;
+    }
+
+    const accountJsonForRecipientAutoFilled = targetAccountProxy.accounts.find(a =>
+      isChainInfoAccordantAccountChainType(destChainInfo, a.chainType),
+    );
+
+    if (!accountJsonForRecipientAutoFilled) {
+      return undefined;
+    }
+
+    const formatedAddress = getReformatAddress(accountJsonForRecipientAutoFilled, destChainInfo);
+
+    if (!formatedAddress) {
+      return undefined;
+    }
+
+    return JSON.stringify({
+      address: formatedAddress,
+      name: accountJsonForRecipientAutoFilled.name,
+    });
+  }, [
+    chainInfoMap,
+    destChainValue,
+    getReformatAddress,
+    isRecipientFieldAllowed,
+    targetAccountProxy.accountType,
+    targetAccountProxy.accounts,
+  ]);
+
+  const hideRecipientField = useMemo(() => {
+    return !isRecipientFieldAllowed || (!!recipientAutoFilledInfo && !isRecipientFieldManuallyVisible);
+  }, [isRecipientFieldAllowed, isRecipientFieldManuallyVisible, recipientAutoFilledInfo]);
+
+  const openSwapQuotesModal = useCallback(() => {
+    Keyboard.dismiss();
+    setTimeout(() => {
+      setSwapQuoteSelectorModalVisible(true);
+    }, 100);
+  }, []);
+
+  const closeSwapQuotesModal = useCallback(() => {
+    setSwapQuoteSelectorModalVisible(false);
+  }, []);
+
+  const openSlippageModal = useCallback(() => {
+    setSlippageModalVisible(true);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -1055,6 +878,37 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
   }, []);
 
   useEffect(() => {
+    if (fromTokenSlugValue && toTokenSlugValue) {
+      const addressInputCurrent = addressInputRef.current;
+      if (recipientAutoFilledInfo) {
+        try {
+          setIsRecipientFieldManuallyVisible(false);
+          const { address } = JSON.parse(recipientAutoFilledInfo) as {
+            address: string;
+            name: string;
+          };
+
+          // addressInputCurrent?.setInputValue?.(address);
+          // addressInputCurrent?.setSelectedOption?.({
+          //   address,
+          //   formatedAddress: address,
+          //   analyzedGroup: AnalyzedGroup.RECENT,
+          //   displayName: name,
+          // });
+
+          setValue('recipient', address);
+        } catch (e) {
+          console.log('Parse recipientAutoFilledInfo error', e);
+        }
+      } else {
+        addressInputCurrent?.setInputValue?.('');
+        addressInputCurrent?.setSelectedOption?.(undefined);
+        setValue('recipient', undefined);
+      }
+    }
+  }, [fromTokenSlugValue, isAddressInputReady, recipientAutoFilledInfo, setValue, toTokenSlugValue]);
+
+  useEffect(() => {
     let sync = true;
     let timeout: NodeJS.Timeout;
 
@@ -1062,78 +916,67 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       timeout = setTimeout(() => {
         const fromFieldPromise = reValidateField('from');
         const recipientFieldPromise = reValidateField('recipient');
-        Promise.all([recipientFieldPromise, fromFieldPromise])
-          .then(res => {
-            if (!res.some(r => !r)) {
-              if (!sync) {
-                return;
-              }
-
-              setHandleRequestLoading(true);
-              setCurrentQuoteRequest(undefined);
-              setQuoteAliveUntil(undefined);
-              setCurrentQuote(undefined);
-              setSwapError(undefined);
-              setIsFormInvalid(false);
-              setShowQuoteArea(true);
-
-              const currentRequest: SwapRequest = {
-                address: fromValue,
-                pair: {
-                  slug: _parseAssetRefKey(fromTokenSlugValue, toTokenSlugValue),
-                  from: fromTokenSlugValue,
-                  to: toTokenSlugValue,
-                },
-                fromAmount: fromAmountValue,
-                slippage: currentSlippage.slippage.toNumber(),
-                recipient: recipientValue || undefined,
-              };
-
-              handleSwapRequest(currentRequest)
-                .then(result => {
-                  if (sync) {
-                    setCurrentQuoteRequest(currentRequest);
-                    setOptimalSwapPath(result.process);
-
-                    dispatchProcessState({
-                      payload: {
-                        steps: result.process.steps,
-                        feeStructure: result.process.totalFee,
-                      },
-                      type: CommonActionType.STEP_CREATE,
-                    });
-
-                    setQuoteOptions(result.quote.quotes);
-                    setCurrentQuote(result.quote.optimalQuote);
-                    setTempQuote(result.quote.optimalQuote);
-                    setQuoteAliveUntil(result.quote.aliveUntil);
-                    setFeeOptions(result.quote.optimalQuote?.feeInfo?.feeOptions || []);
-                    setCurrentFeeOption(result.quote.optimalQuote?.feeInfo?.feeOptions?.[0]);
-                    setSwapError(result.quote.error);
-                    optimalQuoteRef.current = result.quote.optimalQuote;
-                    setHandleRequestLoading(false);
-                  }
-                })
-                .catch(e => {
-                  console.log('handleSwapRequest error', e);
-
-                  if (sync) {
-                    console.log('e.message.toLowerCase()', e.message.toLowerCase());
-                    if (
-                      e.message.toLowerCase().startsWith('failed to fetch swap quote') ||
-                      e.message.toLowerCase().startsWith('swap pair is not found')
-                    ) {
-                      notifyNoQuote();
-                    }
-
-                    setHandleRequestLoading(false);
-                  }
-                });
-            } else {
-              if (sync) {
-                setIsFormInvalid(true);
-              }
+        const fieldsToBeValidated: Promise<boolean>[] = [fromFieldPromise];
+        if (isRecipientFieldAllowed) {
+          fieldsToBeValidated.push(recipientFieldPromise);
+        }
+        Promise.all(fieldsToBeValidated)
+          .then(() => {
+            if (!sync) {
+              return;
             }
+
+            setHandleRequestLoading(true);
+            setCurrentQuoteRequest(undefined);
+            setQuoteAliveUntil(undefined);
+            setCurrentQuote(undefined);
+            setSwapError(undefined);
+            setIsFormInvalid(false);
+            setShowQuoteArea(true);
+
+            const currentRequest: SwapRequestV2 = {
+              address: fromValue,
+              pair: {
+                slug: _parseAssetRefKey(fromTokenSlugValue, toTokenSlugValue),
+                from: fromTokenSlugValue,
+                to: toTokenSlugValue,
+              },
+              fromAmount: fromAmountValue,
+              slippage: currentSlippage.slippage.toNumber(),
+              recipient: recipientValue || undefined,
+              preferredProvider: preferredProvider,
+            };
+
+            handleSwapRequestV2(currentRequest)
+              .then(result => {
+                if (sync) {
+                  setCurrentQuoteRequest(currentRequest);
+                  dispatchProcessState({
+                    payload: {
+                      steps: result.process.steps,
+                      feeStructure: result.process.totalFee,
+                    },
+                    type: CommonActionType.STEP_CREATE,
+                  });
+
+                  updateSwapStates(result);
+                  setHandleRequestLoading(false);
+                }
+              })
+              .catch(e => {
+                console.log('handleSwapRequest error', e);
+
+                if (sync) {
+                  if (
+                    e.message.toLowerCase().startsWith('failed to fetch swap quote') ||
+                    e.message.toLowerCase().startsWith('swap pair is not found')
+                  ) {
+                    notifyNoQuote();
+                  }
+
+                  setHandleRequestLoading(false);
+                }
+              });
           })
           .catch(() => {
             if (sync) {
@@ -1142,11 +985,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
           });
       }, 300);
     } else {
-      setHandleRequestLoading(false);
-      setCurrentQuoteRequest(undefined);
-      setQuoteAliveUntil(undefined);
-      setCurrentQuote(undefined);
-      setSwapError(undefined);
       setIsFormInvalid(true);
     }
 
@@ -1160,10 +998,13 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     fromAmountValue,
     fromTokenSlugValue,
     fromValue,
+    isRecipientFieldAllowed,
     notifyNoQuote,
+    preferredProvider,
     reValidateField,
     recipientValue,
     toTokenSlugValue,
+    updateSwapStates,
   ]);
 
   useEffect(() => {
@@ -1217,28 +1058,26 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     let timer: string | number | NodeJS.Timeout | undefined;
     let sync = true;
 
-    const updateQuote = () => {
+    const refreshSwapRequestResult = () => {
       if (currentQuoteRequest) {
         if (sync) {
           setHandleRequestLoading(true);
         }
 
-        getLatestSwapQuote(currentQuoteRequest)
+        handleSwapRequestV2(currentQuoteRequest)
           .then(rs => {
             if (sync) {
-              if (rs.optimalQuote) {
-                setSwapError(undefined);
-              }
-              setQuoteOptions(rs.quotes);
-              setCurrentQuote(rs.optimalQuote);
-              setQuoteAliveUntil(rs.aliveUntil);
+              updateSwapStates(rs);
+              setHandleRequestLoading(false);
             }
           })
           .catch(e => {
-            console.log('Error when getLatestSwapQuote', e);
-          })
-          .finally(() => {
             if (sync) {
+              console.log('Error when doing refreshSwapRequestResult', e);
+
+              if (e.message.toLowerCase().startsWith('swap pair is not found')) {
+                notifyNoQuote();
+              }
               setHandleRequestLoading(false);
             }
           });
@@ -1260,13 +1099,13 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
         clearInterval(timer);
 
         if (!requestUserInteractToContinue && !hasInternalConfirmations) {
-          updateQuote();
+          refreshSwapRequestResult();
         }
       } else {
         if (continueRefreshQuoteRef.current) {
           continueRefreshQuoteRef.current = false;
 
-          updateQuote();
+          refreshSwapRequestResult();
         }
       }
     };
@@ -1279,7 +1118,14 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       sync = false;
       clearInterval(timer);
     };
-  }, [currentQuoteRequest, hasInternalConfirmations, quoteAliveUntil, requestUserInteractToContinue]);
+  }, [
+    currentQuoteRequest,
+    hasInternalConfirmations,
+    notifyNoQuote,
+    quoteAliveUntil,
+    requestUserInteractToContinue,
+    updateSwapStates,
+  ]);
 
   useEffect(() => {
     if (isFormInvalid) {
@@ -1293,7 +1139,6 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
 
   useEffect(() => {
     if (requestUserInteractToContinue) {
-      setSwapQuoteModalVisible(false);
       setChooseFeeModalVisible(false);
       setSwapQuoteSelectorModalVisible(false);
       setSlippageModalVisible(false);
@@ -1306,50 +1151,19 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
       turnOnChain(altChain);
     }
   }, [checkChainConnected, altChain, turnOnChain]);
+  // useEffect(() => {
+  //   if (hideRecipientField) {
+  //     setValue('recipient', '');
+  //   }
+  // }, [setValue, hideRecipientField]);
 
   useEffect(() => {
-    if (!showRecipientField) {
-      setValue('recipient', '');
+    if (isChainConnected && swapError) {
+      show(swapError?.message, {
+        type: 'danger',
+      });
     }
-  }, [setValue, showRecipientField]);
-
-  const renderAlertBox = useCallback(() => {
-    const multichainAsset = fromAssetInfo?.multiChainAsset;
-    const fromAssetName = multichainAsset && multiChainAssetMap[multichainAsset]?.name;
-    const toAssetName = chainInfoMap[toAssetInfo?.originChain]?.name;
-
-    return (
-      <View style={{ gap: theme.sizeXS }}>
-        {isSwapAssetHub && !isFormInvalid && (
-          <AlertBox
-            description={
-              'Swapping on Asset Hub is in beta with a limited number of pairs and low liquidity. Continue at your own risk'
-            }
-            title={'Pay attention!'}
-            type={'warning'}
-          />
-        )}
-
-        {isSwapXCM && fromAssetName && toAssetName && !isFormInvalid && !oneSign && (
-          <AlertBox
-            description={`The amount you entered is higher than your available balance on ${toAssetName} network. You need to first transfer cross-chain from ${fromAssetName} network to ${toAssetName} network to continue swapping`}
-            title={'Action needed'}
-            type={'warning'}
-          />
-        )}
-      </View>
-    );
-  }, [
-    chainInfoMap,
-    fromAssetInfo?.multiChainAsset,
-    isFormInvalid,
-    isSwapAssetHub,
-    isSwapXCM,
-    multiChainAssetMap,
-    oneSign,
-    theme.sizeXS,
-    toAssetInfo?.originChain,
-  ]);
+  }, [isChainConnected, show, swapError, swapError?.message]);
 
   return (
     <>
@@ -1371,7 +1185,35 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
               showsVerticalScrollIndicator={false}
               ref={scrollRef}
               keyboardShouldPersistTaps={'handled'}>
+              {!!currentFromTokenAvailableBalance && (
+                <View
+                  style={{
+                    position: 'relative',
+                    flexDirection: 'row',
+                    zIndex: 10,
+                    justifyContent: 'flex-end',
+                    height: 0,
+                  }}>
+                  <Button
+                    style={{ paddingHorizontal: 0 }}
+                    onPress={onPressMaxAmountButton}
+                    size={'xs'}
+                    type={'ghost'}
+                    externalTextStyle={{ fontSize: theme.fontSizeSM, lineHeight: 40, height: 40, ...FontSemiBold }}>
+                    Max
+                  </Button>
+                  <Button
+                    style={{ paddingHorizontal: 0 }}
+                    onPress={onPressHaftAmountButton}
+                    size={'xs'}
+                    type={'ghost'}
+                    externalTextStyle={{ fontSize: theme.fontSizeSM, lineHeight: 40, height: 40, ...FontSemiBold }}>
+                    50%
+                  </Button>
+                </View>
+              )}
               <SwapFromField
+                key={swapFromFieldRenderKey}
                 fromAsset={fromAssetInfo}
                 onChangeInput={onChangeAmount}
                 assetValue={fromTokenSlugValue}
@@ -1401,17 +1243,30 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                 />
               </View>
 
-              <SwapToField
-                decimals={_getAssetDecimals(toAssetInfo)}
-                toAsset={toAssetInfo}
-                assetValue={toTokenSlugValue}
-                chainValue={toChainValue}
-                tokenSelectorItems={toTokenItems}
-                swapValue={currentQuote?.toAmount || 0}
-                chainInfo={chainInfoMap[toChainValue]}
-                onSelectToken={onSelectToToken}
-                loading={handleRequestLoading && showQuoteArea}
-              />
+              <View style={{ position: 'relative' }}>
+                {!!recipientAutoFilledInfo && !isRecipientFieldManuallyVisible && (
+                  <View style={{ position: 'absolute', top: -2, zIndex: 10, right: 4 }}>
+                    <Button
+                      type={'ghost'}
+                      icon={<Icon phosphorIcon={Book} size={'xs'} iconColor={theme['gray-5']} />}
+                      size={'xs'}
+                      onPress={toggleAddressInputManually}
+                    />
+                  </View>
+                )}
+
+                <SwapToField
+                  decimals={_getAssetDecimals(toAssetInfo)}
+                  toAsset={toAssetInfo}
+                  assetValue={toTokenSlugValue}
+                  chainValue={toChainValue}
+                  tokenSelectorItems={toTokenItems}
+                  swapValue={currentQuote?.toAmount || 0}
+                  chainInfo={chainInfoMap[toChainValue]}
+                  onSelectToken={onSelectToToken}
+                  loading={handleRequestLoading && showQuoteArea}
+                />
+              </View>
 
               {!isNotShowAccountSelector && (
                 <AccountSelector
@@ -1437,7 +1292,7 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                 />
               )}
 
-              {showRecipientField && (
+              {!hideRecipientField && (
                 <FormItem
                   name={'recipient'}
                   control={control}
@@ -1445,7 +1300,12 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
                   render={({ field: { value, ref, onChange, onBlur } }) => (
                     <InputAddress
                       containerStyle={{ marginTop: theme.marginXS }}
-                      ref={ref}
+                      ref={el => {
+                        if (el) {
+                          (addressInputRef as React.MutableRefObject<AddressInputRef>).current = el;
+                          ref?.(el);
+                        }
+                      }}
                       label={'To:'}
                       value={value}
                       horizontal
@@ -1465,82 +1325,37 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
               )}
 
               <View style={{ marginTop: theme.marginXS }}>
-                <FreeBalanceToYield
-                  address={fromValue}
-                  label={`${i18n.inputLabel.availableBalance}:`}
-                  tokens={xcmBalanceTokens}
-                  hidden={!canShowAvailableBalance || !isSwapXCM}
-                />
-
                 <FreeBalance
                   address={fromValue}
                   chain={chainValue}
-                  hidden={!canShowAvailableBalance || isSwapXCM}
+                  extrinsicType={ExtrinsicType.SWAP}
+                  hidden={!canShowAvailableBalance}
                   isSubscribe={true}
-                  label={`${i18n.inputLabel.availableBalance}:`}
+                  label={`${i18n.inputLabel.availableBalance}`}
                   tokenSlug={fromTokenSlugValue}
-                  showNetwork
+                  labelTooltip={'Available balance for swap'}
+                  showNetwork={false}
                 />
               </View>
 
-              {showQuoteArea && !!fromTokenItems.length && (
-                <>
-                  {!!currentQuote && !isFormInvalid && (
-                    <>
-                      <Divider type={'horizontal'} />
-
-                      <View style={{ marginTop: theme.sizeXS }}>
-                        <MetaInfo labelColorScheme={'gray'} spaceSize={'sm'} valueColorScheme={'light'}>
-                          <MetaInfo.Default label={'Quote rate'} valueColorSchema={'gray'}>
-                            {handleRequestLoading ? <ActivityIndicator size={20} /> : renderRateInfo()}
-                          </MetaInfo.Default>
-                          <MetaInfo.Default label={'Estimated fee'}>
-                            {handleRequestLoading ? (
-                              <ActivityIndicator size={20} />
-                            ) : (
-                              <Number
-                                size={theme.fontSize}
-                                decimal={0}
-                                prefix={currencyData?.symbol}
-                                value={estimatedFeeValue}
-                              />
-                            )}
-                          </MetaInfo.Default>
-                        </MetaInfo>
-
-                        {!isFormInvalid && !handleRequestLoading && (
-                          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <QuoteResetTime quoteAliveUntilValue={quoteAliveUntil} />
-
-                            <TouchableOpacity
-                              style={{ height: 40, justifyContent: 'center' }}
-                              onPress={() => {
-                                Keyboard.dismiss();
-                                setTimeout(() => setSwapQuoteModalVisible(true), 100);
-                              }}>
-                              <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
-                                <Typography.Text style={{ color: theme.colorTextLight4 }}>
-                                  {'View swap quote'}
-                                </Typography.Text>
-                                <View style={{ paddingTop: 2 }}>
-                                  <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight4} />
-                                </View>
-                              </View>
-                            </TouchableOpacity>
-                          </View>
-                        )}
-                      </View>
-                    </>
-                  )}
-
-                  <View style={{ marginTop: theme.marginXS }}>
-                    {swapError && !errors.recipient && <Warning isDanger message={swapError.message} />}
-                  </View>
-                </>
+              {showQuoteArea && (
+                <QuoteInfoArea
+                  currentOptimalSwapPath={currentOptimalSwapPath}
+                  currentQuote={currentQuote}
+                  estimatedFeeValue={estimatedFeeValue}
+                  fromAssetInfo={fromAssetInfo}
+                  handleRequestLoading={handleRequestLoading}
+                  isFormInvalid={isFormInvalid}
+                  openSlippageModal={openSlippageModal}
+                  openSwapQuotesModal={openSwapQuotesModal}
+                  quoteAliveUntil={quoteAliveUntil}
+                  quoteOptions={quoteOptions}
+                  slippage={slippage}
+                  swapError={swapError}
+                  toAssetInfo={toAssetInfo}
+                />
               )}
-
-              {!!fromTokenItems.length && !errors.recipient && renderAlertBox()}
-              {tokenGroupSlug && !fromAssetInfo && (
+              {defaultSlug && !fromAssetInfo && (
                 <AlertBox
                   type={'warning'}
                   title={'Pay attention!'}
@@ -1583,46 +1398,26 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
               onApplySlippage={onSelectSlippage}
             />
 
-            {!isFormInvalid && (
-              <SwapQuoteDetailModal
-                modalVisible={swapQuoteModalVisible}
-                setModalVisible={setSwapQuoteModalVisible}
-                minimumReceived={minimumReceived}
-                symbol={_getAssetSymbol(toAssetInfo)}
-                currentQuote={currentQuote}
-                renderRateInfo={renderRateInfo}
+            {swapQuoteSelectorModalVisible && (
+              <SwapQuotesSelectorModal
+                applyQuote={onConfirmSelectedQuote}
+                disableConfirmButton={handleRequestLoading}
+                modalVisible={swapQuoteSelectorModalVisible}
+                setModalVisible={setSwapQuoteSelectorModalVisible}
+                items={quoteOptions}
+                onCancel={closeSwapQuotesModal}
                 quoteAliveUntil={quoteAliveUntil}
-                value={estimatedFeeValue}
-                feeItems={feeItems}
-                openChooseFeeToken={openChooseFeeToken}
-                openSwapSelectorModal={openSwapSelectorModal}
-                feeAssetInfo={feeAssetInfo}
-                renderSlippage={renderSlippage}
-                handleRequestLoading={handleRequestLoading}
-                currencyData={currencyData}
-                decimals={_getAssetDecimals(toAssetInfo)}
+                selectedItem={currentQuote}
               />
             )}
-
-            <SwapQuotesSelectorModal
-              modalVisible={swapQuoteSelectorModalVisible}
-              setModalVisible={setSwapQuoteSelectorModalVisible}
-              items={quoteOptions}
-              onSelectItem={onSelectQuote}
-              selectedItem={tempQuote}
-              optimalQuoteItem={optimalQuoteRef.current}
-              loading={confirmQuoteLoading}
-              onConfirmationItem={onConfirmationItem}
-            />
 
             <ChooseFeeTokenModal
               modalVisible={chooseFeeModalVisible}
               setModalVisible={setChooseFeeModalVisible}
-              items={feeOptions}
               estimatedFee={estimatedFeeValue}
+              items={feeOptions}
               selectedItem={currentFeeOption}
               onSelectItem={onSelectFeeOption}
-              currencyData={currencyData}
             />
 
             <SwapIdleWarningModal
@@ -1638,3 +1433,32 @@ export const Swap = ({ route: { params } }: SendFundProps) => {
     </>
   );
 };
+
+const Swap = ({ route: { params } }: SendFundProps) => {
+  const { accountProxies, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
+  const navigation = useNavigation<RootNavigationProps>();
+
+  const targetAccountProxy = useMemo(() => {
+    return accountProxies.find(ap => {
+      if (!currentAccountProxy) {
+        return isAccountAll(ap.id);
+      }
+
+      return ap.id === currentAccountProxy.id;
+    });
+  }, [accountProxies, currentAccountProxy]);
+
+  useEffect(() => {
+    if (!targetAccountProxy) {
+      navigation.goBack();
+    }
+  }, [navigation, targetAccountProxy]);
+
+  if (!targetAccountProxy) {
+    return <></>;
+  }
+
+  return <Component targetAccountProxy={targetAccountProxy} defaultSlug={params?.slug} />;
+};
+
+export default Swap;

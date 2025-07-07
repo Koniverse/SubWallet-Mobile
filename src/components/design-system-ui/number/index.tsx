@@ -27,6 +27,8 @@ export interface SwNumberProps {
   unitOpacity?: number;
   unitColor?: string;
   style?: ViewStyle;
+  hide?: boolean;
+  showHideLength?: number;
 }
 
 interface LocaleNumberFormat {

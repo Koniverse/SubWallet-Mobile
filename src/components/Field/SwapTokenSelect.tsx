@@ -39,7 +39,7 @@ export const SwapTokenSelectField = ({
         {!!value && (
           <>
             <View style={styles.logoWrapper}>{getTokenLogo(logoKey, subLogoKey, label ? 28 : 32)}</View>
-            <View style={{ paddingRight: 22 }}>
+            <View style={{ paddingRight: 22, flex: 1 }}>
               <Typography.Text ellipsis style={styles.text}>
                 {value}
               </Typography.Text>

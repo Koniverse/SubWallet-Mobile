@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ProcessTransactionData, ProcessType, ResponseSubscribeProcessById } from '@subwallet/extension-base/types';
 import { cancelSubscription, subscribeProcess } from '../../../messaging';
@@ -7,7 +7,7 @@ import { Button, Divider, SwModal } from '../../design-system-ui';
 import CurrentProcessStep from 'components/Modal/TransactionProcessDetailModal/parts/CurrentProcessStep';
 import TransactionInfoBlock from 'components/Modal/TransactionProcessDetailModal/parts/TransactionInfoBlock';
 import ProcessStepList from 'components/Modal/TransactionProcessDetailModal/parts/ProcessStepList';
-
+import { deviceHeight } from 'constants/index';
 interface Props {
   processId: string;
   onCancel: () => void;
@@ -89,11 +89,12 @@ const TransactionProcessDetailModal: React.FC<Props> = (props: Props) => {
       modalTitle={modalTitle}
       isUseModalV2
       onChangeModalVisible={onCancel}
+      isAllowSwipeDown={Platform.OS === 'ios'}
       titleTextAlign={'center'}
       footer={footer}>
       <ScrollView
+        style={{ maxHeight: deviceHeight * 0.6 }}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps={'handled'}
         contentContainerStyle={{ gap: theme.size }}>
         <CurrentProcessStep processData={processData} />
         <TransactionInfoBlock processData={processData} />

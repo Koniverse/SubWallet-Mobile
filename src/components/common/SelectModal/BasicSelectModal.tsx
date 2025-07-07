@@ -10,6 +10,7 @@ import { OptionType } from 'components/common/FilterModal';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ScrollView } from 'react-native-gesture-handler';
+import { deviceHeight } from 'constants/index';
 
 interface Props<T> {
   title: string;
@@ -38,6 +39,7 @@ interface Props<T> {
   isUseForceHidden?: boolean;
   level?: number;
   isUseModalV2?: boolean;
+  searchFunction?: (items: T[], searchString: string) => T[];
 }
 
 function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
@@ -121,7 +123,7 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
             // ...MarginBottomForSubmitButton,
             marginTop: theme.padding,
           }}
-          disabled={applyBtn?.disabled}
+          disabled={applyBtn?.disabled || !items.length}
           icon={color => <Icon phosphorIcon={applyBtn?.icon} size={'lg'} iconColor={color} />}
           onPress={applyBtn?.onPressApplyBtn}>
           {applyBtn?.label}
@@ -168,7 +170,7 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
             <ScrollView
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps={'handled'}
-              style={{ width: '100%', maxHeight: 400 }}
+              style={{ width: '100%', maxHeight: deviceHeight * 0.4 }}
               contentContainerStyle={{ gap: 8 }}>
               {items.map(item => (renderCustomItem ? renderCustomItem(item) : renderItem(item)))}
             </ScrollView>

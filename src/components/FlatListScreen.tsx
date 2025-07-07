@@ -12,6 +12,7 @@ import FilterModal, { OptionType } from 'components/common/FilterModal';
 import { useFilterModal } from 'hooks/useFilterModal';
 import { LazySectionList, SectionItem } from 'components/LazySectionList';
 import { ContentStyle, ListRenderItemInfo } from '@shopify/flash-list';
+import { FullSizeFilterModal } from 'components/common/FilterModal/FullSizeFilterModal';
 
 export interface RightIconOpt {
   icon?: (iconProps: IconProps) => JSX.Element;
@@ -67,6 +68,8 @@ interface Props<T> {
   removeClippedSubviews?: boolean;
   isShowCustomContent?: boolean;
   renderCustomContent?: () => JSX.Element | JSX.Element[];
+  filterModalSearchFunc?: (items: OptionType[], searchString: string) => OptionType[];
+  isFilterFullSize?: boolean;
 }
 
 export function FlatListScreen<T>({
@@ -111,11 +114,20 @@ export function FlatListScreen<T>({
   removeClippedSubviews,
   isShowCustomContent,
   renderCustomContent,
+  filterModalSearchFunc,
+  isFilterFullSize,
 }: Props<T>) {
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
   const searchRef = useRef<TextInput>(null);
-  const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
-    useFilterModal(defaultSelectionMap);
+  const {
+    filterSelectionMap,
+    openFilterModal,
+    onApplyFilter,
+    onChangeFilterOption,
+    selectedFilters,
+    filterModalRef,
+    onCloseFilterModal,
+  } = useFilterModal(defaultSelectionMap);
 
   useEffect(() => {
     setTimeout(() => {
@@ -205,13 +217,30 @@ export function FlatListScreen<T>({
       {afterListItem}
 
       {!!(filterOptions && filterOptions.length && filterSelectionMap) && (
-        <FilterModal
-          filterModalRef={filterModalRef}
-          options={filterOptions}
-          onChangeOption={onChangeFilterOption}
-          optionSelectionMap={filterSelectionMap}
-          onApplyFilter={onApplyFilter}
-        />
+        <>
+          {isFilterFullSize ? (
+            <FullSizeFilterModal
+              ref={filterModalRef}
+              options={filterOptions}
+              onChangeOption={onChangeFilterOption}
+              optionSelectionMap={filterSelectionMap}
+              onApplyFilter={onApplyFilter}
+              searchFunction={filterModalSearchFunc}
+              placeholder={'Search network'}
+              autoFocus={true}
+              onCloseModal={onCloseFilterModal}
+            />
+          ) : (
+            <FilterModal
+              filterModalRef={filterModalRef}
+              options={filterOptions}
+              onChangeOption={onChangeFilterOption}
+              optionSelectionMap={filterSelectionMap}
+              onApplyFilter={onApplyFilter}
+              searchFunction={filterModalSearchFunc}
+            />
+          )}
+        </>
       )}
     </View>
   );

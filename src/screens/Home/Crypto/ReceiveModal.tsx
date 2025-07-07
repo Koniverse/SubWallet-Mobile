@@ -22,6 +22,7 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { AccountActions } from '@subwallet/extension-base/types';
 import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 interface Props {
   modalVisible: boolean;
@@ -128,7 +129,13 @@ export const ReceiveModal = ({
       <View style={receiveModalContentWrapper}>
         <View style={{ paddingTop: 16 }}>
           {address && (
-            <QRCode width={264} height={264} QRSize={264 / 41} qrRef={(ref?) => (svg = ref)} value={address} />
+            <QRCode
+              width={264}
+              height={264}
+              QRSize={isEthereumAddress(address) ? 264 / 37 : 264 / 41}
+              qrRef={(ref?) => (svg = ref)}
+              value={address}
+            />
           )}
         </View>
 

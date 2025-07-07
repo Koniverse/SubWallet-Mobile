@@ -326,7 +326,10 @@ export const subscribeAuthUrls = lazySubscribeMessage('pri(authorize.subscribe)'
 // export const subscribeMediaAllowance = lazySubscribeMessage('pri(accounts.subscribeWithCurrentAddress)', {}, updateCurrentAccountState, updateCurrentAccountState);
 
 export const updateChainInfoMap = (data: Record<string, _ChainInfo>) => {
-  store.dispatch({ type: 'chainStore/updateChainInfoMap', payload: data });
+  const filteredData = Object.fromEntries(
+    Object.entries(data).filter(([key]) => key !== 'cardano' && key !== 'cardano_preproduction'),
+  );
+  store.dispatch({ type: 'chainStore/updateChainInfoMap', payload: filteredData });
 };
 
 export const subscribeChainInfoMap = lazySubscribeMessage(

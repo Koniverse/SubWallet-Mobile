@@ -7,22 +7,20 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { BN_TEN, BN_ZERO } from 'utils/chainBalances';
 import BigN from 'bignumber.js';
-import { View } from 'react-native';
-import { Number, Typography } from 'components/design-system-ui';
-import { _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
 import { ConfirmationContent } from 'components/common/Confirmation';
 import { SwapTransactionBlock } from 'components/Swap/SwapTransactionBlock';
 import MetaInfo from 'components/MetaInfo';
 import i18n from 'utils/i18n/i18n';
-import { SwapRoute } from 'components/Swap/SwapRoute';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { useGetTransactionProcessSteps } from 'hooks/transaction/process';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { getSwapChainsFromPath, getTokenPairFromStep } from '@subwallet/extension-base/services/swap-service/utils';
+import { ProcessType } from '@subwallet/extension-base/types';
+import QuoteRateDisplay from 'components/Swap/QuoteRateDisplay';
+import useGetSwapProcessSteps from 'hooks/transaction/process/useGetSwapProcessSteps';
 
 type Props = BaseProcessConfirmationProps;
 
 export const SwapProcessConfirmation = ({ process }: Props) => {
-  const theme = useSubWalletTheme().swThemes;
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
@@ -55,25 +53,28 @@ export const SwapProcessConfirmation = ({ process }: Props) => {
     return totalBalance;
   }, [assetRegistryMap, data.quote.feeInfo.feeComponent, priceMap]);
 
-  const renderRateConfirmInfo = () => {
-    return (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Number size={14} decimal={0} value={1} suffix={_getAssetSymbol(fromAssetInfo)} />
-        <Typography.Text style={{ color: theme.colorWhite }}> ~ </Typography.Text>
-        <Number size={14} decimal={0} suffix={_getAssetSymbol(toAssetInfo)} value={data.quote.rate} />
-      </View>
-    );
-  };
-
   const getWaitingTime = useMemo(() => {
     return Math.ceil((data.quote.estimatedArrivalTime || 0) / 60);
   }, [data.quote.estimatedArrivalTime]);
 
   const getTransactionProcessSteps = useGetTransactionProcessSteps();
+  const getSwapProcessSteps = useGetSwapProcessSteps();
 
   const stepItems = useMemo(() => {
-    return getTransactionProcessSteps(process.steps, process.combineInfo, false);
-  }, [getTransactionProcessSteps, process.combineInfo, process.steps]);
+    if (process.type === ProcessType.SWAP) {
+      return getSwapProcessSteps(data.process, data.quote);
+    }
+
+    return getTransactionProcessSteps(process.steps, data, false);
+  }, [process.type, process.steps, getTransactionProcessSteps, data, getSwapProcessSteps]);
+
+  const processChains = useMemo(() => {
+    return getSwapChainsFromPath(data.process.path);
+  }, [data.process.path]);
+
+  const originSwapPair = useMemo(() => {
+    return getTokenPairFromStep(data.process.steps);
+  }, [data.process.steps]);
 
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
@@ -94,7 +95,12 @@ export const SwapProcessConfirmation = ({ process }: Props) => {
 
   return (
     <ConfirmationContent isFullHeight>
-      <SwapTransactionBlock quote={data.quote} />
+      <SwapTransactionBlock
+        fromAmount={data.quote.fromAmount}
+        fromAssetSlug={originSwapPair?.from}
+        toAmount={data.quote.toAmount}
+        toAssetSlug={originSwapPair?.to}
+      />
 
       <MetaInfo labelColorScheme={'gray'} valueColorScheme={'light'}>
         <MetaInfo.Account
@@ -106,7 +112,7 @@ export const SwapProcessConfirmation = ({ process }: Props) => {
         />
 
         <MetaInfo.Default label={'Quote rate'} valueColorSchema={'gray'}>
-          {renderRateConfirmInfo()}
+          <QuoteRateDisplay fromAssetInfo={fromAssetInfo} rateValue={data.quote.rate} toAssetInfo={toAssetInfo} />
         </MetaInfo.Default>
 
         <MetaInfo.Number
@@ -117,9 +123,7 @@ export const SwapProcessConfirmation = ({ process }: Props) => {
           value={estimatedFeeValue}
         />
 
-        <MetaInfo.Default label={'Swap route'} />
-        <SwapRoute swapRoute={data.quote.route} />
-        <MetaInfo.TransactionProcess items={stepItems} type={process.type} />
+        <MetaInfo.TransactionProcess items={stepItems} type={process.type} processChains={processChains} />
 
         {!showQuoteExpired && getWaitingTime > 0 && (
           <AlertBox
@@ -128,15 +132,15 @@ export const SwapProcessConfirmation = ({ process }: Props) => {
             type={'warning'}
           />
         )}
-
-        {showQuoteExpired && (
-          <AlertBox
-            title={'Pay attention!'}
-            description={'Swap quote expired. Cancel to get a new quote.'}
-            type={'warning'}
-          />
-        )}
       </MetaInfo>
+
+      {showQuoteExpired && (
+        <AlertBox
+          title={'Pay attention!'}
+          description={'Swap quote expired. Cancel to get a new quote.'}
+          type={'warning'}
+        />
+      )}
     </ConfirmationContent>
   );
 };

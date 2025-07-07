@@ -23,7 +23,7 @@ import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { CustomizationModal } from 'screens/Home/Crypto/CustomizationModal';
 import { useToast } from 'react-native-toast-notifications';
 import { TokenSearchModal } from 'screens/Home/Crypto/TokenSearchModal';
-import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
+import { SelectAccAndTokenModal } from 'components/Modal/SelectAccAndTokenModal';
 import { tokenItem } from 'constants/itemHeight';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { AccountChainType, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';

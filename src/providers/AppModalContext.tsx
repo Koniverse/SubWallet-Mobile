@@ -9,8 +9,8 @@ import { RootStackParamList } from 'routes/index';
 import TransactionProcessDetailModal from 'components/Modal/TransactionProcessDetailModal';
 import TransactionStepsModal from 'components/Modal/TransactionStepsModal';
 import { ProcessType } from '@subwallet/extension-base/types';
-import { ProcessStepItemType } from 'components/ProcessStepItem';
 import SelectAddressFormatModal from 'components/Modal/SelectAddressFormatModal';
+import { TransactionProcessStepItemType } from 'types/component';
 
 interface AppModalContextProviderProps {
   children?: React.ReactElement;
@@ -65,7 +65,8 @@ export type SelectAddressFormatModalState = {
 export type TransactionStepsInfo = {
   visible?: boolean;
   type?: ProcessType;
-  items?: ProcessStepItemType[];
+  items?: TransactionProcessStepItemType[];
+  variant?: 'standard' | 'simple';
 };
 
 export interface AppModal {

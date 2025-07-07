@@ -7,6 +7,7 @@ import { CheckCircle, ClockCounterClockwise, ProhibitInset, SpinnerGap } from 'p
 import { Icon, Typography } from 'components/design-system-ui';
 import { isStepCompleted, isStepFailed, isStepPending, isStepProcessing, isStepTimeout } from 'utils/transaction';
 import { RollingIcon } from 'components/RollingIcon';
+import { TransactionProcessStepItemType } from 'types/component';
 
 export type ProcessStepItemType = {
   status: StepStatus;
@@ -16,7 +17,7 @@ export type ProcessStepItemType = {
   isFirstItem?: boolean;
 };
 
-type Props = ProcessStepItemType;
+type Props = TransactionProcessStepItemType;
 
 const ProcessStepItem: React.FC<Props> = (props: Props) => {
   const { index, isLastItem, isFirstItem, status, text } = props;

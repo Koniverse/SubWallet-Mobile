@@ -1,92 +1,109 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { Button, Icon, SwModal } from 'components/design-system-ui';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { SwapQuotesItem } from 'components/Item/Swap/SwapQuotesItem';
-import { RootState } from 'stores/index';
-import { useSelector } from 'react-redux';
-import { _getAssetDecimals, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
 import { ScrollView, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapQuote } from '@subwallet/extension-base/types/swap';
 import { deviceHeight } from 'constants/index';
 import { CheckCircle } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
+import { VoidFunction } from 'types/index';
+import { QuoteResetTime } from 'components/Swap/QuoteResetTime';
 
 interface Props {
   modalVisible: boolean;
-  items: SwapQuote[];
   setModalVisible: (value: boolean) => void;
-  onSelectItem: (quote: SwapQuote) => void;
+  items: SwapQuote[];
+  applyQuote: (quote: SwapQuote) => Promise<void>;
   selectedItem?: SwapQuote;
-  optimalQuoteItem?: SwapQuote;
-  loading: boolean;
-  onConfirmationItem: (quote: SwapQuote) => Promise<void>;
+  onCancel: VoidFunction;
+  quoteAliveUntil: number | undefined;
+  disableConfirmButton?: boolean;
 }
 
 export const SwapQuotesSelectorModal = ({
   modalVisible,
   setModalVisible,
   items,
-  optimalQuoteItem,
   selectedItem,
-  onSelectItem,
-  loading,
-  onConfirmationItem,
+  applyQuote,
+  onCancel,
+  quoteAliveUntil,
+  disableConfirmButton,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
-  const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-
-  const getToAssetInfo = useCallback(
-    (quote: SwapQuote) => {
-      return assetRegistryMap[quote.pair.to] || undefined;
-    },
-    [assetRegistryMap],
-  );
+  const [loading, setLoading] = useState<boolean>(false);
+  const [currentQuote, setCurrentQuote] = useState<SwapQuote | undefined>(selectedItem);
+  const onSelectItem = useCallback((quote: SwapQuote) => {
+    setCurrentQuote(quote);
+  }, []);
 
   const handleApplySlippage = useCallback(() => {
-    if (selectedItem) {
-      onConfirmationItem(selectedItem).catch(error => {
-        console.error('Error when confirm swap quote:', error);
-      });
+    const quoteResult = items.find(i => i.provider.id === currentQuote?.provider.id);
+    if (quoteResult) {
+      setLoading(true);
+      applyQuote(quoteResult)
+        .catch(error => {
+          console.error('Error when confirm swap quote:', error);
+        })
+        .finally(() => {
+          onCancel();
+          setLoading(false);
+        });
     }
-  }, [onConfirmationItem, selectedItem]);
+  }, [applyQuote, currentQuote?.provider.id, items, onCancel]);
+
+  useEffect(() => {
+    if (items.length) {
+      if (currentQuote && selectedItem && !items.some(i => i.provider.id === currentQuote.provider.id)) {
+        setCurrentQuote(selectedItem);
+      }
+    }
+  }, [currentQuote, items, selectedItem]);
 
   const renderItems = useCallback(
     (_items: SwapQuote[]) => {
-      return _items.map(item => {
-        const decimals = _getAssetDecimals(getToAssetInfo(item));
-        const symbol = _getAssetSymbol(getToAssetInfo(item));
-
+      return _items.map((item, index) => {
         return (
           <SwapQuotesItem
-            isRecommend={optimalQuoteItem?.provider.id === item.provider.id}
+            isRecommend={index === 0}
             key={item.provider.id}
             onSelect={onSelectItem}
             quote={item}
-            selected={selectedItem?.provider.id === item.provider.id}
-            decimals={decimals}
-            symbol={symbol}
+            selected={currentQuote?.provider.id === item.provider.id}
           />
         );
       });
     },
-    [getToAssetInfo, onSelectItem, optimalQuoteItem?.provider.id, selectedItem?.provider.id],
+    [currentQuote, onSelectItem],
+  );
+
+  const isDisableConfirmButton = useMemo(
+    () => disableConfirmButton || !currentQuote || items.length < 2,
+    [currentQuote, disableConfirmButton, items.length],
   );
 
   const footer = useMemo(() => {
     return (
       <View style={{ paddingTop: theme.padding }}>
         <Button
-          disabled={loading}
+          disabled={isDisableConfirmButton}
           loading={loading}
           onPress={handleApplySlippage}
-          icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}>
+          icon={
+            <Icon
+              iconColor={isDisableConfirmButton ? theme.colorTextLight5 : theme.colorWhite}
+              phosphorIcon={CheckCircle}
+              weight={'fill'}
+            />
+          }>
           {i18n.buttonTitles.confirm}
         </Button>
       </View>
     );
-  }, [handleApplySlippage, loading, theme.padding]);
+  }, [handleApplySlippage, isDisableConfirmButton, loading, theme.colorTextLight5, theme.colorWhite, theme.padding]);
 
   return (
     <SwModal
@@ -94,7 +111,17 @@ export const SwapQuotesSelectorModal = ({
       level={2}
       modalVisible={modalVisible}
       setVisible={setModalVisible}
-      modalTitle={'Swap quote'}
+      renderHeader={
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: theme.margin }}>
+          <Typography.Title level={4} style={{ color: theme.colorWhite }}>
+            {'Select provider'}
+          </Typography.Title>
+          <View style={{ position: 'absolute', right: 0, top: 10 }}>
+            <QuoteResetTime quoteAliveUntilValue={quoteAliveUntil} />
+          </View>
+        </View>
+      }
       footer={footer}
       modalBaseV2Ref={modalBaseV2Ref}>
       <ScrollView style={{ maxHeight: deviceHeight * 0.6 }} contentContainerStyle={{ gap: theme.sizeXS }}>

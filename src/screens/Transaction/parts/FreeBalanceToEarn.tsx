@@ -1,15 +1,17 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { Typography, Number, ActivityIndicator } from 'components/design-system-ui';
+import { Typography, Number, ActivityIndicator, Icon } from 'components/design-system-ui';
 import { useGetBalance } from 'hooks/balance';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { Platform, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { FontMedium } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { Info } from 'phosphor-react-native';
 
 interface BalanceInfo {
   token: string;
@@ -23,6 +25,7 @@ interface Props {
   onBalanceReady?: (rs: boolean) => void;
   style?: StyleProp<ViewStyle>;
   hidden?: boolean;
+  labelTooltip?: string;
 }
 
 interface PartProps {
@@ -129,7 +132,8 @@ const PartComponent: React.FC<PartProps> = (props: PartProps) => {
 };
 
 const FreeBalanceToYield = (props: Props) => {
-  const { address, label, onBalanceReady, tokens, style, hidden } = props;
+  const { address, label, onBalanceReady, tokens, style, hidden, labelTooltip } = props;
+  const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const theme = useSubWalletTheme().swThemes;
 
@@ -220,10 +224,36 @@ const FreeBalanceToYield = (props: Props) => {
         style,
       ]}>
       {!error && (
-        <Typography.Text
-          style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
-          {label || `${i18n.sendToken.senderAvailableBalance}:`}
-        </Typography.Text>
+        <Tooltip
+          isVisible={tooltipVisible}
+          disableShadow={true}
+          placement={'bottom'}
+          showChildInTooltip={false}
+          topAdjustment={Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0}
+          contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
+          closeOnBackgroundInteraction={true}
+          onClose={() => setTooltipVisible(false)}
+          content={
+            <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
+              {labelTooltip || ''}
+            </Typography.Text>
+          }>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Typography.Text
+              style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 2 }}>
+              {label || `${i18n.sendToken.senderAvailableBalance}`}
+            </Typography.Text>
+
+            <View style={{ paddingTop: 2 }}>
+              <Icon phosphorIcon={Info} customSize={14} iconColor={theme['gray-5']} />
+            </View>
+
+            <Typography.Text
+              style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
+              {': '}
+            </Typography.Text>
+          </View>
+        </Tooltip>
       )}
       {isLoading && <ActivityIndicator size={14} />}
       {error && (

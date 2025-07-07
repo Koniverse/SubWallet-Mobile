@@ -30,11 +30,18 @@ import { mmkvStore } from 'utils/storage';
 import { EARNING_WARNING_ANNOUNCEMENT } from 'constants/localStorage';
 import { AppModalContext } from 'providers/AppModalContext';
 import { PageIcon, Typography } from 'components/design-system-ui';
+import { _ChainInfo } from '@subwallet/chain-list/types';
 
 interface Props {
   setStep: (value: number) => void;
   loading: boolean;
 }
+
+const getOrdinalChainTypeValue = (item: ExtraYieldPositionInfo, chainInfoMap: Record<string, _ChainInfo>): number => {
+  const chainInfo = chainInfoMap[item.chain];
+
+  return chainInfo?.isTestnet ? 0 : 1;
+};
 
 const filterFunction = (items: ExtraYieldPositionInfo[], filters: string[]) => {
   if (!filters.length) {
@@ -107,9 +114,12 @@ export const PositionList = ({ setStep, loading }: Props) => {
             .multipliedBy(item.price)
             .toNumber();
         };
-        return getValue(secondItem) - getValue(firstItem);
+        return (
+          getOrdinalChainTypeValue(secondItem, chainInfoMap) - getOrdinalChainTypeValue(firstItem, chainInfoMap) ||
+          getValue(secondItem) - getValue(firstItem)
+        );
       });
-  }, [assetInfoMap, currencyData, data, priceMap]);
+  }, [assetInfoMap, chainInfoMap, currencyData, data, priceMap]);
 
   const chainStakingBoth = useMemo(() => {
     if (!currentAccountProxy) {

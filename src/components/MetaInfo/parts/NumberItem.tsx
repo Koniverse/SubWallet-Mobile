@@ -7,7 +7,7 @@ import MetaInfoStyles from 'components/MetaInfo/style';
 import useGeneralStyles from 'components/MetaInfo/hooks/useGeneralStyles';
 import { View } from 'react-native';
 import { getSchemaColor, renderColContent } from 'components/MetaInfo/shared';
-import { ActivityIndicator, Number } from 'components/design-system-ui';
+import { ActivityIndicator, NumberDisplay, Number } from 'components/design-system-ui';
 import { TextSizeProps } from 'components/design-system-ui/typography';
 import { SwNumberProps } from 'components/design-system-ui/number';
 
@@ -26,6 +26,8 @@ export interface NumberInfoItem extends Omit<InfoItemBase, 'valueColorSchema'> {
   unitColor?: SwNumberProps['unitColor'];
   intColor?: SwNumberProps['intColor'];
   decimalColor?: SwNumberProps['decimalColor'];
+  subFloatNumber?: boolean;
+  useNumberDisplay?: boolean;
 }
 
 const NumberItem: React.FC<NumberInfoItem> = ({
@@ -43,6 +45,8 @@ const NumberItem: React.FC<NumberInfoItem> = ({
   customFormatter,
   formatType,
   unitColor,
+  useNumberDisplay,
+  subFloatNumber,
 }: NumberInfoItem) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = MetaInfoStyles(theme);
@@ -80,6 +84,8 @@ const NumberItem: React.FC<NumberInfoItem> = ({
     return 14;
   }, [size]);
 
+  const NumberComponent = useNumberDisplay ? NumberDisplay : Number;
+
   return (
     <View style={_style.row}>
       <View style={[_style.col]}>{renderColContent(label, { ..._style.label, ...labelGeneralStyle }, size)}</View>
@@ -88,7 +94,7 @@ const NumberItem: React.FC<NumberInfoItem> = ({
           <ActivityIndicator size={20} />
         ) : (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Number
+            <NumberComponent
               value={value}
               decimal={decimals}
               suffix={suffix}
@@ -101,6 +107,7 @@ const NumberItem: React.FC<NumberInfoItem> = ({
               metadata={metadata}
               formatType={formatType}
               customFormatter={customFormatter}
+              subFloatNumber={subFloatNumber}
             />
             {suffixNode}
           </View>

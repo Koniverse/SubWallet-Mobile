@@ -19,7 +19,7 @@ import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
-import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
+import { SelectAccAndTokenModal } from 'components/Modal/SelectAccAndTokenModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { AccountChainType, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';

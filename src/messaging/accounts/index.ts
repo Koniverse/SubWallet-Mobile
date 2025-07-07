@@ -6,3 +6,4 @@ export * from './derive';
 export * from './edit';
 export * from './addressBook';
 export * from './currentAccount';
+export * from './legacy';

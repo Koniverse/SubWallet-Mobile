@@ -17,7 +17,6 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
-import { _getOriginChainOfAsset } from '@subwallet/extension-base/services/chain-service/utils';
 
 interface Props {
   totalValue: SwNumberProps['value'];
@@ -61,32 +60,12 @@ export const TokenGroupsUpperBlock = ({
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const buyTokenInfos = useSelector((state: RootState) => state.buyService.tokens);
   const { currencyData } = useSelector((state: RootState) => state.price);
-  const swapPairs = useSelector((state: RootState) => state.swap.swapPairs);
   const allowedChains = useGetChainSlugsByAccount();
   const { isShowBuyToken } = useShowBuyToken();
   const _toggleBalances = () => {
     updateToggleBalance();
     toggleBalancesVisibility().catch(console.log);
   };
-  const fromAndToTokenMap = useMemo<Record<string, string[]>>(() => {
-    const result: Record<string, string[]> = {};
-
-    swapPairs.forEach(pair => {
-      if (!result[pair.from]) {
-        result[pair.from] = [pair.to];
-      } else {
-        result[pair.from].push(pair.to);
-      }
-    });
-
-    return result;
-  }, [swapPairs]);
-
-  const isEnableSwapButton = useMemo(() => {
-    return Object.keys(fromAndToTokenMap).some(tokenSlug => {
-      return allowedChains.includes(_getOriginChainOfAsset(tokenSlug));
-    });
-  }, [allowedChains, fromAndToTokenMap]);
 
   const isSupportBuyTokens = useMemo(() => {
     return Object.values(buyTokenInfos).some(item => allowedChains.includes(item.network));
@@ -175,7 +154,6 @@ export const TokenGroupsUpperBlock = ({
         />
         {isShowBuyToken && (
           <ActionButton
-            disabled={!isEnableSwapButton}
             label={i18n.cryptoScreen.swap}
             icon={ButtonIcon.Swap}
             onPress={onOpenSwap}

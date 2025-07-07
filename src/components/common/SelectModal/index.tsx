@@ -76,6 +76,9 @@ interface Props<T> {
   extraData?: any;
   keyExtractor?: (item: T, index: number) => string;
   flatListStyle?: ViewStyle;
+  showBalance?: boolean;
+  filterModalSearchFunc?: (items: OptionType[], searchString: string) => OptionType[];
+  isFilterFullSize?: boolean;
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
@@ -120,6 +123,9 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     extraData,
     keyExtractor,
     flatListStyle,
+    showBalance = true,
+    filterModalSearchFunc,
+    isFilterFullSize,
   } = selectModalProps;
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isLoadingData, setLoadingData] = useState<boolean>(true);
@@ -228,6 +234,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
           selectedValueMap={selectedValueMap}
           onSelectItem={_onSelectItem}
           onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
+          showBalance={showBalance}
         />
       );
     } else if (selectModalItemType === 'chain') {
@@ -347,6 +354,8 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
                 searchMarginBottom={grouping ? theme.sizeXS : undefined}
                 extraData={extraData}
                 keyExtractor={keyExtractor}
+                filterModalSearchFunc={filterModalSearchFunc}
+                isFilterFullSize={isFilterFullSize}
               />
             )}
           </>

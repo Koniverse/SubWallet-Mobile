@@ -219,7 +219,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
                   let { height } = event.nativeEvent.layout;
                   !!height && setContentHeight(height + (Platform.OS === 'ios' ? 16 : -16));
                 }}>
-                {renderTitle()}
+                {renderHeader ? renderHeader : renderTitle()}
                 {children}
 
                 {footer}

@@ -363,7 +363,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             }, 300);
           } else {
             const message = rs.errorMessage || '';
-            console.log('message 1', message);
+
             onError(message);
           }
         }
@@ -371,7 +371,6 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       .catch(e => {
         if (isValid()) {
           const message = (e as Error).message || '';
-          console.log('message 2', message);
           onError(message);
         }
       })

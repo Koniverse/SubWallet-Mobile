@@ -12,10 +12,9 @@ import { updateAuthUrls } from 'stores/updater';
 import { useNavigation } from '@react-navigation/native';
 import i18n from 'utils/i18n/i18n';
 import { EmptyList } from 'components/EmptyList';
-import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { BackgroundIcon, Typography } from 'components/design-system-ui';
-import { DisabledStyle, FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import DappAccessItem, { getSiteTitle } from 'components/design-system-ui/web3-block/DappAccessItem';
 import { getHostName } from 'utils/browser';
 import { ThemeTypes } from 'styles/themes';
@@ -24,6 +23,8 @@ import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/
 import { AccountChainType, AccountProxy } from '@subwallet/extension-base/types';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { getAccountCount } from 'screens/Settings/Security/DAppAccess/index';
+import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
+import { convertAuthorizeTypeToChainTypes } from 'utils/accountProxy';
 
 type Props = {
   origin: string;
@@ -267,20 +268,20 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
       };
 
       return (
-        <View style={{ marginBottom: theme.marginXS }}>
-          <AccountItemWithName
-            customStyle={{ container: [{ marginHorizontal: theme.margin }, !authInfo.isAllowed && DisabledStyle] }}
-            address={item.id}
-            accountName={item.name}
-            showAddress={false}
-            renderRightItem={() => (
+        <View style={{ marginBottom: theme.marginXS, marginHorizontal: theme.margin }}>
+          <AccountProxyItem
+            accountProxy={item}
+            chainTypes={convertAuthorizeTypeToChainTypes(authInfo.accountAuthTypes, item.chainTypes)}
+            key={item.id}
+            disabled={!authInfo.isAllowed}
+            rightPartNode={
               <Switch
                 disabled={pendingMap[item.id] !== undefined || !authInfo.isAllowed}
                 ios_backgroundColor={ColorMap.switchInactiveButtonColor}
                 value={pendingMap[item.id] === undefined ? isEnabled : pendingMap[item.id]}
                 onValueChange={onChangeToggle}
               />
-            )}
+            }
           />
         </View>
       );
@@ -288,10 +289,10 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
     [
       theme.marginXS,
       theme.margin,
+      authInfo.accountAuthTypes,
       authInfo.isAllowed,
       authInfo.isAllowedMap,
       authInfo.id,
-      authInfo.accountAuthTypes,
       pendingMap,
     ],
   );

@@ -1,6 +1,6 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { View } from 'react-native';
-import { TokenSelector, TokenItemType } from 'components/Modal/common/TokenSelector';
+import { TokenSelector, TokenItemType, TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { ModalRef } from 'types/modalRef';
 import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import { _getChainName } from '@subwallet/extension-base/services/chain-service/utils';
@@ -10,6 +10,10 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapTokenSelectField } from 'components/Field/SwapTokenSelect';
 import { formatNumberString, swapCustomFormatter } from '@subwallet/extension-base/utils';
 import { BN_TEN } from 'utils/chainBalances';
+import { FontSemiBold } from 'styles/sharedStyles';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { OptionType } from 'components/common/FilterModal';
 
 interface Props {
   tokenSelectorItems: TokenItemType[];
@@ -34,22 +38,56 @@ export const SwapToField = ({
   decimals,
   loading,
 }: Props) => {
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const tokenSelectorRef = useRef<ModalRef>();
-  // const decimals = _getAssetDecimals(toAsset);
-  // const priceId = _getAssetPriceId(toAsset);
-  // const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const theme = useSubWalletTheme().swThemes;
   const chainName = chainInfo ? _getChainName(chainInfo) : '';
 
-  // const getConvertedInputValue = useMemo(() => {
-  //   if (swapValue) {
-  //     const price = priceMap[priceId] || 0;
-  //
-  //     return swapValue.div(BN_TEN.pow(decimals || 0)).multipliedBy(price);
-  //   }
-  //
-  //   return BN_ZERO;
-  // }, [decimals, priceId, priceMap, swapValue]);
+  const filterOptions: OptionType[] = useMemo(() => {
+    const uniqueOriginChains = Array.from(new Set(tokenSelectorItems.map(item => item.originChain)));
+
+    const result = uniqueOriginChains.map(originChain => {
+      return {
+        label: _getChainName(chainInfoMap[originChain]),
+        value: originChain,
+      };
+    });
+
+    result.sort((a, b) => {
+      const priority: Record<string, number> = {
+        polkadot: 0,
+        ethereum: 1,
+      };
+
+      const aPriority = priority[a.value] ?? 2;
+      const bPriority = priority[b.value] ?? 2;
+
+      if (aPriority !== bPriority) {
+        return aPriority - bPriority; // Sort by priority first
+      }
+
+      // If both have same priority (i.e., both are not polkadot/ethereum), sort by label
+      return a.label.localeCompare(b.label);
+    });
+
+    return result;
+  }, [chainInfoMap, tokenSelectorItems]);
+
+  const filterFunction = useCallback((items: TokenSelectorItemType[], filters: string[]) => {
+    return items.filter(item => {
+      if (!filters.length) {
+        return true;
+      }
+
+      for (const filter of filters) {
+        if (item.originChain === filter) {
+          return true;
+        }
+      }
+
+      return false;
+    });
+  }, []);
 
   const convertedDestinationSwapValue = useMemo(() => {
     const convertValue = new BigN(swapValue).div(BN_TEN.pow(decimals));
@@ -79,7 +117,7 @@ export const SwapToField = ({
           paddingHorizontal: theme.padding,
           paddingVertical: theme.paddingXS,
         }}>
-        <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
+        <Typography.Text size={'sm'} style={{ color: theme.colorTextLight1, ...FontSemiBold }}>
           {'To'}
         </Typography.Text>
       </View>
@@ -90,7 +128,7 @@ export const SwapToField = ({
           alignItems: 'center',
           flex: 1,
         }}>
-        <View style={{ minWidth: 160 }}>
+        <View style={{ flex: 1 }}>
           <TokenSelector
             items={tokenSelectorItems}
             selectedValueMap={{ [assetValue]: true }}
@@ -99,6 +137,9 @@ export const SwapToField = ({
             showAddBtn={false}
             acceptDefaultValue={true}
             tokenSelectorRef={tokenSelectorRef}
+            isShowFilterBtn={true}
+            filterOptions={filterOptions}
+            filterFunction={filterFunction}
             renderSelected={() => (
               <SwapTokenSelectField
                 style={{ marginBottom: 0, marginLeft: 4 }}
@@ -109,10 +150,11 @@ export const SwapToField = ({
                 showIcon
               />
             )}
+            selectedValue={assetValue}
           />
         </View>
 
-        <View style={{ flex: 2, alignItems: 'flex-end', paddingRight: theme.padding }}>
+        <View style={{ flex: 1, alignItems: 'flex-end', paddingRight: theme.paddingSM }}>
           {loading ? (
             <ActivityIndicator size={20} indicatorColor={theme.colorTextLight4} />
           ) : (
