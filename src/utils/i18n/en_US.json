@@ -743,7 +743,7 @@
     "connectPolkadotVault": "Connect Polkadot Vault",
     "connectKeystoneDevice": "Connect Keystone device",
     "attachReadOnlyAcc": "Attach watch-only account",
-    "removeThisAcc": "Detele this account?",
+    "removeThisAcc": "Delete  this account?",
     "verifySeedPhrase": "Verify seed phrase",
     "createAPassword": "Create a password",
     "customizeAssetDisplay": "Customize asset display",
