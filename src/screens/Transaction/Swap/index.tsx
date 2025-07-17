@@ -542,7 +542,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
 
   const notifyNoQuote = useCallback(() => {
     hideAll();
-    show('No swap quote found. Please try again later', { type: 'danger' });
+    show('Swap pair not supported. Select another pair and try again', { type: 'danger' });
   }, [hideAll, show]);
 
   const updateSwapStates = useCallback((rs: SwapRequestResult) => {
