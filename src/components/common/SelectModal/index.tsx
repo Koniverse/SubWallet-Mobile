@@ -244,6 +244,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
           selectedValueMap={selectedValueMap}
           onSelectItem={_onSelectItem}
           onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
+          showBalance={true}
         />
       );
     } else {

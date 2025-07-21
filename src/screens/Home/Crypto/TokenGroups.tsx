@@ -175,7 +175,6 @@ export const TokenGroups = () => {
 
   const tokenGroupBalanceItems = useMemo<TokenBalanceItemType[]>(() => {
     const result: TokenBalanceItemType[] = [];
-
     sortedTokenGroups.forEach(tokenGroupSlug => {
       if (debouncedTokenGroupBalanceMap[tokenGroupSlug]) {
         result.push(debouncedTokenGroupBalanceMap[tokenGroupSlug]);

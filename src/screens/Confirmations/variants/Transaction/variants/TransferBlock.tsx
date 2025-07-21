@@ -13,6 +13,8 @@ import { RootState } from 'stores/index';
 import { BaseTransactionConfirmationProps } from './Base';
 import i18n from 'utils/i18n/i18n';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
+import { _isAcrossChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/acrossBridge';
+import QuoteRateDisplay from 'components/Swap/QuoteRateDisplay';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -23,6 +25,18 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
   const assetRegistryMap = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
   const tokenInfo =
     assetRegistryMap[transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM ? xcmData.tokenSlug : data.tokenSlug];
+
+  const isAcrossBridge = useMemo(() => {
+    return _isAcrossChainBridge(xcmData.originNetworkKey, xcmData.destinationNetworkKey);
+  }, [xcmData.originNetworkKey, xcmData.destinationNetworkKey]);
+
+  const destTokenInfo = useMemo(() => {
+    if (isAcrossBridge && xcmData.metadata?.destChainSlug) {
+      return assetRegistryMap[xcmData.metadata?.destChainSlug];
+    }
+
+    return tokenInfo;
+  }, [isAcrossBridge, xcmData.metadata?.destChainSlug, tokenInfo, assetRegistryMap]);
 
   const chainInfo = useMemo(() => chainInfoMap[transaction.chain], [chainInfoMap, transaction.chain]);
 
@@ -61,12 +75,31 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
       </MetaInfo>
 
       <MetaInfo hasBackgroundWrapper>
-        <MetaInfo.Number
-          decimals={tokenInfo.decimals || 0}
-          label={i18n.inputLabel.amount}
-          suffix={tokenInfo.symbol}
-          value={data.value || 0}
-        />
+        {isAcrossBridge && xcmData.metadata ? (
+          <>
+            <MetaInfo.Default label={'Quote'}>
+              <QuoteRateDisplay
+                fromAssetInfo={tokenInfo}
+                rateValue={Number(xcmData.metadata.rate)}
+                toAssetInfo={destTokenInfo}
+                size={14}
+              />
+            </MetaInfo.Default>
+            <MetaInfo.Number
+              value={xcmData.metadata.amountOut}
+              decimals={destTokenInfo.decimals || 0}
+              label={'Expected amount'}
+              suffix={destTokenInfo.symbol}
+            />
+          </>
+        ) : (
+          <MetaInfo.Number
+            decimals={tokenInfo.decimals || 0}
+            label={i18n.inputLabel.amount}
+            suffix={tokenInfo.symbol}
+            value={data.value || 0}
+          />
+        )}
 
         <MetaInfo.Number
           decimals={feeInfo ? feeInfo.decimals : nativeTokenDecimals}
