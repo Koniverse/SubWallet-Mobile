@@ -92,7 +92,7 @@ export function TnCSeedPhraseModal({
   const subtitle: string = useMemo(() => {
     return useDefaultContent
       ? 'Tap on all checkboxes to confirm you understand the importance of your seed phrase'
-      : 'This seed phrase creates a unified account that can be used for Polkadot, Ethereum, Bitcoin and TON ecosystem. Keep in mind that for TON specifically, this seed phrase is not compatible with TON-native wallets.';
+      : 'This seed phrase creates a unified account that can be used for Polkadot, Ethereum & TON ecosystems. Keep in mind that for TON specifically, this seed phrase is not compatible with TON-native wallets.';
   }, [useDefaultContent]);
 
   return (

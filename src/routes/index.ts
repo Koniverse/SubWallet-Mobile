@@ -6,6 +6,7 @@ import { SigningActionStackParamList } from 'routes/signing';
 import { TransactionActionStackParamList } from 'routes/transaction/transactionAction';
 import { WrapperParamList } from 'routes/wrapper';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
+import { ProcessType } from '@subwallet/extension-base/types';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -97,7 +98,7 @@ export type RootStackParamList = {
   ManageAddressBook: undefined;
   DeriveAccount: undefined;
   Crowdloans: undefined;
-  TransactionSubmission: { transactionProcessId?: string };
+  TransactionSubmission: { transactionProcessId?: string; processType?: ProcessType };
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;

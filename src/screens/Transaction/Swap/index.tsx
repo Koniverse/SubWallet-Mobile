@@ -203,7 +203,14 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
   const { checkChainConnected, turnOnChain } = useChainChecker(false);
   const accountInfo = useGetAccountByAddress(fromValue);
   const [processState, dispatchProcessState] = useReducer(commonProcessReducer, DEFAULT_COMMON_PROCESS);
-  const { onError, onSuccess } = useHandleSubmitMultiTransaction(onDone, setTransactionDone, dispatchProcessState);
+  const { onError, onSuccess } = useHandleSubmitMultiTransaction(
+    onDone,
+    setTransactionDone,
+    dispatchProcessState,
+    undefined,
+    undefined,
+    ProcessType.SWAP,
+  );
   const onPreCheck = usePreCheckAction(fromValue);
   const oneSign = useOneSignProcess(fromValue);
   const getReformatAddress = useReformatAddress();
@@ -1167,7 +1174,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
 
   return (
     <>
-      {!isTransactionDone ? (
+      {!isTransactionDone || (oneSign && currentOptimalSwapPath?.steps && currentOptimalSwapPath?.steps.length > 2) ? (
         <UserInactivity
           isActive={isUserActive}
           skipKeyboard={false}

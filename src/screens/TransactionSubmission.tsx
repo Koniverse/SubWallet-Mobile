@@ -35,11 +35,7 @@ const SwapProcessingContentComponent = (props: SwapProcessingContentComponentPro
   }, [data.process.steps]);
 
   const messages = useMemo<string[]>(() => {
-    return [
-      'Tip: Hit “View process” to view step-by-step details of your swap',
-      'Hanging in there...',
-      'Pro tip: You can hit "View process" to view step-by-step details of your transaction',
-    ];
+    return ['Tip: Hit “View process” to view step-by-step details of your swap', 'Hanging in there...'];
   }, []);
 
   useEffect(() => {
@@ -83,6 +79,7 @@ const SwapProcessingContentComponent = (props: SwapProcessingContentComponentPro
 export const TransactionSubmission = ({ route: { params } }: TransactionSubmissionProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const transactionProcessId = params?.transactionProcessId || ''; // todo change this later
+  const defaultProcessType = params?.processType; // todo change this later
   const [processData, setProcessData] = useState<ProcessTransactionData | undefined>();
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyle(theme);
@@ -158,7 +155,7 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
     });
   }, [navigation]);
 
-  const isSwapProcessing = processData?.type === ProcessType.SWAP;
+  const isSwapProcessing = defaultProcessType === ProcessType.SWAP;
 
   return (
     <ContainerWithSubHeader style={{ flex: 1 }} title={isSwapProcessing ? 'Swap' : 'Submitted'} showLeftBtn={false}>

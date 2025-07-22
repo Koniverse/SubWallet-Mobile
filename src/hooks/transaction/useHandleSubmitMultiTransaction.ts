@@ -4,6 +4,7 @@ import { CommonActionType, CommonProcessAction } from 'reducers/transaction-proc
 import { useToast } from 'react-native-toast-notifications';
 import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
+import { ProcessType } from '@subwallet/extension-base/types';
 
 const useHandleSubmitMultiTransaction = (
   onDone: (id: string) => void,
@@ -11,6 +12,7 @@ const useHandleSubmitMultiTransaction = (
   dispatchProcessState: (value: CommonProcessAction) => void,
   triggerOnChangeValue?: () => void,
   setIgnoreWarnings?: (value: boolean) => void,
+  processType?: ProcessType, // to show exactly title for TransactionSubmission
 ) => {
   const navigation = useNavigation<RootNavigationProps>();
   const { hideAll, show } = useToast();
@@ -32,9 +34,9 @@ const useHandleSubmitMultiTransaction = (
 
   const onHandleOneSignConfirmation = useCallback(
     (transactionProcessId: string) => {
-      navigation.navigate('TransactionSubmission', { transactionProcessId: transactionProcessId });
+      navigation.navigate('TransactionSubmission', { transactionProcessId, processType });
     },
-    [navigation],
+    [navigation, processType],
   );
 
   const onSuccess = useCallback(

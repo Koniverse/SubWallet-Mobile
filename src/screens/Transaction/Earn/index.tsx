@@ -421,7 +421,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const onHandleOneSignConfirmation = useCallback(
     (transactionProcessId: string) => {
-      navigation.navigate('TransactionSubmission', { transactionProcessId: transactionProcessId });
+      navigation.navigate('TransactionSubmission', {
+        transactionProcessId: transactionProcessId,
+        processType: ProcessType.EARNING,
+      });
     },
     [navigation],
   );
@@ -1518,7 +1521,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   return (
     <>
-      {!isTransactionDone ? (
+      {!isTransactionDone || (oneSign && processState.steps.length > 2) ? (
         <TransactionLayout
           title={title}
           disableMainHeader={submitLoading}
