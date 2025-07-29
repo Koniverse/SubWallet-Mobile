@@ -35,8 +35,8 @@ import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { AccountAddressItemType } from 'types/account';
-import { findAccountByAddress, getReformatedAddressRelatedToChain } from 'utils/account';
-import { isSameAddress } from '@subwallet/extension-base/utils';
+import { getReformatedAddressRelatedToChain } from 'utils/account';
+import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
 
 interface ClaimRewardFormValues extends TransactionFormValues {
   bondReward: string;
@@ -95,13 +95,13 @@ const filterAccount = (
 
 const ClaimReward = ({
   route: {
-    params: { slug, from },
+    params: { slug },
   },
 }: ClaimRewardProps) => {
   const accountSelectorRef = useRef<ModalRef>();
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
-  const { isAllAccount, accountProxies, accounts } = useSelector((state: RootState) => state.accountState);
+  const { isAllAccount, accountProxies } = useSelector((state: RootState) => state.accountState);
   const { earningRewards, poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
@@ -121,7 +121,7 @@ const ClaimReward = ({
     reValidateMode: 'onChange',
     defaultValues: {
       bondReward: '',
-      from: from || '',
+      from: '',
     },
   });
 
@@ -135,16 +135,8 @@ const ClaimReward = ({
   const accountInfo = useGetAccountByAddress(fromValue);
 
   const reward = useMemo((): EarningRewardItem | undefined => {
-    const chainInfo = poolChain ? chainInfoMap[poolChain] : undefined;
-    return earningRewards.find(item => {
-      const rewardAccountInfo = findAccountByAddress(accounts, item.address);
-      let rewardAddress: string | undefined = item.address;
-      if (chainInfo && rewardAccountInfo) {
-        rewardAddress = getReformatedAddressRelatedToChain(rewardAccountInfo, chainInfo);
-      }
-      return rewardAddress && item.slug === slug && rewardAddress === fromValue;
-    });
-  }, [accounts, chainInfoMap, earningRewards, fromValue, poolChain, slug]);
+    return earningRewards.find(item => item.slug === slug && item.address === reformatAddress(fromValue));
+  }, [earningRewards, fromValue, slug]);
 
   const { list: allPositions } = useYieldPositionDetail(slug);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chainValue);
