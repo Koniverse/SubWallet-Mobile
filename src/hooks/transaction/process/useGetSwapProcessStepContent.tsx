@@ -275,7 +275,7 @@ const useGetSwapProcessStepContent = () => {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Typography.Text style={styles.text}>{'Approve '}</Typography.Text>
               <TokenDisplay slug={analysisResult.tokenSlug} symbol={analysisResult.tokenSymbol} />
-              <Typography.Text style={styles.text}>{` on ${analysisResult.chainName} for swap`}</Typography.Text>
+              <Typography.Text style={styles.text}>{` on ${analysisResult.chainName}`}</Typography.Text>
             </View>
           );
         }
