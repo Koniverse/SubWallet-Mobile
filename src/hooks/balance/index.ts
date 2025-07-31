@@ -3,3 +3,4 @@
 
 export { default as useGetBalance } from './useGetBalance';
 export { default as useGetAccountTokenBalance } from './useGetAccountTokenBalance';
+export { default as useGetAccountTokenBalance } from './useGetAccountTokenBalance';

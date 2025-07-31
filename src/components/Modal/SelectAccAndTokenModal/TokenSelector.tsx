@@ -149,7 +149,6 @@ export const TokenSelector = ({
       defaultValue={defaultValue}
       acceptDefaultValue={acceptDefaultValue}
       renderListEmptyComponent={renderListEmptyComponent}
-      showBalance={false}
       disabled={disabled}>
       {children}
     </FullSizeSelectModal>
