@@ -9,6 +9,7 @@ import {
   _getAssetOriginChain,
   _getAssetSymbol,
   _getContractAddressOfToken,
+  _getEvmChainId,
   _getMultiChainAsset,
   _getOriginChainOfAsset,
   _isChainEvmCompatible,
@@ -121,6 +122,7 @@ import useReformatAddress from 'hooks/common/useReformatAddress';
 import AlertBoxInstant from 'components/design-system-ui/alert-box/instant';
 import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
+import { _isAcrossChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/acrossBridge';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -513,6 +515,10 @@ export const SendFund = ({
           return Promise.resolve(i18n.errorMessage.amountRequiredError);
         }
 
+        if (new BN(maxTransfer).lte(BN_ZERO)) {
+          return Promise.resolve("You don't have enough tokens to proceed");
+        }
+
         if (new BigN(amount).eq(new BigN(0))) {
           scrollToBottom();
           return Promise.resolve(i18n.errorMessage.amountMustBeGreaterThanZero);
@@ -672,8 +678,28 @@ export const SendFund = ({
   const handleBridgeSpendingApproval = useCallback(
     (values: TransferFormValues): Promise<SWTransactionResponse> => {
       const isAvailBridge = isAvailChainBridge(values.destChain);
+      const isAcrossBridge = _isAcrossChainBridge(values.chain, values.destChain);
 
       const tokenInfo = assetRegistry[values.asset];
+
+      if (isAcrossBridge) {
+        const chainInfo = chainInfoMap[values.chain];
+        const chainId = _getEvmChainId(chainInfo);
+
+        if (chainId) {
+          const tokenApprovalStep = processState.steps.find(step => step.type === CommonStepType.TOKEN_APPROVAL); // Maybe can add index
+          const metadata = tokenApprovalStep?.metadata;
+          const SpokePoolAddress = metadata?.SpokePoolAddress as string;
+
+          return approveSpending({
+            amount: values.value,
+            contractAddress: _getContractAddressOfToken(tokenInfo),
+            spenderAddress: SpokePoolAddress,
+            chain: values.chain,
+            owner: values.from,
+          });
+        }
+      }
 
       return approveSpending({
         amount: values.value,
@@ -685,7 +711,7 @@ export const SendFund = ({
         owner: values.from,
       });
     },
-    [assetRegistry],
+    [assetRegistry, chainInfoMap, processState.steps],
   );
 
   const handleTransferAll = useCallback(
@@ -1066,6 +1092,7 @@ export const SendFund = ({
           address: fromValue,
           chain: assetRegistry[assetValue].originChain,
           token: assetValue,
+          value: transferAmount,
           destChain: destChainValue,
           feeOption: selectedTransactionFee?.feeOption,
           feeCustom: selectedTransactionFee?.feeCustom,
@@ -1099,6 +1126,7 @@ export const SendFund = ({
     nativeTokenSlug,
     selectedTransactionFee?.feeCustom,
     selectedTransactionFee?.feeOption,
+    transferAmount,
     trigger,
   ]);
 

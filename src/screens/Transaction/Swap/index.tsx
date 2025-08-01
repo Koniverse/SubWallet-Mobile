@@ -17,7 +17,7 @@ import {
   _isChainEvmCompatible,
   _parseAssetRefKey,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { Alert, AppState, Keyboard, ScrollView, View } from 'react-native';
+import { Alert, AppState, Keyboard, ScrollView, StyleSheet, View } from 'react-native';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { SwapToField } from 'components/Swap/SwapToField';
 import BigN from 'bignumber.js';
@@ -87,6 +87,8 @@ import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { QuoteInfoArea } from './QuoteInfoArea';
+import { AcrossErrorMsg } from '@subwallet/extension-base/services/balance-service/transfer/xcm/acrossBridge';
+import { ThemeTypes } from 'styles/themes';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -160,6 +162,7 @@ type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
 const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
   const { show, hideAll } = useToast();
   const theme = useSubWalletTheme().swThemes;
+  const styles = createStyles(theme);
   const { assetRegistry: assetRegistryMap } = useSelector((state: RootState) => state.assetRegistry);
   const priorityTokens = useSelector((state: RootState) => state.chainStore.priorityTokens);
   const { chainInfoMap, chainStateMap, ledgerGenericAllowNetworks } = useSelector(
@@ -540,6 +543,10 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
     setCurrentFeeOption(slug);
     setChooseFeeModalVisible(false);
   }, []);
+
+  const notifyInvalidAmount = useCallback(() => {
+    show('No swap quote found. Adjust your amount and try again', { type: 'danger' });
+  }, [show]);
 
   const onConfirmSelectedQuote = useCallback(async (quote: SwapQuote) => {
     setPreferredProvider(quote.provider.id);
@@ -981,6 +988,13 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
                     notifyNoQuote();
                   }
 
+                  if (
+                    e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW) ||
+                    e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)
+                  ) {
+                    notifyInvalidAmount();
+                  }
+
                   setHandleRequestLoading(false);
                 }
               });
@@ -1006,6 +1020,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
     fromTokenSlugValue,
     fromValue,
     isRecipientFieldAllowed,
+    notifyInvalidAmount,
     notifyNoQuote,
     preferredProvider,
     reValidateField,
@@ -1075,16 +1090,27 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
           .then(rs => {
             if (sync) {
               updateSwapStates(rs);
+              updateSwapStates(rs);
               setHandleRequestLoading(false);
             }
           })
           .catch(e => {
-            if (sync) {
-              console.log('Error when doing refreshSwapRequestResult', e);
+            if (
+              e.message.toLowerCase().startsWith('failed to fetch swap quote') ||
+              e.message.toLowerCase().startsWith('swap pair is not found')
+            ) {
+              notifyNoQuote();
+            }
 
-              if (e.message.toLowerCase().startsWith('swap pair is not found')) {
-                notifyNoQuote();
-              }
+            if (
+              e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW) ||
+              e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)
+            ) {
+              notifyInvalidAmount();
+            }
+          })
+          .finally(() => {
+            if (sync) {
               setHandleRequestLoading(false);
             }
           });
@@ -1128,6 +1154,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
   }, [
     currentQuoteRequest,
     hasInternalConfirmations,
+    notifyInvalidAmount,
     notifyNoQuote,
     quoteAliveUntil,
     requestUserInteractToContinue,
@@ -1188,25 +1215,18 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
           }}>
           <TransactionLayout title={title} disableLeftButton={submitLoading}>
             <ScrollView
-              style={{ flex: 1, paddingHorizontal: 16, marginTop: theme.paddingXS }}
+              style={styles.scrollViewContainer}
               showsVerticalScrollIndicator={false}
               ref={scrollRef}
               keyboardShouldPersistTaps={'handled'}>
               {!!currentFromTokenAvailableBalance && (
-                <View
-                  style={{
-                    position: 'relative',
-                    flexDirection: 'row',
-                    zIndex: 10,
-                    justifyContent: 'flex-end',
-                    height: 0,
-                  }}>
+                <View style={styles.swapFromFieldBtnWrapper}>
                   <Button
                     style={{ paddingHorizontal: 0 }}
                     onPress={onPressMaxAmountButton}
                     size={'xs'}
                     type={'ghost'}
-                    externalTextStyle={{ fontSize: theme.fontSizeSM, lineHeight: 40, height: 40, ...FontSemiBold }}>
+                    externalTextStyle={styles.swapFromFieldBtnText}>
                     Max
                   </Button>
                   <Button
@@ -1214,7 +1234,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
                     onPress={onPressHaftAmountButton}
                     size={'xs'}
                     type={'ghost'}
-                    externalTextStyle={{ fontSize: theme.fontSizeSM, lineHeight: 40, height: 40, ...FontSemiBold }}>
+                    externalTextStyle={styles.swapFromFieldBtnText}>
                     50%
                   </Button>
                 </View>
@@ -1231,19 +1251,12 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
                 onSelectToken={onSelectFromToken}
               />
 
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: theme.sizeXS,
-                  position: 'relative',
-                  zIndex: 10000,
-                }}>
+              <View style={styles.switchableButtonWrapper}>
                 <Button
                   disabled={!isSwitchable}
                   onPress={onSwitchSide}
-                  activeStyle={{ backgroundColor: theme['gray-2'] }}
-                  style={{ position: 'absolute', backgroundColor: theme['gray-2'] }}
+                  activeStyle={styles.switchableActiveBtn}
+                  style={styles.switchableBtn}
                   size={'xs'}
                   icon={<Icon phosphorIcon={ArrowsDownUp} size={'sm'} iconColor={theme['gray-5']} />}
                   shape={'circle'}
@@ -1467,5 +1480,28 @@ const Swap = ({ route: { params } }: SendFundProps) => {
 
   return <Component targetAccountProxy={targetAccountProxy} defaultSlug={params?.slug} />;
 };
+
+function createStyles(theme: ThemeTypes) {
+  return StyleSheet.create({
+    scrollViewContainer: { flex: 1, paddingHorizontal: theme.padding, marginTop: theme.paddingXS },
+    swapFromFieldBtnWrapper: {
+      position: 'relative',
+      flexDirection: 'row',
+      zIndex: 10,
+      justifyContent: 'flex-end',
+      height: 0,
+    },
+    swapFromFieldBtnText: { fontSize: theme.fontSizeSM, lineHeight: 40, height: 40, ...FontSemiBold },
+    switchableButtonWrapper: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: theme.sizeXS,
+      position: 'relative',
+      zIndex: 10000,
+    },
+    switchableActiveBtn: { backgroundColor: theme['gray-2'] },
+    switchableBtn: { position: 'absolute', backgroundColor: theme['gray-2'] },
+  });
+}
 
 export default Swap;

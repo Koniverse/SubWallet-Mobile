@@ -11,7 +11,7 @@ import { TokenToggleItem } from 'components/common/TokenToggleItem';
 import { updateAssetSetting } from '../../messaging';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { _isCustomAsset } from '@subwallet/extension-base/services/chain-service/utils';
+import { _isCustomAsset, _isNativeToken } from '@subwallet/extension-base/services/chain-service/utils';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 
@@ -88,6 +88,7 @@ export const CustomTokenSetting = () => {
 
   const onToggleItem = (item: _ChainAsset) => {
     setPendingAssetMap({ ...pendingAssetMap, [item.slug]: !assetSettingMap[item.slug]?.visible });
+    const isNativeToken = _isNativeToken(item);
     const reject = () => {
       console.warn('Toggle token request failed!');
       // @ts-ignore
@@ -100,6 +101,7 @@ export const CustomTokenSetting = () => {
       assetSetting: {
         visible: !assetSettingMap[item.slug]?.visible,
       },
+      autoEnableNativeToken: !isNativeToken,
     })
       .then(result => {
         if (!result) {

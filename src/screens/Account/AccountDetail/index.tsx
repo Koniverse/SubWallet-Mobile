@@ -404,9 +404,7 @@ export const AccountDetail = ({
   const accountProxy = useGetAccountProxyById(accountProxyId);
 
   // useEffect(() => {
-  //   console.log('accountProxy', accountProxy);
   //   if (!accountProxy) {
-  //     console.log('run to this');
   //     navigation.goBack();
   //   }
   // }, [accountProxy, navigation]);

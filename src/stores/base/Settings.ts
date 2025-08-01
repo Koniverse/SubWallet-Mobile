@@ -11,7 +11,7 @@ import { DEFAULT_NOTIFICATION_SETUP } from '@subwallet/extension-base/services/s
 const initialState: AppSettings = {
   // UI settings
   isShowBalance: false,
-  isShowZeroBalance: false,
+  isShowZeroBalance: true,
   accountAllLogo: '',
   theme: ThemeNames.DARK,
   language: 'en',

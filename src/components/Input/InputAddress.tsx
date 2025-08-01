@@ -91,7 +91,7 @@ const Component = (
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
   const [responseOptions, setResponseOptions] = useState<AnalyzeAddress[]>([]);
-  console.log('responseOptions', responseOptions);
+  console.log('responseOption', responseOptions);
   const [selectedOption, setSelectedOption] = useState<string | undefined>(value);
   const isAddressValid = isValidValue !== undefined ? isValidValue : true;
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
