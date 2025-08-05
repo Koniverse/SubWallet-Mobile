@@ -10,18 +10,17 @@ import {
   Swatches,
   Wallet,
 } from 'phosphor-react-native';
-import { EVM_ACCOUNT_TYPE } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import ToastContainer from 'react-native-toast-notifications';
-import { canDerive } from '@subwallet/extension-base/utils';
 import { AccountActionSelectModal, ActionItemType } from 'components/Modal/AccountActionSelectModal';
 import { ModalRef } from 'types/modalRef';
 import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
 import { mmkvStore } from 'utils/storage';
+import { AccountActions } from '@subwallet/extension-base/types';
 
 interface Props {
   createAccountRef: React.MutableRefObject<ModalRef | undefined>;
@@ -32,7 +31,7 @@ interface Props {
 
 export const AccountCreationArea = ({ createAccountRef, importAccountRef, attachAccountRef }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+  const { accountProxies, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const setSelectedMnemonicType = useSetSelectedMnemonicType(false);
   const importAccountActions = [
     {
@@ -88,15 +87,9 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
     },
   ];
 
-  const canDerivedAccounts = useMemo(
-    () =>
-      accounts
-        .filter(({ isExternal }) => !isExternal)
-        .filter(
-          ({ isMasterAccount, type }) =>
-            canDerive(type) && (type !== EVM_ACCOUNT_TYPE || (isMasterAccount && type === EVM_ACCOUNT_TYPE)),
-        ),
-    [accounts],
+  const disableDerive = useMemo(
+    () => !accountProxies.filter(({ accountActions }) => accountActions.includes(AccountActions.DERIVE)).length,
+    [accountProxies],
   );
 
   const toastRef = useRef<ToastContainer>(null);
@@ -122,10 +115,10 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
         backgroundColor: '#E6478E',
         icon: ShareNetwork,
         label: i18n.createAccount.deriveFromAnExistingAcc,
-        disabled: !canDerivedAccounts.length,
+        disabled: disableDerive,
       },
     ];
-  }, [canDerivedAccounts.length]);
+  }, [disableDerive]);
 
   const createAccountFunc = (item: ActionItemType) => {
     if (item.key === 'createAcc') {

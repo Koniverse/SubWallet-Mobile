@@ -7,3 +7,4 @@ export * from './edit';
 export * from './addressBook';
 export * from './currentAccount';
 export * from './legacy';
+export * from './legacy';

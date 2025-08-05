@@ -1,0 +1,139 @@
+diff --git a/node_modules/@subwallet/keyring/cjs/pair/index.js b/node_modules/@subwallet/keyring/cjs/pair/index.js
+index df82f5d..654d3d9 100644
+--- a/node_modules/@subwallet/keyring/cjs/pair/index.js
++++ b/node_modules/@subwallet/keyring/cjs/pair/index.js
+@@ -5,8 +5,8 @@ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+ exports.createPair = createPair;
+-var CardanoWasmMessageSigning = _interopRequireWildcard(require("@emurgo/cardano-message-signing-browser"));
+-var CardanoWasm = _interopRequireWildcard(require("@emurgo/cardano-serialization-lib-nodejs"));
++var CardanoWasmMessageSigning = _interopRequireWildcard(require("@emurgo/csl-mobile-bridge"));
++var CardanoWasm = _interopRequireWildcard(require("@emurgo/csl-mobile-bridge"));
+ var _ethSigUtil = require("@metamask/eth-sig-util");
+ var _ethSimpleKeyring = _interopRequireDefault(require("@metamask/eth-simple-keyring"));
+ var _ed25519_bip = require("@subwallet/keyring/utils/cardano/ed25519_bip32");
+diff --git a/node_modules/@subwallet/keyring/cjs/utils/address/decode.js b/node_modules/@subwallet/keyring/cjs/utils/address/decode.js
+index 763d489..247866c 100644
+--- a/node_modules/@subwallet/keyring/cjs/utils/address/decode.js
++++ b/node_modules/@subwallet/keyring/cjs/utils/address/decode.js
+@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+ exports.decodeAddress = void 0;
+-var CardanoWasm = _interopRequireWildcard(require("@emurgo/cardano-serialization-lib-nodejs"));
++var CardanoWasm = _interopRequireWildcard(require("@emurgo/csl-mobile-bridge"));
+ var _core = require("@ton/core");
+ var bitcoin = _interopRequireWildcard(require("bitcoinjs-lib"));
+ var _util = require("@polkadot/util");
+diff --git a/node_modules/@subwallet/keyring/cjs/utils/address/encode.js b/node_modules/@subwallet/keyring/cjs/utils/address/encode.js
+index c74b1ee..e664433 100644
+--- a/node_modules/@subwallet/keyring/cjs/utils/address/encode.js
++++ b/node_modules/@subwallet/keyring/cjs/utils/address/encode.js
+@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+ exports.encodeAddress = void 0;
+-var CardanoWasm = _interopRequireWildcard(require("@emurgo/cardano-serialization-lib-nodejs"));
++var CardanoWasm = _interopRequireWildcard(require("@emurgo/csl-mobile-bridge"));
+ var _utils = require("@subwallet/keyring/utils");
+ var _core = require("@ton/core");
+ var bitcoin = _interopRequireWildcard(require("bitcoinjs-lib"));
+diff --git a/node_modules/@subwallet/keyring/cjs/utils/address/validate.js b/node_modules/@subwallet/keyring/cjs/utils/address/validate.js
+index cc68238..a07f120 100644
+--- a/node_modules/@subwallet/keyring/cjs/utils/address/validate.js
++++ b/node_modules/@subwallet/keyring/cjs/utils/address/validate.js
+@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+ exports.validateP2WPKHAddress = exports.validateP2TRAddress = exports.validateP2PKHAddress = exports.validateBitcoinAddress = exports.isTonAddress = exports.isSubstrateAddress = exports.isCardanoTestnetAddress = exports.isCardanoRewardAddress = exports.isCardanoMainnetAddress = exports.isCardanoBaseAddress = exports.isCardanoAddress = exports.isBitcoinAddress = exports.getKeypairTypeByAddress = exports.getBitcoinAddressInfo = void 0;
+-var _cardanoSerializationLibNodejs = require("@emurgo/cardano-serialization-lib-nodejs");
++var _cardanoSerializationLibNodejs = require("@emurgo/csl-mobile-bridge");
+ var _core = require("@ton/core");
+ var bitcoin = _interopRequireWildcard(require("bitcoinjs-lib"));
+ var _util = require("@polkadot/util");
+diff --git a/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js b/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js
+index 8d58b3e..ec9581b 100644
+--- a/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js
++++ b/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js
+@@ -4,14 +4,14 @@ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+ exports.createCOSEKey = exports.CoseLabel = void 0;
+-var _cardanoMessageSigningBrowser = require("@emurgo/cardano-message-signing-browser");
++var _cardanoMessageSigningBrowser = require("@emurgo/csl-mobile-bridge");
+ // Copyright 2017-2022 @subwallet/keyring authors & contributors
+ // SPDX-License-Identifier: Apache-2.0
+
+ const CoseLabel = {
+-  address: _cardanoMessageSigningBrowser.Label.new_text('address'),
+-  crv: _cardanoMessageSigningBrowser.Label.new_int(_cardanoMessageSigningBrowser.Int.new_i32(-1)),
+-  x: _cardanoMessageSigningBrowser.Label.new_int(_cardanoMessageSigningBrowser.Int.new_i32(-2))
++  address: '',
++  crv: '',
++  x: ''
+ };
+ exports.CoseLabel = CoseLabel;
+ const createCOSEKey = (addressBytes, publicKey) => {
+diff --git a/node_modules/@subwallet/keyring/cjs/utils/cardano/ed25519_bip32.js b/node_modules/@subwallet/keyring/cjs/utils/cardano/ed25519_bip32.js
+index df7548a..e665915 100644
+--- a/node_modules/@subwallet/keyring/cjs/utils/cardano/ed25519_bip32.js
++++ b/node_modules/@subwallet/keyring/cjs/utils/cardano/ed25519_bip32.js
+@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+ exports.hdCardano = hdCardano;
+-var _cardanoSerializationLibNodejs = require("@emurgo/cardano-serialization-lib-nodejs");
++var _cardanoSerializationLibNodejs = require("@emurgo/csl-mobile-bridge");
+ var _utilCrypto = require("@polkadot/util-crypto");
+ // Copyright 2017-2022 @subwallet/keyring authors & contributors
+ // SPDX-License-Identifier: Apache-2.0
+diff --git a/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js b/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js
+index 5b550c1..2d5419a 100644
+--- a/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js
++++ b/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js
+@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+ exports.mnemonicToCardanoSeed = void 0;
+-var _cardanoSerializationLibNodejs = require("@emurgo/cardano-serialization-lib-nodejs");
++var _cardanoSerializationLibNodejs = require("@emurgo/csl-mobile-bridge");
+ var _util = require("@polkadot/util");
+ var _utilCrypto = require("@polkadot/util-crypto");
+ // Copyright 2017-2022 @subwallet/keyring authors & contributors
+diff --git a/node_modules/@subwallet/keyring/pair/index.js b/node_modules/@subwallet/keyring/pair/index.js
+index c056514..3af37de 100644
+--- a/node_modules/@subwallet/keyring/pair/index.js
++++ b/node_modules/@subwallet/keyring/pair/index.js
+@@ -1,7 +1,7 @@
+ // Copyright 2017-2022 @polkadot/keyring authors & contributors
+ // SPDX-License-Identifier: Apache-2.0
+
+-import * as CardanoWasmMessageSigning from '@emurgo/cardano-message-signing-browser';
++import * as CardanoWasmMessageSigning from '@emurgo/csl-mobile-bridge';
+ import * as CardanoWasm from '@emurgo/cardano-serialization-lib-nodejs';
+ import { SignTypedDataVersion } from '@metamask/eth-sig-util';
+ import SimpleKeyring from '@metamask/eth-simple-keyring';
+diff --git a/node_modules/@subwallet/keyring/utils/cardano/coseKey.d.ts b/node_modules/@subwallet/keyring/utils/cardano/coseKey.d.ts
+index 66195be..f92979d 100644
+--- a/node_modules/@subwallet/keyring/utils/cardano/coseKey.d.ts
++++ b/node_modules/@subwallet/keyring/utils/cardano/coseKey.d.ts
+@@ -1,4 +1,4 @@
+-import { COSEKey, Label } from '@emurgo/cardano-message-signing-browser';
++import { COSEKey, Label } from '@emurgo/csl-mobile-bridge';
+ export declare const CoseLabel: {
+     address: Label;
+     crv: Label;
+diff --git a/node_modules/@subwallet/keyring/utils/cardano/coseKey.js b/node_modules/@subwallet/keyring/utils/cardano/coseKey.js
+index 20b7a8d..1499874 100644
+--- a/node_modules/@subwallet/keyring/utils/cardano/coseKey.js
++++ b/node_modules/@subwallet/keyring/utils/cardano/coseKey.js
+@@ -1,7 +1,7 @@
+ // Copyright 2017-2022 @subwallet/keyring authors & contributors
+ // SPDX-License-Identifier: Apache-2.0
+
+-import { AlgorithmId, CBORValue, COSEKey, CurveType, Int, KeyType, Label } from '@emurgo/cardano-message-signing-browser';
++import { AlgorithmId, CBORValue, COSEKey, CurveType, Int, KeyType, Label } from '@emurgo/csl-mobile-bridge';
+ export const CoseLabel = {
+   address: Label.new_text('address'),
+   crv: Label.new_int(Int.new_i32(-1)),
