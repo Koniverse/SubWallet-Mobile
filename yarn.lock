@@ -5573,10 +5573,10 @@
     "@subwallet/keyring" "^0.1.11"
     web3-core "^1.10.0"
 
-"@subwallet/keyring@^0.1.11", "@subwallet/keyring@^0.1.12":
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/@subwallet/keyring/-/keyring-0.1.12.tgz#86c89c22d0f8b5887b87f6f000a7d88c35d76eda"
-  integrity sha512-XjfBcJmaCDk3+dAH2OBBrepP+f0Pvrnbv9XaoX+w3yQoLxG1s8eRa9tc2lE6sgTUc+4iYWjDWXj83v9NIdnaog==
+"@subwallet/keyring@0.1.11", "@subwallet/keyring@^0.1.11":
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/@subwallet/keyring/-/keyring-0.1.11.tgz#6a95a21ee4ecd906d8ab7d90790c334b112d7a28"
+  integrity sha512-b3aCWWtJvctE2FNJXaV46H/yNtn3oEL4opZdjqW1nFURpZQd0+PO5S0Tt/h+zDtjt3ECfpoMRVBaoJ9mlhBL5Q==
   dependencies:
     "@emurgo/cardano-message-signing-browser" "^1.1.0"
     "@emurgo/cardano-serialization-lib-nodejs" "^13.2.0"
@@ -5680,16 +5680,16 @@
     "@polkadot/util" "^13.2.3"
     "@subwallet/chain-list" "0.2.104"
 
-"@subwallet/ui-keyring@^0.1.11":
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/@subwallet/ui-keyring/-/ui-keyring-0.1.12.tgz#dd06a946e8ec63f913fe32e4e421604c063c6965"
-  integrity sha512-wqaLQzMORevzSsq5h0J06XduYlUbnywBBxWGRceeLdb6LmJCIUK3rmH1zGGJxQX85OcJOPg6FdBbP1aUTk6SaQ==
+"@subwallet/ui-keyring@0.1.11", "@subwallet/ui-keyring@^0.1.11":
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/@subwallet/ui-keyring/-/ui-keyring-0.1.11.tgz#966a172893f9198af82a8c0a0ce63797edef51ad"
+  integrity sha512-CgRQ4LIel5RTQqI8Z4kEFWMxFQXBXAVEMBOX19ci7yrAyAu5QNq7wgsMHFwKSrxyG12+epITBBgqySPNSSOIWg==
   dependencies:
     "@babel/runtime" "^7.20.1"
     "@polkadot/ui-settings" "2.9.14"
     "@polkadot/util" "^12.2.1"
     "@polkadot/util-crypto" "^12.2.1"
-    "@subwallet/keyring" "^0.1.12"
+    "@subwallet/keyring" "^0.1.11"
     mkdirp "^1.0.4"
     rxjs "^7.5.7"
     store "^2.0.12"

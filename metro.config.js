@@ -28,6 +28,7 @@ const config = {
       'expo-crypto': require.resolve('react-native-expo-crypto'),
       'tiny-secp256k1': require.resolve('@bitcoinerlab/secp256k1'),
       '@emurgo/cardano-serialization-lib-nodejs': require.resolve('@emurgo/csl-mobile-bridge'),
+      '@emurgo/cardano-message-signing-browser': require.resolve('@emurgo/csl-mobile-bridge'),
     },
   },
 };
