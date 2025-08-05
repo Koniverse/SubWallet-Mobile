@@ -3949,7 +3949,7 @@
     colord "^2.9.3"
     tslib "^2.6.2"
 
-"@polkadot/util-crypto@10.4.2", "@polkadot/util-crypto@12.6.2", "@polkadot/util-crypto@13.4.3", "@polkadot/util-crypto@6.11.1", "@polkadot/util-crypto@7.9.2", "@polkadot/util-crypto@8.7.1", "@polkadot/util-crypto@^10.4.2", "@polkadot/util-crypto@^12.2.1", "@polkadot/util-crypto@^12.5.1", "@polkadot/util-crypto@^12.6.1", "@polkadot/util-crypto@^12.6.2", "@polkadot/util-crypto@^13.2.3", "@polkadot/util-crypto@^13.4.3", "@polkadot/util-crypto@^13.5.3":
+"@polkadot/util-crypto@10.4.2", "@polkadot/util-crypto@12.6.2", "@polkadot/util-crypto@13.4.3", "@polkadot/util-crypto@6.11.1", "@polkadot/util-crypto@7.9.2", "@polkadot/util-crypto@8.7.1", "@polkadot/util-crypto@^10.4.2", "@polkadot/util-crypto@^12.2.1", "@polkadot/util-crypto@^12.5.1", "@polkadot/util-crypto@^12.6.1", "@polkadot/util-crypto@^12.6.2", "@polkadot/util-crypto@^13.2.3", "@polkadot/util-crypto@^13.4.3":
   version "12.6.2"
   resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-12.6.2.tgz#d2d51010e8e8ca88951b7d864add797dad18bbfc"
   integrity sha512-FEWI/dJ7wDMNN1WOzZAjQoIcCP/3vz3wvAp5QQm+lOrzOLj0iDmaIGIcBkz8HVm3ErfSe/uKP0KS4jgV/ib+Mg==
@@ -3965,7 +3965,7 @@
     "@scure/base" "^1.1.5"
     tslib "^2.6.2"
 
-"@polkadot/util@10.4.2", "@polkadot/util@12.6.2", "@polkadot/util@13.3.1", "@polkadot/util@13.4.3", "@polkadot/util@6.11.1", "@polkadot/util@7.9.2", "@polkadot/util@8.7.1", "@polkadot/util@^10.2.1", "@polkadot/util@^10.4.2", "@polkadot/util@^12.2.1", "@polkadot/util@^12.5.1", "@polkadot/util@^12.6.1", "@polkadot/util@^12.6.2", "@polkadot/util@^13.0.2", "@polkadot/util@^13.2.3", "@polkadot/util@^13.4.3", "@polkadot/util@^13.5.3":
+"@polkadot/util@10.4.2", "@polkadot/util@12.6.2", "@polkadot/util@13.3.1", "@polkadot/util@13.4.3", "@polkadot/util@6.11.1", "@polkadot/util@7.9.2", "@polkadot/util@8.7.1", "@polkadot/util@^10.2.1", "@polkadot/util@^10.4.2", "@polkadot/util@^12.2.1", "@polkadot/util@^12.5.1", "@polkadot/util@^12.6.1", "@polkadot/util@^12.6.2", "@polkadot/util@^13.0.2", "@polkadot/util@^13.2.3", "@polkadot/util@^13.4.3":
   version "12.6.2"
   resolved "https://registry.yarnpkg.com/@polkadot/util/-/util-12.6.2.tgz#9396eff491221e1f0fd28feac55fc16ecd61a8dc"
   integrity sha512-l8TubR7CLEY47240uki0TQzFvtnxFIO7uI/0GoWzpYD/O62EIAMRsuY01N4DuwgKq2ZWD59WhzsLYmA5K6ksdw==
@@ -5573,32 +5573,7 @@
     "@subwallet/keyring" "^0.1.11"
     web3-core "^1.10.0"
 
-"@subwallet/keyring@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@subwallet/keyring/-/keyring-0.1.9.tgz#f5edf15550534980dc38f46c4b69c1856143218a"
-  integrity sha512-XmfztVqhWQi/3bl0zWD7kw0qeUFVWgVw0E7gXRQA2LGzNOAqx0q/bHqo5Bx/UP6EPr8dqZOFfmXUTfFzPjzRfQ==
-  dependencies:
-    "@emurgo/cardano-serialization-lib-nodejs" "^13.2.0"
-    "@ethereumjs/tx" "^5.0.0"
-    "@metamask/eth-sig-util" "^7.0.3"
-    "@metamask/eth-simple-keyring" "^6.0.1"
-    "@polkadot/util" "^12.2.1"
-    "@polkadot/util-crypto" "^12.2.1"
-    "@ton/core" "^0.56.3"
-    "@ton/crypto" "^3.2.0"
-    "@ton/ton" "^15.0.0"
-    bcryptjs "^2.4.3"
-    bignumber.js "^9.1.2"
-    bip322-js "^2.0.0"
-    bitcoinjs-lib "^6.1.5"
-    bitcoinjs-message "^2.2.0"
-    ecpair "^2.1.0"
-    eventemitter3 "^4.0.7"
-    rxjs "^7.5.6"
-    tiny-secp256k1 "^2.2.3"
-    tslib "^2.6.2"
-
-"@subwallet/keyring@^0.1.11":
+"@subwallet/keyring@0.1.11", "@subwallet/keyring@^0.1.11":
   version "0.1.11"
   resolved "https://registry.yarnpkg.com/@subwallet/keyring/-/keyring-0.1.11.tgz#6a95a21ee4ecd906d8ab7d90790c334b112d7a28"
   integrity sha512-b3aCWWtJvctE2FNJXaV46H/yNtn3oEL4opZdjqW1nFURpZQd0+PO5S0Tt/h+zDtjt3ECfpoMRVBaoJ9mlhBL5Q==
@@ -5610,32 +5585,6 @@
     "@metamask/eth-simple-keyring" "^6.0.1"
     "@polkadot/util" "^12.2.1"
     "@polkadot/util-crypto" "^12.2.1"
-    "@ton/core" "^0.56.3"
-    "@ton/crypto" "^3.2.0"
-    "@ton/ton" "^15.0.0"
-    bcryptjs "^2.4.3"
-    bignumber.js "^9.1.2"
-    bip322-js "^2.0.0"
-    bitcoinjs-lib "^6.1.5"
-    bitcoinjs-message "^2.2.0"
-    ecpair "^2.1.0"
-    eventemitter3 "^4.0.7"
-    rxjs "^7.5.6"
-    tiny-secp256k1 "^2.2.3"
-    tslib "^2.6.2"
-
-"@subwallet/keyring@^0.1.8":
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/@subwallet/keyring/-/keyring-0.1.13.tgz#0549caa377898ef4a1f4cf0b4c67fcd257321e19"
-  integrity sha512-jEbGJkr5hORIPwTyhul6b1AcucCwLEbntzgo4HdYZAJX1/YTVcHg8NdQ+Rev/CmFUxakFyffOy5zWQi5qiTv4g==
-  dependencies:
-    "@emurgo/cardano-message-signing-browser" "^1.1.0"
-    "@emurgo/cardano-serialization-lib-nodejs" "^13.2.0"
-    "@ethereumjs/tx" "^5.0.0"
-    "@metamask/eth-sig-util" "^7.0.3"
-    "@metamask/eth-simple-keyring" "^6.0.1"
-    "@polkadot/util" "^13.5.3"
-    "@polkadot/util-crypto" "^13.5.3"
     "@ton/core" "^0.56.3"
     "@ton/crypto" "^3.2.0"
     "@ton/ton" "^15.0.0"
@@ -5731,21 +5680,7 @@
     "@polkadot/util" "^13.2.3"
     "@subwallet/chain-list" "0.2.104"
 
-"@subwallet/ui-keyring@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@subwallet/ui-keyring/-/ui-keyring-0.1.9.tgz#d89aa834c35d0bb6b9dccf85cb398c11c2d1e0a7"
-  integrity sha512-xVqVi+SIpWK/of879IiFUiZFSFid8je9aTnVBNO00Od2ch4v37Xeu9zPYl5S9GDAOHv5W4XKjp1q2PYaJN8vnQ==
-  dependencies:
-    "@babel/runtime" "^7.20.1"
-    "@polkadot/ui-settings" "2.9.14"
-    "@polkadot/util" "^12.2.1"
-    "@polkadot/util-crypto" "^12.2.1"
-    "@subwallet/keyring" "^0.1.8"
-    mkdirp "^1.0.4"
-    rxjs "^7.5.7"
-    store "^2.0.12"
-
-"@subwallet/ui-keyring@^0.1.11":
+"@subwallet/ui-keyring@0.1.11", "@subwallet/ui-keyring@^0.1.11":
   version "0.1.11"
   resolved "https://registry.yarnpkg.com/@subwallet/ui-keyring/-/ui-keyring-0.1.11.tgz#966a172893f9198af82a8c0a0ce63797edef51ad"
   integrity sha512-CgRQ4LIel5RTQqI8Z4kEFWMxFQXBXAVEMBOX19ci7yrAyAu5QNq7wgsMHFwKSrxyG12+epITBBgqySPNSSOIWg==
