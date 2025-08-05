@@ -515,6 +515,10 @@ export const SendFund = ({
           return Promise.resolve(i18n.errorMessage.amountRequiredError);
         }
 
+        if (new BN(maxTransfer).lte(BN_ZERO)) {
+          return Promise.resolve("You don't have enough tokens to proceed");
+        }
+
         if (new BigN(amount).eq(new BigN(0))) {
           scrollToBottom();
           return Promise.resolve(i18n.errorMessage.amountMustBeGreaterThanZero);
