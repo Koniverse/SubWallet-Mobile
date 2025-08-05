@@ -11,7 +11,7 @@ import {
   _isValidSubstrateAddressFormat,
   _isValidTonAddressFormat,
 } from '@subwallet/extension-base/core/utils';
-import { isSubstrateAddress, isTonAddress } from '@subwallet/keyring';
+import { isSubstrateAddress, isTonAddress } from '@subwallet/keyring/utils/address';
 
 function getConditions(validateRecipientParams: ValidateRecipientParams): ValidationCondition[] {
   const { account, actionType, autoFormatValue, destChainInfo, srcChain, toAddress } = validateRecipientParams;

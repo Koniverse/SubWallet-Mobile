@@ -7,7 +7,7 @@ import { toDataUrl } from './blockies.js';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AvatarStyles from './style';
 import { Images } from 'assets/index';
-import { isAddress } from '@subwallet/keyring';
+import { isAddress } from '@subwallet/keyring/utils/address';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 function getEthereumIdenticonStyle(size: number): StyleProp<any> {
   return {

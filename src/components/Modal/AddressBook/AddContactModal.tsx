@@ -17,7 +17,7 @@ import { useToast } from 'react-native-toast-notifications';
 import createStylesheet from './style/AddContactModal';
 import { TextInputProps } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { isAddress } from '@subwallet/keyring';
+import { isAddress } from '@subwallet/keyring/utils/address';
 
 type Props = {
   modalVisible: boolean;

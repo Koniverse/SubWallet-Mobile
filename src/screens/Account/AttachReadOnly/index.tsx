@@ -22,7 +22,7 @@ import { RootState } from 'stores/index';
 import { AccountExternalErrorCode } from '@subwallet/extension-base/background/KoniTypes';
 import InputText from 'components/Input/InputText';
 import { isSameAddress } from '@subwallet/extension-base/utils';
-import { isAddress } from '@subwallet/keyring';
+import { isAddress } from '@subwallet/keyring/utils/address';
 
 const AttachReadOnly = () => {
   const theme = useSubWalletTheme().swThemes;

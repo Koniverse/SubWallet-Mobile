@@ -15,7 +15,7 @@ import { DisabledStyle } from 'styles/sharedStyles';
 import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import useCheckCamera from 'hooks/common/useCheckCamera';
-import { isAddress } from '@subwallet/keyring';
+import { isAddress } from '@subwallet/keyring/utils/address';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 

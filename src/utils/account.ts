@@ -16,7 +16,7 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { isChainInfoAccordantAccountChainType } from 'utils/chain';
 import { AbstractAddressJson, AccountChainType, AccountJson, AccountSignMode } from '@subwallet/extension-base/types';
 import { decodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import { isAddress } from '@subwallet/keyring';
+import { isAddress } from '@subwallet/keyring/utils/address';
 
 export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {

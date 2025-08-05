@@ -16,7 +16,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AccountProxy } from '@subwallet/extension-base/types';
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { isSubstrateAddress, isTonAddress } from '@subwallet/keyring';
+import { isSubstrateAddress, isTonAddress } from '@subwallet/keyring/utils/address';
 
 function searchFunction(items: AuthUrlInfo[], searchString: string) {
   return items.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));

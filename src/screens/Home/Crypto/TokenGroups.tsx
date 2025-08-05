@@ -35,7 +35,7 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { ModalRef } from 'types/modalRef';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { useMMKVBoolean } from 'react-native-mmkv';
-import { isTonAddress } from '@subwallet/keyring';
+import { isTonAddress } from '@subwallet/keyring/utils/address';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { sortTokensByStandard } from 'utils/sort/token';
 import useDebouncedValue from 'hooks/common/useDebouncedValue';

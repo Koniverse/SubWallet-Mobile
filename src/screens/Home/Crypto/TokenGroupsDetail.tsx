@@ -32,7 +32,7 @@ import { ModalRef } from 'types/modalRef';
 import { AccountAddressItemType } from 'types/account';
 import { KeypairType } from '@subwallet/keyring/types';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
-import { isTonAddress } from '@subwallet/keyring';
+import { isTonAddress } from '@subwallet/keyring/utils/address';
 import { sortTokensByStandard } from 'utils/sort/token';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 

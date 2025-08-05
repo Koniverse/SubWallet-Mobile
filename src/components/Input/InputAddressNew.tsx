@@ -18,7 +18,7 @@ import { findContactByAddress } from 'utils/account';
 import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import useCheckCamera from 'hooks/common/useCheckCamera';
-import { isAddress } from '@subwallet/keyring';
+import { isAddress } from '@subwallet/keyring/utils/address';
 import { _reformatAddressWithChain, reformatAddress } from '@subwallet/extension-base/utils';
 import HorizontalInput from 'components/design-system-ui/input/HorizontalInput';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';

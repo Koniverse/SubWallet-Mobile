@@ -1,7 +1,7 @@
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { AccountChainType } from '@subwallet/extension-base/types';
-import { isSubstrateAddress, isTonAddress } from '@subwallet/keyring';
+import { isSubstrateAddress, isTonAddress } from '@subwallet/keyring/utils/address';
 
 export const isAddressAllowedWithAuthType = (address: string, authAccountTypes?: AccountAuthType[]) => {
   if (isEthereumAddress(address) && authAccountTypes?.includes('evm')) {

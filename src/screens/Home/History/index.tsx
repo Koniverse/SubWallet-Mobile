@@ -50,7 +50,7 @@ import { HistoryChainSelector } from 'screens/Home/History/parts/HistoryChainSel
 import LinearGradient from 'react-native-linear-gradient';
 import { AccountAddressItemType } from 'types/account';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { isAddress } from '@subwallet/keyring';
+import { isAddress } from '@subwallet/keyring/utils/address';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 
 type Props = {};
