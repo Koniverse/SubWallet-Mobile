@@ -244,6 +244,10 @@ jobs:
         rustup target add x86_64-linux-android
         rustup target add i686-linux-android
 
+    - name: Install Android SDK Platform 35
+      run: |
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35"
+
     # Build AAB file
     - name: Generate App AAB
       run: |
