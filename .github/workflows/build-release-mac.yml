@@ -252,7 +252,7 @@ jobs:
     - name: Generate App AAB
       run: |
         export NODE_OPTIONS="--max-old-space-size=4096"
-        cd android && export ENVFILE=.env.production && ./gradlew bundleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
+        cd android && export ENVFILE=.env.production && ./gradlew bundleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }} -Pandroid.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/35.0.0/aapt2
 
     - name: Upload to Play Store Internal Testing
       uses: r0adkll/upload-google-play@v1
