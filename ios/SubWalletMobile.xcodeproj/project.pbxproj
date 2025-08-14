@@ -13,7 +13,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */; };
 		354402E42CBE8391002D4A91 /* Web.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 354622E32CBE8391002D4A91 /* Web.bundle */; };
-		356493AD2C64FC7B00440F84 /* DevModeWeb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 356493AC2C64FC7B00462F84 /* DevModeWeb.bundle */; };
+		356494AD2C64FC7B00440F84 /* DevModeWeb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 356494AC2C64FC7B00462F84 /* DevModeWeb.bundle */; };
 		4627831F29CEA0080046230D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4627831E29CEA0080046230D /* fonts */; };
 		462FCA172A72462100B46279 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 462FCA152A72462100B46279 /* RCTMinimizer.m */; };
 		7699B88040F8A987B510C191 /* libPods-SubWalletMobile-SubWalletMobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */; };
@@ -45,7 +45,7 @@
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-SubWalletMobile-SubWalletMobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile-SubWalletMobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		354622E32CBE8391002D4A91 /* Web.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Web.bundle; path = ../html/Web.bundle; sourceTree = "<group>"; };
-		356493AC2C64FC7B00462F84 /* DevModeWeb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = DevModeWeb.bundle; path = ../html/DevModeWeb.bundle; sourceTree = "<group>"; };
+		356494AC2C64FC7B00462F84 /* DevModeWeb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = DevModeWeb.bundle; path = ../html/DevModeWeb.bundle; sourceTree = "<group>"; };
 		3B4624A12AC88292D35C810B /* Pods-SubWalletMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.debug.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		4627831E29CEA0080046230D /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		462FCA152A72462100B46279 /* RCTMinimizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTMinimizer.m; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.m; sourceTree = "<group>"; };
@@ -153,7 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				354622E32CBE8391002D4A91 /* Web.bundle */,
-				356493AC2C64FC7B00462F84 /* DevModeWeb.bundle */,
+				356494AC2C64FC7B00462F84 /* DevModeWeb.bundle */,
 				F1F1508628C6028D004B2C94 /* PageJs.bundle */,
 				13B07FAE1A68108700A75B9A /* SubWalletMobile */,
 				846261AE1AAA6A7D00B99B32 /* Libraries */,
@@ -161,7 +161,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E462B85C8A /* Frameworks */,
 				BBD78D7AC51CEA462F1C20DB /* Pods */,
-				F898C800E8954624935C0C41 /* Resources */,
+				F898C800E8954624945C0C41 /* Resources */,
 				354622E22CBE82D1002D4A91 /* Recovered References */,
 			);
 			indentWidth = 2;
@@ -196,7 +196,7 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		F898C800E8954624935C0C41 /* Resources */ = {
+		F898C800E8954624945C0C41 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -301,7 +301,7 @@
 				3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */,
 				354402E42CBE8391002D4A91 /* Web.bundle in Resources */,
 				81AB9BB82462601600AC10FF /* SplashScreen.storyboard in Resources */,
-				356493AD2C64FC7B00440F84 /* DevModeWeb.bundle in Resources */,
+				356494AD2C64FC7B00440F84 /* DevModeWeb.bundle in Resources */,
 				4627831F29CEA0080046230D /* fonts in Resources */,
 				F1F1508728C6028D004B2C94 /* PageJs.bundle in Resources */,
 				F1554EF9292D4F5B00302F08 /* Images-2.xcassets in Resources */,
@@ -553,7 +553,7 @@
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 493;
+				CURRENT_PROJECT_VERSION = 494;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
@@ -564,7 +564,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.22;
+				MARKETING_VERSION = 1.2.23;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -589,7 +589,7 @@
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 493;
+				CURRENT_PROJECT_VERSION = 494;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SubWallet;
@@ -599,7 +599,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.22;
+				MARKETING_VERSION = 1.2.23;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

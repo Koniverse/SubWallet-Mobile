@@ -1,3 +1,12 @@
+## 1.2.23 (494)
+- test to fix lost image (#1963)
+- fix bug lost local image (#1963)
+- fix bug lost local image (#1963)
+- Add validate for SendFund (#1963)
+- update wr 1.3.32 (#1963)
+- Fix bugs related to reward claiming on some networks (#1979)
+- Update Android 15 (API level 35) (#1990)
+
 ## 1.2.22 (493)
 - Fix some UI bug (#1984)
 
