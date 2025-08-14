@@ -47,9 +47,9 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
           <View style={{ flexDirection: 'row', flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXS }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>
+                <Typography.Text style={styleSheet.groupSymbol} numberOfLines={1}>
                   {symbol}
-                </Text>
+                </Typography.Text>
                 {poolGroup.chain === 'bifrost' && (
                   <Text style={styleSheet.groupChainName} numberOfLines={1} ellipsizeMode={'tail'}>
                     {` (${poolGroup.name})`}
@@ -60,7 +60,7 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
               {poolGroup.isTestnet && getTagItem(poolGroup.isTestnet)}
             </View>
           </View>
-          {!isTempEarningCondition && maxApy && (
+          {!isTempEarningCondition && !!maxApy && (
             <View style={styleSheet.dataRow}>
               <Typography.Text
                 style={{
@@ -104,7 +104,7 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
               ******
             </Typography.Text>
           )}
-          {!isTempEarningCondition && maxApy && (
+          {!isTempEarningCondition && !!maxApy && (
             <View style={styleSheet.dataRow}>
               <Typography.Text
                 style={{
