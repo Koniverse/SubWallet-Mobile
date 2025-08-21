@@ -80,7 +80,9 @@ android {
         versionName "1.2.23"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
-
+    buildFeatures {
+        buildConfig true
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -116,7 +118,8 @@ android {
 }
 
 dependencies {
-// If your app supports Android versions before Ice Cream Sandwich (API level 14)
+  implementation project(':react-native-camera')
+  // If your app supports Android versions before Ice Cream Sandwich (API level 14)
   implementation 'com.facebook.fresco:animated-base-support:1.3.0'
 
   // For animated GIF support

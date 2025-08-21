@@ -2,33 +2,121 @@
 
 buildscript {
     ext {
-        buildToolsVersion = "33.0.0"
+        buildToolsVersion = "35.0.0"
         minSdkVersion = 24
-        compileSdkVersion = 34
-        targetSdkVersion = 34
+        compileSdkVersion = 35
+        targetSdkVersion = 35
         androidXBrowser = "1.4.0"
-        kotlinVersion = "1.8.0"
+        kotlinVersion = "1.9.0"
         // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
         ndkVersion = "23.1.7779620"
     }
-    subprojects { subproject ->
-        afterEvaluate{
-            if((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
-                android {
-                    compileSdkVersion rootProject.ext.compileSdkVersion
-                    buildToolsVersion rootProject.ext.buildToolsVersion
-                }
-            }
-        }
-    }
+
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle")
+        classpath("com.android.tools.build:gradle:8.1.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath('org.mozilla.rust-android-gradle:plugin:0.9.3')
+    }
+}
+
+subprojects { subproject ->
+    afterEvaluate{
+        if((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
+            android {
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                buildToolsVersion rootProject.ext.buildToolsVersion
+            }
+        }
+    }
+}
+subprojects {
+    afterEvaluate { project ->
+      if (project.hasProperty('android')) {
+        project.android {
+          if (namespace == null || namespace.isEmpty()) {
+            def defaultNamespace = project.group.toString().replace('.', '_')
+            namespace = defaultNamespace
+          }
+
+          buildFeatures {
+            buildConfig = true
+          }
+        }
+
+        // Task to ensure namespace and remove package attribute
+        project.tasks.register("fixManifestsAndNamespace") {
+          doLast {
+            // Ensure namespace in build.gradle
+            def buildGradleFile = file("${project.projectDir}/build.gradle")
+            if (buildGradleFile.exists()) {
+              def buildGradleContent = buildGradleFile.getText('UTF-8')
+              def manifestFile = file("${project.projectDir}/src/main/AndroidManifest.xml")
+              if (manifestFile.exists()) {
+                def manifestContent = manifestFile.getText('UTF-8')
+                def packageName = manifestContent.find(/package="([^"]+)"/) { match, p -> p }
+                if (packageName && !buildGradleContent.contains("namespace")) {
+                  println "Setting namespace in ${buildGradleFile}"
+                  buildGradleContent = buildGradleContent.replaceFirst(
+                    /android\s*\{/, "android {\n    namespace '${packageName}'"
+                  )
+                  buildGradleFile.write(buildGradleContent, 'UTF-8')
+                }
+              }
+            }
+
+            // Remove package attribute from AndroidManifest.xml
+            def manifests = fileTree(dir: project.projectDir, includes: ['**/AndroidManifest.xml'])
+            manifests.each { File manifestFile ->
+              def manifestContent = manifestFile.getText('UTF-8')
+              if (manifestContent.contains('package=')) {
+                println "Removing package attribute from ${manifestFile}"
+                manifestContent = manifestContent.replaceAll(/package="[^"]*"/, '')
+                manifestFile.write(manifestContent, 'UTF-8')
+              }
+            }
+          }
+        }
+
+        // Ensure the task runs before the build process
+        project.tasks.matching { it.name.startsWith("preBuild") }.all {
+          dependsOn project.tasks.named("fixManifestsAndNamespace")
+        }
+      }
+    }
+}
+// subprojects {
+//     afterEvaluate { project ->
+//         if (project.hasProperty('android')) {
+//             project.android {
+//                 if (namespace == null) {
+//                     namespace project.group
+//                 }
+//                 // Avoid adding android.defaults.buildfeatures.buildconfig=true
+//                 // to your gradle.properties file because that property is deprecated in AGP 8.0 and is scheduled to be removed in AGP 9.0.
+//                 buildFeatures {
+//                     if (buildConfig == null) {
+//                         buildConfig true
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
+
+// Force all modules to use the same Kotlin version
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force "org.jetbrains.kotlin:kotlin-stdlib:1.9.0"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0"
+            force "org.jetbrains.kotlin:kotlin-reflect:1.9.0"
+        }
     }
 }
