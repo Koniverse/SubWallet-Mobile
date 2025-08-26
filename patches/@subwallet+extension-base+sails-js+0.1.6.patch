@@ -1,0 +1,11 @@
+--- /tmp/sails-js-original.json	2025-08-25 18:40:05
++++ node_modules/@subwallet/extension-base/node_modules/sails-js/package.json	2025-08-25 18:40:27
+@@ -2,7 +2,7 @@
+   "name": "sails-js",
+   "version": "0.1.6",
+   "description": "Parser and typescript code generator from Sails IDL files",
+-  "main": "lib/index.js",
++  "main": "./index.js",
+   "preferGlobal": true,
+   "type": "module",
+   "license": "GPL-3.0",
