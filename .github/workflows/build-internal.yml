@@ -66,7 +66,14 @@ jobs:
 
     - name: Install dependencies
       run: yarn install --immutable | grep -v 'YN0013'
-
+    - name: Apply patches
+      run: yarn patch-package
+    - name: Check sails-js after yarn install
+      run: |
+       ls -l node_modules/sails-js || true
+       cat node_modules/sails-js/package.json | head -n 20 || true
+       ls -l node_modules/@subwallet/extension-base/node_modules/sails-js || true
+       cat node_modules/@subwallet/extension-base/node_modules/sails-js/package.json | head -n 20 || true
     - name: Restore Pods Cache
       uses: actions/cache@v3
       with:
