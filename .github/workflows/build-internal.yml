@@ -105,28 +105,34 @@ jobs:
       run: |
         export NODE_OPTIONS="--max-old-space-size=4096"
         npx react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='ios'
-    - name: Debug RN bundle script
-      run: cat node_modules/react-native/scripts/react-native-xcode.sh
-    # Build IPA file
-    - name: iOS Build Action
-      uses: yukiarrr/ios-build-action@v1.11.2
-      with:
-        project-path: ios/SubWalletMobile.xcodeproj
-        p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-        mobileprovision-base64: ${{ secrets.BUILD_ADHOC_PROVISION_PROFILE_BASE64 }}
-        code-signing-identity: 'Apple Distribution: CDM SOFTWARE DEVELOPMENT COMPANY LIMITED (ZUZ7T3GQMT)'
-        team-id: ${{ secrets.APPLE_TEAM_ID }}
-        workspace-path: ios/SubWalletMobile.xcworkspace
-        export-method: 'ad-hoc'
-        certificate-password: ${{ secrets.P12_PASSWORD }}
-        scheme: SubWalletMobile-Production
-
-    - name: Upload iOS to Diawi
-      id: upload-diawi-ios
-      uses: rnkdsh/action-upload-diawi@v1.5.4
-      with:
-        token: ${{ secrets.DIAWI_TOKEN }}
-        file: output.ipa
+    - name: Debug RN bundle env
+      run: |
+        echo "ENTRY_FILE=$ENTRY_FILE"
+        echo "NODE_BINARY=$(which node)"
+        echo "NODE version=$(node -v)"
+        echo "YARN version=$(yarn -v)"
+        ls -l index.js || true
+        ls -l src/index.ts || true
+#    # Build IPA file
+#    - name: iOS Build Action
+#      uses: yukiarrr/ios-build-action@v1.11.2
+#      with:
+#        project-path: ios/SubWalletMobile.xcodeproj
+#        p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+#        mobileprovision-base64: ${{ secrets.BUILD_ADHOC_PROVISION_PROFILE_BASE64 }}
+#        code-signing-identity: 'Apple Distribution: CDM SOFTWARE DEVELOPMENT COMPANY LIMITED (ZUZ7T3GQMT)'
+#        team-id: ${{ secrets.APPLE_TEAM_ID }}
+#        workspace-path: ios/SubWalletMobile.xcworkspace
+#        export-method: 'ad-hoc'
+#        certificate-password: ${{ secrets.P12_PASSWORD }}
+#        scheme: SubWalletMobile-Production
+#
+#    - name: Upload iOS to Diawi
+#      id: upload-diawi-ios
+#      uses: rnkdsh/action-upload-diawi@v1.5.4
+#      with:
+#        token: ${{ secrets.DIAWI_TOKEN }}
+#        file: output.ipa
 
     # Notify Discord
     - name: Notify to Discord
