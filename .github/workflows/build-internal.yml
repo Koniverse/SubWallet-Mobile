@@ -86,8 +86,7 @@ jobs:
           ${{ runner.os }}-pods-
 
     - name: Install Pods
-      run: |
-        yarn install --immutable
+      run:
         cd ios && pod install --repo-update && cd ..
 
     - name: Install Rust
@@ -106,20 +105,14 @@ jobs:
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '16.4'
-    - name: Clean DerivedData
-      run: rm -rf ~/Library/Developer/Xcode/DerivedData/*
-    - name: Bundle JS & Assets (iOS)
-      run: |
-        export NODE_OPTIONS="--max-old-space-size=4096"
-        npx react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='ios'
+    - name: Set ENTRY_FILE
+      run: echo "export ENTRY_FILE=index.js" >> $GITHUB_ENV
     - name: Debug Metro bundling
       run: |
         echo "ENTRY_FILE = $ENTRY_FILE"
         echo "NODE_BINARY = $NODE_BINARY"
         ls -la index.js || true
         ls -la src/index.ts || true
-    - name: Set ENTRY_FILE
-      run: echo "export ENTRY_FILE=index.js" >> $GITHUB_ENV
     # Build IPA file
     - name: iOS Build Action
       uses: yukiarrr/ios-build-action@v1.11.2
