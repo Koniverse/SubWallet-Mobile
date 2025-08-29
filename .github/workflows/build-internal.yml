@@ -105,6 +105,8 @@ jobs:
       run: |
         export NODE_OPTIONS="--max-old-space-size=4096"
         npx react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='ios'
+    - name: Debug RN bundle script
+      run: cat node_modules/react-native/scripts/react-native-xcode.sh
     # Build IPA file
     - name: iOS Build Action
       uses: yukiarrr/ios-build-action@v1.11.2
