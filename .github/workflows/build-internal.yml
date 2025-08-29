@@ -112,14 +112,14 @@ jobs:
       run: |
         export NODE_OPTIONS="--max-old-space-size=4096"
         npx react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='ios'
-    - name: Debug RN bundle env
+    - name: Debug Metro bundling
       run: |
-        echo "ENTRY_FILE=$ENTRY_FILE"
-        echo "NODE_BINARY=$(which node)"
-        echo "NODE version=$(node -v)"
-        echo "YARN version=$(yarn -v)"
-        ls -l index.js || true
-        ls -l src/index.ts || true
+        echo "ENTRY_FILE = $ENTRY_FILE"
+        echo "NODE_BINARY = $NODE_BINARY"
+        ls -la index.js || true
+        ls -la src/index.ts || true
+    - name: Set ENTRY_FILE
+      run: echo "export ENTRY_FILE=index.js" >> $GITHUB_ENV
     # Build IPA file
     - name: iOS Build Action
       uses: yukiarrr/ios-build-action@v1.11.2
