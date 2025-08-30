@@ -13,6 +13,7 @@ export const DAppIconMap: Record<string, string> = {
   'www.avault.network': 'https://www.avault.network/logo.png',
   'astr.domains': 'https://astr.domains/logo/logo_cic.png',
   'tfalpha.xyz': 'https://tfalpha.xyz/img/tfa-logo.png',
+  'app.incognitee.io': 'https://app.incognitee.io/favicon-256x256.png'
 };
 
 export const DAppTitleMap: Record<string, string> = {
@@ -116,6 +117,7 @@ export const DAppTitleMap: Record<string, string> = {
   'app.multichain.org': 'Multichain - Cross Chain Router Protocol',
   'www.portalbridge.com': 'Wormhole Bridge',
   'verse.bitcoin.com': 'Verse DEX',
+  'app.incognitee.io': 'Incognitee'
 };
 
 export const predefinedDApps: PredefinedDApps = {
@@ -1163,6 +1165,15 @@ export const predefinedDApps: PredefinedDApps = {
       id: 'www.azero.id',
       url: 'https://azero.id',
       categories: ['utilities'],
+      isSupportSubstrateAccount: true,
+      isSupportEthereumAccount: false,
+    },
+    {
+      name: 'Incognitee - Privacy Sidechains',
+      icon: 'https://app.incognitee.io/favicon-256x256.png',
+      id: 'app.incognitee.io',
+      url: 'https://app.incognitee.io',
+      categories: ['defi', 'utilities'],
       isSupportSubstrateAccount: true,
       isSupportEthereumAccount: false,
     },
