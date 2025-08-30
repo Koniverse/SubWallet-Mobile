@@ -1,5 +1,5 @@
 ## SubWallet Mobile 
-This mobile version of [SubWallet Extension](https://github.com/Koniverse/SubWallet-Extension) that is gateway help you access to Dotsama ecosytem.
+This mobile version of [SubWallet Extension](https://github.com/Koniverse/SubWallet-Extension) that is gateway help you access to Dotsama ecosystem.
 
 ## Main Concept
 ![image](https://user-images.githubusercontent.com/11567273/176982199-78bc5c3c-172e-463b-8218-e9f16e5649d4.png)
