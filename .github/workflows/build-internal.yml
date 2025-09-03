@@ -49,7 +49,7 @@ jobs:
       uses: actions/setup-node@v4
       if: ${{ runner.name != 'Dos-Mac-mini' }}
       with:
-        node-version: 18
+        node-version: 20
     - name: Enable Corepack (for Yarn 3+)
       run: corepack enable
 
@@ -79,8 +79,7 @@ jobs:
           ${{ runner.os }}-pods-
 
     - name: Install Pods
-      run: |
-        yarn install --immutable
+      run:
         cd ios && pod install --repo-update && cd ..
 
     - name: Install Rust
@@ -95,16 +94,6 @@ jobs:
         rustup target add x86_64-apple-ios
         rustup target add aarch64-apple-ios-sim
         rustup component add rust-src
-    - name: Set up Xcode
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: '16.4'
-    - name: Clean DerivedData
-      run: rm -rf ~/Library/Developer/Xcode/DerivedData/*
-    - name: Bundle JS & Assets (iOS)
-      run: |
-        export NODE_OPTIONS="--max-old-space-size=4096"
-        npx react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='ios'
     # Build IPA file
     - name: iOS Build Action
       uses: yukiarrr/ios-build-action@v1.11.2
