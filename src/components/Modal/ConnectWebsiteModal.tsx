@@ -49,6 +49,12 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
   const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
   const [loading, setLoading] = useState(false);
   const _isNotConnected = isNotConnected || !authInfo;
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const isEvmAuthorize = useMemo(() => !!authInfo?.accountAuthTypes.includes('evm'), [authInfo?.accountAuthTypes]);
+  const currentEvmNetworkInfo = useMemo(
+    () => authInfo?.currentNetworkMap.evm && chainInfoMap[authInfo?.currentNetworkMap.evm],
+    [authInfo?.currentNetworkMap.evm, chainInfoMap],
+  );
   Keyboard.dismiss();
 
   const onChangeModalVisible = useCallback(() => modalBaseV2Ref?.current?.close(), []);
@@ -73,6 +79,17 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
     },
     [authInfo?.accountAuthTypes],
   );
+
+  const openSwitchNetworkAuthorizeModal = useCallback(() => {
+    authInfo &&
+      switchNetworkAuthorizeModal.open({
+        authUrlInfo: authInfo,
+        onComplete: list => {
+          updateAuthUrls(list);
+        },
+        needsTabAuthCheck: true,
+      });
+  }, [authInfo, switchNetworkAuthorizeModal]);
 
   const handlerSubmit = useCallback(() => {
     if (!loading && authInfo?.id) {

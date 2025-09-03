@@ -1,7 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { DotsThree, Plugs, PlugsConnected, Shield, ShieldSlash, Users, X, Plug } from 'phosphor-react-native';
+import {
+  DotsThree,
+  Plugs,
+  PlugsConnected,
+  Shield,
+  ShieldSlash,
+  Users,
+  X,
+  Plug,
+  ArrowsLeftRight,
+} from 'phosphor-react-native';
 import { MoreOptionItemType, MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -160,6 +170,7 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
 
   const dAppAccessDetailMoreOptions: MoreOptionItemType[] = useMemo(() => {
     const isAllowed = authInfo.isAllowed;
+    const isEvmAuthorize = authInfo.accountAuthTypes.includes('evm');
 
     const options = [
       {
@@ -198,6 +209,23 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
           },
         },
       );
+    }
+
+    if (isEvmAuthorize) {
+      options.push({
+        key: 'switchNetwork',
+        icon: ArrowsLeftRight,
+        backgroundColor: theme['geekblue-6'],
+        name: 'Switch network',
+        onPress: () => {
+          switchNetworkAuthorizeModal.open({
+            authUrlInfo: authInfo,
+            onComplete: list => {
+              updateAuthUrls(list);
+            },
+          });
+        },
+      });
     }
 
     options.push({
