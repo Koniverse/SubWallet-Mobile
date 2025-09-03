@@ -203,7 +203,6 @@
     "react-devtools": "^4.27.0",
     "react-test-renderer": "^18.2.0",
     "readable-stream": "^4.2.0",
-    "sails-js": "0.1.6",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "typescript": "5.0.4",
@@ -225,7 +224,7 @@
     "react-native-svg": "^13.6.0",
     "@subwallet/keyring": "0.1.11",
     "@subwallet/ui-keyring": "0.1.11",
-    "sails-js": "^0.1.6"
+    "sails-js": "https://github.com/Koniverse/custom-packages.git#sails-js-v0.1.6"
   },
   "engines": {
     "node": ">=18"
