@@ -151,7 +151,6 @@
     "rn-android-keyboard-adjust": "^2.1.2",
     "rn-fetch-blob": "0.13.0-beta.2",
     "rn-qr-generator": "^1.3.1",
-    "sails-js": "0.1.6",
     "url-parse": "^1.5.10"
   },
   "devDependencies": {
@@ -225,8 +224,7 @@
     "react-native-svg": "^13.6.0",
     "@subwallet/keyring": "0.1.11",
     "@subwallet/ui-keyring": "0.1.11",
-    "sails-js": "0.1.6",
-    "@subwallet/extension-base/sails-js": "0.1.6"
+    "sails-js": "https://github.com/Koniverse/custom-packages.git#sails-js-v0.1.6"
   },
   "engines": {
     "node": ">=18"
