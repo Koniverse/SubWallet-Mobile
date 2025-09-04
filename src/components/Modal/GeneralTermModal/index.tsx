@@ -68,7 +68,7 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
               setDisableAcceptBtn(true);
             }
           }}
-          scrollEventThrottle={400}
+          scrollEventThrottle={Platform.OS === 'ios' ? 400 : 16}
           contentContainerStyle={{ gap: theme.padding }}>
           <Markdown
             style={{

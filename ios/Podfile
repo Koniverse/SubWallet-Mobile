@@ -25,16 +25,9 @@ end
 
 target 'SubWalletMobile' do
   config = use_native_modules!
-  # Flags change depending on the env values.
-  flags = get_default_flags()
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # Hermes is now enabled by default. Disable by setting this flag to false.
-    # Upcoming versions of React Native may rely on get_default_flags(), but
-    # we make it explicit here to aid in the React Native upgrade process.
-    :hermes_enabled => flags[:hermes_enabled],
-    :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
@@ -58,7 +51,6 @@ target 'SubWalletMobile' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
     # Get main project development team id
     dev_team = ""
     project = installer.aggregate_targets[0].user_project
@@ -81,6 +73,14 @@ target 'SubWalletMobile' do
       end
     end
 
+    # Force glog to use modular headers
+    installer.pods_project.targets.each do |target|
+      if target.name == 'glog'
+        target.build_configurations.each do |config|
+          config.build_settings['DEFINES_MODULE'] = 'YES'
+        end
+      end
+    end
     installer.pods_project.targets.each do |target|
       if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
         target.build_configurations.each do |config|
@@ -97,6 +97,13 @@ target 'SubWalletMobile' do
             end
         end
     end
+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        # Force Swift optimization to -Onone
+        config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
+    end
+  end
   end
 end
 

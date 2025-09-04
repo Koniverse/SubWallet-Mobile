@@ -130,7 +130,7 @@ export const GlobalInstructionModal = ({
               setScrollHeight(currentScrollHeight);
             }}
             onScroll={onScroll}
-            scrollEventThrottle={400}
+            scrollEventThrottle={Platform.OS === 'ios' ? 400 : 16}
             alwaysBounceVertical={false}
             showsVerticalScrollIndicator={false}>
             <View
