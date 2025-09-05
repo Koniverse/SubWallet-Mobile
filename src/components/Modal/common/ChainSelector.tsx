@@ -9,6 +9,7 @@ interface Props {
   selectedValueMap: Record<string, boolean>;
   onSelectItem?: (item: ChainInfo) => void;
   renderSelected?: () => JSX.Element;
+  renderSelectModalBtn?: (onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => JSX.Element;
   disabled?: boolean;
   acceptDefaultValue?: boolean;
   chainSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
@@ -19,6 +20,7 @@ export const ChainSelector = ({
   selectedValueMap,
   onSelectItem,
   renderSelected,
+  renderSelectModalBtn,
   disabled,
   acceptDefaultValue,
   chainSelectorRef,
@@ -38,6 +40,7 @@ export const ChainSelector = ({
       searchFunc={searchFunc}
       onSelectItem={onSelectItem}
       renderSelected={renderSelected}
+      renderSelectModalBtn={renderSelectModalBtn}
       disabled={disabled}
       acceptDefaultValue={acceptDefaultValue}
       placeholder={i18n.placeholder.searchNetwork}

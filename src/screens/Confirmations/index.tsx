@@ -41,6 +41,7 @@ import { AccountJson, AccountSignMode, ProcessType } from '@subwallet/extension-
 import { SignerPayloadJSON } from '@polkadot/types/types';
 import { _isRuntimeUpdated } from '@subwallet/extension-base/utils';
 import { AppModalContext } from 'providers/AppModalContext';
+import { SubmitApiConfirmation } from './variants/Action';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
   return {
@@ -85,7 +86,9 @@ export const Confirmations = () => {
       metadataRequest: i18n.header.updateMetadata,
       signingRequest: i18n.header.signatureRequest,
       connectWCRequest: i18n.header.walletConnect,
+      notSupportWCRequest: i18n.header.walletConnect,
       errorConnectNetwork: i18n.header.transactionRequest,
+      submitApiRequest: i18n.confirmation.approveRequest,
     }),
     [],
   ) as Record<ConfirmationType, string>;
@@ -250,6 +253,12 @@ export const Confirmations = () => {
         account = findAccountByAddress(accounts, request.payload.address) || undefined;
         canSign = request.payload.canSign;
         isMessage = confirmation.type === 'evmSignatureRequest';
+      } else if (confirmation.type === 'submitApiRequest') {
+        const request = confirmation.item as ConfirmationDefinitions['submitApiRequest'][0];
+
+        account = findAccountByAddress(accounts, request.payload.address) || undefined;
+        canSign = request.payload.canSign;
+        isMessage = false;
       }
 
       const signMode = getSignMode(account);
@@ -276,8 +285,7 @@ export const Confirmations = () => {
 
     if (
       confirmation.item.isInternal &&
-      confirmation.type !== 'connectWCRequest' &&
-      confirmation.type !== 'evmSignatureRequest'
+      !['connectWCRequest', 'evmSignatureRequest', 'submitApiRequest'].includes(confirmation.type)
     ) {
       return (
         <TransactionConfirmation
@@ -324,6 +332,14 @@ export const Confirmations = () => {
         return (
           <EvmTransactionConfirmation
             request={confirmation.item as ConfirmationDefinitions['evmSendTransactionRequest'][0]}
+            type={confirmation.type}
+            navigation={navigation}
+          />
+        );
+      case 'submitApiRequest':
+        return (
+          <SubmitApiConfirmation
+            request={confirmation.item as ConfirmationDefinitions['submitApiRequest'][0]}
             type={confirmation.type}
             navigation={navigation}
           />

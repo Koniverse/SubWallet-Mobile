@@ -38,6 +38,7 @@ import { ProcessType } from '@subwallet/extension-base/types';
 import BaseProcessConfirmation from 'screens/Confirmations/variants/Transaction/variants/Process/Base';
 import { VoidFunction } from 'types/index';
 import { ConfirmModalInfo } from 'providers/AppModalContext';
+import SubmitApiArea from 'screens/Confirmations/parts/SubmitApiArea';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
@@ -187,6 +188,16 @@ export const TransactionConfirmation = (props: Props) => {
           payload={item as ConfirmationDefinitionsTon['tonSendTransactionRequest' | 'tonWatchTransactionRequest'][0]}
           txExpirationTime={txExpirationTime}
           type={type}
+        />
+      )}
+      {type === 'submitApiRequest' && (
+        <SubmitApiArea
+          extrinsicType={_transaction.extrinsicType}
+          id={item.id}
+          payload={item as ConfirmationDefinitions['submitApiRequest'][0]}
+          txExpirationTime={txExpirationTime}
+          type={type}
+          navigation={navigation}
         />
       )}
     </>

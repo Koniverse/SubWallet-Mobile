@@ -6,7 +6,7 @@ import { RootState } from 'stores/index';
 
 import { BaseTransactionConfirmationProps } from './Base';
 import { CommonStepType } from '@subwallet/extension-base/types/service-base';
-import { SwapTxData } from '@subwallet/extension-base/types/swap';
+import { SwapProviderId, SwapTxData } from '@subwallet/extension-base/types/swap';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { BN_TEN, BN_ZERO } from 'utils/chainBalances';
@@ -95,6 +95,10 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
     return getTokenPairFromStep(data.process.steps);
   }, [data.process.steps]);
 
+  const isKyberProvider = useMemo(() => {
+    return data.provider.id === SwapProviderId.KYBER;
+  }, [data.provider.id]);
+
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
 
@@ -152,6 +156,13 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
           description={
             'The swap quote has been updated. Make sure to double-check all information before confirming the transaction.'
           }
+          title={'Pay attention!'}
+          type={'warning'}
+        />
+      )}
+      {isKyberProvider && (
+        <AlertBox
+          description={'Due to market conditions, you may receive more or less than expected'}
           title={'Pay attention!'}
           type={'warning'}
         />

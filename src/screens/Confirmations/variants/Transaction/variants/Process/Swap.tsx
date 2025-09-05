@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BaseProcessConfirmationProps } from './Base';
 import { RootState } from 'stores/index';
-import { SwapBaseTxData } from '@subwallet/extension-base/types/swap';
+import { SwapBaseTxData, SwapProviderId } from '@subwallet/extension-base/types/swap';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { BN_TEN, BN_ZERO } from 'utils/chainBalances';
@@ -52,6 +52,10 @@ export const SwapProcessConfirmation = ({ process }: Props) => {
 
     return totalBalance;
   }, [assetRegistryMap, data.quote.feeInfo.feeComponent, priceMap]);
+
+  const isKyberSwap = useMemo(() => {
+    return data.provider.id === SwapProviderId.KYBER;
+  }, [data.provider.id]);
 
   const getWaitingTime = useMemo(() => {
     return Math.ceil((data.quote.estimatedArrivalTime || 0) / 60);
@@ -133,6 +137,14 @@ export const SwapProcessConfirmation = ({ process }: Props) => {
           />
         )}
       </MetaInfo>
+
+      {isKyberSwap && (
+        <AlertBox
+          title={'Pay attention!'}
+          description={'Due to market conditions, you may receive more or less than expected.'}
+          type={'warning'}
+        />
+      )}
 
       {showQuoteExpired && (
         <AlertBox

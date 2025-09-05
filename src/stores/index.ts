@@ -51,8 +51,8 @@ const persistRootConfig = {
   key: 'root',
   version: 3,
   storage: AsyncStorage,
-  whitelist: ['mobileSettings', 'settings', 'appVersion', 'campaign'],
-  blacklist: ['browser', 'price', 'balance', 'chainStore', 'assetRegistry'],
+  whitelist: ['mobileSettings', 'settings', 'appVersion', 'campaign', 'price'],
+  blacklist: ['browser', 'balance', 'chainStore', 'assetRegistry'],
   migrate: async (state: any) => {
     if (state?._persist && state._persist.version < 3 && state.browser) {
       mmkvReduxStore.setItem('persist:browser', JSON.stringify(state.browser));

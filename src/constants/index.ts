@@ -76,3 +76,4 @@ export const ALL_ACCOUNT_AUTH_TYPES: AccountAuthType[] = ['evm', 'substrate', 't
 export const SHOW_REVIEW_APP_SCREENS = [ExtrinsicType.STAKING_WITHDRAW, ExtrinsicType.SWAP];
 export const FAQ_URL =
   'https://docs.subwallet.app/main/extension-user-guide/faqs#the-transfer-confirmation-screen-displayed-a-different-recipient-address-than-the-address-i-entered';
+export const AUTHORIZE_TYPE_SUPPORTS_NETWORK_SWITCH = 'evm';

@@ -544,8 +544,12 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
     setChooseFeeModalVisible(false);
   }, []);
 
-  const notifyInvalidAmount = useCallback(() => {
-    show('No swap quote found. Adjust your amount and try again', { type: 'danger' });
+  const notifyTooLowAmount = useCallback(() => {
+    show('Amount too low. Increase your amount and try again', { type: 'danger' });
+  }, [show]);
+
+  const notifyTooHighAmount = useCallback(() => {
+    show('Amount too high. Lower your amount and try again', { type: 'danger' });
   }, [show]);
 
   const onConfirmSelectedQuote = useCallback(async (quote: SwapQuote) => {
@@ -988,11 +992,12 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
                     notifyNoQuote();
                   }
 
-                  if (
-                    e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW) ||
-                    e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)
-                  ) {
-                    notifyInvalidAmount();
+                  if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW)) {
+                    notifyTooLowAmount();
+                  }
+
+                  if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)) {
+                    notifyTooHighAmount();
                   }
 
                   setHandleRequestLoading(false);
@@ -1020,8 +1025,9 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
     fromTokenSlugValue,
     fromValue,
     isRecipientFieldAllowed,
-    notifyInvalidAmount,
     notifyNoQuote,
+    notifyTooHighAmount,
+    notifyTooLowAmount,
     preferredProvider,
     reValidateField,
     recipientValue,
@@ -1102,11 +1108,12 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
               notifyNoQuote();
             }
 
-            if (
-              e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW) ||
-              e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)
-            ) {
-              notifyInvalidAmount();
+            if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW)) {
+              notifyTooLowAmount();
+            }
+
+            if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)) {
+              notifyTooHighAmount();
             }
           })
           .finally(() => {
@@ -1154,8 +1161,9 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
   }, [
     currentQuoteRequest,
     hasInternalConfirmations,
-    notifyInvalidAmount,
     notifyNoQuote,
+    notifyTooHighAmount,
+    notifyTooLowAmount,
     quoteAliveUntil,
     requestUserInteractToContinue,
     updateSwapStates,

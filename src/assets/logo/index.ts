@@ -37,6 +37,7 @@ export const ImageLogosMap = {
   kusama_assethub: require('./kusama-asset-hub.png'),
   rococo_assethub: require('./uniswap.png'),
   uniswap: require('./rococo-asset-hub.png'),
+  kyber: require('./kyber.png'),
   'subnet-0': require('./bittensor/subnet-0.png'),
   'subnet-1': require('./bittensor/subnet-1.png'),
   'subnet-2': require('./bittensor/subnet-2.png'),

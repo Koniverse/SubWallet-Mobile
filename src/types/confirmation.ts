@@ -6,6 +6,7 @@ export type EvmSignatureSupportType = keyof Pick<
 >;
 
 export type EvmErrorSupportType = keyof Pick<ConfirmationDefinitions, 'errorConnectNetwork'>;
+export type SubmitApiType = keyof Pick<ConfirmationDefinitions, 'submitApiRequest'>;
 export type TonSignatureSupportType = keyof Pick<
   ConfirmationDefinitionsTon,
   'tonSignatureRequest' | 'tonWatchTransactionRequest' | 'tonSendTransactionRequest'
