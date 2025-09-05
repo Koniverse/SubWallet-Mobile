@@ -58,8 +58,8 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const isEvmAuthorize = useMemo(() => !!authInfo?.accountAuthTypes.includes('evm'), [authInfo?.accountAuthTypes]);
   const currentEvmNetworkInfo = useMemo(
-    () => authInfo?.currentNetworkMap.evm && chainInfoMap[authInfo?.currentNetworkMap.evm],
-    [authInfo?.currentNetworkMap.evm, chainInfoMap],
+    () => authInfo?.currentNetworkMap?.evm && chainInfoMap[authInfo?.currentNetworkMap.evm],
+    [authInfo?.currentNetworkMap?.evm, chainInfoMap],
   );
   Keyboard.dismiss();
 
