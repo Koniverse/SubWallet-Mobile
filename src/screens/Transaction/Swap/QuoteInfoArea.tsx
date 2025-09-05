@@ -23,6 +23,7 @@ import QuoteRateDisplay from 'components/Swap/QuoteRateDisplay';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
+import SwapFeesModal from 'components/Modal/SwapFeesModal';
 
 type Props = {
   currentQuote: SwapQuote | undefined;
@@ -63,6 +64,19 @@ export const QuoteInfoArea = (props: Props) => {
   const { transactionStepsModal } = useContext(AppModalContext);
   const getSwapProcessSteps = useGetSwapProcessSteps();
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [swapFeesModalVisible, setSwapFeesModalVisible] = useState<boolean>(false);
+
+  const openSwapFeeModal = () => {
+    if (!currentQuote) {
+      return;
+    }
+
+    setSwapFeesModalVisible(true);
+  };
+
+  const closeSwapFeeModal = () => {
+    setSwapFeesModalVisible(false);
+  };
 
   const openProcessModal = useCallback(() => {
     Keyboard.dismiss();
@@ -212,7 +226,7 @@ export const QuoteInfoArea = (props: Props) => {
           content={<Typography.Text style={styles.smallText}>{slippageTitle}</Typography.Text>}>
           <TouchableOpacity
             style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}
-            onPress={!!slippageTitle ? onPressInfo : onOpenSlippageModal}>
+            onPress={slippageTitle ? onPressInfo : onOpenSlippageModal}>
             {!!slippageTitle && <Icon phosphorIcon={Info} size={'xxs'} />}
             <Typography.Text style={styles.smallText}>{slippageContent}</Typography.Text>
 
@@ -295,14 +309,18 @@ export const QuoteInfoArea = (props: Props) => {
                 {'Estimated fee'}
               </Typography.Text>
             }>
-            <NumberDisplay
-              size={12}
-              textStyle={{ ...FontSemiBold }}
-              decimal={0}
-              prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
-              suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
-              value={estimatedFeeValue}
-            />
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={openSwapFeeModal}>
+              <NumberDisplay
+                size={12}
+                textStyle={{ ...FontSemiBold }}
+                decimal={0}
+                prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+                value={estimatedFeeValue}
+              />
+
+              <Icon phosphorIcon={CaretRight} size={'xs'} />
+            </TouchableOpacity>
           </MetaInfo.Default>
 
           <MetaInfo.Default
@@ -323,6 +341,16 @@ export const QuoteInfoArea = (props: Props) => {
 
           {renderSlippageInfoContent()}
         </MetaInfo>
+      )}
+
+      {currentQuote && (
+        <SwapFeesModal
+          modalVisible={swapFeesModalVisible}
+          setModalVisible={setSwapFeesModalVisible}
+          currentQuote={currentQuote}
+          estimatedFeeValue={estimatedFeeValue}
+          onCancel={closeSwapFeeModal}
+        />
       )}
 
       {showQuoteEmptyBlock && renderQuoteEmptyBlock()}
