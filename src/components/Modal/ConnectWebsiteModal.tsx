@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
+import { AuthUrlInfo, AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
@@ -18,6 +18,11 @@ import { convertAuthorizeTypeToChainTypes, filterAuthorizeAccountProxies } from 
 import { isAddressAllowedWithAuthType } from 'utils/account/account';
 import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
 import { AccountProxy } from '@subwallet/extension-base/types';
+import { updateAuthUrls } from 'stores/utils';
+import SwitchNetworkAuthorizeModal from 'components/Modal/SwitchNetworkAuthorizeModal';
+import { ModalRef } from 'types/modalRef';
+import { FontSemiBold } from 'styles/sharedStyles';
+import { NetworkItem } from 'components/NetworkItem';
 
 interface Props {
   modalVisible: boolean;
@@ -41,6 +46,7 @@ const ButtonIconMap = {
 
 // todo: i18n;
 export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, isBlocked, authInfo, url }: Props) => {
+  const chainSelectorRef = useRef<ModalRef>();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -80,16 +86,9 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
     [authInfo?.accountAuthTypes],
   );
 
-  const openSwitchNetworkAuthorizeModal = useCallback(() => {
-    authInfo &&
-      switchNetworkAuthorizeModal.open({
-        authUrlInfo: authInfo,
-        onComplete: list => {
-          updateAuthUrls(list);
-        },
-        needsTabAuthCheck: true,
-      });
-  }, [authInfo, switchNetworkAuthorizeModal]);
+  const onComplete = useCallback((list: AuthUrls) => {
+    updateAuthUrls(list);
+  }, []);
 
   const handlerSubmit = useCallback(() => {
     if (!loading && authInfo?.id) {
@@ -286,6 +285,30 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
       contentContainerStyle={stylesheet.modalContentContainerStyle}
       footer={<View style={stylesheet.footer}>{actionButtons}</View>}>
       <ScrollView style={stylesheet.scrollView} showsVerticalScrollIndicator={false} nestedScrollEnabled>
+        {isEvmAuthorize && !!currentEvmNetworkInfo && authInfo && (
+          <SwitchNetworkAuthorizeModal
+            selectorRef={chainSelectorRef}
+            onComplete={onComplete}
+            authUrlInfo={authInfo}
+            onCancel={() => chainSelectorRef?.current?.onCloseModal()}
+            needsTabAuthCheck={true}
+            renderSelectModalBtn={(onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => {
+              return (
+                <View style={stylesheet.switchNetworkLabelWrapper}>
+                  <Typography.Text style={{ color: theme.colorTextLight1, ...FontSemiBold }}>
+                    {'Switch network'}
+                  </Typography.Text>
+                  <NetworkItem
+                    itemName={currentEvmNetworkInfo?.name}
+                    itemKey={currentEvmNetworkInfo?.slug}
+                    iconSize={20}
+                    onSelectNetwork={() => onOpenModal(true)}
+                  />
+                </View>
+              );
+            }}
+          />
+        )}
         <TouchableOpacity activeOpacity={1}>
           <ConfirmationGeneralInfo
             request={{

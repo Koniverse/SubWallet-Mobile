@@ -1,24 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { ThemeTypes } from 'styles/themes';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AuthUrlInfo, AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AUTHORIZE_TYPE_SUPPORTS_NETWORK_SWITCH } from 'constants/index';
 import { useGetCurrentAuth } from 'hooks/auth/useGetCurrentAuth';
-import { ChainItemType } from 'types/index';
+import { ChainInfo, ChainItemType } from 'types/index';
 import { _isChainEvmCompatible } from '@subwallet/extension-base/services/chain-service/utils';
 import { stripUrl } from '@subwallet/extension-base/utils';
 import { switchCurrentNetworkAuthorization } from 'messaging/settings';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
-import { NetworkField } from 'components/Field/Network';
-import i18n from 'utils/i18n/i18n';
+import { ModalRef } from 'types/modalRef';
 
 export interface SwitchNetworkAuthorizeModalProps {
+  selectorRef?: React.MutableRefObject<ModalRef | undefined>;
   authUrlInfo: AuthUrlInfo;
   onComplete: (authInfo: AuthUrls) => void;
   needsTabAuthCheck?: boolean;
+  renderSelectModalBtn?: (onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => JSX.Element;
 }
 
 type Props = SwitchNetworkAuthorizeModalProps & {
@@ -28,13 +26,13 @@ type Props = SwitchNetworkAuthorizeModalProps & {
 const networkTypeSupported = AUTHORIZE_TYPE_SUPPORTS_NETWORK_SWITCH;
 
 const SwitchNetworkAuthorizeModal: React.FC<Props> = ({
+  selectorRef,
   authUrlInfo,
   onComplete,
   needsTabAuthCheck,
   onCancel,
+  renderSelectModalBtn,
 }: Props) => {
-  const theme = useSubWalletTheme().swThemes;
-  const styles = useMemo(() => createStyle(theme), [theme]);
   const [loading, setLoading] = useState(false);
   const [networkSelected, setNetworkSelected] = useState(authUrlInfo.currentNetworkMap[networkTypeSupported] || '');
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
@@ -50,8 +48,8 @@ const SwitchNetworkAuthorizeModal: React.FC<Props> = ({
     }, []);
   }, [chainInfoMap]);
 
-  const onSelectNetwork = useCallback(selectedNetwork => {
-    setNetworkSelected(selectedNetwork);
+  const onSelectNetwork = useCallback((item: ChainInfo) => {
+    setNetworkSelected(item.slug);
   }, []);
 
   useEffect(() => {
@@ -94,30 +92,16 @@ const SwitchNetworkAuthorizeModal: React.FC<Props> = ({
     }
   }, [authUrlInfo.id, currentAuthByActiveTab, needsTabAuthCheck, onCancel]);
 
-  const renderSelected = useCallback(() => {
-    return (
-      <NetworkField
-        networkKey={networkSelected}
-        outerStyle={{ marginBottom: 0 }}
-        placeholder={i18n.placeholder.selectChain}
-        showIcon
-        disabled={loading}
-      />
-    );
-  }, [loading, networkSelected]);
-
   return (
     <ChainSelector
+      chainSelectorRef={selectorRef}
       items={networkItems}
-      selectedValueMap={{}}
+      selectedValueMap={{ [networkSelected]: true }}
       onSelectItem={onSelectNetwork}
-      renderSelected={renderSelected}
+      renderSelectModalBtn={renderSelectModalBtn}
+      disabled={loading}
     />
   );
 };
-
-function createStyle(theme: ThemeTypes) {
-  return StyleSheet.create({});
-}
 
 export default SwitchNetworkAuthorizeModal;

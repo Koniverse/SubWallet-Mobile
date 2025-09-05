@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import {
@@ -29,12 +29,14 @@ import DappAccessItem, { getSiteTitle } from 'components/design-system-ui/web3-b
 import { getHostName } from 'utils/browser';
 import { ThemeTypes } from 'styles/themes';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
+import { AuthUrlInfo, AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { AccountChainType, AccountProxy } from '@subwallet/extension-base/types';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { getAccountCount } from 'screens/Settings/Security/DAppAccess/index';
 import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
 import { convertAuthorizeTypeToChainTypes } from 'utils/accountProxy';
+import SwitchNetworkAuthorizeModal from 'components/Modal/SwitchNetworkAuthorizeModal';
+import { ModalRef } from 'types/modalRef';
 
 type Props = {
   origin: string;
@@ -84,6 +86,7 @@ const checkAccountAddressValid = (chainType: AccountChainType, accountAuthTypes?
 };
 
 const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
+  const chainSelectorRef = useRef<ModalRef>();
   const navigation = useNavigation<RootNavigationProps>();
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -168,6 +171,10 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
     </>
   );
 
+  const onComplete = useCallback((list: AuthUrls) => {
+    updateAuthUrls(list);
+  }, []);
+
   const dAppAccessDetailMoreOptions: MoreOptionItemType[] = useMemo(() => {
     const isAllowed = authInfo.isAllowed;
     const isEvmAuthorize = authInfo.accountAuthTypes.includes('evm');
@@ -214,16 +221,12 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
     if (isEvmAuthorize) {
       options.push({
         key: 'switchNetwork',
-        icon: ArrowsLeftRight,
-        backgroundColor: theme['geekblue-6'],
         name: 'Switch network',
+        icon: ArrowsLeftRight,
+        // @ts-ignore
+        backgroundColor: theme['geekblue-6'],
         onPress: () => {
-          switchNetworkAuthorizeModal.open({
-            authUrlInfo: authInfo,
-            onComplete: list => {
-              updateAuthUrls(list);
-            },
-          });
+          chainSelectorRef?.current?.onOpenModal();
         },
       });
     }
@@ -245,7 +248,7 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
     });
 
     return options;
-  }, [authInfo.isAllowed, theme, origin, navigation]);
+  }, [authInfo.isAllowed, authInfo.accountAuthTypes, theme, origin, navigation]);
 
   useEffect(() => {
     setPendingMap(prevMap => {
@@ -326,34 +329,43 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
   );
 
   return (
-    <FlatListScreen
-      title={origin}
-      autoFocus={false}
-      onPressBack={() => navigation.goBack()}
-      beforeListItem={renderBeforeListItem()}
-      items={accountProxyItems}
-      searchFunction={searchFunction}
-      placeholder={i18n.placeholder.accountName}
-      renderListEmptyComponent={() => (
-        <EmptyList
-          icon={Users}
-          title={i18n.emptyScreen.manageDAppDetailEmptyTitle}
-          message={i18n.emptyScreen.manageDAppDetailEmptyMessage}
-        />
-      )}
-      estimatedItemSize={60}
-      rightIconOption={rightIconOption}
-      renderItem={renderItem}
-      afterListItem={
-        <MoreOptionModal
-          modalVisible={modalVisible}
-          moreOptionList={dAppAccessDetailMoreOptions}
-          setModalVisible={setModalVisible}
-        />
-      }
-      extraData={JSON.stringify(authInfo).concat(JSON.stringify(pendingMap))}
-      keyExtractor={item => item.id}
-    />
+    <>
+      <FlatListScreen
+        title={origin}
+        autoFocus={false}
+        onPressBack={() => navigation.goBack()}
+        beforeListItem={renderBeforeListItem()}
+        items={accountProxyItems}
+        searchFunction={searchFunction}
+        placeholder={i18n.placeholder.accountName}
+        renderListEmptyComponent={() => (
+          <EmptyList
+            icon={Users}
+            title={i18n.emptyScreen.manageDAppDetailEmptyTitle}
+            message={i18n.emptyScreen.manageDAppDetailEmptyMessage}
+          />
+        )}
+        estimatedItemSize={60}
+        rightIconOption={rightIconOption}
+        renderItem={renderItem}
+        afterListItem={
+          <MoreOptionModal
+            modalVisible={modalVisible}
+            moreOptionList={dAppAccessDetailMoreOptions}
+            setModalVisible={setModalVisible}
+          />
+        }
+        extraData={JSON.stringify(authInfo).concat(JSON.stringify(pendingMap))}
+        keyExtractor={item => item.id}
+      />
+      <SwitchNetworkAuthorizeModal
+        selectorRef={chainSelectorRef}
+        onComplete={onComplete}
+        authUrlInfo={authInfo}
+        onCancel={() => chainSelectorRef?.current?.onCloseModal()}
+        needsTabAuthCheck={true}
+      />
+    </>
   );
 };
 

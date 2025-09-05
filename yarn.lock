@@ -3607,15 +3607,6 @@
     "@substrate/ss58-registry" "^1.51.0"
     tslib "^2.8.0"
 
-"@polkadot/networks@^13.5.6":
-  version "13.5.6"
-  resolved "https://registry.yarnpkg.com/@polkadot/networks/-/networks-13.5.6.tgz#fc74b556dc2aa03a49ee6543df0ae74a280da7a5"
-  integrity sha512-9HqUIBOHnz9x/ssPb0aOD/7XcU8vGokEYpLoNgexFNIJzqDgrDHXR197iFpkbMqA/+98zagrvYUyPYj1yYs9Jw==
-  dependencies:
-    "@polkadot/util" "13.5.6"
-    "@substrate/ss58-registry" "^1.51.0"
-    tslib "^2.8.0"
-
 "@polkadot/phishing@^0.25.4":
   version "0.25.5"
   resolved "https://registry.yarnpkg.com/@polkadot/phishing/-/phishing-0.25.5.tgz#819a0ba643fbf0910b62ad9c33f51c9229d6e9dd"
@@ -3995,17 +3986,6 @@
     store "^2.0.12"
     tslib "^2.6.2"
 
-"@polkadot/ui-settings@^3.15.2":
-  version "3.16.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/ui-settings/-/ui-settings-3.16.1.tgz#a038056bba883cf9dd2847066836d45ec03e767e"
-  integrity sha512-C8A3p8aQmPbGXK9/KAmQGh6wPdRt+L0a7C/lbRGdYK7CladI+lWSecogQaC9kn5F5kyzU/htYyqwMbFOj53w0g==
-  dependencies:
-    "@polkadot/networks" "^13.5.6"
-    "@polkadot/util" "^13.5.6"
-    eventemitter3 "^5.0.1"
-    store "^2.0.12"
-    tslib "^2.8.1"
-
 "@polkadot/ui-shared@3.12.2":
   version "3.12.2"
   resolved "https://registry.yarnpkg.com/@polkadot/ui-shared/-/ui-shared-3.12.2.tgz#6fbfcc281b2da2683e5837d40a65fcb2c8e6d070"
@@ -4022,7 +4002,7 @@
     colord "^2.9.3"
     tslib "^2.6.2"
 
-"@polkadot/util-crypto@10.4.2", "@polkadot/util-crypto@12.6.2", "@polkadot/util-crypto@13.4.3", "@polkadot/util-crypto@6.11.1", "@polkadot/util-crypto@7.9.2", "@polkadot/util-crypto@8.7.1", "@polkadot/util-crypto@^10.4.2", "@polkadot/util-crypto@^12.2.1", "@polkadot/util-crypto@^12.5.1", "@polkadot/util-crypto@^12.6.1", "@polkadot/util-crypto@^12.6.2", "@polkadot/util-crypto@^13.2.3", "@polkadot/util-crypto@^13.4.3", "@polkadot/util-crypto@^13.5.3":
+"@polkadot/util-crypto@10.4.2", "@polkadot/util-crypto@12.6.2", "@polkadot/util-crypto@13.4.3", "@polkadot/util-crypto@6.11.1", "@polkadot/util-crypto@7.9.2", "@polkadot/util-crypto@8.7.1", "@polkadot/util-crypto@^10.4.2", "@polkadot/util-crypto@^12.2.1", "@polkadot/util-crypto@^12.5.1", "@polkadot/util-crypto@^12.6.1", "@polkadot/util-crypto@^12.6.2", "@polkadot/util-crypto@^13.2.3", "@polkadot/util-crypto@^13.4.3":
   version "12.6.2"
   resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-12.6.2.tgz#d2d51010e8e8ca88951b7d864add797dad18bbfc"
   integrity sha512-FEWI/dJ7wDMNN1WOzZAjQoIcCP/3vz3wvAp5QQm+lOrzOLj0iDmaIGIcBkz8HVm3ErfSe/uKP0KS4jgV/ib+Mg==
@@ -4038,7 +4018,7 @@
     "@scure/base" "^1.1.5"
     tslib "^2.6.2"
 
-"@polkadot/util@10.4.2", "@polkadot/util@12.6.2", "@polkadot/util@13.3.1", "@polkadot/util@13.4.3", "@polkadot/util@13.5.6", "@polkadot/util@6.11.1", "@polkadot/util@7.9.2", "@polkadot/util@8.7.1", "@polkadot/util@^10.2.1", "@polkadot/util@^10.4.2", "@polkadot/util@^12.2.1", "@polkadot/util@^12.5.1", "@polkadot/util@^12.6.1", "@polkadot/util@^12.6.2", "@polkadot/util@^13.0.2", "@polkadot/util@^13.2.3", "@polkadot/util@^13.4.3", "@polkadot/util@^13.5.3", "@polkadot/util@^13.5.6":
+"@polkadot/util@10.4.2", "@polkadot/util@12.6.2", "@polkadot/util@13.3.1", "@polkadot/util@13.4.3", "@polkadot/util@6.11.1", "@polkadot/util@7.9.2", "@polkadot/util@8.7.1", "@polkadot/util@^10.2.1", "@polkadot/util@^10.4.2", "@polkadot/util@^12.2.1", "@polkadot/util@^12.5.1", "@polkadot/util@^12.6.1", "@polkadot/util@^12.6.2", "@polkadot/util@^13.0.2", "@polkadot/util@^13.2.3", "@polkadot/util@^13.4.3":
   version "12.6.2"
   resolved "https://registry.yarnpkg.com/@polkadot/util/-/util-12.6.2.tgz#9396eff491221e1f0fd28feac55fc16ecd61a8dc"
   integrity sha512-l8TubR7CLEY47240uki0TQzFvtnxFIO7uI/0GoWzpYD/O62EIAMRsuY01N4DuwgKq2ZWD59WhzsLYmA5K6ksdw==
@@ -5650,7 +5630,7 @@
     "@subwallet/keyring" "^0.1.12"
     web3-core "^1.10.0"
 
-"@subwallet/keyring@0.1.12", "@subwallet/keyring@^0.1.12", "@subwallet/keyring@^0.1.13":
+"@subwallet/keyring@0.1.12", "@subwallet/keyring@^0.1.12":
   version "0.1.12"
   resolved "https://registry.yarnpkg.com/@subwallet/keyring/-/keyring-0.1.12.tgz#86c89c22d0f8b5887b87f6f000a7d88c35d76eda"
   integrity sha512-XjfBcJmaCDk3+dAH2OBBrepP+f0Pvrnbv9XaoX+w3yQoLxG1s8eRa9tc2lE6sgTUc+4iYWjDWXj83v9NIdnaog==

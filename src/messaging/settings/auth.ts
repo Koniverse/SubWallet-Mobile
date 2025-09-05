@@ -1,4 +1,8 @@
-import { RequestAuthorizationBlock, RequestAuthorizationPerSite, RequestSwitchCurrentNetworkAuthorization } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  RequestAuthorizationBlock,
+  RequestAuthorizationPerSite,
+  RequestSwitchCurrentNetworkAuthorization,
+} from '@subwallet/extension-base/background/KoniTypes';
 import { ResponseAuthorizeList } from '@subwallet/extension-base/background/types';
 import { AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { sendMessage } from '..';
