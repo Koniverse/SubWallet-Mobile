@@ -92,11 +92,6 @@ jobs:
         rustup target add x86_64-apple-ios
         rustup target add aarch64-apple-ios-sim
         rustup component add rust-src
-
-    - name: Bundle JS & Assets (iOS)
-      run: |
-        export NODE_OPTIONS="--max-old-space-size=4096"
-        npx react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='ios'
     # Build IPA file
     - name: iOS Build Action
       uses: yukiarrr/ios-build-action@v1.11.2
