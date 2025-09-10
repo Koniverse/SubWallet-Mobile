@@ -42,6 +42,7 @@ export default (theme: ThemeTypes) => {
       alignItems: 'center',
       justifyContent: 'center',
       gap: theme.sizeXS,
+      paddingBottom: theme.sizeSM,
     },
   });
 };
