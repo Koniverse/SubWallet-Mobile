@@ -48,6 +48,49 @@ const defaultTooltipMap: Record<SwapFeeType, (percentage?: number) => string> = 
   },
 };
 
+interface SwapFeeItemProps {
+  item: FeeItem;
+}
+
+const SwapFeeItem: React.FC<SwapFeeItemProps> = ({ item }: SwapFeeItemProps) => {
+  const theme = useSubWalletTheme().swThemes;
+  const styles = useMemo(() => createStyle(theme), [theme]);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+
+  return (
+    <MetaInfo.Number
+      label={
+        <Tooltip
+          isVisible={tooltipVisible}
+          disableShadow={true}
+          placement={'top'}
+          showChildInTooltip={false}
+          topAdjustment={Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0}
+          contentStyle={styles.tooltipContentStyle}
+          closeOnBackgroundInteraction={true}
+          onClose={() => {
+            setTooltipVisible(false);
+          }}
+          content={
+            <Typography.Text size={'sm'} style={styles.tooltipContentTextStyle}>
+              {item.tooltip || ''}
+            </Typography.Text>
+          }>
+          <TouchableOpacity style={styles.tooltipLabelStyle} onPress={() => setTooltipVisible(true)}>
+            <Typography.Text style={{ color: theme.colorTextLight4, ...FontSemiBold }}>{item.label}</Typography.Text>
+            <Icon phosphorIcon={Info} size="xs" iconColor={theme.colorTextLight4} weight={'bold'} />
+          </TouchableOpacity>
+        </Tooltip>
+      }
+      decimals={0}
+      prefix={item.prefix}
+      suffix={item.suffix}
+      useNumberDisplay
+      value={item.value}
+    />
+  );
+};
+
 const SwapFeesModal: React.FC<Props> = ({
   currentQuote,
   estimatedFeeValue,
@@ -56,10 +99,8 @@ const SwapFeesModal: React.FC<Props> = ({
   setModalVisible,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const styles = useMemo(() => createStyle(theme), [theme]);
   const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const getConvertedBalance = useCallback(
     (feeItem: CommonFeeComponent) => {
@@ -112,26 +153,30 @@ const SwapFeesModal: React.FC<Props> = ({
       tooltip: getTooltip(percentage),
     });
 
-    const feeTypeMap: Record<SwapFeeType, FeeItem> = feeConfigs.reduce(
-      (map, { getTooltip, label, type }) => ({
-        ...map,
-        [type]: createFeeItem(type, label, getTooltip),
-      }),
-      {} as Record<SwapFeeType, FeeItem>,
-    );
+    const activeFeeTypes = new Set(currentQuote?.feeInfo?.feeComponent?.map(item => item.feeType) ?? []);
+
+    const feeTypeMap: Record<SwapFeeType, FeeItem> = feeConfigs
+      .filter(config => activeFeeTypes.has(config.type))
+      .reduce(
+        (map, { getTooltip, label, type }) => ({
+          ...map,
+          [type]: createFeeItem(type, label, getTooltip),
+        }),
+        {} as Record<SwapFeeType, FeeItem>,
+      );
 
     currentQuote?.feeInfo.feeComponent.forEach(feeItem => {
       const { feeType, percentage } = feeItem;
 
       feeTypeMap[feeType].value = feeTypeMap[feeType].value.plus(getConvertedBalance(feeItem));
 
-      if (feeType === SwapFeeType.WALLET_FEE && percentage !== undefined) {
+      if (feeType === SwapFeeType.WALLET_FEE) {
         feeTypeMap[feeType].tooltip = defaultTooltipMap[feeType](percentage);
       }
     });
 
     Object.values(feeTypeMap).forEach(fee => {
-      if (!fee.value.lte(new BigN(0))) {
+      if (!fee.value.lt(new BigN(0))) {
         result.push(fee);
       }
     });
@@ -153,38 +198,7 @@ const SwapFeesModal: React.FC<Props> = ({
       <MetaInfo hasBackgroundWrapper labelColorScheme={'gray'} spaceSize={'sm'} valueColorScheme={'light'}>
         <View style={{ gap: theme.size }}>
           {feeItems.map(item => (
-            <MetaInfo.Number
-              label={
-                <Tooltip
-                  isVisible={tooltipVisible}
-                  disableShadow={true}
-                  placement={'top'}
-                  showChildInTooltip={false}
-                  topAdjustment={
-                    Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0
-                  }
-                  contentStyle={styles.tooltipContentStyle}
-                  closeOnBackgroundInteraction={true}
-                  onClose={() => setTooltipVisible(false)}
-                  content={
-                    <Typography.Text size={'sm'} style={styles.tooltipContentTextStyle}>
-                      {item.tooltip || ''}
-                    </Typography.Text>
-                  }>
-                  <TouchableOpacity style={styles.tooltipLabelStyle} onPress={() => setTooltipVisible(true)}>
-                    <Typography.Text style={{ color: theme.colorTextLight4, ...FontSemiBold }}>
-                      {item.label}
-                    </Typography.Text>
-                    <Icon phosphorIcon={Info} size="xs" iconColor={theme.colorTextLight4} weight={'bold'} />
-                  </TouchableOpacity>
-                </Tooltip>
-              }
-              decimals={0}
-              prefix={item.prefix}
-              suffix={item.suffix}
-              useNumberDisplay
-              value={item.value}
-            />
+            <SwapFeeItem item={item} />
           ))}
 
           <Divider type={'horizontal'} />

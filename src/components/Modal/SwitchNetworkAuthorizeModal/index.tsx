@@ -10,6 +10,7 @@ import { stripUrl } from '@subwallet/extension-base/utils';
 import { switchCurrentNetworkAuthorization } from 'messaging/settings';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { ModalRef } from 'types/modalRef';
+import { useToast } from 'react-native-toast-notifications';
 
 export interface SwitchNetworkAuthorizeModalProps {
   selectorRef?: React.MutableRefObject<ModalRef | undefined>;
@@ -33,6 +34,7 @@ const SwitchNetworkAuthorizeModal: React.FC<Props> = ({
   onCancel,
   renderSelectModalBtn,
 }: Props) => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [networkSelected, setNetworkSelected] = useState(authUrlInfo.currentNetworkMap[networkTypeSupported] || '');
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
@@ -48,43 +50,33 @@ const SwitchNetworkAuthorizeModal: React.FC<Props> = ({
     }, []);
   }, [chainInfoMap]);
 
-  const onSelectNetwork = useCallback((item: ChainInfo) => {
-    setNetworkSelected(item.slug);
-  }, []);
+  const onSelectNetwork = useCallback(
+    (item: ChainInfo) => {
+      setNetworkSelected(item.slug);
+      if (item.slug && item.slug !== authUrlInfo.currentNetworkMap[networkTypeSupported]) {
+        const url = stripUrl(authUrlInfo.url);
 
-  useEffect(() => {
-    let isSync = true;
-
-    if (networkSelected && networkSelected !== authUrlInfo.currentNetworkMap[networkTypeSupported]) {
-      const url = stripUrl(authUrlInfo.url);
-
-      if (isSync) {
         setLoading(true);
-      }
 
-      switchCurrentNetworkAuthorization({
-        networkKey: networkSelected,
-        authSwitchNetworkType: networkTypeSupported,
-        url,
-      })
-        .then(({ list }) => {
-          onComplete(list);
+        switchCurrentNetworkAuthorization({
+          networkKey: item.slug,
+          authSwitchNetworkType: networkTypeSupported,
+          url,
         })
-        .catch(console.error)
-        .finally(() => {
-          onCancel();
-
-          if (isSync) {
-            setNetworkSelected('');
+          .then(({ list }) => {
+            onComplete(list);
+          })
+          .catch(console.error)
+          .finally(() => {
+            onCancel();
             setLoading(false);
-          }
-        });
-    }
-
-    return () => {
-      isSync = false;
-    };
-  }, [authUrlInfo, networkSelected, onCancel, onComplete]);
+          });
+      }
+      toast.hideAll();
+      toast.show('Switched network successfully');
+    },
+    [authUrlInfo.currentNetworkMap, authUrlInfo.url, onCancel, onComplete, toast],
+  );
 
   useEffect(() => {
     if (needsTabAuthCheck && currentAuthByActiveTab && currentAuthByActiveTab.id !== authUrlInfo.id) {
@@ -100,6 +92,7 @@ const SwitchNetworkAuthorizeModal: React.FC<Props> = ({
       onSelectItem={onSelectNetwork}
       renderSelectModalBtn={renderSelectModalBtn}
       disabled={loading}
+      extraData={networkSelected}
     />
   );
 };

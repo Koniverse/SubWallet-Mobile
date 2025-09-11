@@ -367,7 +367,7 @@ index e36bd82..8c5f707 100644
    }
  }
 diff --git a/node_modules/@subwallet/extension-base/utils/index.js b/node_modules/@subwallet/extension-base/utils/index.js
-index 6843fc7..11aba18 100644
+index 6843fc7..f30a11b 100644
 --- a/node_modules/@subwallet/extension-base/utils/index.js
 +++ b/node_modules/@subwallet/extension-base/utils/index.js
 @@ -3,12 +3,13 @@

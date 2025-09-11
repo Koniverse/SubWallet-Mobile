@@ -17,7 +17,7 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { convertAuthorizeTypeToChainTypes, filterAuthorizeAccountProxies } from 'utils/accountProxy';
 import { isAddressAllowedWithAuthType } from 'utils/account/account';
 import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
-import { AccountProxy } from '@subwallet/extension-base/types';
+import { AccountChainType, AccountProxy } from '@subwallet/extension-base/types';
 import { updateAuthUrls } from 'stores/utils';
 import SwitchNetworkAuthorizeModal from 'components/Modal/SwitchNetworkAuthorizeModal';
 import { ModalRef } from 'types/modalRef';
@@ -51,8 +51,7 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const [allowedMap, setAllowedMap] = useState<Record<string, boolean>>(authInfo?.isAllowedMap || {});
-  const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
-  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
+  const { accountProxies, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const [loading, setLoading] = useState(false);
   const _isNotConnected = isNotConnected || !authInfo;
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
@@ -285,30 +284,33 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
       contentContainerStyle={stylesheet.modalContentContainerStyle}
       footer={<View style={stylesheet.footer}>{actionButtons}</View>}>
       <ScrollView style={stylesheet.scrollView} showsVerticalScrollIndicator={false} nestedScrollEnabled>
-        {isEvmAuthorize && !!currentEvmNetworkInfo && authInfo && (
-          <SwitchNetworkAuthorizeModal
-            selectorRef={chainSelectorRef}
-            onComplete={onComplete}
-            authUrlInfo={authInfo}
-            onCancel={() => chainSelectorRef?.current?.onCloseModal()}
-            needsTabAuthCheck={true}
-            renderSelectModalBtn={(onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => {
-              return (
-                <View style={stylesheet.switchNetworkLabelWrapper}>
-                  <Typography.Text style={{ color: theme.colorTextLight1, ...FontSemiBold }}>
-                    {'Switch network'}
-                  </Typography.Text>
-                  <NetworkItem
-                    itemName={currentEvmNetworkInfo?.name}
-                    itemKey={currentEvmNetworkInfo?.slug}
-                    iconSize={20}
-                    onSelectNetwork={() => onOpenModal(true)}
-                  />
-                </View>
-              );
-            }}
-          />
-        )}
+        {isEvmAuthorize &&
+          !!currentEvmNetworkInfo &&
+          authInfo &&
+          !!currentAccountProxy?.chainTypes.includes(AccountChainType.ETHEREUM) && (
+            <SwitchNetworkAuthorizeModal
+              selectorRef={chainSelectorRef}
+              onComplete={onComplete}
+              authUrlInfo={authInfo}
+              onCancel={() => chainSelectorRef?.current?.onCloseModal()}
+              needsTabAuthCheck={true}
+              renderSelectModalBtn={(onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => {
+                return (
+                  <View style={stylesheet.switchNetworkLabelWrapper}>
+                    <Typography.Text style={{ color: theme.colorTextLight1, ...FontSemiBold }}>
+                      {'Switch network'}
+                    </Typography.Text>
+                    <NetworkItem
+                      itemName={currentEvmNetworkInfo?.name}
+                      itemKey={currentEvmNetworkInfo?.slug}
+                      iconSize={20}
+                      onSelectNetwork={() => onOpenModal(true)}
+                    />
+                  </View>
+                );
+              }}
+            />
+          )}
         <TouchableOpacity activeOpacity={1}>
           <ConfirmationGeneralInfo
             request={{

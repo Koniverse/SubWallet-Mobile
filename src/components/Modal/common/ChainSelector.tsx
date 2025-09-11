@@ -13,6 +13,8 @@ interface Props {
   disabled?: boolean;
   acceptDefaultValue?: boolean;
   chainSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  extraData?: string;
+  keyExtractor?: (item: ChainInfo, index: number) => string;
 }
 
 export const ChainSelector = ({
@@ -24,6 +26,7 @@ export const ChainSelector = ({
   disabled,
   acceptDefaultValue,
   chainSelectorRef,
+  extraData,
 }: Props) => {
   const searchFunc = useCallback((_items: ChainInfo[], searchString: string) => {
     const lowerCaseSearchString = searchString.toLowerCase();
@@ -48,6 +51,8 @@ export const ChainSelector = ({
       onBackButtonPress={() => chainSelectorRef?.current?.onCloseModal()}
       title={i18n.header.selectNetwork}
       estimatedItemSize={60}
+      extraData={extraData}
+      keyExtractor={item => item.slug}
     />
   );
 };
