@@ -1,7 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
 export interface TokenToggleItemStyles {
   container: ViewStyle;
   leftContentWrapperStyle: ViewStyle;
@@ -25,9 +24,8 @@ export default (theme: ThemeTypes) =>
       fontSize: theme.fontSizeLG,
       lineHeight: theme.fontSizeLG * theme.lineHeightLG,
       ...FontSemiBold,
-      color: ColorMap.light,
-      paddingLeft: 12,
-      paddingRight: 36,
-      width: '100%',
+      color: theme.colorTextLight1,
+      paddingLeft: theme.paddingSM,
+      paddingRight: theme.paddingXL + 4,
     },
   });
