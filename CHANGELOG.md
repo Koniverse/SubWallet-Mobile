@@ -1,3 +1,16 @@
+## 1.2.25 (501)
+- fix bug press max button in swap with large amount (#1987)
+- fix ui bug (#1987)
+- test case lost image (#1987)
+- test case lost image (#1987)
+- fix bug lost img (#1987)
+- fix ui bug (#1987)
+- rollback github workflow code (#1987)
+- fix error page when connect with dApps (#1987)
+- Update UI to to clearly display fees (#1987)
+- Fix bug when connects to Remix (#1987)
+- Update wr 1.3.40 (#1987)
+
 ## 1.2.24 (500)
 - fix xcm bug (#1999)
 
