@@ -1,5 +1,6 @@
 import { ThemeTypes } from 'styles/themes';
 import { StyleSheet } from 'react-native';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create({
@@ -13,6 +14,10 @@ export default (theme: ThemeTypes) => {
       color: theme.colorTextLight4,
       textAlign: 'center',
       paddingHorizontal: theme.sizeLG,
+    },
+    switchNetworkLabel: {
+      color: theme.colorTextLight1,
+      ...FontSemiBold,
     },
     connectAccountMessage: {
       marginTop: theme.size,
@@ -31,6 +36,13 @@ export default (theme: ThemeTypes) => {
     scrollView: {
       height: '60%',
       width: '100%',
+    },
+    switchNetworkLabelWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: theme.sizeXS,
+      paddingBottom: theme.sizeSM,
     },
   });
 };

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { mmkvStore } from 'utils/storage';
 import { SwapTermOfServiceModal } from 'components/Modal/TermModal/parts/SwapTermOfServiceModal';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
@@ -28,8 +28,8 @@ import { isAccountAll } from 'utils/accountAll';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AddressInputRef, InputAddress } from 'components/Input/InputAddress';
 import i18n from 'utils/i18n/i18n';
-import { Button, Icon } from 'components/design-system-ui';
-import { ArrowsDownUp, Book } from 'phosphor-react-native';
+import { Button, Icon, PageIcon } from 'components/design-system-ui';
+import { ArrowsDownUp, Book, Warning } from 'phosphor-react-native';
 import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
 import { BN_TEN, BN_ZERO } from 'utils/chainBalances';
 import { ChooseFeeTokenModal } from 'components/Modal/Swap/ChooseFeeTokenModal';
@@ -89,6 +89,8 @@ import { FontSemiBold } from 'styles/sharedStyles';
 import { QuoteInfoArea } from './QuoteInfoArea';
 import { AcrossErrorMsg } from '@subwallet/extension-base/services/balance-service/transfer/xcm/acrossBridge';
 import { ThemeTypes } from 'styles/themes';
+import { AppModalContext } from 'providers/AppModalContext';
+import { KyberSwapQuoteMetadata } from '@subwallet/extension-base/services/swap-service/handler/kyber-handler';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -162,6 +164,7 @@ type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
 const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
   const { show, hideAll } = useToast();
   const theme = useSubWalletTheme().swThemes;
+  const { confirmModal } = useContext(AppModalContext);
   const styles = createStyles(theme);
   const { assetRegistry: assetRegistryMap } = useSelector((state: RootState) => state.assetRegistry);
   const priorityTokens = useSelector((state: RootState) => state.chainStore.priorityTokens);
@@ -544,8 +547,12 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
     setChooseFeeModalVisible(false);
   }, []);
 
-  const notifyInvalidAmount = useCallback(() => {
-    show('No swap quote found. Adjust your amount and try again', { type: 'danger' });
+  const notifyTooLowAmount = useCallback(() => {
+    show('Amount too low. Increase your amount and try again', { type: 'danger' });
+  }, [show]);
+
+  const notifyTooHighAmount = useCallback(() => {
+    show('Amount too high. Lower your amount and try again', { type: 'danger' });
   }, [show]);
 
   const onConfirmSelectedQuote = useCallback(async (quote: SwapQuote) => {
@@ -582,7 +589,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
       return;
     }
 
-    const result = new BigN(currentFromTokenAvailableBalance.value).multipliedBy(92).dividedToIntegerBy(100).toString();
+    const result = new BigN(currentFromTokenAvailableBalance.value).multipliedBy(92).dividedToIntegerBy(100).toFixed();
     onChangeAmount(result);
     setSwapFromFieldRenderKey(`SwapFromField-${Date.now()}`);
   }, [currentFromTokenAvailableBalance, onChangeAmount]);
@@ -592,7 +599,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
       return;
     }
 
-    const result = new BigN(currentFromTokenAvailableBalance.value).dividedToIntegerBy(2).toString();
+    const result = new BigN(currentFromTokenAvailableBalance.value).dividedToIntegerBy(2).toFixed();
 
     onChangeAmount(result);
     setSwapFromFieldRenderKey(`SwapFromField-${Date.now()}`);
@@ -763,20 +770,27 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
       };
 
       if (currentQuote.isLowLiquidity) {
-        Alert.alert(
-          'Pay attention!',
-          'Low liquidity. Swap is available but not recommended as swap rate is unfavorable',
-          [
-            {
-              text: 'Cancel',
-              style: 'destructive',
-            },
-            {
-              text: 'Continue',
-              onPress: transactionBlockProcess,
-            },
-          ],
-        );
+        const metadata = currentQuote.metadata as KyberSwapQuoteMetadata;
+        const isHighPriceImpact = metadata?.priceImpact;
+
+        confirmModal.setConfirmModal({
+          visible: true,
+          title: isHighPriceImpact ? 'High price impact!' : 'Pay attention!',
+          message:
+            isHighPriceImpact && metadata.priceImpact
+              ? `Swapping this amount will result in a -${metadata.priceImpact}% price impact, and you will receive less than expected. Lower amount and try again, or continue at your own risk`
+              : 'Low liquidity. Swap is available but not recommended as swap rate is unfavorable',
+          completeBtnTitle: 'Continue',
+          cancelBtnTitle: 'Cancel',
+          onCompleteModal: () => {
+            confirmModal.hideConfirmModal();
+            transactionBlockProcess();
+          },
+          onCancelModal: () => {
+            confirmModal.hideConfirmModal();
+          },
+          customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+        });
       } else {
         transactionBlockProcess();
       }
@@ -785,6 +799,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
       accounts,
       chainValue,
       checkChainConnected,
+      confirmModal,
       currentOptimalSwapPath,
       currentQuote,
       hideAll,
@@ -799,6 +814,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
       show,
       slippage,
       swapError,
+      theme.colorWarning,
     ],
   );
 
@@ -988,11 +1004,12 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
                     notifyNoQuote();
                   }
 
-                  if (
-                    e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW) ||
-                    e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)
-                  ) {
-                    notifyInvalidAmount();
+                  if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW)) {
+                    notifyTooLowAmount();
+                  }
+
+                  if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)) {
+                    notifyTooHighAmount();
                   }
 
                   setHandleRequestLoading(false);
@@ -1020,8 +1037,9 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
     fromTokenSlugValue,
     fromValue,
     isRecipientFieldAllowed,
-    notifyInvalidAmount,
     notifyNoQuote,
+    notifyTooHighAmount,
+    notifyTooLowAmount,
     preferredProvider,
     reValidateField,
     recipientValue,
@@ -1102,11 +1120,12 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
               notifyNoQuote();
             }
 
-            if (
-              e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW) ||
-              e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)
-            ) {
-              notifyInvalidAmount();
+            if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW)) {
+              notifyTooLowAmount();
+            }
+
+            if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)) {
+              notifyTooHighAmount();
             }
           })
           .finally(() => {
@@ -1154,8 +1173,9 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
   }, [
     currentQuoteRequest,
     hasInternalConfirmations,
-    notifyInvalidAmount,
     notifyNoQuote,
+    notifyTooHighAmount,
+    notifyTooLowAmount,
     quoteAliveUntil,
     requestUserInteractToContinue,
     updateSwapStates,
