@@ -1,3 +1,11 @@
+## 1.2.26 (502)
+- resolve conflict (#1990)
+- fix ui bug (#1990)
+- fix bug cannot apply GeneralTermModal in android (#1990)
+- Fix build problems with sails-js (#1990)
+- Remove unused code and fix bug auto-build fail (#1990)
+- Upgrade to Android 15 (API level 35) (#1990)
+
 ## 1.2.25 (501)
 - fix bug press max button in swap with large amount (#1987)
 - fix ui bug (#1987)
