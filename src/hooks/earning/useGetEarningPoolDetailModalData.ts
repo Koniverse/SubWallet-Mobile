@@ -129,6 +129,37 @@ export const useGetEarningPoolDetailModalData = (earningStaticData: StaticDataPr
             });
           }
 
+          if (_STAKING_CHAIN_GROUP.energy.includes(poolInfo.chain)) {
+            const earningData =
+              earningStaticData.find(item => item.slug === YieldPoolType.NATIVE_STAKING)?.instructions || [];
+            return earningData
+              .filter(item => item.icon !== 'ThumbsUp')
+              .map(item => {
+                const _item: BoxProps = { ...item, icon: item.icon };
+
+                replaceEarningValue(_item, '{validatorNumber}', maxCandidatePerFarmer.toString());
+                replaceEarningValue(_item, '{validatorType}', label);
+                replaceEarningValue(_item, '{periodNumb}', unBondedTime);
+                replaceEarningValue(_item, '{maintainBalance}', maintainBalance);
+                replaceEarningValue(_item, '{maintainSymbol}', maintainSymbol);
+
+                if (paidOut !== undefined) {
+                  replaceEarningValue(
+                    _item,
+                    '{paidOut}',
+                    paidOut >= 1 ? paidOut.toString() : (paidOut * 60).toString(),
+                  );
+                  replaceEarningValue(
+                    _item,
+                    '{paidOutTimeUnit}',
+                    paidOut > 1 ? 'hours' : paidOut === 1 ? 'hour' : 'minutes',
+                  );
+                }
+
+                return _item;
+              });
+          }
+
           const earningData =
             earningStaticData.find(item => item.slug === YieldPoolType.NATIVE_STAKING)?.instructions || [];
           return earningData.map(item => {
