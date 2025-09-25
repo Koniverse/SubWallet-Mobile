@@ -130,6 +130,11 @@ interface TransferFormValues extends TransactionFormValues {
   value: string;
 }
 
+interface Props {
+  sendFundSlug?: string;
+  scanRecipient?: string;
+}
+
 type ViewStep = 1 | 2;
 
 type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
@@ -203,11 +208,7 @@ function getTokenAvailableDestinations(
   return result;
 }
 
-export const SendFund = ({
-  route: {
-    params: { slug: sendFundSlug, recipient: scanRecipient },
-  },
-}: SendFundProps) => {
+const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const { show, hideAll } = useToast();
@@ -1558,4 +1559,8 @@ export const SendFund = ({
       )}
     </>
   );
+};
+
+export const SendFund = ({ route: { params } }: SendFundProps) => {
+  return <Component sendFundSlug={params?.slug} scanRecipient={params?.recipient} />;
 };

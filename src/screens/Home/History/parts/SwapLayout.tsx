@@ -8,7 +8,7 @@ import BigN from 'bignumber.js';
 import { findAccountByAddress } from 'utils/account';
 import MetaInfo from 'components/MetaInfo';
 import { SwapTransactionBlock } from 'components/Swap/SwapTransactionBlock';
-import { _getAssetName, _getAssetOriginChain } from '@subwallet/extension-base/services/chain-service/utils';
+import { _getAssetOriginChain, _getChainName } from '@subwallet/extension-base/services/chain-service/utils';
 import { HistoryStatusMap, TxTypeNameMap } from 'screens/Home/History/shared';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 
@@ -21,6 +21,7 @@ export const SwapLayout = ({ data }: Props) => {
   const { currencyData, priceMap } = useSelector((state: RootState) => state.price);
   const swapInfo = data.additionalInfo as SwapTxData | undefined;
   const { accounts } = useSelector((state: RootState) => state.accountState);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
   const estimatedFeeValue = useMemo(() => {
     let totalBalance = BN_ZERO;
@@ -49,6 +50,8 @@ export const SwapLayout = ({ data }: Props) => {
   const account = findAccountByAddress(accounts, recipientAddress);
   const txtTypeNameMap = TxTypeNameMap();
   const historyStatusMap = HistoryStatusMap();
+  const destChainSlug = _getAssetOriginChain(assetTo);
+  const originChainSlug = _getAssetOriginChain(assetFrom);
 
   return (
     <MetaInfo>
@@ -66,12 +69,12 @@ export const SwapLayout = ({ data }: Props) => {
       ) : (
         <MetaInfo.Transfer
           destinationChain={{
-            slug: _getAssetOriginChain(assetTo),
-            name: _getAssetName(assetTo),
+            slug: destChainSlug,
+            name: _getChainName(chainInfoMap[destChainSlug]),
           }}
           originChain={{
-            slug: _getAssetOriginChain(assetFrom),
-            name: _getAssetName(assetFrom),
+            slug: originChainSlug,
+            name: _getChainName(chainInfoMap[originChainSlug]),
           }}
           recipientAddress={recipientAddress}
           recipientName={account?.name}
