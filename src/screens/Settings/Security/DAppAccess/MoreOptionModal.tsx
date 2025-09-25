@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { View } from 'react-native';
-import i18n from 'utils/i18n/i18n';
 import { SelectItem, SwModal } from 'components/design-system-ui';
 import { IconProps } from 'phosphor-react-native';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
@@ -27,7 +26,7 @@ export const MoreOptionModal = ({ modalVisible, moreOptionList, setModalVisible 
       setVisible={setModalVisible}
       modalBaseV2Ref={modalBaseV2Ref}
       modalVisible={modalVisible}
-      modalTitle={i18n.header.websiteAccessConfig}>
+      modalTitle={'dApp configuration'}>
       <View style={{ width: '100%', gap: 8 }}>
         {moreOptionList.map(item => (
           <SelectItem

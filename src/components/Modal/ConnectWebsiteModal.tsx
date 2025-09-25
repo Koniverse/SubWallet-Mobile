@@ -23,6 +23,9 @@ import SwitchNetworkAuthorizeModal from 'components/Modal/SwitchNetworkAuthorize
 import { ModalRef } from 'types/modalRef';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { NetworkItem } from 'components/NetworkItem';
+// import { DAppConfigurationModal } from 'components/Modal/DAppConfigurationModal.tsx';
+// import { useNavigation } from '@react-navigation/native';
+// import { RootNavigationProps } from 'routes/index.ts';
 
 interface Props {
   modalVisible: boolean;
@@ -46,6 +49,7 @@ const ButtonIconMap = {
 
 // todo: i18n;
 export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, isBlocked, authInfo, url }: Props) => {
+  // const navigation = useNavigation<RootNavigationProps>();
   const chainSelectorRef = useRef<ModalRef>();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
@@ -53,6 +57,7 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
   const [allowedMap, setAllowedMap] = useState<Record<string, boolean>>(authInfo?.isAllowedMap || {});
   const { accountProxies, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const [loading, setLoading] = useState(false);
+  // const [configurationModalVisible, setConfigurationModalVisible] = useState(false);
   const _isNotConnected = isNotConnected || !authInfo;
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const isEvmAuthorize = useMemo(() => !!authInfo?.accountAuthTypes.includes('evm'), [authInfo?.accountAuthTypes]);
@@ -282,6 +287,8 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
       modalBaseV2Ref={modalBaseV2Ref}
       onBackButtonPress={onChangeModalVisible}
       contentContainerStyle={stylesheet.modalContentContainerStyle}
+      // isShowRightBtn={true}
+      // onPressRightBtn={() => setConfigurationModalVisible(true)}
       footer={<View style={stylesheet.footer}>{actionButtons}</View>}>
       <ScrollView style={stylesheet.scrollView} showsVerticalScrollIndicator={false} nestedScrollEnabled>
         {isEvmAuthorize &&
@@ -311,6 +318,16 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
               }}
             />
           )}
+
+        {/*{authInfo && (*/}
+        {/*  <DAppConfigurationModal*/}
+        {/*    modalVisible={configurationModalVisible}*/}
+        {/*    setModalVisible={setConfigurationModalVisible}*/}
+        {/*    authInfo={authInfo}*/}
+        {/*    navigation={navigation}*/}
+        {/*  />*/}
+        {/*)}*/}
+
         <TouchableOpacity activeOpacity={1}>
           <ConfirmationGeneralInfo
             request={{
