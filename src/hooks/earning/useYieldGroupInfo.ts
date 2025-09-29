@@ -105,6 +105,8 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
             freeBalance.pastConvertedValue = freeBalance.pastConvertedValue.plus(balanceItem.free.pastConvertedValue);
           }
 
+          console.log(group, pool.slug);
+
           result[group] = {
             group: group,
             token: token.slug,
