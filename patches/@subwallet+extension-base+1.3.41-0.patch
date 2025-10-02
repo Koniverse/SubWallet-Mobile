@@ -25,7 +25,7 @@ index d7880a3..f71899e 100644
  var _utils = require("@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils");
  var _subwalletApiSdk = require("@subwallet/subwallet-api-sdk");
 diff --git a/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js b/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js
-index 70b6ddc..75d6967 100644
+index 70b6ddc..1fcbda5 100644
 --- a/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js
 +++ b/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js
 @@ -24,6 +24,7 @@ const _STAKING_CHAIN_GROUP = {
@@ -36,6 +36,19 @@ index 70b6ddc..75d6967 100644
    mythos: ['mythos', 'muse_testnet']
  };
  exports._STAKING_CHAIN_GROUP = _STAKING_CHAIN_GROUP;
+diff --git a/node_modules/@subwallet/extension-base/cjs/services/earning-service/utils/index.js b/node_modules/@subwallet/extension-base/cjs/services/earning-service/utils/index.js
+index 7ac33d0..a75f6b2 100644
+--- a/node_modules/@subwallet/extension-base/cjs/services/earning-service/utils/index.js
++++ b/node_modules/@subwallet/extension-base/cjs/services/earning-service/utils/index.js
+@@ -120,6 +120,8 @@ function isActionFromValidator(stakingType, chain) {
+     return true;
+   } else if (_constants._STAKING_CHAIN_GROUP.mythos.includes(chain)) {
+     return true;
++  } else if (_constants._STAKING_CHAIN_GROUP.energy.includes(chain)) {
++    return true;
+   }
+   return false;
+ }
 diff --git a/node_modules/@subwallet/extension-base/core/utils.js b/node_modules/@subwallet/extension-base/core/utils.js
 index 92f858b..11d3118 100644
 --- a/node_modules/@subwallet/extension-base/core/utils.js
@@ -87,7 +100,7 @@ index 8f32cf5..ca269f7 100644
  import { getAdaBelongUtxo, getCardanoTxFee, splitCardanoId } from '@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils';
  import { subwalletApiSdk } from '@subwallet/subwallet-api-sdk';
 diff --git a/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js b/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
-index 320772f..246302e 100644
+index 320772f..34512ff 100644
 --- a/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
 +++ b/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
 @@ -18,6 +18,7 @@ export const _STAKING_CHAIN_GROUP = {
@@ -98,6 +111,34 @@ index 320772f..246302e 100644
    mythos: ['mythos', 'muse_testnet']
  };
  export const TON_CHAINS = ['ton', 'ton_testnet'];
+diff --git a/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js b/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
+index c4c4805..09a9aaa 100644
+--- a/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
++++ b/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
+@@ -93,10 +93,11 @@ export async function parseIdentity(substrateApi, address, children) {
+   }
+   return [undefined, false];
+ }
+-export function isActionFromValidator(stakingType, chain) {
++export function isActionFromValidator (stakingType: YieldPoolType, chain: string) {
+   if (stakingType === YieldPoolType.NOMINATION_POOL || stakingType === YieldPoolType.LIQUID_STAKING || stakingType === YieldPoolType.LENDING) {
+     return false;
+   }
++
+   if (_STAKING_CHAIN_GROUP.astar.includes(chain)) {
+     return true;
+   } else if (_STAKING_CHAIN_GROUP.amplitude.includes(chain)) {
+@@ -107,7 +108,10 @@ export function isActionFromValidator(stakingType, chain) {
+     return true;
+   } else if (_STAKING_CHAIN_GROUP.mythos.includes(chain)) {
+     return true;
++  } else if (_STAKING_CHAIN_GROUP.energy.includes(chain)) {
++    return true;
+   }
++
+   return false;
+ }
+ export const isNominationPool = pool => {
 diff --git a/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js b/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js
 index 82e18b1..397599a 100644
 --- a/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js

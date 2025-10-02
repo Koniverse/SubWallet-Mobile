@@ -30,7 +30,7 @@ import { BN_ZERO } from 'utils/chainBalances';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { Button, Icon, Typography, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { getEarningSlippage, yieldSubmitLeavePool } from 'messaging/index';
+import { getEarningImpact, yieldSubmitLeavePool } from 'messaging/index';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { UnbondProps } from 'routes/transaction/transactionAction';
@@ -206,7 +206,7 @@ export const Unbond = ({
         type: ExtrinsicType.STAKING_UNBOND,
       };
 
-      getEarningSlippage(data)
+      getEarningImpact(data)
         .then(result => {
           setEarningSlippage(result.slippage);
           setEarningRate(result.rate);
