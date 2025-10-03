@@ -1,3 +1,6 @@
+## 1.2.27 (503)
+
+
 ## 1.2.26 (502)
 - fix bug cannot do not show WND earning option (#1988)
 - fix bug cannot unstake EWT (#1988)
