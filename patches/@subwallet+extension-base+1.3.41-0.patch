@@ -25,10 +25,18 @@ index d7880a3..f71899e 100644
  var _utils = require("@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils");
  var _subwalletApiSdk = require("@subwallet/subwallet-api-sdk");
 diff --git a/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js b/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js
-index 70b6ddc..1fcbda5 100644
+index 70b6ddc..857d233 100644
 --- a/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js
 +++ b/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js
-@@ -24,6 +24,7 @@ const _STAKING_CHAIN_GROUP = {
+@@ -9,6 +9,7 @@ exports._STAKING_CHAIN_GROUP = exports.TON_CHAINS = exports.ST_LIQUID_TOKEN_ABI
+ 
+ const _STAKING_CHAIN_GROUP = {
+   relay: ['polkadot', 'kusama', 'aleph', 'polkadex', 'ternoa', 'alephTest', 'polkadexTest', 'westend', 'kate', 'edgeware', 'creditcoin', 'vara_network', 'goldberg_testnet', 'availTuringTest', 'avail_mainnet', 'vara_testnet', 'dentnet', 'cere'],
++  assetHub: ['statemine', 'statemint', 'westend_assethub'],
+   para: ['moonbeam', 'moonriver', 'moonbase', 'turing', 'turingStaging', 'bifrost', 'bifrost_testnet', 'calamari_test', 'calamari', 'manta_network', 'polimec'],
+   astar: ['astar', 'shiden', 'shibuya'],
+   amplitude: ['amplitude', 'amplitude_test', 'kilt', 'kilt_peregrine', 'pendulum', 'krest_network'],
+@@ -24,6 +25,7 @@ const _STAKING_CHAIN_GROUP = {
    krest_network: ['krest_network'],
    manta: ['manta_network'],
    bittensor: ['bittensor', 'bittensor_testnet'],
@@ -37,7 +45,7 @@ index 70b6ddc..1fcbda5 100644
  };
  exports._STAKING_CHAIN_GROUP = _STAKING_CHAIN_GROUP;
 diff --git a/node_modules/@subwallet/extension-base/cjs/services/earning-service/utils/index.js b/node_modules/@subwallet/extension-base/cjs/services/earning-service/utils/index.js
-index 7ac33d0..a75f6b2 100644
+index 7ac33d0..3738280 100644
 --- a/node_modules/@subwallet/extension-base/cjs/services/earning-service/utils/index.js
 +++ b/node_modules/@subwallet/extension-base/cjs/services/earning-service/utils/index.js
 @@ -120,6 +120,8 @@ function isActionFromValidator(stakingType, chain) {
@@ -100,10 +108,18 @@ index 8f32cf5..ca269f7 100644
  import { getAdaBelongUtxo, getCardanoTxFee, splitCardanoId } from '@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils';
  import { subwalletApiSdk } from '@subwallet/subwallet-api-sdk';
 diff --git a/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js b/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
-index 320772f..34512ff 100644
+index 320772f..e1fe907 100644
 --- a/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
 +++ b/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
-@@ -18,6 +18,7 @@ export const _STAKING_CHAIN_GROUP = {
+@@ -3,6 +3,7 @@
+ 
+ export const _STAKING_CHAIN_GROUP = {
+   relay: ['polkadot', 'kusama', 'aleph', 'polkadex', 'ternoa', 'alephTest', 'polkadexTest', 'westend', 'kate', 'edgeware', 'creditcoin', 'vara_network', 'goldberg_testnet', 'availTuringTest', 'avail_mainnet', 'vara_testnet', 'dentnet', 'cere'],
++  assetHub: ['statemine', 'statemint', 'westend_assethub'],
+   para: ['moonbeam', 'moonriver', 'moonbase', 'turing', 'turingStaging', 'bifrost', 'bifrost_testnet', 'calamari_test', 'calamari', 'manta_network', 'polimec'],
+   astar: ['astar', 'shiden', 'shibuya'],
+   amplitude: ['amplitude', 'amplitude_test', 'kilt', 'kilt_peregrine', 'pendulum', 'krest_network'],
+@@ -18,6 +19,7 @@ export const _STAKING_CHAIN_GROUP = {
    krest_network: ['krest_network'],
    manta: ['manta_network'],
    bittensor: ['bittensor', 'bittensor_testnet'],
@@ -112,7 +128,7 @@ index 320772f..34512ff 100644
  };
  export const TON_CHAINS = ['ton', 'ton_testnet'];
 diff --git a/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js b/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
-index c4c4805..09a9aaa 100644
+index c4c4805..c7498f2 100644
 --- a/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
 +++ b/node_modules/@subwallet/extension-base/services/earning-service/utils/index.js
 @@ -93,10 +93,11 @@ export async function parseIdentity(substrateApi, address, children) {
