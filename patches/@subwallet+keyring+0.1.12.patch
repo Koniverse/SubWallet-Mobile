@@ -1,5 +1,5 @@
 diff --git a/node_modules/@subwallet/keyring/cjs/pair/index.js b/node_modules/@subwallet/keyring/cjs/pair/index.js
-index df82f5d..406c4bd 100644
+index df82f5d..654d3d9 100644
 --- a/node_modules/@subwallet/keyring/cjs/pair/index.js
 +++ b/node_modules/@subwallet/keyring/cjs/pair/index.js
 @@ -5,8 +5,8 @@ Object.defineProperty(exports, "__esModule", {
@@ -14,7 +14,7 @@ index df82f5d..406c4bd 100644
  var _ethSimpleKeyring = _interopRequireDefault(require("@metamask/eth-simple-keyring"));
  var _ed25519_bip = require("@subwallet/keyring/utils/cardano/ed25519_bip32");
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/address/decode.js b/node_modules/@subwallet/keyring/cjs/utils/address/decode.js
-index 763d489..247866c 100644
+index 763d489..959aeb0 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/address/decode.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/address/decode.js
 @@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
@@ -26,8 +26,41 @@ index 763d489..247866c 100644
  var _core = require("@ton/core");
  var bitcoin = _interopRequireWildcard(require("bitcoinjs-lib"));
  var _util = require("@polkadot/util");
+@@ -42,19 +42,19 @@ const decodeAddress = function (encoded, ignoreChecksum) {
+       bounceable: false
+     }));
+   }
+-  if ((0, _validate.isCardanoAddress)(encoded)) {
+-    // The reward address returns the mainnet address. To get the testnet address, use encode address with network ID set to 0.
+-    const networkId = CardanoWasm.NetworkInfo.mainnet().network_id();
+-    if ((0, _validate.isCardanoBaseAddress)(encoded)) {
+-      const specificBaseAddress = CardanoWasm.BaseAddress.from_address(CardanoWasm.Address.from_bech32(encoded));
+-      const paymentKey = specificBaseAddress.payment_cred();
+-      const stakeKey = specificBaseAddress.stake_cred();
+-      return CardanoWasm.BaseAddress.new(networkId, paymentKey, stakeKey).to_address().to_bytes();
+-    } else if ((0, _validate.isCardanoRewardAddress)(encoded)) {
+-      const specificRewardAddress = CardanoWasm.RewardAddress.from_address(CardanoWasm.Address.from_bech32(encoded));
+-      return CardanoWasm.RewardAddress.new(networkId, specificRewardAddress.payment_cred()).to_address().to_bytes();
+-    }
+-  }
++  // if ((0, _validate.isCardanoAddress)(encoded)) {
++  //   // The reward address returns the mainnet address. To get the testnet address, use encode address with network ID set to 0.
++  //   const networkId = CardanoWasm.NetworkInfo.mainnet().network_id();
++  //   if ((0, _validate.isCardanoBaseAddress)(encoded)) {
++  //     const specificBaseAddress = CardanoWasm.BaseAddress.from_address(CardanoWasm.Address.from_bech32(encoded));
++  //     const paymentKey = specificBaseAddress.payment_cred();
++  //     const stakeKey = specificBaseAddress.stake_cred();
++  //     return CardanoWasm.BaseAddress.new(networkId, paymentKey, stakeKey).to_address().to_bytes();
++  //   } else if ((0, _validate.isCardanoRewardAddress)(encoded)) {
++  //     const specificRewardAddress = CardanoWasm.RewardAddress.from_address(CardanoWasm.Address.from_bech32(encoded));
++  //     return CardanoWasm.RewardAddress.new(networkId, specificRewardAddress.payment_cred()).to_address().to_bytes();
++  //   }
++  // }
+   return (0, _utilCrypto.decodeAddress)(encoded, ignoreChecksum, ss58Format);
+ };
+ exports.decodeAddress = decodeAddress;
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/address/encode.js b/node_modules/@subwallet/keyring/cjs/utils/address/encode.js
-index c74b1ee..e664433 100644
+index c74b1ee..af0d43a 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/address/encode.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/address/encode.js
 @@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
@@ -40,7 +73,7 @@ index c74b1ee..e664433 100644
  var _core = require("@ton/core");
  var bitcoin = _interopRequireWildcard(require("bitcoinjs-lib"));
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/address/validate.js b/node_modules/@subwallet/keyring/cjs/utils/address/validate.js
-index cc68238..a07f120 100644
+index cc68238..c2f3d19 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/address/validate.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/address/validate.js
 @@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
@@ -52,8 +85,21 @@ index cc68238..a07f120 100644
  var _core = require("@ton/core");
  var bitcoin = _interopRequireWildcard(require("bitcoinjs-lib"));
  var _util = require("@polkadot/util");
+@@ -272,9 +272,9 @@ const getKeypairTypeByAddress = address => {
+   if (isTonAddress(address)) {
+     return 'ton-native';
+   }
+-  if (isCardanoAddress(address)) {
+-    return 'cardano';
+-  }
++  // if (isCardanoAddress(address)) {
++  //   return 'cardano';
++  // }
+   return 'sr25519';
+ };
+ exports.getKeypairTypeByAddress = getKeypairTypeByAddress;
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js b/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js
-index 8d58b3e..ec9581b 100644
+index 8d58b3e..8d50e3e 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js
 @@ -4,14 +4,14 @@ Object.defineProperty(exports, "__esModule", {
@@ -64,7 +110,7 @@ index 8d58b3e..ec9581b 100644
 +var _cardanoMessageSigningBrowser = require("@emurgo/csl-mobile-bridge");
  // Copyright 2017-2022 @subwallet/keyring authors & contributors
  // SPDX-License-Identifier: Apache-2.0
-
+ 
  const CoseLabel = {
 -  address: _cardanoMessageSigningBrowser.Label.new_text('address'),
 -  crv: _cardanoMessageSigningBrowser.Label.new_int(_cardanoMessageSigningBrowser.Int.new_i32(-1)),
@@ -76,7 +122,7 @@ index 8d58b3e..ec9581b 100644
  exports.CoseLabel = CoseLabel;
  const createCOSEKey = (addressBytes, publicKey) => {
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/cardano/ed25519_bip32.js b/node_modules/@subwallet/keyring/cjs/utils/cardano/ed25519_bip32.js
-index df7548a..e665915 100644
+index df7548a..9183874 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/cardano/ed25519_bip32.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/cardano/ed25519_bip32.js
 @@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
@@ -89,7 +135,7 @@ index df7548a..e665915 100644
  // Copyright 2017-2022 @subwallet/keyring authors & contributors
  // SPDX-License-Identifier: Apache-2.0
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js b/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js
-index 5b550c1..2d5419a 100644
+index 5b550c1..da04c1a 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js
 @@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
@@ -102,13 +148,13 @@ index 5b550c1..2d5419a 100644
  var _utilCrypto = require("@polkadot/util-crypto");
  // Copyright 2017-2022 @subwallet/keyring authors & contributors
 diff --git a/node_modules/@subwallet/keyring/pair/index.js b/node_modules/@subwallet/keyring/pair/index.js
-index c056514..63f6efd 100644
+index c056514..06b9c45 100644
 --- a/node_modules/@subwallet/keyring/pair/index.js
 +++ b/node_modules/@subwallet/keyring/pair/index.js
 @@ -1,8 +1,8 @@
  // Copyright 2017-2022 @polkadot/keyring authors & contributors
  // SPDX-License-Identifier: Apache-2.0
-
+ 
 -import * as CardanoWasmMessageSigning from '@emurgo/cardano-message-signing-browser';
 -import * as CardanoWasm from '@emurgo/cardano-serialization-lib-nodejs';
 +import * as CardanoWasmMessageSigning from '@emurgo/csl-mobile-bridge';
@@ -117,39 +163,71 @@ index c056514..63f6efd 100644
  import SimpleKeyring from '@metamask/eth-simple-keyring';
  import { hdCardano } from '@subwallet/keyring/utils/cardano/ed25519_bip32';
 diff --git a/node_modules/@subwallet/keyring/utils/address/decode.js b/node_modules/@subwallet/keyring/utils/address/decode.js
-index f44fe83..436f535 100644
+index f44fe83..590c530 100644
 --- a/node_modules/@subwallet/keyring/utils/address/decode.js
 +++ b/node_modules/@subwallet/keyring/utils/address/decode.js
 @@ -1,7 +1,7 @@
  // Copyright 2017-2022 @polkadot/keyring authors & contributors
  // SPDX-License-Identifier: Apache-2.0
-
+ 
 -import * as CardanoWasm from '@emurgo/cardano-serialization-lib-nodejs';
 +import * as CardanoWasm from '@emurgo/csl-mobile-bridge';
  import { Address as TonAddress } from '@ton/core';
  import * as bitcoin from 'bitcoinjs-lib';
  import { hexToU8a, isHex, isU8a, u8aToU8a } from '@polkadot/util';
+@@ -33,18 +33,18 @@ export const decodeAddress = (encoded, ignoreChecksum, ss58Format = -1) => {
+       bounceable: false
+     }));
+   }
+-  if (isCardanoAddress(encoded)) {
+-    // The reward address returns the mainnet address. To get the testnet address, use encode address with network ID set to 0.
+-    const networkId = CardanoWasm.NetworkInfo.mainnet().network_id();
+-    if (isCardanoBaseAddress(encoded)) {
+-      const specificBaseAddress = CardanoWasm.BaseAddress.from_address(CardanoWasm.Address.from_bech32(encoded));
+-      const paymentKey = specificBaseAddress.payment_cred();
+-      const stakeKey = specificBaseAddress.stake_cred();
+-      return CardanoWasm.BaseAddress.new(networkId, paymentKey, stakeKey).to_address().to_bytes();
+-    } else if (isCardanoRewardAddress(encoded)) {
+-      const specificRewardAddress = CardanoWasm.RewardAddress.from_address(CardanoWasm.Address.from_bech32(encoded));
+-      return CardanoWasm.RewardAddress.new(networkId, specificRewardAddress.payment_cred()).to_address().to_bytes();
+-    }
+-  }
++  // if (isCardanoAddress(encoded)) {
++  //   // The reward address returns the mainnet address. To get the testnet address, use encode address with network ID set to 0.
++  //   const networkId = CardanoWasm.NetworkInfo.mainnet().network_id();
++  //   if (isCardanoBaseAddress(encoded)) {
++  //     const specificBaseAddress = CardanoWasm.BaseAddress.from_address(CardanoWasm.Address.from_bech32(encoded));
++  //     const paymentKey = specificBaseAddress.payment_cred();
++  //     const stakeKey = specificBaseAddress.stake_cred();
++  //     return CardanoWasm.BaseAddress.new(networkId, paymentKey, stakeKey).to_address().to_bytes();
++  //   } else if (isCardanoRewardAddress(encoded)) {
++  //     const specificRewardAddress = CardanoWasm.RewardAddress.from_address(CardanoWasm.Address.from_bech32(encoded));
++  //     return CardanoWasm.RewardAddress.new(networkId, specificRewardAddress.payment_cred()).to_address().to_bytes();
++  //   }
++  // }
+   return polkadotDecodeAddress(encoded, ignoreChecksum, ss58Format);
+ };
 diff --git a/node_modules/@subwallet/keyring/utils/address/encode.js b/node_modules/@subwallet/keyring/utils/address/encode.js
-index 67c8fe8..fa49774 100644
+index 67c8fe8..7b1c0e7 100644
 --- a/node_modules/@subwallet/keyring/utils/address/encode.js
 +++ b/node_modules/@subwallet/keyring/utils/address/encode.js
 @@ -1,7 +1,7 @@
  // Copyright 2017-2022 @polkadot/keyring authors & contributors
  // SPDX-License-Identifier: Apache-2.0
-
+ 
 -import * as CardanoWasm from '@emurgo/cardano-serialization-lib-nodejs';
 +import * as CardanoWasm from '@emurgo/csl-mobile-bridge';
  import { isCardanoBaseAddress, isCardanoRewardAddress } from '@subwallet/keyring/utils';
  import { Address as TonAddress } from '@ton/core';
  import * as bitcoin from 'bitcoinjs-lib';
 diff --git a/node_modules/@subwallet/keyring/utils/address/validate.js b/node_modules/@subwallet/keyring/utils/address/validate.js
-index 62cf7a7..55bdc3d 100644
+index 62cf7a7..591b1a6 100644
 --- a/node_modules/@subwallet/keyring/utils/address/validate.js
 +++ b/node_modules/@subwallet/keyring/utils/address/validate.js
 @@ -1,7 +1,7 @@
  // Copyright 2017-2022 @polkadot/keyring authors & contributors
  // SPDX-License-Identifier: Apache-2.0
-
+ 
 -import { Address, BaseAddress, RewardAddress } from '@emurgo/cardano-serialization-lib-nodejs';
 +import { Address, BaseAddress, RewardAddress } from '@emurgo/csl-mobile-bridge';
  import { Address as TonAddress } from '@ton/core';
@@ -166,39 +244,39 @@ index 66195be..f92979d 100644
      address: Label;
      crv: Label;
 diff --git a/node_modules/@subwallet/keyring/utils/cardano/coseKey.js b/node_modules/@subwallet/keyring/utils/cardano/coseKey.js
-index 20b7a8d..9b94f6f 100644
+index 20b7a8d..1499874 100644
 --- a/node_modules/@subwallet/keyring/utils/cardano/coseKey.js
 +++ b/node_modules/@subwallet/keyring/utils/cardano/coseKey.js
 @@ -1,7 +1,7 @@
  // Copyright 2017-2022 @subwallet/keyring authors & contributors
  // SPDX-License-Identifier: Apache-2.0
-
+ 
 -import { AlgorithmId, CBORValue, COSEKey, CurveType, Int, KeyType, Label } from '@emurgo/cardano-message-signing-browser';
 +import { AlgorithmId, CBORValue, COSEKey, CurveType, Int, KeyType, Label } from '@emurgo/csl-mobile-bridge';
  export const CoseLabel = {
    address: Label.new_text('address'),
    crv: Label.new_int(Int.new_i32(-1)),
 diff --git a/node_modules/@subwallet/keyring/utils/cardano/ed25519_bip32.js b/node_modules/@subwallet/keyring/utils/cardano/ed25519_bip32.js
-index 8be7090..71fbd24 100644
+index 8be7090..8331bc1 100644
 --- a/node_modules/@subwallet/keyring/utils/cardano/ed25519_bip32.js
 +++ b/node_modules/@subwallet/keyring/utils/cardano/ed25519_bip32.js
 @@ -1,7 +1,7 @@
  // Copyright 2017-2022 @subwallet/keyring authors & contributors
  // SPDX-License-Identifier: Apache-2.0
-
+ 
 -import { Bip32PrivateKey } from '@emurgo/cardano-serialization-lib-nodejs';
 +import { Bip32PrivateKey } from '@emurgo/csl-mobile-bridge';
  import { hdValidatePath } from '@polkadot/util-crypto';
  function harden(num) {
    return 0x80000000 + num;
 diff --git a/node_modules/@subwallet/keyring/utils/cardano/mnemonic.js b/node_modules/@subwallet/keyring/utils/cardano/mnemonic.js
-index 1932aa2..c19e85c 100644
+index 1932aa2..f9d3077 100644
 --- a/node_modules/@subwallet/keyring/utils/cardano/mnemonic.js
 +++ b/node_modules/@subwallet/keyring/utils/cardano/mnemonic.js
 @@ -1,7 +1,7 @@
  // Copyright 2017-2022 @subwallet/keyring authors & contributors
  // SPDX-License-Identifier: Apache-2.0
-
+ 
 -import { Bip32PrivateKey } from '@emurgo/cardano-serialization-lib-nodejs';
 +import { Bip32PrivateKey } from '@emurgo/csl-mobile-bridge';
  import { u8aToHex } from '@polkadot/util';

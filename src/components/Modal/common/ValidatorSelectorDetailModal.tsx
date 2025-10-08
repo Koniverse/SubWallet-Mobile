@@ -2,13 +2,13 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { SwModal, Number, Typography } from 'components/design-system-ui';
 import { View } from 'react-native';
 import MetaInfo from 'components/MetaInfo';
-import { ValidatorDataType } from 'hooks/screen/Staking/useGetValidatorList';
 import i18n from 'utils/i18n/i18n';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { getSchemaColor } from 'components/MetaInfo/shared';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ValidatorDataType } from 'types/earning';
 
 interface Props {
   detailModalVisible: boolean;
@@ -50,7 +50,11 @@ export const ValidatorSelectorDetailModal = ({
   }, [chain]);
 
   const isParaChain = useMemo(() => {
-    return _STAKING_CHAIN_GROUP.para.includes(chain) || _STAKING_CHAIN_GROUP.amplitude.includes(chain);
+    return (
+      _STAKING_CHAIN_GROUP.para.includes(chain) ||
+      _STAKING_CHAIN_GROUP.amplitude.includes(chain) ||
+      _STAKING_CHAIN_GROUP.energy.includes(chain)
+    );
   }, [chain]);
 
   const ratePercent = useMemo(() => {

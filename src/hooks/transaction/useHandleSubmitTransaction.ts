@@ -96,6 +96,7 @@ const useHandleSubmitTransaction = (
 
   const onError = useCallback(
     (error: Error) => {
+      console.log('error', error);
       setTransactionDone(false);
       hideAll();
       show(error.message, { type: 'danger', duration: 8000 });

@@ -31,7 +31,6 @@ export const AccountExport = ({
     params: { address },
   },
 }: AccountExportProps) => {
-  console.log('address', address);
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();

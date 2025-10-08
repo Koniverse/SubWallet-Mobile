@@ -1,24 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
-import {
-  DotsThree,
-  Plugs,
-  PlugsConnected,
-  Shield,
-  ShieldSlash,
-  Users,
-  X,
-  Plug,
-  ArrowsLeftRight,
-} from 'phosphor-react-native';
-import { MoreOptionItemType, MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
+import { DotsThree, Plugs, PlugsConnected, Users, Plug } from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { DAppAccessDetailProps, RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
-import { changeAuthorization, changeAuthorizationPerSite, forgetSite, toggleAuthorization } from 'messaging/index';
-import { updateAuthUrls } from 'stores/updater';
+import { changeAuthorizationPerSite } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import i18n from 'utils/i18n/i18n';
 import { EmptyList } from 'components/EmptyList';
@@ -29,14 +17,13 @@ import DappAccessItem, { getSiteTitle } from 'components/design-system-ui/web3-b
 import { getHostName } from 'utils/browser';
 import { ThemeTypes } from 'styles/themes';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { AuthUrlInfo, AuthUrls } from '@subwallet/extension-base/services/request-service/types';
+import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
 import { AccountChainType, AccountProxy } from '@subwallet/extension-base/types';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { getAccountCount } from 'screens/Settings/Security/DAppAccess/index';
 import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
 import { convertAuthorizeTypeToChainTypes } from 'utils/accountProxy';
-import SwitchNetworkAuthorizeModal from 'components/Modal/SwitchNetworkAuthorizeModal';
-import { ModalRef } from 'types/modalRef';
+import { DAppConfigurationModal } from 'components/Modal/DAppConfigurationModal.tsx';
 
 type Props = {
   origin: string;
@@ -86,7 +73,6 @@ const checkAccountAddressValid = (chainType: AccountChainType, accountAuthTypes?
 };
 
 const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
-  const chainSelectorRef = useRef<ModalRef>();
   const navigation = useNavigation<RootNavigationProps>();
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -170,85 +156,6 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
       </Typography.Text>
     </>
   );
-
-  const onComplete = useCallback((list: AuthUrls) => {
-    updateAuthUrls(list);
-  }, []);
-
-  const dAppAccessDetailMoreOptions: MoreOptionItemType[] = useMemo(() => {
-    const isAllowed = authInfo.isAllowed;
-    const isEvmAuthorize = authInfo.accountAuthTypes.includes('evm');
-
-    const options = [
-      {
-        key: 'forgetSite',
-        icon: X,
-        backgroundColor: theme['yellow-6'],
-        name: i18n.common.forgetSite,
-        onPress: () => {
-          forgetSite(origin, updateAuthUrls).catch(console.error);
-          navigation.canGoBack() && navigation.goBack();
-        },
-      },
-    ];
-
-    if (isAllowed) {
-      options.push(
-        {
-          key: 'disconnectAll',
-          icon: Plugs,
-          name: i18n.common.disconnectAll,
-          // @ts-ignore
-          backgroundColor: theme['gray-3'],
-          onPress: () => {
-            changeAuthorization(false, origin, updateAuthUrls).catch(console.error);
-            setModalVisible(false);
-          },
-        },
-        {
-          key: 'connectAll',
-          icon: PlugsConnected,
-          name: i18n.common.connectAll,
-          backgroundColor: theme['green-6'],
-          onPress: () => {
-            changeAuthorization(true, origin, updateAuthUrls).catch(console.error);
-            setModalVisible(false);
-          },
-        },
-      );
-    }
-
-    if (isEvmAuthorize) {
-      options.push({
-        key: 'switchNetwork',
-        name: 'Switch network',
-        icon: ArrowsLeftRight,
-        // @ts-ignore
-        backgroundColor: theme['geekblue-6'],
-        onPress: () => {
-          chainSelectorRef?.current?.onOpenModal();
-        },
-      });
-    }
-
-    options.push({
-      key: 'blockOrUnblock',
-      name: isAllowed ? i18n.common.block : i18n.common.unblock,
-      icon: isAllowed ? ShieldSlash : Shield,
-      // @ts-ignore
-      backgroundColor: isAllowed ? theme['red-6'] : theme['green-6'],
-      onPress: () => {
-        toggleAuthorization(origin)
-          .then(({ list }) => {
-            updateAuthUrls(list);
-          })
-          .catch(console.error);
-        setModalVisible(false);
-      },
-    });
-
-    return options;
-  }, [authInfo.isAllowed, authInfo.accountAuthTypes, theme, origin, navigation]);
 
   useEffect(() => {
     setPendingMap(prevMap => {
@@ -349,21 +256,15 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
         rightIconOption={rightIconOption}
         renderItem={renderItem}
         afterListItem={
-          <MoreOptionModal
+          <DAppConfigurationModal
             modalVisible={modalVisible}
-            moreOptionList={dAppAccessDetailMoreOptions}
             setModalVisible={setModalVisible}
+            navigation={navigation}
+            authInfo={authInfo}
           />
         }
         extraData={JSON.stringify(authInfo).concat(JSON.stringify(pendingMap))}
         keyExtractor={item => item.id}
-      />
-      <SwitchNetworkAuthorizeModal
-        selectorRef={chainSelectorRef}
-        onComplete={onComplete}
-        authUrlInfo={authInfo}
-        onCancel={() => chainSelectorRef?.current?.onCloseModal()}
-        needsTabAuthCheck={true}
       />
     </>
   );

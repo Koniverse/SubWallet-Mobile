@@ -12,6 +12,7 @@ import Typography from '../../design-system-ui/typography';
 export interface AccountGroupInfoItem extends InfoItemBase {
   addresses: string[];
   content: string;
+  identPrefix?: number;
 }
 
 const AccountGroupItem: React.FC<AccountGroupInfoItem> = ({
@@ -19,6 +20,7 @@ const AccountGroupItem: React.FC<AccountGroupInfoItem> = ({
   content,
   label,
   valueColorSchema,
+  identPrefix,
 }: AccountGroupInfoItem) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = MetaInfoStyles(theme);
@@ -37,7 +39,7 @@ const AccountGroupItem: React.FC<AccountGroupInfoItem> = ({
       <View style={[_style.col]}>{renderColContent(label, { ..._style.label, ...labelGeneralStyle })}</View>
       <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
         <View style={[_style.valueWrapper, { gap: theme.sizeXS, paddingLeft: theme.paddingXS }]}>
-          <AvatarGroup addresses={addresses} />
+          <AvatarGroup addresses={addresses} identPrefix={identPrefix} />
           <Typography.Text ellipsis style={valueStyle}>
             {content}
           </Typography.Text>

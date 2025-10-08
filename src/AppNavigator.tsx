@@ -220,6 +220,13 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
                 redirectFromPreview: (redirectFromPreview: boolean) => redirectFromPreview,
               },
             },
+            SendFund: {
+              path: 'send-fund',
+              stringify: {
+                slug: (slug: string) => slug,
+                recipient: (recipient: string) => recipient,
+              },
+            },
             Swap: {
               path: 'swap',
               stringify: {
@@ -488,7 +495,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
 
         //enable Network (if deeplink is not for earning)
         if (!parseUrl.pathname.startsWith('/transaction-action/earning')) {
-          let originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+          let originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1]?.toLowerCase() : '';
           if (urlQueryMap.chain) {
             originChain = urlQueryMap.chain;
           }
