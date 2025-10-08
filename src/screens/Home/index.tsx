@@ -139,7 +139,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
         },
         tabBarLabelStyle: {
           paddingTop: 2,
-          paddingBottom: insets.bottom ? insets.bottom - 12 : 8,
+          paddingBottom: insets.bottom,
           fontSize: 10,
           lineHeight: 18,
           ...FontMedium,
@@ -152,7 +152,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
           paddingLeft: 16,
           paddingRight: 16,
           borderTopColor: theme.colorBgBorder,
-          height: BOTTOM_BAR_HEIGHT + (insets.bottom ? insets.bottom - 15 : insets.bottom),
+          height: BOTTOM_BAR_HEIGHT + insets.bottom,
         },
         tabBarActiveTintColor: ColorMap.light,
         tabBarInactiveTintColor: '#777777',

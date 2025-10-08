@@ -1,7 +1,8 @@
 import React from 'react';
-import { SafeAreaView, StyleProp, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import ModalBase from 'components/Modal/Base/ModalBase';
+import { SafeAreaView } from 'react-native-safe-area-context';
 interface Props {
   children: React.ReactNode;
   modalVisible: boolean;
@@ -63,7 +64,7 @@ export const SubWalletModal = ({
 
           {children}
         </View>
-        <SafeAreaView />
+        <SafeAreaView edges={['bottom']} />
       </View>
     </ModalBase>
   );

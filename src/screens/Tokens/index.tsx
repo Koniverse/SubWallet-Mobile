@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { Coins, Plus } from 'phosphor-react-native';
-import { SafeAreaView } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -160,8 +159,6 @@ export const CustomTokenSetting = () => {
         )}
         isShowListWrapper
       />
-
-      <SafeAreaView />
     </>
   );
 };

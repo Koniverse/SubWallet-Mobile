@@ -1,7 +1,7 @@
 import { Images } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View, Linking } from 'react-native';
+import { ImageBackground, Platform, StatusBar, StyleProp, View, Linking } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -21,6 +21,7 @@ import { Image } from 'components/design-system-ui';
 import { SelectLanguageModal } from 'components/Modal/SelectLanguageModal';
 import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
 import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -210,7 +211,7 @@ export const FirstScreen = () => {
     <View style={{ width: '100%', flex: 1 }}>
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={imageBackgroundStyle}>
-        <SafeAreaView />
+        <SafeAreaView edges={['top']} />
         <View style={logoStyle}>
           <View
             style={{
@@ -255,7 +256,7 @@ export const FirstScreen = () => {
           setVisible={setGeneralTermVisible}
           onPressAcceptBtn={onPressAcceptBtn}
         />
-        <SafeAreaView />
+        <SafeAreaView edges={['bottom']} />
       </ImageBackground>
     </View>
   );

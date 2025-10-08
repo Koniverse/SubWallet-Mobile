@@ -46,19 +46,7 @@ import { useToast } from 'react-native-toast-notifications';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useWatch } from 'react-hook-form';
-import {
-  Alert,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { ScreenContainer } from 'components/ScreenContainer';
-import { Header } from 'components/Header';
-import { SubHeader } from 'components/SubHeader';
+import { Alert, Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
@@ -123,6 +111,7 @@ import AlertBoxInstant from 'components/design-system-ui/alert-box/instant';
 import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { _isAcrossChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/acrossBridge';
+import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -1295,264 +1284,250 @@ export const SendFund = ({
   return (
     <>
       {!transactionDone ? (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-          <ScreenContainer>
-            <>
-              <Header disabled={loading} />
-
-              <View style={stylesheet.subheader}>
-                <SubHeader
-                  title={viewStep === 1 ? title : i18n.common.amount}
-                  onPressBack={onSubheaderPressBack}
-                  disabled={loading}
-                  titleTextAlign={'left'}
-                />
-              </View>
-
-              <>
-                <ScrollView
-                  ref={scrollViewRef}
-                  style={stylesheet.scrollView}
-                  contentContainerStyle={stylesheet.scrollViewContentContainer}
-                  keyboardShouldPersistTaps={'handled'}>
-                  {viewStep === 1 ? (
-                    <View style={stylesheet.row}>
-                      <View style={stylesheet.rowItem}>
-                        <TokenSelector
-                          items={tokenItems}
-                          selectedValueMap={{ [assetValue]: true }}
-                          onSelectItem={_onChangeAsset}
-                          showAddBtn={false}
-                          tokenSelectorRef={tokenSelectorRef}
-                          renderSelected={() => (
-                            <TokenSelectField
-                              logoKey={currentChainAsset?.slug || ''}
-                              subLogoKey={currentChainAsset?.originChain || ''}
-                              value={currentChainAsset?.symbol || ''}
-                              outerStyle={{ marginBottom: 0 }}
-                              showIcon
-                            />
-                          )}
-                          selectedValue={currentChainAsset?.slug || ''}
-                          disabled={!tokenItems.length || loading}
+        <TransactionLayout
+          title={viewStep === 1 ? title : i18n.common.amount}
+          disableMainHeader={loading}
+          disableLeftButton={loading}
+          disableRightButton={loading}
+          onPressBack={onSubheaderPressBack}>
+          <>
+            <ScrollView
+              ref={scrollViewRef}
+              style={stylesheet.scrollView}
+              contentContainerStyle={stylesheet.scrollViewContentContainer}
+              keyboardShouldPersistTaps={'handled'}>
+              {viewStep === 1 ? (
+                <View style={stylesheet.row}>
+                  <View style={stylesheet.rowItem}>
+                    <TokenSelector
+                      items={tokenItems}
+                      selectedValueMap={{ [assetValue]: true }}
+                      onSelectItem={_onChangeAsset}
+                      showAddBtn={false}
+                      tokenSelectorRef={tokenSelectorRef}
+                      renderSelected={() => (
+                        <TokenSelectField
+                          logoKey={currentChainAsset?.slug || ''}
+                          subLogoKey={currentChainAsset?.originChain || ''}
+                          value={currentChainAsset?.symbol || ''}
+                          outerStyle={{ marginBottom: 0 }}
+                          showIcon
                         />
-                      </View>
+                      )}
+                      selectedValue={currentChainAsset?.slug || ''}
+                      disabled={!tokenItems.length || loading}
+                    />
+                  </View>
 
-                      <View style={stylesheet.paperPlaneIconWrapper}>
-                        <Icon phosphorIcon={PaperPlaneRight} size={'md'} iconColor={theme['gray-5']} />
-                      </View>
+                  <View style={stylesheet.paperPlaneIconWrapper}>
+                    <Icon phosphorIcon={PaperPlaneRight} size={'md'} iconColor={theme['gray-5']} />
+                  </View>
 
-                      <View style={stylesheet.rowItem}>
-                        <ChainSelector
-                          items={destChainItems}
-                          selectedValueMap={{ [destChainValue]: true }}
-                          chainSelectorRef={chainSelectorRef}
-                          onSelectItem={_onChangeDestChain}
-                          renderSelected={() => (
-                            <NetworkField
-                              networkKey={destChainValue}
-                              outerStyle={{ marginBottom: 0 }}
-                              placeholder={i18n.placeholder.selectChain}
-                              showIcon
-                            />
-                          )}
-                          disabled={!destChainItems.length || loading}
+                  <View style={stylesheet.rowItem}>
+                    <ChainSelector
+                      items={destChainItems}
+                      selectedValueMap={{ [destChainValue]: true }}
+                      chainSelectorRef={chainSelectorRef}
+                      onSelectItem={_onChangeDestChain}
+                      renderSelected={() => (
+                        <NetworkField
+                          networkKey={destChainValue}
+                          outerStyle={{ marginBottom: 0 }}
+                          placeholder={i18n.placeholder.selectChain}
+                          showIcon
                         />
-                      </View>
-                    </View>
-                  ) : (
-                    <View style={stylesheet.row}>
-                      <View style={stylesheet.rowItem}>
-                        <SelectModalField
+                      )}
+                      disabled={!destChainItems.length || loading}
+                    />
+                  </View>
+                </View>
+              ) : (
+                <View style={stylesheet.row}>
+                  <View style={stylesheet.rowItem}>
+                    <SelectModalField
+                      disabled={true}
+                      renderSelected={() => (
+                        <TokenSelectField
                           disabled={true}
-                          renderSelected={() => (
-                            <TokenSelectField
-                              disabled={true}
-                              logoKey={currentChainAsset?.slug || ''}
-                              subLogoKey={currentChainAsset?.originChain || ''}
-                              value={currentChainAsset?.symbol || ''}
-                              outerStyle={{ marginBottom: 0 }}
-                              showIcon
-                            />
-                          )}
+                          logoKey={currentChainAsset?.slug || ''}
+                          subLogoKey={currentChainAsset?.originChain || ''}
+                          value={currentChainAsset?.symbol || ''}
+                          outerStyle={{ marginBottom: 0 }}
+                          showIcon
                         />
-                      </View>
+                      )}
+                    />
+                  </View>
 
-                      <View style={stylesheet.paperPlaneIconWrapper}>
-                        <Icon phosphorIcon={PaperPlaneRight} size={'md'} iconColor={theme['gray-5']} />
-                      </View>
+                  <View style={stylesheet.paperPlaneIconWrapper}>
+                    <Icon phosphorIcon={PaperPlaneRight} size={'md'} iconColor={theme['gray-5']} />
+                  </View>
 
-                      <View style={stylesheet.rowItem}>
-                        <SelectModalField
+                  <View style={stylesheet.rowItem}>
+                    <SelectModalField
+                      disabled={true}
+                      renderSelected={() => (
+                        <NetworkField
                           disabled={true}
-                          renderSelected={() => (
-                            <NetworkField
-                              disabled={true}
-                              networkKey={destChainValue}
-                              outerStyle={{ marginBottom: 0 }}
-                              placeholder={i18n.placeholder.selectChain}
-                              showIcon
-                            />
-                          )}
+                          networkKey={destChainValue}
+                          outerStyle={{ marginBottom: 0 }}
+                          placeholder={i18n.placeholder.selectChain}
+                          showIcon
                         />
-                      </View>
-                    </View>
-                  )}
-                  {isAllAccount && viewStep === 1 && (
-                    <View style={{ marginBottom: theme.marginSM }}>
-                      <AccountSelector
-                        items={accountAddressItems}
-                        selectedValueMap={{ [fromValue]: true }}
-                        onSelectItem={_onChangeFrom}
-                        renderSelected={() => (
-                          <AccountSelectField
-                            label={'From:'}
-                            horizontal
-                            accountName={senderAccountName}
-                            value={fromValue}
-                            showIcon
-                            labelStyle={{ width: 48 }}
-                          />
-                        )}
-                        disabled={loading}
-                        accountSelectorRef={accountSelectorRef}
+                      )}
+                    />
+                  </View>
+                </View>
+              )}
+              {isAllAccount && viewStep === 1 && (
+                <View style={{ marginBottom: theme.marginSM }}>
+                  <AccountSelector
+                    items={accountAddressItems}
+                    selectedValueMap={{ [fromValue]: true }}
+                    onSelectItem={_onChangeFrom}
+                    renderSelected={() => (
+                      <AccountSelectField
+                        label={'From:'}
+                        horizontal
+                        accountName={senderAccountName}
+                        value={fromValue}
+                        showIcon
+                        labelStyle={{ width: 48 }}
                       />
-                    </View>
+                    )}
+                    disabled={loading}
+                    accountSelectorRef={accountSelectorRef}
+                  />
+                </View>
+              )}
+
+              {viewStep === 1 && (
+                <>
+                  <FormItem
+                    style={{ marginBottom: theme.marginSM }}
+                    control={control}
+                    rules={recipientAddressRules}
+                    render={({ field: { value, ref, onChange, onBlur }, formState: { errors } }) => (
+                      <InputAddress
+                        ref={ref}
+                        label={'To:'}
+                        value={value}
+                        onChangeText={text => {
+                          clearErrors('to');
+                          onChange(text);
+                        }}
+                        isValidValue={!Object.keys(errors).length}
+                        horizontal
+                        showAvatar={false}
+                        onBlur={onBlur}
+                        onSideEffectChange={onBlur}
+                        placeholder={i18n.placeholder.accountAddress}
+                        disabled={loading || disabledToAddressInput}
+                        chain={destChainValue}
+                        fitNetwork
+                        showAddressBook
+                        saveAddress
+                      />
+                    )}
+                    name="to"
+                  />
+                </>
+              )}
+
+              {viewStep === 2 ? (
+                <View style={stylesheet.amountWrapper}>
+                  <FormItem control={control} rules={amountRules} render={renderAmountInput} name="value" />
+                </View>
+              ) : (
+                <View style={stylesheet.balanceWrapper}>
+                  <FreeBalance
+                    address={fromValue}
+                    chain={chainValue}
+                    tokenSlug={assetValue}
+                    extrinsicType={extrinsicType}
+                    label={`${i18n.inputLabel.availableBalance}`}
+                    style={stylesheet.balance}
+                  />
+
+                  {chainValue !== destChainValue && (
+                    <AlertBox
+                      title={i18n.warningTitle.payAttention}
+                      description={i18n.warningMessage.crossChainTransferWarningMessage}
+                      type={'warning'}
+                    />
                   )}
 
-                  {viewStep === 1 && (
-                    <>
-                      <FormItem
-                        style={{ marginBottom: theme.marginSM }}
-                        control={control}
-                        rules={recipientAddressRules}
-                        render={({ field: { value, ref, onChange, onBlur }, formState: { errors } }) => (
-                          <InputAddress
-                            ref={ref}
-                            label={'To:'}
-                            value={value}
-                            onChangeText={text => {
-                              clearErrors('to');
-                              onChange(text);
-                            }}
-                            isValidValue={!Object.keys(errors).length}
-                            horizontal
-                            showAvatar={false}
-                            onBlur={onBlur}
-                            onSideEffectChange={onBlur}
-                            placeholder={i18n.placeholder.accountAddress}
-                            disabled={loading || disabledToAddressInput}
-                            chain={destChainValue}
-                            fitNetwork
-                            showAddressBook
-                            saveAddress
-                          />
-                        )}
-                        name="to"
-                      />
-                    </>
+                  {!(chainValue !== destChainValue) && isShowAddressFormatInfoBox && (
+                    <AlertBoxInstant type={'new-address-format'} />
                   )}
+                </View>
+              )}
+            </ScrollView>
 
-                  {viewStep === 2 ? (
-                    <View style={stylesheet.amountWrapper}>
-                      <FormItem control={control} rules={amountRules} render={renderAmountInput} name="value" />
-                    </View>
-                  ) : (
-                    <View style={stylesheet.balanceWrapper}>
+            <View style={stylesheet.footer}>
+              {viewStep === 1 && (
+                <Button disabled={isNextButtonDisable} icon={getButtonIcon(ArrowCircleRight)} onPress={onPressNextStep}>
+                  {i18n.buttonTitles.next}
+                </Button>
+              )}
+              {viewStep === 2 && (
+                <>
+                  <View style={stylesheet.footerBalanceWrapper}>
+                    <Divider />
+                    <View style={{ flexDirection: 'row', paddingBottom: isShowFeeEditor ? 0 : theme.padding }}>
                       <FreeBalance
                         address={fromValue}
                         chain={chainValue}
                         tokenSlug={assetValue}
                         extrinsicType={extrinsicType}
                         label={`${i18n.inputLabel.availableBalance}`}
-                        style={stylesheet.balance}
+                        style={stylesheet.balanceStep2}
                       />
 
-                      {chainValue !== destChainValue && (
-                        <AlertBox
-                          title={i18n.warningTitle.payAttention}
-                          description={i18n.warningMessage.crossChainTransferWarningMessage}
-                          type={'warning'}
-                        />
-                      )}
-
-                      {!(chainValue !== destChainValue) && isShowAddressFormatInfoBox && (
-                        <AlertBoxInstant type={'new-address-format'} />
+                      {viewStep === 2 && !hideMaxButton && (
+                        <TouchableOpacity onPress={onSetMaxTransferable} style={stylesheet.max}>
+                          {<Typography.Text style={stylesheet.maxText}>{i18n.common.max}</Typography.Text>}
+                        </TouchableOpacity>
                       )}
                     </View>
-                  )}
-                </ScrollView>
-
-                <View style={stylesheet.footer}>
-                  {viewStep === 1 && (
-                    <Button
-                      disabled={isNextButtonDisable}
-                      icon={getButtonIcon(ArrowCircleRight)}
-                      onPress={onPressNextStep}>
-                      {i18n.buttonTitles.next}
-                    </Button>
-                  )}
-                  {viewStep === 2 && (
-                    <>
-                      <View style={stylesheet.footerBalanceWrapper}>
-                        <Divider />
-                        <View style={{ flexDirection: 'row', paddingBottom: isShowFeeEditor ? 0 : theme.padding }}>
-                          <FreeBalance
-                            address={fromValue}
-                            chain={chainValue}
+                    {viewStep === 2 && (
+                      <>
+                        {!TON_CHAINS.includes(chainValue) && !!toValue && !!transferAmount && !!nativeTokenSlug && (
+                          <FeeEditor
+                            chainValue={chainValue}
+                            currentTokenPayFee={currentTokenPayFee}
+                            destChainValue={destChainValue}
+                            estimateFee={estimatedNativeFee}
+                            feeOptionsInfo={transferInfo?.feeOptions}
+                            feePercentageSpecialCase={transferInfo?.feePercentageSpecialCase}
+                            feeType={transferInfo?.feeType}
+                            isLoadingFee={isFetchingInfo}
+                            isLoadingToken={isFetchingListFeeToken}
+                            listTokensCanPayFee={listTokensCanPayFee}
+                            nativeTokenSlug={nativeTokenSlug}
+                            onSelect={setSelectedTransactionFee}
+                            onSetTokenPayFee={onSetTokenPayFee}
+                            selectedFeeOption={selectedTransactionFee}
+                            tokenPayFeeSlug={currentTokenPayFee || nativeTokenSlug}
                             tokenSlug={assetValue}
-                            extrinsicType={extrinsicType}
-                            label={`${i18n.inputLabel.availableBalance}`}
-                            style={stylesheet.balanceStep2}
                           />
-
-                          {viewStep === 2 && !hideMaxButton && (
-                            <TouchableOpacity onPress={onSetMaxTransferable} style={stylesheet.max}>
-                              {<Typography.Text style={stylesheet.maxText}>{i18n.common.max}</Typography.Text>}
-                            </TouchableOpacity>
-                          )}
-                        </View>
-                        {viewStep === 2 && (
-                          <>
-                            {!TON_CHAINS.includes(chainValue) && !!toValue && !!transferAmount && !!nativeTokenSlug && (
-                              <FeeEditor
-                                chainValue={chainValue}
-                                currentTokenPayFee={currentTokenPayFee}
-                                destChainValue={destChainValue}
-                                estimateFee={estimatedNativeFee}
-                                feeOptionsInfo={transferInfo?.feeOptions}
-                                feePercentageSpecialCase={transferInfo?.feePercentageSpecialCase}
-                                feeType={transferInfo?.feeType}
-                                isLoadingFee={isFetchingInfo}
-                                isLoadingToken={isFetchingListFeeToken}
-                                listTokensCanPayFee={listTokensCanPayFee}
-                                nativeTokenSlug={nativeTokenSlug}
-                                onSelect={setSelectedTransactionFee}
-                                onSetTokenPayFee={onSetTokenPayFee}
-                                selectedFeeOption={selectedTransactionFee}
-                                tokenPayFeeSlug={currentTokenPayFee || nativeTokenSlug}
-                                tokenSlug={assetValue}
-                              />
-                            )}
-                          </>
                         )}
-                      </View>
-                      <Button
-                        disabled={isSubmitButtonDisable}
-                        loading={loading}
-                        type={undefined}
-                        onPress={checkAction(handleSubmit(onPressSubmit), extrinsicType)}
-                        icon={getButtonIcon(PaperPlaneTilt)}>
-                        {i18n.buttonTitles.transfer}
-                      </Button>
-                    </>
-                  )}
-                </View>
-                <SafeAreaView />
-              </>
-            </>
-          </ScreenContainer>
-        </KeyboardAvoidingView>
+                      </>
+                    )}
+                  </View>
+                  <Button
+                    disabled={isSubmitButtonDisable}
+                    loading={loading}
+                    type={undefined}
+                    onPress={checkAction(handleSubmit(onPressSubmit), extrinsicType)}
+                    icon={getButtonIcon(PaperPlaneTilt)}>
+                    {i18n.buttonTitles.transfer}
+                  </Button>
+                </>
+              )}
+            </View>
+          </>
+        </TransactionLayout>
       ) : (
         <TransactionDone transactionDoneInfo={transactionDoneInfo} extrinsicType={extrinsicType} />
       )}

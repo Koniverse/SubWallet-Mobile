@@ -37,6 +37,7 @@ target 'SubWalletMobile' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => true
 
 
   target 'SubWalletMobileTests' do

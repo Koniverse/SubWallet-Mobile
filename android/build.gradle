@@ -8,14 +8,16 @@ buildscript {
         targetSdkVersion = 35
         androidXBrowser = "1.4.0"
         kotlinVersion = "1.9.0"
-        ndkVersion = "23.1.7779620"
+        ndkVersion = "26.1.10909125"
     }
     subprojects { subproject ->
-        afterEvaluate{
-            if((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
-                android {
+        afterEvaluate {
+            if (subproject.plugins.hasPlugin('com.android.application') ||
+                subproject.plugins.hasPlugin('com.android.library')) {
+                subproject.android {
                     compileSdkVersion rootProject.ext.compileSdkVersion
                     buildToolsVersion rootProject.ext.buildToolsVersion
+                    ndkVersion rootProject.ext.ndkVersion
                 }
             }
         }
