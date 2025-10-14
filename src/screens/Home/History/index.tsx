@@ -292,8 +292,15 @@ function History({
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
-  const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
-    useFilterModal();
+  const {
+    filterSelectionMap,
+    openFilterModal,
+    onApplyFilter,
+    onChangeFilterOption,
+    onResetFilter,
+    selectedFilters,
+    filterModalRef,
+  } = useFilterModal();
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
       accMap[cur.address.toLowerCase()] = cur.name || '';
@@ -667,6 +674,7 @@ function History({
         onChangeOption={onChangeFilterOption}
         optionSelectionMap={filterSelectionMap}
         onApplyFilter={onApplyFilter}
+        onChangeModalVisible={onResetFilter}
       />
     </>
   );

@@ -246,16 +246,28 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<YieldPoolInfo>) => {
       return (
-        <EarningPoolItem
-          chain={chainInfoMap[item.chain]}
-          key={item.slug}
-          onStakeMore={() => {
-            Keyboard.dismiss();
-            onPressItem(chainInfoMap[item.chain].slug, item);
-          }}
-          poolInfo={item}
-          currencyData={currencyData}
-        />
+        <>
+          <EarningPoolItem
+            chain={chainInfoMap[item.chain]}
+            key={item.slug}
+            onStakeMore={() => {
+              Keyboard.dismiss();
+              onPressItem(chainInfoMap[item.chain].slug, item);
+            }}
+            poolInfo={item}
+            currencyData={currencyData}
+          />
+          <EarningPoolItem
+            chain={chainInfoMap[item.chain]}
+            key={item.slug}
+            onStakeMore={() => {
+              Keyboard.dismiss();
+              onPressItem(chainInfoMap[item.chain].slug, item);
+            }}
+            poolInfo={item}
+            currencyData={currencyData}
+          />
+        </>
       );
     },
     [chainInfoMap, currencyData, onPressItem],
@@ -291,7 +303,6 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   return (
     <>
       <FlatListScreen
-        style={styles.wrapper}
         title={i18n.header.poolList.replace('{{symbol}}', symbol)}
         titleTextAlign={'left'}
         items={items}
@@ -309,6 +320,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         // rightIconOption={rightIconOption}
         isShowFilterBtn
         isShowMainHeader
+        isHideBottomSafeArea
         refreshControl={
           <RefreshControl
             style={styles.refreshIndicator}

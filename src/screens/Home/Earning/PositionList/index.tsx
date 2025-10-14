@@ -307,7 +307,6 @@ export const PositionList = ({ setStep, loading }: Props) => {
 
   return (
     <FlatListScreen
-      style={styles.wrapper}
       title={i18n.header.positionList}
       titleTextAlign={'left'}
       items={items}
@@ -326,6 +325,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
       keyExtractor={item => item.slug}
       isShowFilterBtn
       isShowMainHeader
+      isHideBottomSafeArea
       refreshControl={
         <RefreshControl
           style={styles.refreshIndicator}

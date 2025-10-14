@@ -109,6 +109,7 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
         isShowMainHeader
         title={i18n.header.missionPools}
         showLeftBtn={false}
+        isHideBottomSafeArea
         titleTextAlign={'left'}>
         {banners && banners.length ? (
           <View style={{ marginHorizontal: theme.margin, paddingTop: theme.paddingXS, paddingBottom: theme.marginXXS }}>

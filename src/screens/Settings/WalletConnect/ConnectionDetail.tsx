@@ -1,9 +1,9 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useToast } from 'react-native-toast-notifications';
 import { stripUrl } from '@subwallet/extension-base/utils';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import MetaInfo from 'components/MetaInfo';
-import { Button, Icon, Image, SwModal, Typography } from 'components/design-system-ui';
+import { Button, Icon, Image, Typography } from 'components/design-system-ui';
 import { WCNetworkAvatarGroup } from 'components/WalletConnect/Network/WCNetworkAvatarGroup';
 import { WalletConnectChainInfo } from 'types/walletConnect';
 import { chainsToWalletConnectChainInfos, getWCAccountProxyList } from 'utils/walletConnect';
@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { ConnectDetailProps, RootNavigationProps } from 'routes/index';
-import { DeviceEventEmitter, ScrollView, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, ScrollView, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
@@ -21,9 +21,9 @@ import DeleteModal from 'components/common/Modal/DeleteModal';
 import { disconnectWalletConnectConnection } from 'messaging/index';
 import { EmptyList } from 'components/EmptyList';
 import { SessionTypes } from '@walletconnect/types';
-import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { WCNetworkItem } from 'components/WalletConnect/Network/WCNetworkItem';
-import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 export const ConnectionDetail = ({
   route: {
@@ -33,12 +33,10 @@ export const ConnectionDetail = ({
   const { sessions } = useSelector((state: RootState) => state.walletConnect);
   const theme = useSubWalletTheme().swThemes;
   const currentSession: SessionTypes.Struct = sessions[topic];
-  const networkDetailModalRef = useRef<SWModalRefProps>(null);
 
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
   const [disconnectModalVisible, setDisconnectModalVisible] = useState<boolean>(false);
-  const [networkModalVisible, setNetworkModalVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
@@ -97,6 +95,23 @@ export const ConnectionDetail = ({
       });
   };
 
+  const renderNetworkItem = ({ item }: ListRenderItemInfo<WalletConnectChainInfo>) => {
+    return (
+      <WCNetworkItem
+        containerStyle={{ marginBottom: theme.marginXS }}
+        key={item.slug}
+        item={item}
+        selectedValueMap={connectedChainsMap}
+      />
+    );
+  };
+
+  const searchFunction = useCallback((items: WalletConnectChainInfo[], searchText: string) => {
+    const searchTextLowerCase = searchText.toLowerCase();
+
+    return items.filter(item => item.chainInfo?.name.toLowerCase().includes(searchTextLowerCase));
+  }, []);
+
   return (
     <ContainerWithSubHeader
       disabled={loading}
@@ -119,21 +134,30 @@ export const ConnectionDetail = ({
                   </View>
                 </MetaInfo.Default>
                 <MetaInfo.Default label={i18n.inputLabel.network}>
-                  <TouchableOpacity
-                    activeOpacity={BUTTON_ACTIVE_OPACITY}
-                    onPress={() => setNetworkModalVisible(true)}
-                    style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <WCNetworkAvatarGroup networks={chains} />
-                    <Typography.Text
-                      ellipsis
-                      style={{
-                        ...FontMedium,
-                        color: theme.colorTextTertiary,
-                      }}>
-                      {i18n.formatString(i18n.message.connectedNetworks, chains.length)}
-                    </Typography.Text>
-                    <Icon phosphorIcon={Info} weight={'fill'} size={'sm'} iconColor={theme.colorTextTertiary} />
-                  </TouchableOpacity>
+                  <FullSizeSelectModal
+                    items={chains}
+                    renderCustomItem={renderNetworkItem}
+                    selectedValueMap={{}}
+                    title={i18n.header.connectedNetworks}
+                    flatListStyle={{ paddingHorizontal: theme.padding }}
+                    renderSelected={() => (
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <WCNetworkAvatarGroup networks={chains} />
+                        <Typography.Text
+                          ellipsis
+                          style={{
+                            ...FontMedium,
+                            color: theme.colorTextTertiary,
+                          }}>
+                          {i18n.formatString(i18n.message.connectedNetworks, chains.length)}
+                        </Typography.Text>
+                        <Icon phosphorIcon={Info} weight={'fill'} size={'sm'} iconColor={theme.colorTextTertiary} />
+                      </View>
+                    )}
+                    searchFunc={searchFunction}
+                    placeholder={i18n.placeholder.networkName}
+                    estimatedItemSize={60}
+                  />
                 </MetaInfo.Default>
               </MetaInfo>
 
@@ -173,19 +197,6 @@ export const ConnectionDetail = ({
               loading={loading}
               setVisible={setDisconnectModalVisible}
             />
-
-            <SwModal
-              isUseModalV2
-              modalBaseV2Ref={networkDetailModalRef}
-              modalVisible={networkModalVisible}
-              modalTitle={i18n.header.connectedNetworks}
-              setVisible={setNetworkModalVisible}>
-              <View style={{ width: '100%', gap: 8 }}>
-                {chains.map(chain => (
-                  <WCNetworkItem key={chain.slug} item={chain} selectedValueMap={connectedChainsMap} />
-                ))}
-              </View>
-            </SwModal>
           </>
         ) : (
           <EmptyList

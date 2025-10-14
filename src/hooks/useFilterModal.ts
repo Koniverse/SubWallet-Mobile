@@ -39,11 +39,22 @@ export function useFilterModal(defaultSelectionMap?: Record<string, boolean>) {
     setSelectedFilters(Object.keys(filterSelectionMap).filter(o => filterSelectionMap[o]));
   }, [filterSelectionMap]);
 
+  const onResetFilter = useCallback(() => {
+    setFilterSelectionMap(
+      selectedFilters.reduce((acc, curr) => {
+        acc[curr] = true;
+
+        return acc;
+      }, {} as Record<string, boolean>),
+    );
+  }, [selectedFilters]);
+
   return {
     openFilterModal,
     onChangeFilterOption,
     onApplyFilter,
     onCloseFilterModal,
+    onResetFilter,
     filterSelectionMap,
     selectedFilters,
     filterModalRef,

@@ -350,7 +350,6 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   return (
     <>
       <FlatListScreen
-        style={styles.wrapper}
         title={i18n.header.groupList}
         titleTextAlign={'left'}
         items={items}
@@ -367,6 +366,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         estimatedItemSize={74}
         isShowFilterBtn
         isShowMainHeader
+        isHideBottomSafeArea
         refreshControl={
           <RefreshControl
             style={styles.refreshIndicator}

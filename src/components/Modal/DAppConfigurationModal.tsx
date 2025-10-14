@@ -1,14 +1,14 @@
 import { AuthUrlInfo, AuthUrls } from '@subwallet/extension-base/services/request-service/types';
-import { MoreOptionItemType, MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal.tsx';
+import { MoreOptionItemType, MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { ArrowsLeftRight, Plugs, PlugsConnected, Shield, ShieldSlash, X } from 'phosphor-react-native';
-import i18n from 'utils/i18n/i18n.ts';
+import i18n from 'utils/i18n/i18n';
 import { changeAuthorization, forgetSite, toggleAuthorization } from 'messaging/settings';
-import { updateAuthUrls } from 'stores/updater.ts';
+import { updateAuthUrls } from 'stores/updater';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from 'routes/index.ts';
-import { ModalRef } from 'types/modalRef.ts';
+import { RootStackParamList } from 'routes/index';
+import { ModalRef } from 'types/modalRef';
 import SwitchNetworkAuthorizeModal from 'components/Modal/SwitchNetworkAuthorizeModal';
 
 interface Props {

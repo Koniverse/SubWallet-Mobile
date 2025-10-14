@@ -217,13 +217,20 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
                 style={{ paddingHorizontal: 16, paddingTop: 22 }}
                 onLayout={event => {
                   let { height } = event.nativeEvent.layout;
-                  !!height && setContentHeight(height + 16);
+                  !!height && setContentHeight(height);
                 }}>
                 {renderHeader ? renderHeader : renderTitle()}
                 {children}
 
                 {footer}
-                {isUseSafeAreaView && <SafeAreaView edges={['bottom']} style={{ marginBottom: theme.margin }} />}
+                {isUseSafeAreaView && (
+                  <SafeAreaView
+                    edges={['bottom']}
+                    style={{
+                      marginBottom: Platform.select({ ios: 30, android: Number(Platform.Version) > 34 ? 30 : 0 }),
+                    }}
+                  />
+                )}
               </View>
             </ModalBaseV2>
           </Portal>

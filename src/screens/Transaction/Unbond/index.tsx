@@ -41,7 +41,6 @@ import { useWatch } from 'react-hook-form';
 import { FormItem } from 'components/common/FormItem';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
-import { isActionFromValidator } from '@subwallet/extension-base/services/earning-service/utils';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { mmkvStore } from 'utils/storage';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
@@ -66,6 +65,32 @@ interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
   fastLeave: string;
 }
+
+const isActionFromValidator = (stakingType: YieldPoolType, chain: string) => {
+  if (
+    stakingType === YieldPoolType.NOMINATION_POOL ||
+    stakingType === YieldPoolType.LIQUID_STAKING ||
+    stakingType === YieldPoolType.LENDING
+  ) {
+    return false;
+  }
+
+  if (_STAKING_CHAIN_GROUP.astar.includes(chain)) {
+    return true;
+  } else if (_STAKING_CHAIN_GROUP.amplitude.includes(chain)) {
+    return true;
+  } else if (_STAKING_CHAIN_GROUP.para.includes(chain)) {
+    return true;
+  } else if (_STAKING_CHAIN_GROUP.bittensor.includes(chain)) {
+    return true;
+  } else if (_STAKING_CHAIN_GROUP.mythos.includes(chain)) {
+    return true;
+  } else if (_STAKING_CHAIN_GROUP.energy.includes(chain)) {
+    return true;
+  }
+
+  return false;
+};
 
 const _accountFilterFunc = (
   positionInfos: YieldPositionInfo[],

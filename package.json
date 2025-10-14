@@ -25,7 +25,7 @@
     "ios:production": "scripts/build-ios.sh",
     "ios:staging": "scripts/build-ios.sh staging",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "start": "react-native start",
+    "start": "node --max-old-space-size=8192 node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "prepare": "husky install"

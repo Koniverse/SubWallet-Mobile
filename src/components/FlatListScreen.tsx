@@ -58,6 +58,7 @@ interface Props<T> {
     sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
   isShowMainHeader?: boolean;
+  isHideBottomSafeArea?: boolean;
   defaultSearchString?: string;
   defaultSelectionMap?: Record<string, boolean>;
   androidKeyboardVerticalOffset?: number;
@@ -116,6 +117,7 @@ export function FlatListScreen<T>({
   renderCustomContent,
   filterModalSearchFunc,
   isFilterFullSize,
+  isHideBottomSafeArea,
 }: Props<T>) {
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
   const searchRef = useRef<TextInput>(null);
@@ -260,6 +262,7 @@ export function FlatListScreen<T>({
       style={[{ width: '100%' }, style]}
       showRightBtn={!!rightIconOption?.icon}
       rightIcon={rightIconOption?.icon}
+      isHideBottomSafeArea={isHideBottomSafeArea}
       onPressRightIcon={() => {
         Keyboard.dismiss();
         setTimeout(() => rightIconOption?.onPress(), 100);
