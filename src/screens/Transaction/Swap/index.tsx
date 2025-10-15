@@ -91,6 +91,7 @@ import { AcrossErrorMsg } from '@subwallet/extension-base/services/balance-servi
 import { ThemeTypes } from 'styles/themes';
 import { AppModalContext } from 'providers/AppModalContext';
 import { KyberSwapQuoteMetadata } from '@subwallet/extension-base/services/swap-service/handler/kyber-handler';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -862,9 +863,9 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
 
   const openSwapQuotesModal = useCallback(() => {
     Keyboard.dismiss();
-    setTimeout(() => {
+    delayActionAfterDismissKeyboard(() => {
       setSwapQuoteSelectorModalVisible(true);
-    }, 100);
+    });
   }, []);
 
   const closeSwapQuotesModal = useCallback(() => {

@@ -25,7 +25,7 @@ index d7880a3..f71899e 100644
  var _utils = require("@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils");
  var _subwalletApiSdk = require("@subwallet/subwallet-api-sdk");
 diff --git a/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js b/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js
-index 70b6ddc..857d233 100644
+index 70b6ddc..1fc85e6 100644
 --- a/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js
 +++ b/node_modules/@subwallet/extension-base/cjs/services/earning-service/constants/chains.js
 @@ -9,6 +9,7 @@ exports._STAKING_CHAIN_GROUP = exports.TON_CHAINS = exports.ST_LIQUID_TOKEN_ABI
@@ -108,7 +108,7 @@ index 8f32cf5..ca269f7 100644
  import { getAdaBelongUtxo, getCardanoTxFee, splitCardanoId } from '@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils';
  import { subwalletApiSdk } from '@subwallet/subwallet-api-sdk';
 diff --git a/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js b/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
-index 320772f..e1fe907 100644
+index 320772f..58b1176 100644
 --- a/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
 +++ b/node_modules/@subwallet/extension-base/services/earning-service/constants/chains.js
 @@ -3,6 +3,7 @@
@@ -436,9 +436,18 @@ index 82e18b1..397599a 100644
  }
 \ No newline at end of file
 diff --git a/node_modules/@subwallet/extension-base/utils/account/common.js b/node_modules/@subwallet/extension-base/utils/account/common.js
-index e36bd82..f1b01ac 100644
+index e36bd82..8c5f707 100644
 --- a/node_modules/@subwallet/extension-base/utils/account/common.js
 +++ b/node_modules/@subwallet/extension-base/utils/account/common.js
+@@ -11,7 +11,7 @@ import { ethereumEncode, isEthereumAddress } from '@polkadot/util-crypto';
+ export function isAccountAll(address) {
+   return address === ALL_ACCOUNT_KEY;
+ }
+-export function reformatAddress(address, networkPrefix = 42, isEthereum = false) {
++export function reformatAddress(address, networkPrefix = 42, isEthereum = false, ignoreError = true) {
+   try {
+     if (!address || address === '') {
+       return '';
 @@ -33,6 +33,11 @@ export function reformatAddress(address, networkPrefix = 42, isEthereum = false)
      return encodeAddress(publicKey, networkPrefix, type);
    } catch (e) {

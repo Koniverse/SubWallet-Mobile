@@ -12,6 +12,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountGroupLabel, AccountGroupType } from 'screens/Account/AccountsScreen';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { AccountProxyType } from '@subwallet/extension-base/types';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface Props {
   items: AccountAddressItemType[];
@@ -114,7 +115,7 @@ export const AccountSelector = ({
 
   const _onSelectItem = (item: AccountAddressItemExtraType) => {
     Keyboard.dismiss();
-    onSelectItem && onSelectItem(item);
+    delayActionAfterDismissKeyboard(() => onSelectItem && onSelectItem(item));
   };
 
   const groupBy = useCallback((item: AccountAddressItemExtraType) => {

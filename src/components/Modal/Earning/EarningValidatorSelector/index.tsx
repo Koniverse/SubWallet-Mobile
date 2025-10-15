@@ -33,6 +33,7 @@ import DotBadge from 'components/design-system-ui/badge/DotBadge';
 import { autoSelectValidatorOptimally } from 'utils/earning';
 import { fetchStaticData } from 'utils/fetchStaticData';
 import { ChainRecommendValidator } from '@subwallet/extension-base/constants';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -427,9 +428,7 @@ export const EarningValidatorSelector = forwardRef(
             onPressRightButton={() => {
               Keyboard.dismiss();
               setDetailItem(item);
-              setTimeout(() => {
-                setDetailModalVisible(true);
-              }, 100);
+              delayActionAfterDismissKeyboard(() => setDetailModalVisible(true));
             }}
             isNominated={nominated}
             isSelected={selected}

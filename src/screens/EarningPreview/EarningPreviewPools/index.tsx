@@ -32,6 +32,7 @@ import { _ChainInfo } from '@subwallet/chain-list/types';
 import { getStartEarningUrl } from '..';
 import { analysisAccounts } from 'hooks/screen/Home/Crypto/useGetChainSlugsByAccountType';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
   if (!filters.length) {
@@ -259,7 +260,7 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
           key={item.slug}
           onStakeMore={() => {
             Keyboard.dismiss();
-            onPressItem(chainInfoMap[item.chain].slug, item);
+            delayActionAfterDismissKeyboard(() => onPressItem(chainInfoMap[item.chain].slug, item));
           }}
           poolInfo={item}
           currencyData={currencyData}

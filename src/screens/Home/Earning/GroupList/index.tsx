@@ -31,6 +31,7 @@ import { BannerGenerator } from 'components/common/BannerGenerator';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -315,7 +316,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
               return;
             }
             Keyboard.dismiss();
-            onPressItem(item.chain, item);
+            delayActionAfterDismissKeyboard(() => onPressItem(item.chain, item));
           }}
           isShowBalance={isShowBalance}
         />

@@ -108,6 +108,7 @@ import { ImageLogosMap } from 'assets/logo';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
 import { useTaoStakingFee } from 'hooks/earning/useTaoStakingFee';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -432,7 +433,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const handleOpenDetailModal = useCallback((): void => {
     Keyboard.dismiss();
     isPressInfoBtnRef.current = true;
-    setDetailModalVisible(true);
+    delayActionAfterDismissKeyboard(() => setDetailModalVisible(true));
   }, []);
 
   const handleDataForInsufficientAlert = useCallback(() => {

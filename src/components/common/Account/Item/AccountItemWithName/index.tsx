@@ -2,7 +2,7 @@ import { isAccountAll } from '@subwallet/extension-base/utils';
 import createStyle from './styles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { StyleProp, Text, View, ViewStyle } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import AccountItemBase, { AccountItemBaseProps } from '../AccountItemBase';
@@ -14,6 +14,7 @@ interface Props extends AccountItemBaseProps {
   accounts?: AccountJson[];
   fallbackName?: boolean;
   showAddress?: boolean;
+  customNameStyle?: StyleProp<ViewStyle>;
 }
 
 const AccountItemWithName: React.FC<Props> = (props: Props) => {
@@ -25,6 +26,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
     direction = 'horizontal',
     fallbackName = true,
     showAddress = true,
+    customNameStyle,
   } = props;
   const isAll = isAccountAll(address);
 
@@ -51,7 +53,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
       middleItem={
         <View
           style={[direction === 'horizontal' ? styles.contentDirectionHorizontal : styles.contentDirectionVertical]}>
-          <Text style={styles.accountName} numberOfLines={1}>
+          <Text style={[styles.accountName, customNameStyle]} numberOfLines={1}>
             {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
           </Text>
           {showFallback && address && showAddress && (

@@ -42,6 +42,7 @@ import useFetchChainInfo from 'hooks/common/useFetchChainInfo';
 import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
 import { AnalyzeAddress, ResponseInputAccountSubscribe } from '@subwallet/extension-base/types';
 import { useForwardFieldRef } from 'hooks/useForwardFieldRef';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface Props extends InputProps {
   chain?: string;
@@ -277,7 +278,7 @@ const Component = (
     };
 
     Keyboard.dismiss();
-    checkCamera(undefined, openScannerScreen)();
+    delayActionAfterDismissKeyboard(() => checkCamera(undefined, openScannerScreen)());
   }, [checkCamera]);
 
   const RightPart = useMemo(() => {

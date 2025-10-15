@@ -30,6 +30,7 @@ import { ListRenderItemInfo } from '@shopify/flash-list';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
   if (!filters.length) {
@@ -134,13 +135,15 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const handleOnStakeMore = useCallback(
     (slug: string): void => {
       Keyboard.dismiss();
-      navigation.navigate('Drawer', {
-        screen: 'TransactionAction',
-        params: {
-          screen: 'Earning',
-          params: { slug },
-        },
-      });
+      delayActionAfterDismissKeyboard(() =>
+        navigation.navigate('Drawer', {
+          screen: 'TransactionAction',
+          params: {
+            screen: 'Earning',
+            params: { slug },
+          },
+        }),
+      );
     },
     [navigation],
   );
@@ -246,28 +249,16 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<YieldPoolInfo>) => {
       return (
-        <>
-          <EarningPoolItem
-            chain={chainInfoMap[item.chain]}
-            key={item.slug}
-            onStakeMore={() => {
-              Keyboard.dismiss();
-              onPressItem(chainInfoMap[item.chain].slug, item);
-            }}
-            poolInfo={item}
-            currencyData={currencyData}
-          />
-          <EarningPoolItem
-            chain={chainInfoMap[item.chain]}
-            key={item.slug}
-            onStakeMore={() => {
-              Keyboard.dismiss();
-              onPressItem(chainInfoMap[item.chain].slug, item);
-            }}
-            poolInfo={item}
-            currencyData={currencyData}
-          />
-        </>
+        <EarningPoolItem
+          chain={chainInfoMap[item.chain]}
+          key={item.slug}
+          onStakeMore={() => {
+            Keyboard.dismiss();
+            delayActionAfterDismissKeyboard(() => onPressItem(chainInfoMap[item.chain].slug, item));
+          }}
+          poolInfo={item}
+          currencyData={currencyData}
+        />
       );
     },
     [chainInfoMap, currencyData, onPressItem],

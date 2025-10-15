@@ -52,6 +52,7 @@ import { AccountAddressItemType } from 'types/account';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { isAddress } from '@subwallet/keyring';
 import { reformatAddress } from '@subwallet/extension-base/utils';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 type Props = {};
 
@@ -292,15 +293,8 @@ function History({
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
-  const {
-    filterSelectionMap,
-    openFilterModal,
-    onApplyFilter,
-    onChangeFilterOption,
-    onResetFilter,
-    selectedFilters,
-    filterModalRef,
-  } = useFilterModal();
+  const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
+    useFilterModal();
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
       accMap[cur.address.toLowerCase()] = cur.name || '';
@@ -408,7 +402,7 @@ function History({
     return () => {
       Keyboard.dismiss();
       setSelectedItem(item);
-      setTimeout(() => setDetailModalVisible(true), 200);
+      delayActionAfterDismissKeyboard(() => setDetailModalVisible(true));
     };
   }, []);
 
@@ -589,7 +583,7 @@ function History({
         rightIcon={FadersHorizontal}
         onPressRightIcon={() => {
           Keyboard.dismiss();
-          setTimeout(() => openFilterModal(), 100);
+          delayActionAfterDismissKeyboard(() => openFilterModal());
         }}>
         <View style={{ position: 'relative', flex: 1 }}>
           <LinearGradient
@@ -674,7 +668,6 @@ function History({
         onChangeOption={onChangeFilterOption}
         optionSelectionMap={filterSelectionMap}
         onApplyFilter={onApplyFilter}
-        onChangeModalVisible={onResetFilter}
       />
     </>
   );

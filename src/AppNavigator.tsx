@@ -100,6 +100,7 @@ import { ImportNft } from 'screens/ImportToken/ImportNft';
 import { TransactionSubmission } from 'screens/TransactionSubmission';
 import MigrateAccount from 'screens/MigrateAccount';
 import AccountSettings from 'screens/Settings/Account';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface Props {
   isAppReady: boolean;
@@ -579,7 +580,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
           amount
         ) {
           Keyboard.dismiss();
-          navigationRef.current?.navigate('Confirmations');
+          delayActionAfterDismissKeyboard(() => navigationRef.current?.navigate('Confirmations'));
         }
       }
     }

@@ -175,7 +175,13 @@ export const ConnectionDetail = ({
 
               <View style={{ gap: theme.paddingXS }}>
                 {accountProxyItems.map(item => (
-                  <AccountItemWithName key={item.id} address={item.id} accountName={item?.name} showAddress={false} />
+                  <AccountItemWithName
+                    customNameStyle={{ flex: 1 }}
+                    key={item.id}
+                    address={item.id}
+                    accountName={item?.name}
+                    showAddress={false}
+                  />
                 ))}
               </View>
             </ScrollView>

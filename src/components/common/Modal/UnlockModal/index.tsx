@@ -28,6 +28,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SVGImages } from 'assets/index';
 import { getKeychainPassword } from 'utils/account';
 import { Portal } from '@gorhom/portal';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 type AuthMethod = 'biometric' | 'master-password';
 const UNLOCK_BIOMETRY_TIMEOUT = Platform.OS === 'ios' ? 0 : 300;
@@ -44,7 +45,7 @@ async function handleUnlockPassword(
       if (unlockData.status) {
         DeviceEventEmitter.emit('unlockModal', { type: 'onComplete', password: isUpdateBiometric ? password : '' });
         Keyboard.dismiss();
-        navigation.goBack();
+        delayActionAfterDismissKeyboard(() => navigation.goBack());
         return true;
       }
       throw 'Credential not match';
@@ -122,7 +123,7 @@ export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
           }
           DeviceEventEmitter.emit('unlockModal', { type: 'onComplete', password: isUpdateBiometric ? password : '' });
           Keyboard.dismiss();
-          navigation.goBack();
+          delayActionAfterDismissKeyboard(() => navigation.goBack());
         })
         .catch((e: Error) => {
           onUpdateErrors('password')([e.message]);
@@ -154,7 +155,7 @@ export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
   const onCancelUnlock = () => {
     DeviceEventEmitter.emit('unlockModal', { type: 'onCancel' });
     Keyboard.dismiss();
-    navigation.goBack();
+    delayActionAfterDismissKeyboard(() => navigation.goBack());
     return true;
   };
 

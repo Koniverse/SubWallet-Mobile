@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { ModalRef } from 'types/modalRef';
 import { Keyboard } from 'react-native';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 export function useFilterModal(defaultSelectionMap?: Record<string, boolean>) {
   const filterModalRef = useRef<ModalRef>();
@@ -12,7 +13,7 @@ export function useFilterModal(defaultSelectionMap?: Record<string, boolean>) {
 
   const openFilterModal = useCallback(() => {
     Keyboard.dismiss();
-    setTimeout(() => filterModalRef && filterModalRef.current?.onOpenModal(), 100);
+    delayActionAfterDismissKeyboard(() => filterModalRef && filterModalRef.current?.onOpenModal());
   }, []);
 
   const onCloseFilterModal = useCallback(() => {
@@ -39,22 +40,11 @@ export function useFilterModal(defaultSelectionMap?: Record<string, boolean>) {
     setSelectedFilters(Object.keys(filterSelectionMap).filter(o => filterSelectionMap[o]));
   }, [filterSelectionMap]);
 
-  const onResetFilter = useCallback(() => {
-    setFilterSelectionMap(
-      selectedFilters.reduce((acc, curr) => {
-        acc[curr] = true;
-
-        return acc;
-      }, {} as Record<string, boolean>),
-    );
-  }, [selectedFilters]);
-
   return {
     openFilterModal,
     onChangeFilterOption,
     onApplyFilter,
     onCloseFilterModal,
-    onResetFilter,
     filterSelectionMap,
     selectedFilters,
     filterModalRef,

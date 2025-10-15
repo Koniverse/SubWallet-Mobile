@@ -23,6 +23,7 @@ import DotBadge from 'components/design-system-ui/badge/DotBadge';
 import { fetchStaticData } from 'utils/fetchStaticData';
 import { useToast } from 'react-native-toast-notifications';
 import { EarningPoolSortModal } from 'components/Modal/Earning/EarningPoolSelector/EarningPoolSortModal';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 enum EarningPoolGroup {
   RECOMMEND = 'recommend',
@@ -351,9 +352,7 @@ export const EarningPoolSelector = forwardRef(
     const onPressRightIconButton = useCallback((item: NominationPoolDataTypeItem) => {
       Keyboard.dismiss();
       setSelectedItem(item);
-      setTimeout(() => {
-        setDetailModalVisible(true);
-      }, 100);
+      delayActionAfterDismissKeyboard(() => setDetailModalVisible(true));
     }, []);
 
     const onPressResetSortingItem = useCallback(() => {

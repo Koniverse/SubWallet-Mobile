@@ -13,6 +13,7 @@ import { useFilterModal } from 'hooks/useFilterModal';
 import { LazySectionList, SectionItem } from 'components/LazySectionList';
 import { ContentStyle, ListRenderItemInfo } from '@shopify/flash-list';
 import { FullSizeFilterModal } from 'components/common/FilterModal/FullSizeFilterModal';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 export interface RightIconOpt {
   icon?: (iconProps: IconProps) => JSX.Element;
@@ -265,7 +266,7 @@ export function FlatListScreen<T>({
       isHideBottomSafeArea={isHideBottomSafeArea}
       onPressRightIcon={() => {
         Keyboard.dismiss();
-        setTimeout(() => rightIconOption?.onPress(), 100);
+        delayActionAfterDismissKeyboard(() => rightIconOption?.onPress());
       }}
       rightButtonTitle={rightIconOption?.title}
       disableRightButton={rightIconOption?.disabled}

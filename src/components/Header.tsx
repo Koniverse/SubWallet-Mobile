@@ -18,6 +18,7 @@ import useCheckCamera from 'hooks/common/useCheckCamera';
 import { isAddress } from '@subwallet/keyring';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 export interface HeaderProps {
   rightComponent?: JSX.Element;
@@ -108,7 +109,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
           icon={<SVGImages.MenuBarLogo />}
           onPress={() => {
             Keyboard.dismiss();
-            drawerNavigation.openDrawer();
+            delayActionAfterDismissKeyboard(() => drawerNavigation.openDrawer());
           }}
         />
       </View>

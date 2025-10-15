@@ -17,6 +17,7 @@ import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/c
 import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
 import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface Props {
   accountProxy: AccountProxy;
@@ -83,7 +84,7 @@ export const AccountChainAddressesSelector = ({
         };
 
         if (isPolkadotUnifiedChain) {
-          openSelectAddressFormatModal(item);
+          delayActionAfterDismissKeyboard(() => openSelectAddressFormatModal(item));
         } else {
           setTimeout(() => {
             onHandleTonAccountWarning(item.accountType, processFunction);
@@ -107,7 +108,7 @@ export const AccountChainAddressesSelector = ({
         };
 
         if (isPolkadotUnifiedChain) {
-          openSelectAddressFormatModal(item);
+          delayActionAfterDismissKeyboard(() => openSelectAddressFormatModal(item));
         } else {
           onHandleTonAccountWarning(item.accountType, processFunction);
         }
@@ -120,7 +121,7 @@ export const AccountChainAddressesSelector = ({
     (item: AccountChainAddress) => {
       return () => {
         Keyboard.dismiss();
-        setTimeout(() => openSelectAddressFormatModal(item), 100);
+        delayActionAfterDismissKeyboard(() => openSelectAddressFormatModal(item));
       };
     },
     [openSelectAddressFormatModal],

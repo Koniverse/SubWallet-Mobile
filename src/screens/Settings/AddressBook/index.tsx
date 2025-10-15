@@ -21,6 +21,7 @@ import { RootNavigationProps } from 'routes/index';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AddressJson } from '@subwallet/extension-base/types';
 import { reformatAddress } from '@subwallet/extension-base/utils';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 enum AccountGroup {
   CONTACT = 'contact',
@@ -186,7 +187,7 @@ export const ManageAddressBook = () => {
             onPress={() => {
               Keyboard.dismiss();
               setSelectedItem(item);
-              setTimeout(() => setShowEditContactModal(true), 100);
+              delayActionAfterDismissKeyboard(() => setShowEditContactModal(true));
             }}
             customStyle={{ address: stylesheet.itemAddressTextStyle, container: stylesheet.itemContainerStyle }}
             rightItem={ItemRightIcon}
@@ -204,7 +205,7 @@ export const ManageAddressBook = () => {
           onPress={() => {
             Keyboard.dismiss();
             setSelectedItem(item);
-            setTimeout(() => setShowEditContactModal(true), 100);
+            delayActionAfterDismissKeyboard(() => setShowEditContactModal(true));
           }}
           rightItem={ItemRightIcon}
         />
