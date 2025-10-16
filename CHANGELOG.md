@@ -1,3 +1,16 @@
+## 1.2.28 (504)
+- Fix UI bug (#1990)
+- Fix UI bug (#1990)
+- Fix conflict UI for iOS, Android (#1990)
+- Resolve conflict (#1990)
+- Fix bug UI for android 15 (#1990)
+- resolve conflict (#1990)
+- fix ui bug (#1990)
+- fix bug cannot apply GeneralTermModal in android (#1990)
+- Fix build problems with sails-js (#1990)
+- Remove unused code and fix bug auto-build fail (#1990)
+- Upgrade to Android 15 (API level 35) (#1990)
+
 ## 1.2.27 (503)
 
 
