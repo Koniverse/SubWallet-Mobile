@@ -19,7 +19,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStyle from './style';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, RootStackParamList, UnlockModalProps } from 'routes/index';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 import { useSelector } from 'react-redux';
@@ -29,6 +29,7 @@ import { SVGImages } from 'assets/index';
 import { getKeychainPassword } from 'utils/account';
 import { Portal } from '@gorhom/portal';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 type AuthMethod = 'biometric' | 'master-password';
 const UNLOCK_BIOMETRY_TIMEOUT = Platform.OS === 'ios' ? 0 : 300;
@@ -57,11 +58,20 @@ async function handleUnlockPassword(
   }
 }
 export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
-  const { isUpdateBiometric } = params;
+  const { isUpdateBiometric, isConfirmation } = params;
   const { isUseBiometric } = useSelector((state: RootState) => state.mobileSettings);
   const navigation = useNavigation<RootNavigationProps>();
+  const insets = useSafeAreaInsets();
   const theme = useSubWalletTheme().swThemes;
-  const { isKeyboardVisible } = useKeyboardVisible();
+  const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible();
+  const keyboardOffset = useMemo(() => {
+    if (isKeyboardVisible) {
+      return keyboardHeight + insets.bottom;
+    } else {
+      return 0;
+    }
+  }, [insets.bottom, isKeyboardVisible, keyboardHeight]);
+  const isAndroid15 = useMemo(() => Platform.OS === 'android' && Platform.Version > 34, []);
   const styles = useMemo(() => createStyle(theme), [theme]);
   const formConfig = {
     password: {
@@ -170,10 +180,14 @@ export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
       .catch(() => setAuthMethod('master-password'));
   };
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: withTiming(-keyboardOffset, { duration: 150 }) }],
+  }));
+
   const renderMainContent = () => (
     <View style={[styles.root, Platform.OS === 'ios' ? null : styles.androidMaskModal]}>
       <TouchableOpacity activeOpacity={1} style={styles.flex1} onPress={onCancelUnlock} />
-      <View style={styles.container}>
+      <Animated.View style={[styles.container, isAndroid15 && isConfirmation && animatedStyle]}>
         <View style={styles.separator} />
         <View style={styles.wrapper}>
           <Typography.Text size={'lg'} style={styles.header}>
@@ -210,7 +224,7 @@ export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
           </View>
           {!isKeyboardVisible && <SafeAreaView edges={['bottom']} />}
         </View>
-      </View>
+      </Animated.View>
     </View>
   );
 

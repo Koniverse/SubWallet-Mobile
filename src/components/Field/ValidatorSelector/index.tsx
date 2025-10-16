@@ -18,6 +18,7 @@ interface Props extends FieldBaseProps {
   onPressBookBtn?: () => void;
   onPressLightningBtn?: () => void;
   disabled?: boolean;
+  chain: string;
 }
 
 const blockContentStyle: StyleProp<any> = {
@@ -48,9 +49,14 @@ export const ValidatorSelectorField = ({
   onPressLightningBtn,
   showLightningBtn = false,
   disabled,
+  chain,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+
+  const isBittensorChain = useMemo(() => {
+    return chain === 'bittensor';
+  }, [chain]);
 
   const addressList = useMemo(() => {
     if (value) {
@@ -69,6 +75,16 @@ export const ValidatorSelectorField = ({
   const renderContent = () => {
     if (!value) {
       return <Text style={textStyle}>{placeholder || 'Selected validator'}</Text>;
+    }
+
+    if (isBittensorChain) {
+      const [address, name] = value.split('___');
+
+      return (
+        <Text numberOfLines={1} style={textStyle}>
+          {name || toShort(address)}
+        </Text>
+      );
     }
 
     const valueList = value.split(',');

@@ -442,6 +442,7 @@ export const EarningValidatorSelector = forwardRef(
       () => (
         <ValidatorSelectorField
           showLightningBtn={false}
+          chain={chain}
           onPressLightningBtn={() => onAutoSelectValidator()}
           onPressBookBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
           value={selectedValidator}
