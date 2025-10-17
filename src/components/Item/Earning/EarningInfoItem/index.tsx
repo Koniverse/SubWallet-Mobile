@@ -1,4 +1,4 @@
-import { YieldPoolType } from '@subwallet/extension-base/types';
+import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { Icon, Number, Tag, Typography } from 'components/design-system-ui';
 import EarningTypeTag from 'components/Tag/EarningTypeTag';
@@ -28,7 +28,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
-  const poolInfo = poolInfoMap[slug];
+  const poolInfo: YieldPoolInfo | undefined = poolInfoMap[slug];
   const isTempEarningCondition = ['ASTR___native_staking___astar', 'SDN___native_staking___shiden'].includes(
     positionInfo.slug,
   );
@@ -84,9 +84,13 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
   }, [positionInfo.subnetData?.subnetShortName]);
 
   const isSubnetStaking = useMemo(
-    () => [YieldPoolType.SUBNET_STAKING].includes(poolInfo.type) && !poolInfo.slug.includes('testnet'),
-    [poolInfo.slug, poolInfo.type],
+    () => !!poolInfo && [YieldPoolType.SUBNET_STAKING].includes(poolInfo.type) && !poolInfo.slug.includes('testnet'),
+    [poolInfo],
   );
+
+  if (!poolInfo) {
+    return <></>;
+  }
 
   return (
     <TouchableOpacity style={styleSheet.infoContainer} activeOpacity={0.5} onPress={onPress(positionInfo)}>

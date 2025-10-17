@@ -1,7 +1,7 @@
 import { Images } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ImageBackground, Platform, StatusBar, StyleProp, View, Linking } from 'react-native';
+import { ImageBackground, StatusBar, StyleProp, View, Linking } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -28,7 +28,7 @@ const imageBackgroundStyle: StyleProp<any> = {
   justifyContent: 'flex-end',
   alignItems: 'center',
   paddingHorizontal: 16,
-  paddingBottom: Platform.OS === 'ios' ? 56 : 20,
+  paddingBottom: 20,
   position: 'relative',
 };
 
