@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Linking, Platform, Share, StyleProp, View } from 'react-native';
+import { Linking, Platform, Share, StyleProp, StyleSheet, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { getNetworkLogo, toShort } from 'utils/index';
@@ -23,6 +23,8 @@ import { AccountActions } from '@subwallet/extension-base/types';
 import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import { RELAY_CHAINS_TO_MIGRATE } from 'constants/chain';
+import { BlurView } from '@react-native-community/blur';
 
 interface Props {
   modalVisible: boolean;
@@ -63,6 +65,11 @@ export const ReceiveModal = ({
   const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - insets.bottom - insets.top - 50;
   const accountInfo = useGetAccountByAddress(address);
   const [tonWalletContractVisible, setTonWalletContractVisible] = useState<boolean>(false);
+
+  const isRelayChainToMigrate = useMemo(
+    () => selectedNetwork && RELAY_CHAINS_TO_MIGRATE.includes(selectedNetwork),
+    [selectedNetwork],
+  );
 
   const isRelatedToTon = useMemo(() => {
     return accountInfo?.accountActions.includes(AccountActions.TON_CHANGE_WALLET_CONTRACT_VERSION);
@@ -129,13 +136,24 @@ export const ReceiveModal = ({
       <View style={receiveModalContentWrapper}>
         <View style={{ paddingTop: 16 }}>
           {address && (
-            <QRCode
-              width={264}
-              height={264}
-              QRSize={isEthereumAddress(address) ? 264 / 37 : 264 / 41}
-              qrRef={(ref?) => (svg = ref)}
-              value={address}
-            />
+            <View>
+              <QRCode
+                width={264}
+                height={264}
+                QRSize={isEthereumAddress(address) ? 264 / 37 : 264 / 41}
+                qrRef={(ref?) => (svg = ref)}
+                value={address}
+              />
+
+              {isRelayChainToMigrate && (
+                <BlurView
+                  style={{ ...StyleSheet.absoluteFillObject, borderRadius: 8 }}
+                  blurType={'light'}
+                  blurAmount={10}
+                  reducedTransparencyFallbackColor="white"
+                />
+              )}
+            </View>
           )}
         </View>
 
@@ -146,6 +164,7 @@ export const ReceiveModal = ({
             backgroundColor: theme.colorBgSecondary,
             padding: theme.paddingXXS,
             paddingLeft: theme.paddingSM,
+            paddingRight: isRelayChainToMigrate ? theme.paddingSM : 0,
             alignItems: 'center',
             gap: theme.paddingXS,
             borderRadius: theme.borderRadiusLG,
@@ -167,12 +186,14 @@ export const ReceiveModal = ({
             </Tag>
           )}
 
-          <Button
-            icon={<Icon phosphorIcon={CopySimple} weight={'bold'} size={'sm'} iconColor={theme.colorTextLight4} />}
-            type={'ghost'}
-            size={'xs'}
-            onPress={copyToClipboard(address || '')}
-          />
+          {!isRelayChainToMigrate && (
+            <Button
+              icon={<Icon phosphorIcon={CopySimple} weight={'bold'} size={'sm'} iconColor={theme.colorTextLight4} />}
+              type={'ghost'}
+              size={'xs'}
+              onPress={copyToClipboard(address || '')}
+            />
+          )}
         </View>
 
         <View

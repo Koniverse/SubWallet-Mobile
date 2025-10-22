@@ -9,6 +9,7 @@ import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning
 import { getSchemaColor } from 'components/MetaInfo/shared';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ValidatorDataType } from 'types/earning';
+import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
 
 interface Props {
   detailModalVisible: boolean;
@@ -46,7 +47,7 @@ export const ValidatorSelectorDetailModal = ({
   const theme = useSubWalletTheme().swThemes;
 
   const isRelayChain = useMemo(() => {
-    return _STAKING_CHAIN_GROUP.relay.includes(chain);
+    return RELAY_HANDLER_DIRECT_STAKING_CHAINS.includes(chain);
   }, [chain]);
 
   const isParaChain = useMemo(() => {

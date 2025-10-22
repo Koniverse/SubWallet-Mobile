@@ -30,8 +30,8 @@ import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { BannerGenerator } from 'components/common/BannerGenerator';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -246,7 +246,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
               const minJoinPoolBalanceValue = getBalanceValue(minJoinPool, _getAssetDecimals(assetInfo));
 
               if (
-                _STAKING_CHAIN_GROUP.relay.includes(poolInfo.chain) &&
+                RELAY_HANDLER_DIRECT_STAKING_CHAINS.includes(poolInfo.chain) &&
                 minJoinPoolBalanceValue.isGreaterThan(availableBalance)
               ) {
                 isHiddenPool = true;
