@@ -16,6 +16,7 @@ interface Props {
   onPressQrButton?: VoidFunction;
   onPressInfoButton?: VoidFunction;
   isShowInfoButton?: boolean;
+  disabled?: boolean;
 }
 
 export const AccountChainAddressItem = ({
@@ -25,6 +26,7 @@ export const AccountChainAddressItem = ({
   onPressQrButton,
   onPressInfoButton,
   isShowInfoButton,
+  disabled,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyle(theme);
@@ -32,7 +34,7 @@ export const AccountChainAddressItem = ({
   const isRelayChainToMigrate = useMemo(() => RELAY_CHAINS_TO_MIGRATE.includes(item.slug), [item.slug]);
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity style={styles.container} onPress={onPress} disabled={disabled}>
       <Logo network={item.slug} shape={'circle'} size={28} />
 
       <View style={styles.centerPart}>

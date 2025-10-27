@@ -128,6 +128,7 @@ export const AccountAddressList = ({ accountProxy }: Props) => {
         onPress={onShowQr(item)}
         isShowInfoButton={isPolkadotUnifiedChain}
         onPressInfoButton={onPressInfoButton(item)}
+        disabled
       />
     );
   };
