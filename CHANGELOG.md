@@ -1,3 +1,6 @@
+## 1.2.30 (508)
+
+
 ## 1.2.30 (507)
 - fix bug BuyToken (#2023)
 - fix bug UI in AccountDetailScreen (#2022)
