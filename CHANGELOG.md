@@ -1,3 +1,9 @@
+## 1.2.30 (507)
+- fix bug BuyToken (#2023)
+- fix bug UI in AccountDetailScreen (#2022)
+- Update coinbase onramp feature (#2023)
+- Support for Asset Hub Migration (#2022)
+
 ## 1.2.29 (506)
 
 
