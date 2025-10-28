@@ -64,7 +64,13 @@ export const AccountChainAddressItem = ({
         <Button
           type={'ghost'}
           size={'xs'}
-          icon={<Icon phosphorIcon={Copy} size={'sm'} iconColor={theme['gray-5']} />}
+          icon={
+            <Icon
+              phosphorIcon={Copy}
+              size={'sm'}
+              iconColor={!isRelayChainToMigrate ? theme['gray-5'] : theme['gray-3']}
+            />
+          }
           onPress={onPressCopyButton}
           disabled={isRelayChainToMigrate}
         />

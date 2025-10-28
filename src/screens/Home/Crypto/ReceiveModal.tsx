@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Linking, Platform, Share, StyleProp, StyleSheet, View } from 'react-native';
+import { Linking, Platform, Share, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { getNetworkLogo, toShort } from 'utils/index';
@@ -10,7 +10,7 @@ import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
-import { Button, Icon, QRCode, SwModal, Tag, Typography } from 'components/design-system-ui';
+import { Button, Icon, Image, QRCode, SwModal, Tag, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,9 +22,9 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { AccountActions } from '@subwallet/extension-base/types';
 import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { RELAY_CHAINS_TO_MIGRATE } from 'constants/chain';
-import { BlurView } from '@react-native-community/blur';
+import { Images } from 'assets/index';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 interface Props {
   modalVisible: boolean;
@@ -137,21 +137,16 @@ export const ReceiveModal = ({
         <View style={{ paddingTop: 16 }}>
           {address && (
             <View>
-              <QRCode
-                width={264}
-                height={264}
-                QRSize={isEthereumAddress(address) ? 264 / 37 : 264 / 41}
-                qrRef={(ref?) => (svg = ref)}
-                value={address}
-              />
-
-              {isRelayChainToMigrate && (
-                <BlurView
-                  style={{ ...StyleSheet.absoluteFillObject, borderRadius: 8 }}
-                  blurType={'light'}
-                  blurAmount={10}
-                  reducedTransparencyFallbackColor="white"
+              {!isRelayChainToMigrate ? (
+                <QRCode
+                  width={264}
+                  height={264}
+                  QRSize={isEthereumAddress(address) ? 264 / 37 : 264 / 41}
+                  qrRef={(ref?) => (svg = ref)}
+                  value={address}
                 />
+              ) : (
+                <Image src={Images.blurredQr} style={{ width: 288, height: 288 }} />
               )}
             </View>
           )}

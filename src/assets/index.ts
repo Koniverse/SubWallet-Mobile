@@ -36,6 +36,7 @@ export const SVGImages = {
 export const Images = {
   ...ImageLogosMap,
   SubWalletLogoGradient: require('./subwallet-logo-gradient.png'),
+  blurredQr: require('./blurred-qr.png'),
   backgroundImg: require('./subwallet-background-img.png'),
   historyEmpty: require('./transaction-history-coming-soon.png'),
   squircleBorder: require('./squircleBorder.png'),
