@@ -8,12 +8,3 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
-# --- Fresco (React Native Image pipeline) keep rules ---
--keep class com.facebook.imagepipeline.** { *; }
--keep class com.facebook.drawee.** { *; }
--keep class com.facebook.fresco.** { *; }
--dontwarn com.facebook.imagepipeline.**
--dontwarn com.facebook.drawee.**
--dontwarn com.facebook.fresco.**
--keep class com.dylanvann.fastimage.** { *; }
--dontwarn com.dylanvann.fastimage.**
