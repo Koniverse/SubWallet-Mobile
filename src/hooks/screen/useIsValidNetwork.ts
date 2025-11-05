@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 const useIsValidNetwork = (networkKey?: string): [boolean, string] => {
-  const showedNetwork = useGetChainSlugsByAccount();
+  const showedNetwork = useGetChainSlugsByCurrentAccountProxy();
 
   return useMemo(
     (): [boolean, string] => [networkKey ? showedNetwork.includes(networkKey) : true, showedNetwork.join('___')],

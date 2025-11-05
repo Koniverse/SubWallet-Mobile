@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { Keyboard, ListRenderItemInfo, StyleSheet, View } from 'react-native';
@@ -13,6 +13,8 @@ import { AccountGroupLabel, AccountGroupType } from 'screens/Account/AccountsScr
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { AccountProxyType } from '@subwallet/extension-base/types';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import { isBitcoinAddress } from '@subwallet/keyring';
+import { getBitcoinAccountDetails } from 'utils/account/account';
 
 interface Props {
   items: AccountAddressItemType[];
@@ -27,10 +29,22 @@ interface Props {
   children?: React.ReactNode;
   renderCustomItem?: ({ item }: ListRenderItemInfo<AccountAddressItemType>) => JSX.Element;
   onCloseModal?: VoidFunction;
+  autoSelectFirstItem?: boolean;
 }
 
 export interface AccountAddressItemExtraType extends AccountAddressItemType {
   group: AccountGroupType;
+}
+
+type ListItemGroupLabel = {
+  id: string;
+  groupLabel: string;
+};
+
+type ListItem = AccountAddressItemType | ListItemGroupLabel;
+
+function isAccountAddressItem(item: ListItem): item is AccountAddressItemType {
+  return 'address' in item && 'accountProxyId' in item && 'accountName' in item && !('groupLabel' in item);
 }
 
 export const AccountSelector = ({
@@ -46,9 +60,30 @@ export const AccountSelector = ({
   children,
   renderCustomItem,
   onCloseModal,
+  autoSelectFirstItem,
 }: Props) => {
+  // NOTE:
+  // displayAddress is only for visual representation.
+  // The original address should always be used for identification, selection, comparison, and any logic-related operations.
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyle(theme);
+
+  const sortedItems = useMemo<AccountAddressItemType[]>(() => {
+    return [...items].sort((a, b) => {
+      const _isABitcoin = isBitcoinAddress(a.address);
+      const _isBBitcoin = isBitcoinAddress(b.address);
+      const _isSameProxyId = a.accountProxyId === b.accountProxyId;
+
+      if (_isABitcoin && _isBBitcoin && _isSameProxyId) {
+        const aDetails = getBitcoinAccountDetails(a.accountType);
+        const bDetails = getBitcoinAccountDetails(b.accountType);
+
+        return aDetails.order - bDetails.order;
+      }
+
+      return 0;
+    });
+  }, [items]);
 
   const listItems = useMemo<AccountAddressItemExtraType[]>(() => {
     let accountAll: AccountAddressItemExtraType | undefined;
@@ -60,7 +95,7 @@ export const AccountSelector = ({
     const injectedAccounts: AccountAddressItemExtraType[] = [];
     const unknownAccounts: AccountAddressItemExtraType[] = [];
 
-    items.forEach(ap => {
+    sortedItems.forEach(ap => {
       if (isAccountAll(ap.accountProxyId) || ap.accountProxyType === AccountProxyType.ALL_ACCOUNT) {
         accountAll = { ...ap, group: AccountGroupType.ALL_ACCOUNT };
 
@@ -111,7 +146,7 @@ export const AccountSelector = ({
     }
 
     return result;
-  }, [items]);
+  }, [sortedItems]);
 
   const _onSelectItem = (item: AccountAddressItemExtraType) => {
     Keyboard.dismiss();
@@ -152,9 +187,35 @@ export const AccountSelector = ({
     return _items.filter(
       acc =>
         (acc.accountName && acc.accountName.toLowerCase().includes(lowerCaseSearchString)) ||
-        acc.address.toLowerCase().includes(lowerCaseSearchString),
+        (acc.displayAddress || acc.address).toLowerCase().includes(lowerCaseSearchString),
     );
   }, []);
+
+  useEffect(() => {
+    const selectFirstItem = () => {
+      if (!sortedItems.length) {
+        return;
+      }
+
+      const firstItem = sortedItems[0];
+
+      if (!firstItem) {
+        return;
+      }
+
+      if (!selectedValueMap) {
+        onSelectItem?.(firstItem);
+      }
+
+      if (!sortedItems.some(i => isAccountAddressItem(i) && i.address === Object.keys(selectedValueMap)[0])) {
+        onSelectItem?.(firstItem);
+      }
+    };
+
+    if (autoSelectFirstItem) {
+      selectFirstItem();
+    }
+  }, [autoSelectFirstItem, onSelectItem, selectedValueMap, sortedItems]);
 
   return (
     <FullSizeSelectModal

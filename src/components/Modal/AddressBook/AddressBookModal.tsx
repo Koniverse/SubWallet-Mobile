@@ -19,7 +19,7 @@ import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AbstractAddressJson } from '@subwallet/extension-base/types';
 import { _reformatAddressWithChain } from '@subwallet/extension-base/utils';
 import useChainInfo from 'hooks/chain/useChainInfo';
-import useReformatAddress from 'hooks/common/useReformatAddress';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 
 interface Props {
   modalVisible: boolean;
@@ -112,7 +112,7 @@ const sortFunction = (a: AccountItem, b: AccountItem) => {
 export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = '', setVisible }: Props) => {
   const { accountProxies, contacts, recent } = useSelector((state: RootState) => state.accountState);
   const chainInfo = useChainInfo(chainSlug);
-  const getReformatAddress = useReformatAddress();
+  const getReformatAddress = useCoreCreateReformatAddress();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);

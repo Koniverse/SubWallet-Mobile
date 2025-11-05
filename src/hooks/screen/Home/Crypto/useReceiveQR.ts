@@ -9,17 +9,17 @@ import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { AccountAddressItemType } from 'types/account';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { KeypairType } from '@subwallet/keyring/types';
 import useHandleTonAccountWarning from 'hooks/account/useHandleTonAccountWarning';
 import { AppModalContext } from 'providers/AppModalContext';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 import { AccountActions, AccountProxyType } from '@subwallet/extension-base/types';
 import { VoidFunction } from 'types/index';
-import useReformatAddress from 'hooks/common/useReformatAddress';
 import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 
 export default function useReceiveQR(tokenGroupSlug?: string) {
   const navigation = useNavigation<RootNavigationProps>();
@@ -29,7 +29,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const [selectedChain, setSelectedChain] = useState<string | undefined>();
   const [selectedAccountAddressItem, setSelectedAccountAddressItem] = useState<AccountAddressItemType | undefined>();
-  const chainSupported = useGetChainSlugsByAccount();
+  const chainSupported = useGetChainSlugsByCurrentAccountProxy();
   const { addressQrModal, selectAddressFormatModal } = useContext(AppModalContext);
   const accountRef = useRef<ModalRef>();
   const tokenRef = useRef<ModalRef>();
@@ -46,7 +46,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     accountRef && accountRef.current?.closeModal?.();
   });
 
-  const getReformatAddress = useReformatAddress();
+  const getReformatAddress = useCoreCreateReformatAddress();
   const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
 
   const openAddressQrModal = useCallback(

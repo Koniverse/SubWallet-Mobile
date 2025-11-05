@@ -15,8 +15,8 @@ import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { BuyTokenInfo } from '@subwallet/extension-base/types';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
@@ -45,7 +45,7 @@ export const TokenGroupsDetailUpperBlock = ({
   const { isShowBuyToken } = useShowBuyToken();
   const { tokens } = useSelector((state: RootState) => state.buyService);
   const _style = createStyleSheet(theme);
-  const allowedChains = useGetChainSlugsByAccount();
+  const allowedChains = useGetChainSlugsByCurrentAccountProxy();
 
   const buyInfos = useMemo(() => {
     const groupSlug = tokenGroupSlug || '';

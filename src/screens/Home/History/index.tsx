@@ -52,6 +52,7 @@ import { AccountAddressItemType } from 'types/account';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { isAddress } from '@subwallet/keyring';
 import { reformatAddress } from '@subwallet/extension-base/utils';
+import { YIELD_EXTRINSIC_TYPES } from '@subwallet/extension-base/koni/api/yield/helper/utils';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 type Props = {};
@@ -111,7 +112,8 @@ function getDisplayData(
   titleMap: Record<string, string>,
 ): TransactionHistoryDisplayData {
   let displayData: TransactionHistoryDisplayData;
-  const time = customFormatDate(item.time, '#hhhh#:#mm#');
+  const displayTime = item.blockTime || item.time;
+  const time = customFormatDate(displayTime, '#hhhh#:#mm#');
 
   const displayStatus = item.status === ExtrinsicStatus.FAIL ? i18n.historyScreen.label.transactionFail : '';
 
@@ -173,6 +175,7 @@ enum FilterValue {
   CROWDLOAN = 'crowdloan',
   SUCCESSFUL = 'successful',
   FAILED = 'failed',
+  EARN = 'earn',
   SWAP = 'swap',
 }
 
@@ -237,6 +240,10 @@ const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[
             return true;
           }
           break;
+        case FilterValue.EARN:
+          if (YIELD_EXTRINSIC_TYPES.includes(item.type)) {
+            return true;
+          }
       }
     }
 
@@ -273,6 +280,12 @@ function filterDuplicateItems(items: TransactionHistoryItem[]): TransactionHisto
 
   return result;
 }
+
+const PROCESSING_STATUSES: ExtrinsicStatus[] = [
+  ExtrinsicStatus.QUEUED,
+  ExtrinsicStatus.SUBMITTING,
+  ExtrinsicStatus.PROCESSING,
+];
 
 const gradientBackground = ['rgba(76, 234, 172, 0.10)', 'rgba(76, 234, 172, 0.00)'];
 
@@ -365,12 +378,14 @@ function History({
       const fromName = accountMap[quickFormatAddressToCompare(item.from) || ''];
       const toName = accountMap[quickFormatAddressToCompare(item.to) || ''];
       const key = getHistoryItemKey(item);
+      const displayTime = item.blockTime || item.time;
 
       finalHistoryMap[key] = {
         ...item,
         fromName,
         toName,
         displayData: getDisplayData(item, txtTypeNameMap, typeTitleMap),
+        displayTime,
       };
     });
 
@@ -379,7 +394,17 @@ function History({
 
   // Fill display data to history list
   const getHistoryItems = useCallback(() => {
-    return Object.values(historyMap).sort((a, b) => b.time - a.time);
+    return Object.values(historyMap).sort((a, b) => {
+      if (PROCESSING_STATUSES.includes(a.status) && !PROCESSING_STATUSES.includes(b.status)) {
+        return -1;
+      } else if (PROCESSING_STATUSES.includes(b.status) && !PROCESSING_STATUSES.includes(a.status)) {
+        return 1;
+      } else if (!!b.displayTime && !!a.displayTime && b.displayTime !== a.displayTime) {
+        return b.displayTime - a.displayTime;
+      } else {
+        return (a.apiTxIndex ?? 0) - (b.apiTxIndex ?? 0);
+      }
+    });
   }, [historyMap]);
 
   const [historyItems, setHistoryItems] = useState<TransactionHistoryDisplayItem[]>(getHistoryItems());
@@ -402,7 +427,7 @@ function History({
     return () => {
       Keyboard.dismiss();
       setSelectedItem(item);
-      delayActionAfterDismissKeyboard(() => setDetailModalVisible(true));
+      setTimeout(() => setDetailModalVisible(true), 200);
     };
   }, []);
 
@@ -452,7 +477,11 @@ function History({
 
   const groupBy = useCallback(
     (item: TransactionHistoryDisplayItem) => {
-      return customFormatDate(item.time, '#YYYY#-#MM#-#DD#') + '|' + formatHistoryDate(item.time, language, 'list');
+      if (PROCESSING_STATUSES.includes(item.status)) {
+        return 'Processing';
+      }
+
+      return formatHistoryDate(item.displayTime, language, 'list');
     },
     [language],
   );
@@ -536,6 +565,12 @@ function History({
   useEffect(() => {
     let id: string;
     let isSubscribed = true;
+
+    if (!selectedChain) {
+      setLoading(false);
+
+      return;
+    }
 
     setLoading(true);
 

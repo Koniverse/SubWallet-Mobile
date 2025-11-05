@@ -1,18 +1,13 @@
 import React from 'react';
 import { AccountType } from 'types/ui-types';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountAuthType } from '@subwallet/extension-base/background/types';
-import { isAccountAll, uniqueStringArray } from '@subwallet/extension-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { StyleProp } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { IconProps } from 'phosphor-react-native';
-import { _ChainInfo, _ChainStatus } from '@subwallet/chain-list/types';
 import { Logo as SWLogo } from 'components/design-system-ui';
-import { DEFAULT_ACCOUNT_TYPES, EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE, TON_ACCOUNT_TYPE } from 'constants/index';
-import { AccountChainType, AccountJson, AccountProxy } from '@subwallet/extension-base/types';
-import { isChainInfoAccordantAccountChainType } from 'utils/chain';
-import { KeypairType } from '@subwallet/keyring/types';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 export const subscanByNetworkKey: Record<string, string> = {
   acala: 'https://acala.subscan.io',
@@ -138,11 +133,6 @@ export function toShort(text: string, preLength = 6, sufLength = 6): string {
 
   return text;
 }
-
-export function findAccountByAddress(accounts: AccountJson[], _address: string): AccountJson | null {
-  return accounts.find(({ address }): boolean => address === _address) || null;
-}
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default', outerStyle?: StyleProp<any>) {
   return <SWLogo network={logoKey} defaultLogoKey={defaultLogoKey} size={size} />;
@@ -318,72 +308,5 @@ export function isUrl(targetString: string) {
   return targetString.startsWith('http:') || targetString.startsWith('https:') || targetString.startsWith('wss:');
 }
 
-export const convertKeyTypes = (authTypes: AccountAuthType[]): KeypairType[] => {
-  const result: KeypairType[] = [];
-
-  for (const authType of authTypes) {
-    if (authType === 'evm') {
-      result.push(EVM_ACCOUNT_TYPE);
-    } else if (authType === 'substrate') {
-      result.push(SUBSTRATE_ACCOUNT_TYPE);
-    } else if (authType === 'ton') {
-      result.push(TON_ACCOUNT_TYPE);
-    }
-  }
-
-  const _rs = uniqueStringArray(result) as KeypairType[];
-
-  return _rs.length ? _rs : DEFAULT_ACCOUNT_TYPES;
-};
-
-export const getChainsByAccountAll = (
-  accountAllProxy: AccountProxy,
-  accountProxies: AccountProxy[],
-  _chainInfoMap: Record<string, _ChainInfo>,
-): string[] => {
-  const specialChainRecord: Record<AccountChainType, string[]> = {} as Record<AccountChainType, string[]>;
-  const { chainTypes, specialChain } = accountAllProxy;
-  const chainInfoMap = Object.fromEntries(
-    Object.entries(_chainInfoMap).filter(([, chainInfo]) => chainInfo.chainStatus === _ChainStatus.ACTIVE),
-  );
-  /*
-    Special chain List
-    *: All network
-  */
-
-  for (const proxy of accountProxies) {
-    if (proxy.specialChain) {
-      specialChainRecord[proxy.chainTypes[0]] = [
-        ...(specialChainRecord[proxy.chainTypes[0]] || []),
-        proxy.specialChain,
-      ];
-    } else if (!isAccountAll(proxy.id)) {
-      proxy.chainTypes.forEach(chainType => {
-        specialChainRecord[chainType] = ['*'];
-      });
-    }
-  }
-
-  const result: string[] = [];
-
-  if (!specialChain) {
-    Object.values(chainInfoMap).forEach(chainInfo => {
-      const isAllowed = chainTypes.some(chainType => {
-        const specialChains = specialChainRecord[chainType];
-
-        return (
-          (specialChains.includes('*') || specialChains.includes(chainInfo.slug)) &&
-          isChainInfoAccordantAccountChainType(chainInfo, chainType)
-        );
-      });
-
-      if (isAllowed) {
-        result.push(chainInfo.slug);
-      }
-    });
-  } else {
-    return Object.keys(chainInfoMap).filter(chain => specialChain === chain);
-  }
-
-  return result;
-};
+export * from './account';
+export * from './chain';

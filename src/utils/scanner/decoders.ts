@@ -9,7 +9,7 @@ import {
   SubstrateCompletedParsedData,
   SubstrateMultiParsedData,
 } from 'types/qr/scanner';
-import { findAccountByAddress } from 'utils/account';
+import { findAccountByAddress } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkJsonByGenesisHash } from 'utils/network';
 import { compactFromU8a, hexStripPrefix, hexToU8a, u8aToHex } from '@polkadot/util';

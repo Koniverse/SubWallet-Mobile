@@ -40,7 +40,6 @@ export const AddressScanner = ({
     })
       .then(response => {
         onChangeAddress(response.values[0]);
-        console.log('isShowError', isShowError);
         !isShowError && onPressCancel();
       })
       .catch(err => console.log(err));

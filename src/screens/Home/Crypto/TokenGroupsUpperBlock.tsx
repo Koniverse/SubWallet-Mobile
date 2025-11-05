@@ -16,7 +16,7 @@ import { updateToggleBalance } from 'stores/base/Settings';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 interface Props {
   totalValue: SwNumberProps['value'];
@@ -60,7 +60,7 @@ export const TokenGroupsUpperBlock = ({
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const buyTokenInfos = useSelector((state: RootState) => state.buyService.tokens);
   const { currencyData } = useSelector((state: RootState) => state.price);
-  const allowedChains = useGetChainSlugsByAccount();
+  const allowedChains = useGetChainSlugsByCurrentAccountProxy();
   const { isShowBuyToken } = useShowBuyToken();
   const _toggleBalances = () => {
     updateToggleBalance();

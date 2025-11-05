@@ -26,7 +26,6 @@ import {
   WithdrawClaimNotificationMetadata,
 } from '@subwallet/extension-base/services/inapp-notification-service/interfaces';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -59,6 +58,7 @@ import { NotificationDetailModal } from 'components/Modal/NotificationDetailModa
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 export interface NotificationInfoItem extends _NotificationInfo {
   backgroundColor: string;
@@ -95,7 +95,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
   const paramTransactionProcess = params?.transactionProcess;
   const paramTransactionProcessId = paramTransactionProcess?.processId;
   const theme = useSubWalletTheme().swThemes;
-  const chainsByAccountType = useGetChainSlugsByAccount();
+  const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
   const { confirmModal, transactionProcessDetailModal } = useContext(AppModalContext);
   const { turnOnChain } = useChainChecker();
   const { notificationSetup } = useSelector((state: RootState) => state.settings);

@@ -1,6 +1,9 @@
 import { AmountData, RequestMaxTransferable } from '@subwallet/extension-base/background/KoniTypes';
 import { RequestOptimalTransferProcess } from '@subwallet/extension-base/services/balance-service/helpers';
-import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
+import {
+  BitcoinTransactionData,
+  SWTransactionResponse,
+} from '@subwallet/extension-base/services/transaction-service/types';
 import {
   CommonOptimalTransferPath,
   RequestCrossChainTransfer,
@@ -9,7 +12,9 @@ import {
 } from '@subwallet/extension-base/types';
 import { sendMessage } from '..';
 import {
+  RequestSubmitSignPsbtTransfer,
   RequestSubmitTransfer,
+  RequestSubmitTransferWithId,
   RequestSubscribeTransfer,
   ResponseSubscribeTransfer,
 } from '@subwallet/extension-base/types/balance/transfer';
@@ -19,8 +24,24 @@ export async function makeTransfer(request: RequestSubmitTransfer): Promise<SWTr
   return sendMessage('pri(accounts.transfer)', request);
 }
 
+export async function makeBitcoinDappTransferConfirmation(
+  request: RequestSubmitTransferWithId,
+): Promise<SWTransactionResponse> {
+  return sendMessage('pri(accounts.bitcoin.dapp.transfer.confirmation)', request);
+}
+
+export async function makePSBTTransferAfterConfirmation(
+  request: RequestSubmitSignPsbtTransfer,
+): Promise<SWTransactionResponse> {
+  return sendMessage('pri(accounts.psbt.transfer.confirmation)', request);
+}
+
 export async function makeCrossChainTransfer(request: RequestCrossChainTransfer): Promise<SWTransactionResponse> {
   return sendMessage('pri(accounts.crossChainTransfer)', request);
+}
+
+export async function getBitcoinTransactionData(request: RequestSubmitTransfer): Promise<BitcoinTransactionData> {
+  return sendMessage('pri(accounts.getBitcoinTransactionData)', request);
 }
 
 export async function approveSpending(request: TokenSpendingApprovalParams): Promise<SWTransactionResponse> {
