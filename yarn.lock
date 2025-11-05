@@ -24702,8 +24702,8 @@ __metadata:
   linkType: hard
 
 "sha.js@npm:^2.4.0, sha.js@npm:^2.4.8":
-  version: 2.4.11
-  resolution: "sha.js@npm:2.4.11"
+  version: 2.4.12
+  resolution: "sha.js@npm:2.4.12"
   dependencies:
     inherits: ^2.0.1
     safe-buffer: ^5.0.1
