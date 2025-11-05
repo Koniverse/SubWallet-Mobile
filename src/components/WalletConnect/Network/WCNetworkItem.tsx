@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { WalletConnectChainInfo } from 'types/walletConnect';
-import { StyleProp, View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { getNetworkLogo } from 'utils/index';
 import Text from 'components/Text';
 import { Icon } from 'components/design-system-ui';
@@ -12,6 +12,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 interface Props {
   item: WalletConnectChainInfo;
   selectedValueMap: Record<string, boolean>;
+  containerStyle?: StyleProp<ViewStyle>;
 }
 
 const itemArea: StyleProp<any> = {
@@ -43,13 +44,13 @@ const logoWrapperStyle: StyleProp<any> = {
   borderRadius: 28,
 };
 
-export const WCNetworkItem = ({ item, selectedValueMap }: Props) => {
+export const WCNetworkItem = ({ item, selectedValueMap, containerStyle }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const isSupported = useMemo(() => {
     return selectedValueMap[item.slug];
   }, [item.slug, selectedValueMap]);
   return (
-    <>
+    <View style={containerStyle}>
       <View style={itemArea}>
         <View style={itemBodyArea}>
           <View style={logoWrapperStyle}>{getNetworkLogo(item.slug, 28)}</View>
@@ -62,6 +63,6 @@ export const WCNetworkItem = ({ item, selectedValueMap }: Props) => {
           </View>
         )}
       </View>
-    </>
+    </View>
   );
 };

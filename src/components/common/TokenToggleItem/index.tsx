@@ -1,10 +1,10 @@
 import React from 'react';
-import { Switch, Text, View } from 'react-native';
+import { Switch, View } from 'react-native';
 import { PencilSimpleLine } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { Divider } from 'components/Divider';
 import { _ChainAsset } from '@subwallet/chain-list/types';
-import { Button, Icon, Logo as SWLogo } from 'components/design-system-ui';
+import { Button, Icon, Logo as SWLogo, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TokenToggleItemStyles from './style';
 
@@ -31,9 +31,9 @@ export const TokenToggleItem = ({ item, onPress, isEnabled, onValueChange, isDis
             size={36}
             isShowSubLogo
           />
-          <Text numberOfLines={1} style={_style.itemTextStyle}>
+          <Typography.Text ellipsis style={_style.itemTextStyle}>
             {item.symbol || ''}
-          </Text>
+          </Typography.Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Switch

@@ -31,6 +31,7 @@ import { EARNING_WARNING_ANNOUNCEMENT } from 'constants/localStorage';
 import { AppModalContext } from 'providers/AppModalContext';
 import { PageIcon, Typography } from 'components/design-system-ui';
 import { _ChainInfo } from '@subwallet/chain-list/types';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface Props {
   setStep: (value: number) => void;
@@ -190,7 +191,9 @@ export const PositionList = ({ setStep, loading }: Props) => {
       }
       return () => {
         Keyboard.dismiss();
-        navigation.navigate('EarningPositionDetail', { earningSlug: positionInfo.slug });
+        delayActionAfterDismissKeyboard(() =>
+          navigation.navigate('EarningPositionDetail', { earningSlug: positionInfo.slug }),
+        );
       };
     },
     [navigation],
@@ -307,7 +310,6 @@ export const PositionList = ({ setStep, loading }: Props) => {
 
   return (
     <FlatListScreen
-      style={styles.wrapper}
       title={i18n.header.positionList}
       titleTextAlign={'left'}
       items={items}
@@ -326,6 +328,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
       keyExtractor={item => item.slug}
       isShowFilterBtn
       isShowMainHeader
+      isHideBottomSafeArea
       refreshControl={
         <RefreshControl
           style={styles.refreshIndicator}

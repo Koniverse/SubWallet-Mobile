@@ -29,7 +29,8 @@ import { useGroupYieldPosition } from 'hooks/earning';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { _ChainInfo } from '@subwallet/chain-list/types';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
 
 const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
   if (!filters.length) {
@@ -134,13 +135,15 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const handleOnStakeMore = useCallback(
     (slug: string): void => {
       Keyboard.dismiss();
-      navigation.navigate('Drawer', {
-        screen: 'TransactionAction',
-        params: {
-          screen: 'Earning',
-          params: { slug },
-        },
-      });
+      delayActionAfterDismissKeyboard(() =>
+        navigation.navigate('Drawer', {
+          screen: 'TransactionAction',
+          params: {
+            screen: 'Earning',
+            params: { slug },
+          },
+        }),
+      );
     },
     [navigation],
   );
@@ -171,7 +174,10 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         return;
       }
 
-      if (poolInfo.type === YieldPoolType.NATIVE_STAKING && _STAKING_CHAIN_GROUP.relay.includes(poolInfo.chain)) {
+      if (
+        poolInfo.type === YieldPoolType.NATIVE_STAKING &&
+        RELAY_HANDLER_DIRECT_STAKING_CHAINS.includes(poolInfo.chain)
+      ) {
         let minJoinPool: string;
 
         if (poolInfo.statistic && !positionSlugs.includes(poolInfo.slug)) {
@@ -251,7 +257,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
           key={item.slug}
           onStakeMore={() => {
             Keyboard.dismiss();
-            onPressItem(chainInfoMap[item.chain].slug, item);
+            delayActionAfterDismissKeyboard(() => onPressItem(chainInfoMap[item.chain].slug, item));
           }}
           poolInfo={item}
           currencyData={currencyData}
@@ -291,7 +297,6 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   return (
     <>
       <FlatListScreen
-        style={styles.wrapper}
         title={i18n.header.poolList.replace('{{symbol}}', symbol)}
         titleTextAlign={'left'}
         items={items}
@@ -309,6 +314,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         // rightIconOption={rightIconOption}
         isShowFilterBtn
         isShowMainHeader
+        isHideBottomSafeArea
         refreshControl={
           <RefreshControl
             style={styles.refreshIndicator}

@@ -1,9 +1,8 @@
 import React from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
-import { ScreenContainer } from 'components/ScreenContainer';
 import TransactionHeader from 'screens/Transaction/parts/TransactionHeader';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
+import { TransactionContainer } from 'components/TransactionContainer.tsx';
 
 interface Props {
   title: string;
@@ -29,24 +28,21 @@ export const TransactionLayout = ({
   const navigation = useNavigation<StakingScreenNavigationProps>();
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-      <ScreenContainer backgroundColor={'#0C0C0C'}>
-        <>
-          <TransactionHeader
-            title={title}
-            navigation={navigation}
-            showRightIcon={showRightHeaderButton}
-            onPressRightIcon={onPressRightHeaderBtn}
-            disableRightButton={disableRightButton}
-            disableLeftButton={disableLeftButton}
-            disableMainHeader={disableMainHeader}
-            onPressBack={onPressBack}
-          />
+    <TransactionContainer>
+      <>
+        <TransactionHeader
+          title={title}
+          navigation={navigation}
+          showRightIcon={showRightHeaderButton}
+          onPressRightIcon={onPressRightHeaderBtn}
+          disableRightButton={disableRightButton}
+          disableLeftButton={disableLeftButton}
+          disableMainHeader={disableMainHeader}
+          onPressBack={onPressBack}
+        />
 
-          {children}
-          <SafeAreaView />
-        </>
-      </ScreenContainer>
-    </KeyboardAvoidingView>
+        {children}
+      </>
+    </TransactionContainer>
   );
 };

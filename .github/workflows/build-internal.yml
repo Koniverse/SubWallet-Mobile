@@ -8,7 +8,7 @@ jobs:
   # iOS build workflow -------------------------------------------------
   build-ios:
     name: iOS builds
-    runs-on: self-hosted
+    runs-on: macos-15
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
       GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
@@ -49,8 +49,9 @@ jobs:
       uses: actions/setup-node@v4
       if: ${{ runner.name != 'Dos-Mac-mini' }}
       with:
-        node-version: 18
-        cache: 'yarn'
+        node-version: 20
+    - name: Enable Corepack (for Yarn 3+)
+      run: corepack enable
 
     - name: Cache Yarn dependencies
       uses: actions/cache@v3
@@ -78,7 +79,8 @@ jobs:
           ${{ runner.os }}-pods-
 
     - name: Install Pods
-      run: cd ios && pod update hermes-engine --no-repo-update && cd ..
+      run:
+        cd ios && pod install --repo-update && cd ..
 
     - name: Install Rust
       uses: actions-rs/toolchain@v1
@@ -92,11 +94,6 @@ jobs:
         rustup target add x86_64-apple-ios
         rustup target add aarch64-apple-ios-sim
         rustup component add rust-src
-
-    - name: Bundle JS & Assets (iOS)
-      run: |
-        export NODE_OPTIONS="--max-old-space-size=4096"
-        npx react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='ios'
     # Build IPA file
     - name: iOS Build Action
       uses: yukiarrr/ios-build-action@v1.11.2
@@ -132,141 +129,141 @@ jobs:
           URL: ${{ steps.upload-ios.outputs.fileUrl }}
           Diawi: ${{ steps.upload-diawi-ios.outputs.url }}
           Diawi QR: ${{ steps.upload-diawi-ios.outputs.qrcode }}
-#
-#  # Android build workflow -------------------------------------------------
-#  build-android:
-#    name: Android builds
-#    runs-on: macos-latest
-#    env:
-#      GH_PAT: ${{ secrets.GH_PAT }}
-#      GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
-#      KS_PASSWORD: ${{ secrets.KS_PASSWORD }}
-#      NEXTCLOUD_CONFIG: ${{ secrets.NEXTCLOUD_CONFIG }}
-#      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-#      COMMIT_MESSAGE: ${{ github.event.pull_request.title }}
-#      REF_NAME: ${{ github.ref_name }}
-#      TRANSAK_API_KEY: ${{ secrets.TRANSAK_API_KEY }}
-#      COINBASE_PAY_ID: ${{ secrets.COINBASE_PAY_ID }}
-#    steps:
-#    - uses: actions/checkout@v4
-#      with:
-#        fetch-depth: 0
-#        token: ${{ secrets.GH_PAT }}
-#    - name: Remove unused web-runner for Android
-#      run: |
-#        rm -rf ./html/OldWeb.bundle
-#
-#    - name: Add APP ENV
-#      run: |
-#          cp .env.development.example .env.production
-#          if [ -f .env.production ]; then
-#            sed -i '' "s/^TRANSAK_API_KEY=.*/TRANSAK_API_KEY=$TRANSAK_API_KEY/" .env.production
-#            sed -i '' "s/^COINBASE_PAY_ID=.*/COINBASE_PAY_ID=$COINBASE_PAY_ID/" .env.production
-#            sed -i '' "s/^IOS_CODEPUSH_KEY=.*/IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY/" .env.production
-#            sed -i '' "s/^ANDROID_CODEPUSH_KEY=.*/ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY/" .env.production
-#            sed -i '' "s/^BUNDLE_ENV=.*/BUNDLE_ENV=STAGING/" .env.production
-#            else
-#            echo "TRANSAK_API_KEY=$TRANSAK_API_KEY" >> .env.production
-#            echo "COINBASE_PAY_ID=$COINBASE_PAY_ID" >> .env.production
-#            echo "IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY" >> .env.production
-#            echo "ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY" >> .env.production
-#            echo "BUNDLE_ENV=STAGING" >> .env.production
-#          fi
-#
-#    - name: Use Node.js 18
-#      uses: actions/setup-node@v4
-#      if: ${{ runner.name != 'Dos-Mac-mini' }}
-#      with:
-#        node-version: 18
-#        cache: 'yarn'
-#
-#    - name: Cache Yarn dependencies
-#      uses: actions/cache@v3
-#      if: ${{ runner.name != 'Dos-Mac-mini' }}
-#      id: yarn-cache # optional, but allows referencing the step
-#      with:
-#        path: |
-#          .yarn/cache
-#          **/node_modules
-#        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#        restore-keys: |
-#          ${{ runner.os }}-yarn-
-#
-#    - uses: actions/setup-java@v1
-#      with:
-#        java-version: '17'
-#
-#    - name: Cache Gradle Wrapper
-#      uses: actions/cache@v3
-#      if: ${{ runner.name != 'Dos-Mac-mini' }}
-#      with:
-#        path: ~/.gradle/wrapper
-#        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-#
-#    - name: Cache Gradle Dependencies
-#      uses: actions/cache@v3
-#      if: ${{ runner.name != 'Dos-Mac-mini' }}
-#      with:
-#        path: ~/.gradle/caches
-#        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-#        restore-keys: |
-#          ${{ runner.os }}-gradle-caches-
-#
-#    - name: Install dependencies
-#      run: yarn install --immutable | grep -v 'YN0013'
-#
-#    - name: Prepare sign datarun
-#      run: |
-#        echo "${{ secrets.ANDROID_KEY_STORE_BASE64 }}" | base64 --decode > android/app/${{ secrets.MYAPP_UPLOAD_STORE_FILE }}
-#
-#    - name: Set up Python 3.10
-#      uses: actions/setup-python@v5
-#      with:
-#        python-version: '3.10'
-#
-#    - name: Install Rust
-#      uses: actions-rs/toolchain@v1
-#      with:
-#        toolchain: 1.86.0
-#        override: true
-#
-#    - name: Install cargo-ndk
-#      run: cargo install cargo-ndk
-#
-#    - name: Install Android NDK
-#      run: |
-#        echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-#        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;23.1.7779620"
-#
-#    - name: Add Rust Android targets
-#      run: |
-#        rustup target add aarch64-linux-android
-#        rustup target add armv7-linux-androideabi
-#        rustup target add x86_64-linux-android
-#        rustup target add i686-linux-android
-#    # Build APK file
-#    - name: Generate App APK
-#      run: |
-#        export NODE_OPTIONS="--max-old-space-size=4096"
-#        cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
-#
-#    - name: Upload Android to Diawi
-#      id: upload-diawi-android
-#      uses: rnkdsh/action-upload-diawi@v1.5.4
-#      with:
-#        token: ${{ secrets.DIAWI_TOKEN }}
-#        file: ./android/app/build/outputs/apk/release/app-release.apk
-#
-#    # Notify to Discord
-#    - name: Notify to Discord
-#      uses: sarisia/actions-status-discord@v1
-#      if: always()
-#      with:
-#        webhook: ${{ secrets.DISCORD_WEBHOOK }}
-#        status: ${{ job.status }}
-#        username: GitHub Actions Test Notifier
-#        title: ${{ github.workflow }}
-#        description: |
-#          Android: The Deployment has been completed.
-#          Diawi: ${{ steps.upload-diawi-android.outputs.url }}
-#          Diawi QR: ${{ steps.upload-diawi-android.outputs.qrcode }}
+
+  # Android build workflow -------------------------------------------------
+  build-android:
+    name: Android builds
+    runs-on: macos-latest
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
+      KS_PASSWORD: ${{ secrets.KS_PASSWORD }}
+      NEXTCLOUD_CONFIG: ${{ secrets.NEXTCLOUD_CONFIG }}
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      COMMIT_MESSAGE: ${{ github.event.pull_request.title }}
+      REF_NAME: ${{ github.ref_name }}
+      TRANSAK_API_KEY: ${{ secrets.TRANSAK_API_KEY }}
+      COINBASE_PAY_ID: ${{ secrets.COINBASE_PAY_ID }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+    - name: Remove unused web-runner for Android
+      run: |
+        rm -rf ./html/OldWeb.bundle
+
+    - name: Add APP ENV
+      run: |
+          cp .env.development.example .env.production
+          if [ -f .env.production ]; then
+            sed -i '' "s/^TRANSAK_API_KEY=.*/TRANSAK_API_KEY=$TRANSAK_API_KEY/" .env.production
+            sed -i '' "s/^COINBASE_PAY_ID=.*/COINBASE_PAY_ID=$COINBASE_PAY_ID/" .env.production
+            sed -i '' "s/^IOS_CODEPUSH_KEY=.*/IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY/" .env.production
+            sed -i '' "s/^ANDROID_CODEPUSH_KEY=.*/ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY/" .env.production
+            sed -i '' "s/^BUNDLE_ENV=.*/BUNDLE_ENV=STAGING/" .env.production
+            else
+            echo "TRANSAK_API_KEY=$TRANSAK_API_KEY" >> .env.production
+            echo "COINBASE_PAY_ID=$COINBASE_PAY_ID" >> .env.production
+            echo "IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY" >> .env.production
+            echo "ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY" >> .env.production
+            echo "BUNDLE_ENV=STAGING" >> .env.production
+          fi
+
+    - name: Use Node.js 18
+      uses: actions/setup-node@v4
+      if: ${{ runner.name != 'Dos-Mac-mini' }}
+      with:
+        node-version: 18
+        cache: 'yarn'
+
+    - name: Cache Yarn dependencies
+      uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' }}
+      id: yarn-cache # optional, but allows referencing the step
+      with:
+        path: |
+          .yarn/cache
+          **/node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '17'
+
+    - name: Cache Gradle Wrapper
+      uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' }}
+      with:
+        path: ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+    - name: Cache Gradle Dependencies
+      uses: actions/cache@v3
+      if: ${{ runner.name != 'Dos-Mac-mini' }}
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-caches-
+
+    - name: Install dependencies
+      run: yarn install --immutable | grep -v 'YN0013'
+
+    - name: Prepare sign datarun
+      run: |
+        echo "${{ secrets.ANDROID_KEY_STORE_BASE64 }}" | base64 --decode > android/app/${{ secrets.MYAPP_UPLOAD_STORE_FILE }}
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: 1.86.0
+        override: true
+
+    - name: Install cargo-ndk
+      run: cargo install cargo-ndk
+
+    - name: Install Android NDK
+      run: |
+        echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;23.1.7779620"
+
+    - name: Add Rust Android targets
+      run: |
+        rustup target add aarch64-linux-android
+        rustup target add armv7-linux-androideabi
+        rustup target add x86_64-linux-android
+        rustup target add i686-linux-android
+    # Build APK file
+    - name: Generate App APK
+      run: |
+        export NODE_OPTIONS="--max-old-space-size=4096"
+        cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
+
+    - name: Upload Android to Diawi
+      id: upload-diawi-android
+      uses: rnkdsh/action-upload-diawi@v1.5.4
+      with:
+        token: ${{ secrets.DIAWI_TOKEN }}
+        file: ./android/app/build/outputs/apk/release/app-release.apk
+
+    # Notify to Discord
+    - name: Notify to Discord
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        status: ${{ job.status }}
+        username: GitHub Actions Test Notifier
+        title: ${{ github.workflow }}
+        description: |
+          Android: The Deployment has been completed.
+          Diawi: ${{ steps.upload-diawi-android.outputs.url }}
+          Diawi QR: ${{ steps.upload-diawi-android.outputs.qrcode }}

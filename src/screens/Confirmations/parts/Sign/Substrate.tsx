@@ -322,7 +322,7 @@ export const SubstrateSignArea = (props: Props) => {
     setIsShowQr(true);
   }, []);
 
-  const { onPress: onConfirmPassword } = useUnlockModal(navigation, setLoading);
+  const { onPress: onConfirmPassword } = useUnlockModal(navigation, setLoading, false, true);
 
   const onConfirm = useCallback(() => {
     if (txExpirationTime) {

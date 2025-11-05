@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
+import { AuthUrlInfo, AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
@@ -17,7 +17,15 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { convertAuthorizeTypeToChainTypes, filterAuthorizeAccountProxies } from 'utils/accountProxy';
 import { isAddressAllowedWithAuthType } from 'utils/account/account';
 import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
-import { AccountProxy } from '@subwallet/extension-base/types';
+import { AccountChainType, AccountProxy } from '@subwallet/extension-base/types';
+import { updateAuthUrls } from 'stores/utils';
+import SwitchNetworkAuthorizeModal from 'components/Modal/SwitchNetworkAuthorizeModal';
+import { ModalRef } from 'types/modalRef';
+import { FontSemiBold } from 'styles/sharedStyles';
+import { NetworkItem } from 'components/NetworkItem';
+// import { DAppConfigurationModal } from 'components/Modal/DAppConfigurationModal.tsx';
+// import { useNavigation } from '@react-navigation/native';
+// import { RootNavigationProps } from 'routes/index.ts';
 
 interface Props {
   modalVisible: boolean;
@@ -41,14 +49,22 @@ const ButtonIconMap = {
 
 // todo: i18n;
 export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, isBlocked, authInfo, url }: Props) => {
+  // const navigation = useNavigation<RootNavigationProps>();
+  const chainSelectorRef = useRef<ModalRef>();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const [allowedMap, setAllowedMap] = useState<Record<string, boolean>>(authInfo?.isAllowedMap || {});
-  const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
-  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
+  const { accountProxies, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const [loading, setLoading] = useState(false);
+  // const [configurationModalVisible, setConfigurationModalVisible] = useState(false);
   const _isNotConnected = isNotConnected || !authInfo;
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const isEvmAuthorize = useMemo(() => !!authInfo?.accountAuthTypes.includes('evm'), [authInfo?.accountAuthTypes]);
+  const currentEvmNetworkInfo = useMemo(
+    () => authInfo?.currentNetworkMap?.evm && chainInfoMap[authInfo?.currentNetworkMap.evm],
+    [authInfo?.currentNetworkMap?.evm, chainInfoMap],
+  );
   Keyboard.dismiss();
 
   const onChangeModalVisible = useCallback(() => modalBaseV2Ref?.current?.close(), []);
@@ -73,6 +89,10 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
     },
     [authInfo?.accountAuthTypes],
   );
+
+  const onComplete = useCallback((list: AuthUrls) => {
+    updateAuthUrls(list);
+  }, []);
 
   const handlerSubmit = useCallback(() => {
     if (!loading && authInfo?.id) {
@@ -267,8 +287,47 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
       modalBaseV2Ref={modalBaseV2Ref}
       onBackButtonPress={onChangeModalVisible}
       contentContainerStyle={stylesheet.modalContentContainerStyle}
+      // isShowRightBtn={true}
+      // onPressRightBtn={() => setConfigurationModalVisible(true)}
       footer={<View style={stylesheet.footer}>{actionButtons}</View>}>
       <ScrollView style={stylesheet.scrollView} showsVerticalScrollIndicator={false} nestedScrollEnabled>
+        {isEvmAuthorize &&
+          !!currentEvmNetworkInfo &&
+          authInfo &&
+          !!currentAccountProxy?.chainTypes.includes(AccountChainType.ETHEREUM) && (
+            <SwitchNetworkAuthorizeModal
+              selectorRef={chainSelectorRef}
+              onComplete={onComplete}
+              authUrlInfo={authInfo}
+              onCancel={() => chainSelectorRef?.current?.onCloseModal()}
+              needsTabAuthCheck={true}
+              renderSelectModalBtn={(onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => {
+                return (
+                  <View style={stylesheet.switchNetworkLabelWrapper}>
+                    <Typography.Text style={{ color: theme.colorTextLight1, ...FontSemiBold }}>
+                      {'Switch network'}
+                    </Typography.Text>
+                    <NetworkItem
+                      itemName={currentEvmNetworkInfo?.name}
+                      itemKey={currentEvmNetworkInfo?.slug}
+                      iconSize={20}
+                      onSelectNetwork={() => onOpenModal(true)}
+                    />
+                  </View>
+                );
+              }}
+            />
+          )}
+
+        {/*{authInfo && (*/}
+        {/*  <DAppConfigurationModal*/}
+        {/*    modalVisible={configurationModalVisible}*/}
+        {/*    setModalVisible={setConfigurationModalVisible}*/}
+        {/*    authInfo={authInfo}*/}
+        {/*    navigation={navigation}*/}
+        {/*  />*/}
+        {/*)}*/}
+
         <TouchableOpacity activeOpacity={1}>
           <ConfirmationGeneralInfo
             request={{

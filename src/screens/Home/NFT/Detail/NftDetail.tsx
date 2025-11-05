@@ -257,6 +257,7 @@ const NftDetail = ({
       isShowMainHeader={true}
       title={data.name || i18n.title.nftDetail}
       style={ContainerHeaderStyle}
+      isHideBottomSafeArea={true}
       onPressBack={() => navigation.goBack()}>
       <>
         <ScrollView style={ContainerDetailStyle} showsVerticalScrollIndicator={false} nestedScrollEnabled>

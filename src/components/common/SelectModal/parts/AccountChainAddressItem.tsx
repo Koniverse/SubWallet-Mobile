@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AccountChainAddress } from 'types/account';
 import { VoidFunction } from 'types/index';
 import { ThemeTypes } from 'styles/themes';
@@ -7,6 +7,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Icon, Logo, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
 import { Copy, Info, QrCode } from 'phosphor-react-native';
+import { RELAY_CHAINS_TO_MIGRATE } from 'constants/chain';
 
 interface Props {
   item: AccountChainAddress;
@@ -15,6 +16,7 @@ interface Props {
   onPressQrButton?: VoidFunction;
   onPressInfoButton?: VoidFunction;
   isShowInfoButton?: boolean;
+  disabled?: boolean;
 }
 
 export const AccountChainAddressItem = ({
@@ -24,11 +26,15 @@ export const AccountChainAddressItem = ({
   onPressQrButton,
   onPressInfoButton,
   isShowInfoButton,
+  disabled,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyle(theme);
+
+  const isRelayChainToMigrate = useMemo(() => RELAY_CHAINS_TO_MIGRATE.includes(item.slug), [item.slug]);
+
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity style={styles.container} onPress={onPress} disabled={disabled}>
       <Logo network={item.slug} shape={'circle'} size={28} />
 
       <View style={styles.centerPart}>
@@ -58,8 +64,15 @@ export const AccountChainAddressItem = ({
         <Button
           type={'ghost'}
           size={'xs'}
-          icon={<Icon phosphorIcon={Copy} size={'sm'} iconColor={theme['gray-5']} />}
+          icon={
+            <Icon
+              phosphorIcon={Copy}
+              size={'sm'}
+              iconColor={!isRelayChainToMigrate ? theme['gray-5'] : theme['gray-3']}
+            />
+          }
           onPress={onPressCopyButton}
+          disabled={isRelayChainToMigrate}
         />
       </View>
     </TouchableOpacity>

@@ -1,8 +1,8 @@
-import React from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { KeyboardAvoidingView, Platform, StyleProp, View } from 'react-native';
 import { SubHeader, SubHeaderProps } from 'components/SubHeader';
 import { Header } from 'components/Header';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Edges, SafeAreaView } from 'react-native-safe-area-context';
 import DeviceInfo from 'react-native-device-info';
 
 export interface ContainerWithSubHeaderProps extends SubHeaderProps {
@@ -12,16 +12,15 @@ export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   isShowPlaceHolder?: boolean;
   androidKeyboardVerticalOffset?: number;
   disabledMainHeader?: boolean;
+  isHideBottomSafeArea?: boolean;
 }
 
-const getContainerStyle: (insetTop: number, backgroundColor?: string) => StyleProp<any> = (
-  insetTop: number,
-  backgroundColor?: string,
-) => {
+const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgroundColor?: string) => {
   return {
     flex: 1,
     backgroundColor: backgroundColor || '#0C0C0C',
-    paddingTop: insetTop + (Platform.OS === 'ios' && DeviceInfo.hasNotch() ? 0 : 8),
+    paddingTop: Platform.OS === 'ios' && DeviceInfo.hasNotch() ? 0 : 8,
+    width: '100%',
   };
 };
 
@@ -32,22 +31,31 @@ export const ContainerWithSubHeader = ({
   androidKeyboardVerticalOffset,
   titleTextAlign,
   disabledMainHeader,
+  isHideBottomSafeArea = false,
   ...subHeaderProps
 }: ContainerWithSubHeaderProps) => {
-  const insets = useSafeAreaInsets();
+  const edges = useMemo((): Edges => {
+    if (isHideBottomSafeArea) {
+      return ['top'];
+    }
+
+    return ['top', 'bottom'];
+  }, [isHideBottomSafeArea]);
+
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.select({ ios: 0, android: androidKeyboardVerticalOffset })}
-      style={[getContainerStyle(insets.top, subHeaderProps.backgroundColor), style]}>
-      {isShowMainHeader && (
-        <View style={{ marginBottom: 16 }}>
-          <Header disabled={disabledMainHeader} />
-        </View>
-      )}
-      <SubHeader {...subHeaderProps} titleTextAlign={titleTextAlign} />
-      {children}
-      <SafeAreaView />
-    </KeyboardAvoidingView>
+    <SafeAreaView edges={edges} style={{ flex: 1, backgroundColor: subHeaderProps.backgroundColor || '#0C0C0C' }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.select({ ios: 0, android: androidKeyboardVerticalOffset })}
+        style={[getContainerStyle(subHeaderProps.backgroundColor), style]}>
+        {isShowMainHeader && (
+          <View style={{ marginBottom: 16 }}>
+            <Header disabled={disabledMainHeader} />
+          </View>
+        )}
+        <SubHeader {...subHeaderProps} titleTextAlign={titleTextAlign} />
+        {children}
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };

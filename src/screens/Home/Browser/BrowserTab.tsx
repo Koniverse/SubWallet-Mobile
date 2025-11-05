@@ -11,7 +11,7 @@ import React, {
 } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import { Linking, NativeSyntheticEvent, Platform, SafeAreaView, Share, TouchableOpacity, View } from 'react-native';
+import { Linking, NativeSyntheticEvent, Platform, Share, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -59,6 +59,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import { transformUniversalToNative } from 'utils/deeplink';
 import { useGetDesktopMode } from 'hooks/screen/Home/Browser/DesktopMode/useGetDesktopMode';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -632,7 +633,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
 
       <View style={stylesheet.footer}>{bottomButtonList.map(renderBrowserTabBar)}</View>
 
-      <SafeAreaView style={stylesheet.footerAfter} />
+      <SafeAreaView edges={['bottom']} style={stylesheet.footerAfter} />
 
       <BrowserOptionModal
         ref={browserOptionModalRef}

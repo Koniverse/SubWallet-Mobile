@@ -18,6 +18,7 @@ export interface FilterModalProps {
   optionSelectionMap: Record<string, boolean>;
   filterModalRef: React.MutableRefObject<ModalRef | undefined>;
   searchFunction?: (items: OptionType[], searchString: string) => OptionType[];
+  onChangeModalVisible?: () => void;
 }
 
 const FilterModal = ({
@@ -28,6 +29,7 @@ const FilterModal = ({
   optionSelectionMap,
   filterModalRef,
   searchFunction,
+  onChangeModalVisible,
 }: FilterModalProps) => {
   return (
     <>
@@ -43,6 +45,7 @@ const FilterModal = ({
         isShowInput={false}
         ref={filterModalRef}
         searchFunction={searchFunction}
+        onChangeModalVisible={onChangeModalVisible}
         applyBtn={{
           label: i18n.buttonTitles.applyFilter,
           icon: FadersHorizontal,

@@ -37,9 +37,11 @@ export const TokenSelectField = ({
         {!!value && (
           <>
             <View style={styles.logoWrapper}>{getTokenLogo(logoKey, subLogoKey, label ? 20 : 24)}</View>
-            <Typography.Text ellipsis style={styles.text}>
-              {value}
-            </Typography.Text>
+            <View style={styles.textWrapper}>
+              <Typography.Text ellipsis style={styles.text}>
+                {value}
+              </Typography.Text>
+            </View>
           </>
         )}
 
@@ -57,10 +59,10 @@ export const TokenSelectField = ({
 
 function createStyle(theme: ThemeTypes, disabled?: boolean) {
   return StyleSheet.create({
+    textWrapper: { flex: 1, alignItems: 'flex-start' },
     text: {
       ...FontMedium,
       color: disabled ? theme.colorTextLight4 : theme.colorTextLight2,
-      flex: 1,
     },
     blockContent: { flexDirection: 'row', height: 48, alignItems: 'center', paddingRight: theme.paddingSM },
     logoWrapper: {

@@ -243,6 +243,7 @@ const Component: React.FC<Props> = (props: Props) => {
       title={'Earning position detail'}
       onPressRightIcon={onEarnMore}
       showRightBtn={true}
+      isHideBottomSafeArea
       disableRightButton={isChainUnsupported}
       rightIcon={Plus}>
       <ScrollView contentContainerStyle={styles.wrapper} showsVerticalScrollIndicator={false}>

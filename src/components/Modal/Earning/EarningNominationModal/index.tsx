@@ -1,5 +1,4 @@
 import { _ChainAsset } from '@subwallet/chain-list/types';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { YieldPositionInfo } from '@subwallet/extension-base/types';
 import { Number, SwModal, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
@@ -10,6 +9,7 @@ import { toShort } from 'utils/index';
 import createStyles from './style';
 import { deviceHeight } from 'constants/index';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
 
 interface Props {
   item: YieldPositionInfo;
@@ -24,7 +24,7 @@ const EarningNominationModal: React.FC<Props> = (props: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(item.chain), [item.chain]);
+  const isRelayChain = useMemo(() => RELAY_HANDLER_DIRECT_STAKING_CHAINS.includes(item.chain), [item.chain]);
 
   return (
     <SwModal

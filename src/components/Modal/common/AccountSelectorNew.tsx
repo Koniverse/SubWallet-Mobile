@@ -10,6 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { VoidFunction } from 'types/index';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface Props {
   items: AccountProxy[];
@@ -136,7 +137,7 @@ export const AccountProxySelector = ({
 
   const _onSelectItem = (item: AccountProxyItem) => {
     Keyboard.dismiss();
-    onSelectItem && onSelectItem(item);
+    delayActionAfterDismissKeyboard(() => onSelectItem && onSelectItem(item));
   };
 
   const searchFunc = useCallback((_items: AccountProxyItem[], searchString: string) => {

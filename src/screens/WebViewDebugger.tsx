@@ -10,7 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Input } from 'react-native-elements';
 import { devMode, getDevMode, mmkvStore } from 'utils/storage';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
-import { Button } from 'components/design-system-ui';
+import { Button, Image } from 'components/design-system-ui';
 import env from 'react-native-config';
 import { ToggleItem } from 'components/ToggleItem';
 import { Bug } from 'phosphor-react-native';
@@ -21,6 +21,7 @@ import {
 } from 'stores/base/StaticContent';
 import { useDispatch } from 'react-redux';
 import { IS_SHOW_TON_CONTRACT_VERSION_WARNING } from 'constants/localStorage';
+import { Images } from 'assets/index';
 
 const BUNDLE_ENV = env.BUNDLE_ENV;
 export const WebViewDebugger = () => {
@@ -101,6 +102,8 @@ export const WebViewDebugger = () => {
     <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.settings.webViewDebugger}>
       <ScrollView style={{ ...sharedStyles.layoutContainer }}>
         <View style={containerStyle}>
+          <Image src={Images.SubWalletLogoGradient} style={{ width: 66, height: 100 }} />
+          <Image src={Images.circleRobot} style={{ width: 66, height: 100 }} />
           <Text style={textStyle}>{`${i18n.common.status}${webState.status}`}</Text>
           <Text style={textStyle}>{`${i18n.common.url}${webState.url}`}</Text>
           <Text style={textStyle}>{`${i18n.common.version}${webState.version}`}</Text>

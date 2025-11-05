@@ -52,6 +52,7 @@ import { AccountAddressItemType } from 'types/account';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { isAddress } from '@subwallet/keyring';
 import { reformatAddress } from '@subwallet/extension-base/utils';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 type Props = {};
 
@@ -401,7 +402,7 @@ function History({
     return () => {
       Keyboard.dismiss();
       setSelectedItem(item);
-      setTimeout(() => setDetailModalVisible(true), 200);
+      delayActionAfterDismissKeyboard(() => setDetailModalVisible(true));
     };
   }, []);
 
@@ -582,7 +583,7 @@ function History({
         rightIcon={FadersHorizontal}
         onPressRightIcon={() => {
           Keyboard.dismiss();
-          setTimeout(() => openFilterModal(), 100);
+          delayActionAfterDismissKeyboard(() => openFilterModal());
         }}>
         <View style={{ position: 'relative', flex: 1 }}>
           <LinearGradient

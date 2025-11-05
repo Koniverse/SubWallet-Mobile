@@ -1,14 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { DotsThree, Plugs, PlugsConnected, Shield, ShieldSlash, Users, X, Plug } from 'phosphor-react-native';
-import { MoreOptionItemType, MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
+import { DotsThree, Plugs, PlugsConnected, Users, Plug } from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { DAppAccessDetailProps, RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
-import { changeAuthorization, changeAuthorizationPerSite, forgetSite, toggleAuthorization } from 'messaging/index';
-import { updateAuthUrls } from 'stores/updater';
+import { changeAuthorizationPerSite } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import i18n from 'utils/i18n/i18n';
 import { EmptyList } from 'components/EmptyList';
@@ -25,6 +23,7 @@ import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { getAccountCount } from 'screens/Settings/Security/DAppAccess/index';
 import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
 import { convertAuthorizeTypeToChainTypes } from 'utils/accountProxy';
+import { DAppConfigurationModal } from 'components/Modal/DAppConfigurationModal.tsx';
 
 type Props = {
   origin: string;
@@ -158,67 +157,6 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
     </>
   );
 
-  const dAppAccessDetailMoreOptions: MoreOptionItemType[] = useMemo(() => {
-    const isAllowed = authInfo.isAllowed;
-
-    const options = [
-      {
-        key: 'forgetSite',
-        icon: X,
-        backgroundColor: theme['yellow-6'],
-        name: i18n.common.forgetSite,
-        onPress: () => {
-          forgetSite(origin, updateAuthUrls).catch(console.error);
-          navigation.canGoBack() && navigation.goBack();
-        },
-      },
-    ];
-
-    if (isAllowed) {
-      options.push(
-        {
-          key: 'disconnectAll',
-          icon: Plugs,
-          name: i18n.common.disconnectAll,
-          // @ts-ignore
-          backgroundColor: theme['gray-3'],
-          onPress: () => {
-            changeAuthorization(false, origin, updateAuthUrls).catch(console.error);
-            setModalVisible(false);
-          },
-        },
-        {
-          key: 'connectAll',
-          icon: PlugsConnected,
-          name: i18n.common.connectAll,
-          backgroundColor: theme['green-6'],
-          onPress: () => {
-            changeAuthorization(true, origin, updateAuthUrls).catch(console.error);
-            setModalVisible(false);
-          },
-        },
-      );
-    }
-
-    options.push({
-      key: 'blockOrUnblock',
-      name: isAllowed ? i18n.common.block : i18n.common.unblock,
-      icon: isAllowed ? ShieldSlash : Shield,
-      // @ts-ignore
-      backgroundColor: isAllowed ? theme['red-6'] : theme['green-6'],
-      onPress: () => {
-        toggleAuthorization(origin)
-          .then(({ list }) => {
-            updateAuthUrls(list);
-          })
-          .catch(console.error);
-        setModalVisible(false);
-      },
-    });
-
-    return options;
-  }, [authInfo.isAllowed, theme, origin, navigation]);
-
   useEffect(() => {
     setPendingMap(prevMap => {
       if (!Object.keys(prevMap).length) {
@@ -298,34 +236,37 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
   );
 
   return (
-    <FlatListScreen
-      title={origin}
-      autoFocus={false}
-      onPressBack={() => navigation.goBack()}
-      beforeListItem={renderBeforeListItem()}
-      items={accountProxyItems}
-      searchFunction={searchFunction}
-      placeholder={i18n.placeholder.accountName}
-      renderListEmptyComponent={() => (
-        <EmptyList
-          icon={Users}
-          title={i18n.emptyScreen.manageDAppDetailEmptyTitle}
-          message={i18n.emptyScreen.manageDAppDetailEmptyMessage}
-        />
-      )}
-      estimatedItemSize={60}
-      rightIconOption={rightIconOption}
-      renderItem={renderItem}
-      afterListItem={
-        <MoreOptionModal
-          modalVisible={modalVisible}
-          moreOptionList={dAppAccessDetailMoreOptions}
-          setModalVisible={setModalVisible}
-        />
-      }
-      extraData={JSON.stringify(authInfo).concat(JSON.stringify(pendingMap))}
-      keyExtractor={item => item.id}
-    />
+    <>
+      <FlatListScreen
+        title={origin}
+        autoFocus={false}
+        onPressBack={() => navigation.goBack()}
+        beforeListItem={renderBeforeListItem()}
+        items={accountProxyItems}
+        searchFunction={searchFunction}
+        placeholder={i18n.placeholder.accountName}
+        renderListEmptyComponent={() => (
+          <EmptyList
+            icon={Users}
+            title={i18n.emptyScreen.manageDAppDetailEmptyTitle}
+            message={i18n.emptyScreen.manageDAppDetailEmptyMessage}
+          />
+        )}
+        estimatedItemSize={60}
+        rightIconOption={rightIconOption}
+        renderItem={renderItem}
+        afterListItem={
+          <DAppConfigurationModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            navigation={navigation}
+            authInfo={authInfo}
+          />
+        }
+        extraData={JSON.stringify(authInfo).concat(JSON.stringify(pendingMap))}
+        keyExtractor={item => item.id}
+      />
+    </>
   );
 };
 

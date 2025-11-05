@@ -1,5 +1,4 @@
 import { _ChainAsset } from '@subwallet/chain-list/types';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import {
   SubnetYieldPositionInfo,
   YieldPoolInfo,
@@ -16,6 +15,7 @@ import { isAccountAll } from 'utils/accountAll';
 import { toShort } from 'utils/index';
 import createStyles from './styles';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -34,7 +34,7 @@ const EarningNominationInfo: React.FC<Props> = (props: Props) => {
 
   const [showDetail, setShowDetail] = useState(false);
 
-  const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(poolInfo?.chain), [poolInfo?.chain]);
+  const isRelayChain = useMemo(() => RELAY_HANDLER_DIRECT_STAKING_CHAINS.includes(poolInfo?.chain), [poolInfo?.chain]);
   const haveNomination = useMemo(() => {
     return [YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING, YieldPoolType.SUBNET_STAKING].includes(
       poolInfo.type,

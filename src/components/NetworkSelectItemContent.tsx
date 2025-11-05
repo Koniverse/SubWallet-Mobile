@@ -15,6 +15,7 @@ interface Props {
   defaultItemKey?: string;
   showSeparator?: boolean;
   iconSize?: number;
+  customIcon?: React.ReactNode;
 }
 
 const itemArea: StyleProp<any> = {
@@ -61,6 +62,7 @@ export const NetworkSelectItemContent = ({
   defaultItemKey,
   showSeparator = true,
   iconSize = 28,
+  customIcon,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   return (
@@ -74,6 +76,12 @@ export const NetworkSelectItemContent = ({
         {isSelected && (
           <View style={{ height: 40, width: 40, alignItems: 'center', justifyContent: 'center', marginRight: -8 }}>
             <Icon phosphorIcon={CheckCircle} size={'sm'} weight={'fill'} iconColor={theme.colorSuccess} />
+          </View>
+        )}
+
+        {customIcon && (
+          <View style={{ height: 40, width: 40, alignItems: 'center', justifyContent: 'center', marginRight: -8 }}>
+            {customIcon}
           </View>
         )}
       </View>

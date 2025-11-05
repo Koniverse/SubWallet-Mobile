@@ -45,7 +45,6 @@ import useGetNativeTokenSlug from 'hooks/useGetNativeTokenSlug';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import {
   fetchPoolTarget,
-  getEarningSlippage,
   getOptimalYieldPath,
   submitJoinYieldPool,
   submitProcess,
@@ -108,6 +107,8 @@ import useReformatAddress from 'hooks/common/useReformatAddress';
 import { ImageLogosMap } from 'assets/logo';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
+import { useTaoStakingFee } from 'hooks/earning/useTaoStakingFee';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface StakeFormValues extends TransactionFormValues {
   slug: string;
@@ -432,7 +433,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const handleOpenDetailModal = useCallback((): void => {
     Keyboard.dismiss();
     isPressInfoBtnRef.current = true;
-    setDetailModalVisible(true);
+    delayActionAfterDismissKeyboard(() => setDetailModalVisible(true));
   }, []);
 
   const handleDataForInsufficientAlert = useCallback(() => {
@@ -455,6 +456,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const onError = useCallback(
     (error: Error) => {
+      console.log('error', error);
       const { chain: _chain, isXCM, minJoinPool, symbol } = handleDataForInsufficientAlert();
       const balanceDisplayInfo = _handleDisplayInsufficientEarningError(
         error,
@@ -556,6 +558,15 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     [hideAll, onDone, onError, onHandleOneSignConfirmation, show],
   );
 
+  const { earningRate, earningSlippage, stakingFee } = useTaoStakingFee(
+    poolInfo,
+    currentAmount,
+    assetDecimals,
+    poolInfo.metadata.subnetData?.netuid || 0,
+    ExtrinsicType.STAKING_BOND,
+    setSubmitLoading,
+  );
+
   const onChangeTarget = useCallback(
     (value: string) => {
       setValue('target', value);
@@ -568,12 +579,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   // For subnet staking
   const scrollViewRef = useRef<ScrollView>(null);
   const alertBoxRef = useRef<View>(null);
-  const [earningSlippage, setEarningSlippage] = useState<number>(0);
-  const [earningRate, setEarningRate] = useState<number>(0);
   const [slippageModalVisible, setSlippageModalVisible] = useState<boolean>(false);
   const [maxSlippage, setMaxSlippage] = useState<SlippageType>({ slippage: new BigN(0.005), isCustomType: true });
   const [hasScrolled, setHasScrolled] = useState<boolean>(false);
-  const debounce = useRef<NodeJS.Timeout | null>(null);
 
   const scrollToAlertBox = useCallback(() => {
     if (alertBoxRef.current && scrollViewRef.current) {
@@ -603,54 +611,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
     [isSubnetStaking, currentAmount, mustChooseTarget, poolTarget],
   );
-
-  useEffect(() => {
-    if (isDisabledSubnetContent) {
-      return;
-    }
-
-    setSubmitLoading(true);
-
-    if (debounce.current) {
-      clearTimeout(debounce.current);
-    }
-
-    debounce.current = setTimeout(() => {
-      const netuid = poolInfo.metadata.subnetData?.netuid || 0;
-      const data = {
-        slug: poolInfo.slug,
-        value: currentAmount,
-        netuid: netuid,
-        type: ExtrinsicType.STAKING_BOND,
-      };
-
-      getEarningSlippage(data)
-        .then(result => {
-          setEarningSlippage(result.slippage);
-          setEarningRate(result.rate);
-        })
-        .catch(error => {
-          console.error('Error fetching earning slippage:', error);
-        })
-        .finally(() => {
-          setSubmitLoading(false);
-        });
-    }, 200);
-
-    return () => {
-      if (debounce.current) {
-        clearTimeout(debounce.current);
-      }
-    };
-  }, [
-    currentAmount,
-    isDisabledSubnetContent,
-    isSubnetStaking,
-    mustChooseTarget,
-    poolInfo.metadata.subnetData?.netuid,
-    poolInfo.slug,
-    poolTarget,
-  ]);
 
   const isSlippageAcceptable = useMemo(() => {
     if (earningSlippage === null || !currentAmount) {
@@ -955,6 +915,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             subnetData: {
               netuid: netuid,
               slippage: maxSlippage?.slippage.toNumber(),
+              stakingFee: stakingFee,
             },
           } as SubmitJoinNativeStaking;
         }
@@ -1088,6 +1049,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     processState.steps,
     showValidatorMaxCountWarning,
     slug,
+    stakingFee,
   ]);
 
   const onPressSubmit = useCallback(() => {
@@ -1674,7 +1636,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                           title={'Slippage too high!'}
                           description={`Unable to stake due to a slippage of ${(earningSlippage * 100).toFixed(
                             2,
-                          )}%, which exceeds the maximum allowed. Lower your stake amount and try again`}
+                          )}%, which exceeds the current slippage set for this transaction. Lower your stake amount or increase slippage and try again`}
                           type={'error'}
                         />
                       </View>

@@ -3,16 +3,12 @@ import { ColorMap } from 'styles/color';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {
-  wrapper: ViewStyle;
   container: ViewStyle;
   refreshIndicator: ViewStyle;
 }
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
-    wrapper: {
-      paddingBottom: theme.padding,
-    },
     container: {
       paddingHorizontal: theme.padding,
       gap: theme.sizeXS,

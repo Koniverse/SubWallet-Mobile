@@ -1,3 +1,63 @@
+## 1.2.30 (509)
+
+
+## 1.2.30 (508)
+
+
+## 1.2.30 (507)
+- fix bug BuyToken (#2023)
+- fix bug UI in AccountDetailScreen (#2022)
+- Update coinbase onramp feature (#2023)
+- Support for Asset Hub Migration (#2022)
+
+## 1.2.29 (506)
+
+
+## 1.2.29 (505)
+
+
+## 1.2.28 (504)
+- Fix UI bug (#1990)
+- Fix UI bug (#1990)
+- Fix conflict UI for iOS, Android (#1990)
+- Resolve conflict (#1990)
+- Fix bug UI for android 15 (#1990)
+- resolve conflict (#1990)
+- fix ui bug (#1990)
+- fix bug cannot apply GeneralTermModal in android (#1990)
+- Fix build problems with sails-js (#1990)
+- Remove unused code and fix bug auto-build fail (#1990)
+- Upgrade to Android 15 (API level 35) (#1990)
+
+## 1.2.27 (503)
+
+
+## 1.2.26 (502)
+- fix bug cannot do not show WND earning option (#1988)
+- fix bug cannot unstake EWT (#1988)
+- remove api dev in wr (#1988)
+- fix bug for wr 1.3.41 (#1988)
+- fix bug for wr 1.3.41 (#1988)
+- remove unused code (#1988)
+- Update wr to fix bug (#1988)
+- Migrate to ParaSpell V4 & Update asset metadata (#1988)
+- Add support for in-app EWT staking (#1988)
+- Update UI Connect dApp screen (#1988)
+- update wr 1.2.41 (#1988)
+
+## 1.2.25 (501)
+- fix bug press max button in swap with large amount (#1987)
+- fix ui bug (#1987)
+- test case lost image (#1987)
+- test case lost image (#1987)
+- fix bug lost img (#1987)
+- fix ui bug (#1987)
+- rollback github workflow code (#1987)
+- fix error page when connect with dApps (#1987)
+- Update UI to to clearly display fees (#1987)
+- Fix bug when connects to Remix (#1987)
+- Update wr 1.3.40 (#1987)
+
 ## 1.2.24 (500)
 - fix xcm bug (#1999)
 

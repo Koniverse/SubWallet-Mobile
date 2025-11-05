@@ -479,7 +479,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             showsVerticalScrollIndicator={false}
             alwaysBounceVertical={false}
             nestedScrollEnabled={true}
-            scrollEventThrottle={400}
+            scrollEventThrottle={Platform.OS === 'ios' ? 400 : 16}
             onLayout={event => {
               let { height: _scrollHeight } = event.nativeEvent.layout;
               const currentScrollHeight = _scrollHeight + (Platform.OS === 'ios' ? 16 : -16);

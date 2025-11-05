@@ -1,0 +1,354 @@
+diff --git a/node_modules/@subwallet/extension-base/cjs/services/balance-service/helpers/subscribe/cardano/utils.js b/node_modules/@subwallet/extension-base/cjs/services/balance-service/helpers/subscribe/cardano/utils.js
+index 5a7d4ba..1b7340f 100644
+--- a/node_modules/@subwallet/extension-base/cjs/services/balance-service/helpers/subscribe/cardano/utils.js
++++ b/node_modules/@subwallet/extension-base/cjs/services/balance-service/helpers/subscribe/cardano/utils.js
+@@ -9,7 +9,7 @@ exports.getCardanoAssetId = getCardanoAssetId;
+ exports.getCardanoTxFee = getCardanoTxFee;
+ exports.retryCardanoTxStatus = retryCardanoTxStatus;
+ exports.splitCardanoId = splitCardanoId;
+-var _cardanoSerializationLibNodejs = require("@emurgo/cardano-serialization-lib-nodejs");
++var _cardanoSerializationLibNodejs = require("@emurgo/csl-mobile-bridge");
+ // Copyright 2019-2022 @subwallet/extension-base
+ // SPDX-License-Identifier: Apache-2.0
+ 
+diff --git a/node_modules/@subwallet/extension-base/cjs/services/balance-service/transfer/cardano-transfer.js b/node_modules/@subwallet/extension-base/cjs/services/balance-service/transfer/cardano-transfer.js
+index 2d87564..6bb43e1 100644
+--- a/node_modules/@subwallet/extension-base/cjs/services/balance-service/transfer/cardano-transfer.js
++++ b/node_modules/@subwallet/extension-base/cjs/services/balance-service/transfer/cardano-transfer.js
+@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+ exports.createCardanoTransaction = createCardanoTransaction;
+-var csl = _interopRequireWildcard(require("@emurgo/cardano-serialization-lib-nodejs"));
++var csl = _interopRequireWildcard(require("@emurgo/csl-mobile-bridge"));
+ var _types = require("@subwallet/chain-list/types");
+ var _utils = require("@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils");
+ var _utils2 = require("@subwallet/extension-base/utils");
+diff --git a/node_modules/@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils.js b/node_modules/@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils.js
+index 26a5f26..a3fab9d 100644
+--- a/node_modules/@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils.js
++++ b/node_modules/@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils.js
+@@ -1,7 +1,7 @@
+ // Copyright 2019-2022 @subwallet/extension-base
+ // SPDX-License-Identifier: Apache-2.0
+ 
+-import { Transaction } from '@emurgo/cardano-serialization-lib-nodejs';
++import { Transaction } from '@emurgo/csl-mobile-bridge';
+ export function getCardanoAssetId(chainAsset) {
+   var _chainAsset$metadata;
+   return (_chainAsset$metadata = chainAsset.metadata) === null || _chainAsset$metadata === void 0 ? void 0 : _chainAsset$metadata.cardanoId;
+diff --git a/node_modules/@subwallet/extension-base/services/balance-service/transfer/cardano-transfer.js b/node_modules/@subwallet/extension-base/services/balance-service/transfer/cardano-transfer.js
+index 9564b07..bec025a 100644
+--- a/node_modules/@subwallet/extension-base/services/balance-service/transfer/cardano-transfer.js
++++ b/node_modules/@subwallet/extension-base/services/balance-service/transfer/cardano-transfer.js
+@@ -1,7 +1,7 @@
+ // Copyright 2019-2022 @subwallet/extension-base
+ // SPDX-License-Identifier: Apache-2.0
+ 
+-import * as csl from '@emurgo/cardano-serialization-lib-nodejs';
++import * as csl from '@emurgo/csl-mobile-bridge';
+ import { _AssetType } from '@subwallet/chain-list/types';
+ import { getAdaBelongUtxo, getCardanoTxFee, splitCardanoId } from '@subwallet/extension-base/services/balance-service/helpers/subscribe/cardano/utils';
+ import { toUnit } from '@subwallet/extension-base/utils';
+diff --git a/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js b/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js
+index e8076a2..e7fa6b2 100644
+--- a/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js
++++ b/node_modules/@subwallet/extension-base/services/swap-service/handler/chainflip-handler.js
+@@ -1,286 +1,20 @@
+ // Copyright 2019-2022 @subwallet/extension-base
+ // SPDX-License-Identifier: Apache-2.0
+ 
+-import { COMMON_ASSETS } from '@subwallet/chain-list';
+-import { TransactionError } from '@subwallet/extension-base/background/errors/TransactionError';
+-import { ChainType, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+-import { createBitcoinTransaction } from '@subwallet/extension-base/services/balance-service/transfer/bitcoin-transfer';
+-import { getERC20TransactionObject, getEVMTransactionObject } from '@subwallet/extension-base/services/balance-service/transfer/smart-contract';
+-import { createSubstrateExtrinsic } from '@subwallet/extension-base/services/balance-service/transfer/token';
+-import { _getContractAddressOfToken, _isChainSubstrateCompatible, _isNativeToken, _isPureBitcoinChain } from '@subwallet/extension-base/services/chain-service/utils';
+-import { SwapBaseHandler } from '@subwallet/extension-base/services/swap-service/handler/base-handler';
+-import { BasicTxErrorType, CommonStepType, DynamicSwapType, SwapProviderId, SwapStepType } from '@subwallet/extension-base/types';
+-import { ProxyServiceRoute } from '@subwallet/extension-base/types/environment';
+-import { _reformatAddressWithChain, fetchFromProxyService } from '@subwallet/extension-base/utils';
+-import { getId } from '@subwallet/extension-base/utils/getId';
+-import BigNumber from 'bignumber.js';
+-import * as bitcoin from 'bitcoinjs-lib';
+-const INTERMEDIARY_MAINNET_ASSET_SLUG = COMMON_ASSETS.USDC_ETHEREUM;
+-const INTERMEDIARY_TESTNET_ASSET_SLUG = COMMON_ASSETS.USDC_SEPOLIA;
++import { SwapProviderId } from '@subwallet/extension-base/types';
++export const CHAINFLIP_BROKER_API = process.env.CHAINFLIP_BROKER_API || '';
+ export class ChainflipSwapHandler {
+-  // private baseUrl: string;
+-  // private assetsUrl: string;
+-
+-  constructor(chainService, balanceService, feeService, isTestnet = true) {
+-    this.swapBaseHandler = new SwapBaseHandler({
+-      chainService,
+-      balanceService,
+-      feeService,
+-      providerName: isTestnet ? 'Chainflip Testnet' : 'Chainflip',
+-      providerSlug: isTestnet ? SwapProviderId.CHAIN_FLIP_TESTNET : SwapProviderId.CHAIN_FLIP_MAINNET
+-    });
+-    this.isTestnet = isTestnet;
+-    this.providerSlug = isTestnet ? SwapProviderId.CHAIN_FLIP_TESTNET : SwapProviderId.CHAIN_FLIP_MAINNET;
+-    // this.baseUrl = getChainflipSwap(isTestnet);
+-    // this.assetsUrl = getAssetsUrl(isTestnet);
+-  }
+-
+-  get chainService() {
+-    return this.swapBaseHandler.chainService;
+-  }
+-  get balanceService() {
+-    return this.swapBaseHandler.balanceService;
+-  }
+-  get providerInfo() {
+-    return this.swapBaseHandler.providerInfo;
+-  }
+-  get name() {
+-    return this.swapBaseHandler.name;
+-  }
+-  get slug() {
+-    return this.swapBaseHandler.slug;
+-  }
+-  get intermediaryAssetSlug() {
+-    if (this.isTestnet) {
+-      return INTERMEDIARY_TESTNET_ASSET_SLUG;
+-    } else {
+-      return INTERMEDIARY_MAINNET_ASSET_SLUG;
+-    }
+-  }
+-  async handleSubmitStep(params) {
+-    const {
+-      address,
+-      currentStep,
+-      process,
+-      quote,
+-      recipient,
+-      slippage
+-    } = params;
+-    const pair = quote.pair;
+-    const fromAsset = this.chainService.getAssetBySlug(pair.from);
+-    const chainInfo = this.chainService.getChainInfoByKey(fromAsset.originChain);
+-    const toChainInfo = this.chainService.getChainInfoByKey(fromAsset.originChain);
+-    const chainType = _isChainSubstrateCompatible(chainInfo) ? ChainType.SUBSTRATE : _isPureBitcoinChain(chainInfo) ? ChainType.BITCOIN : ChainType.EVM; // todo: improve throw error for unknown chain
+-    const receiver = _reformatAddressWithChain(recipient !== null && recipient !== void 0 ? recipient : address, toChainInfo);
+-    const minReceive = new BigNumber(quote.rate).times(1 - slippage).toString();
+-    const processMetadata = process.steps[currentStep].metadata;
+-    const quoteMetadata = processMetadata;
+-    const fromAssetId = quoteMetadata.fromAssetId;
+-    const toAssetId = quoteMetadata.toAssetId;
+-    if (!processMetadata || !quoteMetadata) {
+-      throw new Error('Metadata for Chainflip not found');
+-    }
+-    if (processMetadata.destChain !== quoteMetadata.destChain || processMetadata.srcChain !== quoteMetadata.srcChain) {
+-      throw new Error('Metadata for Chainflip not found');
+-    }
+-    const assetsResponse = await fetchFromProxyService(ProxyServiceRoute.CHAINFLIP, '/assets', {
+-      method: 'GET'
+-    }, this.isTestnet);
+-    const _allAssets = await assetsResponse.json();
+-    const allAssets = _allAssets.assets;
+-    const sourceAsset = allAssets.find(asset => asset.network === processMetadata.srcChain && asset.ticker === fromAssetId);
+-    const destinationAsset = allAssets.find(asset => asset.network === processMetadata.destChain && asset.ticker === toAssetId);
+-    if (!sourceAsset || !destinationAsset) {
+-      throw new Error('Error get Chainflip data');
+-    }
+-    const depositParams = {
+-      destinationAddress: receiver,
+-      destinationAsset: destinationAsset.id,
+-      sourceAsset: sourceAsset.id,
+-      minimumPrice: minReceive,
+-      // minimum accepted price for swaps through the channel
+-      refundAddress: address,
+-      // address to which assets are refunded
+-      retryDurationInBlocks: '100' // 100 blocks * 6 seconds = 10 minutes before deposits are refunded
+-    };
+-
+-    const path = `/swap?${new URLSearchParams(depositParams).toString()}`;
+-    const response = await fetchFromProxyService(ProxyServiceRoute.CHAINFLIP, path, {
+-      method: 'GET'
+-    }, this.isTestnet);
+-    const data = await response.json();
+-    console.log('Chainflip channel info:', data);
+-    if (!data.id || !data.address || data.address === '' || !data.issuedBlock || !data.network || !data.channelId) {
+-      throw new Error('Error get Chainflip data');
+-    }
+-    const depositChannelId = `${data.issuedBlock}-${data.network}-${data.channelId}`;
+-    const depositAddress = data.address;
+-    const txData = {
+-      address,
+-      provider: this.providerInfo,
+-      quote,
+-      slippage,
+-      recipient,
+-      depositChannelId,
+-      depositAddress,
+-      process
+-    };
+-    let extrinsic;
+-    if (chainType === ChainType.SUBSTRATE) {
+-      const _substrateApi = this.chainService.getSubstrateApi(chainInfo.slug);
+-      const substrateApi = await _substrateApi.isReady;
+-      const [submittableExtrinsic] = await createSubstrateExtrinsic({
+-        from: address,
+-        networkKey: chainInfo.slug,
+-        substrateApi,
+-        to: depositAddress,
+-        tokenInfo: fromAsset,
+-        transferAll: false,
+-        // always false, because we do not allow swapping all the balance
+-        value: quote.fromAmount
+-      });
+-      extrinsic = submittableExtrinsic;
+-    } else if (chainType === ChainType.EVM) {
+-      const feeInfo = await this.swapBaseHandler.feeService.subscribeChainFee(getId(), chainInfo.slug, 'evm');
+-      if (_isNativeToken(fromAsset)) {
+-        const [transactionConfig] = await getEVMTransactionObject({
+-          chain: chainInfo.slug,
+-          evmApi: this.chainService.getEvmApi(chainInfo.slug),
+-          from: address,
+-          to: depositAddress,
+-          value: quote.fromAmount,
+-          feeInfo,
+-          transferAll: false
+-        });
+-        extrinsic = transactionConfig;
+-      } else {
+-        const [transactionConfig] = await getERC20TransactionObject({
+-          assetAddress: _getContractAddressOfToken(fromAsset),
+-          chain: chainInfo.slug,
+-          evmApi: this.chainService.getEvmApi(chainInfo.slug),
+-          from: address,
+-          to: depositAddress,
+-          value: quote.fromAmount,
+-          feeInfo,
+-          transferAll: false
+-        });
+-        extrinsic = transactionConfig;
+-      }
+-    } else if (chainType === ChainType.BITCOIN) {
+-      const bitcoinApi = this.chainService.getBitcoinApi(chainInfo.slug);
+-      const feeInfo = await this.swapBaseHandler.feeService.subscribeChainFee(getId(), chainInfo.slug, 'bitcoin');
+-      const network = chainInfo.isTestnet ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
+-      const [transaction] = await createBitcoinTransaction({
+-        bitcoinApi,
+-        chain: chainInfo.slug,
+-        from: address,
+-        feeInfo,
+-        to: depositAddress,
+-        transferAll: false,
+-        value: quote.fromAmount,
+-        network
+-      });
+-      extrinsic = transaction;
+-    } else {
+-      // todo: update this when support new chainType rather than substrate, evm, bitcoin
+-      throw new Error('Unknown swap chain type');
++    constructor(chainService, balanceService, feeService, isTestnet = true) {
++        this.providerSlug = isTestnet ? SwapProviderId.CHAIN_FLIP_TESTNET : SwapProviderId.CHAIN_FLIP_MAINNET;
+     }
+-    return {
+-      txChain: fromAsset.originChain,
+-      txData,
+-      extrinsic,
+-      transferNativeAmount: _isNativeToken(fromAsset) ? quote.fromAmount : '0',
+-      // todo
+-      extrinsicType: ExtrinsicType.SWAP,
+-      chainType
+-    };
+-  }
+-  async handleSwapProcess(params) {
+-    const {
+-      currentStep,
+-      process
+-    } = params;
+-    const type = process.steps[currentStep].type;
+-    switch (type) {
+-      case CommonStepType.DEFAULT:
+-        return Promise.reject(new TransactionError(BasicTxErrorType.UNSUPPORTED));
+-      case SwapStepType.SWAP:
+-        return this.handleSubmitStep(params);
+-      default:
+-        return this.handleSubmitStep(params);
++    handleSubmitStep(params) {
++        throw new Error('Not implemented');
+     }
+-  }
+-  async getSubmitStep(params, stepIndex) {
+-    var _params$selectedQuote;
+-    const metadata = (_params$selectedQuote = params.selectedQuote) === null || _params$selectedQuote === void 0 ? void 0 : _params$selectedQuote.metadata;
+-    if (!params.selectedQuote) {
+-      return Promise.resolve(undefined);
+-    }
+-    if (!metadata || !metadata.srcChain || !metadata.destChain) {
+-      return Promise.resolve(undefined);
+-    }
+-    const originTokenInfo = this.chainService.getAssetBySlug(params.selectedQuote.pair.from);
+-    const destinationTokenInfo = this.chainService.getAssetBySlug(params.selectedQuote.pair.to);
+-    const originChain = this.chainService.getChainInfoByKey(originTokenInfo.originChain);
+-    const destinationChain = this.chainService.getChainInfoByKey(destinationTokenInfo.originChain);
+-    const submitStep = {
+-      name: 'Swap',
+-      type: SwapStepType.SWAP,
+-      // @ts-ignore
+-      metadata: {
+-        sendingValue: params.request.fromAmount.toString(),
+-        expectedReceive: params.selectedQuote.toAmount,
+-        originTokenInfo,
+-        destinationTokenInfo,
+-        sender: _reformatAddressWithChain(params.request.address, originChain),
+-        receiver: _reformatAddressWithChain(params.request.recipient || params.request.address, destinationChain),
+-        srcChain: metadata.srcChain,
+-        destChain: metadata.destChain,
+-        fromAssetId: metadata.fromAssetId,
+-        toAssetId: metadata.toAssetId,
+-        version: 2
+-      }
+-    };
+-    return Promise.resolve([submitStep, params.selectedQuote.feeInfo]);
+-  }
+-  generateOptimalProcessV2(params) {
+-    return this.swapBaseHandler.generateOptimalProcessV2(params, [this.getSubmitStep.bind(this)]);
+-  }
+-  async validateSwapProcessV2(params) {
+-    // todo: recheck address and recipient format in params
+-    const {
+-      process,
+-      selectedQuote
+-    } = params; // todo: review flow, currentStep param.
+-
+-    // todo: validate path with optimalProcess
+-    // todo: review error message in case many step swap
+-    if (BigNumber(selectedQuote.fromAmount).lte(0)) {
+-      return [new TransactionError(BasicTxErrorType.INVALID_PARAMS, 'Amount must be greater than 0')];
+-    }
+-    const actionList = JSON.stringify(process.path.map(step => step.action));
+-    const swap = actionList === JSON.stringify([DynamicSwapType.SWAP]);
+-    const swapXcm = actionList === JSON.stringify([DynamicSwapType.SWAP, DynamicSwapType.BRIDGE]);
+-    const xcmSwap = actionList === JSON.stringify([DynamicSwapType.BRIDGE, DynamicSwapType.SWAP]);
+-    const xcmSwapXcm = actionList === JSON.stringify([DynamicSwapType.BRIDGE, DynamicSwapType.SWAP, DynamicSwapType.BRIDGE]);
+-    const swapIndex = params.process.steps.findIndex(step => step.type === SwapStepType.SWAP); // todo
+-
+-    if (swapIndex <= -1) {
+-      return [new TransactionError(BasicTxErrorType.INTERNAL_ERROR)];
+-    }
+-    if (swap) {
+-      return this.swapBaseHandler.validateSwapOnlyProcess(params, swapIndex); // todo: create interface for input request
++    handleSwapProcess(params) {
++        throw new Error('Not implemented');
+     }
+ 
+-    if (swapXcm) {
+-      return [new TransactionError(BasicTxErrorType.INTERNAL_ERROR)];
+-    }
+-    if (xcmSwap) {
+-      return [new TransactionError(BasicTxErrorType.INTERNAL_ERROR)];
+-    }
+-    if (xcmSwapXcm) {
+-      return [new TransactionError(BasicTxErrorType.INTERNAL_ERROR)];
++    validateSwapRequest(request) {
++        throw new Error('Not implemented');
+     }
+-    return [new TransactionError(BasicTxErrorType.INTERNAL_ERROR)];
+-  }
+ }
+\ No newline at end of file

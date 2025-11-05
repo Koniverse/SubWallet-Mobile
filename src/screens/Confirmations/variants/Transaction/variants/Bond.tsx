@@ -8,6 +8,7 @@ import MetaInfo from 'components/MetaInfo';
 import i18n from 'utils/i18n/i18n';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
+import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -17,12 +18,11 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
   const handleValidatorLabel = useMemo(() => {
     return getValidatorLabel(transaction.chain);
   }, [transaction.chain]);
+  const networkPrefix = useGetChainPrefixBySlug(transaction.chain);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
   const addressList = data.selectedValidators.map(validator => validator.address);
 
-  const isBittensorChain = useMemo(() => {
-    return data.poolPosition?.chain === 'bittensor' || data.poolPosition?.chain === 'bittensor_testnet';
-  }, [data.poolPosition?.chain]);
+  const stakingFee = data.subnetData?.stakingFee;
 
   return (
     <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
@@ -33,6 +33,7 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
           addresses={addressList}
           content={`${data.selectedValidators.length} selected ${handleValidatorLabel.toLowerCase()}`}
           label={data.type === StakingType.POOLED ? i18n.inputLabel.pool : handleValidatorLabel}
+          identPrefix={networkPrefix}
         />
 
         <MetaInfo.Number decimals={decimals} label={i18n.inputLabel.amount} suffix={symbol} value={data.amount} />
@@ -52,12 +53,10 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
         type={'warning'}
       />
 
-      {isBittensorChain && (
+      {!!stakingFee && (
         <AlertBox
           title={'TAO unstaking fee'}
-          description={
-            'An unstaking fee of 0.00005 TAO will be deducted from your unstaked amount once the transaction is complete'
-          }
+          description={`A staking fee of ${stakingFee} TAO will be deducted from your stake once the transaction is complete`}
           type={'info'}
         />
       )}

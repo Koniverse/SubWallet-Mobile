@@ -1,15 +1,11 @@
-import { generateOnRampURL } from '@coinbase/cbpay-js';
-import { COINBASE_PAY_ID } from 'constants/buy';
 import { CreateBuyOrderFunction } from 'types/buy';
 import 'react-native-url-polyfill/auto';
+import subwalletApiSdk from '@subwallet-monorepos/subwallet-services-sdk';
 
-export const createCoinbaseOrder: CreateBuyOrderFunction = (symbol, address, network) => {
-  return new Promise(resolve => {
-    const onRampURL = generateOnRampURL({
-      appId: COINBASE_PAY_ID,
-      destinationWallets: [{ address: address, supportedNetworks: [network], assets: [symbol] }],
-    });
-
-    resolve(onRampURL);
+export const createCoinbaseOrder: CreateBuyOrderFunction = (asset, address, network) => {
+  return subwalletApiSdk.onrampCoinbaseApi.generateOnRampUrl({
+    assets: [asset],
+    address,
+    networks: [network],
   });
 };

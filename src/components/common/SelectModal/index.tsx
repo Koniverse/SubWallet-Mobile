@@ -21,6 +21,7 @@ import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AccountAddressItemExtraType } from 'components/Modal/common/AccountSelector';
 import { AccountProxyItem } from 'screens/Account/AccountsScreen';
 import { AccountProxySelectItem } from 'components/common/SelectModal/parts/AccountProxySelectItem';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface Props<T> {
   items: T[];
@@ -179,8 +180,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   const _onSelectItem = useCallback(
     (_item: T) => {
       selectModalType === 'single' && Keyboard.dismiss();
-      // setTimeout(() => onSelectItem && onSelectItem(_item), 50);
-      onSelectItem && onSelectItem(_item);
+      delayActionAfterDismissKeyboard(() => onSelectItem && onSelectItem(_item));
     },
     [onSelectItem, selectModalType],
   );

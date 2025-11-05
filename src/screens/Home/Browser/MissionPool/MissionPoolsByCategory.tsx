@@ -18,6 +18,7 @@ import { computeStatus } from 'utils/missionPools';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { MissionPoolsContext } from 'screens/Home/Browser/MissionPool/context';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackParamList>> = ({ route }) => {
   const theme = useSubWalletTheme().swThemes;
@@ -145,7 +146,7 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
       onPressItem={() => {
         Keyboard.dismiss();
         setSelectedMissionPool(item);
-        setVisible(true);
+        delayActionAfterDismissKeyboard(() => setVisible(true));
       }}
     />
   );

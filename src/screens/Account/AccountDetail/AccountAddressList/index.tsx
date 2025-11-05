@@ -18,6 +18,7 @@ import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/c
 import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
 import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface Props {
   accountProxy: AccountProxy;
@@ -109,7 +110,7 @@ export const AccountAddressList = ({ accountProxy }: Props) => {
     (item: AccountChainAddress) => {
       return () => {
         Keyboard.dismiss();
-        setTimeout(() => openSelectAddressFormatModal(item), 100);
+        delayActionAfterDismissKeyboard(() => openSelectAddressFormatModal(item));
       };
     },
     [openSelectAddressFormatModal],
@@ -127,6 +128,7 @@ export const AccountAddressList = ({ accountProxy }: Props) => {
         onPress={onShowQr(item)}
         isShowInfoButton={isPolkadotUnifiedChain}
         onPressInfoButton={onPressInfoButton(item)}
+        disabled
       />
     );
   };

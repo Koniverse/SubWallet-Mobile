@@ -100,6 +100,7 @@ import { ImportNft } from 'screens/ImportToken/ImportNft';
 import { TransactionSubmission } from 'screens/TransactionSubmission';
 import MigrateAccount from 'screens/MigrateAccount';
 import AccountSettings from 'screens/Settings/Account';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface Props {
   isAppReady: boolean;
@@ -218,6 +219,13 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
                 slug: (slug: string) => slug,
                 target: (target: string) => target,
                 redirectFromPreview: (redirectFromPreview: boolean) => redirectFromPreview,
+              },
+            },
+            SendFund: {
+              path: 'send-fund',
+              stringify: {
+                slug: (slug: string) => slug,
+                recipient: (recipient: string) => recipient,
               },
             },
             Swap: {
@@ -488,7 +496,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
 
         //enable Network (if deeplink is not for earning)
         if (!parseUrl.pathname.startsWith('/transaction-action/earning')) {
-          let originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+          let originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1]?.toLowerCase() : '';
           if (urlQueryMap.chain) {
             originChain = urlQueryMap.chain;
           }
@@ -572,7 +580,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
           amount
         ) {
           Keyboard.dismiss();
-          navigationRef.current?.navigate('Confirmations');
+          delayActionAfterDismissKeyboard(() => navigationRef.current?.navigate('Confirmations'));
         }
       }
     }

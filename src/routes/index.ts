@@ -25,7 +25,7 @@ export type RootStackParamList = {
       | 'AttachReadOnly';
     state?: string[];
   };
-  UnlockModal: { isUpdateBiometric?: boolean };
+  UnlockModal: { isUpdateBiometric?: boolean; isConfirmation?: boolean };
   ChangePassword: undefined;
   ConnectList: { isDelete?: boolean };
   ConnectDetail: { topic: string; isLastItem: boolean };

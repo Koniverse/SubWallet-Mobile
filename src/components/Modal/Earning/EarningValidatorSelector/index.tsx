@@ -1,4 +1,3 @@
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { useGetPoolTargetList, useYieldPositionDetail } from 'hooks/earning';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
@@ -33,6 +32,8 @@ import DotBadge from 'components/design-system-ui/badge/DotBadge';
 import { autoSelectValidatorOptimally } from 'utils/earning';
 import { fetchStaticData } from 'utils/fetchStaticData';
 import { ChainRecommendValidator } from '@subwallet/extension-base/constants';
+import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -113,7 +114,7 @@ export const EarningValidatorSelector = forwardRef(
 
     // const cachedNominations = useMemo(() => compound?.nominations || [], [compound]);
     const [nominations] = useState<NominationInfo[]>(compound?.nominations || []);
-    const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(chain), [chain]);
+    const isRelayChain = useMemo(() => RELAY_HANDLER_DIRECT_STAKING_CHAINS.includes(chain), [chain]);
     const isSingleSelect = useMemo(() => _isSingleSelect || !isRelayChain, [_isSingleSelect, isRelayChain]);
     const hasReturn = useMemo(() => items[0]?.expectedReturn !== undefined, [items]);
 
@@ -427,9 +428,7 @@ export const EarningValidatorSelector = forwardRef(
             onPressRightButton={() => {
               Keyboard.dismiss();
               setDetailItem(item);
-              setTimeout(() => {
-                setDetailModalVisible(true);
-              }, 100);
+              delayActionAfterDismissKeyboard(() => setDetailModalVisible(true));
             }}
             isNominated={nominated}
             isSelected={selected}
@@ -443,6 +442,7 @@ export const EarningValidatorSelector = forwardRef(
       () => (
         <ValidatorSelectorField
           showLightningBtn={false}
+          chain={chain}
           onPressLightningBtn={() => onAutoSelectValidator()}
           onPressBookBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
           value={selectedValidator}

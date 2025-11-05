@@ -28,7 +28,6 @@ build/
 dist/
 web-build/
 .idea
-.yarn
 .gradle
 local.properties
 *.iml
@@ -71,3 +70,11 @@ yarn-error.log
 app-center-private.pem
 # testing
 /coverage
+
+# Yarn v3+ structure
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

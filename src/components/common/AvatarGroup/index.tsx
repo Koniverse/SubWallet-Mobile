@@ -13,6 +13,7 @@ interface Props {
   addresses?: string[];
   avatarSize?: number;
   avatarGroupStyle?: ViewStyle;
+  identPrefix?: number;
 }
 
 const sizeAva = {
@@ -20,7 +21,7 @@ const sizeAva = {
   large: 24,
 };
 
-const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize, avatarGroupStyle }: Props) => {
+const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize, avatarGroupStyle, identPrefix }: Props) => {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const theme = useSubWalletTheme().swThemes;
   const _style = AvatarGroupStyle();
@@ -74,7 +75,7 @@ const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize, avatarGro
               <Avatar
                 size={avatarSize}
                 value={account}
-                identPrefix={42}
+                identPrefix={identPrefix || 42}
                 theme={isEthereumAddress(account) ? 'ethereum' : 'polkadot'}
               />
             </View>

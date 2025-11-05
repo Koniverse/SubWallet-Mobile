@@ -147,7 +147,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
 
     useEffect(() => {
       if (isKeyboardVisible) {
-        setChildrenHeight(keyboardHeight + contentHeight - insets.bottom);
+        setChildrenHeight(keyboardHeight + contentHeight - (Platform.OS === 'ios' ? insets.bottom : 0));
       } else {
         setChildrenHeight(contentHeight);
       }
@@ -217,13 +217,20 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
                 style={{ paddingHorizontal: 16, paddingTop: 22 }}
                 onLayout={event => {
                   let { height } = event.nativeEvent.layout;
-                  !!height && setContentHeight(height + (Platform.OS === 'ios' ? 16 : -16));
+                  !!height && setContentHeight(height);
                 }}>
                 {renderHeader ? renderHeader : renderTitle()}
                 {children}
 
                 {footer}
-                {isUseSafeAreaView && <SafeAreaView edges={['bottom']} style={{ marginBottom: theme.margin }} />}
+                {isUseSafeAreaView && (
+                  <SafeAreaView
+                    edges={['bottom']}
+                    style={{
+                      marginBottom: Platform.select({ ios: 30, android: Number(Platform.Version) > 34 ? 30 : 0 }),
+                    }}
+                  />
+                )}
               </View>
             </ModalBaseV2>
           </Portal>
@@ -250,7 +257,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
                 style={[
                   {
                     width: '100%',
-                    paddingBottom: 16 + insets.bottom,
+                    paddingBottom: 16 + (Platform.OS === 'android' ? 0 : insets.bottom),
                     paddingHorizontal: 16,
                     alignItems: 'center',
                     flex: isFullHeight ? 1 : undefined,
@@ -264,7 +271,6 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
               </View>
 
               {footer}
-              <SafeAreaView edges={['bottom']} />
             </View>
           </ModalBase>
         )}

@@ -17,6 +17,7 @@ const useUnlockModal = (
   navigation: NativeStackNavigationProp<RootStackParamList>,
   setLoading?: (arg: boolean) => void,
   isUpdateBiometric?: boolean,
+  isConfirmation?: boolean,
   onCloseModal?: () => void,
 ): Result => {
   const { isLocked, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
@@ -51,7 +52,7 @@ const useUnlockModal = (
           setTimeout(() => {
             onCompleteRef.current = onComplete;
             if ((hasMasterPassword && isLocked) || isUpdateBiometric) {
-              navigation.navigate('UnlockModal', { isUpdateBiometric });
+              navigation.navigate('UnlockModal', { isUpdateBiometric, isConfirmation });
               promiseRef.current = new Promise<boolean>((resolve, reject) => {
                 resolveRef.current = resolve;
                 rejectRef.current = reject;
