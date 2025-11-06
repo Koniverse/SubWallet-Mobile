@@ -44,7 +44,7 @@ export function getWaitingTime(currentTimestampMs: number, targetTimestampMs?: n
   } else {
     const remainingTimeHr = remainingTimestampMs / 1000 / 60 / 60;
 
-    // Formatted waitting time without round up
+    // Formatted waiting time without round up
 
     const _formattedWaitingTime = humanizeDuration(remainingTimestampMs, {
       units: remainingTimeHr >= 24 ? ['d', 'h'] : ['h', 'm'],
@@ -66,7 +66,7 @@ export function getWaitingTime(currentTimestampMs: number, targetTimestampMs?: n
       }, // TODO: should not be shorten
     }) as string;
 
-    // Formatted waitting time with round up
+    // Formatted waiting time with round up
     const formattedWaitingTime = _formattedWaitingTime
       .split(' ')
       .map((segment, index) => {
