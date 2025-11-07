@@ -1,25 +1,42 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { _getAssetOriginChain, _getMultiChainAsset } from '@subwallet/extension-base/services/chain-service/utils';
+import {
+  _getAssetOriginChain,
+  _getMultiChainAsset,
+  _isChainBitcoinCompatible,
+  _isChainInfoCompatibleWithAccountInfo,
+} from '@subwallet/extension-base/services/chain-service/utils';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
-import { _ChainAsset } from '@subwallet/chain-list/types';
-import { AccountAddressItemType } from 'types/account';
-import { KeypairType } from '@subwallet/keyring/types';
+import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
+import { AccountAddressItemType, AccountTokenAddress } from 'types/account';
+import { BitcoinMainnetKeypairTypes, BitcoinTestnetKeypairTypes, KeypairType } from '@subwallet/keyring/types';
 import useHandleTonAccountWarning from 'hooks/account/useHandleTonAccountWarning';
 import { AppModalContext } from 'providers/AppModalContext';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
-import { AccountActions, AccountProxyType } from '@subwallet/extension-base/types';
+import {
+  AccountActions,
+  AccountChainType,
+  AccountJson,
+  AccountProxy,
+  AccountProxyType,
+} from '@subwallet/extension-base/types';
 import { VoidFunction } from 'types/index';
 import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
+import useGetBitcoinAccounts from 'hooks/common/useGetBitcoinAccounts';
+
+type SelectedTokenInfo = {
+  tokenSlug: string;
+  chainSlug: string;
+};
 
 export default function useReceiveQR(tokenGroupSlug?: string) {
   const navigation = useNavigation<RootNavigationProps>();
@@ -27,16 +44,19 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   const { chainAssets } = useChainAssets();
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const [selectedChain, setSelectedChain] = useState<string | undefined>();
+  const [selectedTokenInfo, setSelectedTokenInfo] = useState<SelectedTokenInfo | undefined>();
   const [selectedAccountAddressItem, setSelectedAccountAddressItem] = useState<AccountAddressItemType | undefined>();
   const chainSupported = useGetChainSlugsByCurrentAccountProxy();
-  const { addressQrModal, selectAddressFormatModal } = useContext(AppModalContext);
+  const { addressQrModal, selectAddressFormatModal, accountTokenAddressModal } = useContext(AppModalContext);
   const accountRef = useRef<ModalRef>();
   const tokenRef = useRef<ModalRef>();
   const chainRef = useRef<ModalRef>();
-  const specificChain = useMemo(() => {
+  const specificSelectedTokenInfo = useMemo<SelectedTokenInfo | undefined>(() => {
     if (tokenGroupSlug && assetRegistryMap[tokenGroupSlug]) {
-      return _getAssetOriginChain(assetRegistryMap[tokenGroupSlug]);
+      return {
+        tokenSlug: tokenGroupSlug,
+        chainSlug: _getAssetOriginChain(assetRegistryMap[tokenGroupSlug]),
+      };
     }
 
     return undefined;
@@ -48,6 +68,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
   const getReformatAddress = useCoreCreateReformatAddress();
   const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
+  const getBitcoinAccounts = useGetBitcoinAccounts();
 
   const openAddressQrModal = useCallback(
     (
@@ -97,6 +118,21 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     [navigation, selectAddressFormatModal],
   );
 
+  const openAccountTokenAddressModal = useCallback(
+    (accounts: AccountTokenAddress[]) => {
+      const processFunction = () => {
+        accountTokenAddressModal.setAccountTokenAddressModalState({
+          visible: true,
+          items: accounts,
+          onBack: accountTokenAddressModal.hideAccountTokenAddressModal,
+        });
+      };
+
+      processFunction();
+    },
+    [accountTokenAddressModal],
+  );
+
   /* --- token Selector */
   const tokenSelectorItems = useMemo<_ChainAsset[]>(() => {
     const rawAssets = chainAssets.filter(asset => chainSupported.includes(asset.originChain));
@@ -127,12 +163,40 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
         return;
       }
 
-      setSelectedChain(chainSlug);
+      setSelectedTokenInfo({
+        tokenSlug: item.slug,
+        chainSlug,
+      });
 
       if (isAllAccount) {
         setTimeout(() => accountRef && accountRef.current?.onOpenModal(), 100);
 
         return;
+      }
+
+      const isBitcoinChain = _isChainBitcoinCompatible(chainInfo);
+
+      if (isBitcoinChain) {
+        const accountTokenAddressList = getBitcoinAccounts(
+          chainSlug,
+          item.slug,
+          chainInfo,
+          currentAccountProxy.accounts,
+        );
+
+        if (accountTokenAddressList.length > 1) {
+          openAccountTokenAddressModal(accountTokenAddressList);
+        } else if (accountTokenAddressList.length === 1) {
+          openAddressQrModal(
+            accountTokenAddressList[0].accountInfo.address,
+            accountTokenAddressList[0].accountInfo.type,
+            currentAccountProxy.id,
+            chainSlug,
+            () => {
+              setSelectedAccountAddressItem(undefined);
+            },
+          );
+        }
       }
 
       const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(chainSlug);
@@ -168,8 +232,10 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
       chainInfoMap,
       checkIsPolkadotUnifiedChain,
       currentAccountProxy,
+      getBitcoinAccounts,
       getReformatAddress,
       isAllAccount,
+      openAccountTokenAddressModal,
       openAddressFormatModal,
       openAddressQrModal,
     ],
@@ -178,8 +244,8 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
   /* --- account Selector */
   const accountSelectorItems = useMemo<AccountAddressItemType[]>(() => {
-    const targetChain = specificChain || selectedChain;
-    const chainInfo = targetChain ? chainInfoMap[targetChain] : undefined;
+    const targetTokenInfo = specificSelectedTokenInfo || selectedTokenInfo;
+    const chainInfo = targetTokenInfo ? chainInfoMap[targetTokenInfo.chainSlug] : undefined;
 
     if (!chainInfo) {
       return [];
@@ -187,46 +253,103 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
     const result: AccountAddressItemType[] = [];
 
-    accountProxies.forEach(ap => {
-      ap.accounts.forEach(a => {
-        const reformatedAddress = getReformatAddress(a, chainInfo);
+    const updateResult = (ap: AccountProxy, a: AccountJson, _chainInfo: _ChainInfo) => {
+      const reformatedAddress = getReformatAddress(a, _chainInfo);
 
-        if (reformatedAddress) {
-          result.push({
-            accountName: ap.name,
-            accountProxyId: ap.id,
-            accountProxyType: ap.accountType,
-            accountType: a.type,
-            address: reformatedAddress,
-            accountActions: ap.accountActions,
-          });
+      if (reformatedAddress) {
+        result.push({
+          accountName: ap.name,
+          accountProxyId: ap.id,
+          accountProxyType: ap.accountType,
+          accountType: a.type,
+          address: reformatedAddress,
+          accountActions: ap.accountActions,
+        });
+      }
+    };
+
+    const getPreferredBitcoinAccount = (accounts: AccountJson[]) => {
+      const bitcoinAccounts = accounts.filter(
+        a => a.chainType === AccountChainType.BITCOIN && _isChainInfoCompatibleWithAccountInfo(chainInfo, a),
+      );
+
+      return bitcoinAccounts.find(a => a.type === 'bitcoin-84' || a.type === 'bittest-84') || bitcoinAccounts[0];
+    };
+
+    accountProxies.forEach(ap => {
+      // case bitcoin accounts
+      if (ap.chainTypes.includes(AccountChainType.BITCOIN)) {
+        const preferredBitcoinAccount = getPreferredBitcoinAccount(ap.accounts);
+
+        preferredBitcoinAccount && updateResult(ap, preferredBitcoinAccount, chainInfo);
+      }
+      // case non-bitcoin accounts
+      ap.accounts.forEach(a => {
+        if (a.chainType === AccountChainType.BITCOIN) {
+          return;
         }
+
+        updateResult(ap, a, chainInfo);
       });
     });
 
     return result;
-  }, [accountProxies, chainInfoMap, getReformatAddress, selectedChain, specificChain]);
+  }, [accountProxies, chainInfoMap, getReformatAddress, selectedTokenInfo, specificSelectedTokenInfo]);
 
   const onCloseAccountSelector = useCallback(() => {
     accountRef && accountRef.current?.onCloseModal();
     tokenRef && tokenRef.current?.onCloseModal();
-    setSelectedChain(undefined);
+    setSelectedTokenInfo(undefined);
     setSelectedAccountAddressItem(undefined);
   }, []);
 
   const onSelectAccountSelector = useCallback(
     (item: AccountAddressItemType) => {
-      const targetChain = specificChain || selectedChain;
+      const targetTokenInfo = specificSelectedTokenInfo || selectedTokenInfo;
 
-      if (!targetChain) {
+      if (!targetTokenInfo) {
         return;
       }
 
+      const targetChain = targetTokenInfo.chainSlug;
+
       const chainInfo = chainInfoMap[targetChain];
+
+      if (!chainInfo) {
+        return;
+      }
+
+      const isBitcoinAccountItem = [...BitcoinMainnetKeypairTypes, ...BitcoinTestnetKeypairTypes].includes(
+        item.accountType,
+      );
 
       setSelectedAccountAddressItem(item);
       tokenRef && tokenRef.current?.onCloseModal();
       accountRef && accountRef.current?.onCloseModal();
+
+      if (isBitcoinAccountItem) {
+        const targetAccountProxy = accountProxies.find(ap => ap.id === item.accountProxyId);
+
+        if (!targetAccountProxy) {
+          return;
+        }
+
+        const accountTokenAddressList = getBitcoinAccounts(
+          targetChain,
+          targetTokenInfo.tokenSlug,
+          chainInfo,
+          targetAccountProxy.accounts,
+        );
+
+        if (accountTokenAddressList.length > 1) {
+          openAccountTokenAddressModal(accountTokenAddressList);
+        } else {
+          openAddressQrModal(item.address, item.accountType, item.accountProxyId, targetChain);
+        }
+
+        return;
+      }
+
       const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(targetChain);
 
       if (isPolkadotUnifiedChain) {
@@ -236,12 +359,15 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
       }
     },
     [
+      accountProxies,
       chainInfoMap,
       checkIsPolkadotUnifiedChain,
+      getBitcoinAccounts,
+      openAccountTokenAddressModal,
       openAddressFormatModal,
       openAddressQrModal,
-      selectedChain,
-      specificChain,
+      selectedTokenInfo,
+      specificSelectedTokenInfo,
     ],
   );
   /* account Selector --- */
@@ -289,8 +415,8 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
       }
     };
 
-    if (specificChain) {
-      if (!chainSupported.includes(specificChain)) {
+    if (specificSelectedTokenInfo) {
+      if (!chainSupported.includes(specificSelectedTokenInfo.chainSlug)) {
         console.warn('tokenGroupSlug does not work with current account');
 
         return;
@@ -305,14 +431,17 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
       // current account is not All, just do show QR logic
 
-      handleShowQrModal(specificChain);
+      handleShowQrModal(specificSelectedTokenInfo.chainSlug);
 
       return;
     }
 
     if (tokenSelectorItems.length === 1 && tokenGroupSlug) {
       if (isAllAccount) {
-        setSelectedChain(tokenSelectorItems[0].originChain);
+        setSelectedTokenInfo({
+          tokenSlug: tokenSelectorItems[0].slug,
+          chainSlug: tokenSelectorItems[0].originChain,
+        });
         accountRef && accountRef.current?.onOpenModal();
 
         return;
@@ -333,7 +462,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     isAllAccount,
     openAddressFormatModal,
     openAddressQrModal,
-    specificChain,
+    specificSelectedTokenInfo,
     tokenGroupSlug,
     tokenSelectorItems,
   ]);

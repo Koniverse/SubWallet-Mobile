@@ -70,10 +70,11 @@ export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
         label={label}
         suffix={symbol}
         value={value}
-        valueColorSchema="gray"
+        valueColorSchema={'gray'}
+        unitColor={theme['gray-5']}
       />
     ),
-    [decimals, symbol],
+    [decimals, symbol, theme],
   );
   const isBitcoinChain = !!chainInfo && _isChainBitcoinCompatible(chainInfo);
   const balanceItems = useMemo<BalanceDisplayItem[]>(() => {
@@ -106,10 +107,10 @@ export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
       <View style={{ flex: 1 }}>
         {isBitcoinChain ? (
           <View style={[_style.row, { paddingBottom: theme.paddingXXS }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.paddingXS }}>
+            <View style={_style.accountInfoWrapper}>
               <AccountProxyAvatar value={address} size={24} />
               {name ? (
-                <View>
+                <View style={_style.accountNameAndAddressWrapper}>
                   <Typography.Text style={_style.accountDetailLabel} ellipsis>
                     {name}
                   </Typography.Text>
@@ -129,10 +130,10 @@ export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
           </View>
         ) : (
           <View style={[_style.row, { paddingBottom: theme.paddingXXS }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.paddingXS }}>
+            <View style={_style.accountInfoWrapper}>
               <AccountProxyAvatar value={address} size={24} />
               {name ? (
-                <View>
+                <View style={_style.accountNameAndAddressWrapper}>
                   <Typography.Text style={_style.accountDetailLabel} ellipsis>
                     {name}
                   </Typography.Text>
@@ -161,7 +162,7 @@ export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
           {balanceItems.map(renderBalanceItem)}
           {!!link && (
             <Button
-              style={{ marginBottom: -4, marginTop: theme.marginXXS }}
+              style={_style.explorerBtn}
               size={'xs'}
               type={'ghost'}
               onPress={() => Linking.openURL(link)}
