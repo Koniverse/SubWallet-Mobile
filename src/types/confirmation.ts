@@ -1,4 +1,8 @@
-import { ConfirmationDefinitions, ConfirmationDefinitionsTon } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  ConfirmationDefinitions,
+  ConfirmationDefinitionsBitcoin,
+  ConfirmationDefinitionsTon,
+} from '@subwallet/extension-base/background/KoniTypes';
 
 export type EvmSignatureSupportType = keyof Pick<
   ConfirmationDefinitions,
@@ -10,4 +14,12 @@ export type SubmitApiType = keyof Pick<ConfirmationDefinitions, 'submitApiReques
 export type TonSignatureSupportType = keyof Pick<
   ConfirmationDefinitionsTon,
   'tonSignatureRequest' | 'tonWatchTransactionRequest' | 'tonSendTransactionRequest'
+>;
+export type BitcoinSignatureSupportType = keyof Pick<
+  ConfirmationDefinitionsBitcoin,
+  | 'bitcoinSignatureRequest'
+  | 'bitcoinSendTransactionRequest'
+  | 'bitcoinWatchTransactionRequest'
+  | 'bitcoinSignPsbtRequest'
+  | 'bitcoinSendTransactionRequestAfterConfirmation'
 >;

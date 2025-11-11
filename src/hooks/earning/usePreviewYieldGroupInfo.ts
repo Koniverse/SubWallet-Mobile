@@ -10,15 +10,15 @@ import { YieldGroupInfo } from 'types/earning';
 import { isRelatedToAstar } from 'utils/earning';
 import { BalanceValueInfo } from 'types/balance';
 import { BN_ZERO } from 'utils/chainBalances';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 const usePreviewYieldGroupInfo = (poolInfoMap: Record<string, YieldPoolInfo>): YieldGroupInfo[] => {
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const chainsByAccountType = useGetChainSlugsByAccount();
+  const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, true);
 

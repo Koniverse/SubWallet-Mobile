@@ -34,7 +34,7 @@ import { KeypairType } from '@subwallet/keyring/types';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { isTonAddress } from '@subwallet/keyring';
 import { sortTokensByStandard } from 'utils/sort/token';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -111,7 +111,7 @@ export const TokenGroupsDetail = ({
 
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
-  const chainsByAccountType = useGetChainSlugsByAccount();
+  const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
   const { tokenGroupMap, isComputing: isTokenGroupComputing } = useTokenGroup(chainsByAccountType, true);
   const {
     tokenBalanceMap,

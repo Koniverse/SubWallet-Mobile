@@ -1,20 +1,27 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useCallback } from 'react';
-import { useToast } from 'react-native-toast-notifications';
+import React, { useCallback } from 'react';
+import Toast, { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 
-const useCopyClipboard = () => {
+const useCopyClipboard = (toastRef?: React.RefObject<Toast>) => {
   const toast = useToast();
 
   const copyToClipboard = useCallback(
     (text: string) => {
       return () => {
         Clipboard.setString(text);
-        toast.hideAll();
-        toast.show(i18n.common.copiedToClipboard);
+        if (toastRef && toastRef.current) {
+          // @ts-ignore
+          toastRef.current.hideAll();
+          // @ts-ignore
+          toastRef.current.show(i18n.common.copiedToClipboard);
+        } else {
+          toast.hideAll();
+          toast.show(i18n.common.copiedToClipboard);
+        }
       };
     },
-    [toast],
+    [toast, toastRef],
   );
 
   return { copyToClipboard };

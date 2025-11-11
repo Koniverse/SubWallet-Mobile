@@ -7,14 +7,14 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import { findAccountByAddress } from 'utils/index';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 const useYieldRewardTotal = (slug: string): string | undefined => {
   const { poolInfoMap, earningRewards } = useSelector((state: RootState) => state.earning);
   const { currentAccountProxy, accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
-  const chainsByAccountType = useGetChainSlugsByAccount();
+  const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
 
   return useMemo(() => {
     const checkAddress = (item: EarningRewardItem) => {

@@ -33,7 +33,7 @@ import { isLendingPool, isLiquidPool } from '@subwallet/extension-base/services/
 import { GettingDataModal } from 'components/Modal/GettingDataModal';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { isChainInfoAccordantAccountChainType } from 'utils/chain';
+import { _isChainInfoCompatibleWithAccountInfo } from '@subwallet/extension-base/services/chain-service/utils';
 
 interface Props {
   compound: YieldPositionInfo;
@@ -62,11 +62,11 @@ const Component: React.FC<Props> = (props: Props) => {
       return ALL_ACCOUNT_KEY;
     }
 
-    const accountAddress = currentAccountProxy?.accounts.find(({ chainType }) => {
+    const accountAddress = currentAccountProxy?.accounts.find(accountInfo => {
       if (chainInfoMap[poolInfo.chain]) {
         const chainInfo = chainInfoMap[poolInfo.chain];
 
-        return isChainInfoAccordantAccountChainType(chainInfo, chainType);
+        return _isChainInfoCompatibleWithAccountInfo(chainInfo, accountInfo);
       }
 
       return false;

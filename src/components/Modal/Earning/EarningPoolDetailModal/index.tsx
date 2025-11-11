@@ -31,7 +31,7 @@ import { EARNING_POOL_DETAIL_DATA } from 'constants/earning/EarningDataRaw';
 import { useGetEarningPoolDetailModalData } from 'hooks/earning/useGetEarningPoolDetailModalData';
 import { isAccountAll } from 'utils/accountAll';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { isChainInfoAccordantAccountChainType } from 'utils/chain';
+import { _isChainInfoCompatibleWithAccountInfo } from '@subwallet/extension-base/services/chain-service/utils';
 
 interface Props {
   slug: string;
@@ -100,11 +100,11 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
       return ALL_ACCOUNT_KEY;
     }
 
-    const accountAddress = currentAccountProxy?.accounts.find(({ chainType }) => {
+    const accountAddress = currentAccountProxy?.accounts.find(accountInfo => {
       if (chainInfoMap[poolInfo.chain]) {
         const chainInfo = chainInfoMap[poolInfo.chain];
 
-        return isChainInfoAccordantAccountChainType(chainInfo, chainType);
+        return _isChainInfoCompatibleWithAccountInfo(chainInfo, accountInfo);
       }
 
       return false;

@@ -3,7 +3,7 @@ import { ScannerContext } from 'providers/ScannerContext';
 import { BarCodeReadEvent } from 'react-native-camera';
 import { RootState } from 'stores/index';
 import { CompletedParsedData, EthereumParsedData, ParsedData, SubstrateParsedData } from 'types/qr/scanner';
-import { findAccountByAddress } from 'utils/account';
+import { findAccountByAddress } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
 import { constructDataFromBytes, isAddressString, isJsonString, rawDataToU8A } from 'utils/scanner/decoders';
 import { isMultiFramesInfo, isMultipartData, isNetworkParsedData } from 'utils/scanner/sign';

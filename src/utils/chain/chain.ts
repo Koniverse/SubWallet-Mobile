@@ -1,4 +1,4 @@
-import { _ChainInfo, _ChainStatus } from '@subwallet/chain-list/types';
+import { _ChainInfo } from '@subwallet/chain-list/types';
 import {
   _getSubstrateGenesisHash,
   _isChainBitcoinCompatible,
@@ -39,7 +39,9 @@ export const findChainInfoByChainId = (chainMap: Record<string, _ChainInfo>, cha
 
   return null;
 };
-
+/**
+ * @deprecated Use `_isChainInfoCompatibleWithAccountInfo` instead.
+ */
 export const isChainInfoAccordantAccountChainType = (chainInfo: _ChainInfo, chainType: AccountChainType): boolean => {
   if (chainType === AccountChainType.SUBSTRATE) {
     return _isPureSubstrateChain(chainInfo);
@@ -62,35 +64,4 @@ export const isChainInfoAccordantAccountChainType = (chainInfo: _ChainInfo, chai
   }
 
   return false;
-};
-
-export const isChainCompatibleWithAccountChainTypes = (
-  chainInfo: _ChainInfo,
-  chainTypes: AccountChainType[],
-): boolean => {
-  return chainTypes.some(chainType => isChainInfoAccordantAccountChainType(chainInfo, chainType));
-};
-
-export const getChainsByAccountType = (
-  _chainInfoMap: Record<string, _ChainInfo>,
-  chainTypes: AccountChainType[],
-  specialChain?: string,
-): string[] => {
-  const chainInfoMap = Object.fromEntries(
-    Object.entries(_chainInfoMap).filter(([, chainInfo]) => chainInfo.chainStatus === _ChainStatus.ACTIVE),
-  );
-
-  if (specialChain) {
-    return Object.keys(chainInfoMap).filter(chain => specialChain === chain);
-  } else {
-    const result: string[] = [];
-
-    for (const chainInfo of Object.values(chainInfoMap)) {
-      if (isChainCompatibleWithAccountChainTypes(chainInfo, chainTypes)) {
-        result.push(chainInfo.slug);
-      }
-    }
-
-    return result;
-  }
 };

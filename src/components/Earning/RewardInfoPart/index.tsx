@@ -20,7 +20,7 @@ import { RootState } from 'stores/index';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { HideBalanceItem } from 'components/HideBalanceItem';
 import { isSameAddress } from '@subwallet/extension-base/utils';
-import useReformatAddress from 'hooks/common/useReformatAddress';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -41,7 +41,7 @@ const RewardInfoPart: React.FC<Props> = (props: Props) => {
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const total = useYieldRewardTotal(slug);
-  const getReformatAddress = useReformatAddress();
+  const getReformatAddress = useCoreCreateReformatAddress();
   const [showDetail, setShowDetail] = useState(false);
 
   const toggleDetail = useCallback(() => {

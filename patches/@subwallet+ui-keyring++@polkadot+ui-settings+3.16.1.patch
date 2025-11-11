@@ -1,0 +1,12 @@
+diff --git a/node_modules/@subwallet/ui-keyring/node_modules/@polkadot/ui-settings/packageInfo.js b/node_modules/@subwallet/ui-keyring/node_modules/@polkadot/ui-settings/packageInfo.js
+index 2f5b17a..24fa679 100644
+--- a/node_modules/@subwallet/ui-keyring/node_modules/@polkadot/ui-settings/packageInfo.js
++++ b/node_modules/@subwallet/ui-keyring/node_modules/@polkadot/ui-settings/packageInfo.js
+@@ -1 +1,6 @@
+-export const packageInfo = { name: '@polkadot/ui-settings', path: (import.meta && import.meta.url) ? new URL(import.meta.url).pathname.substring(0, new URL(import.meta.url).pathname.lastIndexOf('/') + 1) : 'auto', type: 'esm', version: '3.16.1' };
++export const packageInfo = {
++    name: '@polkadot/ui-settings',
++    path: 'auto',
++    type: 'cjs',
++    version: '3.16.1'
++};

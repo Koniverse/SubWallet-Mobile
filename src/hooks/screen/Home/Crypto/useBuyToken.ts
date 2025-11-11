@@ -14,12 +14,12 @@ import { _getOriginChainOfAsset, _isAssetFungibleToken } from '@subwallet/extens
 import { AccountProxy, BuyTokenInfo } from '@subwallet/extension-base/types';
 import { AccountAddressItemType } from 'types/account';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import useAssetChecker from 'hooks/chain/useAssetChecker';
 import { reformatAddress } from '@subwallet/extension-base/utils';
-import useReformatAddress from 'hooks/common/useReformatAddress';
 import { useGetAccountTokenBalance } from 'hooks/balance';
 import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 
 type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
 
@@ -32,8 +32,8 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
   const { services, tokens } = useSelector((state: RootState) => state.buyService);
   const getAccountTokenBalance = useGetAccountTokenBalance();
   const checkAsset = useAssetChecker();
-  const allowedChains = useGetChainSlugsByAccount();
-  const getReformatAddress = useReformatAddress();
+  const allowedChains = useGetChainSlugsByCurrentAccountProxy();
+  const getReformatAddress = useCoreCreateReformatAddress();
   const fixedTokenSlug = useMemo((): string | undefined => {
     if (currentSymbol) {
       return Object.values(tokens).filter(value => value.slug === currentSymbol || value.symbol === currentSymbol)[0]

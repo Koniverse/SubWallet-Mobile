@@ -18,7 +18,7 @@ import {
   SubstrateTransactionParsedData,
   TxQRInfo,
 } from 'types/qr/scanner';
-import { findAccountByAddress } from 'utils/account';
+import { findAccountByAddress } from 'utils/index';
 import { getNetworkJsonByInfo } from 'utils/network';
 import { constructDataFromBytes, encodeNumber } from 'utils/scanner/decoders';
 import { isEthereumCompletedParsedData, isSubstrateMessageParsedData } from 'utils/scanner/sign';
