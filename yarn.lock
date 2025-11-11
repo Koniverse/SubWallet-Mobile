@@ -7609,13 +7609,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subwallet/chain-list@npm:0.2.105-mobile.2":
-  version: 0.2.105-mobile.2
-  resolution: "@subwallet/chain-list@npm:0.2.105-mobile.2"
+"@subwallet/chain-list@npm:0.2.107-mobile.1":
+  version: 0.2.107-mobile.1
+  resolution: "@subwallet/chain-list@npm:0.2.107-mobile.1"
   dependencies:
     "@polkadot/util": ^12.5.1
     ts-md5: ^1.3.1
-  checksum: e7815eb280e92c3703cfb23fbb912b38c547df9bea90c68e40d812644888537fdf6320644cba7cd7df396c31214f56bc44316417dbc7d34d0cc9d84e769d2a33
+  checksum: 2575bc5b519861e829441baf7748f815e755f2820da24ccebd81c3b5b64924c8f6f14933306314bc778b7102ac7971ca66959375d0dbbb5b9c1e0dd248855371
   languageName: node
   linkType: hard
 
@@ -9705,7 +9705,7 @@ __metadata:
     "@reduxjs/toolkit": ^1.9.2
     "@shopify/flash-list": ^1.7.1
     "@subwallet-monorepos/subwallet-services-sdk": ^0.1.8
-    "@subwallet/chain-list": 0.2.105-mobile.2
+    "@subwallet/chain-list": 0.2.107-mobile.1
     "@subwallet/extension-base": 1.3.62-0
     "@subwallet/extension-chains": 1.3.41-0
     "@subwallet/extension-dapp": 1.3.41-0
