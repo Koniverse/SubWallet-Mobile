@@ -5,7 +5,8 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { Typography } from 'components/design-system-ui';
 import { AccountChainTypeLogos } from 'components/AccountProxy/AccountChainTypeLogos';
-import { AccountChainType, SUPPORTED_ACCOUNT_CHAIN_TYPES } from '@subwallet/extension-base/types';
+import { AccountChainType } from '@subwallet/extension-base/types';
+import { SUPPORTED_ACCOUNT_CHAIN_TYPES } from 'constants/account';
 import { FontSemiBold } from 'styles/sharedStyles';
 
 export type ResultAccountProxyItemType = {

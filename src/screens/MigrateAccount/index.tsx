@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react';
 import { BriefView } from './BriefView';
 import SoloAccountMigrationView from 'screens/MigrateAccount/SoloAccountMigrationView';
 import SummaryView from 'screens/MigrateAccount/SummaryView';
-import PasswordModal from 'components/Modal/PasswordModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { RequestMigrateSoloAccount, SoloAccountToBeMigrated } from '@subwallet/extension-base/background/KoniTypes';
@@ -11,6 +10,7 @@ import { MigrateAccountProps, RootNavigationProps } from 'routes/index';
 import { hasAnyAccountForMigration } from '@subwallet/extension-base/services/keyring-service/utils';
 import { migrateSoloAccount, migrateUnifiedAndFetchEligibleSoloAccounts } from 'messaging/migrate-unified-account';
 import { saveMigrationAcknowledgedStatus } from 'messaging/index';
+import PasswordMigrateModal from 'screens/MigrateAccount/PasswordMigrateModal';
 
 export enum ScreenView {
   BRIEF = 'brief',
@@ -101,7 +101,6 @@ const MigrateAccount = ({
           } else {
             setCurrentScreenView(ScreenView.SUMMARY);
           }
-          setIsBusy(false);
           onClosePasswordModal();
         })
         .catch(err => {
@@ -163,7 +162,7 @@ const MigrateAccount = ({
       )}
 
       {isPasswordModalOpen && (
-        <PasswordModal
+        <PasswordMigrateModal
           visible={isPasswordModalOpen}
           setModalVisible={setIsPasswordModalOpen}
           onConfirm={onSubmitPassword}
