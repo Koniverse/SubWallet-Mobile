@@ -212,7 +212,9 @@
     "noFaceIdPermission": "This app use Face ID to unlock password",
     "tooManyAttemps": "Too many failed attempts. Please try again later or enter password.",
     "ratingAlertTitle": "Rate our app!",
-    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday."
+    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday.",
+    "enterPassword": "Enter password",
+    "enterPasswordToMigrate": "Enter your master password to migrate account"
   },
   "title": {
     "exportAccount": "Экспорт аккаунта",
@@ -439,7 +441,9 @@
     "cancelUnstake": "Cancel unstake",
     "exploreEarningOptions": "Explore earning options",
     "enterAstarPortal": "Enter Astar portal",
-    "iUnderstand": "I understand"
+    "iUnderstand": "I understand",
+    "dismiss": "Dismiss",
+    "migrateNow": "Migrate now"
   },
   "inputLabel": {
     "selectAcc": "Выбрать аккаунт",

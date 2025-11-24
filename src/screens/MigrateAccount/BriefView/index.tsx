@@ -79,7 +79,7 @@ export const BriefView = ({ isForcedMigration, onDismiss, onMigrateNow, isBusy }
               <View style={{ gap: theme.sizeMD, paddingTop: theme.paddingMD }}>
                 <Typography.Text style={{ color: theme.colorTextTertiary, textAlign: 'center' }}>
                   {
-                    'Account migration is not yet complete. If this process remains incomplete, you will not be able to perform any action on SubWallet extension.'
+                    'Account migration is not yet complete. If this process remains incomplete, you will not be able to perform any action on SubWallet mobile.'
                   }
                 </Typography.Text>
                 <Typography.Text style={{ color: theme.colorTextTertiary, textAlign: 'center' }}>
@@ -103,7 +103,7 @@ export const BriefView = ({ isForcedMigration, onDismiss, onMigrateNow, isBusy }
                 {i18n.buttonTitles.cancel}
               </Button>
               <Button block icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />} onPress={onMigrateNow}>
-                {'Migrate now'}
+                {i18n.buttonTitles.migrateNow}
               </Button>
             </View>
           )}
