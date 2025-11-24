@@ -45,9 +45,16 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
           {toShort(data.extrinsicHash, 8, 9)}
         </MetaInfo.Default>
       )}
-      <MetaInfo.Default label={i18n.historyScreen.label.transactionTime}>
-        {formatHistoryDate(data.time, language, 'detail')}
-      </MetaInfo.Default>
+      {!!data.time && (
+        <MetaInfo.Default label={i18n.historyScreen.label.transactionTime}>
+          {formatHistoryDate(data.time, language, 'detail')}
+        </MetaInfo.Default>
+      )}
+      {!!data.blockTime && (
+        <MetaInfo.Default label={'Block time'}>
+          {formatHistoryDate(data.blockTime, language, 'detail')}
+        </MetaInfo.Default>
+      )}
       <HistoryDetailAmount data={data} />
       {isAbleToShowFee(data) && <HistoryDetailFee data={data} />}
     </MetaInfo>

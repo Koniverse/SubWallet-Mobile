@@ -9,11 +9,12 @@ import { validateAccountName } from 'messaging/accounts';
 import { SoloAccountToBeMigratedItem } from 'screens/MigrateAccount/SoloAccountMigrationView/SoloAccountToBeMigratedItem';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { AccountProxyType } from '@subwallet/extension-base/types';
+import { AccountProxyType, SUPPORTED_ACCOUNT_CHAIN_TYPES } from '@subwallet/extension-base/types';
 import { CheckCircle, XCircle } from 'phosphor-react-native';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
+import { AccountChainTypeLogos } from 'components/AccountProxy/AccountChainTypeLogos';
 
 interface Props {
   currentProcessOrdinal: number;
@@ -166,6 +167,7 @@ export const ProcessViewItem = ({
               accountType={AccountProxyType.UNIFIED}
               placeholder={'Enter the account name'}
               placeholderTextColor={theme.colorTextTertiary}
+              suffix={<AccountChainTypeLogos chainTypes={SUPPORTED_ACCOUNT_CHAIN_TYPES} />}
               errorMessages={formState.errors.accountName}
             />
           </View>

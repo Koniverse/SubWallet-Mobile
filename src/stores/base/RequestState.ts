@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ConfirmationsQueue, ConfirmationsQueueTon } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  ConfirmationsQueue,
+  ConfirmationsQueueBitcoin,
+  ConfirmationsQueueTon,
+} from '@subwallet/extension-base/background/KoniTypes';
 import {
   AuthorizeRequest,
   ConfirmationRequestBase,
@@ -22,9 +26,11 @@ const initialState: RequestState = {
   metadataRequest: {},
   signingRequest: {},
   transactionRequest: {},
-  connectWCRequest: {},
 
-  // Type of confirmation requets
+  // WalletConnect
+  connectWCRequest: {},
+  notSupportWCRequest: {},
+  // Type of confirmation requests
   addNetworkRequest: {},
   addTokenRequest: {},
   evmSignatureRequest: {},
@@ -32,10 +38,22 @@ const initialState: RequestState = {
   evmWatchTransactionRequest: {},
   errorConnectNetwork: {},
   submitApiRequest: {},
-  notSupportWCRequest: {},
+
   tonSignatureRequest: {},
   tonWatchTransactionRequest: {},
   tonSendTransactionRequest: {},
+
+  cardanoSignatureRequest: {},
+  cardanoSendTransactionRequest: {},
+  cardanoWatchTransactionRequest: {},
+  cardanoSignTransactionRequest: {},
+
+  bitcoinSendTransactionRequest: {},
+  bitcoinSignatureRequest: {},
+  bitcoinSendTransactionRequestAfterConfirmation: {},
+  bitcoinWatchTransactionRequest: {},
+  bitcoinSignPsbtRequest: {},
+
   aliveProcess: {},
   // Summary Info
   reduxStatus: ReduxStatus.INIT,
@@ -55,10 +73,18 @@ export const CONFIRMATIONS_FIELDS: Array<keyof RequestState> = [
   'evmWatchTransactionRequest',
   'errorConnectNetwork',
   'submitApiRequest',
-  'connectWCRequest',
   'tonSignatureRequest',
   'tonSendTransactionRequest',
   'tonWatchTransactionRequest',
+  'cardanoSignatureRequest',
+  'cardanoSendTransactionRequest',
+  'cardanoSignTransactionRequest',
+  'tonWatchTransactionRequest',
+  'bitcoinSignatureRequest',
+  'bitcoinSendTransactionRequest',
+  'bitcoinWatchTransactionRequest',
+  'connectWCRequest',
+  'notSupportWCRequest',
 ];
 
 export interface ConfirmationQueueItem {
@@ -76,6 +102,7 @@ const readyMap = {
   updateConfirmationRequestsTon: false,
   updateConnectWalletConnect: false,
   updateNotSupportWalletConnect: false,
+  updateConfirmationRequestBitcoin: false,
 };
 
 function computeStateSummary(state: RequestState) {
@@ -140,6 +167,11 @@ const requestStateSlice = createSlice({
       readyMap.updateConfirmationRequestsTon = true;
       computeStateSummary(state as RequestState);
     },
+    updateConfirmationRequestsBitcoin(state, action: PayloadAction<Partial<ConfirmationsQueueBitcoin>>) {
+      Object.assign(state, action.payload);
+      readyMap.updateConfirmationRequestBitcoin = true;
+      computeStateSummary(state as RequestState);
+    },
     updateWCNotSupportRequests(state, { payload }: PayloadAction<Record<string, WalletConnectNotSupportRequest>>) {
       state.notSupportWCRequest = payload;
       readyMap.updateNotSupportWalletConnect = true;
@@ -154,6 +186,7 @@ export const {
   updateMetadataRequests,
   updateSigningRequests,
   updateConfirmationRequestsTon,
+  updateConfirmationRequestsBitcoin,
   updateWCNotSupportRequests,
   updateTransactionRequests,
   updateConnectWCRequests,

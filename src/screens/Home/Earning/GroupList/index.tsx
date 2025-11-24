@@ -29,9 +29,9 @@ import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { BannerGenerator } from 'components/common/BannerGenerator';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -115,7 +115,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const data = useYieldGroupInfo();
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
-  const chainsByAccountType = useGetChainSlugsByAccount();
+  const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
   const yieldPositions = useGroupYieldPosition();

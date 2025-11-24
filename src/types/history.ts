@@ -9,4 +9,5 @@ export interface TransactionHistoryDisplayData {
 }
 export interface TransactionHistoryDisplayItem extends TransactionHistoryItem {
   displayData: TransactionHistoryDisplayData;
+  displayTime: number;
 }

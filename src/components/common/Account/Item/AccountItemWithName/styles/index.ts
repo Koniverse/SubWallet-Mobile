@@ -19,6 +19,7 @@ export default (theme: ThemeTypes) => {
     contentDirectionHorizontal: {
       flexDirection: 'row',
       paddingRight: theme.padding,
+      alignItems: 'center',
     },
     contentDirectionVertical: {
       flexDirection: 'column',

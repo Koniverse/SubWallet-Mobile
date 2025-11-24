@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { _AssetRef, _AssetType, _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
+import { _AssetRef, _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import {
   _getAssetDecimals,
@@ -12,6 +12,8 @@ import {
   _getEvmChainId,
   _getMultiChainAsset,
   _getOriginChainOfAsset,
+  _isChainBitcoinCompatible,
+  _isChainCardanoCompatible,
   _isChainEvmCompatible,
   _isNativeToken,
   _isTokenTransferredByEvm,
@@ -36,7 +38,7 @@ import {
   saveRecentAccount,
   subscribeMaxTransfer,
 } from 'messaging/index';
-import { findAccountByAddress } from 'utils/account';
+import { findAccountByAddress } from 'utils/index';
 import { balanceFormatter, formatBalance, formatNumber } from 'utils/number';
 import { TokenItemType, TokenSelector, TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { isAccountAll } from 'utils/accountAll';
@@ -89,8 +91,6 @@ import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationB
 import { GlobalModalContext } from 'providers/GlobalModalContext';
 import { AccountProxy, AccountProxyType, TransactionFee } from '@subwallet/extension-base/types';
 import { AccountAddressItemType } from 'types/account';
-import { getChainsByAccountType } from 'utils/chain';
-import { getChainsByAccountAll } from 'utils/index';
 import { SelectModalField } from 'components/common/SelectModal/parts/SelectModalField';
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
@@ -106,12 +106,13 @@ import { FeeEditor } from 'components/Modal/TransactionFee';
 import { ResponseSubscribeTransfer } from '@subwallet/extension-base/types/balance/transfer';
 import { TokenHasBalanceInfo } from '@subwallet/extension-base/services/fee-service/interfaces';
 import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
-import useReformatAddress from 'hooks/common/useReformatAddress';
 import AlertBoxInstant from 'components/design-system-ui/alert-box/instant';
 import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { _isAcrossChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/acrossBridge';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
+import useCoreCreateGetChainSlugsByAccountProxy from 'hooks/chain/useCoreCreateGetChainSlugsByAccountProxy';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -127,43 +128,6 @@ interface Props {
 type ViewStep = 1 | 2;
 
 type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
-
-function getTokenItems(
-  accountProxy: AccountProxy,
-  accountProxies: AccountProxy[],
-  chainInfoMap: Record<string, _ChainInfo>,
-  assetRegistry: Record<string, _ChainAsset>,
-  tokenGroupSlug?: string, // is ether a token slug or a multiChainAsset slug
-): TokenSelectorItemType[] {
-  let allowedChains: string[];
-
-  if (!isAccountAll(accountProxy.id)) {
-    allowedChains = getChainsByAccountType(chainInfoMap, accountProxy.chainTypes, accountProxy.specialChain);
-  } else {
-    allowedChains = getChainsByAccountAll(accountProxy, accountProxies, chainInfoMap);
-  }
-
-  const items: TokenSelectorItemType[] = [];
-
-  Object.values(assetRegistry).forEach(chainAsset => {
-    const originChain = _getAssetOriginChain(chainAsset);
-
-    if (!allowedChains.includes(originChain)) {
-      return;
-    }
-
-    if (!tokenGroupSlug || chainAsset.slug === tokenGroupSlug || _getMultiChainAsset(chainAsset) === tokenGroupSlug) {
-      items.push({
-        slug: chainAsset.slug,
-        name: _getAssetName(chainAsset),
-        symbol: _getAssetSymbol(chainAsset),
-        originChain,
-      });
-    }
-  });
-
-  return items;
-}
 
 function getTokenAvailableDestinations(
   tokenSlug: string,
@@ -266,7 +230,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const { confirmModal } = useContext(AppModalContext);
   const globalAppModalContext = useContext(GlobalModalContext);
   const assetInfo = useFetchChainAssetInfo(assetValue);
-  const getReformatAddress = useReformatAddress();
+  const getReformatAddress = useCoreCreateReformatAddress();
   const [listTokensCanPayFee, setListTokensCanPayFee] = useState<TokenHasBalanceInfo[]>([]);
   const [defaultTokenPayFee, setDefaultTokenPayFee] = useState<string | undefined>(undefined);
   const [currentTokenPayFee, setCurrentTokenPayFee] = useState<string | undefined>(undefined);
@@ -274,6 +238,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
   const isShowAddressFormatInfoBox = checkIsPolkadotUnifiedChain(chainValue);
   const getAccountTokenBalance = useGetAccountTokenBalance();
+  const getChainSlugsByAccountProxy = useCoreCreateGetChainSlugsByAccountProxy();
 
   const currentConfirmations = useMemo(() => {
     if (chainValue && destChainValue) {
@@ -352,7 +317,29 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
       return [];
     }
 
-    const items = getTokenItems(currentAccountProxy, accountProxies, chainInfoMap, assetRegistry, sendFundSlug);
+    const items = (() => {
+      const allowedChains = getChainSlugsByAccountProxy(currentAccountProxy);
+      const result: TokenSelectorItemType[] = [];
+
+      Object.values(assetRegistry).forEach(chainAsset => {
+        const originChain = _getAssetOriginChain(chainAsset);
+
+        if (!allowedChains.includes(originChain)) {
+          return;
+        }
+
+        if (!sendFundSlug || chainAsset.slug === sendFundSlug || _getMultiChainAsset(chainAsset) === sendFundSlug) {
+          result.push({
+            slug: chainAsset.slug,
+            name: _getAssetName(chainAsset),
+            symbol: _getAssetSymbol(chainAsset),
+            originChain,
+          });
+        }
+      });
+
+      return result;
+    })();
 
     const tokenBalanceMap = getAccountTokenBalance(
       items.map(item => item.slug),
@@ -386,12 +373,11 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
 
     return tokenItemsSorted;
   }, [
-    accountProxies,
     assetRegistry,
-    chainInfoMap,
     chainStateMap,
     currentAccountProxy,
     getAccountTokenBalance,
+    getChainSlugsByAccountProxy,
     priorityTokens,
     sendFundSlug,
     targetAccountProxyIdForGetBalance,
@@ -453,9 +439,12 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     return (
       !!_chainInfo &&
       !!assetInfo &&
-      _isChainEvmCompatible(_chainInfo) &&
       destChainValue === chainValue &&
-      _isNativeToken(assetInfo)
+      _isNativeToken(assetInfo) &&
+      _isChainEvmCompatible(_chainInfo) &&
+      (_isChainEvmCompatible(_chainInfo) ||
+        _isChainCardanoCompatible(_chainInfo) ||
+        _isChainBitcoinCompatible(_chainInfo))
     );
   }, [chainInfoMap, chainValue, assetInfo, destChainValue]);
 
@@ -1080,6 +1069,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
       subscribeMaxTransfer(
         {
           address: fromValue,
+          to: toValue,
           chain: assetRegistry[assetValue].originChain,
           token: assetValue,
           value: transferAmount,
@@ -1116,6 +1106,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     nativeTokenSlug,
     selectedTransactionFee?.feeCustom,
     selectedTransactionFee?.feeOption,
+    toValue,
     transferAmount,
     trigger,
   ]);
@@ -1380,7 +1371,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                   </View>
                 </View>
               )}
-              {isAllAccount && viewStep === 1 && (
+              {(isAllAccount || accountAddressItems.length > 2) && viewStep === 1 && (
                 <View style={{ marginBottom: theme.marginSM }}>
                   <AccountSelector
                     items={accountAddressItems}

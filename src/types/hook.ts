@@ -3,8 +3,8 @@ import { PriceChangeStatus, TokenBalanceItemType } from 'types/balance';
 
 export type TokenGroupHookType = {
   tokenGroupMap: Record<string, string[]>;
-  sortedTokenGroups: string[];
-  sortedTokenSlugs: string[];
+  tokenGroups: string[];
+  tokenSlugs: string[];
   isComputing?: boolean;
 };
 

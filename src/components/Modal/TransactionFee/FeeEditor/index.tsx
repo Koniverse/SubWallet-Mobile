@@ -56,7 +56,7 @@ interface Props {
   nativeTokenSlug: string;
 }
 
-const FEE_TYPES_CAN_SHOW: Array<FeeChainType | undefined> = ['substrate', 'evm'];
+const FEE_TYPES_CAN_SHOW: Array<FeeChainType | undefined> = ['substrate', 'evm', 'bitcoin'];
 
 const FeeEditor = ({
   chainValue,

@@ -103,11 +103,11 @@ import { VoidFunction } from 'types/index';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import useOneSignProcess from 'hooks/account/useOneSignProcess';
-import useReformatAddress from 'hooks/common/useReformatAddress';
 import { ImageLogosMap } from 'assets/logo';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
 import { useTaoStakingFee } from 'hooks/earning/useTaoStakingFee';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface StakeFormValues extends TransactionFormValues {
@@ -181,7 +181,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const isShowNoPoolInfoPopupRef = useRef<boolean>(false);
   const oneSign = useOneSignProcess(currentFrom);
   const nativeTokenSlug = useGetNativeTokenSlug(chain);
-  const getReformatAddress = useReformatAddress();
+  const getReformatAddress = useCoreCreateReformatAddress();
 
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
 

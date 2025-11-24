@@ -38,5 +38,8 @@ export default (theme: ThemeTypes) => {
       color: theme.colorTextTertiary,
       paddingRight: theme.paddingXS,
     },
+    explorerBtn: { marginBottom: -4, marginTop: theme.marginXXS },
+    accountInfoWrapper: { flexDirection: 'row', alignItems: 'center', gap: theme.paddingXS },
+    accountNameAndAddressWrapper: { flexDirection: 'row', alignItems: 'center' },
   });
 };

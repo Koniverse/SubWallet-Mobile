@@ -3,8 +3,10 @@
 
 import {
   ConfirmationDefinitions,
+  ConfirmationDefinitionsBitcoin,
   ConfirmationDefinitionsTon,
   ConfirmationType,
+  ConfirmationTypeBitcoin,
   ConfirmationTypeTon,
   RequestSigningApprovePasswordV2,
 } from '@subwallet/extension-base/background/KoniTypes';
@@ -49,4 +51,11 @@ export async function completeConfirmationTon<CT extends ConfirmationTypeTon>(
   payload: ConfirmationDefinitionsTon[CT][1],
 ): Promise<boolean> {
   return sendMessage('pri(confirmationsTon.complete)', { [type]: payload });
+}
+
+export async function completeConfirmationBitcoin<CT extends ConfirmationTypeBitcoin>(
+  type: CT,
+  payload: ConfirmationDefinitionsBitcoin[CT][1],
+): Promise<boolean> {
+  return sendMessage('pri(confirmationsBitcoin.complete)', { [type]: payload });
 }

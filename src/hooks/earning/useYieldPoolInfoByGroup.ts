@@ -5,11 +5,11 @@ import { YieldPoolInfo } from '@subwallet/extension-base/types';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 const useYieldPoolInfoByGroup = (group: string): YieldPoolInfo[] => {
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
-  const chainsByAccountType = useGetChainSlugsByAccount();
+  const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
 
   return useMemo(() => {
     const result: YieldPoolInfo[] = [];

@@ -27,10 +27,11 @@ import useAccountBalance, { getBalanceValue } from 'hooks/screen/useAccountBalan
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { useGroupYieldPosition } from 'hooks/earning';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
+import { BN_ZERO } from '@subwallet/extension-base/utils';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 const filterFunction = (items: YieldPoolInfo[], filters: string[]) => {
   if (!filters.length) {
@@ -106,7 +107,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const [selectedPoolOpt, setSelectedPoolOpt] = React.useState<YieldPoolInfo | undefined>(undefined);
   const { assetRegistry: chainAsset } = useSelector((state: RootState) => state.assetRegistry);
   const { currencyData } = useSelector((state: RootState) => state.price);
-  const chainsByAccountType = useGetChainSlugsByAccount();
+  const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
   const yieldPositions = useGroupYieldPosition();
@@ -186,12 +187,23 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
           minJoinPool = '0';
         }
 
-        const originChainAsset = poolInfo.metadata.inputAsset;
-        const availableBalance = tokenBalanceMap[originChainAsset] && tokenBalanceMap[originChainAsset].free.value;
-        const assetInfo = chainAsset[originChainAsset];
-        const minJoinPoolBalanceValue = getBalanceValue(minJoinPool, _getAssetDecimals(assetInfo));
+        let nativeSlug: string | undefined;
 
-        if (availableBalance && availableBalance.isGreaterThan(minJoinPoolBalanceValue)) {
+        const nativeAsset =
+          poolInfo && poolInfo?.statistic?.assetEarning.find(item => item.slug.toLowerCase().includes('native'));
+
+        if (nativeAsset) {
+          nativeSlug = nativeAsset.slug;
+        }
+
+        const assetInfo = nativeSlug && chainAsset[nativeSlug];
+        const minJoinPoolBalanceValue =
+          (assetInfo && getBalanceValue(minJoinPool, _getAssetDecimals(assetInfo))) || BN_ZERO;
+
+        const availableBalance =
+          (nativeSlug && tokenBalanceMap[nativeSlug] && tokenBalanceMap[nativeSlug].free.value) || BN_ZERO;
+
+        if (availableBalance.isGreaterThanOrEqualTo(minJoinPoolBalanceValue)) {
           result.push(poolInfo);
         }
       } else {

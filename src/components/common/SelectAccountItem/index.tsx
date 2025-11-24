@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
-import { TouchableOpacity, View, ViewStyle } from 'react-native';
-import { Button, Icon, Logo, Typography } from 'components/design-system-ui';
+import React from 'react';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontSemiBold } from 'styles/sharedStyles';
 import {
@@ -17,10 +17,12 @@ import {
   Strategy,
   Swatches,
 } from 'phosphor-react-native';
-import { AccountChainType, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
+import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { PhosphorIcon } from 'utils/campaign';
 import { IconWeight } from 'phosphor-react-native/lib/typescript';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { AccountChainTypeLogos } from 'components/AccountProxy/AccountChainTypeLogos';
+import { ThemeTypes } from 'styles/themes';
 
 export type AccountProxyTypeIcon = {
   value: PhosphorIcon;
@@ -66,6 +68,7 @@ export const SelectAccountItem = ({
   isShowTypeIcon = true,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const styles = createStyles(theme);
 
   const accountProxyTypeIconProps = ((): AccountProxyTypeIcon | null => {
     if (accountProxy.accountType === AccountProxyType.UNIFIED) {
@@ -127,16 +130,6 @@ export const SelectAccountItem = ({
     return null;
   })();
 
-  const chainTypeLogoMap = useMemo(() => {
-    return {
-      [AccountChainType.SUBSTRATE]: 'polkadot',
-      [AccountChainType.ETHEREUM]: 'ethereum',
-      [AccountChainType.BITCOIN]: 'bitcoin',
-      [AccountChainType.TON]: 'ton',
-      [AccountChainType.CARDANO]: 'cardano',
-    };
-  }, []);
-
   const _onPressCopyButton = () => {
     onPressCopyBtn?.();
   };
@@ -144,38 +137,13 @@ export const SelectAccountItem = ({
   return (
     <TouchableOpacity
       activeOpacity={1}
-      style={[
-        {
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginHorizontal: 16,
-          paddingVertical: theme.paddingXS - 1,
-          paddingLeft: 12,
-          paddingRight: 4,
-          backgroundColor: theme.colorBgSecondary,
-          borderRadius: theme.borderRadiusLG,
-          flex: 1,
-          marginBottom: theme.marginXS,
-        },
-        wrapperStyle,
-      ]}
+      style={[styles.wrapperStyle, wrapperStyle]}
       onPress={() => onSelectAccount && onSelectAccount()}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 2 }}>
+      <View style={styles.leftArea}>
         <View style={{ position: 'relative' }}>
           <AccountProxyAvatar size={avatarSize || 32} value={accountProxy.id} />
           {!!accountProxyTypeIconProps && isShowTypeIcon && (
-            <View
-              style={{
-                position: 'absolute',
-                right: 0,
-                bottom: 0,
-                width: theme.size,
-                height: theme.size,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: theme.borderRadiusLG,
-                backgroundColor: 'rgba(0, 0, 0, 0.65)',
-              }}>
+            <View style={styles.accountProxyTypeIcon}>
               <Icon
                 phosphorIcon={accountProxyTypeIconProps.value}
                 size={'xxs'}
@@ -208,19 +176,18 @@ export const SelectAccountItem = ({
                     style={{ color: theme.colorTextTertiary, marginTop: -(theme.marginXXS - 2) }}>
                     {accountProxy.suri || ''}
                   </Typography.Text>
+                  <View style={{ paddingLeft: theme.sizeXXS }}>
+                    <AccountChainTypeLogos chainTypes={accountProxy.chainTypes} />
+                  </View>
                 </View>
               ) : (
-                accountProxy.chainTypes.map((nt, index) => (
-                  <View style={index !== 0 && { marginLeft: -4 }}>
-                    <Logo network={chainTypeLogoMap[nt]} size={16} shape={'circle'} />
-                  </View>
-                ))
+                <AccountChainTypeLogos chainTypes={accountProxy.chainTypes} />
               )}
             </View>
           )}
         </View>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
+      <View style={styles.rightArea}>
         {!isShowMultiCheck && isSelected && (
           <View style={{ paddingHorizontal: theme.paddingSM - 2 }}>
             <Icon phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} size={'sm'} weight={'fill'} />
@@ -264,3 +231,33 @@ export const SelectAccountItem = ({
     </TouchableOpacity>
   );
 };
+
+function createStyles(theme: ThemeTypes) {
+  return StyleSheet.create({
+    wrapperStyle: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginHorizontal: 16,
+      paddingVertical: theme.paddingXS - 1,
+      paddingLeft: 12,
+      paddingRight: 4,
+      backgroundColor: theme.colorBgSecondary,
+      borderRadius: theme.borderRadiusLG,
+      flex: 1,
+      marginBottom: theme.marginXS,
+    },
+    leftArea: { flexDirection: 'row', alignItems: 'center', flex: 2 },
+    rightArea: { flexDirection: 'row', alignItems: 'center', flex: 1, justifyContent: 'flex-end' },
+    accountProxyTypeIcon: {
+      position: 'absolute',
+      right: 0,
+      bottom: 0,
+      width: theme.size,
+      height: theme.size,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: theme.borderRadiusLG,
+      backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    },
+  });
+}

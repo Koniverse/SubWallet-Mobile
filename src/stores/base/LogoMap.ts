@@ -23,6 +23,7 @@ const settingsSlice = createSlice({
       payload.chain_flip_testnet = ImageLogosMap.chain_flip_testnet;
       payload.hydradx_mainnet = ImageLogosMap.hydradx_mainnet;
       payload.hydradx_testnet = ImageLogosMap.hydradx_testnet;
+      payload.ordinal_rune = ImageLogosMap.ordinal_rune;
       payload.simple_swap = ImageLogosMap.simple_swap;
       payload[SwapProviderId.POLKADOT_ASSET_HUB.toLowerCase()] = ImageLogosMap.polkadot_assethub;
       payload[SwapProviderId.KUSAMA_ASSET_HUB.toLowerCase()] = ImageLogosMap.kusama_assethub;

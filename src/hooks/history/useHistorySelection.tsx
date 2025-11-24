@@ -4,17 +4,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { RootState } from 'stores/index';
 import { AccountProxy } from '@subwallet/extension-base/types';
 import useChainInfoWithState from 'hooks/chain/useChainInfoWithState';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { ChainItemType } from 'types/index';
 import { AccountAddressItemType } from 'types/account';
-import useReformatAddress from 'hooks/common/useReformatAddress';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 
 export default function useHistorySelection(initialChain?: string, initialAddress?: string) {
   const { accountProxies, currentAccountProxy } = useSelector((root: RootState) => root.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const chainInfoList = useChainInfoWithState();
-  const allowedChains = useGetChainSlugsByAccount();
-  const getReformatAddress = useReformatAddress();
+  const allowedChains = useGetChainSlugsByCurrentAccountProxy();
+  const getReformatAddress = useCoreCreateReformatAddress();
   const [selectedAddress, setSelectedAddress] = useState<string>(initialAddress || '');
   const [selectedChain, setSelectedChain] = useState<string>(initialChain || '');
 

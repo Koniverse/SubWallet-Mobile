@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import {
   ConfirmationDefinitions,
+  ConfirmationDefinitionsBitcoin,
   ConfirmationDefinitionsTon,
   ExtrinsicType,
 } from '@subwallet/extension-base/background/KoniTypes';
@@ -12,7 +13,7 @@ import { SigningRequest } from '@subwallet/extension-base/background/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
-import { EvmSignArea, SubstrateSignArea, TonSignArea } from '../../parts';
+import { BitcoinSignArea, EvmSignArea, SubstrateSignArea, TonSignArea } from '../../parts';
 import {
   JoinPoolTransactionConfirmation,
   SendNftTransactionConfirmation,
@@ -187,6 +188,24 @@ export const TransactionConfirmation = (props: Props) => {
           id={item.id}
           payload={item as ConfirmationDefinitionsTon['tonSendTransactionRequest' | 'tonWatchTransactionRequest'][0]}
           txExpirationTime={txExpirationTime}
+          type={type}
+        />
+      )}
+      {(type === 'bitcoinSignatureRequest' ||
+        type === 'bitcoinSendTransactionRequest' ||
+        type === 'bitcoinWatchTransactionRequest' ||
+        type === 'bitcoinSignPsbtRequest') && (
+        <BitcoinSignArea
+          navigation={navigation}
+          extrinsicType={_transaction.extrinsicType}
+          id={item.id}
+          payload={
+            item as ConfirmationDefinitionsBitcoin[
+              | 'bitcoinSignatureRequest'
+              | 'bitcoinSendTransactionRequest'
+              | 'bitcoinWatchTransactionRequest'
+              | 'bitcoinSignPsbtRequest'][0]
+          }
           type={type}
         />
       )}

@@ -11,6 +11,8 @@ import TransactionStepsModal from 'components/Modal/TransactionStepsModal';
 import { ProcessType } from '@subwallet/extension-base/types';
 import SelectAddressFormatModal from 'components/Modal/SelectAddressFormatModal';
 import { TransactionProcessStepItemType } from 'types/component';
+import { AccountTokenAddress } from 'types/account';
+import { AccountTokenAddressModal } from 'components/Modal/AccountTokenAddressModal';
 
 interface AppModalContextProviderProps {
   children?: React.ReactElement;
@@ -38,6 +40,7 @@ export type AddressQrModalInfo = {
   isNewFormat?: boolean;
   onBack?: VoidFunction;
   isOpenFromAccountDetailScreen?: boolean;
+  accountTokenAddresses?: AccountTokenAddress[];
   navigation?: NativeStackNavigationProp<RootStackParamList>;
 };
 
@@ -67,6 +70,13 @@ export type TransactionStepsInfo = {
   type?: ProcessType;
   items?: TransactionProcessStepItemType[];
   variant?: 'standard' | 'simple';
+};
+
+export type AccountTokenAddressModalState = {
+  visible?: boolean;
+  items?: AccountTokenAddress[];
+  onBack?: VoidFunction;
+  navigation?: NativeStackNavigationProp<RootStackParamList>;
 };
 
 export interface AppModal {
@@ -99,6 +109,11 @@ export interface AppModal {
     setSelectAddressFormatModalState: React.Dispatch<React.SetStateAction<SelectAddressFormatModalState>>;
     hideSelectAddressFormatModal: () => void;
   };
+  accountTokenAddressModal: {
+    accountTokenAddressModalState: AccountTokenAddressModalState;
+    setAccountTokenAddressModalState: React.Dispatch<React.SetStateAction<AccountTokenAddressModalState>>;
+    hideAccountTokenAddressModal: () => void;
+  };
 }
 
 export const AppModalContext = React.createContext({} as AppModal);
@@ -111,7 +126,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
   const [transactionProcessDetailModalState, setTransactionProcessDetailModalState] =
     useState<TransactionProcessDetailInfo>({});
   const [selectAddressFormatModalState, setSelectAddressFormatModalState] = useState<SelectAddressFormatModalState>({});
-
+  const [accountTokenAddressModalState, setAccountTokenAddressModalState] = useState<AccountTokenAddressModalState>({});
   const hideConfirmModal = useCallback(() => {
     setConfirmModal(prevState => ({ ...prevState, visible: false }));
     setTimeout(
@@ -197,6 +212,18 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
     );
   }, []);
 
+  const hideAccountTokenAddressModal = useCallback(() => {
+    setAccountTokenAddressModalState(prevState => ({ ...prevState, visible: false }));
+    setTimeout(
+      () =>
+        setAccountTokenAddressModalState(prevState => ({
+          ...prevState,
+          items: undefined,
+        })),
+      300,
+    );
+  }, []);
+
   const contextValue: AppModal = useMemo(
     () => ({
       confirmModal: {
@@ -228,19 +255,26 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         setSelectAddressFormatModalState: setSelectAddressFormatModalState,
         hideSelectAddressFormatModal,
       },
+      accountTokenAddressModal: {
+        accountTokenAddressModalState: accountTokenAddressModalState,
+        setAccountTokenAddressModalState: setAccountTokenAddressModalState,
+        hideAccountTokenAddressModal,
+      },
     }),
     [
-      addressQrModalState,
-      deriveModalState,
-      hideAddressQrModal,
       hideConfirmModal,
+      addressQrModalState,
+      hideAddressQrModal,
+      deriveModalState,
       hideDeriveModal,
-      hideSelectAddressFormatModal,
-      hideTransactionProcessDetailModal,
-      hideTransactionStepsModal,
-      selectAddressFormatModalState,
-      transactionProcessDetailModalState,
       transactionStepsModalState,
+      hideTransactionStepsModal,
+      transactionProcessDetailModalState,
+      hideTransactionProcessDetailModal,
+      selectAddressFormatModalState,
+      hideSelectAddressFormatModal,
+      accountTokenAddressModalState,
+      hideAccountTokenAddressModal,
     ],
   );
   // TODO: Add back and cancel
@@ -262,7 +296,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         isShowCancelButton={confirmModal.isShowCancelButton}
       />
 
-      {addressQrModalState.visible && (
+      {addressQrModalState.visible && addressQrModalState.address && (
         <ReceiveModal
           modalVisible={addressQrModalState.visible}
           setModalVisible={noop}
@@ -273,6 +307,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           isOpenFromAccountDetailScreen={addressQrModalState.isOpenFromAccountDetailScreen}
           isNewFormat={addressQrModalState.isNewFormat}
           navigation={addressQrModalState.navigation}
+          accountTokenAddresses={addressQrModalState.accountTokenAddresses}
         />
       )}
 
@@ -322,6 +357,18 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
             name={selectAddressFormatModalState.name}
             onCancel={hideSelectAddressFormatModal}
             chainSlug={selectAddressFormatModalState.chainSlug}
+            navigation={selectAddressFormatModalState.navigation}
+          />
+        )}
+
+      {accountTokenAddressModalState.visible &&
+        accountTokenAddressModalState.items &&
+        accountTokenAddressModalState.items.length && (
+          <AccountTokenAddressModal
+            modalVisible={accountTokenAddressModalState.visible}
+            setModalVisible={noop}
+            items={accountTokenAddressModalState.items}
+            onCancel={hideAccountTokenAddressModal}
             navigation={selectAddressFormatModalState.navigation}
           />
         )}

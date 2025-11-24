@@ -12,45 +12,31 @@ import { Coins } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { AccountBalanceHookType, TokenGroupHookType } from 'types/hook';
-import { sortTokenByValue } from 'utils/sort/token';
+import { sortTokensByBalanceInSelector } from 'utils/sort/token';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   onSelectItem: (item: TokenBalanceItemType) => void;
   tokenBalanceMap: AccountBalanceHookType['tokenBalanceMap'];
-  sortedTokenSlugs: TokenGroupHookType['sortedTokenSlugs'];
+  tokenSlugs: TokenGroupHookType['tokenSlugs'];
   isShowBalance: boolean;
   tokenSearchRef: React.MutableRefObject<ModalRef | undefined>;
 }
 
 const searchFunction = (items: TokenBalanceItemType[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
-  const filteredList = items.filter(({ symbol }) => symbol.toLowerCase().includes(lowerCaseSearchString));
-
-  if (lowerCaseSearchString === 'ton') {
-    const tonItemIndex = filteredList.findIndex(item => item.slug === 'ton-NATIVE-TON');
-
-    if (tonItemIndex !== -1) {
-      const [tonItem] = filteredList.splice(tonItemIndex, 1);
-
-      if (tonItem) {
-        filteredList.unshift(tonItem);
-      }
-    }
-
-    return filteredList;
-  } else {
-    return filteredList;
-  }
+  return items.filter(({ symbol }) => symbol.toLowerCase().includes(lowerCaseSearchString));
 };
 
 function getTokenBalances(
   tokenBalanceMap: AccountBalanceHookType['tokenBalanceMap'],
-  sortedTokenSlugs: TokenGroupHookType['sortedTokenSlugs'],
+  tokenSlugs: TokenGroupHookType['tokenSlugs'],
 ): TokenBalanceItemType[] {
   const result: TokenBalanceItemType[] = [];
 
-  sortedTokenSlugs.forEach(tokenSlug => {
+  tokenSlugs.forEach(tokenSlug => {
     if (tokenBalanceMap[tokenSlug]) {
       result.push(tokenBalanceMap[tokenSlug]);
     }
@@ -61,17 +47,21 @@ function getTokenBalances(
 
 export const TokenSearchModal = ({
   onSelectItem,
-  sortedTokenSlugs,
   tokenBalanceMap,
+  tokenSlugs,
   isShowBalance,
   tokenSearchRef,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
-
+  const priorityTokens = useSelector((state: RootState) => state.chainStore.priorityTokens);
   const tokenBalances = useMemo<TokenBalanceItemType[]>(() => {
-    return getTokenBalances(tokenBalanceMap, sortedTokenSlugs).sort(sortTokenByValue);
-  }, [tokenBalanceMap, sortedTokenSlugs]);
+    const result = getTokenBalances(tokenBalanceMap, tokenSlugs);
+
+    sortTokensByBalanceInSelector(result, priorityTokens);
+
+    return result;
+  }, [tokenBalanceMap, tokenSlugs, priorityTokens]);
 
   const _onPressItem = useCallback(
     (item: TokenBalanceItemType) => {

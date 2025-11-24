@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AccountType } from 'types/ui-types';
 import { RootState } from 'stores/index';
-import { findAccountByAddress } from 'utils/account';
+import { findAccountByAddress } from 'utils/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { isAccountAll } from 'utils/accountAll';
 

@@ -11,10 +11,13 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import {
   _getAssetDecimals,
   _getAssetOriginChain,
+  _getAssetSymbol,
+  _getChainName,
   _getMultiChainAsset,
   _getOriginChainOfAsset,
   _isAssetFungibleToken,
   _isChainEvmCompatible,
+  _isChainInfoCompatibleWithAccountInfo,
   _parseAssetRefKey,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { Alert, AppState, Keyboard, ScrollView, StyleSheet, View } from 'react-native';
@@ -48,7 +51,7 @@ import { CommonOptimalSwapPath } from '@subwallet/extension-base/types/service-b
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
-import { findAccountByAddress } from 'utils/account';
+import { findAccountByAddress } from 'utils/index';
 import { handleSwapStep, validateSwapProcess } from 'messaging/swap';
 import { CommonActionType, commonProcessReducer, DEFAULT_COMMON_PROCESS } from 'reducers/transaction-process';
 import { FormItem } from 'components/common/FormItem';
@@ -69,16 +72,12 @@ import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountAddressItemType } from 'types/account';
 import { AccountProxy, AccountProxyType, ProcessType } from '@subwallet/extension-base/types';
-import { isTokenCompatibleWithAccountChainTypes } from 'utils/chainAndAsset';
-import { getChainsByAccountAll } from 'utils/index';
-import { isChainInfoAccordantAccountChainType } from 'utils/chain';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { CHAINFLIP_SLIPPAGE } from 'types/swap';
 import { handleSwapRequestV2, submitProcess } from 'messaging/index';
 import useOneSignProcess from 'hooks/account/useOneSignProcess';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import useReformatAddress from 'hooks/common/useReformatAddress';
 import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
 import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import { TokenBalanceItemType } from 'types/balance';
@@ -92,6 +91,8 @@ import { ThemeTypes } from 'styles/themes';
 import { AppModalContext } from 'providers/AppModalContext';
 import { KyberSwapQuoteMetadata } from '@subwallet/extension-base/services/swap-service/handler/kyber-handler';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
+import useCoreCreateGetChainSlugsByAccountProxy from 'hooks/chain/useCoreCreateGetChainSlugsByAccountProxy';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -218,9 +219,23 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
     undefined,
     ProcessType.SWAP,
   );
-  const onPreCheck = usePreCheckAction(fromValue);
+  const preCheckMessage = useMemo(() => {
+    if (!fromTokenSlugValue) {
+      return undefined;
+    }
+
+    const chainAsset = assetRegistryMap[fromTokenSlugValue];
+    const chainSlug = _getAssetOriginChain(chainAsset);
+    const chainName = _getChainName(chainInfoMap[chainSlug]);
+
+    return `${_getAssetSymbol(
+      chainAsset,
+    )} on ${chainName} is not supported for swapping. Select another token and try again`;
+  }, [assetRegistryMap, chainInfoMap, fromTokenSlugValue]);
+  const onPreCheck = usePreCheckAction(fromValue, undefined, preCheckMessage);
   const oneSign = useOneSignProcess(fromValue);
-  const getReformatAddress = useReformatAddress();
+  const getReformatAddress = useCoreCreateReformatAddress();
+  const getChainSlugsByAccountProxy = useCoreCreateGetChainSlugsByAccountProxy();
   const accountSelectorRef = useRef<ModalRef>();
   const [showQuoteArea, setShowQuoteArea] = useState<boolean>(false);
   const [quoteOptions, setQuoteOptions] = useState<SwapQuote[]>([]);
@@ -348,24 +363,29 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
     return result;
   }, [assetItems, chainStateMap, getAccountTokenBalance, priorityTokens, targetAccountProxyIdForGetBalance]);
 
-  const fromTokenItems = useMemo<TokenSelectorItemType[]>(() => {
-    const allowChainSlugs = isAccountAll(targetAccountProxy.id)
-      ? getChainsByAccountAll(targetAccountProxy, accountProxies, chainInfoMap)
-      : undefined;
+  const allowedChainSlugsForTargetAccountProxy = useMemo(() => {
+    return getChainSlugsByAccountProxy(targetAccountProxy);
+  }, [getChainSlugsByAccountProxy, targetAccountProxy]);
 
+  const isTokenCompatibleWithTargetAccountProxy = useCallback(
+    (tokenSlug: string): boolean => {
+      if (!tokenSlug) {
+        return false;
+      }
+
+      const chainSlug = _getOriginChainOfAsset(tokenSlug);
+
+      return allowedChainSlugsForTargetAccountProxy.includes(chainSlug);
+    },
+    [allowedChainSlugsForTargetAccountProxy],
+  );
+
+  const fromTokenItems = useMemo<TokenSelectorItemType[]>(() => {
     return tokenSelectorItems.filter(item => {
       const slug = item.slug;
       const assetInfo = assetRegistryMap[slug];
 
-      if (!assetInfo) {
-        return false;
-      }
-
-      if (allowChainSlugs && !allowChainSlugs.includes(assetInfo.originChain)) {
-        return false;
-      }
-
-      if (!isTokenCompatibleWithAccountChainTypes(slug, targetAccountProxy.chainTypes, chainInfoMap)) {
+      if (!assetInfo || !isTokenCompatibleWithTargetAccountProxy(slug)) {
         return false;
       }
 
@@ -375,7 +395,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
 
       return defaultSlug === slug || _getMultiChainAsset(assetInfo) === defaultSlug;
     });
-  }, [accountProxies, assetRegistryMap, chainInfoMap, defaultSlug, targetAccountProxy, tokenSelectorItems]);
+  }, [assetRegistryMap, defaultSlug, isTokenCompatibleWithTargetAccountProxy, tokenSelectorItems]);
 
   const toTokenItems = useMemo(() => {
     return tokenSelectorItems.filter(item => item.slug !== fromTokenSlugValue);
@@ -396,8 +416,8 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
       return false;
     }
 
-    return isTokenCompatibleWithAccountChainTypes(toTokenSlugValue, targetAccountProxy.chainTypes, chainInfoMap);
-  }, [chainInfoMap, targetAccountProxy.chainTypes, toTokenSlugValue]);
+    return isTokenCompatibleWithTargetAccountProxy(toTokenSlugValue);
+  }, [isTokenCompatibleWithTargetAccountProxy, toTokenSlugValue]);
 
   // Unable to use useEffect due to infinity loop caused by conflict setCurrentSlippage and currentQuote
   const slippage = useMemo(() => {
@@ -427,7 +447,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
       return false;
     }
 
-    return !isChainInfoAccordantAccountChainType(chainInfoMap[destChainValue], fromAccountJson.chainType);
+    return !_isChainInfoCompatibleWithAccountInfo(chainInfoMap[destChainValue], fromAccountJson);
   }, [accounts, chainInfoMap, destChainValue, fromValue]);
 
   const toChainValue = useMemo(() => _getAssetOriginChain(toAssetInfo), [toAssetInfo]);
@@ -831,7 +851,7 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
     }
 
     const accountJsonForRecipientAutoFilled = targetAccountProxy.accounts.find(a =>
-      isChainInfoAccordantAccountChainType(destChainInfo, a.chainType),
+      _isChainInfoCompatibleWithAccountInfo(destChainInfo, a),
     );
 
     if (!accountJsonForRecipientAutoFilled) {

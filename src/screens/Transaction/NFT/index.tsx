@@ -39,7 +39,7 @@ import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
 import { ActionType } from '@subwallet/extension-base/core/types';
-import { findAccountByAddress } from 'utils/account';
+import { findAccountByAddress } from 'utils/index';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 
 const DEFAULT_ITEM: NftItem = {

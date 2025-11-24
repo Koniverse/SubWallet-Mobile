@@ -29,6 +29,18 @@ export function getSchemaColor(schema: SchemeColor, theme: ThemeTypes) {
     return theme.colorPrimary;
   }
 
+  if (schema === 'cyan-7') {
+    return theme['cyan-7'];
+  }
+
+  if (schema === 'lime-7') {
+    return theme['lime-7'];
+  }
+
+  if (schema === 'orange-7') {
+    return theme['orange-7'];
+  }
+
   return theme.colorTextLight1;
 }
 

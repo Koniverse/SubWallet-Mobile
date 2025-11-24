@@ -55,6 +55,7 @@ import {
   subscribePriorityTokens,
   subscribeAliveProcess,
   getOldChainPrefixData,
+  subscribeConfirmationRequestsBitcoin,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -368,6 +369,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
         _DataContext.addHandler({
           ...subscribeConfirmationRequests,
           name: 'subscribeConfirmationRequests',
+          relatedStores: ['requestState'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeConfirmationRequestsBitcoin,
+          name: 'subscribeConfirmationRequestsBitcoin',
           relatedStores: ['requestState'],
           isStartImmediately: true,
         });

@@ -11,7 +11,11 @@ import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo
 import { KeyboardAvoidingView, Platform, StyleProp, View } from 'react-native';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
-import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  ConfirmationDefinitions,
+  ConfirmationDefinitionsBitcoin,
+  ExtrinsicType,
+} from '@subwallet/extension-base/background/KoniTypes';
 import { ColorMap } from 'styles/color';
 import { isRawPayload } from 'utils/confirmation/request/substrate';
 
@@ -34,7 +38,7 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Portal } from '@gorhom/portal';
-import { findAccountByAddress, getSignMode } from 'utils/account';
+import { findAccountByAddress, getSignMode } from 'utils/index';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { getDevMode } from 'utils/storage';
 import { AccountJson, AccountSignMode, ProcessType } from '@subwallet/extension-base/types';
@@ -76,13 +80,20 @@ export const Confirmations = () => {
   } = useContext(AppModalContext);
   useHandlerHardwareBackPress(true);
   const isDevMode = getDevMode();
-  const titleMap = useMemo(
+  const titleMap: Record<ConfirmationType, string> = useMemo(
     () => ({
       addNetworkRequest: i18n.header.addNetworkRequest,
       addTokenRequest: i18n.header.addTokenRequest,
       authorizeRequest: i18n.header.connectWithSubwallet,
       evmSendTransactionRequest: i18n.header.transactionRequest,
       evmSignatureRequest: i18n.header.signatureRequest,
+      cardanoSignatureRequest: 'Signature request',
+      cardanoSignTransactionRequest: 'Transaction request',
+      bitcoinSignatureRequest: 'Signature request',
+      bitcoinSendTransactionRequest: 'Transaction request',
+      bitcoinSendTransactionRequestAfterConfirmation: 'Transaction request',
+      bitcoinWatchTransactionRequest: 'Transaction request',
+      bitcoinSignPsbtRequest: 'Sign PSBT request',
       metadataRequest: i18n.header.updateMetadata,
       signingRequest: i18n.header.signatureRequest,
       connectWCRequest: i18n.header.walletConnect,
@@ -259,6 +270,24 @@ export const Confirmations = () => {
         account = findAccountByAddress(accounts, request.payload.address) || undefined;
         canSign = request.payload.canSign;
         isMessage = false;
+      } else if (
+        [
+          'bitcoinSignatureRequest',
+          'bitcoinSendTransactionRequest',
+          'bitcoinWatchTransactionRequest',
+          'bitcoinSignPsbtRequest',
+          'bitcoinSendTransactionRequestAfterConfirmation',
+        ].includes(confirmation.type)
+      ) {
+        const request = confirmation.item as ConfirmationDefinitionsBitcoin[
+          | 'bitcoinSignatureRequest'
+          | 'bitcoinSendTransactionRequest'
+          | 'bitcoinWatchTransactionRequest'
+          | 'bitcoinSendTransactionRequestAfterConfirmation'][0];
+
+        account = request.payload.account;
+        canSign = request.payload.canSign;
+        isMessage = confirmation.type === 'bitcoinSignatureRequest';
       }
 
       const signMode = getSignMode(account);

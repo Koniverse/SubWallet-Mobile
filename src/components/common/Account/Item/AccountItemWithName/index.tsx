@@ -8,6 +8,10 @@ import { toShort } from 'utils/index';
 import AccountItemBase, { AccountItemBaseProps } from '../AccountItemBase';
 import { AccountJson } from '@subwallet/extension-base/types';
 import { AccountProxyAvatarGroup } from 'components/design-system-ui/avatar/account-proxy-avatar-group';
+import { getKeypairTypeByAddress, isBitcoinAddress } from '@subwallet/keyring';
+import { getBitcoinKeypairAttributes } from 'utils/account/account';
+import { Typography } from 'components/design-system-ui';
+import { FontBold } from 'styles/sharedStyles';
 
 interface Props extends AccountItemBaseProps {
   direction?: 'vertical' | 'horizontal';
@@ -21,8 +25,8 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
   const {
     accountName,
     address,
-    addressPreLength = 4,
-    addressSufLength = 4,
+    addressPreLength = 9,
+    addressSufLength = 10,
     direction = 'horizontal',
     fallbackName = true,
     showAddress = true,
@@ -32,6 +36,16 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
 
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
+
+  const bitcoinAttributes = useMemo(() => {
+    if (isBitcoinAddress(address)) {
+      const keyPairType = getKeypairTypeByAddress(address);
+
+      return getBitcoinKeypairAttributes(keyPairType);
+    }
+
+    return undefined;
+  }, [address]);
 
   const showFallback = useMemo(() => {
     if (isAll) {
@@ -51,17 +65,42 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
       address={address}
       leftItem={isAll ? <AccountProxyAvatarGroup /> : props.leftItem}
       middleItem={
-        <View
-          style={[direction === 'horizontal' ? styles.contentDirectionHorizontal : styles.contentDirectionVertical]}>
-          <Text style={[styles.accountName, customNameStyle]} numberOfLines={1}>
-            {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
-          </Text>
+        <View style={{ paddingTop: theme.paddingSM - 2, paddingBottom: theme.paddingSM - 2 }}>
+          <View
+            style={[direction === 'horizontal' ? styles.contentDirectionHorizontal : styles.contentDirectionVertical]}>
+            <Typography.Text style={[styles.accountName, customNameStyle]} ellipsis>
+              {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
+            </Typography.Text>
+            {!!bitcoinAttributes && !!bitcoinAttributes.schema ? (
+              <Typography.Text>
+                <Typography.Text
+                  style={{
+                    fontSize: theme.fontSizeXS,
+                    lineHeight: theme.fontSizeXS * theme.lineHeightXS,
+                    color: theme.colorTextTertiary,
+                    paddingHorizontal: theme.paddingXXS,
+                    ...FontBold,
+                  }}>
+                  {'  -  '}
+                </Typography.Text>
+                <Typography.Text
+                  style={{
+                    fontSize: theme.fontSizeXS,
+                    lineHeight: theme.fontSizeXS * theme.lineHeightXS,
+                    color: theme[bitcoinAttributes.schema],
+                    ...FontBold,
+                  }}>
+                  {bitcoinAttributes.label}
+                </Typography.Text>
+              </Typography.Text>
+            ) : null}
+          </View>
           {showFallback && address && showAddress && (
-            <Text style={[styles.accountAddress, direction === 'horizontal' && styles.accountAddressHorizontal]}>
-              {direction === 'horizontal' && '('}
-              {toShort(address, addressPreLength, addressSufLength)}
-              {direction === 'horizontal' && ')'}
-            </Text>
+            <View>
+              <Text style={[styles.accountAddress, direction === 'horizontal' && styles.accountAddressHorizontal]}>
+                {toShort(address, addressPreLength, addressSufLength)}
+              </Text>
+            </View>
           )}
         </View>
       }
