@@ -10,7 +10,7 @@ import { MigrateAccountProps, RootNavigationProps } from 'routes/index';
 import { hasAnyAccountForMigration } from '@subwallet/extension-base/services/keyring-service/utils';
 import { migrateSoloAccount, migrateUnifiedAndFetchEligibleSoloAccounts } from 'messaging/migrate-unified-account';
 import { saveMigrationAcknowledgedStatus } from 'messaging/index';
-import PasswordMigrateModal from 'screens/MigrateAccount/PasswordMigrateModal';
+import PasswordModal from 'components/Modal/PasswordModal';
 
 export enum ScreenView {
   BRIEF = 'brief',
@@ -162,7 +162,7 @@ const MigrateAccount = ({
       )}
 
       {isPasswordModalOpen && (
-        <PasswordMigrateModal
+        <PasswordModal
           visible={isPasswordModalOpen}
           setModalVisible={setIsPasswordModalOpen}
           onConfirm={onSubmitPassword}

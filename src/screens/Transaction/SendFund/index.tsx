@@ -39,7 +39,7 @@ import {
   subscribeMaxTransfer,
 } from 'messaging/index';
 import { findAccountByAddress } from 'utils/index';
-import { balanceFormatter, formatBalance, formatNumber } from 'utils/number';
+import { formatBalance } from 'utils/number';
 import { TokenItemType, TokenSelector, TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { isAccountAll } from 'utils/accountAll';
 import { ChainInfo, ChainItemType } from 'types/index';
@@ -48,7 +48,7 @@ import { useToast } from 'react-native-toast-notifications';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useWatch } from 'react-hook-form';
-import { Alert, Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
@@ -89,7 +89,7 @@ import {
 import useFetchChainAssetInfo from 'hooks/screen/useFetchChainAssetInfo';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
-import { AccountProxy, AccountProxyType, TransactionFee } from '@subwallet/extension-base/types';
+import { AccountProxy, AccountProxyType, BasicTxWarningCode, TransactionFee } from '@subwallet/extension-base/types';
 import { AccountAddressItemType } from 'types/account';
 import { SelectModalField } from 'components/common/SelectModal/parts/SelectModalField';
 import { ActionType } from '@subwallet/extension-base/core/types';
@@ -113,6 +113,7 @@ import { _isAcrossChainBridge } from '@subwallet/extension-base/services/balance
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 import useCoreCreateGetChainSlugsByAccountProxy from 'hooks/chain/useCoreCreateGetChainSlugsByAccountProxy';
+import { TransactionWarning } from '@subwallet/extension-base/background/warnings/TransactionWarning';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -220,12 +221,10 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const [isTransferBounceable, setTransferBounceable] = useState(false);
   const [, update] = useState({});
   const [isBalanceReady, setIsBalanceReady] = useState(true);
-  const [forceUpdateValue, setForceUpdateValue] = useState<{ value: string | null } | undefined>(undefined);
+  const [forceUpdateMaxValue, setForceUpdateMaxValue] = useState<{ value: string | null } | undefined>(undefined);
   const [transferInfo, setTransferInfo] = useState<ResponseSubscribeTransfer | undefined>();
   const [isFetchingInfo, setIsFetchingInfo] = useState(false);
   const [isFetchingListFeeToken, setIsFetchingListFeeToken] = useState(false);
-  const forceTransferAllRef = useRef<boolean>(false);
-  const [forceTransferAll, setForceTransferAll] = useState<boolean>(false);
   const estimatedNativeFee = useMemo((): string => transferInfo?.feeOptions.estimatedFee || '0', [transferInfo]);
   const { confirmModal } = useContext(AppModalContext);
   const globalAppModalContext = useContext(GlobalModalContext);
@@ -249,10 +248,6 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   }, [chainValue, destChainValue, getCurrentConfirmation]);
 
   const [processState, dispatchProcessState] = useReducer(commonProcessReducer, DEFAULT_COMMON_PROCESS);
-
-  const triggerOnChangeValue = useCallback(() => {
-    setForceUpdateValue({ value: transferAmount });
-  }, [transferAmount]);
 
   const accountAddressItems = useMemo(() => {
     const chainInfo = chainValue ? chainInfoMap[chainValue] : undefined;
@@ -421,13 +416,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     }
   }, [chainValue, currentChainAsset, destChainValue]);
 
-  const {
-    error: isGetBalanceError,
-    isLoading: isGetBalanceLoading,
-    nativeTokenBalance,
-    nativeTokenSlug,
-    tokenBalance,
-  } = useGetBalance(chainValue, fromValue, assetValue, false, extrinsicType);
+  const { nativeTokenBalance, nativeTokenSlug } = useGetBalance(chainValue, fromValue);
 
   const hideMaxButton = useMemo(() => {
     const _chainInfo = chainInfoMap[chainValue];
@@ -520,7 +509,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     setFrom(item.address);
     accountSelectorRef?.current?.onCloseModal();
     resetField('asset');
-    setForceUpdateValue(undefined);
+    setForceUpdateMaxValue(undefined);
     setSelectedTransactionFee(undefined);
     setIsTransferAll(false);
   };
@@ -532,7 +521,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     clearErrors('to');
     setValue('destChain', item.originChain);
     tokenSelectorRef?.current?.onCloseModal();
-    setForceUpdateValue(undefined);
+    setForceUpdateMaxValue(undefined);
     setCurrentTokenPayFee(chainValue === chain ? defaultTokenPayFee : undefined);
     setIsTransferAll(false);
   };
@@ -555,7 +544,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
         keepError: false,
         keepTouched: false,
       });
-      setForceUpdateValue({ value: null });
+      setForceUpdateMaxValue({ value: null });
       setIsTransferAll(false);
     }
   }, [navigation, resetField, viewStep]);
@@ -693,12 +682,12 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     [assetRegistry, chainInfoMap, processState.steps],
   );
 
-  const handleTransferAll = useCallback(
-    (value: boolean) => {
-      setForceTransferAll(value);
-      setIsTransferAll(true);
-      setForceUpdateValue({ value: transferInfo?.maxTransferable || '0' });
-      forceTransferAllRef.current = true;
+  const handleWarning = useCallback(
+    (warnings: TransactionWarning[]) => {
+      if (warnings.some(w => w.warningType === BasicTxWarningCode.NOT_ENOUGH_EXISTENTIAL_DEPOSIT)) {
+        setForceUpdateMaxValue({ value: transferInfo?.maxTransferable || '0' });
+        setIsTransferAll(true);
+      }
     },
     [transferInfo?.maxTransferable],
   );
@@ -707,8 +696,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     onDone,
     setTransactionDone,
     dispatchProcessState,
-    triggerOnChangeValue,
-    handleTransferAll,
+    handleWarning,
   );
 
   const doSubmit = useCallback(
@@ -786,7 +774,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
 
   const onSetMaxTransferable = useCallback(() => {
     setFocus('value');
-    setForceUpdateValue({ value: transferInfo?.maxTransferable || '0' });
+    setForceUpdateMaxValue({ value: transferInfo?.maxTransferable || '0' });
     const bnMaxTransfer = new BN(transferInfo?.maxTransferable || '0');
 
     if (!bnMaxTransfer.isZero()) {
@@ -831,16 +819,9 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
         }
       }
 
-      if (isTransferAll) {
-        setForceTransferAll(true);
-        forceTransferAllRef.current = true;
-
-        return;
-      }
-
       doSubmit(values);
     },
-    [isTransferAll, doSubmit, chainValue, destChainValue, chainInfoMap, confirmModal, theme.colorWarning],
+    [doSubmit, chainValue, destChainValue, chainInfoMap, confirmModal, theme.colorWarning],
   );
 
   const onPressNextStep = useCallback(async () => {
@@ -941,7 +922,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
           <Amount
             ref={ref}
             value={value}
-            forceUpdateValue={forceUpdateValue}
+            forceUpdateMaxValue={forceUpdateMaxValue}
             onChangeValue={onChange}
             onInputChange={onInputChangeAmount}
             onBlur={onBlur}
@@ -959,12 +940,8 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
         </>
       );
     },
-    [assetValue, clearErrors, decimals, forceUpdateValue, onInputChangeAmount, stylesheet.amountValueConverter],
+    [assetValue, clearErrors, decimals, forceUpdateMaxValue, onInputChangeAmount, stylesheet.amountValueConverter],
   );
-
-  useEffect(() => {
-    setIsBalanceReady(!isGetBalanceLoading && !isGetBalanceError);
-  }, [isGetBalanceError, isGetBalanceLoading]);
 
   useEffect(() => {
     if (scanRecipient) {
@@ -1209,60 +1186,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     return () => {
       cancel = true;
     };
-  }, [chainValue, fromValue, nativeTokenSlug]);
-
-  useEffect(() => {
-    if (forceTransferAllRef.current && forceTransferAll) {
-      forceTransferAllRef.current = false;
-      let maxTransferDisplay: string;
-      if (assetValue === nativeTokenSlug) {
-        maxTransferDisplay = `${formatNumber(
-          transferInfo?.maxTransferable || '0',
-          nativeTokenBalance.decimals,
-          balanceFormatter,
-        )} ${nativeTokenBalance.symbol}`;
-      } else {
-        maxTransferDisplay = `${formatNumber(
-          transferInfo?.maxTransferable || '0',
-          tokenBalance.decimals,
-          balanceFormatter,
-        )} ${tokenBalance.symbol}`;
-      }
-
-      Alert.alert(
-        'Pay attention!',
-        "After performing this transaction, your account won't have enough balance to pay network fees for other transactions.",
-        [
-          {
-            text: i18n.buttonTitles.cancel,
-            onPress: () => {
-              setForceTransferAll(false);
-            },
-          },
-          {
-            text: `Transfer ${maxTransferDisplay}`,
-            onPress: () => {
-              let currentValues = getValues();
-              setForceTransferAll(false);
-              setLoading(true);
-              doSubmit(currentValues);
-            },
-          },
-        ],
-      );
-    }
-  }, [
-    assetValue,
-    doSubmit,
-    forceTransferAll,
-    getValues,
-    nativeTokenBalance.decimals,
-    nativeTokenBalance.symbol,
-    nativeTokenSlug,
-    tokenBalance.decimals,
-    tokenBalance.symbol,
-    transferInfo?.maxTransferable,
-  ]);
+  }, [chainValue, fromValue, nativeTokenSlug, nativeTokenBalance]);
 
   const isShowFeeEditor = useMemo(
     () => !TON_CHAINS.includes(chainValue) && !!toValue && !!transferAmount && !!nativeTokenSlug,
@@ -1439,6 +1363,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                     extrinsicType={extrinsicType}
                     label={`${i18n.inputLabel.availableBalance}`}
                     style={stylesheet.balance}
+                    onBalanceReady={setIsBalanceReady}
                   />
 
                   {chainValue !== destChainValue && (
@@ -1474,6 +1399,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                         extrinsicType={extrinsicType}
                         label={`${i18n.inputLabel.availableBalance}`}
                         style={stylesheet.balanceStep2}
+                        onBalanceReady={setIsBalanceReady}
                       />
 
                       {viewStep === 2 && !hideMaxButton && (

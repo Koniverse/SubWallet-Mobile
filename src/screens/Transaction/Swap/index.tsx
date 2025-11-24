@@ -216,7 +216,6 @@ const Component = ({ targetAccountProxy, defaultSlug }: ComponentProps) => {
     setTransactionDone,
     dispatchProcessState,
     undefined,
-    undefined,
     ProcessType.SWAP,
   );
   const preCheckMessage = useMemo(() => {

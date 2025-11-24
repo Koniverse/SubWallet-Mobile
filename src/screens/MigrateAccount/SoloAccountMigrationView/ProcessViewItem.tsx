@@ -192,6 +192,7 @@ export const ProcessViewItem = ({
         </Button>
         <Button
           block
+          loading={loading}
           disabled={loading || !!formState.errors.accountName.length}
           onPress={() => _onApprove(formState)}
           icon={
