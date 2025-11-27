@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Icon, Number, SwModal, Typography } from 'components/design-system-ui';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { BalanceItemWithAddressType, TokenBalanceItemType } from 'types/balance';
@@ -103,9 +103,13 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
     ];
   }, [currentTokenInfo, tokenBalanceMap]);
   const onChangeModalVisible = () => modalBaseV2Ref?.current?.close();
-  const [selectedTab, setSelectedTab] = useState<'tokenDetails' | 'accountDetails'>(
-    isBitcoinChain ? 'accountDetails' : 'tokenDetails',
-  );
+  const [selectedTab, setSelectedTab] = useState<'tokenDetails' | 'accountDetails'>('tokenDetails');
+
+  useEffect(() => {
+    if (isBitcoinChain) {
+      setSelectedTab('accountDetails');
+    }
+  }, [isBitcoinChain]);
 
   const _onSelectType = (value: string) => {
     setSelectedTab(value as 'tokenDetails' | 'accountDetails');
@@ -194,11 +198,13 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
       modalVisible={modalVisible}
       modalTitle={isAllAccount && isBitcoinChain ? 'Account Details' : i18n.header.tokenDetails}
       isAllowSwipeDown={Platform.OS === 'ios'}
-      onChangeModalVisible={() => setSelectedTab('tokenDetails')}
+      // onChangeModalVisible={() => setSelectedTab('accountDetails')}
       onBackButtonPress={onChangeModalVisible}>
       <>
-        {isAllAccount && <SwTab tabs={tokenDetailTabs} onSelectType={_onSelectType} selectedValue={selectedTab} />}
-        {selectedTab === 'tokenDetails' ? (
+        {isAllAccount && !isBitcoinChain && (
+          <SwTab tabs={tokenDetailTabs} onSelectType={_onSelectType} selectedValue={selectedTab} />
+        )}
+        {selectedTab === 'tokenDetails' && (
           <View style={_style.blockContainer}>
             {items.map(item => (
               <View key={item.key} style={_style.row}>
@@ -220,7 +226,8 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
               </View>
             ))}
           </View>
-        ) : (
+        )}
+        {selectedTab === 'accountDetails' && (
           <ScrollView
             showsVerticalScrollIndicator={false}
             style={{ maxHeight: deviceHeight * 0.6 }}

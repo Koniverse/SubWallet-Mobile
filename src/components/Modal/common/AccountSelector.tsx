@@ -30,6 +30,7 @@ interface Props {
   renderCustomItem?: ({ item }: ListRenderItemInfo<AccountAddressItemType>) => JSX.Element;
   onCloseModal?: VoidFunction;
   autoSelectFirstItem?: boolean;
+  isShowBitcoinAttr?: boolean;
 }
 
 export interface AccountAddressItemExtraType extends AccountAddressItemType {
@@ -61,6 +62,7 @@ export const AccountSelector = ({
   renderCustomItem,
   onCloseModal,
   autoSelectFirstItem,
+  isShowBitcoinAttr,
 }: Props) => {
   // NOTE:
   // displayAddress is only for visual representation.
@@ -236,6 +238,7 @@ export const AccountSelector = ({
       estimatedItemSize={60}
       onCloseModal={onCloseModal}
       grouping={grouping}
+      isShowBitcoinAttr={isShowBitcoinAttr}
       isShowInput={isShowInput}>
       {children}
     </FullSizeSelectModal>

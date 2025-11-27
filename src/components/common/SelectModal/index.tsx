@@ -80,6 +80,7 @@ interface Props<T> {
   showBalance?: boolean;
   filterModalSearchFunc?: (items: OptionType[], searchString: string) => OptionType[];
   isFilterFullSize?: boolean;
+  isShowBitcoinAttr?: boolean;
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
@@ -127,6 +128,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     showBalance = true,
     filterModalSearchFunc,
     isFilterFullSize,
+    isShowBitcoinAttr,
   } = selectModalProps;
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isLoadingData, setLoadingData] = useState<boolean>(true);
@@ -212,6 +214,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
             onSelectItem={_onSelectItem}
             showAccountSignModeIcon={showAccountSignModeIcon}
             onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
+            isShowBitcoinAttr={isShowBitcoinAttr}
           />
         </>
       );

@@ -19,6 +19,7 @@ interface Props extends AccountItemBaseProps {
   fallbackName?: boolean;
   showAddress?: boolean;
   customNameStyle?: StyleProp<ViewStyle>;
+  isShowBitcoinAttr?: boolean;
 }
 
 const AccountItemWithName: React.FC<Props> = (props: Props) => {
@@ -31,6 +32,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
     fallbackName = true,
     showAddress = true,
     customNameStyle,
+    isShowBitcoinAttr = true,
   } = props;
   const isAll = isAccountAll(address);
 
@@ -71,7 +73,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
             <Typography.Text style={[styles.accountName, customNameStyle]} ellipsis>
               {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
             </Typography.Text>
-            {!!bitcoinAttributes && !!bitcoinAttributes.schema ? (
+            {isShowBitcoinAttr && !!bitcoinAttributes && !!bitcoinAttributes.schema ? (
               <Typography.Text>
                 <Typography.Text
                   style={{

@@ -210,6 +210,7 @@ export const BitcoinSignArea: React.FC<Props> = (props: Props) => {
   return (
     <ConfirmationFooter>
       <Button
+        block
         disabled={loading}
         icon={<Icon phosphorIcon={XCircle} weight="fill" />}
         onPress={onCancel}
@@ -217,7 +218,8 @@ export const BitcoinSignArea: React.FC<Props> = (props: Props) => {
         {i18n.common.cancel}
       </Button>
       <Button
-        disabled={!(canSign === undefined ? payload.payload.canSign : canSign && payload.payload.canSign)}
+        block
+        disabled={!(canSign === undefined ? payload.payload.canSign : canSign && payload.payload.canSign) || loading}
         icon={<Icon phosphorIcon={approveIcon} weight="fill" />}
         loading={loading}
         onPress={onConfirm}>

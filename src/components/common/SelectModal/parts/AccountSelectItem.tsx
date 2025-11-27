@@ -8,6 +8,7 @@ interface Props<T> {
   onSelectItem?: (item: T) => void;
   onCloseModal?: () => void;
   showAccountSignModeIcon?: boolean;
+  isShowBitcoinAttr?: boolean;
 }
 
 export function AccountSelectItem<T>({
@@ -16,11 +17,13 @@ export function AccountSelectItem<T>({
   onSelectItem,
   onCloseModal,
   showAccountSignModeIcon,
+  isShowBitcoinAttr,
 }: Props<T>) {
   const { address, accountName } = item as AccountAddressItemType;
 
   return (
     <AccountItemWithName
+      isShowBitcoinAttr={isShowBitcoinAttr}
       customStyle={{ container: { marginBottom: 8, marginHorizontal: 16 } }}
       avatarSize={24}
       address={address}
