@@ -12,7 +12,6 @@ import i18n from 'utils/i18n/i18n';
 
 interface Props {
   isForcedMigration?: boolean;
-  isBusy?: boolean;
   onDismiss: VoidFunction;
   onMigrateNow: VoidFunction;
 }
@@ -22,7 +21,7 @@ type ContentDataType = {
   title: string;
 };
 
-export const BriefView = ({ isForcedMigration, onDismiss, onMigrateNow, isBusy }: Props) => {
+export const BriefView = React.memo(({ isForcedMigration, onDismiss, onMigrateNow }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const [contentData, setContentData] = useState<ContentDataType>({
     content: '',
@@ -58,15 +57,15 @@ export const BriefView = ({ isForcedMigration, onDismiss, onMigrateNow, isBusy }
     }
   }, [isForcedMigration]);
 
-  if (isFetchingBriefContent || isBusy) {
+  if (isFetchingBriefContent) {
     return <LoadingScreen />;
   }
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={false}
-      style={{ paddingHorizontal: theme.padding }}
       title={!isForcedMigration ? contentData.title : 'Migration incomplete!'}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, paddingHorizontal: theme.padding }}>
         <View style={{ flex: 1 }}>
           {!isForcedMigration && <ContentGenerator content={contentData.content} />}
 
@@ -102,7 +101,15 @@ export const BriefView = ({ isForcedMigration, onDismiss, onMigrateNow, isBusy }
                 onPress={onDismiss}>
                 {i18n.buttonTitles.cancel}
               </Button>
-              <Button block icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />} onPress={onMigrateNow}>
+              <Button
+                block
+                icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}
+                externalTextStyle={{
+                  flexGrow: 0,
+                  flexShrink: 1,
+                  flexBasis: 'auto',
+                }}
+                onPress={onMigrateNow}>
                 {i18n.buttonTitles.migrateNow}
               </Button>
             </View>
@@ -113,4 +120,4 @@ export const BriefView = ({ isForcedMigration, onDismiss, onMigrateNow, isBusy }
       </View>
     </ContainerWithSubHeader>
   );
-};
+});

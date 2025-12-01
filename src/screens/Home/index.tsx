@@ -363,7 +363,7 @@ export const Home = ({ navigation }: Props) => {
         if (value === 'true') {
           setDuplicateModalVisible(true);
         } else {
-          if (!!activePriorityPath && !isEmptyAccounts) {
+          if (!!activePriorityPath && !isEmptyAccounts && !needMigrate && !isLocked) {
             navigation.navigate('MigrateAccount', activePriorityPath);
             return;
           }
@@ -382,7 +382,16 @@ export const Home = ({ navigation }: Props) => {
         }
       })
       .catch(noop);
-  }, [activePriorityPath, dispatch, isEmptyAccounts, isLocked, lastTimeLogin, navigation, storedRemindBackupTimeout]);
+  }, [
+    activePriorityPath,
+    dispatch,
+    isEmptyAccounts,
+    isLocked,
+    lastTimeLogin,
+    navigation,
+    needMigrate,
+    storedRemindBackupTimeout,
+  ]);
 
   useEffect(() => {
     if (timeAutoLock === LockTimeout.ALWAYS) {

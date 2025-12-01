@@ -11,6 +11,7 @@ import { hasAnyAccountForMigration } from '@subwallet/extension-base/services/ke
 import { migrateSoloAccount, migrateUnifiedAndFetchEligibleSoloAccounts } from 'messaging/migrate-unified-account';
 import { saveMigrationAcknowledgedStatus } from 'messaging/index';
 import PasswordModal from 'components/Modal/PasswordModal';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 export enum ScreenView {
   BRIEF = 'brief',
@@ -37,6 +38,9 @@ const MigrateAccount = ({
   );
   const [isBusy, setIsBusy] = useState(false);
   const accountProxies = useSelector((root: RootState) => root.accountState.accountProxies);
+  const isNeedMigration = hasAnyAccountForMigration(accountProxies);
+
+  useHandlerHardwareBackPress(!!sessionId || isBusy);
 
   const onClosePasswordModal = useCallback(() => {
     setIsPasswordModalOpen(false);
@@ -75,12 +79,12 @@ const MigrateAccount = ({
   const onPressMigrateNow = useCallback(() => {
     onInteractAction();
 
-    if (!hasAnyAccountForMigration(accountProxies)) {
+    if (!isNeedMigration) {
       setCurrentScreenView(ScreenView.SUMMARY);
     } else {
       onOpenPasswordModal();
     }
-  }, [accountProxies, onInteractAction, onOpenPasswordModal]);
+  }, [isNeedMigration, onInteractAction, onOpenPasswordModal]);
 
   const onSubmitPassword = useCallback(
     async (password: string) => {
@@ -140,12 +144,7 @@ const MigrateAccount = ({
   return (
     <>
       {currentScreenView === ScreenView.BRIEF && (
-        <BriefView
-          isForcedMigration={isForcedMigration}
-          onDismiss={onPressDismiss}
-          onMigrateNow={onPressMigrateNow}
-          isBusy={isBusy}
-        />
+        <BriefView isForcedMigration={isForcedMigration} onDismiss={onPressDismiss} onMigrateNow={onPressMigrateNow} />
       )}
 
       {currentScreenView === ScreenView.SOLO_ACCOUNT_MIGRATION && (

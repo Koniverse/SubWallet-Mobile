@@ -130,6 +130,8 @@ export const ProcessViewItem = ({
     onChangeValue('accountName')(value);
   };
 
+  const disableApprove = loading || !!formState.errors.accountName.length || !formState.data.accountName.length;
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
@@ -146,9 +148,11 @@ export const ProcessViewItem = ({
 
           <View>
             <Typography.Text style={styles.labelText}>{'Migrate from'}</Typography.Text>
-            {currentSoloAccountToBeMigratedGroup.map(account => (
-              <SoloAccountToBeMigratedItem key={account.address} {...account} />
-            ))}
+            <View style={{ gap: theme.sizeXS }}>
+              {currentSoloAccountToBeMigratedGroup.map(account => (
+                <SoloAccountToBeMigratedItem key={account.address} {...account} />
+              ))}
+            </View>
           </View>
 
           <View>
@@ -158,6 +162,7 @@ export const ProcessViewItem = ({
               ref={formState.refs.accountName}
               label={formState.labels.accountName}
               editAccountInputStyle={{ marginBottom: theme.marginXS, paddingBottom: theme.paddingXS }}
+              outerInputStyle={{ paddingHorizontal: 0 }}
               value={formState.data.accountName}
               onChangeText={onChangeAccountName}
               onSubmitField={
@@ -193,12 +198,12 @@ export const ProcessViewItem = ({
         <Button
           block
           loading={loading}
-          disabled={loading || !!formState.errors.accountName.length}
+          disabled={disableApprove}
           onPress={() => _onApprove(formState)}
           icon={
             <Icon
               phosphorIcon={CheckCircle}
-              iconColor={loading || !!formState.errors.accountName.length ? theme.colorTextLight5 : theme.colorWhite}
+              iconColor={disableApprove ? theme.colorTextLight5 : theme.colorWhite}
               weight={'fill'}
             />
           }>
