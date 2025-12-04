@@ -215,7 +215,7 @@ export const AccountChainAddressList = ({ accountProxy }: Props) => {
         const isBitcoinChain = isBitcoinAddress(item.address);
 
         const processFunction = () => {
-          copyToClipboard(item.address || '');
+          copyToClipboard(item.address || '')();
           show('Copied to clipboard');
         };
 

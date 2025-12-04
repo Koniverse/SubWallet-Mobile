@@ -82,7 +82,7 @@ export const Search = (searchProps: Props) => {
             color: ColorMap.disabled,
             flexDirection: 'row',
             flex: 1,
-            paddingLeft: 44,
+            paddingLeft: 46,
             paddingRight: isShowFilterBtn ? 84 : 44,
             height: '100%',
             maxHeight: Platform.OS === 'android' ? undefined : 20,

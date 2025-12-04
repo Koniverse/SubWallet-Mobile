@@ -184,11 +184,11 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
       });
   }, [accounts, balanceMap, currentAccountProxy, currentTokenInfo?.slug, isAllAccount, isBitcoinChain]);
 
-  const filteredItems = useMemo(() => {
-    return accountItems.filter(item => {
-      return new BigN(item.free).plus(item.locked).gt(0);
-    });
-  }, [accountItems]);
+  // const filteredItems = useMemo(() => {
+  //   return accountItems.filter(item => {
+  //     return new BigN(item.free).plus(item.locked).gt(0);
+  //   });
+  // }, [accountItems]);
 
   return (
     <SwModal
@@ -232,8 +232,8 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
             showsVerticalScrollIndicator={false}
             style={{ maxHeight: deviceHeight * 0.6 }}
             contentContainerStyle={{ gap: theme.paddingSM }}>
-            {filteredItems && filteredItems.length ? (
-              filteredItems.map(item => (
+            {accountItems && accountItems.length ? (
+              accountItems.map(item => (
                 <AccountTokenDetail key={item.address} item={item} chainInfoMap={chainInfoMap} />
               ))
             ) : (

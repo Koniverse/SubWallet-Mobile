@@ -15,10 +15,12 @@ import i18n from 'utils/i18n/i18n';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { _isAcrossChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/acrossBridge';
 import QuoteRateDisplay from 'components/Swap/QuoteRateDisplay';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 type Props = BaseTransactionConfirmationProps;
 
 const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const data = transaction.data as ExtrinsicDataTypeMap[ExtrinsicType.TRANSFER_BALANCE];
   const xcmData = transaction.data as ExtrinsicDataTypeMap[ExtrinsicType.TRANSFER_XCM];
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
@@ -56,7 +58,7 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
 
   return (
     <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
-      <MetaInfo hasBackgroundWrapper>
+      <MetaInfo hasBackgroundWrapper valueColorScheme={'gray'}>
         <MetaInfo.Account address={data.from} label={i18n.inputLabel.sendFrom} networkPrefix={senderPrefix} />
 
         {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && chainInfo && (
@@ -106,6 +108,7 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
           label={i18n.inputLabel.estimatedFee}
           suffix={feeInfo ? feeInfo.symbol : nativeTokenSymbol}
           value={feeInfo ? feeInfo.value : 0}
+          unitColor={theme.colorTextLight3}
         />
       </MetaInfo>
       {!!transaction.estimateFee?.tooHigh && (

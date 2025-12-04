@@ -1,9 +1,8 @@
-import React, { useCallback, useContext, useRef } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { View, StyleSheet, Linking, Platform } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountTokenAddress } from 'types/account';
-import ToastContainer from 'react-native-toast-notifications';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
 import { AppModalContext } from 'providers/AppModalContext';
 import { AccountTokenAddressItem } from 'components/AccountProxy/AccountTokenAddressItem';
@@ -11,11 +10,6 @@ import { SwModal, Typography } from 'components/design-system-ui';
 import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
-import Toast from 'react-native-toast-notifications';
-import { deviceHeight, TOAST_DURATION } from 'constants/index';
-import { ColorMap } from 'styles/color';
-import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 
@@ -32,11 +26,8 @@ const LEARN_MORE_DOCS_URL =
 
 export const AccountTokenAddressModal = ({ items, onCancel, modalVisible, setModalVisible, navigation }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const toastRef = useRef<ToastContainer>(null);
   const { addressQrModal } = useContext(AppModalContext);
-  const { copyToClipboard } = useCopyClipboard(toastRef);
-  const insets = useSafeAreaInsets();
-  const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - insets.bottom - insets.top;
+  const { copyToClipboard } = useCopyClipboard();
   const styles = createStyle(theme);
 
   const onShowQr = useCallback(
@@ -64,13 +55,7 @@ export const AccountTokenAddressModal = ({ items, onCancel, modalVisible, setMod
   const onCopyAddress = useCallback(
     (item: AccountTokenAddress) => {
       return () => {
-        copyToClipboard(item.accountInfo.address || '');
-        if (toastRef.current) {
-          // @ts-ignore
-          toastRef.current.hideAll();
-          // @ts-ignore
-          toastRef.current.show(i18n.common.copiedToClipboard);
-        }
+        copyToClipboard(item.accountInfo.address || '')();
       };
     },
     [copyToClipboard],
@@ -127,18 +112,6 @@ export const AccountTokenAddressModal = ({ items, onCancel, modalVisible, setMod
         <View style={{ gap: theme.sizeXS, width: '100%' }}>
           {items.length > 0 ? items.map(item => renderItem(item)) : renderEmpty()}
         </View>
-
-        {
-          <Toast
-            duration={TOAST_DURATION}
-            normalColor={ColorMap.notification}
-            ref={toastRef}
-            placement={'bottom'}
-            offsetBottom={OFFSET_BOTTOM}
-            textStyle={{ textAlign: 'center', ...FontMedium }}
-            style={{ borderRadius: 8 }}
-          />
-        }
       </>
     </SwModal>
   );

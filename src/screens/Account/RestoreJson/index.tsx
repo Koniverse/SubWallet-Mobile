@@ -145,7 +145,7 @@ export const RestoreJson = () => {
     if (exitedAccount.length) {
       result.push(...exitedAccount);
     }
-    return result;
+    return result.filter(i => i.chainTypes);
   }, [accountProxies]);
 
   const groupBy = useCallback((item: AccountProxyExtra_) => {
@@ -385,6 +385,7 @@ export const RestoreJson = () => {
     RNFS.readFile(fileUri, 'ascii')
       .then(res => {
         const file = JSON.parse(res) as KeyringPair$Json | KeyringPairs$Json;
+        console.log('file', file);
         if (!isValidJsonFile(file)) {
           throw new Error('Invalid JSON file');
         }

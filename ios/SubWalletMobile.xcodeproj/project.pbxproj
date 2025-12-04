@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,7 +15,7 @@
 		356510AD2C64FC7B00440F84 /* DevModeWeb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 356510AC2C64FC7B00462F84 /* DevModeWeb.bundle */; };
 		4627831F29CEA0080046230D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4627831E29CEA0080046230D /* fonts */; };
 		462FCA172A72462100B46279 /* RCTMinimizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 462FCA152A72462100B46279 /* RCTMinimizer.m */; };
-		5FDA56E5ECDD706819BCAA3F /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		5FDA56E5ECDD706819BCAA3F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		63E73E626F363199AE7D5E8A /* libPods-SubWalletMobile-SubWalletMobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AEE6AF47E4FA3A7D89E75F1 /* libPods-SubWalletMobile-SubWalletMobileTests.a */; };
 		81AB9BB82462601600AC10FF /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72462601600AC10FF /* SplashScreen.storyboard */; };
 		D9DC9D264E0207A55573004A /* libPods-SubWalletMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EFFEADAEF5FDCD85CA071C8 /* libPods-SubWalletMobile.a */; };
@@ -75,7 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 8;
 			files = (
-				5FDA56E5ECDD706819BCAA3F /* BuildFile in Frameworks */,
+				5FDA56E5ECDD706819BCAA3F /* (null) in Frameworks */,
 				D9DC9D264E0207A55573004A /* libPods-SubWalletMobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -268,7 +268,7 @@
 				};
 			};
 			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "SubWalletMobile" */;
-			compatibilityVersion = "Xcode 13.0";
+			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -336,9 +336,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SubWalletMobile-SubWalletMobileTests/Pods-SubWalletMobile-SubWalletMobileTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SubWalletMobile-SubWalletMobileTests/Pods-SubWalletMobile-SubWalletMobileTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -353,9 +357,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -392,9 +400,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -431,9 +443,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SubWalletMobile-SubWalletMobileTests/Pods-SubWalletMobile-SubWalletMobileTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SubWalletMobile-SubWalletMobileTests/Pods-SubWalletMobile-SubWalletMobileTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

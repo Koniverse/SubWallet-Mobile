@@ -8,7 +8,6 @@ import { AccountChainAddressItem } from 'components/common/SelectModal/parts/Acc
 import { AppModalContext } from 'providers/AppModalContext';
 import { VoidFunction } from 'types/index';
 import useHandleTonAccountWarning from 'hooks/account/useHandleTonAccountWarning';
-import { useToast } from 'react-native-toast-notifications';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 import useIsPolkadotUnifiedChain from 'hooks/common/useIsPolkadotUnifiedChain';
@@ -64,7 +63,6 @@ export const AccountChainAddressesSelector = ({
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const navigation = useNavigation<RootNavigationProps>();
   const items: AccountChainAddress[] = useGetAccountChainAddresses(accountProxy);
-  const { show } = useToast();
   const { copyToClipboard } = useCopyClipboard();
 
   const bitcoinAccountList: AccountInfoType[] = useMemo(() => {
@@ -223,8 +221,7 @@ export const AccountChainAddressesSelector = ({
         const isBitcoinChain = isBitcoinAddress(item.address);
 
         const processFunction = () => {
-          copyToClipboard(item.address || '');
-          show('Copied to clipboard');
+          copyToClipboard(item.address || '')();
         };
 
         if (isPolkadotUnifiedChain) {
@@ -252,7 +249,6 @@ export const AccountChainAddressesSelector = ({
       onHandleTonAccountWarning,
       openAccountTokenAddressModal,
       openSelectAddressFormatModal,
-      show,
     ],
   );
 
