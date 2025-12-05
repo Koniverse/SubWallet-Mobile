@@ -20,6 +20,7 @@ import { useGetAccountTokenBalance } from 'hooks/balance';
 import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
+import { useToast } from 'react-native-toast-notifications';
 
 type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
 
@@ -27,6 +28,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
   const { accountProxies } = useSelector((state: RootState) => state.accountState);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { isLocked } = useAppLock();
+  const { show } = useToast();
   const { walletReference } = useSelector((state: RootState) => state.settings);
   const { chainInfoMap, chainStateMap, priorityTokens } = useSelector((state: RootState) => state.chainStore);
   const { services, tokens } = useSelector((state: RootState) => state.buyService);
@@ -315,9 +317,19 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
         await sleep(50);
         const errorMessage = (error as Error).message || (error as string);
         console.log('error message for buy feature', errorMessage);
+
+        show('Create buy order fail', { type: 'danger', duration: 8000 });
       }
     },
-    [chainInfoMap, formState.data.address, formState.data.service, formState.data.tokenSlug, tokens, walletReference],
+    [
+      chainInfoMap,
+      formState.data.address,
+      formState.data.service,
+      formState.data.tokenSlug,
+      show,
+      tokens,
+      walletReference,
+    ],
   );
 
   const onPressItem = (currentValue: SupportService) => {

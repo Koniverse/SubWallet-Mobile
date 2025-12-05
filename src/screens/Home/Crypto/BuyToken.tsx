@@ -22,6 +22,7 @@ import { BuyTokenProps } from 'routes/wrapper';
 import { DisclaimerModal } from 'components/Buy/DisclaimerModal';
 import { SupportService } from 'types/buy';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
+import { AccountChainType } from '@subwallet/extension-base/types';
 
 const submitButtonIcon = (iconColor: string) => (
   <Icon phosphorIcon={ShoppingCartSimple} weight={'fill'} iconColor={iconColor} />
@@ -149,7 +150,7 @@ export const BuyToken = ({
               selectedValueMap={selectedAccount ? { [selectedAccount.address]: true } : {}}
               onSelectItem={openSelectBuyAccount}
               accountSelectorRef={accountBuyRef}
-              disabled={!isAllAccount}
+              disabled={!isAllAccount && !currentAccountProxy?.chainTypes.includes(AccountChainType.BITCOIN)}
               renderSelected={() => (
                 <AccountSelectField
                   label={'To:'}

@@ -134,7 +134,11 @@ const FeeEditor = ({
     return chainValue && destChainValue && chainValue !== destChainValue;
   }, [chainValue, destChainValue]);
 
-  const isEditButton = useMemo(() => {
+  const isEnergyWebChain = useMemo(() => {
+    return chainValue === 'energy_web_chain';
+  }, [chainValue]);
+
+  const { isEditButton, isEvmButNoCustomFeeSupport } = useMemo(() => {
     const isSubstrateSupport = !!(
       chainValue &&
       feeType === 'substrate' &&
@@ -142,14 +146,22 @@ const FeeEditor = ({
       isChainSupportTokenPayFee(chainValue)
     );
     const isEvmSupport = !!(chainValue && feeType === 'evm');
+    const isEvmCustomFeeEditable =
+      isEvmSupport && !!feeOptionsInfo && 'options' in feeOptionsInfo && feeOptionsInfo.options != null;
 
-    return (isSubstrateSupport || isEvmSupport) && !isXcm;
-  }, [isXcm, chainValue, feeType, listTokensCanPayFee.length]);
+    const isEvmButNoCustomFeeSupport_ = isEvmSupport && !isEvmCustomFeeEditable;
+    const isEditButton_ = (isSubstrateSupport || isEvmSupport) && !isXcm && !isEnergyWebChain;
+
+    return {
+      isEvmButNoCustomFeeSupport: isEvmButNoCustomFeeSupport_,
+      isEditButton: isEditButton_,
+    };
+  }, [chainValue, feeType, listTokensCanPayFee.length, feeOptionsInfo, isXcm, isEnergyWebChain]);
 
   const onPressEdit = useCallback(() => {
     Keyboard.dismiss();
 
-    if (!isEditButton) {
+    if (!isEditButton || isEvmButNoCustomFeeSupport) {
       setTimeout(() => {
         setTooltipVisible(true);
       }, 500);
@@ -170,7 +182,7 @@ const FeeEditor = ({
         setFeeEditorModalVisible(true);
       }, 100);
     }
-  }, [chainValue, isEditButton, setFeeEditorModalVisible]);
+  }, [chainValue, isEditButton, isEvmButNoCustomFeeSupport]);
 
   const customFieldNode = useMemo(() => {
     if (!renderFieldNode) {

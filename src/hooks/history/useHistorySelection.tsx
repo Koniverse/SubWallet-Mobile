@@ -97,22 +97,6 @@ export default function useHistorySelection(initialChain?: string, initialAddres
     }
   }, [chainInfoMap, chainItems]);
 
-  useEffect(() => {
-    setSelectedAddress(prevResult => {
-      if (accountAddressItems.length) {
-        if (!prevResult) {
-          return accountAddressItems[0].address;
-        }
-
-        if (!accountAddressItems.some(a => a.address === prevResult)) {
-          return accountAddressItems[0].address;
-        }
-      }
-
-      return prevResult;
-    });
-  }, [accountAddressItems, initialAddress]);
-
   return {
     chainItems,
     accountAddressItems,

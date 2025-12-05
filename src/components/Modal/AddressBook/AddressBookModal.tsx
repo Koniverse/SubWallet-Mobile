@@ -16,10 +16,11 @@ import createStylesheet from './style/AddressBookModal';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { AbstractAddressJson } from '@subwallet/extension-base/types';
+import { AnalyzeAddress, AnalyzedGroup } from '@subwallet/extension-base/types';
 import { _reformatAddressWithChain } from '@subwallet/extension-base/utils';
 import useChainInfo from 'hooks/chain/useChainInfo';
 import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
+import { sortFuncAnalyzeAddress } from 'utils/sort/address';
 
 interface Props {
   modalVisible: boolean;
@@ -29,19 +30,7 @@ interface Props {
   setVisible: (arg: boolean) => void;
 }
 
-enum AccountGroup {
-  WALLET = 'wallet',
-  CONTACT = 'contact',
-  RECENT = 'recent',
-}
-
-interface AccountItem extends AbstractAddressJson {
-  group: AccountGroup;
-  formatedAddress: string;
-  proxyId?: string;
-}
-
-function searchFunction(items: AccountItem[], searchText: string) {
+function searchFunction(items: AnalyzeAddress[], searchText: string) {
   if (!searchText) {
     return items;
   }
@@ -51,13 +40,13 @@ function searchFunction(items: AccountItem[], searchText: string) {
   return items.filter(item => {
     return (
       item.formatedAddress.toLowerCase().includes(searchTextLowerCase) ||
-      (item.name ? item.name.toLowerCase().includes(searchTextLowerCase) : false)
+      (item.displayName ? item.displayName.toLowerCase().includes(searchTextLowerCase) : false)
     );
   });
 }
 
-const filterFunction = (items: AccountItem[], filters: string[]) => {
-  const filteredItems: AccountItem[] = [];
+const filterFunction = (items: AnalyzeAddress[], filters: string[]) => {
+  const filteredItems: AnalyzeAddress[] = [];
 
   if (!filters.length) {
     return items;
@@ -66,18 +55,18 @@ const filterFunction = (items: AccountItem[], filters: string[]) => {
   items.forEach(item => {
     for (const filter of filters) {
       switch (filter) {
-        case AccountGroup.WALLET:
-          if (item.group === AccountGroup.WALLET) {
+        case AnalyzedGroup.WALLET:
+          if (item.analyzedGroup === AnalyzedGroup.WALLET) {
             filteredItems.push(item);
           }
           break;
-        case AccountGroup.CONTACT:
-          if (item.group === AccountGroup.CONTACT) {
+        case AnalyzedGroup.CONTACT:
+          if (item.analyzedGroup === AnalyzedGroup.CONTACT) {
             filteredItems.push(item);
           }
           break;
-        case AccountGroup.RECENT:
-          if (item.group === AccountGroup.RECENT) {
+        case AnalyzedGroup.RECENT:
+          if (item.analyzedGroup === AnalyzedGroup.RECENT) {
             filteredItems.push(item);
           }
       }
@@ -97,16 +86,28 @@ const emptyList = () => {
   );
 };
 
-const sortSection = (a: SectionItem<AccountItem>, b: SectionItem<AccountItem>) => {
+const sortSection = (a: SectionItem<AnalyzeAddress>, b: SectionItem<AnalyzeAddress>) => {
   return b.title.localeCompare(a.title);
 };
 
-const sortFunction = (a: AccountItem, b: AccountItem) => {
-  if (b.name && a.name) {
-    return b.name.localeCompare(a.name);
+const sortFunction = (a: AnalyzeAddress, b: AnalyzeAddress) => {
+  if (b.displayName && a.displayName) {
+    return b.displayName.localeCompare(a.displayName);
   }
 
   return b.address.localeCompare(a.address);
+};
+
+const getGroupPriority = (item: AnalyzeAddress): number => {
+  switch (item.analyzedGroup) {
+    case AnalyzedGroup.WALLET:
+      return 2;
+    case AnalyzedGroup.CONTACT:
+      return 1;
+    case AnalyzedGroup.RECENT:
+    default:
+      return 0;
+  }
 };
 
 export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = '', setVisible }: Props) => {
@@ -118,42 +119,43 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
 
   const onClose = useCallback(() => modalBaseV2Ref?.current?.close(), []);
-  const AccountGroupNameMap = useMemo(
+  const AnalyzedGroupNameMap = useMemo(
     () => ({
-      [AccountGroup.WALLET]: i18n.addressBook.typeWallet,
-      [AccountGroup.CONTACT]: i18n.addressBook.typeContact,
-      [AccountGroup.RECENT]: i18n.addressBook.typeRecent,
+      [AnalyzedGroup.WALLET]: i18n.addressBook.typeWallet,
+      [AnalyzedGroup.CONTACT]: i18n.addressBook.typeContact,
+      [AnalyzedGroup.RECENT]: i18n.addressBook.typeRecent,
+      [AnalyzedGroup.DOMAIN]: 'Domain',
     }),
     [],
   );
   const groupBy = useCallback(
-    (item: AccountItem) => {
+    (item: AnalyzeAddress) => {
       let priority;
 
-      if (item.group === AccountGroup.WALLET) {
+      if (item.analyzedGroup === AnalyzedGroup.WALLET) {
         priority = '2';
-      } else if (item.group === AccountGroup.CONTACT) {
+      } else if (item.analyzedGroup === AnalyzedGroup.CONTACT) {
         priority = '1';
       } else {
         priority = '0';
       }
 
-      return `${priority}|${AccountGroupNameMap[item.group]}|${item.group}`;
+      return `${priority}|${AnalyzedGroupNameMap[item.analyzedGroup]}|${item.analyzedGroup}`;
     },
-    [AccountGroupNameMap],
+    [AnalyzedGroupNameMap],
   );
 
-  const FILTER_OPTIONS = [AccountGroup.WALLET, AccountGroup.CONTACT, AccountGroup.RECENT].map(valueItem => ({
+  const FILTER_OPTIONS = [AnalyzedGroup.WALLET, AnalyzedGroup.CONTACT, AnalyzedGroup.RECENT].map(valueItem => ({
     value: valueItem,
-    label: AccountGroupNameMap[valueItem],
+    label: AnalyzedGroupNameMap[valueItem],
   }));
 
-  const items = useMemo((): AccountItem[] => {
+  const items = useMemo((): AnalyzeAddress[] => {
     if (!chainInfo) {
       return [];
     }
 
-    const result: AccountItem[] = [];
+    const result: AnalyzeAddress[] = [];
 
     recent.forEach(acc => {
       const chains = acc.recentChainSlugs || [];
@@ -163,7 +165,7 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
           ...acc,
           address: acc.address,
           formatedAddress: _reformatAddressWithChain(acc.address, chainInfo),
-          group: AccountGroup.RECENT,
+          analyzedGroup: AnalyzedGroup.RECENT,
         });
       }
     });
@@ -173,7 +175,7 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
         ...acc,
         address: acc.address,
         formatedAddress: _reformatAddressWithChain(acc.address, chainInfo),
-        group: AccountGroup.CONTACT,
+        analyzedGroup: AnalyzedGroup.CONTACT,
       });
     });
 
@@ -188,16 +190,22 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
         const formatedAddress = getReformatAddress(acc, chainInfo);
 
         if (formatedAddress) {
-          result.push({ ...acc, address: acc.address, formatedAddress, proxyId: ap.id, group: AccountGroup.WALLET });
+          result.push({
+            displayName: acc.name,
+            formatedAddress,
+            address: acc.address,
+            analyzedGroup: AnalyzedGroup.WALLET,
+            proxyId: ap.id,
+          });
         }
       });
     });
 
-    return result;
+    return result.sort(sortFuncAnalyzeAddress).sort((a, b) => getGroupPriority(b) - getGroupPriority(a));
   }, [accountProxies, chainInfo, chainSlug, contacts, getReformatAddress, recent]);
 
   const onSelectItem = useCallback(
-    (item: AccountItem) => {
+    (item: AnalyzeAddress) => {
       return () => {
         onSelect(item.formatedAddress);
         onClose();
@@ -207,13 +215,13 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
   );
 
   const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<AccountItem>) => {
-      const isRecent = item.group === AccountGroup.RECENT;
+    ({ item }: ListRenderItemInfo<AnalyzeAddress>) => {
+      const isRecent = item.analyzedGroup === AnalyzedGroup.RECENT;
 
       return (
         <AccountItemWithName
-          key={`${item.name}-${item.formatedAddress}`}
-          accountName={item.name}
+          key={`${item.displayName}-${item.formatedAddress}`}
+          accountName={item.displayName}
           avatarValue={item.proxyId || item.address}
           address={item.formatedAddress}
           addressPreLength={isRecent ? 9 : 4}

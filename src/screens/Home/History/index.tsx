@@ -491,7 +491,7 @@ function History({
       return (
         <View style={{ paddingBottom: theme.sizeXS }}>
           <Typography.Text size={'sm'} style={{ color: theme.colorTextLight3, ...FontMedium }}>
-            {item.split('|')[1]}
+            {item}
           </Typography.Text>
         </View>
       );
@@ -500,12 +500,27 @@ function History({
   );
 
   const sortSection = useCallback<SortFunctionInterface<SectionItem<TransactionHistoryDisplayItem>>>((a, b) => {
-    return b.title.localeCompare(a.title);
+    const timeA = a.data?.[0]?.displayTime;
+    const timeB = b.data?.[0]?.displayTime;
+
+    if (timeB == null) {
+      return -1;
+    }
+
+    if (timeA == null) {
+      return 1;
+    }
+
+    return timeB - timeA;
   }, []);
 
   const grouping = useMemo(() => {
     return { groupBy, sortSection, renderSectionHeader };
   }, [groupBy, renderSectionHeader, sortSection]);
+
+  const isShowAccounttSelector = useMemo(() => {
+    return isAllAccount || accountAddressItems.length > 1;
+  }, [accountAddressItems.length, isAllAccount]);
 
   const sortFunction = useCallback((a: TransactionHistoryDisplayItem, b: TransactionHistoryDisplayItem) => {
     return b.time - a.time;
@@ -607,6 +622,12 @@ function History({
     };
   }, [isSelectedChainEvm, selectedAddress, selectedChain]);
 
+  useEffect(() => {
+    if (!isShowAccounttSelector && !propAddress && selectedAddress !== accounts[0]?.address) {
+      setSelectedAddress(accountAddressItems[0]?.address || '');
+    }
+  }, [accountAddressItems, accounts, isShowAccounttSelector, propAddress, selectedAddress, setSelectedAddress]);
+
   return (
     <>
       <ContainerWithSubHeader
@@ -655,7 +676,7 @@ function History({
               />
             </View>
 
-            {isAllAccount && (
+            {isShowAccounttSelector && (
               <View style={{ flex: 1 }}>
                 <HistoryAccountSelector
                   items={accountAddressItems}

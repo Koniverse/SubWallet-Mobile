@@ -144,7 +144,12 @@ const MigrateAccount = ({
   return (
     <>
       {currentScreenView === ScreenView.BRIEF && (
-        <BriefView isForcedMigration={isForcedMigration} onDismiss={onPressDismiss} onMigrateNow={onPressMigrateNow} />
+        <BriefView
+          isForcedMigration={isForcedMigration}
+          onDismiss={onPressDismiss}
+          onMigrateNow={onPressMigrateNow}
+          isBusy={isBusy}
+        />
       )}
 
       {currentScreenView === ScreenView.SOLO_ACCOUNT_MIGRATION && (

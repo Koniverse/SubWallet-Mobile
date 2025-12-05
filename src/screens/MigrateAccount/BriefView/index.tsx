@@ -12,6 +12,7 @@ import i18n from 'utils/i18n/i18n';
 
 interface Props {
   isForcedMigration?: boolean;
+  isBusy?: boolean;
   onDismiss: VoidFunction;
   onMigrateNow: VoidFunction;
 }
@@ -21,7 +22,7 @@ type ContentDataType = {
   title: string;
 };
 
-export const BriefView = React.memo(({ isForcedMigration, onDismiss, onMigrateNow }: Props) => {
+export const BriefView = React.memo(({ isForcedMigration, onDismiss, onMigrateNow, isBusy }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const [contentData, setContentData] = useState<ContentDataType>({
     content: '',
@@ -55,9 +56,9 @@ export const BriefView = React.memo(({ isForcedMigration, onDismiss, onMigrateNo
     if (isForcedMigration) {
       setIsFetchingBriefContent(false);
     }
-  }, [isForcedMigration]);
+  }, [isBusy, isForcedMigration]);
 
-  if (isFetchingBriefContent) {
+  if (isFetchingBriefContent || isBusy) {
     return <LoadingScreen />;
   }
 

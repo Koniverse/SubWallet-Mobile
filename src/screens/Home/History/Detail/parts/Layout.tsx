@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import HistoryDetailAmount from './Amount';
 import HistoryDetailFee from './Fee';
@@ -15,6 +15,7 @@ import { RootState } from 'stores/index';
 import { ExtrinsicType, LanguageType } from '@subwallet/extension-base/background/KoniTypes';
 import { isAbleToShowFee } from 'components/common/HistoryItem';
 import { SwapLayout } from 'screens/Home/History/parts/SwapLayout';
+import { hexAddPrefix, isHex } from '@polkadot/util';
 
 interface Props {
   data: TransactionHistoryDisplayItem;
@@ -25,6 +26,12 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
   const txtTypeNameMap = TxTypeNameMap();
   const historyStatusMap = HistoryStatusMap();
   const language = useSelector((state: RootState) => state.settings.language) as LanguageType;
+
+  const extrinsicHash = useMemo(() => {
+    const hash = data.extrinsicHash || '';
+
+    return isHex(hexAddPrefix(hash)) ? toShort(data.extrinsicHash, 8, 9) : '...';
+  }, [data.extrinsicHash]);
 
   if (data.type === ExtrinsicType.SWAP) {
     return <SwapLayout data={data} />;
@@ -40,11 +47,9 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
         statusName={historyStatusMap[data.status].name}
         valueColorSchema={historyStatusMap[data.status].schema}
       />
-      {data.extrinsicHash && data.extrinsicHash.startsWith('0x') && (
-        <MetaInfo.Default label={i18n.historyScreen.label.extrinsicHash}>
-          {toShort(data.extrinsicHash, 8, 9)}
-        </MetaInfo.Default>
-      )}
+
+      <MetaInfo.Default label={i18n.historyScreen.label.extrinsicHash}>{extrinsicHash}</MetaInfo.Default>
+
       {!!data.time && (
         <MetaInfo.Default label={i18n.historyScreen.label.transactionTime}>
           {formatHistoryDate(data.time, language, 'detail')}
