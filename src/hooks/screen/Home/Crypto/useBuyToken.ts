@@ -20,6 +20,7 @@ import { reformatAddress } from '@subwallet/extension-base/utils';
 import useReformatAddress from 'hooks/common/useReformatAddress';
 import { useGetAccountTokenBalance } from 'hooks/balance';
 import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
+import { useToast } from 'react-native-toast-notifications';
 
 type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
 
@@ -33,6 +34,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
   const getAccountTokenBalance = useGetAccountTokenBalance();
   const checkAsset = useAssetChecker();
   const allowedChains = useGetChainSlugsByAccount();
+  const { show } = useToast();
   const getReformatAddress = useReformatAddress();
   const fixedTokenSlug = useMemo((): string | undefined => {
     if (currentSymbol) {
@@ -315,9 +317,22 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
         await sleep(50);
         const errorMessage = (error as Error).message || (error as string);
         console.log('error message for buy feature', errorMessage);
+
+        show('Unable to redirect you to the selected supplier at the moment. Try again later', {
+          type: 'danger',
+          duration: 8000,
+        });
       }
     },
-    [chainInfoMap, formState.data.address, formState.data.service, formState.data.tokenSlug, tokens, walletReference],
+    [
+      chainInfoMap,
+      formState.data.address,
+      formState.data.service,
+      formState.data.tokenSlug,
+      show,
+      tokens,
+      walletReference,
+    ],
   );
 
   const onPressItem = (currentValue: SupportService) => {
