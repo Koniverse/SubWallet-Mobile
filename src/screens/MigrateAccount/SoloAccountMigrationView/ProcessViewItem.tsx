@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SoloAccountToBeMigrated } from '@subwallet/extension-base/background/KoniTypes';
 import { VoidFunction } from 'types/index';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import { FlatList, Keyboard, StyleSheet, View } from 'react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
@@ -130,6 +130,11 @@ export const ProcessViewItem = ({
     onChangeValue('accountName')(value);
   };
 
+  const renderSoloItem = useCallback(
+    ({ item }: { item: SoloAccountToBeMigrated }) => <SoloAccountToBeMigratedItem {...item} />,
+    [],
+  );
+
   const disableApprove = loading || !!formState.errors.accountName.length || !formState.data.accountName.length;
 
   return (
@@ -148,10 +153,16 @@ export const ProcessViewItem = ({
 
           <View>
             <Typography.Text style={styles.labelText}>{'Migrate from'}</Typography.Text>
-            <View style={{ gap: theme.sizeXS }}>
-              {currentSoloAccountToBeMigratedGroup.map(account => (
-                <SoloAccountToBeMigratedItem key={account.address} {...account} />
-              ))}
+            <View style={{ maxHeight: 280, borderRadius: 12 }}>
+              <FlatList
+                data={currentSoloAccountToBeMigratedGroup}
+                keyExtractor={item => item.address}
+                renderItem={renderSoloItem}
+                ItemSeparatorComponent={() => <View style={{ height: theme.sizeXS }} />}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                nestedScrollEnabled
+              />
             </View>
           </View>
 

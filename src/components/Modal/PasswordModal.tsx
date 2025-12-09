@@ -81,8 +81,8 @@ const PasswordModal = ({
   }, [formState.data.password, onConfirm]);
 
   useEffect(() => {
+    setErrorArr([]);
     if (!visible) {
-      setErrorArr([]);
       onChangeValue('password')('');
       onUpdateErrors('password')([]);
     } else {
@@ -121,7 +121,7 @@ const PasswordModal = ({
         )}
 
         <Button
-          style={{ marginTop: !!errors.length ? 0 : 8 }}
+          style={{ marginTop: errors.length ? 0 : 8 }}
           loading={isBusy}
           onPress={onPress}
           disabled={!formState.data.password || errors.length > 0 || !isNetConnected || isBusy}>
