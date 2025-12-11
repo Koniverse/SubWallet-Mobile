@@ -318,7 +318,10 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
         const errorMessage = (error as Error).message || (error as string);
         console.log('error message for buy feature', errorMessage);
 
-        show('Create buy order fail', { type: 'danger', duration: 8000 });
+        show('Unable to redirect you to the selected supplier at the moment. Try again later', {
+          type: 'danger',
+          duration: 8000,
+        });
       }
     },
     [

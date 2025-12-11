@@ -7,6 +7,6 @@ export const createTransakOrder: CreateBuyOrderFunction = (symbol, address, netw
     address: address,
     network: network,
     action: 'BUY',
-    referrerDomain: 'https://web.subwallet.app',
+    referrerDomain: 'app.subwallet.mobile',
   });
 };
