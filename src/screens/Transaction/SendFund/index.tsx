@@ -427,21 +427,18 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const { nativeTokenBalance, nativeTokenSlug } = useGetBalance(chainValue, fromValue);
 
   const hideMaxButton = useMemo(() => {
-    const _chainInfo = chainInfoMap[chainValue];
+    const chainInfo = chainInfoMap[chainValue];
 
     if (_isPolygonChainBridge(chainValue, destChainValue) || _isPosChainBridge(chainValue, destChainValue)) {
       return true;
     }
 
     return (
-      !!_chainInfo &&
+      !!chainInfo &&
       !!assetInfo &&
       destChainValue === chainValue &&
       _isNativeToken(assetInfo) &&
-      _isChainEvmCompatible(_chainInfo) &&
-      (_isChainEvmCompatible(_chainInfo) ||
-        _isChainCardanoCompatible(_chainInfo) ||
-        _isChainBitcoinCompatible(_chainInfo))
+      (_isChainEvmCompatible(chainInfo) || _isChainCardanoCompatible(chainInfo) || _isChainBitcoinCompatible(chainInfo))
     );
   }, [chainInfoMap, chainValue, assetInfo, destChainValue]);
 
@@ -915,8 +912,17 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     return !isBalanceReady || loading || (isTransferAll ? isFetchingInfo : false);
   })();
 
+  const isDataReady = !isFetchingInfo && !isFetchingListFeeToken && !!transferInfo?.feeOptions;
+
   const isSubmitButtonDisable = (() => {
-    return !isBalanceReady || loading || isFetchingListFeeToken || (isTransferAll ? isFetchingInfo : false);
+    return (
+      !isBalanceReady ||
+      loading ||
+      isFetchingListFeeToken ||
+      (isTransferAll ? isFetchingInfo : false) ||
+      !isDataReady ||
+      transferInfo?.isEvmRpcError
+    );
   })();
 
   const onInputChangeAmount = useCallback(() => {

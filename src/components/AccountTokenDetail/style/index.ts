@@ -12,8 +12,19 @@ export default (theme: ThemeTypes) => {
     },
     row: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      alignItems: 'center',
       gap: theme.paddingXS,
+    },
+    left: {
+      flex: 1,
+      minWidth: 0,
+      flexShrink: 1,
+    },
+    right: {
+      marginLeft: theme.paddingXS,
+      flexShrink: 0,
+      alignItems: 'flex-end',
+      maxWidth: 190,
     },
     value: {
       flex: 1,
@@ -30,16 +41,30 @@ export default (theme: ThemeTypes) => {
       ...FontMedium,
     },
     accountDetailLabel: {
-      maxWidth: 120,
       color: theme.colorWhite,
       paddingRight: theme.paddingXXS,
+      flexShrink: 1,
+      minWidth: 0,
+      maxWidth: 120,
     },
     accountDetailValue: {
       color: theme.colorTextTertiary,
       paddingRight: theme.paddingXS,
+      flexShrink: 0,
     },
     explorerBtn: { marginBottom: -4, marginTop: theme.marginXXS },
-    accountInfoWrapper: { flexDirection: 'row', alignItems: 'center', gap: theme.paddingXS },
-    accountNameAndAddressWrapper: { flexDirection: 'row', alignItems: 'center' },
+    accountInfoWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.paddingXS,
+      flex: 1,
+      minWidth: 0,
+    },
+    accountNameAndAddressWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+      minWidth: 0,
+    },
   });
 };

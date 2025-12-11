@@ -9,12 +9,18 @@ export interface ComponentStyle {
   accountName: TextStyle;
   accountAddress: TextStyle;
   accountAddressHorizontal: TextStyle;
+  middleContentWrapper: ViewStyle;
 }
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
     contentWrapper: {
       display: 'flex',
+    },
+    middleContentWrapper: {
+      paddingTop: theme.paddingSM - 2,
+      paddingBottom: theme.paddingSM - 2,
+      width: '100%',
     },
     contentDirectionHorizontal: {
       flexDirection: 'row',

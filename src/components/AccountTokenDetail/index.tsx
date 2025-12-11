@@ -102,64 +102,82 @@ export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
   }, [free, isBitcoinChain, locked, metadata, total]);
 
   return (
-    //todo: rewrite this component
     <View style={_style.container}>
       <View style={{ flex: 1 }}>
         {isBitcoinChain ? (
           <View style={[_style.row, { paddingBottom: theme.paddingXXS }]}>
-            <View style={_style.accountInfoWrapper}>
-              <AccountProxyAvatar value={address} size={24} />
-              {name ? (
-                <View style={_style.accountNameAndAddressWrapper}>
-                  <Typography.Text style={_style.accountDetailLabel} ellipsis>
-                    {name}
-                  </Typography.Text>
+            <View style={_style.left}>
+              <View style={_style.accountInfoWrapper}>
+                <AccountProxyAvatar value={address} size={24} />
 
-                  <Typography.Text size={'sm'} style={_style.accountDetailValue}>{`(${toShort(
-                    reformatedAddress,
-                  )})`}</Typography.Text>
-                </View>
-              ) : (
-                <Typography.Text style={_style.accountDetailValue}>{`(${toShort(reformatedAddress)})`}</Typography.Text>
-              )}
+                {name ? (
+                  <View style={_style.accountNameAndAddressWrapper}>
+                    <Typography.Text style={_style.accountDetailLabel} ellipsis>
+                      {name}
+                    </Typography.Text>
+
+                    <Typography.Text size={'sm'} style={_style.accountDetailValue}>
+                      {`(${toShort(reformatedAddress)})`}
+                    </Typography.Text>
+                  </View>
+                ) : (
+                  <Typography.Text style={_style.accountDetailValue}>
+                    {`(${toShort(reformatedAddress)})`}
+                  </Typography.Text>
+                )}
+              </View>
             </View>
 
-            <Typography.Text style={{ color: schema ? theme[schema] : theme.colorTextLight1 }}>
-              {addressTypeLabel}
-            </Typography.Text>
+            <View style={_style.right}>
+              <Typography.Text
+                style={{ color: schema ? theme[schema] : theme.colorTextLight1 }}
+                numberOfLines={1}
+                ellipsis>
+                {addressTypeLabel}
+              </Typography.Text>
+            </View>
           </View>
         ) : (
           <View style={[_style.row, { paddingBottom: theme.paddingXXS }]}>
-            <View style={_style.accountInfoWrapper}>
-              <AccountProxyAvatar value={address} size={24} />
-              {name ? (
-                <View style={_style.accountNameAndAddressWrapper}>
-                  <Typography.Text style={_style.accountDetailLabel} ellipsis>
-                    {name}
-                  </Typography.Text>
+            <View style={_style.left}>
+              <View style={_style.accountInfoWrapper}>
+                <AccountProxyAvatar value={address} size={24} />
 
-                  <Typography.Text size={'sm'} style={_style.accountDetailValue}>{`(${toShort(
-                    reformatedAddress,
-                  )})`}</Typography.Text>
-                </View>
-              ) : (
-                <Typography.Text style={_style.accountDetailValue}>{`(${toShort(reformatedAddress)})`}</Typography.Text>
-              )}
+                {name ? (
+                  <View style={_style.accountNameAndAddressWrapper}>
+                    <Typography.Text style={_style.accountDetailLabel} ellipsis>
+                      {name}
+                    </Typography.Text>
+
+                    <Typography.Text size={'sm'} style={_style.accountDetailValue}>
+                      {`(${toShort(reformatedAddress)})`}
+                    </Typography.Text>
+                  </View>
+                ) : (
+                  <Typography.Text style={_style.accountDetailValue}>
+                    {`(${toShort(reformatedAddress)})`}
+                  </Typography.Text>
+                )}
+              </View>
             </View>
 
-            <Number
-              size={14}
-              value={total}
-              decimal={decimals}
-              suffix={symbol}
-              decimalOpacity={0.85}
-              unitOpacity={0.85}
-              intOpacity={0.85}
-            />
+            <View style={_style.right}>
+              <Number
+                size={14}
+                value={total}
+                decimal={decimals}
+                suffix={symbol}
+                decimalOpacity={0.85}
+                unitOpacity={0.85}
+                intOpacity={0.85}
+              />
+            </View>
           </View>
         )}
+
         <MetaInfo style={{ paddingLeft: theme.paddingXL }} labelColorScheme={'gray'} spaceSize={'none'}>
           {balanceItems.map(renderBalanceItem)}
+
           {!!link && (
             <Button
               style={_style.explorerBtn}

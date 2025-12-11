@@ -1,7 +1,7 @@
 import { Images } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ImageBackground, StatusBar, StyleProp, View, Linking } from 'react-native';
+import { ImageBackground, StatusBar, StyleProp, View, Linking, Platform, DeviceEventEmitter } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -22,6 +22,7 @@ import { SelectLanguageModal } from 'components/Modal/SelectLanguageModal';
 import { isHandleDeeplinkPromise, setIsHandleDeeplinkPromise } from '../../App';
 import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { FORCE_HIDDEN_EVENT } from 'components/design-system-ui/modal/ModalBaseV2';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -91,6 +92,14 @@ export const FirstScreen = () => {
       setIsHandleDeeplinkPromise(true);
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    // Ensure modals are shown when returning to this screen on Android
+    // because modal is hidden in login screen to prevent after reset account
+    if (Platform.OS === 'android') {
+      DeviceEventEmitter.emit(FORCE_HIDDEN_EVENT, false);
+    }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = Linking.addEventListener('url', ({ url }) => {

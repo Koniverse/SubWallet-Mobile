@@ -67,23 +67,22 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
       address={address}
       leftItem={isAll ? <AccountProxyAvatarGroup /> : props.leftItem}
       middleItem={
-        <View style={{ paddingTop: theme.paddingSM - 2, paddingBottom: theme.paddingSM - 2 }}>
+        <View style={styles.middleContentWrapper}>
           <View
             style={[direction === 'horizontal' ? styles.contentDirectionHorizontal : styles.contentDirectionVertical]}>
             <Typography.Text style={[styles.accountName, customNameStyle]} ellipsis>
               {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
             </Typography.Text>
             {isShowBitcoinAttr && !!bitcoinAttributes && !!bitcoinAttributes.schema ? (
-              <Typography.Text>
+              <>
                 <Typography.Text
                   style={{
                     fontSize: theme.fontSizeXS,
                     lineHeight: theme.fontSizeXS * theme.lineHeightXS,
                     color: theme.colorTextTertiary,
-                    paddingHorizontal: theme.paddingXXS,
                     ...FontBold,
                   }}>
-                  {'  -  '}
+                  {' - '}
                 </Typography.Text>
                 <Typography.Text
                   style={{
@@ -94,7 +93,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
                   }}>
                   {bitcoinAttributes.label}
                 </Typography.Text>
-              </Typography.Text>
+              </>
             ) : null}
           </View>
           {showFallback && address && showAddress && (

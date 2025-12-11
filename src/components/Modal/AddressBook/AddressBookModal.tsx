@@ -173,6 +173,7 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
     contacts.forEach(acc => {
       result.push({
         ...acc,
+        displayName: acc.name,
         address: acc.address,
         formatedAddress: _reformatAddressWithChain(acc.address, chainInfo),
         analyzedGroup: AnalyzedGroup.CONTACT,
