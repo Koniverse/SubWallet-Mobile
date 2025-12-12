@@ -119,6 +119,9 @@ export const ProcessViewItem = ({
 
     return () => {
       amount = false;
+      if (timeOutRef.current) {
+        clearTimeout(timeOutRef.current);
+      }
     };
   }, [formState.data.accountName, onUpdateErrors, validatorFunc]);
 

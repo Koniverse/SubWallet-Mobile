@@ -22,32 +22,16 @@ const SoloAccountMigrationView: React.FC<Props> = ({
   const [currentToBeMigratedGroupIndex, setCurrentToBeMigratedGroupIndex] = useState<number>(0);
   const [totalProcessSteps, setTotalProcessSteps] = useState<number>(soloAccountToBeMigratedGroups.length);
 
-  const performNextProcess = useCallback(
-    (increaseProcessOrdinal = true) => {
-      if (currentProcessOrdinal === totalProcessSteps) {
-        onCompleteMigrationProcess();
+  const performNextProcess = useCallback((increaseProcessOrdinal = true) => {
+    setCurrentToBeMigratedGroupIndex(prev => prev + 1);
 
-        return;
-      }
-
-      setCurrentToBeMigratedGroupIndex(prev => prev + 1);
-
-      if (increaseProcessOrdinal) {
-        setCurrentProcessOrdinal(prev => prev + 1);
-      }
-    },
-    [currentProcessOrdinal, onCompleteMigrationProcess, totalProcessSteps],
-  );
+    if (increaseProcessOrdinal) {
+      setCurrentProcessOrdinal(prev => prev + 1);
+    }
+  }, []);
 
   const onSkip = useCallback(() => {
-    setTotalProcessSteps(prev => {
-      if (prev > 0) {
-        return prev - 1;
-      }
-
-      return prev;
-    });
-
+    setTotalProcessSteps(prev => (prev > 0 ? prev - 1 : prev));
     performNextProcess(false);
   }, [performNextProcess]);
 
@@ -63,12 +47,18 @@ const SoloAccountMigrationView: React.FC<Props> = ({
         accountName,
       });
 
-      performNextProcess();
+      performNextProcess(true);
     },
     [onApprove, performNextProcess, sessionId],
   );
 
   const currentSoloAccountToBeMigratedGroup = soloAccountToBeMigratedGroups[currentToBeMigratedGroupIndex];
+
+  useEffect(() => {
+    if (currentProcessOrdinal === totalProcessSteps + 1) {
+      onCompleteMigrationProcess();
+    }
+  }, [currentProcessOrdinal, totalProcessSteps, onCompleteMigrationProcess]);
 
   useEffect(() => {
     // keep the session alive while in this view
