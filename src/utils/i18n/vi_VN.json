@@ -985,7 +985,8 @@
       "fromAccount": "Từ tài khoản",
       "transactionFail": " thất bại",
       "estimatedReceivables": "Estimated receivables",
-      "minimumReceivables": "Minimum receivables"
+      "minimumReceivables": "Minimum receivables",
+      "submittedTime": "Submitted time"
     },
     "title": {
       "transaction": "Giao dịch",

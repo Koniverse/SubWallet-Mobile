@@ -522,10 +522,6 @@ function History({
     return isAllAccount || accountAddressItems.length > 1;
   }, [accountAddressItems.length, isAllAccount]);
 
-  const sortFunction = useCallback((a: TransactionHistoryDisplayItem, b: TransactionHistoryDisplayItem) => {
-    return b.time - a.time;
-  }, []);
-
   const emptyList = useCallback(() => {
     return (
       <EmptyList
@@ -701,7 +697,6 @@ function History({
             renderListEmptyComponent={emptyList}
             filterFunction={filterFunction}
             selectedFilters={selectedFilters}
-            sortItemFunction={sortFunction}
             sortSectionFunction={grouping.sortSection}
             groupBy={grouping.groupBy}
             renderSectionHeader={grouping.renderSectionHeader}

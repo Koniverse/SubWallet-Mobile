@@ -17,10 +17,12 @@ import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AnalyzeAddress, AnalyzedGroup } from '@subwallet/extension-base/types';
-import { _reformatAddressWithChain } from '@subwallet/extension-base/utils';
+import { _reformatAddressWithChain, getAccountChainTypeForAddress } from '@subwallet/extension-base/utils';
 import useChainInfo from 'hooks/chain/useChainInfo';
 import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 import { sortFuncAnalyzeAddress } from 'utils/sort/address';
+import { _isChainInfoCompatibleWithAccountInfo } from '@subwallet/extension-base/services/chain-service/utils';
+import { getKeypairTypeByAddress } from '@subwallet/keyring';
 
 interface Props {
   modalVisible: boolean;
@@ -171,13 +173,20 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
     });
 
     contacts.forEach(acc => {
-      result.push({
-        ...acc,
-        displayName: acc.name,
-        address: acc.address,
-        formatedAddress: _reformatAddressWithChain(acc.address, chainInfo),
-        analyzedGroup: AnalyzedGroup.CONTACT,
-      });
+      if (
+        _isChainInfoCompatibleWithAccountInfo(chainInfo, {
+          chainType: getAccountChainTypeForAddress(acc.address),
+          type: getKeypairTypeByAddress(acc.address),
+        })
+      ) {
+        result.push({
+          ...acc,
+          displayName: acc.name,
+          address: acc.address,
+          formatedAddress: _reformatAddressWithChain(acc.address, chainInfo),
+          analyzedGroup: AnalyzedGroup.CONTACT,
+        });
+      }
     });
 
     accountProxies.forEach(ap => {

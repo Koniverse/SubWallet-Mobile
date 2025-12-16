@@ -164,7 +164,9 @@ class WebRunnerHandler {
 
     const isRunning = await this.server.isRunning();
     if (!isRunning) {
+      console.log('await this.server.start();', this.server);
       await this.server.start();
+      console.log('this.server', this.server);
     }
     return true;
   }

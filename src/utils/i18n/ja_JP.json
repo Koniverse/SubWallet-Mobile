@@ -984,7 +984,8 @@
       "fromAccount": "アカウントから",
       "transactionFail": " fail",
       "estimatedReceivables": " Estimated receivables",
-      "minimumReceivables": "Minimum receivables"
+      "minimumReceivables": "Minimum receivables",
+      "submittedTime": "Submitted time"
     },
     "title": {
       "transaction": "トランザクション",

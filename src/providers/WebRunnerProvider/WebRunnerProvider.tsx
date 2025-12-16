@@ -21,6 +21,7 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
     status: 'init',
     version: 'unknown',
   });
+  console.log('webStateRef', webStateRef);
   const [isReady, setIsReady] = useState(lastIsReady);
   const [isNetConnected, setIsNetConnected] = useState(lastIsNetConnected);
   const [isUpdateComplete, setUpdateComplete] = useState(false);

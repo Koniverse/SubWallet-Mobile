@@ -984,7 +984,8 @@
       "fromAccount": "从账户",
       "transactionFail": "输",
       "estimatedReceivables": " Estimated receivables",
-      "minimumReceivables": "Minimum receivables"
+      "minimumReceivables": "Minimum receivables",
+      "submittedTime": "Submitted time"
     },
     "title": {
       "transaction": "交易",

@@ -9,6 +9,7 @@ import { CheckCircle } from 'phosphor-react-native';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { getKeypairTypeByAddress, isBitcoinAddress } from '@subwallet/keyring';
 import { getBitcoinKeypairAttributes } from 'utils/account/account';
+import { FontBold } from 'styles/sharedStyles';
 
 interface CustomStyle extends Web3BlockCustomStyle {
   address?: StyleProp<TextStyle>;
@@ -62,13 +63,21 @@ const AccountItem: React.FC<AccountItemProps> = (props: AccountItemProps) => {
       leftItem={leftItem || <AccountProxyAvatar value={avatarValue || address} size={avatarSize} />}
       middleItem={
         middleItem || (
-          <View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXS }}>
             <Typography.Text style={[addressStyle]}>
               {toShort(address || '', addressPreLength, addressSufLength)}
             </Typography.Text>
 
             {!!bitcoinAttributes && !!bitcoinAttributes.schema ? (
-              <Typography.Text>{bitcoinAttributes.label}</Typography.Text> //todo: add styles
+              <Typography.Text
+                style={{
+                  fontSize: theme.fontSizeXS,
+                  lineHeight: theme.fontSizeXS * theme.lineHeightXS,
+                  color: theme[bitcoinAttributes.schema],
+                  ...FontBold,
+                }}>
+                {bitcoinAttributes.label}
+              </Typography.Text> //todo: add styles
             ) : null}
           </View>
         )

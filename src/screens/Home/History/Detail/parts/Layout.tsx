@@ -51,7 +51,7 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
       <MetaInfo.Default label={i18n.historyScreen.label.extrinsicHash}>{extrinsicHash}</MetaInfo.Default>
 
       {!!data.time && (
-        <MetaInfo.Default label={i18n.historyScreen.label.transactionTime}>
+        <MetaInfo.Default label={i18n.historyScreen.label.submittedTime}>
           {formatHistoryDate(data.time, language, 'detail')}
         </MetaInfo.Default>
       )}
