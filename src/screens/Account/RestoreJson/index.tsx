@@ -385,7 +385,6 @@ export const RestoreJson = () => {
     RNFS.readFile(fileUri, 'ascii')
       .then(res => {
         const file = JSON.parse(res) as KeyringPair$Json | KeyringPairs$Json;
-        console.log('file', file);
         if (!isValidJsonFile(file)) {
           throw new Error('Invalid JSON file');
         }

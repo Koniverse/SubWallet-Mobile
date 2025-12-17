@@ -19,7 +19,7 @@ export function AccountSelectItem<T>({
   showAccountSignModeIcon,
   isShowBitcoinAttr,
 }: Props<T>) {
-  const { address, accountName } = item as AccountAddressItemType;
+  const { address, accountName, accountProxyId } = item as AccountAddressItemType;
 
   return (
     <AccountItemWithName
@@ -27,6 +27,7 @@ export function AccountSelectItem<T>({
       customStyle={{ container: { marginBottom: 8, marginHorizontal: 16 } }}
       avatarSize={24}
       address={address}
+      avatarValue={accountProxyId}
       accountName={accountName}
       isSelected={!!selectedValueMap[address]}
       showAccountSignModeIcon={showAccountSignModeIcon}
