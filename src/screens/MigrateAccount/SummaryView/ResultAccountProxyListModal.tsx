@@ -1,10 +1,11 @@
 import React from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ResultAccountProxyItem, {
   ResultAccountProxyItemType,
 } from 'screens/MigrateAccount/SummaryView/ResultAccountProxyItem';
 import { Button, SwModal } from 'components/design-system-ui';
+import { deviceHeight } from 'constants/index';
 
 interface Props {
   modalVisible: boolean;
@@ -26,7 +27,10 @@ const ResultAccountProxyListModal: React.FC<Props> = ({ accountProxies, setModal
           <Button onPress={() => setModalVisible(false)}>{'Close'}</Button>
         </View>
       }>
-      <View style={{ gap: theme.sizeXS }}>
+      <ScrollView
+        style={{ maxHeight: deviceHeight * 0.5 }}
+        contentContainerStyle={{ gap: theme.sizeXS }}
+        showsVerticalScrollIndicator={false}>
         {accountProxies.map(ap => (
           <ResultAccountProxyItem
             key={ap.accountProxyId}
@@ -34,7 +38,7 @@ const ResultAccountProxyListModal: React.FC<Props> = ({ accountProxies, setModal
             accountName={ap.accountName}
           />
         ))}
-      </View>
+      </ScrollView>
     </SwModal>
   );
 };

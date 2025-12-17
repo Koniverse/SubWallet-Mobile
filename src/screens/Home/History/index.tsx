@@ -502,6 +502,17 @@ function History({
   const sortSection = useCallback<SortFunctionInterface<SectionItem<TransactionHistoryDisplayItem>>>((a, b) => {
     const timeA = a.data?.[0]?.displayTime;
     const timeB = b.data?.[0]?.displayTime;
+    const isAProcessing = a.title === 'Processing';
+    const isBProcessing = b.title === 'Processing';
+
+    // 1️⃣ Ưu tiên Processing lên đầu
+    if (isAProcessing && !isBProcessing) {
+      return -1;
+    }
+
+    if (!isAProcessing && isBProcessing) {
+      return 1;
+    }
 
     if (timeB == null) {
       return -1;
