@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ResultAccountProxyItem, {
   ResultAccountProxyItemType,
@@ -21,6 +21,7 @@ const ResultAccountProxyListModal: React.FC<Props> = ({ accountProxies, setModal
       modalVisible={modalVisible}
       setVisible={setModalVisible}
       isUseModalV2
+      isAllowSwipeDown={Platform.OS === 'ios'}
       modalTitle={'Migrated account list'}
       footer={
         <View style={{ paddingTop: theme.padding }}>

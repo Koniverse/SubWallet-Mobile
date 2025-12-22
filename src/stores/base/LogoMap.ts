@@ -30,6 +30,7 @@ const settingsSlice = createSlice({
       payload[SwapProviderId.ROCOCO_ASSET_HUB.toLowerCase()] = ImageLogosMap.rococo_assethub;
       payload.uniswap = ImageLogosMap.rococo_assethub; // TODO: change later
       payload.kyber = ImageLogosMap.kyber;
+      payload.tanssi = ImageLogosMap.tanssi;
       for (let i = 0; i < 86; i++) {
         // @ts-ignore
         payload[`subnet-${i}`] = ImageLogosMap[`subnet-${i}`];
@@ -42,6 +43,8 @@ const settingsSlice = createSlice({
     },
     updateAssetLogoMaps(state, action: PayloadAction<Record<string, string>>) {
       const payload = action.payload;
+      payload['tanssi-tanssi'] = ImageLogosMap.tanssi;
+      payload['tanssi-native-tanssi'] = ImageLogosMap.tanssi;
 
       return {
         ...state,
