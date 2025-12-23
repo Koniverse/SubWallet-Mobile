@@ -1,3 +1,6 @@
+## 1.2.34 (513)
+- fix bug do not show BTC token balance (#2013)
+
 ## 1.2.33 (512)
 - fix bug UI (#2013)
 - fix bug UI (#2013)
