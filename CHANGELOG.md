@@ -1,3 +1,17 @@
+## 1.2.33 (512)
+- fix bug UI (#2013)
+- fix bug UI (#2013)
+- fix bug UI (#2013)
+- fix bug UI for wr 1.3.42 and remove unused log (#2013)
+- fix bug UI for wr 1.3.42 (#2013)
+- add missing property for ios (#2013)
+- fix UI bug (#2013)
+- add Tanssi network (#2013)
+- fix some UI bug for Bitcoin (#2013)
+- Fix bug cannot import JSON Bitcoin account (#2013)
+- remove TransferAll alert (#2013)
+- feat: wr 1.3.42 (#2013)
+
 ## 1.2.32 (511)
 
 
