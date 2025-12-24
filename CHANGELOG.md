@@ -1,3 +1,6 @@
+## 1.2.34 (514)
+- fix bug cannot use biometric (#2013)
+
 ## 1.2.34 (513)
 - fix bug do not show BTC token balance (#2013)
 
