@@ -10,6 +10,9 @@ import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { _isChainInfoCompatibleWithAccountInfo } from '@subwallet/extension-base/services/chain-service/utils';
 import { DEFAULT_ACCOUNT_TYPES, EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE, TON_ACCOUNT_TYPE } from 'constants/index';
+import SInfo, { RNSensitiveInfoOptions } from 'react-native-sensitive-info';
+import { Alert } from 'react-native';
+import i18n from 'utils/i18n/i18n';
 
 export const isAddressAllowedWithAuthType = (address: string, authAccountTypes?: AccountAuthType[]) => {
   if (isEthereumAddress(address) && authAccountTypes?.includes('evm')) {
@@ -227,5 +230,70 @@ export const getBitcoinKeypairAttributes = (keyPairType: KeypairType): { label: 
       return { label: 'Native SegWit', schema: 'lime-7' };
     default:
       return { label: '', schema: '' };
+  }
+};
+
+// Keychain configuration
+const keychainConfig: RNSensitiveInfoOptions = {
+  touchID: true,
+  showModal: true,
+  kSecAccessControl: 'kSecAccessControlBiometryCurrentSet',
+  sharedPreferencesName: 'swSharedPrefs',
+  keychainService: 'swKeychain',
+  kSecAttrAccessible: 'kSecAttrAccessibleWhenUnlocked',
+  kSecUseOperationPrompt: 'Unlock app using biometric',
+};
+const maxAttempsData = ['Biometry is locked out', 'Quá nhiều lần thử', 'Too many attempts'];
+function alertFailedAttempts(e: any) {
+  let isFailedAttemps = false;
+  maxAttempsData.map(item => {
+    if (JSON.stringify(e).includes(item)) {
+      isFailedAttemps = true;
+    }
+  });
+  if (isFailedAttemps) {
+    Alert.alert(i18n.buttonTitles.unlockWithBiometric, i18n.common.tooManyAttemps);
+  }
+}
+const username = 'sw-user';
+export const createKeychainPassword = async (password: string) => {
+  try {
+    await SInfo.setItem(username, password, keychainConfig);
+    return true;
+  } catch (e) {
+    alertFailedAttempts(e);
+    console.warn('set keychain failed', e);
+    return false;
+  }
+};
+
+export const getKeychainPassword = async () => {
+  try {
+    const password = await SInfo.getItem(username, keychainConfig);
+    return password;
+  } catch (e) {
+    alertFailedAttempts(e);
+    throw e;
+  }
+};
+
+export const resetKeychainPassword = async () => {
+  try {
+    // return await Keychain.resetGenericPassword();
+    SInfo.deleteItem(username, keychainConfig);
+    return true;
+  } catch (e) {
+    console.warn('reset keychain failed:', e);
+    return false;
+  }
+};
+
+export const getSupportedBiometryType = async () => {
+  try {
+    const result = await SInfo.isSensorAvailable();
+    return result;
+  } catch (e) {
+    console.warn('Get failed!');
+    return null;
   }
 };
