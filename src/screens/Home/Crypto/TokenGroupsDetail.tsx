@@ -111,6 +111,36 @@ export const TokenGroupsDetail = ({
 
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
+  const isSwapSupported = useMemo(() => {
+    const isSupportAccount = (currentAcc: AccountProxy) => {
+      const isReadOnlyAccount = currentAcc.accountType === AccountProxyType.READ_ONLY;
+      const isLedgerAccount = currentAcc.accountType === AccountProxyType.LEDGER;
+      const isSoloAccount = currentAcc.accountType === AccountProxyType.SOLO;
+      const validEcosystem = [AccountChainType.ETHEREUM, AccountChainType.SUBSTRATE, AccountChainType.BITCOIN].includes(
+        currentAcc.chainTypes[0],
+      );
+      const invalidSoloAccount = isSoloAccount && !validEcosystem;
+
+      return !invalidSoloAccount && !isLedgerAccount && !isReadOnlyAccount;
+    };
+
+    const isSupportAllAccount = (_accountProxies: AccountProxy[]) => {
+      return _accountProxies
+        .filter(account => account.accountType !== AccountProxyType.ALL_ACCOUNT)
+        .some(account => isSupportAccount(account));
+    };
+
+    if (!currentAccountProxy || currentAccountProxy.chainTypes.length <= 0) {
+      return false;
+    }
+
+    if (isAllAccount) {
+      return isSupportAllAccount(accountProxies);
+    } else {
+      return isSupportAccount(currentAccountProxy);
+    }
+  }, [accountProxies, currentAccountProxy, isAllAccount]);
+
   const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
   const { tokenGroupMap, isComputing: isTokenGroupComputing } = useTokenGroup(chainsByAccountType, true);
   const {
@@ -286,6 +316,7 @@ export const TokenGroupsDetail = ({
         groupSymbol={groupSymbol}
         tokenGroupSlug={tokenGroupSlug}
         tokenGroupMap={tokenGroupMap}
+        isSwapSupported={isSwapSupported}
       />
     );
   }, [
@@ -297,6 +328,7 @@ export const TokenGroupsDetail = ({
     groupSymbol,
     tokenGroupSlug,
     tokenGroupMap,
+    isSwapSupported,
   ]);
 
   const renderItem = useCallback(

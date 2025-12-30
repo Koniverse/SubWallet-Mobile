@@ -28,6 +28,7 @@ export const StakingTypeNameMap = (): Record<string, string> => ({
   [ExtrinsicType.MINT_STDOT]: i18n.historyScreen.extrinsicType.mintSTDOT,
   [ExtrinsicType.STAKING_LEAVE_POOL]: i18n.historyScreen.extrinsicType.unstake,
   [ExtrinsicType.STAKING_UNBOND]: i18n.historyScreen.extrinsicType.unbond,
+  [ExtrinsicType.CHANGE_EARNING_VALIDATOR]: 'Nominator',
   [ExtrinsicType.JOIN_YIELD_POOL]: i18n.historyScreen.extrinsicType.stake,
   [ExtrinsicType.UNSTAKE_VDOT]: i18n.historyScreen.extrinsicType.unstakeVDOT,
   [ExtrinsicType.UNSTAKE_VMANTA]: i18n.historyScreen.extrinsicType.unstakeVMANTA,

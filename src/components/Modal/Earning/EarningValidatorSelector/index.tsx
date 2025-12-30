@@ -3,7 +3,7 @@ import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo
 import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
-import { Keyboard, ListRenderItemInfo, Platform } from 'react-native';
+import { Keyboard, Platform, StyleSheet } from 'react-native';
 import { StakingValidatorItem } from 'components/common/StakingValidatorItem';
 import { getValidatorKey } from 'utils/transaction/stake';
 import { useSelectValidators } from 'hooks/screen/Transaction/useSelectValidators';
@@ -34,6 +34,8 @@ import { fetchStaticData } from 'utils/fetchStaticData';
 import { ChainRecommendValidator } from '@subwallet/extension-base/constants';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
+import { ListRenderItemInfo } from '@shopify/flash-list';
+import { ThemeTypes } from 'styles/themes';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -54,6 +56,8 @@ interface Props {
   chain: string;
   from: string;
   slug: string;
+  label?: string;
+  originValidator?: string;
   isSingleSelect?: boolean;
   validatorLoading: boolean;
   selectedValidator?: string;
@@ -89,11 +93,14 @@ export const EarningValidatorSelector = forwardRef(
       disabled,
       setForceFetchValidator,
       slug,
+      label: _label,
+      originValidator,
       defaultValidatorAddress,
     }: Props,
     ref: React.Ref<ValidatorSelectorRef>,
   ) => {
     const theme = useSubWalletTheme().swThemes;
+    const styles = createStyle(theme);
     const toastRef = useRef<ToastContainer>(null);
     const items = useGetPoolTargetList(slug) as ValidatorDataType[];
     const insets = useSafeAreaInsets();
@@ -168,8 +175,7 @@ export const EarningValidatorSelector = forwardRef(
       onCancelSelectValidator,
       onChangeSelectedValidator,
       onInitValidators,
-      onAutoSelectValidator,
-    } = useSelectValidators(items, maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
+    } = useSelectValidators(chain, maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
     const { keyboardHeight } = useKeyboardVisible();
     const defaultValueRef = useRef({ _default: '_', selected: '_' });
     const [detailItem, setDetailItem] = useState<ValidatorDataType | undefined>(undefined);
@@ -370,7 +376,7 @@ export const EarningValidatorSelector = forwardRef(
       onInitValidators(_default, selected);
       onSelectItem && onSelectItem(selected);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isSingleSelect, from, defaultValidatorAddress, autoValidator]);
+    }, [isSingleSelect, from, defaultValidatorAddress, autoValidator, originValidator]);
 
     const applyBtn = useMemo(
       () => ({
@@ -384,18 +390,6 @@ export const EarningValidatorSelector = forwardRef(
       }),
       [applyLabel, changeValidators.length, onApplyChangeValidators],
     );
-
-    // const customBtn = useMemo(
-    //   () => ({
-    //     icon: Lightning,
-    //     onPressCustomBtn: () => {
-    //       validatorSelectModalRef?.current?.closeModal?.();
-    //       onAutoSelectValidator();
-    //     },
-    //     customBtnDisabled: !items.length,
-    //   }),
-    //   [items.length, onAutoSelectValidator],
-    // );
 
     const renderSortingItem = (item: SortOption) => {
       return (
@@ -415,6 +409,10 @@ export const EarningValidatorSelector = forwardRef(
 
     const renderItem = useCallback(
       ({ item }: ListRenderItemInfo<ValidatorDataType>) => {
+        if (item.address === originValidator) {
+          return <></>;
+        }
+
         const key = getValidatorKey(item.address, item.identity);
         const keyBase = key.split('___')[0];
         const selected = changeValidators.includes(key);
@@ -423,6 +421,7 @@ export const EarningValidatorSelector = forwardRef(
 
         return (
           <StakingValidatorItem
+            apy={item?.expectedReturn?.toString() || '0'}
             validatorInfo={item}
             onPress={onChangeSelectedValidator}
             onPressRightButton={() => {
@@ -435,7 +434,7 @@ export const EarningValidatorSelector = forwardRef(
           />
         );
       },
-      [changeValidators, nominatorValueList, onChangeSelectedValidator],
+      [changeValidators, nominatorValueList, onChangeSelectedValidator, originValidator],
     );
 
     const renderSelected = useCallback(
@@ -443,14 +442,14 @@ export const EarningValidatorSelector = forwardRef(
         <ValidatorSelectorField
           showLightningBtn={false}
           chain={chain}
-          onPressLightningBtn={() => onAutoSelectValidator()}
           onPressBookBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
           value={selectedValidator}
           label={
-            i18n.formatString(
+            _label ||
+            (i18n.formatString(
               i18n.common.selectStakingValidator,
               getValidatorLabel(chain) === 'dApp' ? getValidatorLabel(chain) : getValidatorLabel(chain).toLowerCase(),
-            ) as string
+            ) as string)
           }
           loading={validatorLoading}
           placeholder={
@@ -461,7 +460,7 @@ export const EarningValidatorSelector = forwardRef(
           }
         />
       ),
-      [chain, onAutoSelectValidator, selectedValidator, validatorLoading],
+      [_label, chain, selectedValidator, validatorLoading],
     );
 
     return (
@@ -524,7 +523,7 @@ export const EarningValidatorSelector = forwardRef(
             onBackButtonPress={() => sortingModalRef.current?.onCloseModal()}
             renderCustomItem={renderSortingItem}>
             <Button
-              style={{ marginTop: 16 }}
+              style={styles.buttonStyle}
               icon={<Icon phosphorIcon={ArrowsClockwise} size={'md'} />}
               onPress={() => {
                 setSortSelection(SortKey.DEFAULT);
@@ -540,11 +539,19 @@ export const EarningValidatorSelector = forwardRef(
             ref={toastRef}
             placement={'bottom'}
             offsetBottom={OFFSET_BOTTOM}
-            textStyle={{ textAlign: 'center', ...FontMedium }}
-            style={{ borderRadius: 8 }}
+            textStyle={styles.toastTextStyle}
+            style={styles.toastStyle}
           />
         </>
       </FullSizeSelectModal>
     );
   },
 );
+
+function createStyle(theme: ThemeTypes) {
+  return StyleSheet.create({
+    toastStyle: { borderRadius: theme.borderRadiusLG },
+    toastTextStyle: { textAlign: 'center', ...FontMedium },
+    buttonStyle: { marginTop: theme.margin },
+  });
+}

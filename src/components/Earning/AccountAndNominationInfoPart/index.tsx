@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import createStyles from './styles';
 import AccountInfoPart from './parts/AccountInfoPart';
 import NominationInfoPart from './parts/NominationInfoPart';
+import SelectedValidatorInfoPart from 'components/Earning/AccountAndNominationInfoPart/parts/SelectedValidatorInfoPart';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -20,11 +21,18 @@ const AccountAndNominationInfoPart: React.FC<Props> = (props: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const canChangeValidator = useMemo(() => {
+    return poolInfo.metadata.availableMethod.changeValidator;
+  }, [poolInfo]);
 
   return (
     <View style={styles.wrapper}>
       <AccountInfoPart list={list} compound={compound} inputAsset={inputAsset} poolInfo={poolInfo} />
-      <NominationInfoPart poolInfo={poolInfo} compound={compound} inputAsset={inputAsset} />
+      {canChangeValidator ? (
+        <SelectedValidatorInfoPart poolInfo={poolInfo} compound={compound} inputAsset={inputAsset} />
+      ) : (
+        <NominationInfoPart poolInfo={poolInfo} compound={compound} inputAsset={inputAsset} />
+      )}
     </View>
   );
 };

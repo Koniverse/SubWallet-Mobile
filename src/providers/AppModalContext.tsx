@@ -81,6 +81,7 @@ export type AccountTokenAddressModalState = {
 
 export interface AppModal {
   confirmModal: {
+    confirmModalState: ConfirmModalInfo;
     setConfirmModal: React.Dispatch<React.SetStateAction<ConfirmModalInfo>>;
     hideConfirmModal: () => void;
   };
@@ -227,6 +228,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
   const contextValue: AppModal = useMemo(
     () => ({
       confirmModal: {
+        confirmModalState: confirmModal,
         setConfirmModal,
         hideConfirmModal,
       },
@@ -262,6 +264,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
       },
     }),
     [
+      confirmModal,
       hideConfirmModal,
       addressQrModalState,
       hideAddressQrModal,

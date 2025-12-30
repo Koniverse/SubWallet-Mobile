@@ -68,6 +68,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
         return ExtrinsicType.SWAP;
       case 'claim-bridge':
         return ExtrinsicType.CLAIM_BRIDGE;
+      case 'change-earning-validator':
+        return ExtrinsicType.CHANGE_EARNING_VALIDATOR;
       case 'send-fund':
       default:
         return ExtrinsicType.TRANSFER_BALANCE;

@@ -90,6 +90,8 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
     return Object.values(namespaceAccounts).every(({ appliedAccounts }) => appliedAccounts.length);
   }, [namespaceAccounts]);
 
+  const hasNoNamespaceAccounts = useMemo(() => Object.values(namespaceAccounts).length === 0, [namespaceAccounts]);
+
   const [loading, setLoading] = useState(false);
   const checkNetworksConnected = useMemo((): string[] => {
     let needConnectedNetwork: string[] = [];
@@ -195,7 +197,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
     [onCancelSelectAccounts],
   );
 
-  const isSupportCase = !isUnSupportCase && !isExpired;
+  const isSupportCase = !isUnSupportCase && !isExpired && !noNetwork && !hasNoNamespaceAccounts;
 
   useEffect(() => {
     if (checkNetworksConnected.length > 0 && !blockAddNetwork && !isExitedAnotherUnsupportedNamespace) {
@@ -220,7 +222,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
     <React.Fragment>
       <ConfirmationContent>
         <ConfirmationGeneralInfo request={request} gap={0} />
-        {(isUnSupportCase || blockAddNetwork) && (
+        {(isUnSupportCase || blockAddNetwork || hasNoNamespaceAccounts) && (
           <View>
             <View style={{ paddingBottom: 8 }}>
               <AlertBox

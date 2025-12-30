@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useCallback, useState } from 'react';
 import Toast from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
-import { getValidatorKey } from 'utils/transaction/stake';
-import { autoSelectValidatorOptimally } from 'utils/earning';
-import { ValidatorDataType } from 'hooks/screen/Staking/useGetValidatorList';
+import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 
 export function useSelectValidators(
-  validatorList: ValidatorDataType[],
+  chain: string,
   maxCount: number,
   onChange?: (value: string) => void,
   isSingleSelect?: boolean,
@@ -21,6 +19,31 @@ export function useSelectValidators(
   // Current chosen in modal
   const [changeValidators, setChangeValidators] = useState<string[]>([]);
 
+  const fewValidators = maxCount > 1;
+
+  const notiMessage = useMemo(() => {
+    const label = getValidatorLabel(chain);
+
+    if (!fewValidators) {
+      switch (label) {
+        case 'dApp':
+          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseOneDapp';
+        case 'Collator':
+          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseOneCollator';
+        case 'Validator':
+          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseOneValidator';
+      }
+    } else {
+      switch (label) {
+        case 'dApp':
+          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseNumberDapps';
+        case 'Collator':
+          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseNumberCollators';
+        case 'Validator':
+          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseNumberValidators';
+      }
+    }
+  }, [chain, fewValidators]);
   const onChangeSelectedValidator = useCallback(
     (changeVal: string) => {
       setChangeValidators(currentChangeValidators => {
@@ -32,12 +55,9 @@ export function useSelectValidators(
               if (!defaultSelected.includes(changeVal)) {
                 if (toastRef && toastRef.current) {
                   toastRef.current.hideAll();
-                  toastRef.current.show(
-                    i18n.formatString(i18n.stakingScreen.maximumSelectableValidators, maxCount) as string,
-                    {
-                      type: 'normal',
-                    },
-                  );
+                  toastRef.current.show(i18n.formatString(notiMessage, maxCount) as string, {
+                    type: 'normal',
+                  });
                 }
 
                 return currentChangeValidators;
@@ -49,12 +69,9 @@ export function useSelectValidators(
             if (currentChangeValidators.length >= maxCount) {
               if (toastRef && toastRef.current) {
                 toastRef.current.hideAll();
-                toastRef.current.show(
-                  i18n.formatString(i18n.stakingScreen.maximumSelectableValidators, maxCount) as string,
-                  {
-                    type: 'normal',
-                  },
-                );
+                toastRef.current.show(i18n.formatString(notiMessage, maxCount) as string, {
+                  type: 'normal',
+                });
               }
 
               return currentChangeValidators;
@@ -73,7 +90,7 @@ export function useSelectValidators(
         return result;
       });
     },
-    [defaultSelected, isSingleSelect, maxCount, toastRef],
+    [defaultSelected, isSingleSelect, maxCount, notiMessage, toastRef],
   );
 
   const _onApplyChangeValidators = useCallback(
@@ -110,13 +127,13 @@ export function useSelectValidators(
     onChange && onChange('');
   }, [onChange]);
 
-  const onAutoSelectValidator = useCallback(() => {
-    const validators = autoSelectValidatorOptimally(validatorList, maxCount);
-    const validatorKeyList = validators.map(v => getValidatorKey(v.address, v.identity));
-
-    setChangeValidators(validatorKeyList);
-    _onApplyChangeValidators(validatorKeyList);
-  }, [_onApplyChangeValidators, maxCount, validatorList]);
+  // const onAutoSelectValidator = useCallback(() => {
+  //   const validators = autoSelectValidatorOptimally(validatorList, maxCount);
+  //   const validatorKeyList = validators.map(v => getValidatorKey(v.address, v.identity));
+  //
+  //   setChangeValidators(validatorKeyList);
+  //   _onApplyChangeValidators(validatorKeyList);
+  // }, [_onApplyChangeValidators, maxCount, validatorList]);
 
   return {
     resetValidatorSelector,
@@ -125,6 +142,5 @@ export function useSelectValidators(
     onApplyChangeValidators,
     onCancelSelectValidator,
     onInitValidators,
-    onAutoSelectValidator,
   };
 }

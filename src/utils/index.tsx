@@ -3,7 +3,6 @@ import { AccountType } from 'types/ui-types';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { StyleProp } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { IconProps } from 'phosphor-react-native';
 import { Logo as SWLogo } from 'components/design-system-ui';
@@ -134,8 +133,8 @@ export function toShort(text: string, preLength = 6, sufLength = 6): string {
   return text;
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default', outerStyle?: StyleProp<any>) {
-  return <SWLogo network={logoKey} defaultLogoKey={defaultLogoKey} size={size} />;
+export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default', token?: string) {
+  return <SWLogo network={logoKey} defaultLogoKey={defaultLogoKey} size={size} token={token} />;
 }
 export function getTokenLogo(
   logoKey: string,

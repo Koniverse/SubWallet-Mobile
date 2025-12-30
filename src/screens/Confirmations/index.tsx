@@ -41,7 +41,12 @@ import { Portal } from '@gorhom/portal';
 import { findAccountByAddress, getSignMode } from 'utils/index';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { getDevMode } from 'utils/storage';
-import { AccountJson, AccountSignMode, ProcessType } from '@subwallet/extension-base/types';
+import {
+  AccountJson,
+  AccountSignMode,
+  ProcessType,
+  SubmitBittensorChangeValidatorStaking,
+} from '@subwallet/extension-base/types';
 import { SignerPayloadJSON } from '@polkadot/types/types';
 import { _isRuntimeUpdated } from '@subwallet/extension-base/utils';
 import { AppModalContext } from 'providers/AppModalContext';
@@ -166,6 +171,12 @@ export const Confirmations = () => {
           return i18n.header.claimRewardsConfirmation;
         case ExtrinsicType.STAKING_CANCEL_UNSTAKE:
           return i18n.header.cancelUnstakeConfirmation;
+        case ExtrinsicType.CHANGE_EARNING_VALIDATOR:
+          if ((transaction.data as SubmitBittensorChangeValidatorStaking)?.isMovePartialStake) {
+            return 'Move your stake confirm';
+          }
+
+          return 'Change validator confirm';
         case ExtrinsicType.MINT_VDOT:
           return i18n.header.mintVDOTTransaction;
         case ExtrinsicType.MINT_VMANTA:

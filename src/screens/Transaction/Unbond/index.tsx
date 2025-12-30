@@ -663,6 +663,7 @@ export const Unbond = ({
               {mustChooseValidator && (
                 <>
                   <NominationSelector
+                    chain={chainValue}
                     selectedValue={currentValidator}
                     onSelectItem={onChangeNominator}
                     nominators={nominators}

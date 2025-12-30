@@ -115,6 +115,7 @@ export const RestoreJson = () => {
   const [passwordValidateState, setPasswordValidateState] = useState<ValidateState>({});
   const [fileValidating, setFileValidating] = useState(false);
   const [passwordValidating, setPasswordValidating] = useState(false);
+  const [showAllAccountsExistAlert, setShowAllAccountsExistAlert] = useState(false);
   const { show, hideAll } = useToast();
 
   useHandlerHardwareBackPress(submitting);
@@ -136,7 +137,7 @@ export const RestoreJson = () => {
       }
     });
     if (accountProxies.length > 0) {
-      setShowNoValidAccountAlert(exitedAccount.length === accountProxies.length);
+      setShowAllAccountsExistAlert(exitedAccount.length === accountProxies.length);
     }
     if (result.length === 1) {
       setAccountProxiesSelected([result[0].id]);
@@ -181,11 +182,15 @@ export const RestoreJson = () => {
       setPasswordValidating(true);
 
       const onFail = (e: Error) => {
-        setPasswordValidateState({
-          status: 'error',
-          message: e.message,
-        });
-        focus('password')();
+        if (e.message.toLowerCase().includes('incorrect password')) {
+          setPasswordValidateState({
+            status: 'error',
+            message: e.message,
+          });
+          focus('password')();
+        } else {
+          setShowNoValidAccountAlert(true);
+        }
       };
 
       if (isKeyringPairs$Json(jsonFile)) {
@@ -390,6 +395,7 @@ export const RestoreJson = () => {
         }
         setAccountProxies([]);
         onChangeValue('file')(res);
+        setShowNoValidAccountAlert(false);
         setPasswordValidateState({});
       })
       .catch((e: Error) => {
@@ -476,7 +482,8 @@ export const RestoreJson = () => {
     return (
       !!fileValidateState.status ||
       (!isRequirePassword(formState.data.file) && passwordValidateState.status !== 'success') ||
-      !formState.data.password
+      !formState.data.password ||
+      showNoValidAccountAlert
     );
   }, [
     stepState,
@@ -486,6 +493,7 @@ export const RestoreJson = () => {
     formState.data.file,
     formState.data.password,
     passwordValidateState.status,
+    showNoValidAccountAlert,
   ]);
 
   const passwordErrors = useMemo(() => {
@@ -513,7 +521,7 @@ export const RestoreJson = () => {
               ? "Select the account(s) you'd like to import"
               : i18n.importAccount.importJsonSubtitle}
           </Typography.Text>
-          {stepState === StepState.SELECT_ACCOUNT_IMPORT && showNoValidAccountAlert && (
+          {stepState === StepState.SELECT_ACCOUNT_IMPORT && showAllAccountsExistAlert && (
             <AlertBox
               description={'All accounts found in this file already exist in SubWallet'}
               title={'Unable to import'}
@@ -524,6 +532,14 @@ export const RestoreJson = () => {
           {stepState === StepState.UPLOAD_JSON_FILE && (
             <>
               <InputFile disabled={submitting} onChangeResult={_onChangeFile} fileName={formState.data.fileName} />
+
+              {showNoValidAccountAlert && (
+                <AlertBox
+                  description={'All accounts found in this file are invalid. Import another JSON file and try again'}
+                  title={'Unable to import'}
+                  type={'error'}
+                />
+              )}
 
               {fileValidateState && fileValidateState.message && fileValidateState.status === 'error' && (
                 <WarningComponent

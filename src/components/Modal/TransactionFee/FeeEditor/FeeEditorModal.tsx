@@ -19,7 +19,7 @@ import BigN from 'bignumber.js';
 import { _SUPPORT_TOKEN_PAY_FEE_GROUP } from '@subwallet/extension-base/constants';
 import { InputAmount } from 'components/Input/InputAmount';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { BN_TEN, BN_ZERO, formatNumber } from '@subwallet/extension-base/utils';
+import { BN_TEN, BN_ZERO, formatNumber, isEvmEIP1559FeeDetail } from '@subwallet/extension-base/utils';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deviceHeight } from 'constants/index';
 
@@ -139,6 +139,17 @@ export const FeeEditorModal = ({
     return undefined;
   }, [feeOptionsInfo?.options, selectedFeeOption]);
 
+  const minRequiredMaxFeePerGas = useMemo(() => {
+    if (isEvmEIP1559FeeDetail(feeOptionsInfo)) {
+      const baseGasFee = new BigN(feeOptionsInfo.baseGasFee);
+      const priorityFee = feeOptionsInfo?.options?.slow?.maxPriorityFeePerGas || 0;
+
+      return baseGasFee.multipliedBy(1.5).plus(priorityFee).integerValue(BigN.ROUND_CEIL);
+    }
+
+    return undefined;
+  }, [feeOptionsInfo]);
+
   const formConfig = useMemo(
     () => ({
       maxFeeValue: {
@@ -217,17 +228,63 @@ export const FeeEditorModal = ({
         result = ['Amount is required'];
       }
 
-      if (feeOptionsInfo && 'baseGasFee' in feeOptionsInfo) {
-        const baseGasFee = feeOptionsInfo.baseGasFee;
-        const minFee = new BigN(baseGasFee || 0).multipliedBy(1.5);
+      if (new BigN(value).lte(BN_ZERO)) {
+        result = ['The maximum fee must be greater than 0'];
+      }
 
-        if (baseGasFee && value && new BigN(value).lte(minFee)) {
-          const message = `Max fee per gas must be higher than ${formatNumber(minFee, 9, s => s)} GWEI`;
+      const priorityFeeValue = formState.data.priorityFeeValue;
+
+      if (priorityFeeValue && value && new BigN(value).lt(new BigN(priorityFeeValue))) {
+        result = ['Max fee cannot be lower than priority fee'];
+      }
+
+      if (isEvmEIP1559FeeDetail(feeOptionsInfo)) {
+        if (minRequiredMaxFeePerGas && value && new BigN(value).lt(minRequiredMaxFeePerGas)) {
+          const message = `Max fee per gas must be higher than ${formatNumber(
+            minRequiredMaxFeePerGas,
+            9,
+            s => s,
+          )} GWEI`;
           result = [message];
         }
 
-        if (new BigN(value).lte(BN_ZERO)) {
-          result = ['The maximum fee must be greater than 0'];
+        const fastOption = feeOptionsInfo?.options?.fast;
+
+        if (minRequiredMaxFeePerGas && fastOption?.maxFeePerGas) {
+          const fastMax = new BigN(fastOption.maxFeePerGas).multipliedBy(2);
+
+          if (new BigN(value).gt(fastMax) && fastMax.gt(minRequiredMaxFeePerGas)) {
+            result = ['Max fee is higher than necessary'];
+          }
+        }
+      }
+
+      return result;
+    },
+    [feeOptionsInfo, formState.data.priorityFeeValue, minRequiredMaxFeePerGas],
+  );
+
+  const customPriorityValidateFunc = useCallback(
+    async (value: string) => {
+      let result: string[] = [];
+
+      if (!value) {
+        return result;
+      }
+
+      if (new BigN(value).lt(BN_ZERO)) {
+        result = ['The priority fee must be equal or greater than 0'];
+      }
+
+      if (isEvmEIP1559FeeDetail(feeOptionsInfo)) {
+        const fastOption = feeOptionsInfo?.options?.fast;
+
+        if (fastOption?.maxPriorityFeePerGas) {
+          const fastPriorityMax = new BigN(fastOption.maxPriorityFeePerGas).multipliedBy(2);
+
+          if (new BigN(value).gt(fastPriorityMax)) {
+            result = ['Priority fee is higher than necessary. You may pay more than needed'];
+          }
         }
       }
 
@@ -235,20 +292,6 @@ export const FeeEditorModal = ({
     },
     [feeOptionsInfo],
   );
-
-  const customPriorityValidateFunc = useCallback(async (value: string) => {
-    let result: string[] = [];
-
-    if (!value) {
-      return result;
-    }
-
-    if (new BigN(value).lt(BN_ZERO)) {
-      result = ['The priority fee must be equal or greater than 0'];
-    }
-
-    return result;
-  }, []);
 
   const customValueValidateFunc = useCallback(async (value: string) => {
     let result: string[] = [];
