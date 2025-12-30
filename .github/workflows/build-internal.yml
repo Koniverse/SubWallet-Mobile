@@ -45,13 +45,21 @@ jobs:
             echo "BUNDLE_ENV=STAGING" >> .env.production
           fi
 
-    - name: Use Node.js 18
+    - name: Use Node.js 20
       uses: actions/setup-node@v4
       if: ${{ runner.name != 'Dos-Mac-mini' }}
       with:
         node-version: 20
-    - name: Enable Corepack (for Yarn 3+)
+
+    - name: Enable Corepack (for Yarn 3)
       run: corepack enable
+
+    - name: Ensure Node & Yarn PATH
+      run: |
+        echo "$HOME/.yarn/bin" >> $GITHUB_PATH
+        echo "/usr/local/bin" >> $GITHUB_PATH
+        which node
+        which yarn
 
     - name: Cache Yarn dependencies
       uses: actions/cache@v3
