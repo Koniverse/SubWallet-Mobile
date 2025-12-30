@@ -101,7 +101,7 @@ jobs:
         project-path: ios/SubWalletMobile.xcodeproj
         p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
         mobileprovision-base64: ${{ secrets.BUILD_ADHOC_PROVISION_PROFILE_BASE64 }}
-        code-signing-identity: 'Apple Distribution: CDM SOFTWARE DEVELOPMENT COMPANY LIMITED (ZUZ7T3GQMT)'
+        code-signing-identity: 'iPhone Distribution: DM SOFTWARE DEVELOPMENT COMPANY LIMITED (ZUZ7T3GQMT)'
         team-id: ${{ secrets.APPLE_TEAM_ID }}
         workspace-path: ios/SubWalletMobile.xcworkspace
         export-method: 'ad-hoc'
