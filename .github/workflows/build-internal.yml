@@ -102,6 +102,16 @@ jobs:
         rustup target add x86_64-apple-ios
         rustup target add aarch64-apple-ios-sim
         rustup component add rust-src
+
+    - name: Bundle React Native code and images
+      run: |
+        export NODE_BINARY=$(which node)
+        npx react-native bundle \
+          --platform ios \
+          --entry-file index.js \
+          --bundle-output ios/main.jsbundle \
+          --dev false \
+          --assets-dest ios
     # Build IPA file
     - name: iOS Build Action
       uses: yukiarrr/ios-build-action@v1.11.2

@@ -326,7 +326,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nexport NODE_BINARY=$(command -v node)\nexport YARN_BINARY=$(command -v yarn)\n\nchmod +x \"$PROJECT_DIR/../node_modules/react-native/scripts/xcode/with-environment.sh\"\nchmod +x \"$PROJECT_DIR/../node_modules/react-native/scripts/react-native-xcode.sh\"\n\nbash \"$PROJECT_DIR/../node_modules/react-native/scripts/xcode/with-environment.sh\" \\\n  \"$PROJECT_DIR/../node_modules/react-native/scripts/react-native-xcode.sh\"\n";
+			shellScript = "set -e\n\nexport NODE_BINARY=$(which node)\nexport YARN_BINARY=$(which yarn)\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
 		0C9AE1110B0BA2908B2D6563 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
