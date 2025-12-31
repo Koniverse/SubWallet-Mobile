@@ -103,8 +103,18 @@ target 'SubWalletMobile' do
       target.build_configurations.each do |config|
         # Force Swift optimization to -Onone
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
+      end
     end
-  end
+
+    installer.pods_project.targets.each do |t|
+      next unless t.name.include?('haskell') # an toàn hơn
+      t.source_build_phase.files.each do |file|
+        if file.file_ref && file.file_ref.path && file.file_ref.path.end_with?('build.sh')
+          puts "⛔ Removing invalid build.sh from #{t.name}"
+          file.remove_from_project
+        end
+      end
+    end
   end
 end
 
