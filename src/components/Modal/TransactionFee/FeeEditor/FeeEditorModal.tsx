@@ -327,7 +327,7 @@ export const FeeEditorModal = ({
                 setValidating(false);
               }
             });
-        }, 500);
+        }, 0);
       } else {
         setValidating(false);
       }

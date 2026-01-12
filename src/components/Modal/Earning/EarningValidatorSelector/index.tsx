@@ -251,6 +251,13 @@ export const EarningValidatorSelector = forwardRef(
           case SortKey.NOMINATING:
             return sortValidator(a, b);
           case SortKey.DEFAULT:
+            if (a.isCrowded && !b.isCrowded) {
+              return 1;
+            } else if (!a.isCrowded && b.isCrowded) {
+              return -1;
+            } else {
+              return 0;
+            }
           default:
             return 0;
         }
@@ -296,35 +303,6 @@ export const EarningValidatorSelector = forwardRef(
 
       return defaultSelectedList;
     }, [defaultValidatorAddress, resultList]);
-    //
-    // useEffect(() => {
-    //   setNominations(old => {
-    //     const sortNomination = (a: NominationInfo, b: NominationInfo) => {
-    //       if (a.validatorAddress > b.validatorAddress) {
-    //         return 1;
-    //       } else if (a.validatorAddress < b.validatorAddress) {
-    //         return -1;
-    //       }
-    //
-    //       return 0;
-    //     };
-    //
-    //     const oldSorted = old
-    //       .sort(sortNomination)
-    //       .map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity))
-    //       .join('---');
-    //     const newSorted = cachedNominations
-    //       .sort(sortNomination)
-    //       .map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity))
-    //       .join('---');
-    //
-    //     if (oldSorted !== newSorted) {
-    //       return cachedNominations;
-    //     }
-    //
-    //     return old;
-    //   });
-    // }, [cachedNominations]);
 
     useEffect(() => {
       fetchStaticData<Record<string, ChainRecommendValidator>>('direct-nomination-validator')

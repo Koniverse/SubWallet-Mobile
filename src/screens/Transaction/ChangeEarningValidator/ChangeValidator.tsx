@@ -319,8 +319,6 @@ export const ChangeValidator = ({
         selectedValidators: target,
       };
 
-      console.log('submitData', submitData);
-
       setSubmitLoading(true);
 
       setTimeout(() => {
@@ -338,7 +336,6 @@ export const ChangeValidator = ({
   const onPressSubmit = useCallback(
     (values: { target: ValidatorInfo[] }) => {
       const { target } = values;
-      console.log('run to this');
 
       if (isNoValidatorChanged) {
         confirmModal.setConfirmModal({

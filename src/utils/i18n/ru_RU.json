@@ -697,7 +697,9 @@
     "xcmTransferWarningTitle": "Pay attention!",
     "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
     "generalTermWarning": "Make sure to tick the checkbox \"I understand and agree to the Terms of Use, which apply to my use of SubWallet and all of its feature\" to be able to click Continue",
-    "masterPasswordWarning": "Make sure to tick the checkbox \"I understand that SubWallet can\\'t recover the password for me\" to be able to click Continue"
+    "masterPasswordWarning": "Make sure to tick the checkbox \"I understand that SubWallet can\\'t recover the password for me\" to be able to click Continue",
+    "validatorChangeFeeInfo": "A fee equivalent of {0} TAO will be deducted from your stake amount on the new validator once the transaction is complete",
+    "validatorChangeFeeTitle": "Validator change fee"
   },
   "filterOptions": {
     "polkadotParachain": "Polkadot парачейн",

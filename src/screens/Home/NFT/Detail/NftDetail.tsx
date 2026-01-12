@@ -104,8 +104,8 @@ const NftDetail = ({
 
       if (owner?.isReadOnly) {
         show('The NFT owner is a watch-only account, you cannot send the NFT with it');
+        return;
       }
-      return;
     }
 
     navigation.navigate('Drawer', {
@@ -113,6 +113,7 @@ const NftDetail = ({
       params: {
         screen: 'SendNFT',
         params: {
+          from: nftItem.owner,
           itemId: nftItem.id,
           chain: nftItem.chain,
           collectionId: nftItem.collectionId,
@@ -229,7 +230,7 @@ const NftDetail = ({
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                   {Object.keys(nftItem?.properties).map((key, index) => {
                     // @ts-ignore
-                    return propDetail(key, data?.properties[key], index);
+                    return propDetail(key, nftItem?.properties[key], index);
                   })}
                 </View>
               )}

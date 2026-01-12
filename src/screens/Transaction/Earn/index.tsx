@@ -276,7 +276,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [forceFetchValidator, setForceFetchValidator] = useState(false);
-  const [targetLoading, setTargetLoading] = useState(true);
+  const [targetLoading, setTargetLoading] = useState(false);
   const [stepLoading, setStepLoading] = useState<boolean>(true);
   const [tooltipVisible, setTooltipVisible] = useState<boolean>(false);
   const [submitString, setSubmitString] = useState<string | undefined>();
@@ -455,7 +455,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const onError = useCallback(
     (error: Error) => {
-      console.log('error', error);
       const { chain: _chain, isXCM, minJoinPool, symbol } = handleDataForInsufficientAlert();
       const balanceDisplayInfo = _handleDisplayInsufficientEarningError(
         error,

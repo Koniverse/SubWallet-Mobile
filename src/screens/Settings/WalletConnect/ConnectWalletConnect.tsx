@@ -72,7 +72,7 @@ export const ConnectWalletConnect = () => {
 
     if (message.includes('socket hang up') || message.includes('stalled') || message.includes('interrupted')) {
       newStandardMessage =
-        'Turn off VPN/ad blocker apps, reload the dApp, and try again. If the issue persists, contact support at agent@subwallet.app';
+        ' Turn off VPN/ad blocker apps, reload the dApp, and try again. If the issue persists, contact support at agent@subwallet.app';
       isConnectionBlockedError = true;
     }
 

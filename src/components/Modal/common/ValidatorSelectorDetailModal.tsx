@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { SwModal, Number, Typography, Button, Icon } from 'components/design-system-ui';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { SwModal, Number, Typography, Icon } from 'components/design-system-ui';
+import { Platform, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
 import MetaInfo from 'components/MetaInfo';
 import i18n from 'utils/i18n/i18n';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
@@ -13,6 +13,7 @@ import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { Info } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 interface Props {
   detailModalVisible: boolean;
@@ -143,20 +144,14 @@ export const ValidatorSelectorDetailModal = ({
                             {'Calculated as 18% of the root stake'}
                           </Typography.Text>
                         }>
-                        <Button
-                          icon={
-                            <Icon
-                              iconColor={theme.colorPrimary}
-                              phosphorIcon={Info}
-                              size="sm"
-                              type="phosphor"
-                              weight="fill"
-                            />
-                          }
-                          onPress={() => setTooltipVisible(true)}
-                          type={'ghost'}
-                          size={'xs'}
-                        />
+                        <TouchableOpacity
+                          style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}
+                          onPress={() => setTooltipVisible(true)}>
+                          <Typography.Text style={[styles.tooltipTextStyle, { ...FontSemiBold }]}>
+                            {'Root weight'}
+                          </Typography.Text>
+                          <Icon phosphorIcon={Info} size="xs" type="phosphor" />
+                        </TouchableOpacity>
                       </Tooltip>
                     ) : (
                       i18n.inputLabel.ownStake

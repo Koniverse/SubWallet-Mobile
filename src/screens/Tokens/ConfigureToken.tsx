@@ -138,7 +138,7 @@ export const ConfigureToken = ({
       }
 
       return (
-        <View style={{ paddingTop: theme.paddingXS, alignItems: 'center' }}>
+        <View style={styles.tagWrapper}>
           <Tag
             bgType={'default'}
             closable={false}
@@ -151,7 +151,7 @@ export const ConfigureToken = ({
     }
 
     return null;
-  }, [theme, tokenInfo]);
+  }, [styles.tagWrapper, theme, tokenInfo]);
 
   const {
     onPress: onPressDelete,
@@ -298,5 +298,6 @@ function createStyle(theme: ThemeTypes) {
       gap: theme.sizeSM,
       marginBottom: theme.marginSM,
     },
+    tagWrapper: { paddingTop: theme.paddingXS, alignItems: 'center' },
   });
 }

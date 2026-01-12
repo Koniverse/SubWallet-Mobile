@@ -33,7 +33,6 @@ export const ChangeEarningValidator = ({
     params: { chain, from, slug, displayType: displayTypeProps, nominations, readOnly, addresses, compound },
   },
 }: ChangeEarningValidatorProps) => {
-  console.log('from', from);
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyle(theme);

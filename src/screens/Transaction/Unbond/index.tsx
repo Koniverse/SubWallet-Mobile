@@ -30,7 +30,7 @@ import { BN_ZERO } from 'utils/chainBalances';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { Button, Icon, Typography, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { getEarningImpact, yieldSubmitLeavePool } from 'messaging/index';
+import { yieldSubmitLeavePool } from 'messaging/index';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { UnbondProps } from 'routes/transaction/transactionAction';
@@ -60,6 +60,7 @@ import { getEarningTimeText } from 'utils/earning';
 import { SlippageType } from '@subwallet/extension-base/types/swap';
 import MetaInfo from 'components/MetaInfo';
 import BigNumber from 'bignumber.js';
+import { useTaoStakingFee } from 'hooks/earning/useTaoStakingFee';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -202,10 +203,8 @@ export const Unbond = ({
   // For subnet staking
 
   const isSubnetStaking = useMemo(() => [YieldPoolType.SUBNET_STAKING].includes(poolType), [poolType]);
-  const [earningSlippage, setEarningSlippage] = useState<number>(0);
   const [maxSlippage, setMaxSlippage] = useState<SlippageType>({ slippage: new BigN(0.005), isCustomType: true });
-  const [earningRate, setEarningRate] = useState<number>(0);
-  const debounce = useRef<NodeJS.Timeout | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const isDisabledSubnetContent = useMemo(
     () => !isSubnetStaking || !currentValue,
@@ -213,43 +212,14 @@ export const Unbond = ({
     [isSubnetStaking, currentValue],
   );
 
-  useEffect(() => {
-    if (isDisabledSubnetContent) {
-      return;
-    }
-
-    if (debounce.current) {
-      clearTimeout(debounce.current);
-    }
-
-    debounce.current = setTimeout(() => {
-      const netuid = poolInfo.metadata.subnetData?.netuid || 0;
-      const data = {
-        slug: poolInfo.slug,
-        value: currentValue,
-        netuid: netuid,
-        type: ExtrinsicType.STAKING_UNBOND,
-      };
-
-      getEarningImpact(data)
-        .then(result => {
-          setEarningSlippage(result.slippage);
-          setEarningRate(result.rate);
-        })
-        .catch(error => {
-          console.error('Error fetching earning slippage:', error);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }, 200);
-
-    return () => {
-      if (debounce.current) {
-        clearTimeout(debounce.current);
-      }
-    };
-  }, [currentValue, isDisabledSubnetContent, isSubnetStaking, poolInfo.metadata.subnetData?.netuid, poolInfo.slug]);
+  const { earningRate, earningSlippage, stakingFee } = useTaoStakingFee(
+    poolInfo,
+    currentValue,
+    decimals,
+    poolInfo.metadata.subnetData?.netuid || 0,
+    ExtrinsicType.STAKING_UNBOND,
+    setLoading,
+  );
 
   const isSlippageAcceptable = useMemo(() => {
     if (earningSlippage === null || !currentValue) {
@@ -384,7 +354,6 @@ export const Unbond = ({
     }
   }, [poolInfo?.statistic]);
 
-  const [loading, setLoading] = useState(false);
   const accountList: AccountAddressItemType[] = useMemo(() => {
     const chainInfo = poolChain ? chainInfoMap[poolChain] : undefined;
     if (!chainInfo) {
@@ -459,6 +428,7 @@ export const Unbond = ({
       slug: slug,
       poolInfo: poolInfo,
       slippage: maxSlippage.slippage.toNumber(),
+      stakingFee: stakingFee,
     };
 
     if (mustChooseValidator) {
@@ -483,6 +453,7 @@ export const Unbond = ({
     slug,
     poolInfo,
     maxSlippage.slippage,
+    stakingFee,
     mustChooseValidator,
     currentValidator,
     onSuccess,

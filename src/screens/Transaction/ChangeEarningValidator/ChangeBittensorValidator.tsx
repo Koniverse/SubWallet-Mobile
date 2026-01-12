@@ -15,7 +15,7 @@ import { isActionFromValidator } from '@subwallet/extension-base/services/earnin
 import { parseNominations } from 'utils/transaction';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import MetaInfo from 'components/MetaInfo';
-import { Platform, StatusBar, Switch, View } from 'react-native';
+import { Platform, ScrollView, StatusBar, Switch, TouchableOpacity, View } from 'react-native';
 import { Button, Icon, Logo, Number, PageIcon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
@@ -40,6 +40,7 @@ import { FormItem } from 'components/common/FormItem';
 import { InputAmount } from 'components/Input/InputAmount';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 
 interface Props {
   chain: string;
@@ -101,6 +102,8 @@ export const ChangeBittensorValidator = ({
     reValidateMode: 'onChange',
     defaultValues: {
       target: '',
+      chain: chain,
+      from: from,
     },
   });
 
@@ -199,7 +202,7 @@ export const ChangeBittensorValidator = ({
   const renderSubnetStaking = useCallback(() => {
     return (
       <MetaInfo.Default label={'Subnet'}>
-        <View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Logo network={poolChain} shape={'circle'} size={24} isShowSubLogo={false} token={subnetToken} />
           <Typography.Text style={{ color: theme['gray-5'] }}>{poolInfo.metadata.shortName}</Typography.Text>
         </View>
@@ -328,119 +331,126 @@ export const ChangeBittensorValidator = ({
     <>
       {!isTransactionDone ? (
         <TransactionLayout title={'Change validator'} titleTextAlign={'center'} showMainHeader={false}>
-          <View style={{ paddingHorizontal: theme.padding, flex: 1, marginTop: theme.margin }}>
-            <AccountItemWithName accountName={account?.name} address={from} avatarSize={20} />
-            <Typography.Text>{`Staked balance: ${formatBalance(bondedValue, decimals)} ${symbol}`}</Typography.Text>
+          <ScrollView>
+            <View style={{ paddingHorizontal: theme.padding, flex: 1, marginTop: theme.margin }}>
+              <AccountItemWithName accountName={account?.name} address={from} avatarSize={20} />
+              <Typography.Text
+                style={{
+                  color: theme.colorTextTertiary,
+                  paddingVertical: theme.paddingXS,
+                }}>{`Staked balance: ${formatBalance(bondedValue, decimals)} ${symbol}`}</Typography.Text>
 
-            <NominationSelector
-              chain={chain}
-              disabled={!from}
-              isChangeValidator
-              label={i18n.inputLabel.from}
-              nominators={nominations}
-              poolInfo={poolInfo}
-              selectedValue={originValidator}
-              onSelectItem={onChangeNominator}
-            />
-
-            <EarningValidatorSelector
-              from={from}
-              chain={chain}
-              slug={slug}
-              disabled={!from}
-              label={'Change to'}
-              setForceFetchValidator={setForceFetchValidator}
-              originValidator={originValidator}
-              validatorLoading={false}
-              selectedValidator={toTarget}
-              onSelectItem={_value => setValue('target', _value)}
-            />
-
-            <MetaInfo>
-              {!isSubnetStaking ? (
-                <MetaInfo.Chain chain={chain} label={i18n.inputLabel.network} />
-              ) : (
-                renderSubnetStaking()
-              )}
-            </MetaInfo>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                backgroundColor: theme.colorBgSecondary,
-                padding: theme.paddingSM,
-                paddingRight: theme.paddingXL,
-                marginVertical: theme.paddingSM,
-                borderRadius: theme.borderRadiusLG,
-              }}>
-              <Tooltip
-                isVisible={tooltipVisible}
-                disableShadow={true}
-                placement={'bottom'}
-                showChildInTooltip={false}
-                topAdjustment={Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0}
-                contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
-                closeOnBackgroundInteraction={true}
-                onClose={() => setTooltipVisible(false)}
-                content={
-                  <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
-                    {'Amount you want to move from the selected validator to the new validator'}
-                  </Typography.Text>
-                }>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Typography.Text style={{ color: theme.colorWhite }}>{'Change staking amount'}</Typography.Text>
-                  <Button
-                    icon={<Icon phosphorIcon={Info} size={'sm'} weight={'fill'} />}
-                    onPress={() => setTooltipVisible(true)}
-                    type={'ghost'}
-                    size={'xs'}
-                  />
-                </View>
-              </Tooltip>
-
-              <Switch
-                ios_backgroundColor={ColorMap.switchInactiveButtonColor}
-                value={isShowAmountChange}
-                onValueChange={showAmountChangeInput}
+              <NominationSelector
+                chain={chain}
+                disabled={!from}
+                isChangeValidator
+                label={i18n.inputLabel.from}
+                nominators={nominations}
+                poolInfo={poolInfo}
+                selectedValue={originValidator}
+                onSelectItem={onChangeNominator}
               />
-            </View>
 
-            {isShowAmountChange && (
-              <>
-                <FormItem
-                  control={control}
-                  name={'value'}
-                  render={({ field: { onChange, value: _value, ref } }) => (
-                    <InputAmount
-                      ref={ref}
-                      value={_value}
-                      maxValue={bondedValue}
-                      onChangeValue={onChange}
-                      decimals={decimals}
-                      disable={submitLoading}
-                      showMaxButton={true}
-                    />
-                  )}
+              <EarningValidatorSelector
+                from={from}
+                chain={chain}
+                slug={slug}
+                disabled={!from}
+                label={'Change to'}
+                setForceFetchValidator={setForceFetchValidator}
+                originValidator={originValidator}
+                validatorLoading={false}
+                selectedValidator={toTarget}
+                onSelectItem={_value => setValue('target', _value)}
+              />
+
+              <MetaInfo>
+                {!isSubnetStaking ? (
+                  <MetaInfo.Chain chain={chain} label={i18n.inputLabel.network} />
+                ) : (
+                  renderSubnetStaking()
+                )}
+              </MetaInfo>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  backgroundColor: theme.colorBgSecondary,
+                  padding: theme.paddingSM,
+                  marginVertical: theme.paddingSM,
+                  borderRadius: theme.borderRadiusLG,
+                }}>
+                <Tooltip
+                  isVisible={tooltipVisible}
+                  disableShadow={true}
+                  placement={'bottom'}
+                  showChildInTooltip={false}
+                  topAdjustment={
+                    Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0
+                  }
+                  contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
+                  closeOnBackgroundInteraction={true}
+                  onClose={() => setTooltipVisible(false)}
+                  content={
+                    <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
+                      {'Amount you want to move from the selected validator to the new validator'}
+                    </Typography.Text>
+                  }>
+                  <TouchableOpacity
+                    activeOpacity={BUTTON_ACTIVE_OPACITY}
+                    onPress={() => setTooltipVisible(true)}
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
+                    <Typography.Text style={{ color: theme.colorWhite }}>{'Change staking amount'}</Typography.Text>
+                    <Icon phosphorIcon={Info} size={'sm'} weight={'fill'} />
+                  </TouchableOpacity>
+                </Tooltip>
+
+                <Switch
+                  ios_backgroundColor={ColorMap.switchInactiveButtonColor}
+                  value={isShowAmountChange}
+                  onValueChange={showAmountChangeInput}
                 />
+              </View>
 
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: theme.paddingXS }}>
-                  <Typography.Text style={{ color: theme.colorTextTertiary }}>{'Minimum active stake'}</Typography.Text>
-                  <Number
-                    decimal={decimals}
-                    value={
-                      earningRate > 0
-                        ? BigN(poolInfo.statistic?.earningThreshold.join || 0).div(earningRate)
-                        : BigN(poolInfo.statistic?.earningThreshold.join || 0)
-                    }
-                    suffix={earningRate > 0 ? symbol : bondedAsset?.symbol}
+              {isShowAmountChange && (
+                <>
+                  <FormItem
+                    control={control}
+                    name={'value'}
+                    render={({ field: { onChange, value: _value, ref } }) => (
+                      <InputAmount
+                        ref={ref}
+                        value={_value}
+                        maxValue={bondedValue}
+                        onChangeValue={onChange}
+                        decimals={decimals}
+                        disable={submitLoading}
+                        showMaxButton={true}
+                      />
+                    )}
                   />
-                </View>
-              </>
-            )}
-          </View>
-          <View style={{ paddingHorizontal: theme.padding, paddingBottom: theme.padding }}>
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: theme.paddingXS }}>
+                    <Typography.Text style={{ color: theme.colorTextTertiary }}>
+                      {'Minimum active stake'}
+                    </Typography.Text>
+                    <Number
+                      decimal={decimals}
+                      value={
+                        earningRate > 0
+                          ? BigN(poolInfo.statistic?.earningThreshold.join || 0).div(earningRate)
+                          : BigN(poolInfo.statistic?.earningThreshold.join || 0)
+                      }
+                      suffix={earningRate > 0 ? symbol : bondedAsset?.symbol}
+                    />
+                  </View>
+                </>
+              )}
+            </View>
+          </ScrollView>
+          <View style={{ paddingHorizontal: theme.padding, paddingBottom: theme.padding, paddingTop: theme.padding }}>
             <Button
               icon={
                 <Icon

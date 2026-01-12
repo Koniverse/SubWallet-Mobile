@@ -31,8 +31,8 @@ const blockContentStyle: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingLeft: 16,
-  paddingRight: 16,
+  paddingLeft: 12,
+  paddingRight: 12,
   paddingTop: 9,
   paddingBottom: 12,
 };
@@ -55,7 +55,7 @@ export const NominationSelectorField = ({
             <View style={{ paddingRight: 8 }}>
               <Avatar
                 value={item?.validatorAddress || ''}
-                size={24}
+                size={20}
                 theme={isEthereumAddress(item?.validatorAddress) ? 'ethereum' : 'polkadot'}
               />
             </View>

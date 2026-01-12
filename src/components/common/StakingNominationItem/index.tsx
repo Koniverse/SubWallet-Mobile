@@ -13,6 +13,7 @@ import i18n from 'utils/i18n/i18n';
 import { YieldPoolInfo } from '@subwallet/extension-base/types';
 import { formatBalance } from 'utils/number';
 import { ThemeTypes } from 'styles/themes';
+import BigN from 'bignumber.js';
 
 interface Props {
   nominationInfo: NominationInfo;
@@ -53,19 +54,34 @@ export const StakingNominationItem = ({
       </View>
 
       <View style={{ flex: 1 }}>
-        <Text numberOfLines={1} style={_style.nominationNameTextStyle}>
+        <Typography.Text ellipsis style={_style.nominationNameTextStyle}>
           {validatorIdentity || toShort(validatorAddress)}
-        </Text>
+        </Typography.Text>
 
         {isChangeValidator ? (
-          <View style={_style.contentWrapper}>
-            <Icon phosphorIcon={CurrencyCircleDollar} iconColor={theme.colorTextTertiary} size={'xs'} weight={'fill'} />
-            <Typography.Text style={styles.subTextStyle}>{` : ${
-              nominationInfo.commission !== undefined ? `${nominationInfo.commission}%` : 'N/A'
-            } -`}</Typography.Text>
-            <Typography.Text style={[styles.subTextStyle, { color: theme.colorSuccess }]}>{` APY: ${
-              nominationInfo.expectedReturn ? formatBalance(nominationInfo.expectedReturn, 0) : '0'
-            }%`}</Typography.Text>
+          <View style={[_style.contentWrapper, { paddingRight: theme.paddingXS }]}>
+            <View style={_style.contentWrapper}>
+              <Icon
+                phosphorIcon={CurrencyCircleDollar}
+                iconColor={theme.colorTextTertiary}
+                size={'xs'}
+                weight={'fill'}
+              />
+              <Typography.Text style={styles.subTextStyle}>{` : ${
+                nominationInfo.commission !== undefined ? `${nominationInfo.commission}%` : 'N/A'
+              } -`}</Typography.Text>
+              <Typography.Text style={[styles.subTextStyle, { color: theme.colorSuccess }]}>{` APY: ${
+                nominationInfo.expectedReturn ? formatBalance(nominationInfo.expectedReturn, 0) : '0'
+              }%`}</Typography.Text>
+            </View>
+            {new BigN(nominationInfo.activeStake).gt(0) && (
+              <>
+                <Typography.Text style={styles.subTextStyle}>
+                  {formatBalance(nominationInfo.activeStake, decimals)}
+                </Typography.Text>
+                <Typography.Text style={styles.subTextStyle}>{subnetSymbol || symbol}</Typography.Text>
+              </>
+            )}
           </View>
         ) : (
           <View style={_style.contentWrapper}>
@@ -86,10 +102,12 @@ export const StakingNominationItem = ({
 
       {isSelectable && (
         <>
-          {isSelected && (
+          {isSelected ? (
             <View style={styles.selectedIconWrapper}>
               <Icon phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} size={'sm'} weight={'fill'} />
             </View>
+          ) : (
+            <View style={styles.selectedIconWrapper} />
           )}
         </>
       )}

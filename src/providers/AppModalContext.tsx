@@ -129,7 +129,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
   const [selectAddressFormatModalState, setSelectAddressFormatModalState] = useState<SelectAddressFormatModalState>({});
   const [accountTokenAddressModalState, setAccountTokenAddressModalState] = useState<AccountTokenAddressModalState>({});
   const hideConfirmModal = useCallback(() => {
-    setConfirmModal(prevState => ({ ...prevState, visible: false }));
+    // setConfirmModal(prevState => ({ ...prevState, visible: false }));
     setTimeout(
       () =>
         setConfirmModal(prevState => ({
@@ -140,6 +140,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           messageIcon: undefined,
           onCancelModal: undefined,
           onCompleteModal: undefined,
+          visible: false,
         })),
       300,
     );

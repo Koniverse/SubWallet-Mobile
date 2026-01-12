@@ -22,6 +22,7 @@ import { Info } from 'phosphor-react-native';
 import { ConfirmationContent } from 'components/common/Confirmation';
 import { EarningValidatorSelectedModal } from 'components/Modal/Earning/EarningValidatorSelectedModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import i18n from 'utils/i18n/i18n';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -49,6 +50,7 @@ type ValidatorGroupProps = {
 };
 
 const ValidatorAddress = ({ account, label, title }: ValidatorAddressProps) => {
+  const theme = useSubWalletTheme().swThemes;
   const validator = useMemo(() => {
     if (!account) {
       return '-';
@@ -65,7 +67,7 @@ const ValidatorAddress = ({ account, label, title }: ValidatorAddressProps) => {
 
   return (
     <MetaInfo.Default label={label || title}>
-      <Typography.Text>{validator}</Typography.Text>
+      <Typography.Text style={{ color: theme['gray-5'] }}>{validator}</Typography.Text>
     </MetaInfo.Default>
   );
 };
@@ -108,20 +110,6 @@ const ValidatorGroupModal = ({ accounts, compound, maxValidator, poolInfo, title
     </>
   );
 };
-
-// const ValidatorGroup = (props: ValidatorGroupProps) => {
-//   const { total } = props;
-
-//   if (total === 0) {
-//     return null;
-//   }
-
-//   if (total === 1) {
-//     return <ValidatorAddress {...props} />;
-//   }
-
-//   return <ValidatorGroupModal {...props} />;
-// };
 
 const ChangeValidatorTransactionConfirmation = (props: Props) => {
   const { transaction } = props;
@@ -222,10 +210,8 @@ const ChangeValidatorTransactionConfirmation = (props: Props) => {
           </MetaInfo>
           {!!stakingFee && (
             <AlertBox
-              description={t('ui.TRANSACTION.Confirmations.Earning.Validator.Change.validatorChangeFeeInfo', {
-                replace: { number: stakingFee },
-              })}
-              title={t('ui.TRANSACTION.Confirmations.Earning.Validator.Change.validatorChangeFee')}
+              description={i18n.formatString(i18n.message.validatorChangeFeeInfo, stakingFee)}
+              title={i18n.message.validatorChangeFeeTitle}
               type="info"
             />
           )}
@@ -234,43 +220,5 @@ const ChangeValidatorTransactionConfirmation = (props: Props) => {
     </ConfirmationContent>
   );
 };
-
-// function createStyle(theme: ThemeTypes) {
-//   return StyleSheet.create({});
-// }
-
-// const ChangeValidatorTransactionConfirmation = styled(Component)<BaseTransactionConfirmationProps>(
-//   ({ theme: { token } }: BaseTransactionConfirmationProps) => {
-//     return {
-//       '.nomination-wrapper': {
-//         background: token.colorBgSecondary,
-//         borderRadius: token.borderRadiusLG,
-//         marginTop: token.marginSM,
-//         marginBottom: token.marginSM,
-//         whiteSpace: 'nowrap',
-//       },
-//
-//       '.form-space-sm .ant-form-item': {
-//         marginBottom: '0px',
-//       },
-//
-//       '.validator-group__info': {
-//         display: 'flex',
-//         alignItems: 'center',
-//         gap: token.sizeXXS,
-//         cursor: 'pointer',
-//       },
-//
-//       '.__selected-validator-address': {
-//         display: 'inline-block',
-//         maxWidth: 166,
-//         overflow: 'hidden',
-//         textOverflow: 'ellipsis',
-//         whiteSpace: 'nowrap',
-//         verticalAlign: 'bottom',
-//       },
-//     };
-//   },
-// );
 
 export default ChangeValidatorTransactionConfirmation;

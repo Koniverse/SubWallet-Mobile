@@ -4,6 +4,7 @@ import { NominationInfo, YieldPositionInfo } from '@subwallet/extension-base/typ
 export type TransactionActionStackParamList = {
   SendFund: { slug?: string; recipient?: string };
   SendNFT: {
+    from: string;
     chain: string;
     collectionId: string;
     itemId: string;

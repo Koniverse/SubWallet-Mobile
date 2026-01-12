@@ -534,11 +534,13 @@ export const RestoreJson = () => {
               <InputFile disabled={submitting} onChangeResult={_onChangeFile} fileName={formState.data.fileName} />
 
               {showNoValidAccountAlert && (
-                <AlertBox
-                  description={'All accounts found in this file are invalid. Import another JSON file and try again'}
-                  title={'Unable to import'}
-                  type={'error'}
-                />
+                <View style={styles.error}>
+                  <AlertBox
+                    description={'All accounts found in this file are invalid. Import another JSON file and try again'}
+                    title={'Unable to import'}
+                    type={'error'}
+                  />
+                </View>
               )}
 
               {fileValidateState && fileValidateState.message && fileValidateState.status === 'error' && (
