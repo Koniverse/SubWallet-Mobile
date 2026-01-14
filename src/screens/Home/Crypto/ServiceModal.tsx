@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import i18n from 'utils/i18n/i18n';
-import { ListRenderItemInfo } from 'react-native';
+import { ListRenderItemInfo, StyleSheet } from 'react-native';
 import { ServiceSelectItem } from 'components/ServiceSelectItem';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
@@ -9,6 +9,7 @@ import { SupportService } from 'types/buy';
 import { Image } from 'components/design-system-ui';
 import { ImageLogosMap } from 'assets/logo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ThemeTypes } from 'styles/themes';
 
 interface Props {
   items: ServiceItem[];
@@ -62,6 +63,7 @@ const filterFunction = (items: ServiceItem[], searchString: string) => {
 
 export const ServiceModal = ({ serviceRef, disabled, onPressItem, selectedService, items }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const styles = createStyles(theme);
   const selectedValue = useMemo(() => {
     return baseServiceItems.find(ser => ser.key === selectedService);
   }, [selectedService]);
@@ -70,7 +72,7 @@ export const ServiceModal = ({ serviceRef, disabled, onPressItem, selectedServic
     return (
       <ServiceSelectItem
         disabled={item.disabled}
-        logo={<Image src={ImageLogosMap[item.key]} style={{ width: 24, height: 24 }} />}
+        logo={<Image src={ImageLogosMap[item.key]} style={styles.imageStyle} />}
         serviceName={item.name}
         onPressItem={() => onPressItem(item.key)}
         isSelected={item.key === selectedValue?.key}
@@ -101,3 +103,9 @@ export const ServiceModal = ({ serviceRef, disabled, onPressItem, selectedServic
     />
   );
 };
+
+function createStyles(theme: ThemeTypes) {
+  return StyleSheet.create({
+    imageStyle: { width: theme.sizeLG, height: theme.sizeLG },
+  });
+}
