@@ -114,6 +114,28 @@ export const ConnectionList = ({
     <ConnectionItem session={item} onPress={onPressItem} />
   );
 
+  const convertWCErrorMessage = useCallback((e: Error): string => {
+    const message = e.message.toLowerCase();
+
+    let newStandardMessage = 'Connection unsuccessful. Review our user guide and try connecting again.';
+
+    if (message.includes('pairing already exists')) {
+      newStandardMessage = i18n.errorMessage.connectionAlreadyExist;
+    }
+
+    if (message.includes('socket hang up') || message.includes('stalled') || message.includes('interrupted')) {
+      newStandardMessage =
+        ' Turn off VPN/ad blocker apps, reload the dApp, and try again. If the issue persists, contact support at agent@subwallet.app';
+    }
+
+    if (message.includes('failed for host')) {
+      newStandardMessage =
+        'Turn off some networks on the wallet or close any privacy protection apps (e.g. VPN, ad blocker apps) and try again. If the issue persists, contact support at agent@subwallet.app';
+    }
+
+    return newStandardMessage;
+  }, []);
+
   const onScanAddress = (data: string) => {
     if (!validWalletConnectUri(data)) {
       addConnection({ uri: data })
@@ -123,10 +145,7 @@ export const ConnectionList = ({
           navigation.goBack();
         })
         .catch(e => {
-          const errMessage = (e as Error).message;
-          const message = errMessage.includes('Pairing already exists')
-            ? i18n.errorMessage.connectionAlreadyExist
-            : i18n.errorMessage.failToAddConnection;
+          const message = convertWCErrorMessage(e);
 
           setError(message);
         });

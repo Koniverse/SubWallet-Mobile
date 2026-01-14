@@ -225,6 +225,11 @@ export const EarningValidatorSelector = forwardRef(
         : [];
     }, [nominations]);
 
+    console.log(
+      'check',
+      items.filter(i => nominatorValueList.includes(getValidatorKey(i.address, i.identity))),
+    );
+
     const sortValidator = useCallback(
       (a: ValidatorDataType, b: ValidatorDataType) => {
         const aKey = getValidatorKey(a.address, a.identity);
@@ -234,7 +239,7 @@ export const EarningValidatorSelector = forwardRef(
           return -1;
         }
 
-        return 1;
+        return 0;
       },
       [nominatorValueList],
     );
