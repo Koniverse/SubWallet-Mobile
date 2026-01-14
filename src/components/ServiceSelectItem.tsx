@@ -1,48 +1,57 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ColorMap } from 'styles/color';
-import Text from 'components/Text';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { Divider } from 'components/Divider';
+import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { Typography } from './design-system-ui';
+import { Icon } from 'components/design-system-ui';
+import { CheckCircle } from 'phosphor-react-native';
 
 interface Props {
   logo: React.ReactNode;
   serviceName: string;
   disabled?: boolean;
   onPressItem: () => void;
+  isSelected?: boolean;
 }
 
-export const ServiceSelectItem = ({ logo, serviceName, onPressItem, disabled }: Props) => {
+export const ServiceSelectItem = ({ logo, serviceName, onPressItem, disabled, isSelected }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyle(theme, !!disabled);
   return (
     <TouchableOpacity style={styles.container} onPress={onPressItem} disabled={disabled}>
       <View style={styles.contentWrapper}>
         {logo}
-        <Text style={styles.itemTextStyle}>{serviceName}</Text>
+        <Typography.Text style={styles.itemTextStyle}>{serviceName}</Typography.Text>
       </View>
 
-      <Divider style={styles.dividerStyle} color={ColorMap.dark2} />
+      {isSelected && <Icon phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} weight={'fill'} size={'sm'} />}
     </TouchableOpacity>
   );
 };
 
 function createStyle(theme: ThemeTypes, disabled: boolean) {
   return StyleSheet.create({
-    container: { opacity: !disabled ? 1 : 0.5 },
+    container: {
+      opacity: !disabled ? 1 : 0.5,
+      backgroundColor: theme.colorBgSecondary,
+      borderRadius: theme.borderRadiusLG,
+      marginBottom: theme.marginXS,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: theme.paddingSM,
+    },
     contentWrapper: {
       flexDirection: 'row',
-      paddingHorizontal: theme.padding,
       paddingVertical: theme.paddingSM,
       alignItems: 'center',
     },
-    dividerStyle: { paddingLeft: 64, paddingRight: theme.padding },
     itemTextStyle: {
-      paddingLeft: 20,
-      color: ColorMap.light,
-      ...sharedStyles.mediumText,
+      paddingLeft: theme.paddingSM,
+      color: theme.colorTextLight1,
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
       ...FontSemiBold,
     },
   });
