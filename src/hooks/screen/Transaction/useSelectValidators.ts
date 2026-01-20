@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useCallback, useState } from 'react';
-import Toast from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
+import { useToast } from 'react-native-toast-notifications';
 
 export function useSelectValidators(
   chain: string,
@@ -10,8 +10,8 @@ export function useSelectValidators(
   onChange?: (value: string) => void,
   isSingleSelect?: boolean,
   closeModal?: () => void,
-  toastRef?: React.RefObject<Toast>,
 ) {
+  const toast = useToast();
   // Current nominated at init
   const [defaultSelected, setDefaultSelected] = useState<string[]>([]);
   // Current selected validators
@@ -27,20 +27,20 @@ export function useSelectValidators(
     if (!fewValidators) {
       switch (label) {
         case 'dApp':
-          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseOneDapp';
+          return i18n.toast.canOnlyChooseOneDapp;
         case 'Collator':
-          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseOneCollator';
+          return i18n.toast.canOnlyChooseOneCollator;
         case 'Validator':
-          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseOneValidator';
+          return i18n.toast.canOnlyChooseOneValidator;
       }
     } else {
       switch (label) {
         case 'dApp':
-          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseNumberDapps';
+          return i18n.toast.canOnlyChooseNumberDapps;
         case 'Collator':
-          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseNumberCollators';
+          return i18n.toast.canOnlyChooseNumberCollators;
         case 'Validator':
-          return 'ui.EARNING.hook.modal.useSelectValidators.canOnlyChooseNumberValidators';
+          return i18n.toast.canOnlyChooseNumberValidators;
       }
     }
   }, [chain, fewValidators]);
@@ -53,12 +53,10 @@ export function useSelectValidators(
           if (isSingleSelect) {
             if (defaultSelected.length >= maxCount) {
               if (!defaultSelected.includes(changeVal)) {
-                if (toastRef && toastRef.current) {
-                  toastRef.current.hideAll();
-                  toastRef.current.show(i18n.formatString(notiMessage, maxCount) as string, {
-                    type: 'normal',
-                  });
-                }
+                toast.hideAll();
+                toast.show(i18n.formatString(notiMessage, maxCount) as string, {
+                  type: 'normal',
+                });
 
                 return currentChangeValidators;
               }
@@ -67,12 +65,10 @@ export function useSelectValidators(
             result = [changeVal];
           } else {
             if (currentChangeValidators.length >= maxCount) {
-              if (toastRef && toastRef.current) {
-                toastRef.current.hideAll();
-                toastRef.current.show(i18n.formatString(notiMessage, maxCount) as string, {
-                  type: 'normal',
-                });
-              }
+              toast.hideAll();
+              toast.show(i18n.formatString(notiMessage, maxCount) as string, {
+                type: 'normal',
+              });
 
               return currentChangeValidators;
             }
@@ -90,7 +86,7 @@ export function useSelectValidators(
         return result;
       });
     },
-    [defaultSelected, isSingleSelect, maxCount, notiMessage, toastRef],
+    [defaultSelected, isSingleSelect, maxCount, notiMessage, toast],
   );
 
   const _onApplyChangeValidators = useCallback(

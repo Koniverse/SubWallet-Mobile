@@ -1338,5 +1338,13 @@
   "notification": {
     "markAsRead": "Mark as read",
     "markAsUnread": "Mark as unread"
+  },
+  "toast": {
+    "canOnlyChooseOneDapp": "You can only choose {0} dApp",
+    "canOnlyChooseOneCollator": "You can only choose {0} collator",
+    "canOnlyChooseOneValidator": "You can only choose {0} validator",
+    "canOnlyChooseNumberDapps": "You can only choose {0} dApps",
+    "canOnlyChooseNumberCollators": "You can only choose {0} collators",
+    "canOnlyChooseNumberValidators": "You can only choose {0} validators"
   }
 }

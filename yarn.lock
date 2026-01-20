@@ -7680,7 +7680,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subwallet-monorepos/subwallet-services-sdk@npm:^0.1.13-beta.6":
+"@subwallet-monorepos/subwallet-services-sdk@npm:0.1.14":
   version: 0.1.14
   resolution: "@subwallet-monorepos/subwallet-services-sdk@npm:0.1.14"
   dependencies:
@@ -9804,7 +9804,7 @@ __metadata:
     "@react-navigation/native-stack": ^6.9.8
     "@reduxjs/toolkit": ^1.9.2
     "@shopify/flash-list": ^1.7.1
-    "@subwallet-monorepos/subwallet-services-sdk": ^0.1.13-beta.6
+    "@subwallet-monorepos/subwallet-services-sdk": 0.1.14
     "@subwallet/chain-list": 0.2.114
     "@subwallet/extension-base": 1.3.62-0
     "@subwallet/extension-chains": 1.3.57-0

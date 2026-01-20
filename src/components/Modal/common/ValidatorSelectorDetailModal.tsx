@@ -123,45 +123,44 @@ export const ValidatorSelectorDetailModal = ({
                 />
               )}
 
-              {ownStake !== '0' && (
-                <MetaInfo.Number
-                  decimals={decimals}
-                  label={
-                    isBittensorChain ? (
-                      <Tooltip
-                        isVisible={tooltipVisible}
-                        disableShadow={true}
-                        placement={'bottom'}
-                        showChildInTooltip={false}
-                        topAdjustment={
-                          Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0
-                        }
-                        contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
-                        closeOnBackgroundInteraction={true}
-                        onClose={() => setTooltipVisible(false)}
-                        content={
-                          <Typography.Text size={'sm'} style={styles.tooltipTextStyle}>
-                            {'Calculated as 18% of the root stake'}
-                          </Typography.Text>
-                        }>
-                        <TouchableOpacity
-                          style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}
-                          onPress={() => setTooltipVisible(true)}>
-                          <Typography.Text style={[styles.tooltipTextStyle, { ...FontSemiBold }]}>
-                            {'Root weight'}
-                          </Typography.Text>
-                          <Icon phosphorIcon={Info} size="xs" type="phosphor" />
-                        </TouchableOpacity>
-                      </Tooltip>
-                    ) : (
-                      i18n.inputLabel.ownStake
-                    )
-                  }
-                  suffix={symbol}
-                  value={ownStake}
-                  valueColorSchema={'even-odd'}
-                />
-              )}
+              <MetaInfo.Number
+                decimals={decimals}
+                label={
+                  isBittensorChain ? (
+                    <Tooltip
+                      isVisible={tooltipVisible}
+                      disableShadow={true}
+                      placement={'bottom'}
+                      showChildInTooltip={false}
+                      topAdjustment={
+                        Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0
+                      }
+                      contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
+                      closeOnBackgroundInteraction={true}
+                      onClose={() => setTooltipVisible(false)}
+                      content={
+                        <Typography.Text size={'sm'} style={styles.tooltipTextStyle}>
+                          {'Calculated as 18% of the root stake'}
+                        </Typography.Text>
+                      }>
+                      <TouchableOpacity
+                        style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}
+                        onPress={() => setTooltipVisible(true)}>
+                        <Typography.Text style={[styles.tooltipTextStyle, { ...FontSemiBold }]}>
+                          {'Root weight'}
+                        </Typography.Text>
+                        <Icon phosphorIcon={Info} size="xs" type="phosphor" />
+                      </TouchableOpacity>
+                    </Tooltip>
+                  ) : (
+                    i18n.inputLabel.ownStake
+                  )
+                }
+                suffix={symbol}
+                value={ownStake}
+                valueColorSchema={'even-odd'}
+              />
+
               {otherStake !== '0' && (
                 <MetaInfo.Number
                   decimals={decimals}

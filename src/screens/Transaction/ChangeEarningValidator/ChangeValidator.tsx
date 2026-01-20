@@ -16,7 +16,7 @@ import { getValidatorKey } from 'utils/transaction';
 import { changeEarningValidator } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
-import { Button, Icon, SelectItem, Typography } from 'components/design-system-ui';
+import { Button, Icon, PageIcon, SelectItem, Typography } from 'components/design-system-ui';
 import { EmptyValidator } from 'components/EmptyValidator';
 import { FlatListScreen } from 'components/FlatListScreen';
 import BigN from 'bignumber.js';
@@ -24,6 +24,7 @@ import { StyleSheet, View } from 'react-native';
 import {
   ArrowsClockwise,
   CheckCircle,
+  Info,
   MagnifyingGlass,
   SortAscending,
   SortDescending,
@@ -196,6 +197,7 @@ export const ChangeValidator = ({
     maxCount,
     undefined,
     isSingleSelect,
+    undefined,
   );
 
   const fewValidators = changeValidators.length > 1;
@@ -297,7 +299,13 @@ export const ChangeValidator = ({
   const searchFunction = (__items: ValidatorDataTypeItem[], searchString: string) => {
     const lowerCaseSearchString = searchString.toLowerCase();
 
-    return __items.filter(({ identity }) => identity?.toLowerCase().includes(lowerCaseSearchString));
+    return lowerCaseSearchString
+      ? __items.filter(
+          ({ identity, address }) =>
+            identity?.toLowerCase().includes(lowerCaseSearchString) ||
+            address.toLowerCase().includes(lowerCaseSearchString),
+        )
+      : __items;
   };
 
   const isNoValidatorChanged = useMemo(() => {
@@ -343,6 +351,7 @@ export const ChangeValidator = ({
           message:
             'Your new selections of validators is the same as the original selection. Do you still want to continue?',
           title: 'No changes detected!',
+          customIcon: <PageIcon icon={Info} color={theme.colorInfo} />,
           cancelBtnTitle: i18n.buttonTitles.cancel,
           completeBtnTitle: i18n.buttonTitles.continue,
           onCancelModal: confirmModal.hideConfirmModal,
@@ -357,7 +366,7 @@ export const ChangeValidator = ({
 
       submit(target);
     },
-    [isNoValidatorChanged, submit, confirmModal],
+    [isNoValidatorChanged, submit, confirmModal, theme.colorInfo],
   );
 
   const onResetSort = useCallback(() => {
@@ -380,7 +389,7 @@ export const ChangeValidator = ({
   const onPressMore = useCallback((item: ValidatorDataType) => {
     return () => {
       setViewDetailItem(item);
-      // activeModal(VALIDATOR_DETAIL_MODAL);
+      setDetailModalVisible(true);
     };
   }, []);
 
@@ -389,9 +398,10 @@ export const ChangeValidator = ({
       <EmptyValidator
         isDataEmpty={items.length === 0}
         onClickReload={setForceFetchValidator}
-        validatorTitle={'ui.EARNING.components.Modal.Earning.Validator.Change.validators'}
+        validatorTitle={'validators'}
         icon={MagnifyingGlass}
         title={i18n.emptyScreen.selectorEmptyTitle}
+        message={'Please change your search criteria try again'}
       />
     );
   }, [items.length, setForceFetchValidator]);
@@ -525,8 +535,14 @@ export const ChangeValidator = ({
             afterListItem={
               <View style={{ paddingHorizontal: theme.padding, paddingBottom: theme.padding, marginTop: theme.margin }}>
                 <Button
-                  icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}
-                  disabled={!changeValidators.length}
+                  icon={
+                    <Icon
+                      phosphorIcon={CheckCircle}
+                      weight={'fill'}
+                      iconColor={!changeValidators.length || submitLoading ? theme.colorTextTertiary : theme.colorWhite}
+                    />
+                  }
+                  disabled={!changeValidators.length || submitLoading}
                   loading={submitLoading}
                   onPress={onPreCheck(
                     () => onPressSubmit({ target: selectedValidators }),

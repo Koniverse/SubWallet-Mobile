@@ -19,7 +19,7 @@ export interface ComponentStyle {
   buttonDisable: ViewStyle;
 }
 
-export default (theme: ThemeTypes) => {
+export default (theme: ThemeTypes, accountListLength: number) => {
   return StyleSheet.create<ComponentStyle>({
     header: {
       display: 'flex',
@@ -49,7 +49,7 @@ export default (theme: ThemeTypes) => {
       marginLeft: 10,
     },
     infoContainerMulti: {
-      width: deviceWidth - 90,
+      width: accountListLength === 1 ? deviceWidth - 62 : deviceWidth - 90,
       backgroundColor: theme.colorBgDefault,
     },
     infoRow: {

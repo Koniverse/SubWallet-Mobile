@@ -276,7 +276,7 @@ function createStyle(theme: ThemeTypes) {
       marginBottom: theme.margin,
     },
     propTitleStyle: {
-      color: theme.colorTextPrimary,
+      color: theme.colorTextTertiary,
       fontSize: theme.fontSizeSM,
       lineHeight: theme.fontSizeSM * theme.lineHeightSM,
       ...FontMedium,

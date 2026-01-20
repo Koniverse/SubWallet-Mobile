@@ -222,6 +222,7 @@ export const ChangeBittensorValidator = ({
       `Amount too high. Lower your amount to no more than ${formatBalance(bondedValue, decimals)} ${
         symbol || ''
       } and try again`,
+      { type: 'danger' },
     );
   }, [bondedValue, decimals, hideAll, show, symbol]);
 

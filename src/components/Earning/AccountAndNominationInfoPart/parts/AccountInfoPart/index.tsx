@@ -44,7 +44,7 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { accounts } = useSelector((state: RootState) => state.accountState);
 
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useMemo(() => createStyles(theme, list.length), [theme, list]);
 
   const deriveAsset = useMemo(() => {
     if ('derivativeToken' in compound) {

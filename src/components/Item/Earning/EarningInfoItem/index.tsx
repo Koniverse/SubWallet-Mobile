@@ -80,8 +80,12 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
   );
 
   const subnetToken = useMemo(() => {
+    if (!poolInfo) {
+      return undefined;
+    }
+
     return getSubnetStakingTokenName(poolInfo.chain, poolInfo.metadata.subnetData?.netuid || 0);
-  }, [getSubnetStakingTokenName, poolInfo.chain, poolInfo.metadata.subnetData?.netuid]);
+  }, [getSubnetStakingTokenName, poolInfo]);
 
   if (!poolInfo) {
     return <></>;

@@ -313,93 +313,6 @@ export const FeeEditorModal = ({
     return convertedCustomEvmFee.multipliedBy(priceValue).dividedBy(BN_TEN.pow(decimals));
   }, [convertedCustomEvmFee, decimals, priceValue]);
 
-  // useEffect(() => {
-  //   let amount = true;
-  //
-  //   if (timeOutRef.current) {
-  //     clearTimeout(timeOutRef.current);
-  //   }
-  //   if (amount) {
-  //     if (formState.data.maxFeeValue) {
-  //       setValidating(true);
-  //       timeOutRef.current = setTimeout(() => {
-  //         customMaxFeeValidateFunc(formState.data.maxFeeValue)
-  //           .then(res => {
-  //             onUpdateErrors('maxFeeValue')(res);
-  //           })
-  //           .catch((error: Error) => console.log('error validate max fee', error.message))
-  //           .finally(() => {
-  //             if (amount) {
-  //               setValidating(false);
-  //             }
-  //           });
-  //       }, 500);
-  //     } else {
-  //       setValidating(false);
-  //     }
-  //   }
-  //
-  //   return () => {
-  //     amount = false;
-  //   };
-  // }, [customMaxFeeValidateFunc, formState.data.accountName, formState.data.maxFeeValue, onUpdateErrors]);
-
-  // useEffect(() => {
-  //   let amount = true;
-  //
-  //   if (timeOutRef.current) {
-  //     clearTimeout(timeOutRef.current);
-  //   }
-  //
-  //   if (amount) {
-  //     setValidating(true);
-  //     timeOutRef.current = setTimeout(() => {
-  //       customPriorityValidateFunc(formState.data.priorityFeeValue)
-  //         .then(res => {
-  //           onUpdateErrors('priorityFeeValue')(res);
-  //         })
-  //         .catch((error: Error) => console.log('error validate priorityFeeValue', error.message))
-  //         .finally(() => {
-  //           if (amount) {
-  //             setValidating(false);
-  //           }
-  //         });
-  //     }, 500);
-  //   }
-  //
-  //   return () => {
-  //     amount = false;
-  //   };
-  // }, [customPriorityValidateFunc, formState.data.priorityFeeValue, onUpdateErrors]);
-
-  // useEffect(() => {
-  //   let amount = true;
-  //
-  //   if (timeOutRef.current) {
-  //     clearTimeout(timeOutRef.current);
-  //   }
-  //
-  //   if (amount) {
-  //     setValidating(true);
-  //     timeOutRef.current = setTimeout(() => {
-  //       customValueValidateFunc(formState.data.customValue)
-  //         .then(res => {
-  //           onUpdateErrors('customValue')(res);
-  //         })
-  //         .catch((error: Error) => console.log('error validate customValue', error.message))
-  //         .finally(() => {
-  //           if (amount) {
-  //             setValidating(false);
-  //           }
-  //         });
-  //     }, 500);
-  //   }
-  //
-  //   return () => {
-  //     amount = false;
-  //   };
-  // }, [customValueValidateFunc, formState.data.customValue, onUpdateErrors]);
-
   const viewOptions = useMemo((): TabItem[] => {
     return [
       { label: 'Recommend', value: ViewMode.RECOMMENDED, onPress: () => {} },
@@ -506,7 +419,7 @@ export const FeeEditorModal = ({
       isUseModalV2
       footer={
         <View style={{ paddingTop: theme.padding }}>
-          <Button disabled={disabledSubmitBtn} onPress={onPressSubmit}>
+          <Button disabled={disabledSubmitBtn && currentViewMode === 'custom'} onPress={onPressSubmit}>
             {'Apply fee'}
           </Button>
         </View>

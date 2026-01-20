@@ -255,6 +255,6 @@ function createStyle(theme: ThemeTypes) {
       marginBottom: theme.marginSM,
     },
     link: { color: theme.colorLink },
-    textAlignBoth: { textAlign: 'justify' },
+    textAlignBoth: { textAlign: 'auto' },
   });
 }
