@@ -137,7 +137,6 @@ export const ChangeValidator = ({
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const poolInfo = poolInfoMap[slug];
   const maxCount = poolInfo?.statistic?.maxCandidatePerFarmer || 1;
-
   const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(chain), [chain]);
   const isSingleSelect = useMemo(() => _isSingleSelect || !isRelayChain, [_isSingleSelect, isRelayChain]);
   const hasReturn = useMemo(() => items[0]?.expectedReturn !== undefined, [items]);
@@ -371,13 +370,18 @@ export const ChangeValidator = ({
 
   const onResetSort = useCallback(() => {
     setSortSelection(SortKey.DEFAULT);
+    setForceFetchValidator(true);
     sortingModalRef?.current?.onCloseModal();
-  }, []);
+  }, [setForceFetchValidator]);
 
-  const onChangeSortOpt = useCallback((value: string) => {
-    setSortSelection(value as SortKey);
-    sortingModalRef?.current?.onCloseModal();
-  }, []);
+  const onChangeSortOpt = useCallback(
+    (value: string) => {
+      setSortSelection(value as SortKey);
+      setForceFetchValidator(true);
+      sortingModalRef?.current?.onCloseModal();
+    },
+    [setForceFetchValidator],
+  );
 
   const onPressItem = useCallback(
     (value: string) => {
@@ -521,7 +525,7 @@ export const ChangeValidator = ({
       {!isTransactionDone ? (
         <>
           <FlatListScreen
-            items={resultList}
+            items={[...resultList]}
             onPressBack={onCancel}
             rightIconOption={rightIconOption}
             grouping={grouping}
@@ -529,9 +533,12 @@ export const ChangeValidator = ({
             renderListEmptyComponent={renderEmpty}
             filterFunction={filterFunction}
             estimatedItemSize={58}
+            extraData={JSON.stringify(selectedValidators)}
+            keyExtractor={item => getValidatorKey(item.address, item.identity)}
             searchFunction={searchFunction}
             filterOptions={filterOptions}
             title={'Select validators'}
+            removeClippedSubviews={true}
             afterListItem={
               <View style={{ paddingHorizontal: theme.padding, paddingBottom: theme.padding, marginTop: theme.margin }}>
                 <Button

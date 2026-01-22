@@ -205,6 +205,7 @@ export const Unbond = ({
   const isSubnetStaking = useMemo(() => [YieldPoolType.SUBNET_STAKING].includes(poolType), [poolType]);
   const [maxSlippage, setMaxSlippage] = useState<SlippageType>({ slippage: new BigN(0.005), isCustomType: true });
   const [loading, setLoading] = useState(false);
+  const [taoSubmitLoading, setTaoSubmitLoading] = useState(false);
 
   const isDisabledSubnetContent = useMemo(
     () => !isSubnetStaking || !currentValue,
@@ -218,7 +219,7 @@ export const Unbond = ({
     decimals,
     poolInfo.metadata.subnetData?.netuid || 0,
     ExtrinsicType.STAKING_UNBOND,
-    setLoading,
+    setTaoSubmitLoading,
   );
 
   const isSlippageAcceptable = useMemo(() => {
@@ -415,6 +416,7 @@ export const Unbond = ({
   );
 
   const onSubmit = useCallback(() => {
+    console.log('run to submit');
     if (!positionInfo) {
       return;
     }
@@ -503,7 +505,8 @@ export const Unbond = ({
       loading ||
       !isBalanceReady ||
       !isSlippageAcceptable ||
-      (isMythosStaking && !currentValidator),
+      (isMythosStaking && !currentValidator) ||
+      taoSubmitLoading,
     [
       currentValidator,
       currentValue,
@@ -513,6 +516,7 @@ export const Unbond = ({
       isMythosStaking,
       isSlippageAcceptable,
       loading,
+      taoSubmitLoading,
     ],
   );
 
@@ -750,7 +754,7 @@ export const Unbond = ({
             <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
               <Button
                 disabled={isDisableSubmitBtn}
-                loading={loading}
+                loading={loading || taoSubmitLoading}
                 icon={
                   <Icon
                     phosphorIcon={MinusCircle}
