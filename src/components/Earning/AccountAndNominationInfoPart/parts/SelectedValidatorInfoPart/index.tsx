@@ -61,7 +61,7 @@ const SelectedValidatorInfoPart = ({ compound, poolInfo }: Props) => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingTop: theme.paddingXS - 2,
+        paddingTop: theme.padding,
       }}
       onPress={onPress}>
       <Typography.Text style={{ color: theme.colorTextLight1 }}>{'Your validators'}</Typography.Text>

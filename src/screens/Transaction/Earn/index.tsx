@@ -1609,6 +1609,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       <EarningValidatorSelector
                         from={currentFrom}
                         chain={chain}
+                        key={`render-earning-validator-${currentFrom}`}
                         slug={slug}
                         setForceFetchValidator={setForceFetchValidator}
                         validatorLoading={targetLoading}

@@ -102,6 +102,7 @@ export const ChangeBittensorValidator = ({
     reValidateMode: 'onChange',
     defaultValues: {
       target: '',
+      slug: slug,
       chain: chain,
       from: from,
     },

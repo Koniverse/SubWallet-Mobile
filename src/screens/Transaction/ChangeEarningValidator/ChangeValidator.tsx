@@ -15,7 +15,7 @@ import { useSelectValidators } from 'hooks/screen/Transaction/useSelectValidator
 import { getValidatorKey } from 'utils/transaction';
 import { changeEarningValidator } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
+import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 import { Button, Icon, PageIcon, SelectItem, Typography } from 'components/design-system-ui';
 import { EmptyValidator } from 'components/EmptyValidator';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -127,7 +127,11 @@ export const ChangeValidator = ({
     {
       mode: 'onChange',
       reValidateMode: 'onChange',
-      defaultValues: {},
+      defaultValues: {
+        slug: slug,
+        from: from,
+        chain: chain,
+      },
     },
   );
 
@@ -137,7 +141,7 @@ export const ChangeValidator = ({
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const poolInfo = poolInfoMap[slug];
   const maxCount = poolInfo?.statistic?.maxCandidatePerFarmer || 1;
-  const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(chain), [chain]);
+  const isRelayChain = useMemo(() => RELAY_HANDLER_DIRECT_STAKING_CHAINS.includes(chain), [chain]);
   const isSingleSelect = useMemo(() => _isSingleSelect || !isRelayChain, [_isSingleSelect, isRelayChain]);
   const hasReturn = useMemo(() => items[0]?.expectedReturn !== undefined, [items]);
 
@@ -248,6 +252,17 @@ export const ChangeValidator = ({
   const resultList = useMemo((): ValidatorDataType[] => {
     return [...items]
       .sort((a: ValidatorDataType, b: ValidatorDataType) => {
+        const aRecommended = recommendedAddresses.includes(a.address);
+        const bRecommended = recommendedAddresses.includes(b.address);
+
+        if (aRecommended && !bRecommended) {
+          return -1;
+        }
+
+        if (!aRecommended && bRecommended) {
+          return 1;
+        }
+
         switch (sortSelection) {
           case SortKey.COMMISSION:
             return a.commission - b.commission;

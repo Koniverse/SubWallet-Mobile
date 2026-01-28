@@ -1618,11 +1618,19 @@ const Swap = ({ route: { params } }: SendFundProps) => {
   }
 
   if (fetchError) {
-    return <EmptySwapPairs onPressReload={fetchDestinationsMap} />;
+    return (
+      <TransactionLayout title={'Swap'}>
+        <EmptySwapPairs onPressReload={fetchDestinationsMap} />
+      </TransactionLayout>
+    );
   }
 
   if (isUnsupportedDefaultSlug) {
-    return <EmptySwapPairs onPressReload={handleReloadNotSupportDefault} />;
+    return (
+      <TransactionLayout title={'Swap'}>
+        <EmptySwapPairs onPressReload={handleReloadNotSupportDefault} />
+      </TransactionLayout>
+    );
   }
 
   return (
@@ -1631,7 +1639,7 @@ const Swap = ({ route: { params } }: SendFundProps) => {
       allowedChainAndExcludedTokenForTargetAccountProxy={allowedChainAndExcludedTokenForTargetAccountProxy}
       swappableSlugsSet={swappableSlugsSet}
       targetAccountProxy={targetAccountProxy}
-      defaultSlug={params?.slug}
+      defaultSlug={finalDefaultSlug}
     />
   );
 };
