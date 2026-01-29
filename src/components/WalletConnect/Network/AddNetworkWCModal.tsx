@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Button, PageIcon, SwModal, Typography } from 'components/design-system-ui';
-import { PlugsConnected } from 'phosphor-react-native';
+import { PlugsConnectedIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
 import { View } from 'react-native';
@@ -58,7 +58,7 @@ export const AddNetworkWCModal = ({
       setVisible={setVisible}
       titleTextAlign={'center'}>
       <View style={{ alignItems: 'center', paddingTop: theme.paddingLG, gap: theme.paddingMD }}>
-        <PageIcon icon={PlugsConnected} color={theme.colorWarning} />
+        <PageIcon icon={PlugsConnectedIcon} color={theme.colorWarning} />
         <Typography.Text style={{ color: theme.colorTextTertiary, textAlign: 'center' }}>
           {
             "The network you're connecting to is not yet supported on SubWallet. Add the network first, then connect with WalletConnect again."

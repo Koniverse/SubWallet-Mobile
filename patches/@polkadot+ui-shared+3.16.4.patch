@@ -1,0 +1,33 @@
+diff --git a/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js b/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js
+index 586337b..3cd1584 100644
+--- a/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js
++++ b/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js
+@@ -20,7 +20,7 @@ const SCHEMES_TOTAL = SCHEMES
+ const OUTER_CIRCLE = {
+     cx: C,
+     cy: C,
+-    fill: '#eee',
++    fill: 'transparent',
+     r: C
+ };
+ let zeroHash = new Uint8Array();
+diff --git a/node_modules/@polkadot/ui-shared/icons/polkadot.js b/node_modules/@polkadot/ui-shared/icons/polkadot.js
+index b7f439d..766c0e0 100644
+--- a/node_modules/@polkadot/ui-shared/icons/polkadot.js
++++ b/node_modules/@polkadot/ui-shared/icons/polkadot.js
+@@ -17,7 +17,7 @@ const SCHEMES_TOTAL = SCHEMES
+ const OUTER_CIRCLE = {
+     cx: C,
+     cy: C,
+-    fill: '#eee',
++    fill: 'trasparent',
+     r: C
+ };
+ let zeroHash = new Uint8Array();
+diff --git a/node_modules/@polkadot/ui-shared/packageInfo.js b/node_modules/@polkadot/ui-shared/packageInfo.js
+index 4405c14..f647316 100644
+--- a/node_modules/@polkadot/ui-shared/packageInfo.js
++++ b/node_modules/@polkadot/ui-shared/packageInfo.js
+@@ -1 +1 @@
+-export const packageInfo = { name: '@polkadot/ui-shared', path: (import.meta && import.meta.url) ? new URL(import.meta.url).pathname.substring(0, new URL(import.meta.url).pathname.lastIndexOf('/') + 1) : 'auto', type: 'esm', version: '3.16.4' };
++export const packageInfo = { name: '@polkadot/ui-shared', path: 'auto', type: 'cjs', version: '3.16.4' };

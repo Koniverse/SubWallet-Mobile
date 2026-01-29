@@ -12,7 +12,7 @@ import {
   _isChainSubstrateCompatible,
   _isCustomProvider,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { ValidateStatus } from '@subwallet/react-ui/es/form/FormItem';
+import { ValidateStatus } from 'types/form';
 import { _NetworkUpsertParams } from '@subwallet/extension-base/services/chain-service/types';
 import { upsertChain, validateCustomChain } from 'messaging/index';
 import { useToast } from 'react-native-toast-notifications';

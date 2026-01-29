@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { IconProps } from 'phosphor-react-native';
+import React, { JSX, useEffect, useRef, useState } from 'react';
+import { IconProps, type Icon as PhosphorIcon } from 'phosphor-react-native';
 import { Keyboard, RefreshControlProps, StyleProp, TextInput, View, ViewStyle } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
@@ -16,7 +16,7 @@ import { FullSizeFilterModal } from 'components/common/FilterModal/FullSizeFilte
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 export interface RightIconOpt {
-  icon?: (iconProps: IconProps) => JSX.Element;
+  icon?: PhosphorIcon;
   title?: string;
   disabled?: boolean;
   onPress: () => void;

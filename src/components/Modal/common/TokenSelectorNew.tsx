@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { JSX, useCallback } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';

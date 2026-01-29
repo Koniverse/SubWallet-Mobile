@@ -1,6 +1,6 @@
 import { NavigationState } from '@react-navigation/routers';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import React, { ComponentType, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ComponentType, JSX, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { LinkingOptions, NavigationContainer, StackActions, useNavigationContainerRef } from '@react-navigation/native';
 import AttachReadOnly from 'screens/Account/AttachReadOnly';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
@@ -22,8 +22,8 @@ import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAp
 import { Languages } from 'screens/Settings/Languages';
 import { Security } from 'screens/Settings/Security';
 import { AccountExport } from 'screens/Account/AccountExport';
-import { CustomTokenSetting } from 'screens/Tokens';
-import { ConfigureToken } from 'screens/Tokens/ConfigureToken';
+import { CustomTokenSetting } from 'screens/ManageTokens';
+import { ConfigureToken } from 'screens/ManageTokens/ConfigureToken';
 import { ImportToken } from 'screens/ImportToken/ImportToken';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import SigningScreen from 'screens/Signing/SigningScreen';
@@ -45,7 +45,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AddProvider } from 'screens/AddProvider';
 import TransactionScreen from 'screens/Transaction/TransactionScreen';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
 import { Keyboard, Linking, Platform, StatusBar } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AppNavigatorDeepLinkStatus, Home } from 'screens/Home';
@@ -317,6 +317,7 @@ export const getFilteredAccount = (chainInfo: _ChainInfo) => (account: AccountJs
 };
 
 const AppNavigator = ({ isAppReady }: Props) => {
+  console.log('isAppReady', isAppReady);
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   const appTheme = useSubWalletTheme().swThemes;
@@ -644,9 +645,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
             focus: e => {
               if (Platform.OS === 'android') {
                 if (e.target?.split('-')[0] === 'Home') {
-                  changeNavigationBarColor(appTheme.colorBgSecondary);
+                  SystemNavigationBar.setNavigationColor(appTheme.colorBgSecondary);
                 } else {
-                  changeNavigationBarColor(appTheme.colorBgDefault);
+                  SystemNavigationBar.setNavigationColor(appTheme.colorBgDefault);
                 }
               }
             },
@@ -755,7 +756,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
               </Stack.Group>
             </>
           )}
-          {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
+          {/*{!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}*/}
         </Stack.Navigator>
         <PortalHost name="SimpleModalHost" />
       </ErrorBoundary>

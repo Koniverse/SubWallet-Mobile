@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { BriefView } from './BriefView';
 import SoloAccountMigrationView from 'screens/MigrateAccount/SoloAccountMigrationView';
 import SummaryView from 'screens/MigrateAccount/SummaryView';
+import PasswordModal from 'components/Modal/PasswordModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { RequestMigrateSoloAccount, SoloAccountToBeMigrated } from '@subwallet/extension-base/background/KoniTypes';
@@ -10,8 +11,6 @@ import { MigrateAccountProps, RootNavigationProps } from 'routes/index';
 import { hasAnyAccountForMigration } from '@subwallet/extension-base/services/keyring-service/utils';
 import { migrateSoloAccount, migrateUnifiedAndFetchEligibleSoloAccounts } from 'messaging/migrate-unified-account';
 import { saveMigrationAcknowledgedStatus } from 'messaging/index';
-import PasswordModal from 'components/Modal/PasswordModal';
-import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 export enum ScreenView {
   BRIEF = 'brief',
@@ -38,9 +37,6 @@ const MigrateAccount = ({
   );
   const [isBusy, setIsBusy] = useState(false);
   const accountProxies = useSelector((root: RootState) => root.accountState.accountProxies);
-  const isNeedMigration = hasAnyAccountForMigration(accountProxies);
-
-  useHandlerHardwareBackPress(!!sessionId || isBusy);
 
   const onClosePasswordModal = useCallback(() => {
     setIsPasswordModalOpen(false);
@@ -79,12 +75,12 @@ const MigrateAccount = ({
   const onPressMigrateNow = useCallback(() => {
     onInteractAction();
 
-    if (!isNeedMigration) {
+    if (!hasAnyAccountForMigration(accountProxies)) {
       setCurrentScreenView(ScreenView.SUMMARY);
     } else {
       onOpenPasswordModal();
     }
-  }, [isNeedMigration, onInteractAction, onOpenPasswordModal]);
+  }, [accountProxies, onInteractAction, onOpenPasswordModal]);
 
   const onSubmitPassword = useCallback(
     async (password: string) => {
@@ -105,6 +101,7 @@ const MigrateAccount = ({
           } else {
             setCurrentScreenView(ScreenView.SUMMARY);
           }
+          setIsBusy(false);
           onClosePasswordModal();
         })
         .catch(err => {

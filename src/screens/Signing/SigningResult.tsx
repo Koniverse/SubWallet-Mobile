@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { SubmitButton } from 'components/SubmitButton';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRightIcon } from 'phosphor-react-native';
 import { ScannerContext } from 'providers/ScannerContext';
 import React, { useCallback, useContext, useState } from 'react';
 import { ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
@@ -123,7 +123,7 @@ const SigningResult = () => {
           <View style={ViewDetailContainerButtonStyle}>
             <TouchableOpacity style={ViewDetailButtonStyle} onPress={openModal}>
               <Text style={ViewDetailTextStyle}>{i18n.common.viewDetails}</Text>
-              <CaretRight color={ColorMap.disabled} size={16} style={ViewDetailIconStyle} />
+              <CaretRightIcon color={ColorMap.disabled} size={16} style={ViewDetailIconStyle} />
             </TouchableOpacity>
           </View>
         </View>

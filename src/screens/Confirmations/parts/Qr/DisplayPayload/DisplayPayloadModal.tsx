@@ -6,7 +6,7 @@ import { SubHeader } from 'components/SubHeader';
 import useCheckCamera from 'hooks/common/useCheckCamera';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { QrCode } from 'phosphor-react-native';
-import React, { useMemo, useRef } from 'react';
+import React, { JSX, useMemo, useRef } from 'react';
 import { Platform, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 

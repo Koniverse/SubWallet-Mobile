@@ -1,7 +1,7 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View } from 'react-native';
-import { Book, Lightning } from 'phosphor-react-native';
+import { BookIcon, LightningIcon } from 'phosphor-react-native';
 import { ActivityIndicator, Button, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { toShort } from 'utils/index';
@@ -126,7 +126,7 @@ export const ValidatorSelectorField = ({
               disabled={disabled}
               icon={
                 <Icon
-                  phosphorIcon={Book}
+                  phosphorIcon={BookIcon}
                   size={'sm'}
                   iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
                 />
@@ -140,7 +140,7 @@ export const ValidatorSelectorField = ({
                 disabled={disabled}
                 icon={
                   <Icon
-                    phosphorIcon={Lightning}
+                    phosphorIcon={LightningIcon}
                     size={'sm'}
                     iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
                   />

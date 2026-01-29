@@ -1,5 +1,5 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
-import React, { useMemo } from 'react';
+import React, { JSX, useMemo } from 'react';
 import { toShort } from 'utils/index';
 import { StyleSheet, View } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';

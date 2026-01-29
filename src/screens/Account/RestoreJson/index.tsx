@@ -1,13 +1,12 @@
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { FileArrowDown, Warning, X } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Linking, Platform, ScrollView, View } from 'react-native';
 import { InputFile } from 'components/common/Field/InputFile';
 import type { KeyringPair$Json } from '@subwallet/keyring/types';
 import type { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
-import { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
-import * as RNFS from 'react-native-fs';
+import { DirectoryPickerResponse, DocumentPickerResponse } from '@react-native-documents/picker';
+import * as RNFS from '@dr.pogodin/react-native-fs';
 import { isKeyringPairs$Json } from 'types/typeGuards';
 import { batchRestoreV2, jsonRestoreV2, parseBatchSingleJson, parseInfoSingleJson } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
@@ -25,13 +24,14 @@ import createStyles from './styles';
 import { getButtonIcon } from 'utils/button';
 import { FontMedium } from 'styles/sharedStyles';
 import { useToast } from 'react-native-toast-notifications';
-import { ValidateStatus } from '@subwallet/react-ui/es/form/FormItem';
+import { ValidateStatus } from 'types/form';
 import { AccountProxyExtra } from '@subwallet/extension-base/types';
 import { isValidJsonFile } from 'utils/account/typeGuards';
 import { AppModalContext } from 'providers/AppModalContext';
 import { ImportJsonAccountSelector } from 'screens/Account/RestoreJson/ImportJsonAccountSelector';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { CHANGE_ACCOUNT_NAME_URL } from 'constants/index';
+import { FileArrowDownIcon, XIcon, WarningIcon } from 'phosphor-react-native';
 
 const enum StepState {
   UPLOAD_JSON_FILE = 'upload_json_file',
@@ -115,7 +115,6 @@ export const RestoreJson = () => {
   const [passwordValidateState, setPasswordValidateState] = useState<ValidateState>({});
   const [fileValidating, setFileValidating] = useState(false);
   const [passwordValidating, setPasswordValidating] = useState(false);
-  const [showAllAccountsExistAlert, setShowAllAccountsExistAlert] = useState(false);
   const { show, hideAll } = useToast();
 
   useHandlerHardwareBackPress(submitting);
@@ -137,7 +136,7 @@ export const RestoreJson = () => {
       }
     });
     if (accountProxies.length > 0) {
-      setShowAllAccountsExistAlert(exitedAccount.length === accountProxies.length);
+      setShowNoValidAccountAlert(exitedAccount.length === accountProxies.length);
     }
     if (result.length === 1) {
       setAccountProxiesSelected([result[0].id]);
@@ -146,7 +145,7 @@ export const RestoreJson = () => {
     if (exitedAccount.length) {
       result.push(...exitedAccount);
     }
-    return result.filter(i => i.chainTypes);
+    return result;
   }, [accountProxies]);
 
   const groupBy = useCallback((item: AccountProxyExtra_) => {
@@ -182,15 +181,11 @@ export const RestoreJson = () => {
       setPasswordValidating(true);
 
       const onFail = (e: Error) => {
-        if (e.message.toLowerCase().includes('incorrect password')) {
-          setPasswordValidateState({
-            status: 'error',
-            message: e.message,
-          });
-          focus('password')();
-        } else {
-          setShowNoValidAccountAlert(true);
-        }
+        setPasswordValidateState({
+          status: 'error',
+          message: e.message,
+        });
+        focus('password')();
       };
 
       if (isKeyringPairs$Json(jsonFile)) {
@@ -288,7 +283,7 @@ export const RestoreJson = () => {
       confirmModal.setConfirmModal({
         visible: true,
         title: 'Duplicate account name',
-        customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+        customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
         message: (
           <Typography.Text>
             <Typography.Text>
@@ -375,10 +370,12 @@ export const RestoreJson = () => {
       return;
     }
 
+
+
     setFileValidating(true);
     setFileValidateState({});
-
     if (!fileInfo || !(fileInfo as Array<DocumentPickerResponse>).length) {
+
       return;
     }
 
@@ -395,7 +392,6 @@ export const RestoreJson = () => {
         }
         setAccountProxies([]);
         onChangeValue('file')(res);
-        setShowNoValidAccountAlert(false);
         setPasswordValidateState({});
       })
       .catch((e: Error) => {
@@ -482,8 +478,7 @@ export const RestoreJson = () => {
     return (
       !!fileValidateState.status ||
       (!isRequirePassword(formState.data.file) && passwordValidateState.status !== 'success') ||
-      !formState.data.password ||
-      showNoValidAccountAlert
+      !formState.data.password
     );
   }, [
     stepState,
@@ -493,7 +488,6 @@ export const RestoreJson = () => {
     formState.data.file,
     formState.data.password,
     passwordValidateState.status,
-    showNoValidAccountAlert,
   ]);
 
   const passwordErrors = useMemo(() => {
@@ -511,7 +505,7 @@ export const RestoreJson = () => {
       title={i18n.header.importFromJson}
       onPressBack={_onPressBack}
       disabled={submitting}
-      rightIcon={X}
+      rightIcon={XIcon}
       onPressRightIcon={goHome}
       disableRightButton={submitting}>
       <View style={styles.wrapper}>
@@ -521,7 +515,7 @@ export const RestoreJson = () => {
               ? "Select the account(s) you'd like to import"
               : i18n.importAccount.importJsonSubtitle}
           </Typography.Text>
-          {stepState === StepState.SELECT_ACCOUNT_IMPORT && showAllAccountsExistAlert && (
+          {stepState === StepState.SELECT_ACCOUNT_IMPORT && showNoValidAccountAlert && (
             <AlertBox
               description={'All accounts found in this file already exist in SubWallet'}
               title={'Unable to import'}
@@ -532,16 +526,6 @@ export const RestoreJson = () => {
           {stepState === StepState.UPLOAD_JSON_FILE && (
             <>
               <InputFile disabled={submitting} onChangeResult={_onChangeFile} fileName={formState.data.fileName} />
-
-              {showNoValidAccountAlert && (
-                <View style={styles.error}>
-                  <AlertBox
-                    description={'All accounts found in this file are invalid. Import another JSON file and try again'}
-                    title={'Unable to import'}
-                    type={'error'}
-                  />
-                </View>
-              )}
 
               {fileValidateState && fileValidateState.message && fileValidateState.status === 'error' && (
                 <WarningComponent
@@ -589,7 +573,7 @@ export const RestoreJson = () => {
         <View style={styles.footer}>
           <Button
             loading={fileValidating || passwordValidating || submitting}
-            icon={getButtonIcon(FileArrowDown)}
+            icon={getButtonIcon(FileArrowDownIcon)}
             onPress={onPressSubmit(onPressSubmitButton)}
             disabled={disableSubmit || submitting || passwordValidating || !!passwordErrors.length}>
             {i18n.buttonTitles.importByJsonFile}
@@ -617,7 +601,7 @@ export const RestoreJson = () => {
         modalTitle={'Pay attention'}
         titleTextAlign={'center'}>
         <View style={{ paddingVertical: theme.padding, alignItems: 'center', gap: theme.padding }}>
-          <PageIcon icon={Warning} color={theme.colorWarning} />
+          <PageIcon icon={WarningIcon} color={theme.colorWarning} />
 
           <Typography.Text
             style={{

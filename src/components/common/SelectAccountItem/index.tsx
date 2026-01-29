@@ -4,18 +4,18 @@ import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontSemiBold } from 'styles/sharedStyles';
 import {
-  CheckCircle,
-  Copy,
-  Eye,
-  GitCommit,
-  GitMerge,
+  CheckCircleIcon,
+  CopyIcon,
+  EyeIcon,
+  GitCommitIcon,
+  GitMergeIcon,
   IconProps,
-  Needle,
-  PencilSimpleLine,
-  QrCode,
-  Question,
-  Strategy,
-  Swatches,
+  NeedleIcon,
+  PencilSimpleLineIcon,
+  QrCodeIcon,
+  QuestionIcon,
+  StrategyIcon,
+  SwatchesIcon,
 } from 'phosphor-react-native';
 import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { PhosphorIcon } from 'utils/campaign';
@@ -73,7 +73,7 @@ export const SelectAccountItem = ({
   const accountProxyTypeIconProps = ((): AccountProxyTypeIcon | null => {
     if (accountProxy.accountType === AccountProxyType.UNIFIED) {
       return {
-        value: Strategy,
+        value: StrategyIcon,
         iconColor: theme.colorSuccess,
         weight: 'fill',
       };
@@ -81,7 +81,7 @@ export const SelectAccountItem = ({
 
     if (accountProxy.accountType === AccountProxyType.SOLO) {
       return {
-        value: GitCommit,
+        value: GitCommitIcon,
         iconColor: theme['blue-9'],
         weight: 'fill',
       };
@@ -89,7 +89,7 @@ export const SelectAccountItem = ({
 
     if (accountProxy.accountType === AccountProxyType.QR) {
       return {
-        value: QrCode,
+        value: QrCodeIcon,
         iconColor: theme.colorWhite,
         weight: 'fill',
       };
@@ -97,7 +97,7 @@ export const SelectAccountItem = ({
 
     if (accountProxy.accountType === AccountProxyType.READ_ONLY) {
       return {
-        value: Eye,
+        value: EyeIcon,
         iconColor: theme.colorWhite,
         weight: 'fill',
       };
@@ -105,7 +105,7 @@ export const SelectAccountItem = ({
 
     if (accountProxy.accountType === AccountProxyType.LEDGER) {
       return {
-        value: Swatches,
+        value: SwatchesIcon,
         iconColor: theme.colorWhite,
         weight: 'fill',
       };
@@ -113,7 +113,7 @@ export const SelectAccountItem = ({
 
     if (accountProxy.accountType === AccountProxyType.INJECTED) {
       return {
-        value: Needle,
+        value: NeedleIcon,
         iconColor: theme.colorWhite,
         weight: 'fill',
       };
@@ -121,7 +121,7 @@ export const SelectAccountItem = ({
 
     if (accountProxy.accountType === AccountProxyType.UNKNOWN) {
       return {
-        value: Question,
+        value: QuestionIcon,
         iconColor: theme.colorWhite,
         weight: 'fill',
       };
@@ -170,7 +170,7 @@ export const SelectAccountItem = ({
             <View style={{ height: 20, alignItems: 'center', flexDirection: 'row' }}>
               {showDerivedPath && !!accountProxy.parentId ? (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Icon phosphorIcon={GitMerge} weight={'fill'} size={'xxs'} iconColor={theme.colorTextLight4} />
+                  <Icon phosphorIcon={GitMergeIcon} weight={'fill'} size={'xxs'} iconColor={theme.colorTextLight4} />
                   <Typography.Text
                     size={'sm'}
                     style={{ color: theme.colorTextTertiary, marginTop: -(theme.marginXXS - 2) }}>
@@ -190,7 +190,7 @@ export const SelectAccountItem = ({
       <View style={styles.rightArea}>
         {!isShowMultiCheck && isSelected && (
           <View style={{ paddingHorizontal: theme.paddingSM - 2 }}>
-            <Icon phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} size={'sm'} weight={'fill'} />
+            <Icon phosphorIcon={CheckCircleIcon} iconColor={theme.colorSuccess} size={'sm'} weight={'fill'} />
           </View>
         )}
 
@@ -202,7 +202,7 @@ export const SelectAccountItem = ({
 
         {!isAllAccount && isShowCopyBtn && (
           <Button
-            icon={<Icon phosphorIcon={Copy} size="sm" iconColor={theme['gray-5']} />}
+            icon={<Icon phosphorIcon={CopyIcon} size="sm" iconColor={theme['gray-5']} />}
             onPress={_onPressCopyButton}
             size="xs"
             type="ghost"
@@ -212,7 +212,7 @@ export const SelectAccountItem = ({
           <Button
             type={'ghost'}
             size={'xs'}
-            icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />}
+            icon={<Icon phosphorIcon={PencilSimpleLineIcon} size={'sm'} iconColor={theme['gray-5']} />}
             onPress={onPressDetailBtn}
           />
         )}
@@ -220,7 +220,7 @@ export const SelectAccountItem = ({
         {isShowMultiCheck && (
           <View style={{ paddingHorizontal: theme.paddingSM }}>
             <Icon
-              phosphorIcon={CheckCircle}
+              phosphorIcon={CheckCircleIcon}
               iconColor={isSelected ? theme.colorSuccess : theme['gray-5']}
               size={'sm'}
               weight={'fill'}

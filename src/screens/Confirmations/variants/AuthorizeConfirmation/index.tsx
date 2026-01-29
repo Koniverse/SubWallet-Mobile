@@ -14,7 +14,7 @@ import {
 } from 'constants/index';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { PlusCircle, ShieldSlash, XCircle } from 'phosphor-react-native';
+import { PlusCircleIcon, ShieldSlashIcon, XCircleIcon } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { DeviceEventEmitter, Platform, Text, View } from 'react-native';
 import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from 'messaging/index';
@@ -250,7 +250,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
       <ConfirmationFooter>
         {visibleAccountProxies.length > 0 ? (
           <>
-            <Button icon={<Icon phosphorIcon={ShieldSlash} weight="fill" />} type="danger" onPress={onBlock} />
+            <Button icon={<Icon phosphorIcon={ShieldSlashIcon} weight="fill" />} type="danger" onPress={onBlock} />
             <Button block={true} type="secondary" onPress={onCancel}>
               {i18n.common.cancel}
             </Button>
@@ -261,7 +261,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
         ) : (
           <>
             <Button
-              icon={<Icon phosphorIcon={XCircle} weight="fill" />}
+              icon={<Icon phosphorIcon={XCircleIcon} weight="fill" />}
               block={true}
               type="secondary"
               onPress={onCancel}>
@@ -273,7 +273,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
                 Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
                 onPressCreateOne(onAddAccount)();
               }}
-              icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
+              icon={<Icon phosphorIcon={PlusCircleIcon} weight="fill" />}>
               {i18n.buttonTitles.createOne}
             </Button>
           </>

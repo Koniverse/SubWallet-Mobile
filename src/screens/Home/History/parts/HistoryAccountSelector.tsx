@@ -4,7 +4,7 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
 import { toShort } from 'utils/index';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import Typography from 'components/design-system-ui/typography';
 import { AccountAddressItemType } from 'types/account';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
@@ -49,7 +49,7 @@ export const HistoryAccountSelector = ({ items, value, onSelectItem, disabled, s
         </View>
 
         <View>
-          <CaretDown size={12} color={theme['gray-5']} weight={'bold'} />
+          <CaretDownIcon size={12} color={theme['gray-5']} weight={'bold'} />
         </View>
       </View>
     );

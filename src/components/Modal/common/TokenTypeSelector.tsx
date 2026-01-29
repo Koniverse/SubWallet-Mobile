@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { AssetTypeOption } from 'types/asset';
 import i18n from 'utils/i18n/i18n';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { SelectItem } from 'components/design-system-ui';
-import { Coin } from 'phosphor-react-native';
+import { CoinIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ModalRef } from 'types/modalRef';
 
@@ -40,7 +40,7 @@ export const TokenTypeSelector = ({
       renderCustomItem={item => (
         <SelectItem
           onPress={() => onSelectItem(item)}
-          icon={Coin}
+          icon={CoinIcon}
           key={item.value}
           label={item.label}
           isSelected={selectedValueMap[item.value]}

@@ -7,7 +7,7 @@ import { Keyboard, StyleSheet, View } from 'react-native';
 import { StakingPoolItem } from 'components/common/StakingPoolItem';
 import { PoolSelectorField } from 'components/Field/PoolSelector';
 import { PoolSelectorDetailModal } from 'components/Modal/common/PoolSelectorDetailModal';
-import { MagnifyingGlass, SortAscending, ThumbsUp } from 'phosphor-react-native';
+import { MagnifyingGlassIcon, SortAscendingIcon, ThumbsUpIcon } from 'phosphor-react-native';
 import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import BigN from 'bignumber.js';
@@ -202,7 +202,7 @@ export const EarningPoolSelector = forwardRef(
                 {`${item.split('|')[1]}`}
               </Typography.Text>
               {item.includes('recommended') && (
-                <Icon phosphorIcon={ThumbsUp} iconColor={theme['cyan-6']} size={'xs'} weight={'fill'} />
+                <Icon phosphorIcon={ThumbsUpIcon} iconColor={theme['cyan-6']} size={'xs'} weight={'fill'} />
               )}
             </View>
           );
@@ -312,7 +312,7 @@ export const EarningPoolSelector = forwardRef(
         <EmptyValidator
           title={i18n.emptyScreen.selectorEmptyTitle}
           message={i18n.emptyScreen.selectorEmptyMessage}
-          icon={MagnifyingGlass}
+          icon={MagnifyingGlassIcon}
           validatorTitle={getValidatorLabel(chain).toLowerCase()}
           isDataEmpty={items.length === 0}
           onClickReload={setForceFetchValidator}
@@ -414,7 +414,7 @@ export const EarningPoolSelector = forwardRef(
       () => ({
         icon: () => (
           <DotBadge dot={sortSelection !== EarningPoolSelectorSortKey.DEFAULT}>
-            <Icon phosphorIcon={SortAscending} size="md" />
+            <Icon phosphorIcon={SortAscendingIcon} size="md" />
           </DotBadge>
         ),
         onPress: () => sortingModalRef?.current?.onOpenModal(),

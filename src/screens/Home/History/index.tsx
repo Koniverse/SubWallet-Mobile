@@ -1,18 +1,18 @@
 import { HistoryDetailModal } from './Detail';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Aperture,
-  ArrowDownLeft,
-  ArrowsLeftRight,
-  ArrowUpRight,
-  ClockCounterClockwise,
-  Database,
-  FadersHorizontal,
+  ApertureIcon,
+  ArrowDownLeftIcon,
+  ArrowsLeftRightIcon,
+  ArrowUpRightIcon,
+  ClockCounterClockwiseIcon,
+  DatabaseIcon,
+  FadersHorizontalIcon,
   IconProps,
-  ListBullets,
-  Rocket,
-  Spinner,
-  Pencil,
+  ListBulletsIcon,
+  RocketIcon,
+  SpinnerIcon,
+  PencilIcon,
 } from 'phosphor-react-native';
 import {
   ExtrinsicStatus,
@@ -60,16 +60,16 @@ type Props = {};
 
 let IconMap: Record<string, React.ElementType<IconProps>>;
 IconMap = {
-  send: ArrowUpRight,
-  receive: ArrowDownLeft,
-  claim_reward: ClockCounterClockwise,
-  staking: Database,
-  crowdloan: Rocket,
-  nft: Aperture,
-  processing: Spinner,
-  swap: ArrowsLeftRight,
-  nominate: Pencil,
-  default: ClockCounterClockwise,
+  send: ArrowUpRightIcon,
+  receive: ArrowDownLeftIcon,
+  claim_reward: ClockCounterClockwiseIcon,
+  staking: DatabaseIcon,
+  crowdloan: RocketIcon,
+  nft: ApertureIcon,
+  processing: SpinnerIcon,
+  swap: ArrowsLeftRightIcon,
+  nominate: PencilIcon,
+  default: ClockCounterClockwiseIcon,
 };
 
 function quickFormatAddressToCompare(address?: string) {
@@ -321,8 +321,8 @@ function History({
       return accMap;
     }, {} as Record<string, string>);
   }, [accounts]);
-  const accountSelectorRef = useRef<ModalRef>();
-  const chainSelectorRef = useRef<ModalRef>();
+  const accountSelectorRef = useRef<ModalRef | null>(null);
+  const chainSelectorRef = useRef<ModalRef | null>(null);
   const FILTER_OPTIONS = [
     { label: i18n.filterOptions.sendToken, value: FilterValue.SEND },
     { label: i18n.filterOptions.receiveToken, value: FilterValue.RECEIVED },
@@ -543,7 +543,7 @@ function History({
   const emptyList = useCallback(() => {
     return (
       <EmptyList
-        icon={ListBullets}
+        icon={ListBulletsIcon}
         title={i18n.emptyScreen.historyEmptyTitle}
         message={i18n.emptyScreen.historyEmptyMessage}
       />
@@ -650,7 +650,7 @@ function History({
         title={i18n.header.history}
         titleTextAlign={'center'}
         showRightBtn={true}
-        rightIcon={FadersHorizontal}
+        rightIcon={FadersHorizontalIcon}
         onPressRightIcon={() => {
           Keyboard.dismiss();
           delayActionAfterDismissKeyboard(() => openFilterModal());

@@ -3,7 +3,7 @@ import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { Book, Lightning } from 'phosphor-react-native';
+import { BookIcon, LightningIcon } from 'phosphor-react-native';
 import { ActivityIndicator, Avatar, Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { toShort } from 'utils/index';
@@ -87,7 +87,7 @@ export const PoolSelectorField = ({
               type={'ghost'}
               icon={
                 <Icon
-                  phosphorIcon={Book}
+                  phosphorIcon={BookIcon}
                   size={'sm'}
                   iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
                 />
@@ -101,7 +101,7 @@ export const PoolSelectorField = ({
                 type={'ghost'}
                 icon={
                   <Icon
-                    phosphorIcon={Lightning}
+                    phosphorIcon={LightningIcon}
                     size={'sm'}
                     iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
                   />

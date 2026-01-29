@@ -13,7 +13,7 @@ import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { Button, Image } from 'components/design-system-ui';
 import env from 'react-native-config';
 import { ToggleItem } from 'components/ToggleItem';
-import { Bug } from 'phosphor-react-native';
+import { BugIcon } from 'phosphor-react-native';
 import {
   updateBannerHistoryData,
   updateConfirmationHistoryData,
@@ -68,7 +68,7 @@ export const WebViewDebugger = () => {
 
   const useDefaultWebRunner = () => {
     setInput('');
-    mmkvStore.delete('__development_web_runner_url__');
+    mmkvStore.remove('__development_web_runner_url__');
 
     setNotification("OK, Let's restart app!");
   };
@@ -134,7 +134,7 @@ export const WebViewDebugger = () => {
             isEnabled={devModeStatus}
             label={i18n.common.devMode}
             onValueChange={onValueChange}
-            backgroundIcon={Bug}
+            backgroundIcon={BugIcon}
           />
           <Button
             style={{ marginBottom: 5 }}

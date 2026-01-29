@@ -23,5 +23,5 @@ export const getOsVersion = (): string | number => {
 };
 
 export const removeStorage = (key: string) => {
-  mmkvStore.delete(key);
+  mmkvStore.remove(key);
 };

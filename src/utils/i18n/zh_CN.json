@@ -697,9 +697,7 @@
     "xcmTransferWarningTitle": "Pay attention!",
     "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
     "generalTermWarning": "请选中“我理解并同意本协议的条款，该条款适用于我对 SubWallet 及其所有功能的使用”框以继续",
-    "masterPasswordWarning": "请选中“我了解 SubWallet 无法为我恢复此密码”框以继续",
-    "validatorChangeFeeInfo": "A fee equivalent of {0} TAO will be deducted from your stake amount on the new validator once the transaction is complete",
-    "validatorChangeFeeTitle": "Validator change fee"
+    "masterPasswordWarning": "请选中“我了解 SubWallet 无法为我恢复此密码”框以继续"
   },
   "filterOptions": {
     "polkadotParachain": "Polkadot平行链",
@@ -986,8 +984,7 @@
       "fromAccount": "从账户",
       "transactionFail": "输",
       "estimatedReceivables": " Estimated receivables",
-      "minimumReceivables": "Minimum receivables",
-      "submittedTime": "Submitted time"
+      "minimumReceivables": "Minimum receivables"
     },
     "title": {
       "transaction": "交易",
@@ -1338,13 +1335,5 @@
   "notification": {
     "markAsRead": "Mark as read",
     "markAsUnread": "Mark as unread"
-  },
-  "toast": {
-    "canOnlyChooseOneDapp": "You can only choose {0} dApp",
-    "canOnlyChooseOneCollator": "You can only choose {0} collator",
-    "canOnlyChooseOneValidator": "You can only choose {0} validator",
-    "canOnlyChooseNumberDapps": "You can only choose {0} dApps",
-    "canOnlyChooseNumberCollators": "You can only choose {0} collators",
-    "canOnlyChooseNumberValidators": "You can only choose {0} validators"
   }
 }

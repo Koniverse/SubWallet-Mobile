@@ -3,7 +3,7 @@ import { ScrollView, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { BackgroundIcon, Icon, SelectItem } from 'components/design-system-ui';
-import { CaretRight, CornersOut, Icon as IconType, Strategy } from 'phosphor-react-native';
+import { CaretRightIcon, CornersOutIcon, Icon as IconType, StrategyIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
@@ -35,17 +35,17 @@ const AccountSettings = () => {
   const accountSettingList: SettingItemType[] = [
     {
       key: 'migrate-account',
-      leftIcon: Strategy,
+      leftIcon: StrategyIcon,
       title: 'Migrate to unified account',
-      rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+      rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
       onPress: onPressMigrate,
       leftIconBgColor: '#004BFF',
     },
     {
       key: 'split-account',
-      leftIcon: CornersOut,
+      leftIcon: CornersOutIcon,
       title: 'Split unified account',
-      rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+      rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
       onPress: onPressSplit,
       leftIconBgColor: '#d84a1b',
     },

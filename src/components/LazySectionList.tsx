@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
 import { RefreshControlProps, View } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
@@ -51,7 +51,7 @@ export function LazySectionList<T>({
   extraData,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
-  const sectionListRef = useRef<FlashList<string | T>>(null);
+  const sectionListRef = useRef<typeof FlashList<string | T>>(null);
   const [sections, setSections] = useState<SectionItem<T>[]>([]);
   const sectionData = useMemo(() => {
     const result: (string | T)[] = [];

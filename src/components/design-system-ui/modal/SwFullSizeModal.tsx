@@ -10,7 +10,7 @@ import { deviceHeight } from 'constants/index';
 interface Props {
   children: React.ReactNode;
   modalVisible: boolean;
-  modalBaseV2Ref: React.RefObject<SWModalRefProps>;
+  modalBaseV2Ref: React.RefObject<SWModalRefProps | null>;
   onChangeModalVisible?: () => void;
   modalStyle?: object;
   animationIn?: ModalProps['animationIn'];

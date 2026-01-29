@@ -1,0 +1,12 @@
+diff --git a/node_modules/tiny-secp256k1/lib/wasm_loader.browser.js b/node_modules/tiny-secp256k1/lib/wasm_loader.browser.js
+index bf36a0e..818be6e 100644
+--- a/node_modules/tiny-secp256k1/lib/wasm_loader.browser.js
++++ b/node_modules/tiny-secp256k1/lib/wasm_loader.browser.js
+@@ -1,5 +1,5 @@
+ // Suppress TS2792: Cannot find module './secp256k1.wasm'.
+ // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ // @ts-ignore
+-import * as wasm from "./secp256k1.wasm";
++import * as wasm from "@bitcoinerlab/secp256k1";
+ export default wasm;
+\ No newline at end of file

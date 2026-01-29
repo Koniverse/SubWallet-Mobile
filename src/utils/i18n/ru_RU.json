@@ -697,9 +697,7 @@
     "xcmTransferWarningTitle": "Pay attention!",
     "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
     "generalTermWarning": "Make sure to tick the checkbox \"I understand and agree to the Terms of Use, which apply to my use of SubWallet and all of its feature\" to be able to click Continue",
-    "masterPasswordWarning": "Make sure to tick the checkbox \"I understand that SubWallet can\\'t recover the password for me\" to be able to click Continue",
-    "validatorChangeFeeInfo": "A fee equivalent of {0} TAO will be deducted from your stake amount on the new validator once the transaction is complete",
-    "validatorChangeFeeTitle": "Validator change fee"
+    "masterPasswordWarning": "Make sure to tick the checkbox \"I understand that SubWallet can\\'t recover the password for me\" to be able to click Continue"
   },
   "filterOptions": {
     "polkadotParachain": "Polkadot парачейн",
@@ -986,8 +984,7 @@
       "fromAccount": "С аккаунта",
       "transactionFail": " fail",
       "estimatedReceivables": " Estimated receivables",
-      "minimumReceivables": "Minimum receivables",
-      "submittedTime": "Submitted time"
+      "minimumReceivables": "Minimum receivables"
     },
     "title": {
       "transaction": "Транзакция",
@@ -1338,13 +1335,5 @@
   "notification": {
     "markAsRead": "Mark as read",
     "markAsUnread": "Mark as unread"
-  },
-  "toast": {
-    "canOnlyChooseOneDapp": "You can only choose {0} dApp",
-    "canOnlyChooseOneCollator": "You can only choose {0} collator",
-    "canOnlyChooseOneValidator": "You can only choose {0} validator",
-    "canOnlyChooseNumberDapps": "You can only choose {0} dApps",
-    "canOnlyChooseNumberCollators": "You can only choose {0} collators",
-    "canOnlyChooseNumberValidators": "You can only choose {0} validators"
   }
 }

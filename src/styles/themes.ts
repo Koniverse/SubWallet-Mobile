@@ -50,6 +50,24 @@ export const THEME_PRESET: Record<string, SWTheme> = {
       background2: '#222',
     },
     swThemes,
+    fonts: {
+      regular: {
+        fontFamily: '',
+        fontWeight: '500',
+      },
+      medium: {
+        fontFamily: '',
+        fontWeight: '500',
+      },
+      bold: {
+        fontFamily: '',
+        fontWeight: '500',
+      },
+      heavy: {
+        fontFamily: '',
+        fontWeight: '500',
+      },
+    },
   },
   light: {
     dark: false,
@@ -74,5 +92,23 @@ export const THEME_PRESET: Record<string, SWTheme> = {
       background2: '#222',
     },
     swThemes,
+    fonts: {
+      regular: {
+        fontFamily: '',
+        fontWeight: '500',
+      },
+      medium: {
+        fontFamily: '',
+        fontWeight: '500',
+      },
+      bold: {
+        fontFamily: '',
+        fontWeight: '500',
+      },
+      heavy: {
+        fontFamily: '',
+        fontWeight: '500',
+      },
+    },
   },
 };

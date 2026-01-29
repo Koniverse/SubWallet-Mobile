@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-nativ
 import { TokenBalanceItemType } from 'types/balance';
 import { BN_ZERO } from 'utils/chainBalances';
 import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
-import { DotsThree } from 'phosphor-react-native';
+import { DotsThreeIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TokenBalanceItemStyles from './style';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
@@ -92,7 +92,7 @@ export const TokenBalanceItem = ({
             )}
           </View>
           <View style={_style.iconWrapper}>
-            <Icon type="phosphor" weight={'bold'} phosphorIcon={DotsThree} size={'sm'} iconColor={theme['gray-5']} />
+            <Icon type="phosphor" weight={'bold'} phosphorIcon={DotsThreeIcon} size={'sm'} iconColor={theme['gray-5']} />
           </View>
         </View>
       </View>

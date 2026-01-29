@@ -2,7 +2,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountChainType, AccountProxy } from '@subwallet/extension-base/types';
 import { VoidFunction } from 'types/index';
 import { Icon, Typography } from 'components/design-system-ui';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
@@ -43,7 +43,7 @@ export const AccountProxyItem = (props: Props) => {
   const checkedIconNode = (showUnselectIcon || isSelected) && (
     <Icon
       iconColor={isSelected ? theme.colorSuccess : theme.colorTextLight4}
-      phosphorIcon={CheckCircle}
+      phosphorIcon={CheckCircleIcon}
       size={'sm'}
       weight={'fill'}
     />

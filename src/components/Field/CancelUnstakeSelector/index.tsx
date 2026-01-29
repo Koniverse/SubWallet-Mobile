@@ -3,7 +3,7 @@ import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
-import { CaretDown, CheckCircle, Spinner } from 'phosphor-react-native';
+import { CaretDownIcon, CheckCircleIcon, SpinnerIcon } from 'phosphor-react-native';
 import { ActivityIndicator, Icon, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
@@ -53,7 +53,7 @@ export const CancelUnstakeSelectorField = ({
           <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
             <Icon
               iconColor={item.status === UnstakingStatus.CLAIMABLE ? theme.colorSuccess : theme.colorWarning}
-              phosphorIcon={item.status === UnstakingStatus.CLAIMABLE ? CheckCircle : Spinner}
+              phosphorIcon={item.status === UnstakingStatus.CLAIMABLE ? CheckCircleIcon : SpinnerIcon}
               size="sm"
               weight="fill"
             />
@@ -74,7 +74,7 @@ export const CancelUnstakeSelectorField = ({
             <ActivityIndicator size={20} indicatorColor={theme.colorWhite} />
           </View>
         ) : (
-          <Icon phosphorIcon={CaretDown} size={'sm'} iconColor={theme.colorWhite} />
+          <Icon phosphorIcon={CaretDownIcon} size={'sm'} iconColor={theme.colorWhite} />
         )}
       </View>
     </FieldBase>

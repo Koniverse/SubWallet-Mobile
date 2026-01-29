@@ -4,7 +4,7 @@ import { Button, Icon, SwFullSizeModal, Tag, Typography } from 'components/desig
 import AlertBoxBase from 'components/design-system-ui/alert-box/base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { earlyValidateJoin } from 'messaging/index';
-import { CaretDown, PlusCircle, X } from 'phosphor-react-native';
+import { CaretDownIcon, PlusCircleIcon, XIcon } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
@@ -28,10 +28,10 @@ import { FontSemiBold } from 'styles/sharedStyles';
 import { mmkvStore } from 'utils/storage';
 import { noop } from 'utils/function';
 import { EARNING_POOL_DETAIL_DATA } from 'constants/earning/EarningDataRaw';
-import { useGetEarningPoolDetailModalData } from 'hooks/earning/useGetEarningPoolDetailModalData';
 import { isAccountAll } from 'utils/accountAll';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { _isChainInfoCompatibleWithAccountInfo } from '@subwallet/extension-base/services/chain-service/utils';
+import useGetEarningPoolDetailModalData from 'hooks/earning/useGetEarningPoolDetailModalData';
 
 interface Props {
   slug: string;
@@ -433,7 +433,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
               <Button
                 type={'ghost'}
                 size={'xs'}
-                icon={<Icon phosphorIcon={X} weight={'bold'} size={'md'} iconColor={theme.colorWhite} />}
+                icon={<Icon phosphorIcon={XIcon} weight={'bold'} size={'md'} iconColor={theme.colorWhite} />}
                 onPress={onGoBack}
               />
             </View>
@@ -516,7 +516,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             {showScrollEnd && !isScrollEnd && (
               <Button
                 size="xs"
-                icon={<Icon phosphorIcon={CaretDown} />}
+                icon={<Icon phosphorIcon={CaretDownIcon} />}
                 style={styles.scrollButton}
                 type="primary"
                 shape="circle"
@@ -528,7 +528,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             <Button
               icon={
                 <Icon
-                  phosphorIcon={PlusCircle}
+                  phosphorIcon={PlusCircleIcon}
                   weight="fill"
                   iconColor={isScrollEnd || !showScrollEnd ? theme.colorWhite : theme.colorTextLight5}
                 />
@@ -545,7 +545,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
             <Button
               icon={
                 <Icon
-                  phosphorIcon={PlusCircle}
+                  phosphorIcon={PlusCircleIcon}
                   weight="fill"
                   iconColor={isScrollEnd || !showScrollEnd ? theme.colorWhite : theme.colorTextLight5}
                 />

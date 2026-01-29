@@ -12,7 +12,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { UseControllerReturn } from 'react-hook-form/dist/types';
 import { editContactAddress } from 'messaging/index';
 import { InputAddress } from 'components/Input/InputAddress';
-import { PlusCircle } from 'phosphor-react-native';
+import { PlusCircleIcon } from 'phosphor-react-native';
 import { useToast } from 'react-native-toast-notifications';
 import createStylesheet from './style/AddContactModal';
 import { TextInputProps } from 'react-native/Libraries/Components/TextInput/TextInput';
@@ -54,7 +54,7 @@ const addressValidator: UseControllerProps<FormValues>['rules'] = {
 };
 
 const ButtonIcon = (color: string) => {
-  return <Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} iconColor={color} />;
+  return <Icon phosphorIcon={PlusCircleIcon} size={'lg'} weight={'fill'} iconColor={color} />;
 };
 
 export const AddContactModal = ({ modalVisible, setModalVisible }: Props) => {

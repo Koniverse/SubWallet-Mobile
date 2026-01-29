@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { getTokenLogo } from 'utils/index';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import { Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -58,7 +58,7 @@ export const SwapTokenSelectField = ({
           </Typography.Text>
         )}
 
-        {!!showIcon && <Icon phosphorIcon={CaretDown} size={'xs'} iconColor={theme['gray-5']} weight={'bold'} />}
+        {!!showIcon && <Icon phosphorIcon={CaretDownIcon} size={'xs'} iconColor={theme['gray-5']} weight={'bold'} />}
       </View>
     </FieldBase>
   );

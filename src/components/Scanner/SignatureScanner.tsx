@@ -82,12 +82,12 @@ const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
       onBackButtonPress={onHideModal}>
       <SafeAreaView style={[ScannerStyles.SafeAreaStyle, { backgroundColor: theme.colorBgSecondary }]} />
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={theme.colorBgSecondary} translucent={true} />
-      <QrCodeScanner
-        onPressCancel={onHideModal}
-        onPressLibraryBtn={onPressLibraryBtn}
-        onSuccess={handleRead}
-        error={error}
-      />
+      {/*<QrCodeScanner*/}
+      {/*  onPressCancel={onHideModal}*/}
+      {/*  onPressLibraryBtn={onPressLibraryBtn}*/}
+      {/*  onSuccess={handleRead}*/}
+      {/*  error={error}*/}
+      {/*/>*/}
     </ModalBase>
   );
 };

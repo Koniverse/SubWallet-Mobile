@@ -4,7 +4,7 @@ import { Keyboard } from 'react-native';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 export function useFilterModal(defaultSelectionMap?: Record<string, boolean>) {
-  const filterModalRef = useRef<ModalRef>();
+  const filterModalRef = useRef<ModalRef>(null);
   const defaultSelectedFilter = defaultSelectionMap
     ? Object.keys(defaultSelectionMap).filter(o => defaultSelectionMap[o])
     : undefined;

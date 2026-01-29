@@ -1,12 +1,12 @@
 import {
-  CheckCircle,
-  ClockCounterClockwise,
-  PaperPlaneTilt,
-  ProhibitInset,
-  Queue,
-  Record,
-  Spinner,
-  StopCircle,
+  CheckCircleIcon,
+  ClockCounterClockwiseIcon,
+  PaperPlaneTiltIcon,
+  ProhibitInsetIcon,
+  QueueIcon,
+  RecordIcon,
+  SpinnerIcon,
+  StopCircleIcon,
 } from 'phosphor-react-native';
 import { ExtrinsicStatus, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
@@ -80,49 +80,49 @@ export const TxTypeTitleMap: Record<string, string> = {
 export const HistoryStatusMap = (): Record<string, StatusType> => ({
   [ExtrinsicStatus.SUCCESS]: {
     schema: 'success',
-    icon: CheckCircle,
+    icon: CheckCircleIcon,
     name: i18n.historyScreen.extrinsicStatus.completed,
     color: 'colorSuccess',
   },
   [ExtrinsicStatus.FAIL]: {
     schema: 'danger',
-    icon: ProhibitInset,
+    icon: ProhibitInsetIcon,
     name: i18n.historyScreen.extrinsicStatus.failed,
     color: 'colorError',
   },
   [ExtrinsicStatus.QUEUED]: {
     schema: 'light',
-    icon: Queue,
+    icon: QueueIcon,
     name: i18n.historyScreen.extrinsicStatus.queued,
     color: 'gray-6',
   },
   [ExtrinsicStatus.SUBMITTING]: {
     schema: 'gold',
-    icon: PaperPlaneTilt,
+    icon: PaperPlaneTiltIcon,
     name: i18n.historyScreen.extrinsicStatus.submitting,
     color: 'gold-6',
   },
   [ExtrinsicStatus.PROCESSING]: {
     schema: 'gold',
-    icon: Spinner,
+    icon: SpinnerIcon,
     name: i18n.historyScreen.extrinsicStatus.processing,
     color: 'gold-6',
   },
   [ExtrinsicStatus.CANCELLED]: {
     schema: 'gray',
-    icon: StopCircle,
+    icon: StopCircleIcon,
     name: i18n.historyScreen.extrinsicStatus.cancelled,
     color: 'gray-3',
   },
   [ExtrinsicStatus.UNKNOWN]: {
     schema: 'danger',
-    icon: StopCircle,
+    icon: StopCircleIcon,
     name: i18n.historyScreen.extrinsicStatus.unknown,
     color: 'gray-6',
   },
   [ExtrinsicStatus.TIMEOUT]: {
     schema: 'gold',
-    icon: ClockCounterClockwise,
+    icon: ClockCounterClockwiseIcon,
     name: i18n.historyScreen.extrinsicStatus.timeout,
     color: 'gold-6',
   },

@@ -4,7 +4,7 @@ import { VoidFunction } from 'types/index';
 import Web3Block from '../../design-system-ui/web3-block/Web3Block';
 import { Icon, Logo, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { StyleSheet, View } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -38,7 +38,7 @@ export const TonWalletContractItem = ({ version, address, isSelected, chainSlug,
       }
       rightItem={
         <>
-          {isSelected && <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />}
+          {isSelected && <Icon phosphorIcon={CheckCircleIcon} size="sm" iconColor={theme.colorSecondary} weight="fill" />}
         </>
       }
       onPress={onPress}

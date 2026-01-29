@@ -57,7 +57,6 @@ export interface NominationPoolDataType extends NominationPoolInfo {
 export interface ValidatorDataType extends ValidatorInfo {
   symbol: string;
   decimals: number;
-  isMissingInfo?: boolean;
 }
 
 export type PoolTargetData = NominationPoolDataType | ValidatorDataType;

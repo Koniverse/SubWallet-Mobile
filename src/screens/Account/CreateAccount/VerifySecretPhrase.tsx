@@ -5,16 +5,16 @@ import Text from 'components/Text';
 import { SeedWord } from 'components/SeedWord';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
-import { getWordKey, SeedPhraseArea, SelectedWordType } from 'components/SeedPhraseArea';
 import { shuffleArray } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon } from 'components/design-system-ui';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import { AccountNameModal } from 'components/Modal/AccountNameModal';
 import { AccountProxyType, MnemonicType } from '@subwallet/extension-base/types';
+import { getWordKey, SeedPhraseArea, SelectedWordType } from 'components/SeedPhraseArea';
 
 interface Props {
   onPressSubmit: (name: string) => void;
@@ -140,7 +140,7 @@ export const VerifySecretPhrase = ({
   const { onPress: onSubmit } = useUnlockModal(navigation);
 
   const getCreateAccBtn = (color: string) => {
-    return <Icon phosphorIcon={CheckCircle} size={'lg'} iconColor={color} weight={'fill'} />;
+    return <Icon phosphorIcon={CheckCircleIcon} size={'lg'} iconColor={color} weight={'fill'} />;
   };
 
   const onPressFinish = useCallback(() => {

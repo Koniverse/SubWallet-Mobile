@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import i18n from 'utils/i18n/i18n';
-import { FadersHorizontal, MagnifyingGlass } from 'phosphor-react-native';
+import { FadersHorizontalIcon, MagnifyingGlassIcon } from 'phosphor-react-native';
 import { OptionType } from 'components/common/FilterModal/index';
 import { Button, Icon, SwFullSizeModal } from 'components/design-system-ui';
 import { ScrollView, TextInput, View } from 'react-native';
@@ -125,7 +125,7 @@ function _FullSizeFilterModal(
             ) : (
               <View style={{ flex: 1 }}>
                 <EmptyList
-                  icon={MagnifyingGlass}
+                  icon={MagnifyingGlassIcon}
                   title={'No results found'}
                   message={'Change your search criteria and try again'}
                 />
@@ -146,7 +146,7 @@ function _FullSizeFilterModal(
               disabled={applyBtnDisabled}
               icon={
                 <Icon
-                  phosphorIcon={FadersHorizontal}
+                  phosphorIcon={FadersHorizontalIcon}
                   size={'lg'}
                   weight={'fill'}
                   iconColor={applyBtnDisabled ? theme.colorTextLight5 : theme.colorWhite}

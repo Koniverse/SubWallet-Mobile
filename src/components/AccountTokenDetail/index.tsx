@@ -11,7 +11,7 @@ import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import MetaInfo from 'components/MetaInfo';
-import { ArrowSquareOut } from 'phosphor-react-native';
+import { ArrowSquareOutIcon } from 'phosphor-react-native';
 import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { reformatAddress } from '@subwallet/extension-base/utils';
@@ -184,7 +184,7 @@ export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
               size={'xs'}
               type={'ghost'}
               onPress={() => Linking.openURL(link)}
-              icon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextTertiary} />}>
+              icon={<Icon phosphorIcon={ArrowSquareOutIcon} size={'sm'} iconColor={theme.colorTextTertiary} />}>
               View on explorer
             </Button>
           )}

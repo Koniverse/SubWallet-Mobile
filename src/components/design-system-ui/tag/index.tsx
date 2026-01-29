@@ -3,10 +3,10 @@ import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'r
 import Icon from '../icon';
 import { TagPropsType } from './PropsType';
 import { X } from 'phosphor-react-native';
-import { PresetBrandColorTypes, PresetColorTypes, PresetStatusColorTypes } from '@subwallet/react-ui/es/_util/colors';
-import capitalize from '@subwallet/react-ui/es/_util/capitalize';
+import capitalize from 'utils/capitalize.ts';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TagStyles from './style';
+import { PresetBrandColorTypes, PresetColorTypes, PresetStatusColorTypes } from 'utils/color';
 const PresetColorRegex = new RegExp(`^(${PresetColorTypes.join('|')})(-inverse)?$`);
 const PresetStatusColorRegex = new RegExp(`^(${PresetStatusColorTypes.join('|')})$`);
 const PresetBrandColorRegex = new RegExp(`^(${PresetBrandColorTypes.join('|')})$`);

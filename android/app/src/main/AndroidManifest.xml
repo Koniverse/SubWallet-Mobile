@@ -15,8 +15,10 @@
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
+      android:theme="@style/AppTheme"
       android:usesCleartextTraffic="true"
-      android:theme="@style/AppTheme">
+      android:enableOnBackInvokedCallback="false"
+      android:supportsRtl="true">
       <activity
         android:name=".MainActivity"
         android:theme="@style/SplashTheme"

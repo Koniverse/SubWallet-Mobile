@@ -1,6 +1,6 @@
 import { StyleProp, TouchableOpacity } from 'react-native';
 import { DisabledStyle } from 'styles/sharedStyles';
-import React from 'react';
+import React, { JSX } from 'react';
 import { FieldBaseProps } from 'components/Field/Base';
 
 interface Props extends FieldBaseProps {

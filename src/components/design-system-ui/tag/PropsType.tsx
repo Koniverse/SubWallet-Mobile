@@ -1,6 +1,5 @@
-import { LiteralUnion } from '@subwallet/react-ui/es/_util/type';
-import { PresetBrandColorType, PresetColorType, PresetStatusColorType } from '@subwallet/react-ui/es/_util/colors';
 import React from 'react';
+import { LiteralUnion, PresetBrandColorType, PresetColorType, PresetStatusColorType } from 'types/colors';
 
 export interface TagPropsType {
   selected?: boolean;

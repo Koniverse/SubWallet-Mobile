@@ -1,6 +1,6 @@
 import { Button, Icon, Logo, PageIcon, SwModal } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CheckCircle, PlugsConnected, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, PlugsConnectedIcon, XCircleIcon } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { VoidFunction } from 'types/index';
@@ -57,14 +57,14 @@ const ConfirmModal: React.FC<Props> = ({
                 type="secondary"
                 style={{ flex: 1, marginRight: 12 }}
                 onPress={onCancelModal}
-                icon={<Icon phosphorIcon={XCircle} size={'lg'} weight={'fill'} />}>
+                icon={<Icon phosphorIcon={XCircleIcon} size={'lg'} weight={'fill'} />}>
                 {cancelBtnTitle || i18n.common.cancel}
               </Button>
             )}
             <Button
               externalTextStyle={{ flexShrink: 1 }}
               style={{ flex: 1 }}
-              icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}
+              icon={<Icon phosphorIcon={CheckCircleIcon} size={'lg'} weight={'fill'} />}
               type="primary"
               onPress={onCompleteModal}>
               {completeBtnTitle || i18n.common.connect}
@@ -83,7 +83,7 @@ const ConfirmModal: React.FC<Props> = ({
           ) : customIcon ? (
             <>{customIcon}</>
           ) : (
-            <PageIcon icon={PlugsConnected} color={theme.colorWarning} />
+            <PageIcon icon={PlugsConnectedIcon} color={theme.colorWarning} />
           )}
         </View>
         <Text style={styles.confirmModalMessageTextStyle}>{message}</Text>

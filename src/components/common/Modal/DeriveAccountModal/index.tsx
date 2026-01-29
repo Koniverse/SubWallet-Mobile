@@ -5,7 +5,7 @@ import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
 import { deriveAccountV3, deriveSuggest, validateAccountName, validateDerivePathV2 } from 'messaging/index';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { CheckCircle, Warning } from 'phosphor-react-native';
+import { CheckCircleIcon, WarningIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
 import { AccountChainType, AccountProxyType, DerivePathInfo } from '@subwallet/extension-base/types';
@@ -160,7 +160,7 @@ export const DeriveAccountActionModal = ({
         title: 'Incompatible account',
         message:
           'This derived account can only be used in SubWallet and won’t be compatible with other wallets. Do you still want to continue?',
-        customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+        customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
         onCompleteModal: () => {
           _doSubmit();
           hideConfirmModal();
@@ -333,7 +333,7 @@ export const DeriveAccountActionModal = ({
         <Button
           icon={
             <Icon
-              phosphorIcon={CheckCircle}
+              phosphorIcon={CheckCircleIcon}
               iconColor={disabled ? theme.colorTextLight5 : theme.colorWhite}
               weight={'fill'}
             />

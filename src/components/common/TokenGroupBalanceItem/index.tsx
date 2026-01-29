@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
 import { Icon, Logo, Number } from 'components/design-system-ui';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRightIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TokenGroupBalanceItemStyles from './style';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
@@ -78,7 +78,7 @@ export const TokenGroupBalanceItem = ({
             {!isShowBalance && <HideBalanceItem />}
           </View>
           <View style={_style.iconWrapper}>
-            <Icon type="phosphor" phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />
+            <Icon type="phosphor" phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />
           </View>
         </View>
       </View>

@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { updateDefaultDesktopMode, updateDesktopMode } from 'stores/Browser';
-import { RootState } from 'stores/index';
+import { updateDefaultDesktopMode, updateDesktopMode } from 'stores/Browser.ts';
+import { RootState } from 'stores/index.ts';
 
 const isDesktopMode = (url: string, data: string[]) => {
   if (!data || !url) {

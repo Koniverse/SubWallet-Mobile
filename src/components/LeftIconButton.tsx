@@ -1,7 +1,7 @@
 import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-import React from 'react';
+import React, { JSX } from 'react';
 import Text from '../components/Text';
-import { IconProps } from 'phosphor-react-native';
+import { type Icon as PhosphorIcon } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
@@ -11,7 +11,7 @@ interface ActionItemProps extends TouchableOpacityProps {
   backgroundColor?: string;
   color?: string;
   wrapperStyle?: StyleProp<any>;
-  icon: (iconProps: IconProps) => JSX.Element;
+  icon: PhosphorIcon;
 }
 
 function getWrapperStyle(

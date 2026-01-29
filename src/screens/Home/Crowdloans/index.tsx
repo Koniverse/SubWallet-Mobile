@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import i18n from 'utils/i18n/i18n';
 
-import { RocketLaunch } from 'phosphor-react-native';
+import { RocketLaunchIcon } from 'phosphor-react-native';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
@@ -108,7 +108,7 @@ export const CrowdloansScreen = () => {
     return (
       <EmptyList
         title={i18n.emptyScreen.crowdloanEmptyTitle}
-        icon={RocketLaunch}
+        icon={RocketLaunchIcon}
         message={i18n.emptyScreen.crowdloanEmptyMessage}
         onPressReload={onRefresh}
         isRefresh={isRefresh}

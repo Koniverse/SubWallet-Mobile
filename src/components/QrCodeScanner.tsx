@@ -1,17 +1,16 @@
-import React from 'react';
-import QRCodeScanner from 'react-native-qrcode-scanner';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScannerStyles } from 'styles/scanner';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { AppState, StyleProp, View, ViewStyle } from 'react-native';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
 import { IconButton } from 'components/IconButton';
-import { CaretLeft, ImageSquare } from 'phosphor-react-native';
+import { CaretLeftIcon, ImageSquareIcon } from 'phosphor-react-native';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { Warning } from 'components/Warning';
 import { Button, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { BarCodeReadEvent } from 'react-native-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Camera, useCameraDevice, useCodeScanner } from 'react-native-vision-camera';
 
 const CancelButtonStyle: StyleProp<ViewStyle> = {
   position: 'absolute',
@@ -34,57 +33,89 @@ interface Props {
   error?: string;
   onPressLibraryBtn?: () => Promise<void>;
   onPressCancel: () => void;
-  onSuccess: (e: BarCodeReadEvent) => void;
+  onSuccess: (value: string) => void;
 }
 
 export const QrCodeScanner = ({ error, onPressLibraryBtn, onPressCancel, onSuccess }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const device = useCameraDevice('back');
+  console.log('device', device);
+  const [isActive, setIsActive] = useState(true);
+  const scannedRef = useRef(false);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', state => {
+      setIsActive(state === 'active');
+    });
+
+    return () => sub.remove();
+  }, []);
+
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr'],
+    onCodeScanned: codes => {
+      if (scannedRef.current) {
+        return;
+      }
+
+      const value = codes[0]?.value;
+
+      if (value) {
+        scannedRef.current = true;
+        onSuccess(value);
+
+        setTimeout(() => {
+          scannedRef.current = false;
+        }, 5000);
+      }
+    }
+  })
+
+  // if (!device) {
+  //   return null;
+  // }
+
   return (
-    <QRCodeScanner
-      reactivate={true}
-      reactivateTimeout={5000}
-      showMarker={true}
-      onRead={e => {
-        onSuccess(e);
-      }}
-      containerStyle={ScannerStyles.ContainerStyle}
-      cameraStyle={ScannerStyles.CameraStyle}
-      topViewStyle={ScannerStyles.ContainerStyle}
-      customMarker={
-        <View style={ScannerStyles.RectangleContainerStyle}>
-          <View style={ScannerStyles.TopOverlayStyle}>
-            <SafeAreaView edges={['top']} />
-            <View style={[ScannerStyles.HeaderStyle]}>
-              <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanQrCode}</Text>
-              <IconButton icon={CaretLeft} size={24} style={CancelButtonStyle} onPress={onPressCancel} />
-              {/*<IconButton icon={Info} size={24} style={LibraryButtonStyle} />*/}
-            </View>
-          </View>
-          <View style={ScannerStyles.CenterOverlayStyle}>
-            <View style={ScannerStyles.LeftAndRightOverlayStyle} />
+    <View style={{ width: '100%', height: '100%' }}>
+      {device && <Camera device={device} isActive={isActive} style={ScannerStyles.CameraStyle} codeScanner={codeScanner} />}
 
-            <View style={ScannerStyles.RectangleStyle}>
-              <BarcodeFinder />
-            </View>
+      <View style={ScannerStyles.RectangleContainerStyle}>
+        <View style={ScannerStyles.TopOverlayStyle}>
+          <SafeAreaView edges={['top']} />
+          <View style={ScannerStyles.HeaderStyle}>
+            <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanQrCode}</Text>
 
-            <View style={ScannerStyles.LeftAndRightOverlayStyle} />
-          </View>
-          <View style={ScannerStyles.BottomOverlayStyle}>
-            <View style={[BottomSubContentStyle, { marginBottom: theme.padding }]}>
-              {!!error && <Warning message={error} isDanger />}
-            </View>
-            {onPressLibraryBtn && (
-              <Button
-                icon={<Icon phosphorIcon={ImageSquare} weight={'fill'} />}
-                type={'secondary'}
-                onPress={onPressLibraryBtn}>
-                {i18n.buttonTitles.uploadFromPhotos}
-              </Button>
-            )}
-            <View style={BottomSubContentStyle} />
+            <IconButton icon={CaretLeftIcon} size={24} style={CancelButtonStyle} onPress={onPressCancel} />
           </View>
         </View>
-      }
-    />
+
+        <View style={ScannerStyles.CenterOverlayStyle}>
+          <View style={ScannerStyles.LeftAndRightOverlayStyle} />
+
+          <View style={ScannerStyles.RectangleStyle}>
+            <BarcodeFinder />
+          </View>
+
+          <View style={ScannerStyles.LeftAndRightOverlayStyle} />
+        </View>
+
+        <View style={ScannerStyles.BottomOverlayStyle}>
+          <View style={[BottomSubContentStyle, { marginBottom: theme.padding }]}>
+            {!!error && <Warning message={error} isDanger />}
+          </View>
+
+          {onPressLibraryBtn && (
+            <Button
+              icon={<Icon phosphorIcon={ImageSquareIcon} weight="fill" />}
+              type="secondary"
+              onPress={onPressLibraryBtn}>
+              {i18n.buttonTitles.uploadFromPhotos}
+            </Button>
+          )}
+
+          <View style={BottomSubContentStyle} />
+        </View>
+      </View>
+    </View>
   );
 };

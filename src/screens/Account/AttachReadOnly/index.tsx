@@ -6,7 +6,7 @@ import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Eye, X } from 'phosphor-react-native';
+import { EyeIcon, XIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, ScrollView, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
@@ -202,13 +202,13 @@ const AttachReadOnly = () => {
       onPressBack={goBack}
       title={i18n.header.attachReadOnlyAcc}
       disabled={isBusy}
-      rightIcon={X}
+      rightIcon={XIcon}
       onPressRightIcon={goHome}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
           <Typography.Text style={styles.title}>{i18n.attachAccount.attachWatchOnlyAccMessage}</Typography.Text>
           <View style={styles.pageIconContainer}>
-            <PageIcon icon={Eye} color={theme.colorSuccess} />
+            <PageIcon icon={EyeIcon} color={theme.colorSuccess} />
           </View>
           <InputAddress
             saveAddress={false}
@@ -248,7 +248,7 @@ const AttachReadOnly = () => {
         </ScrollView>
         <View style={styles.footer}>
           <Button
-            icon={getButtonIcon(Eye)}
+            icon={getButtonIcon(EyeIcon)}
             loading={isBusy}
             onPress={onPressSubmit(_onSubmitForm)}
             disabled={formState.errors.address.length > 0 || !formState.data.address || !formState.data.name || isBusy}>

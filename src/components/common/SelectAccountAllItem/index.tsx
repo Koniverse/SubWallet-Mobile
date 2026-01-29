@@ -6,7 +6,7 @@ import {
   BasicAccountProxyInfo,
 } from 'components/design-system-ui/avatar/account-proxy-avatar-group';
 import { Icon, Typography } from 'components/design-system-ui';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -31,7 +31,7 @@ export const SelectAccountAllItem = ({ isSelected, accountProxies, showUnSelecte
         {(showUnSelectedIcon || isSelected) && (
           <View style={styles.checkedIconWrapper}>
             <Icon
-              phosphorIcon={CheckCircle}
+              phosphorIcon={CheckCircleIcon}
               iconColor={isSelected ? theme.colorSuccess : theme['gray-5']}
               size={'sm'}
               weight={'fill'}

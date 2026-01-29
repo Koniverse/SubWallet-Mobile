@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
 import { InteractionManager, RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
 import { useLazyList } from 'hooks/common/useLazyList';

@@ -1,11 +1,11 @@
 import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import React from 'react';
+import React, { JSX } from 'react';
 import { StyleProp, Text, View } from 'react-native';
 import { FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { SelectItem } from 'components/SelectItem';
 import { ColorMap } from 'styles/color';
-import { Activity, Barricade, CirclesThreePlus, ListChecks, Trophy } from 'phosphor-react-native';
+import { ActivityIcon, BarricadeIcon, CirclesThreePlusIcon, ListChecksIcon, TrophyIcon } from 'phosphor-react-native';
 import { getLeftSelectItemIcon, getNetworkLogo } from 'utils/index';
 import { SubmitButton } from 'components/SubmitButton';
 import useFormControl from 'hooks/screen/useFormControl';
@@ -35,7 +35,7 @@ const crowdloanFilterLabelStyle: StyleProp<any> = {
 const parachainFilterOptions: Record<string, FilterOptionType> = {
   all: {
     label: i18n.common.allParachains,
-    icon: getLeftSelectItemIcon(CirclesThreePlus),
+    icon: getLeftSelectItemIcon(CirclesThreePlusIcon),
   },
   polkadot: {
     label: i18n.common.polkadotParachain,
@@ -50,19 +50,19 @@ const parachainFilterOptions: Record<string, FilterOptionType> = {
 const crowdloanStatusFilterOptions: Record<string, FilterOptionType> = {
   all: {
     label: i18n.common.allProjects,
-    icon: getLeftSelectItemIcon(ListChecks),
+    icon: getLeftSelectItemIcon(ListChecksIcon),
   },
   completed: {
     label: i18n.common.win,
-    icon: getLeftSelectItemIcon(Trophy),
+    icon: getLeftSelectItemIcon(TrophyIcon),
   },
   fail: {
     label: i18n.common.fail,
-    icon: getLeftSelectItemIcon(Barricade),
+    icon: getLeftSelectItemIcon(BarricadeIcon),
   },
   ongoing: {
     label: i18n.common.active,
-    icon: getLeftSelectItemIcon(Activity),
+    icon: getLeftSelectItemIcon(ActivityIcon),
   },
 };
 

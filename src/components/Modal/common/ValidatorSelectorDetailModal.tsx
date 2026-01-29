@@ -11,7 +11,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ValidatorDataType } from 'types/earning';
 import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import { Info } from 'phosphor-react-native';
+import { InfoIcon } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import { FontSemiBold } from 'styles/sharedStyles';
 
@@ -149,7 +149,7 @@ export const ValidatorSelectorDetailModal = ({
                         <Typography.Text style={[styles.tooltipTextStyle, { ...FontSemiBold }]}>
                           {'Root weight'}
                         </Typography.Text>
-                        <Icon phosphorIcon={Info} size="xs" type="phosphor" />
+                        <Icon phosphorIcon={InfoIcon} size="xs" type="phosphor" />
                       </TouchableOpacity>
                     </Tooltip>
                   ) : (

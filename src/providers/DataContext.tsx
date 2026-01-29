@@ -206,7 +206,7 @@ type WebRunnerFlagContext = {
 export const DataContextProvider = ({ children }: DataContextProviderProps) => {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
   const readyFlag = useRef<WebRunnerFlagContext>({ isStart: true, beforeWebRunnerReady: isWebRunnerReady });
-
+  console.log('isWebRunnerReady', isWebRunnerReady);
   useEffect(() => {
     // Init subscription
     // Common

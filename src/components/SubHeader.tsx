@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { GestureResponderEvent, StyleProp, TextStyle, View } from 'react-native';
 import Text from '../components/Text';
 import { SpaceStyle } from 'styles/space';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { CaretLeft, IconProps } from 'phosphor-react-native';
+import { CaretLeftIcon, IconProps, type Icon as PhosphorIcon } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { Button, Icon } from 'components/design-system-ui';
 
@@ -12,7 +12,7 @@ export interface SubHeaderProps {
   title?: string;
   onPressBack?: (event?: GestureResponderEvent) => void;
   disabled?: boolean;
-  rightIcon?: (iconProps: IconProps) => JSX.Element;
+  rightIcon?: PhosphorIcon;
   rightIconColor?: string;
   onPressRightIcon?: ((event?: GestureResponderEvent) => void) | undefined;
   disableRightButton?: boolean;
@@ -96,7 +96,7 @@ export const SubHeader = ({
             type={'ghost'}
             icon={
               icon || (
-                <Icon phosphorIcon={CaretLeft} size={'md'} iconColor={disabled ? ColorMap.disabled : ColorMap.light} />
+                <Icon phosphorIcon={CaretLeftIcon} size={'md'} iconColor={disabled ? ColorMap.disabled : ColorMap.light} />
               )
             }
           />

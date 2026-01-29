@@ -4,23 +4,23 @@ import { useNavigation } from '@react-navigation/native';
 import { DeviceEventEmitter, Linking, Platform, ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import {
-  ArrowSquareOut,
-  Book,
-  BookBookmark,
-  CaretRight,
-  ChatCircleText,
-  Clock,
-  Coin,
-  EnvelopeSimple,
-  Globe,
-  GlobeHemisphereWest,
+  ArrowSquareOutIcon,
+  BookIcon,
+  BookBookmarkIcon,
+  CaretRightIcon,
+  ChatCircleTextIcon,
+  ClockIcon,
+  CoinIcon,
+  EnvelopeSimpleIcon,
+  GlobeIcon,
+  GlobeHemisphereWestIcon,
   IconProps,
-  Lock,
-  Rocket,
-  ShareNetwork,
-  ShieldCheck,
-  UserCircleGear,
-  X,
+  LockIcon,
+  RocketIcon,
+  ShareNetworkIcon,
+  ShieldCheckIcon,
+  UserCircleGearIcon,
+  XIcon,
 } from 'phosphor-react-native';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
@@ -66,6 +66,7 @@ const bundleData =
   BUNDLE_ENV === 'PRODUCTION' ? packageJSON.bundleVersion.split('-') : packageJSON.bundleVersionStaging.split('-');
 const bundleVersion =
   Platform.OS === 'android' ? bundleData[0].split('(')[1].slice(0, -1) : bundleData[1].split('(')[1].slice(0, -1);
+
 export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponentProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
@@ -80,55 +81,55 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
     () => [
       [
         {
-          icon: GlobeHemisphereWest,
+          icon: GlobeHemisphereWestIcon,
           title: i18n.settings.generalSettings,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('GeneralSettings'),
           backgroundColor: '#D92079',
         },
         {
-          icon: ShieldCheck,
+          icon: ShieldCheckIcon,
           title: i18n.settings.securitySettings,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('Security'),
           backgroundColor: '#2DA73F',
         },
         {
-          icon: UserCircleGear,
+          icon: UserCircleGearIcon,
           title: i18n.settings.accountSettings,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('AccountSettings'),
           backgroundColor: '#B44EF2',
         },
         {
-          icon: Clock,
+          icon: ClockIcon,
           title: i18n.title.history,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('History', {}),
           backgroundColor: '#2595E6',
         },
         {
-          icon: Rocket,
+          icon: RocketIcon,
           title: i18n.tabName.crowdloans,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('Crowdloans'),
           backgroundColor: '#15B776',
         },
       ],
       [
         {
-          icon: Globe,
+          icon: GlobeIcon,
           title: i18n.settings.manageWebsiteAccess,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => {
             navigation.navigate('DAppAccess');
           },
           backgroundColor: '#0078d9',
         },
         {
-          icon: Clock,
+          icon: ClockIcon,
           title: i18n.header.walletConnect,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => {
             DeviceEventEmitter.emit('isDeleteWc', false);
             navigation.navigate('ConnectList', { isDelete: false });
@@ -138,53 +139,53 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
       ],
       [
         {
-          icon: ShareNetwork,
+          icon: ShareNetworkIcon,
           title: i18n.settings.manageNetworks,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('NetworksSetting', {}),
           backgroundColor: '#9224E1',
         },
         {
-          icon: Coin,
+          icon: CoinIcon,
           title: i18n.settings.manageTokens,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('CustomTokenSetting'),
           backgroundColor: '#D9A33E',
         },
         {
-          icon: BookBookmark,
+          icon: BookBookmarkIcon,
           title: i18n.settings.manageAddressBook,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('ManageAddressBook'),
           backgroundColor: '#0078D9',
         },
       ],
       [
         {
-          icon: EnvelopeSimple,
+          icon: EnvelopeSimpleIcon,
           title: i18n.settings.contactSupport,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={ArrowSquareOutIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: onPressContactSupport,
           backgroundColor: '#004BFF',
         },
         {
-          icon: Book,
+          icon: BookIcon,
           title: i18n.settings.userGuide,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={ArrowSquareOutIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => Linking.openURL(WIKI_URL),
           backgroundColor: '#2DA73F',
         },
         {
-          icon: ChatCircleText,
+          icon: ChatCircleTextIcon,
           title: i18n.settings.requestAFeature,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={ArrowSquareOutIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => Linking.openURL('mailto:agent@subwallet.app?subject=%5BSubWallet%20In-app%20Feedback%5D'),
           backgroundColor: '#E6478E',
         },
         {
-          icon: Clock,
+          icon: ClockIcon,
           title: i18n.settings.aboutSubwallet,
-          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('AboutSubWallet'),
           backgroundColor: '#E6478E',
         },
@@ -205,7 +206,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
       title={i18n.header.settings}
       navigation={navigation}
       icon={<SVGImages.Logo width={24} height={24} />}
-      rightIcon={X}
+      rightIcon={XIcon}
       onPressLeftBtn={() => (drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack())}
       onPressRightIcon={() => (drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack())}>
       <>
@@ -289,7 +290,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
             onPress={lock}
             type={'secondary'}
             block
-            icon={<Icon phosphorIcon={Lock} size={'lg'} weight={'fill'} iconColor={theme.colorWhite} />}>
+            icon={<Icon phosphorIcon={LockIcon} size={'lg'} weight={'fill'} iconColor={theme.colorWhite} />}>
             {i18n.settings.lock}
           </Button>
         </ScrollView>

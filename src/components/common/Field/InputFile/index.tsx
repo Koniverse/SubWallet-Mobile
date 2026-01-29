@@ -2,10 +2,16 @@ import createStyles from './styles';
 import { Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useCallback, useMemo } from 'react';
-import DocumentPicker, { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
+import {
+  DirectoryPickerResponse,
+  DocumentPickerResponse,
+  keepLocalCopy,
+  KeepLocalCopyResponse,
+  pick,
+} from '@react-native-documents/picker';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { AutoLockState } from 'utils/autoLock';
-import { Eraser, UploadSimple } from 'phosphor-react-native';
+import { EraserIcon, UploadSimpleIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {
@@ -19,14 +25,39 @@ export const InputFile = ({ onChangeResult, style, fileName, disabled }: Props) 
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  const mapLocalCopyToDocumentPicker = (
+    file: DocumentPickerResponse,
+    localCopy: KeepLocalCopyResponse,
+  ): DocumentPickerResponse => {
+
+    if (localCopy[0].status !== 'success') {
+      throw new Error(localCopy[0].copyError);
+    }
+
+    return {
+      uri: localCopy[0].localUri,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+    } as DocumentPickerResponse;
+  };
+
   const onChangeFile = useCallback(async () => {
     try {
       AutoLockState.isPreventAutoLock = true;
-      const pickerResult = await DocumentPicker.pickSingle({
-        presentationStyle: 'fullScreen',
-        copyTo: 'cachesDirectory',
-      });
-      onChangeResult([pickerResult]);
+      const [file] = await pick();
+      const localCopy = await keepLocalCopy({
+        files: [
+          {
+            uri: file.uri,
+            fileName: file.name || 'unknown',
+          },
+        ],
+        destination: 'cachesDirectory'
+      })
+
+      const result = mapLocalCopyToDocumentPicker(file, localCopy);
+      onChangeResult([result]);
     } catch (e) {
       console.log('e', e);
     } finally {
@@ -43,7 +74,7 @@ export const InputFile = ({ onChangeResult, style, fileName, disabled }: Props) 
       <View style={styles.border} />
       <View style={styles.container}>
         <Icon
-          phosphorIcon={!fileName ? UploadSimple : Eraser}
+          phosphorIcon={!fileName ? UploadSimpleIcon : EraserIcon}
           size="large"
           iconColor={!fileName ? theme['gray-6'] : theme.colorWarning}
         />

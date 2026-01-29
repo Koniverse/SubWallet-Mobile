@@ -3,7 +3,16 @@ import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
 import React, { Suspense, useContext, useEffect, useState } from 'react';
-import { AppState, DeviceEventEmitter, ImageBackground, Linking, StatusBar, StyleProp, View } from 'react-native';
+import {
+  AppState,
+  DeviceEventEmitter,
+  ImageBackground,
+  Linking,
+  StatusBar,
+  StyleProp,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { ThemeContext, WebRunnerContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -13,7 +22,6 @@ import { RootState } from 'stores/index';
 import useAppLock from 'hooks/useAppLock';
 import useCryptoReady from 'hooks/init/useCryptoReady';
 import useSetupI18n from 'hooks/init/useSetupI18n';
-import SplashScreen from 'react-native-splash-screen';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
@@ -29,9 +37,8 @@ import { keyringLock } from './messaging';
 import { updateAutoLockTime } from 'stores/MobileSettings';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
-import { NEED_UPDATE_CHROME } from 'providers/WebRunnerProvider/WebRunner';
 import { Button, Icon, Image, PageIcon, Typography } from 'components/design-system-ui';
-import { Warning } from 'phosphor-react-native';
+import { WarningIcon } from 'phosphor-react-native';
 import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
@@ -42,31 +49,11 @@ import { useGetConfig } from 'hooks/static-content/useGetConfig';
 import { mmkvStore } from 'utils/storage';
 import { setIsShowRemindBackupModal } from 'screens/Home';
 import { useGetBrowserConfig } from 'hooks/static-content/useGetBrowserConfig';
-import RNRestart from 'react-native-restart';
+import RNRestart from 'react-native-restart-newarch';
 import { ImageLogosMap } from 'assets/logo';
 import { GlobalInstructionModalContextProvider } from 'providers/GlobalInstructionModalContext';
 import { useGetShowReviewPopupScreen } from 'hooks/static-content/useGetShowReviewPopupScreen';
-
-const layerScreenStyle: StyleProp<any> = {
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  position: 'absolute',
-  backgroundColor: ColorMap.dark1,
-  zIndex: 10,
-};
-
-const gestureRootStyle: StyleProp<any> = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-  width: '100%',
-  height: '100%',
-  zIndex: 9999,
-};
+import { NEED_UPDATE_CHROME } from 'providers/WebRunnerProvider/constant.ts';
 
 const logoTextStyle: StyleProp<any> = {
   fontSize: 38,
@@ -161,6 +148,8 @@ export function setIsHandleDeeplinkPromise(value: boolean) {
 export const App = () => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
+
+  const styles = createStyles();
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   const { isUseBiometric, timeAutoLock, isPreventLock } = useSelector((state: RootState) => state.mobileSettings);
@@ -210,12 +199,12 @@ export const App = () => {
   }, [dispatch, timeAutoLock]);
 
   useEffect(() => {
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 100);
+    // setTimeout(() => {
+    //   SplashScreen.hide();
+    // }, 100);
     checkIsShowBuyToken();
     // getPoolInfoMap();
-    mmkvStore.delete('poolInfoMap'); // remove unused mmkvStore
+    mmkvStore.remove('poolInfoMap'); // remove unused mmkvStore
     getDAppsData();
     getConfig();
     getBrowserConfig();
@@ -253,23 +242,13 @@ export const App = () => {
       <>
         {!isUpdateComplete && (
           <View style={{ flex: 1 }}>
-            <ToastProvider
-              duration={TOAST_DURATION}
-              renderToast={toast => <CustomToast toast={toast} />}
-              placement="top"
-              style={{ borderRadius: 8 }}
-              normalColor={theme.colors.notification}
-              textStyle={{ textAlign: 'center', ...FontMedium }}
-              successColor={theme.colors.primary}
-              warningColor={theme.colors.notification_warning}
-              offsetTop={STATUS_BAR_HEIGHT + 40}
-              dangerColor={theme.colors.notification_danger}>
+            <ToastProvider duration={TOAST_DURATION} renderToast={toast => <CustomToast toast={toast} />} placement={'top'} style={{ borderRadius: 8 }} normalColor={theme.colors.notification} textStyle={{ textAlign: 'center', ...FontMedium }} successColor={theme.colors.primary} warningColor={theme.colors.notification_warning} offsetTop={STATUS_BAR_HEIGHT + 40} dangerColor={theme.colors.notification_danger}>
               <ThemeContext.Provider value={theme}>
                 <SigningContextProvider>
                   <ExternalRequestContextProvider>
                     <QrSignerContextProvider>
                       <ScannerContextProvider>
-                        <GestureHandlerRootView style={gestureRootStyle}>
+                        <GestureHandlerRootView style={styles.gestureRootStyle}>
                           <PortalProvider>
                             <GlobalModalContextProvider>
                               <AppOnlineContentContextProvider>
@@ -290,11 +269,11 @@ export const App = () => {
             </ToastProvider>
           </View>
         )}
-        {!isAppReady && (
-          <View style={layerScreenStyle}>
-            <LoadingScreen />
-          </View>
-        )}
+        {/*{!isAppReady && (*/}
+        {/*  <View style={styles.layerScreenStyle}>*/}
+        {/*    <LoadingScreen />*/}
+        {/*  </View>*/}
+        {/*)}*/}
         {needUpdateChrome && (
           <View style={{ width: deviceWidth, height: deviceHeight, justifyContent: 'flex-end' }}>
             <ImageBackground source={Images.backgroundImg} resizeMode={'contain'} style={imageBackgroundStyle}>
@@ -344,7 +323,7 @@ export const App = () => {
                     {'Outdated Webview'}
                   </Typography.Title>
                   <PageIcon
-                    customIcon={<Icon phosphorIcon={Warning} iconColor={theme.swThemes.colorWarning} customSize={64} />}
+                    customIcon={<Icon phosphorIcon={WarningIcon} iconColor={theme.swThemes.colorWarning} customSize={64} />}
                     color={theme.swThemes.colorWarning}
                     backgroundColor={'rgba(217, 197, 0, 0.1)'}
                   />
@@ -442,7 +421,32 @@ export const App = () => {
         )}
       </>
     </SafeAreaProvider>
+
   );
-};
+}
+
+function createStyles() {
+  return StyleSheet.create({
+    layerScreenStyle: {
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      position: 'absolute',
+      backgroundColor: ColorMap.dark1,
+      zIndex: 10,
+    },
+    gestureRootStyle: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: 9999,
+    }
+  });
+}
 
 export default App;

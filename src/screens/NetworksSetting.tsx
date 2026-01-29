@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { ListChecks, Plus } from 'phosphor-react-native';
+import { ListChecksIcon, PlusIcon } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, NetworksSettingProps } from 'routes/index';
 import { updateChainActiveState } from 'messaging/index';
@@ -186,7 +186,7 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
   const renderListEmptyComponent = () => {
     return (
       <EmptyList
-        icon={ListChecks}
+        icon={ListChecksIcon}
         title={i18n.emptyScreen.networkSettingsTitle}
         message={i18n.emptyScreen.networkSettingsMessage}
         addBtnLabel={i18n.header.importNetwork}
@@ -200,7 +200,7 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
   return (
     <FlatListScreen
       rightIconOption={{
-        icon: Plus,
+        icon: PlusIcon,
         onPress: () => {
           navigation.navigate('ImportNetwork');
           setToggleItem(false);

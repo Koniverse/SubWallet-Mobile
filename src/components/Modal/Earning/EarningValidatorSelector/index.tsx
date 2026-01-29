@@ -7,7 +7,7 @@ import { Keyboard, Platform, StyleSheet } from 'react-native';
 import { StakingValidatorItem } from 'components/common/StakingValidatorItem';
 import { getValidatorKey } from 'utils/transaction/stake';
 import { useSelectValidators } from 'hooks/screen/Transaction/useSelectValidators';
-import { ArrowsClockwise, CheckCircle, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
+import { ArrowsClockwiseIcon, CheckCircleIcon, MagnifyingGlassIcon, SortAscendingIcon, SortDescendingIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ValidatorSelectorField } from 'components/Field/ValidatorSelector';
 import { ValidatorSelectorDetailModal } from 'components/Modal/common/ValidatorSelectorDetailModal';
@@ -175,7 +175,7 @@ export const EarningValidatorSelector = forwardRef(
       onCancelSelectValidator,
       onChangeSelectedValidator,
       onInitValidators,
-    } = useSelectValidators(chain, maxCount, onSelectItem, isSingleSelect, undefined);
+    } = useSelectValidators(chain, maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
     const { keyboardHeight } = useKeyboardVisible();
     const defaultValueRef = useRef({ _default: '_', selected: '_' });
     const [detailItem, setDetailItem] = useState<ValidatorDataType | undefined>(undefined);
@@ -225,6 +225,11 @@ export const EarningValidatorSelector = forwardRef(
         : [];
     }, [nominations]);
 
+    console.log(
+      'check',
+      items.filter(i => nominatorValueList.includes(getValidatorKey(i.address, i.identity))),
+    );
+
     const sortValidator = useCallback(
       (a: ValidatorDataType, b: ValidatorDataType) => {
         const aKey = getValidatorKey(a.address, a.identity);
@@ -269,7 +274,7 @@ export const EarningValidatorSelector = forwardRef(
         <EmptyValidator
           title={i18n.emptyScreen.selectorEmptyTitle}
           message={i18n.emptyScreen.selectorEmptyMessage}
-          icon={MagnifyingGlass}
+          icon={MagnifyingGlassIcon}
           isDataEmpty={items.length === 0}
           validatorTitle={
             getValidatorLabel(chain) === 'dApp' ? getValidatorLabel(chain) : getValidatorLabel(chain).toLowerCase()
@@ -358,7 +363,7 @@ export const EarningValidatorSelector = forwardRef(
 
     const applyBtn = useMemo(
       () => ({
-        icon: CheckCircle,
+        icon: CheckCircleIcon,
         label: applyLabel,
         onPressApplyBtn: () => {
           validatorSelectModalRef?.current?.closeModal?.();
@@ -374,7 +379,7 @@ export const EarningValidatorSelector = forwardRef(
         <SelectItem
           key={item.value}
           label={item.label}
-          icon={item.desc ? SortDescending : SortAscending}
+          icon={item.desc ? SortDescendingIcon : SortAscendingIcon}
           backgroundColor={theme.colorPrimary}
           isSelected={sortSelection === item.value}
           onPress={() => {
@@ -460,7 +465,7 @@ export const EarningValidatorSelector = forwardRef(
         rightIconOption={{
           icon: () => (
             <DotBadge dot={sortSelection !== SortKey.DEFAULT}>
-              <Icon phosphorIcon={SortAscending} size="md" />
+              <Icon phosphorIcon={SortAscendingIcon} size="md" />
             </DotBadge>
           ),
           onPress: () => sortingModalRef?.current?.onOpenModal(),
@@ -502,7 +507,7 @@ export const EarningValidatorSelector = forwardRef(
             renderCustomItem={renderSortingItem}>
             <Button
               style={styles.buttonStyle}
-              icon={<Icon phosphorIcon={ArrowsClockwise} size={'md'} />}
+              icon={<Icon phosphorIcon={ArrowsClockwiseIcon} size={'md'} />}
               onPress={() => {
                 setSortSelection(SortKey.DEFAULT);
                 sortingModalRef?.current?.onCloseModal();

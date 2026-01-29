@@ -14,7 +14,7 @@ interface Props {
   label?: string;
   address: string;
   showAvatar?: boolean;
-  toastRef?: React.RefObject<Toast>;
+  toastRef?: React.RefObject<Toast | null>;
 }
 
 export const ReadonlyAddressField = ({ address, label, showAvatar = true, toastRef }: Props) => {

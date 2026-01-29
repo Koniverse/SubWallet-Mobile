@@ -1,9 +1,9 @@
 import React from 'react';
-import capitalize from '@subwallet/react-ui/es/_util/capitalize';
 import { Icon, Tag } from 'components/design-system-ui';
 import { MissionInfo } from 'types/missionPool';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useMissionPools } from 'hooks/useMissionPools';
+import capitalize from 'utils/capitalize';
 
 interface Props {
   data: MissionInfo;

@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AllLogoMap } from '@subwallet/extension-base/background/KoniTypes';
 import { AssetLogoMap, ChainLogoMap } from '@subwallet/chain-list';
 import { ImageLogosMap } from 'assets/logo';
@@ -30,11 +30,10 @@ const settingsSlice = createSlice({
       payload[SwapProviderId.ROCOCO_ASSET_HUB.toLowerCase()] = ImageLogosMap.rococo_assethub;
       payload.uniswap = ImageLogosMap.rococo_assethub; // TODO: change later
       payload.kyber = ImageLogosMap.kyber;
-      payload.tanssi = ImageLogosMap.tanssi;
-      // for (let i = 0; i < 86; i++) {
-      //   // @ts-ignore
-      //   payload[`subnet-${i}`] = ImageLogosMap[`subnet-${i}`];
-      // }
+      for (let i = 0; i < 86; i++) {
+        // @ts-ignore
+        payload[`subnet-${i}`] = ImageLogosMap[`subnet-${i}`];
+      }
 
       return {
         ...state,
@@ -43,9 +42,6 @@ const settingsSlice = createSlice({
     },
     updateAssetLogoMaps(state, action: PayloadAction<Record<string, string>>) {
       const payload = action.payload;
-      payload['tanssi-tanssi'] = ImageLogosMap.tanssi;
-      payload['tanssi-native-tanssi'] = ImageLogosMap.tanssi;
-      payload['ethereum-erc20-tanssi-0x553f4cb7256d8fc038e91d36cb63fa7c13b624ab'] = ImageLogosMap.tanssi;
 
       return {
         ...state,

@@ -1,10 +1,10 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
-import React from 'react';
+import React, { JSX } from 'react';
 import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { CaretDown, IconProps, ShareNetwork } from 'phosphor-react-native';
+import { CaretDownIcon, IconProps, ShareNetworkIcon } from 'phosphor-react-native';
 import { Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
@@ -41,8 +41,8 @@ const blockContentStyle: StyleProp<any> = {
 export const RpcSelectField = ({
   disabled,
   showRightIcon,
-  leftIcon = ShareNetwork,
-  rightIcon = CaretDown,
+  leftIcon = CaretDownIcon,
+  rightIcon = ShareNetworkIcon,
   outerStyle,
   value,
   label,

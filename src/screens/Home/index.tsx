@@ -1,16 +1,14 @@
-import React, { ComponentType, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ComponentType, JSX, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EarningScreen from 'screens/Home/Earning';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Aperture, Globe, Parachute, Vault, Wallet } from 'phosphor-react-native';
-import { CryptoScreen } from 'screens/Home/Crypto';
+import { ApertureIcon, GlobeIcon, ParachuteIcon, VaultIcon, WalletIcon } from 'phosphor-react-native';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOTTOM_BAR_HEIGHT, deviceWidth } from 'constants/index';
 import { ColorMap } from 'styles/color';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
-import { FirstScreen } from 'screens/Home/FirstScreen';
 import { BrowserScreen } from 'screens/Home/Browser';
 import { HomeStackParamList } from 'routes/home';
 import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
@@ -49,24 +47,27 @@ import FloatingBubble from 'components/FloatingBubble';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StepStatus } from '@subwallet/extension-base/types';
 import { LockTimeout } from 'stores/types';
+import { TokensScreen } from './Tokens';
+import { Welcome } from 'screens/Home/Welcome.tsx';
 
 interface tabbarIconColor {
   color: string;
 }
-const tokenTabbarIcon = ({ color }: tabbarIconColor) => {
-  return <Wallet size={24} color={color} weight={'fill'} />;
+
+const tokenTabBarIcon = ({ color }: tabbarIconColor) => {
+  return <WalletIcon size={24} color={color} weight={'fill'} />;
 };
-const nftTabbarIcon = ({ color }: tabbarIconColor) => {
-  return <Aperture size={24} color={color} weight={'fill'} />;
+const nftTabBarIcon = ({ color }: tabbarIconColor) => {
+  return <ApertureIcon size={24} color={color} weight={'fill'} />;
 };
 const missionPoolTabBarIcon = ({ color }: tabbarIconColor) => {
-  return <Parachute size={24} color={color} weight={'fill'} />;
+  return <ParachuteIcon size={24} color={color} weight={'fill'} />;
 };
-const stakingTabbarIcon = ({ color }: tabbarIconColor) => {
-  return <Vault size={24} color={color} weight={'fill'} />;
+const earningTabBarIcon = ({ color }: tabbarIconColor) => {
+  return <VaultIcon size={24} color={color} weight={'fill'} />;
 };
-const browserTabbarIcon = ({ color }: tabbarIconColor) => {
-  return <Globe size={24} color={color} weight={'fill'} />;
+const browserTabBarIcon = ({ color }: tabbarIconColor) => {
+  return <GlobeIcon size={24} color={color} weight={'fill'} />;
 };
 const getSettingsContent = (props: DrawerContentComponentProps) => {
   return <Settings {...props} />;
@@ -84,7 +85,6 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const tabbarButtonStyle = (props: BottomTabBarButtonProps) => {
     let customStyle = {
       flexDirection: 'column',
-      // opacity: !props.accessibilityState?.selected ? 0.2 : 1,
     };
     if (props.accessibilityState?.selected) {
       customStyle = {
@@ -159,10 +159,10 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
       }}>
       <Tab.Screen
         name={'Tokens'}
-        component={CryptoScreen}
+        component={TokensScreen}
         options={{
           tabBarLabel: i18n.tabName.tokens,
-          tabBarIcon: tokenTabbarIcon,
+          tabBarIcon: tokenTabBarIcon,
           freezeOnBlur: true,
         }}
       />
@@ -172,7 +172,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
         options={{
           tabBarLabel: i18n.tabName.nfts,
           tabBarHideOnKeyboard: Platform.OS === 'android',
-          tabBarIcon: nftTabbarIcon,
+          tabBarIcon: nftTabBarIcon,
         }}
       />
       <Tab.Screen
@@ -186,7 +186,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
         options={{
           tabBarLabel: i18n.tabName.earning,
           tabBarHideOnKeyboard: Platform.OS === 'android',
-          tabBarIcon: stakingTabbarIcon,
+          tabBarIcon: earningTabBarIcon,
         }}
       />
       {isShowBuyToken && (
@@ -195,7 +195,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
           component={BrowserScreen}
           options={{
             tabBarLabel: i18n.tabName.browser,
-            tabBarIcon: browserTabbarIcon,
+            tabBarIcon: browserTabBarIcon,
           }}
         />
       )}
@@ -229,7 +229,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
       />
     </Tab.Navigator>
   );
-};
+}
 
 const Wrapper = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
@@ -245,7 +245,7 @@ const Wrapper = () => {
         swipeEnabled: false,
       }}>
       {isEmptyAccounts ? (
-        <Drawer.Screen name="FirstScreen" component={FirstScreen} options={{ headerShown: false }} />
+        <Drawer.Screen name="FirstScreen" component={Welcome} options={{ headerShown: false }} />
       ) : (
         <Drawer.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
       )}

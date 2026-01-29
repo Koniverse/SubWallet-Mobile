@@ -2,26 +2,20 @@ package app.subwallet.mobile
 
 import android.os.Bundle
 import com.facebook.react.ReactActivity
-import org.devio.rn.splashscreen.SplashScreen
 import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import com.swmansion.rnscreens.fragment.restoration.RNScreensFragmentFactory
 
 class MainActivity : ReactActivity() {
-
   override fun onCreate(savedInstanceState: Bundle?) {
+    supportFragmentManager.fragmentFactory = RNScreensFragmentFactory()
     setTheme(R.style.AppTheme)
-    SplashScreen.show(this)
-    super.onCreate(null)
+    super.onCreate(savedInstanceState)
   }
 
   override fun getMainComponentName() = "SubWalletMobile"
 
-  override fun createReactActivityDelegate(): ReactActivityDelegate {
-    return DefaultReactActivityDelegate(
-      this,
-      mainComponentName,
-      DefaultNewArchitectureEntryPoint.fabricEnabled // ✅ property, not function
-    )
-  }
+  override fun createReactActivityDelegate(): ReactActivityDelegate =
+      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 }

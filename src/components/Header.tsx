@@ -1,5 +1,5 @@
-import { BellRinging, QrCode } from 'phosphor-react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import { BellRingingIcon, QrCodeIcon } from 'phosphor-react-native';
+import React, { JSX, useCallback, useMemo, useState } from 'react';
 import { Keyboard, StyleProp, View } from 'react-native';
 import { SpaceStyle } from 'styles/space';
 import { Badge, Button, Icon } from 'components/design-system-ui';
@@ -128,7 +128,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
                 style={[disabled && DisabledStyle]}
                 size={'xs'}
                 type={'ghost'}
-                icon={<Icon phosphorIcon={BellRinging} weight={'bold'} size={'md'} />}
+                icon={<Icon phosphorIcon={BellRingingIcon} weight={'bold'} size={'md'} />}
                 onPress={onPressNotificationBtn}
               />
               {notiEnable && !!unreadNotificationCount && (
@@ -145,7 +145,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
               style={[{ marginRight: -8 }, disabled && DisabledStyle]}
               size={'xs'}
               type={'ghost'}
-              icon={<Icon phosphorIcon={QrCode} weight={'bold'} size={'md'} />}
+              icon={<Icon phosphorIcon={QrCodeIcon} weight={'bold'} size={'md'} />}
               onPress={onPressQrButton}
             />
           </View>

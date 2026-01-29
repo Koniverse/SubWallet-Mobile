@@ -1,8 +1,7 @@
 import { VoidFunction } from 'types/index';
 import BigNumber from 'bignumber.js';
 import React, { useMemo } from 'react';
-import { CheckCircle, IconProps, Lightning, Tree, Wind } from 'phosphor-react-native';
-import { SwIconProps } from '@subwallet/react-ui';
+import { CheckCircleIcon, IconProps, IconWeight, LightningIcon, TreeIcon, WindIcon } from 'phosphor-react-native';
 import { TouchableOpacity, View } from 'react-native';
 import { Icon, Typography, Number, BackgroundIcon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -23,7 +22,7 @@ type Props = {
 
 interface IconOption {
   icon: React.ElementType<IconProps>;
-  weight: SwIconProps['weight'];
+  weight: IconWeight;
   backgroundColor: string;
 }
 
@@ -69,17 +68,17 @@ export const FeeOptionItem = ({ feeValueInfo, isSelected, onPress, time, type }:
 
   const IconMap: Record<FeeOption, IconOption> = {
     slow: {
-      icon: Tree,
+      icon: TreeIcon,
       weight: 'fill',
       backgroundColor: theme['green-7'],
     },
     average: {
-      icon: Wind,
+      icon: WindIcon,
       weight: 'fill',
       backgroundColor: theme.colorPrimary,
     },
     fast: {
-      icon: Lightning,
+      icon: LightningIcon,
       weight: 'fill',
       backgroundColor: theme['gold-6'],
     },
@@ -116,7 +115,7 @@ export const FeeOptionItem = ({ feeValueInfo, isSelected, onPress, time, type }:
             <Typography.Text style={{ color: theme.colorSecondary }}>{timeText}</Typography.Text>
           </View>
         </View>
-        {isSelected && <Icon phosphorIcon={CheckCircle} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />}
+        {isSelected && <Icon phosphorIcon={CheckCircleIcon} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />}
       </View>
     </TouchableOpacity>
   );

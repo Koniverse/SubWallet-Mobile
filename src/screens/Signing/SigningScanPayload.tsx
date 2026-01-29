@@ -5,12 +5,12 @@ import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { SCANNER_QR_STEP } from 'constants/qr';
 import { rectDimensions } from 'constants/scanner';
 import usePayloadScanner from 'hooks/qr/usePayloadScanner';
-import { ArrowLeft } from 'phosphor-react-native';
+import { ArrowLeftIcon } from 'phosphor-react-native';
 import { ScannerContext } from 'providers/ScannerContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { SafeAreaView, StatusBar, StyleProp, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Bar as ProgressBar } from 'react-native-progress';
-import QRCodeScanner from 'react-native-qrcode-scanner';
+// import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RootNavigationProps } from 'routes/index';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { ColorMap } from 'styles/color';
@@ -114,7 +114,7 @@ const SigningScanPayload = () => {
               <View style={[ScannerStyles.HeaderStyle, { backgroundColor: theme.colorBgSecondary }]}>
                 <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanPayload}</Text>
                 <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={BackButtonStyle} onPress={goBack}>
-                  <ArrowLeft size={20} weight={'bold'} color={'#FFF'} />
+                  <ArrowLeftIcon size={20} weight={'bold'} color={'#FFF'} />
                 </TouchableOpacity>
               </View>
               <View style={ScannerStyles.HeaderSubTitleStyle}>

@@ -6,7 +6,7 @@ import {
   ExtrinsicType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { CheckCircle, IconProps, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, IconProps, XCircleIcon } from 'phosphor-react-native';
 import { ConfirmationFooter } from 'components/common/Confirmation';
 import { Button } from 'components/design-system-ui';
 import { getButtonIcon } from 'utils/button';
@@ -49,7 +49,7 @@ export const TonSignArea = (props: Props) => {
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
 
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
-    return CheckCircle;
+    return CheckCircleIcon;
   }, []);
 
   const onCancel = useCallback(() => {
@@ -108,7 +108,7 @@ export const TonSignArea = (props: Props) => {
 
   return (
     <ConfirmationFooter>
-      <Button disabled={loading} block icon={getButtonIcon(XCircle)} type={'secondary'} onPress={onCancel}>
+      <Button disabled={loading} block icon={getButtonIcon(XCircleIcon)} type={'secondary'} onPress={onCancel}>
         {i18n.common.cancel}
       </Button>
       <Button

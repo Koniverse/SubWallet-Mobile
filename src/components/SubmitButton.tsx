@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { ActivityIndicator, StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import Text from '../components/Text';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { CaretRight, IconProps } from 'phosphor-react-native';
+import { CaretRightIcon, IconProps } from 'phosphor-react-native';
 import { ActivityLoading } from './ActivityLoading';
 
 interface ButtonProps extends TouchableOpacityProps {
@@ -91,7 +91,7 @@ export const SubmitButton = (buttonProps: ButtonProps) => {
       <Text style={getTextStyle(color, !!LeftIcon)}>{title}</Text>
       {hasRightArrow && (
         <View style={iconStyle}>
-          <CaretRight size={20} color={color || ColorMap.light} weight={'bold'} />
+          <CaretRightIcon size={20} color={color || ColorMap.light} weight={'bold'} />
         </View>
       )}
       {(disabled || isBusy) && <View style={disabledOverlayStyle(disabledColor)} />}

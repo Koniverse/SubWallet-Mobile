@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getEarningTimeText } from 'utils/earning';
 
-export const useGetEarningPoolDetailModalData = (earningStaticData: StaticDataProps[], poolInfo?: YieldPoolInfo) => {
+const useGetEarningPoolDetailModalData = (earningStaticData: StaticDataProps[], poolInfo?: YieldPoolInfo) => {
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
 
   const replaceEarningValue = useCallback((target: BoxProps, searchString: string, replaceValue: string) => {
@@ -242,3 +242,5 @@ export const useGetEarningPoolDetailModalData = (earningStaticData: StaticDataPr
 
   return { data };
 };
+
+export default useGetEarningPoolDetailModalData;

@@ -5,7 +5,7 @@ import { Button, Icon } from 'components/design-system-ui';
 import { FieldBase } from 'components/Field/Base';
 import { TextField } from 'components/Field/Text';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CheckCircle, CopySimple, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, CopySimpleIcon, XCircleIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { completeConfirmation } from 'messaging/index';
@@ -79,7 +79,7 @@ const AddTokenConfirmation: React.FC<Props> = (props: Props) => {
               <Text style={styles.text}>{type || i18n.confirmation.tokenType}</Text>
             </View>
           </FieldBase>
-          <TextField icon={CopySimple} text={toShort(contractAddress) || i18n.confirmation.contractAddress} />
+          <TextField icon={CopySimpleIcon} text={toShort(contractAddress) || i18n.confirmation.contractAddress} />
           <View style={styles.containerRow}>
             <View style={styles.rowColumn}>
               <FieldBase>
@@ -100,12 +100,12 @@ const AddTokenConfirmation: React.FC<Props> = (props: Props) => {
         </View>
       </ConfirmationContent>
       <ConfirmationFooter>
-        <Button block={true} type="secondary" onPress={onCancel} icon={<Icon phosphorIcon={XCircle} weight="fill" />}>
+        <Button block={true} type="secondary" onPress={onCancel} icon={<Icon phosphorIcon={XCircleIcon} weight="fill" />}>
           {i18n.common.cancel}
         </Button>
         <Button
           block={true}
-          icon={<Icon phosphorIcon={CheckCircle} weight="fill" />}
+          icon={<Icon phosphorIcon={CheckCircleIcon} weight="fill" />}
           disabled={!!slug}
           onPress={onApprove}
           loading={loading}>

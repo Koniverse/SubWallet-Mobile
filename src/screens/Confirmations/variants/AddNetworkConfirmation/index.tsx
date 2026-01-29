@@ -4,7 +4,7 @@ import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFoote
 import { ActivityIndicator, Button, Icon, Typography } from 'components/design-system-ui';
 import { FieldBase } from 'components/Field/Base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CheckCircle, Globe, ShareNetwork, WifiHigh, WifiSlash, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, GlobeIcon, ShareNetworkIcon, WifiHighIcon, WifiSlashIcon, XCircleIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { completeConfirmation } from 'messaging/index';
@@ -81,11 +81,11 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
     }
 
     if (providerError) {
-      return <Icon size="sm" iconColor={theme['gray-4']} phosphorIcon={WifiSlash} type={'phosphor'} weight={'bold'} />;
+      return <Icon size="sm" iconColor={theme['gray-4']} phosphorIcon={WifiSlashIcon} type={'phosphor'} weight={'bold'} />;
     }
 
     return (
-      <Icon size={'sm'} iconColor={theme.colorSuccess} phosphorIcon={WifiHigh} type={'phosphor'} weight={'bold'} />
+      <Icon size={'sm'} iconColor={theme.colorSuccess} phosphorIcon={WifiHighIcon} type={'phosphor'} weight={'bold'} />
     );
   }, [providerError, theme, unconfirmed]);
 
@@ -98,7 +98,7 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
           <FieldBase>
             <View style={styles.networkUrlField}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXS, flex: 1 }}>
-                <Icon iconColor={theme['gray-3']} size="md" phosphorIcon={ShareNetwork} />
+                <Icon iconColor={theme['gray-3']} size="md" phosphorIcon={ShareNetworkIcon} />
                 <Typography.Text
                   ellipsis
                   style={[styles.text, { flex: 1 }, !!providerError && { color: theme.colorError }]}>
@@ -116,7 +116,7 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
             <View style={styles.row1column1}>
               <FieldBase>
                 <View style={styles.textField}>
-                  <Icon iconColor={theme['gray-3']} size="md" phosphorIcon={Globe} />
+                  <Icon iconColor={theme['gray-3']} size="md" phosphorIcon={GlobeIcon} />
                   <Text style={[styles.text, { color: !chainEditInfo.name ? theme.colorTextLight4 : theme.colorText }]}>
                     {chainEditInfo.name || i18n.common.network}
                   </Text>
@@ -186,14 +186,14 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
         </View>
       </ConfirmationContent>
       <ConfirmationFooter>
-        <Button block={true} type="secondary" onPress={onCancel} icon={<Icon phosphorIcon={XCircle} weight="fill" />}>
+        <Button block={true} type="secondary" onPress={onCancel} icon={<Icon phosphorIcon={XCircleIcon} weight="fill" />}>
           {i18n.common.cancel}
         </Button>
         <Button
           block={true}
           icon={
             <Icon
-              phosphorIcon={CheckCircle}
+              phosphorIcon={CheckCircleIcon}
               weight="fill"
               iconColor={mode === 'update' || unconfirmed || !!providerError ? theme.colorTextLight4 : theme.colorWhite}
             />

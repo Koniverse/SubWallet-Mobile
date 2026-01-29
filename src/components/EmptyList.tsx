@@ -1,7 +1,7 @@
 import Text from 'components/Text';
 import { RefreshControl, ScrollView, View } from 'react-native';
 import React from 'react';
-import { IconProps, PlusCircle } from 'phosphor-react-native';
+import { IconProps, PlusCircleIcon } from 'phosphor-react-native';
 import { centerStyle, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { Button, Icon, PageIcon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -29,7 +29,7 @@ export const EmptyList = ({
   addBtnLoading,
   addBtnLabel,
   onPressAddBtn,
-  iconButton = PlusCircle,
+  iconButton = PlusCircleIcon,
   children,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;

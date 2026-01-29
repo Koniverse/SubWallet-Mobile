@@ -12,7 +12,7 @@ import { View } from 'react-native';
 import { Search } from 'components/Search';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {
@@ -99,7 +99,7 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
   const renderEmptyList = () => {
     return (
       <EmptyList
-        icon={MagnifyingGlass}
+        icon={MagnifyingGlassIcon}
         title={i18n.emptyScreen.selectorEmptyTitle}
         message={i18n.emptyScreen.selectorEmptyMessage}
       />

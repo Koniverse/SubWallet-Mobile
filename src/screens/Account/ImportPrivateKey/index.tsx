@@ -11,7 +11,7 @@ import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { Button, Icon, Typography } from 'components/design-system-ui';
-import { FileArrowDown, X } from 'phosphor-react-native';
+import { FileArrowDownIcon, XIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStyle from './styles';
 import InputText from 'components/Input/InputText';
@@ -187,7 +187,7 @@ export const ImportPrivateKey = () => {
       title={i18n.header.importByPrivateKey}
       navigation={navigation}
       disabled={isBusy}
-      rightIcon={X}
+      rightIcon={XIcon}
       onPressRightIcon={goHome}
       disableRightButton={isBusy}>
       <View style={styles.wrapper}>
@@ -223,7 +223,7 @@ export const ImportPrivateKey = () => {
           <Button
             icon={
               <Icon
-                phosphorIcon={FileArrowDown}
+                phosphorIcon={FileArrowDownIcon}
                 size={'lg'}
                 weight={'fill'}
                 iconColor={canSubmit ? theme.colorTextLight5 : theme.colorTextLight1}

@@ -1,0 +1,7 @@
+diff --git a/node_modules/@polkadot/networks/packageInfo.js b/node_modules/@polkadot/networks/packageInfo.js
+index 8a5b89c..49731b3 100644
+--- a/node_modules/@polkadot/networks/packageInfo.js
++++ b/node_modules/@polkadot/networks/packageInfo.js
+@@ -1 +1 @@
+-export const packageInfo = { name: '@polkadot/networks', path: (import.meta && import.meta.url) ? new URL(import.meta.url).pathname.substring(0, new URL(import.meta.url).pathname.lastIndexOf('/') + 1) : 'auto', type: 'esm', version: '13.5.9' };
++export const packageInfo = { name: '@polkadot/networks', path: 'auto', type: 'cjs', version: '13.5.9' };

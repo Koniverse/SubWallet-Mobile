@@ -6,7 +6,7 @@ import { AccountProxyExtra_ } from '..';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { ImportJsonAccountItem } from 'screens/Account/RestoreJson/ImportJsonAccountSelector/ImportJsonAccountItem';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
@@ -32,7 +32,7 @@ export const ImportJsonAccountSelector = ({ grouping, items, accountProxiesSelec
       return (
         <ImportJsonAccountItem
           disabled={item.group === 'existed_accounts'}
-          key={`account-${item.id}`}
+          key={`${item.id}-${item.name}`}
           accountProxy={item}
           isSelected={selected}
           onPress={onSelect(item)}
@@ -45,7 +45,7 @@ export const ImportJsonAccountSelector = ({ grouping, items, accountProxiesSelec
   const renderEmptyList = () => {
     return (
       <EmptyList
-        icon={MagnifyingGlass}
+        icon={MagnifyingGlassIcon}
         title={i18n.emptyScreen.selectorEmptyTitle}
         message={i18n.emptyScreen.selectorEmptyMessage}
       />

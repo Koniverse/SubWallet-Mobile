@@ -118,7 +118,7 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
   const getReformatAddress = useCoreCreateReformatAddress();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
-  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+  const modalBaseV2Ref = useRef<SWModalRefProps | null>(null);
 
   const onClose = useCallback(() => modalBaseV2Ref?.current?.close(), []);
   const AnalyzedGroupNameMap = useMemo(

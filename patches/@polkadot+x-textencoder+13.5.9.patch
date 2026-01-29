@@ -1,0 +1,7 @@
+diff --git a/node_modules/@polkadot/x-textencoder/packageInfo.js b/node_modules/@polkadot/x-textencoder/packageInfo.js
+index 9948a03..94d72ea 100644
+--- a/node_modules/@polkadot/x-textencoder/packageInfo.js
++++ b/node_modules/@polkadot/x-textencoder/packageInfo.js
+@@ -1 +1 @@
+-export const packageInfo = { name: '@polkadot/x-textencoder', path: (import.meta && import.meta.url) ? new URL(import.meta.url).pathname.substring(0, new URL(import.meta.url).pathname.lastIndexOf('/') + 1) : 'auto', type: 'esm', version: '13.5.9' };
++export const packageInfo = { name: '@polkadot/x-textencoder', path: 'auto', type: 'cjs', version: '13.5.9' };

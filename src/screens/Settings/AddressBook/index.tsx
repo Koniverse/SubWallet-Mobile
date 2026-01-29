@@ -6,7 +6,7 @@ import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SectionItem } from 'components/LazySectionList';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass, PencilSimpleLine, Plus } from 'phosphor-react-native';
+import { MagnifyingGlassIcon, PencilSimpleLineIcon, PlusIcon } from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAddress } from '@polkadot/util-crypto';
@@ -76,7 +76,7 @@ const filterFunction = (items: AccountItem[], filters: string[]) => {
 const emptyList = () => {
   return (
     <EmptyList
-      icon={MagnifyingGlass}
+      icon={MagnifyingGlassIcon}
       title={i18n.emptyScreen.selectorEmptyTitle}
       message={i18n.emptyScreen.selectorEmptyMessage}
     />
@@ -168,7 +168,7 @@ export const ManageAddressBook = () => {
   const ItemRightIcon = useMemo(
     () => (
       <View style={stylesheet.itemRightIconWrapper}>
-        <Icon iconColor={theme['gray-5']} phosphorIcon={PencilSimpleLine} size="sm" />
+        <Icon iconColor={theme['gray-5']} phosphorIcon={PencilSimpleLineIcon} size="sm" />
       </View>
     ),
     [stylesheet.itemRightIconWrapper, theme],
@@ -216,7 +216,7 @@ export const ManageAddressBook = () => {
 
   const listRightIconOption = useMemo(() => {
     return {
-      icon: Plus,
+      icon: PlusIcon,
       onPress: () => {
         setShowAddContactModal(true);
       },

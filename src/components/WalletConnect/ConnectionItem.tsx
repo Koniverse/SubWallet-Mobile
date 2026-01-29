@@ -7,7 +7,7 @@ import { DAppIconMap } from '../../predefined/dAppSites';
 import { getWCAccountProxyList } from 'utils/walletConnect';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRightIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
@@ -78,7 +78,7 @@ export const ConnectionItem = ({ session, onPress }: Props) => {
             </View>
           </View>
         }
-        rightItem={<Icon phosphorIcon={CaretRight} size={'sm'} />}
+        rightItem={<Icon phosphorIcon={CaretRightIcon} size={'sm'} />}
       />
     </TouchableOpacity>
   );

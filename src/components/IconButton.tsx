@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { StyleProp, TouchableOpacity, TouchableOpacityProps } from 'react-native';
-import { IconProps } from 'phosphor-react-native';
+import { type Icon as PhosphorIcon } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 
 interface Props extends TouchableOpacityProps {
-  icon: (iconProps: IconProps) => JSX.Element;
+  icon: PhosphorIcon;
   color?: string;
   size?: number;
 }

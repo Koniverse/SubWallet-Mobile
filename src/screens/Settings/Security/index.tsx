@@ -2,10 +2,10 @@ import React, { useCallback, useContext, useRef, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { ToggleItem } from 'components/ToggleItem';
+import { ToggleItem } from 'components/ToggleItem';Icon
 import { View } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
-import { CaretRight, Key, PenNib, Scan, ShieldCheck, Warning, X } from 'phosphor-react-native';
+import { CaretRightIcon, KeyIcon, PenNibIcon, ScanIcon, ShieldCheckIcon, WarningIcon, XIcon } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime, updateUseBiometric } from 'stores/MobileSettings';
@@ -121,7 +121,7 @@ export const Security = () => {
           visible: true,
           title: 'Warning',
           message: 'Changing this will also disable the signing once for multiple transactions feature. Are you sure?',
-          customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+          customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
           cancelBtnTitle: i18n.buttonTitles.cancel,
           completeBtnTitle: i18n.buttonTitles.confirm,
           onCancelModal: confirmModal.hideConfirmModal,
@@ -150,7 +150,7 @@ export const Security = () => {
             title: 'Change unlock time first!',
             message:
               'This feature can’t be enabled while the "Require unlock" time is set to “Always”. Change your settings and try again',
-            customIcon: <PageIcon icon={X} color={theme.colorError} />,
+            customIcon: <PageIcon icon={XIcon} color={theme.colorError} />,
             completeBtnTitle: i18n.buttonTitles.iUnderstand,
             onCompleteModal: confirmModal.hideConfirmModal,
             isShowCancelButton: false,
@@ -179,7 +179,7 @@ export const Security = () => {
       }}>
       <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
         <ToggleItem
-          backgroundIcon={Scan}
+          backgroundIcon={ScanIcon}
           backgroundIconColor={theme['magenta-7']}
           style={{ marginBottom: 16 }}
           label={i18n.settings.faceId}
@@ -189,11 +189,11 @@ export const Security = () => {
 
         <View style={{ gap: theme.paddingXS }}>
           <SelectItem
-            icon={Key}
+            icon={KeyIcon}
             backgroundColor={theme['gold-6']}
             label={i18n.settings.changePassword}
             onPress={() => navigation.navigate('ChangePassword')}
-            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
+            rightIcon={<Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />}
           />
 
           {/*<SelectItem*/}
@@ -204,14 +204,14 @@ export const Security = () => {
           {/*  rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}*/}
           {/*/>*/}
           <SelectItem
-            icon={ShieldCheck}
+            icon={ShieldCheckIcon}
             backgroundColor={theme['green-6']}
             label={i18n.settings.appLock}
             onPress={() => setIsShowAutoLockModal(true)}
-            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
+            rightIcon={<Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />}
           />
           <ToggleItem
-            backgroundIcon={PenNib}
+            backgroundIcon={PenNibIcon}
             backgroundIconColor={theme['purple-8']}
             label={'Sign for multiple transactions'}
             isEnabled={allowOneSign}

@@ -15,7 +15,7 @@ import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { deleteCustomAssets, reloadCron, restartCronServices } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
-import { Image, Trash } from 'phosphor-react-native';
+import { ImageIcon, TrashIcon } from 'phosphor-react-native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import { _isCustomAsset, _isSmartContractToken } from '@subwallet/extension-base/services/chain-service/utils';
@@ -153,13 +153,13 @@ const NftItemList = ({
   const renderEmptyNFT = (searchString?: string) => {
     if (searchString) {
       return (
-        <EmptyList title={i18n.emptyScreen.nftEmptyTitle} icon={Image} message={i18n.emptyScreen.nftEmptyMessage} />
+        <EmptyList title={i18n.emptyScreen.nftEmptyTitle} icon={ImageIcon} message={i18n.emptyScreen.nftEmptyMessage} />
       );
     } else {
       return (
         <EmptyList
           title={i18n.emptyScreen.nftEmptyTitle}
-          icon={Image}
+          icon={ImageIcon}
           message={i18n.emptyScreen.nftEmptyMessage}
           onPressReload={() => refresh(reloadCron({ data: 'nft' }))}
           isRefresh={isRefresh}
@@ -188,7 +188,7 @@ const NftItemList = ({
         searchFunction={filteredNftItem}
         isLoadingData={isLoadingData}
         rightIconOption={{
-          icon: Trash,
+          icon: TrashIcon,
           disabled:
             isDeleting ||
             !(originAssetInfo && _isSmartContractToken(originAssetInfo) && _isCustomAsset(originAssetInfo.slug)),

@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Avatar, Button, Icon, Number, Typography } from 'components/design-system-ui';
 import { FontMedium } from 'styles/sharedStyles';
-import { DotsThree } from 'phosphor-react-native';
+import { DotsThreeIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import StakingPoolItemStyle from './style';
 import { isEthereumAddress } from '@polkadot/util-crypto';
@@ -89,7 +89,7 @@ export const StakingPoolItem = ({
         size={'xs'}
         icon={
           <Icon
-            phosphorIcon={DotsThree}
+            phosphorIcon={DotsThreeIcon}
             size={'sm'}
             iconColor={disabled ? theme.colorTextLight1 : theme.colorTextLight3}
           />

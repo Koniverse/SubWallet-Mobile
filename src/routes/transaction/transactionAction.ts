@@ -1,10 +1,8 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { NominationInfo, YieldPositionInfo } from '@subwallet/extension-base/types';
 
 export type TransactionActionStackParamList = {
   SendFund: { slug?: string; recipient?: string };
   SendNFT: {
-    from: string;
     chain: string;
     collectionId: string;
     itemId: string;
@@ -18,16 +16,6 @@ export type TransactionActionStackParamList = {
   ClaimReward: { slug: string; chain: string; from: string };
   ClaimBridge: { asset: string; chain: string; notificationId: string; from: string };
   CancelUnstake: { slug: string; chain: string; from: string };
-  ChangeEarningValidator: {
-    slug: string;
-    chain: string;
-    from: string;
-    displayType: 'validator' | 'nomination';
-    compound: YieldPositionInfo;
-    nominations: NominationInfo[];
-    readOnly?: boolean;
-    addresses?: string[];
-  };
 };
 
 export type NavigationProps = NativeStackScreenProps<TransactionActionStackParamList>;
@@ -43,7 +31,3 @@ export type WithdrawProps = NativeStackScreenProps<TransactionActionStackParamLi
 export type CancelUnstakeProps = NativeStackScreenProps<TransactionActionStackParamList, 'CancelUnstake'>;
 export type EarningProps = NativeStackScreenProps<TransactionActionStackParamList, 'Earning'>;
 export type SwapProps = NativeStackScreenProps<TransactionActionStackParamList, 'Swap'>;
-export type ChangeEarningValidatorProps = NativeStackScreenProps<
-  TransactionActionStackParamList,
-  'ChangeEarningValidator'
->;

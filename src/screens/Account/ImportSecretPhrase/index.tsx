@@ -8,7 +8,7 @@ import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { createAccountSuriV2, validateSeedV2 } from 'messaging/index';
-import { FileArrowDown, Warning, X } from 'phosphor-react-native';
+import { FileArrowDownIcon, WarningIcon, XIcon } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
@@ -67,7 +67,7 @@ export const ImportSecretPhrase = () => {
           confirmModal.hideConfirmModal();
           setAccountNameModalVisible(true);
         },
-        customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+        customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
         completeBtnTitle: 'Import',
       });
     } else {
@@ -157,7 +157,7 @@ export const ImportSecretPhrase = () => {
   };
 
   const renderIconButton = useCallback((iconColor: string) => {
-    return <Icon phosphorIcon={FileArrowDown} size={'lg'} weight={'fill'} iconColor={iconColor} />;
+    return <Icon phosphorIcon={FileArrowDownIcon} size={'lg'} weight={'fill'} iconColor={iconColor} />;
   }, []);
 
   const disabled = useMemo(
@@ -171,7 +171,7 @@ export const ImportSecretPhrase = () => {
       title={i18n.header.importFromSeedPhrase}
       disabled={accountCreating}
       onPressRightIcon={goHome}
-      rightIcon={X}
+      rightIcon={XIcon}
       disableRightButton={accountCreating}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>

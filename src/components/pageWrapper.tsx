@@ -1,4 +1,4 @@
-import React, { ComponentType, useContext, useEffect, useState } from 'react';
+import React, { ComponentType, JSX, useContext, useEffect, useState } from 'react';
 import { DataContext } from 'providers/DataContext';
 import { StoreName } from 'stores/index';
 import { ActivityIndicator } from './design-system-ui';

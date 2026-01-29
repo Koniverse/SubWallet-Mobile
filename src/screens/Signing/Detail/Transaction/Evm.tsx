@@ -7,7 +7,7 @@ import {
 import { ActivityLoading } from 'components/ActivityLoading';
 import useGetAccountAndNetworkScanned from 'hooks/screen/Signing/useGetAccountAndNetworkScanned';
 import { ScannerContext } from 'providers/ScannerContext';
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { JSX, useCallback, useContext, useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { SigningStyles } from 'styles/signing';
 import i18n from 'utils/i18n/i18n';

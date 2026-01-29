@@ -1,3 +1,28 @@
+export const PresetBrandColorTypes = ['primary', 'secondary'] as const;
+export const PresetStatusColorTypes = [
+  'success',
+  'processing',
+  'error',
+  'default',
+  'warning',
+  'danger',
+] as const;
+export const PresetColorTypes = [
+  'pink',
+  'red',
+  'yellow',
+  'orange',
+  'cyan',
+  'green',
+  'blue',
+  'purple',
+  'geekblue',
+  'magenta',
+  'volcano',
+  'gold',
+  'lime',
+] as const;
+
 export const convertHexColorToRGBA = (hexCode: string, opacity = 1) => {
   let hex = hexCode.replace('#', '');
 

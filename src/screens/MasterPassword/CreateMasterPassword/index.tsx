@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Alert, Keyboard, Linking, ScrollView, Text, View } from 'react-native';
-import { CheckCircle, Info } from 'phosphor-react-native';
+import { CheckCircleIcon, InfoIcon } from 'phosphor-react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
@@ -16,8 +16,8 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import i18n from 'utils/i18n/i18n';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
-import { createKeychainPassword } from 'utils/account';
 import InputCheckBox from 'components/Input/InputCheckBox';
+import { createKeychainPassword } from 'utils/keychain';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.password && isValidated.repeatPassword;
@@ -73,12 +73,15 @@ const CreateMasterPassword = ({
       const password = formState.data.password;
 
       if (password) {
+
         setIsBusy(true);
+        console.log('1123');
         keyringChangeMasterPassword({
           createNew: true,
           newPassword: password,
         })
           .then(res => {
+            console.log('1123');
             if (!res.status) {
               setErrors(res.errors);
             } else {
@@ -90,6 +93,7 @@ const CreateMasterPassword = ({
             }
           })
           .catch(e => {
+            console.log('1123');
             setErrors([e.message]);
           })
           .finally(() => {
@@ -126,7 +130,7 @@ const CreateMasterPassword = ({
       showLeftBtn={pathName !== 'MigratePassword'}
       onPressBack={() => navigation.goBack()}
       disabled={isBusy}
-      rightIcon={Info}
+      rightIcon={InfoIcon}
       disableRightButton={isBusy}
       title={i18n.header.createAPassword}
       style={{ width: '100%' }}>
@@ -191,11 +195,11 @@ const CreateMasterPassword = ({
           checkBoxSize={20}
         />
         <Button
-          disabled={isDisabled}
+          // disabled={isDisabled}
           showDisableStyle={!checked}
           icon={
             <Icon
-              phosphorIcon={CheckCircle}
+              phosphorIcon={CheckCircleIcon}
               size={'lg'}
               weight={'fill'}
               iconColor={isDisabled || !checked ? theme.colorTextLight5 : theme.colorTextLight1}

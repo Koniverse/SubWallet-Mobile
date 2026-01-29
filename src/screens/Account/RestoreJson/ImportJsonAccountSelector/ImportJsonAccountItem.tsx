@@ -6,15 +6,15 @@ import { Button, Icon, Typography } from 'components/design-system-ui';
 import { AccountProxyType } from '@subwallet/extension-base/types';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import {
-  CheckCircle,
-  Eye,
-  GitCommit,
-  Needle,
-  QrCode,
-  Question,
-  Strategy,
-  Swatches,
-  Warning,
+  CheckCircleIcon,
+  EyeIcon,
+  GitCommitIcon,
+  NeedleIcon,
+  QrCodeIcon,
+  QuestionIcon,
+  StrategyIcon,
+  SwatchesIcon,
+  WarningIcon,
 } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountProxyTypeIcon } from 'components/common/SelectAccountItem';
@@ -38,7 +38,7 @@ export const ImportJsonAccountItem = (props: Props) => {
   const accountProxyTypeIconProps = ((): AccountProxyTypeIcon | null => {
     if (accountProxy.accountType === AccountProxyType.UNIFIED) {
       return {
-        value: Strategy,
+        value: StrategyIcon,
         iconColor: theme.colorSuccess,
         weight: 'fill',
       };
@@ -46,7 +46,7 @@ export const ImportJsonAccountItem = (props: Props) => {
 
     if (accountProxy.accountType === AccountProxyType.SOLO) {
       return {
-        value: GitCommit,
+        value: GitCommitIcon,
         iconColor: theme['blue-9'],
         weight: 'fill',
       };
@@ -54,7 +54,7 @@ export const ImportJsonAccountItem = (props: Props) => {
 
     if (accountProxy.accountType === AccountProxyType.QR) {
       return {
-        value: QrCode,
+        value: QrCodeIcon,
         iconColor: theme.colorWhite,
         weight: 'fill',
       };
@@ -62,7 +62,7 @@ export const ImportJsonAccountItem = (props: Props) => {
 
     if (accountProxy.accountType === AccountProxyType.READ_ONLY) {
       return {
-        value: Eye,
+        value: EyeIcon,
         iconColor: theme.colorWhite,
         weight: 'fill',
       };
@@ -70,7 +70,7 @@ export const ImportJsonAccountItem = (props: Props) => {
 
     if (accountProxy.accountType === AccountProxyType.LEDGER) {
       return {
-        value: Swatches,
+        value: SwatchesIcon,
         iconColor: theme.colorWhite,
         weight: 'fill',
       };
@@ -78,7 +78,7 @@ export const ImportJsonAccountItem = (props: Props) => {
 
     if (accountProxy.accountType === AccountProxyType.INJECTED) {
       return {
-        value: Needle,
+        value: NeedleIcon,
         iconColor: theme.colorWhite,
         weight: 'fill',
       };
@@ -86,7 +86,7 @@ export const ImportJsonAccountItem = (props: Props) => {
 
     if (accountProxy.accountType === AccountProxyType.UNKNOWN) {
       return {
-        value: Question,
+        value: QuestionIcon,
         iconColor: theme.colorWhite,
         weight: 'fill',
       };
@@ -171,7 +171,7 @@ export const ImportJsonAccountItem = (props: Props) => {
               icon={
                 <Icon
                   iconColor={isDuplicated ? theme.colorWarning : theme.colorTextLight4}
-                  phosphorIcon={Warning}
+                  phosphorIcon={WarningIcon}
                   size="sm"
                   type="phosphor"
                   weight="fill"
@@ -186,7 +186,7 @@ export const ImportJsonAccountItem = (props: Props) => {
 
         <Icon
           iconColor={isSelected ? theme.colorSuccess : theme.colorTextLight4}
-          phosphorIcon={CheckCircle}
+          phosphorIcon={CheckCircleIcon}
           size="sm"
           type="phosphor"
           weight="fill"

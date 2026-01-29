@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import ConfirmModal from 'components/common/Modal/ConfirmModal';
-import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
+import { ReceiveModal } from 'screens/Home/Tokens/ReceiveModal';
 import { noop } from 'utils/function';
 import { VoidFunction } from 'types/index';
 import { DeriveAccountActionModal } from 'components/common/Modal/DeriveAccountModal';
@@ -81,7 +81,6 @@ export type AccountTokenAddressModalState = {
 
 export interface AppModal {
   confirmModal: {
-    confirmModalState: ConfirmModalInfo;
     setConfirmModal: React.Dispatch<React.SetStateAction<ConfirmModalInfo>>;
     hideConfirmModal: () => void;
   };
@@ -129,7 +128,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
   const [selectAddressFormatModalState, setSelectAddressFormatModalState] = useState<SelectAddressFormatModalState>({});
   const [accountTokenAddressModalState, setAccountTokenAddressModalState] = useState<AccountTokenAddressModalState>({});
   const hideConfirmModal = useCallback(() => {
-    // setConfirmModal(prevState => ({ ...prevState, visible: false }));
+    setConfirmModal(prevState => ({ ...prevState, visible: false }));
     setTimeout(
       () =>
         setConfirmModal(prevState => ({
@@ -140,7 +139,6 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           messageIcon: undefined,
           onCancelModal: undefined,
           onCompleteModal: undefined,
-          visible: false,
         })),
       300,
     );
@@ -229,7 +227,6 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
   const contextValue: AppModal = useMemo(
     () => ({
       confirmModal: {
-        confirmModalState: confirmModal,
         setConfirmModal,
         hideConfirmModal,
       },
@@ -265,7 +262,6 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
       },
     }),
     [
-      confirmModal,
       hideConfirmModal,
       addressQrModalState,
       hideAddressQrModal,

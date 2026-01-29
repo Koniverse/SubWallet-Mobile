@@ -7,7 +7,7 @@ import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFo
 import i18n from 'utils/i18n/i18n';
 import { validateAccountName } from 'messaging/index';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
@@ -87,7 +87,7 @@ export const AccountNameModal = ({
       <Button
         icon={
           <Icon
-            phosphorIcon={CheckCircle}
+            phosphorIcon={CheckCircleIcon}
             iconColor={isDisabled ? theme.colorTextLight5 : theme.colorWhite}
             weight={'fill'}
           />

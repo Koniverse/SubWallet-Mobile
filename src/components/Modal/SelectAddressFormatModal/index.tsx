@@ -10,7 +10,7 @@ import { AppModalContext } from 'providers/AppModalContext';
 import { SwModal, Typography } from 'components/design-system-ui';
 import AccountChainAddressWithStatusItem from 'components/AccountProxy/AccountChainAddressWithStatusItem';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -134,7 +134,7 @@ const SelectAddressFormatModal: React.FC<Props> = ({
   const renderEmptyList = () => {
     return (
       <EmptyList
-        icon={MagnifyingGlass}
+        icon={MagnifyingGlassIcon}
         title={i18n.emptyScreen.selectorEmptyTitle}
         message={i18n.emptyScreen.selectorEmptyMessage}
       />

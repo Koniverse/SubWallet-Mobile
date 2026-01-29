@@ -6,7 +6,7 @@ import { FontMedium } from 'styles/sharedStyles';
 import { toShort } from 'utils/index';
 import { NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
-import { CheckCircle, CurrencyCircleDollar } from 'phosphor-react-native';
+import { CheckCircleIcon, CurrencyCircleDollarIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import StakingNominationItemStyle from './style';
 import i18n from 'utils/i18n/i18n';
@@ -62,7 +62,7 @@ export const StakingNominationItem = ({
           <View style={[_style.contentWrapper, { paddingRight: theme.paddingXS }]}>
             <View style={_style.contentWrapper}>
               <Icon
-                phosphorIcon={CurrencyCircleDollar}
+                phosphorIcon={CurrencyCircleDollarIcon}
                 iconColor={theme.colorTextTertiary}
                 size={'xs'}
                 weight={'fill'}
@@ -104,7 +104,7 @@ export const StakingNominationItem = ({
         <>
           {isSelected ? (
             <View style={styles.selectedIconWrapper}>
-              <Icon phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} size={'sm'} weight={'fill'} />
+              <Icon phosphorIcon={CheckCircleIcon} iconColor={theme.colorSuccess} size={'sm'} weight={'fill'} />
             </View>
           ) : (
             <View style={styles.selectedIconWrapper} />

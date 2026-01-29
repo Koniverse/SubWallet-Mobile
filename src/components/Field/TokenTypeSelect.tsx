@@ -2,7 +2,7 @@ import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, View } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';
-import { CaretDown, Coin } from 'phosphor-react-native';
+import { CaretDownIcon, CoinIcon } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import { BackgroundIcon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -27,7 +27,7 @@ export const TokenTypeSelectField = ({ disabled, showIcon, outerStyle, value, la
             <BackgroundIcon
               style={{ marginLeft: 12, marginRight: 8, justifyContent: 'center', alignItems: 'center' }}
               shape={'circle'}
-              phosphorIcon={Coin}
+              phosphorIcon={CoinIcon}
               backgroundColor={theme['orange-6']}
               weight={'fill'}
             />
@@ -45,7 +45,7 @@ export const TokenTypeSelectField = ({ disabled, showIcon, outerStyle, value, la
 
         {!!showIcon && (
           <View style={styles.iconWrapper}>
-            <CaretDown size={20} color={theme.colorTextLight3} weight={'bold'} />
+            <CaretDownIcon size={20} color={theme.colorTextLight3} weight={'bold'} />
           </View>
         )}
       </View>

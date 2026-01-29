@@ -1,9 +1,9 @@
-import { mobileBackup, mobileRestore } from 'messaging/index';
-import { MMKV } from 'react-native-mmkv';
+import { mobileBackup, mobileRestore } from '../messaging';
+import { createMMKV } from 'react-native-mmkv';
 import { Storage } from 'redux-persist';
 import { addLazy } from '@subwallet/extension-base/utils/lazy';
 
-const storage = new MMKV();
+const storage = createMMKV();
 
 export const mmkvStore = storage;
 
@@ -17,7 +17,7 @@ export const mmkvReduxStore: Storage = {
     return Promise.resolve(value || null);
   },
   removeItem: key => {
-    storage.delete(key);
+    storage.remove(key);
     return Promise.resolve();
   },
 };

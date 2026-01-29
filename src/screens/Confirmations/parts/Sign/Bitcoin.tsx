@@ -9,7 +9,7 @@ import { AccountSignMode } from '@subwallet/extension-base/types';
 import { RequestSubmitTransferWithId } from '@subwallet/extension-base/types/balance/transfer';
 import { wait } from '@subwallet/extension-base/utils';
 import React, { useCallback, useMemo, useState } from 'react';
-import { CheckCircle, IconProps, QrCode, Swatches, Wallet, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, IconProps, QrCodeIcon, SwatchesIcon, WalletIcon,XCircleIcon } from 'phosphor-react-native';
 import { getSignMode } from 'utils/account';
 import { removeTransactionPersist } from 'utils/transaction';
 import { DisplayPayloadModal } from 'screens/Confirmations/parts';
@@ -81,13 +81,13 @@ export const BitcoinSignArea: React.FC<Props> = (props: Props) => {
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
       case AccountSignMode.QR:
-        return QrCode;
+        return QrCodeIcon;
       case AccountSignMode.GENERIC_LEDGER:
-        return Swatches;
+        return SwatchesIcon;
       case AccountSignMode.INJECTED:
-        return Wallet;
+        return WalletIcon;
       default:
-        return CheckCircle;
+        return CheckCircleIcon;
     }
   }, [signMode]);
 
@@ -212,7 +212,7 @@ export const BitcoinSignArea: React.FC<Props> = (props: Props) => {
       <Button
         block
         disabled={loading}
-        icon={<Icon phosphorIcon={XCircle} weight="fill" />}
+        icon={<Icon phosphorIcon={XCircleIcon} weight="fill" />}
         onPress={onCancel}
         type={'secondary'}>
         {i18n.common.cancel}

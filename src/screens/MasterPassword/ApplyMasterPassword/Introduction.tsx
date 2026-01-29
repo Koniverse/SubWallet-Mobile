@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { PageIcon } from 'components/design-system-ui';
-import { ShieldStar } from 'phosphor-react-native';
+import { ShieldStarIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ApplyMasterPasswordStyle from './style';
 import i18n from 'utils/i18n/i18n';
@@ -12,7 +12,7 @@ export const Introduction = () => {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <PageIcon icon={ShieldStar} color={theme.colorSuccess} />
+      <PageIcon icon={ShieldStarIcon} color={theme.colorSuccess} />
       <Text style={_style.titleStyle}>{i18n.applyMasterPassword.applyMasterPassword}</Text>
       <Text style={_style.messageStyle}>{i18n.applyMasterPassword.applyMasterPasswordMessage}</Text>
     </View>

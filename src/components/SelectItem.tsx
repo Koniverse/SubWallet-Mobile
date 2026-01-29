@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-import { CircleWavyCheck } from 'phosphor-react-native';
+import { CircleWavyCheckIcon } from 'phosphor-react-native';
 import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
@@ -19,7 +19,7 @@ const selectItemSeparator: StyleProp<any> = {
 };
 
 export const SelectItem = ({ label, isSelected, onPress, showSeparator = true, leftIcon }: Props) => {
-  const CheckIcon = CircleWavyCheck;
+  const CheckIcon = CircleWavyCheckIcon;
   return (
     <TouchableOpacity style={{ paddingHorizontal: 16 }} onPress={onPress}>
       <View

@@ -23,7 +23,7 @@ import { Button, Icon } from 'components/design-system-ui';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
 import { AssetTypeOption } from 'types/asset';
-import { Plus, PlusCircle } from 'phosphor-react-native';
+import { PlusIcon, PlusCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
@@ -290,7 +290,7 @@ export const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) =>
   );
 
   const getSubmitIconBtn = (color: string) => {
-    return <Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} iconColor={color} />;
+    return <Icon phosphorIcon={PlusCircleIcon} size={'lg'} weight={'fill'} iconColor={color} />;
   };
 
   useEffect(() => {
@@ -393,7 +393,7 @@ export const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) =>
             />
 
             <Button
-              icon={iconColor => <Icon phosphorIcon={Plus} size={'lg'} iconColor={iconColor} weight={'bold'} />}
+              icon={iconColor => <Icon phosphorIcon={PlusIcon} size={'lg'} iconColor={iconColor} weight={'bold'} />}
               style={{ marginTop: 8 }}
               onPress={() => showPopupEnableChain(chain)}
               type={'ghost'}>

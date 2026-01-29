@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Avatar, Button, Icon, Number } from 'components/design-system-ui';
 import { FontMedium } from 'styles/sharedStyles';
-import { CheckCircle, DotsThree, Medal } from 'phosphor-react-native';
+import { CheckCircleIcon, DotsThreeIcon, MedalIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import StakingValidatorItemStyle from './style';
 import { isEthereumAddress } from '@polkadot/util-crypto';
@@ -51,7 +51,7 @@ export const StakingValidatorItem = ({
           <Text numberOfLines={1} style={_style.validatorNameTextStyle}>
             {identity || toShort(address)}
           </Text>
-          {isNominated && <Icon iconColor={theme.colorSuccess} phosphorIcon={Medal} size={'xs'} weight={'fill'} />}
+          {isNominated && <Icon iconColor={theme.colorSuccess} phosphorIcon={MedalIcon} size={'xs'} weight={'fill'} />}
         </View>
 
         <View style={_style.contentWrapper}>
@@ -79,7 +79,7 @@ export const StakingValidatorItem = ({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {(showUnSelectedIcon || isSelected) && (
           <Icon
-            phosphorIcon={CheckCircle}
+            phosphorIcon={CheckCircleIcon}
             size={'sm'}
             weight={'fill'}
             iconColor={isSelected ? theme.colorSuccess : theme.colorTextLight4}
@@ -90,7 +90,7 @@ export const StakingValidatorItem = ({
             style={{ marginLeft: 10 }}
             type={'ghost'}
             size={'xs'}
-            icon={<Icon phosphorIcon={DotsThree} size={'sm'} iconColor={theme.colorTextLight4} />}
+            icon={<Icon phosphorIcon={DotsThreeIcon} size={'sm'} iconColor={theme.colorTextLight4} />}
             onPress={onPressRightButton}
           />
         )}

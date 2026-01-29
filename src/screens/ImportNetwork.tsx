@@ -5,16 +5,16 @@ import { Keyboard, View } from 'react-native';
 import InputText from 'components/Input/InputText';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import {
-  FloppyDiskBack,
-  Globe,
-  GlobeHemisphereEast,
-  Rocket,
-  ShareNetwork,
-  WifiHigh,
-  WifiSlash,
+  FloppyDiskBackIcon,
+  GlobeIcon,
+  GlobeHemisphereEastIcon,
+  RocketIcon,
+  ShareNetworkIcon,
+  WifiHighIcon,
+  WifiSlashIcon,
 } from 'phosphor-react-native';
 import { ActivityIndicator, Button, Icon } from 'components/design-system-ui';
-import { ValidateStatus } from '@subwallet/react-ui/es/form/FormItem';
+import { ValidateStatus } from 'types/form';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
 import { ImportNetworkProps, RootNavigationProps } from 'routes/index';
@@ -299,7 +299,7 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
 
     if (providerValidation.status === 'success') {
       return (
-        <Icon size={'sm'} iconColor={theme.colorSuccess} phosphorIcon={WifiHigh} type={'phosphor'} weight={'bold'} />
+        <Icon size={'sm'} iconColor={theme.colorSuccess} phosphorIcon={WifiHighIcon} type={'phosphor'} weight={'bold'} />
       );
     }
 
@@ -308,7 +308,7 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
     }
 
     if (providerValidation.status === 'error') {
-      return <Icon size="sm" iconColor={theme['gray-4']} phosphorIcon={WifiSlash} type={'phosphor'} weight={'bold'} />;
+      return <Icon size="sm" iconColor={theme['gray-4']} phosphorIcon={WifiSlashIcon} type={'phosphor'} weight={'bold'} />;
     }
 
     return <></>;
@@ -328,7 +328,7 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
     <ContainerWithSubHeader onPressBack={onBack} title={i18n.header.importNetwork}>
       <View style={{ ...ContainerHorizontalPadding, paddingTop: 16, flex: 1 }}>
         <InputText
-          leftIcon={ShareNetwork}
+          leftIcon={ShareNetworkIcon}
           placeholder={formState.labels.provider}
           ref={formState.refs.provider}
           value={formState.data.provider}
@@ -343,7 +343,7 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
         <View style={{ flexDirection: 'row' }}>
           <InputText
             containerStyle={{ flex: 2, marginRight: 6 }}
-            leftIcon={Globe}
+            leftIcon={GlobeIcon}
             placeholder={formState.labels.name}
             ref={formState.refs.name}
             value={formState.data.name}
@@ -385,7 +385,7 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
         </View>
 
         <InputText
-          leftIcon={GlobeHemisphereEast}
+          leftIcon={GlobeHemisphereEastIcon}
           placeholder={formState.labels.blockExplorer}
           ref={formState.refs.blockExplorer}
           value={formState.data.blockExplorer}
@@ -394,7 +394,7 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
         />
 
         <InputText
-          leftIcon={Rocket}
+          leftIcon={RocketIcon}
           placeholder={formState.labels.crowdloanUrl}
           ref={formState.refs.crowdloanUrl}
           value={formState.data.crowdloanUrl}
@@ -410,7 +410,7 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
           onPress={onSubmit}
           icon={
             <Icon
-              phosphorIcon={FloppyDiskBack}
+              phosphorIcon={FloppyDiskBackIcon}
               size={'lg'}
               weight={'fill'}
               iconColor={isSubmitDisabled() ? theme.colorTextLight5 : theme.colorWhite}

@@ -38,7 +38,7 @@ export interface SWModalProps {
   onBackButtonPress?: () => void;
   isUseModalV2?: boolean;
   setVisible: (arg: boolean) => void;
-  modalBaseV2Ref?: React.RefObject<SWModalRefProps>;
+  modalBaseV2Ref?: React.RefObject<SWModalRefProps | null>;
   level?: number;
   isUseSafeAreaView?: boolean;
   disabledOnPressBackDrop?: boolean;

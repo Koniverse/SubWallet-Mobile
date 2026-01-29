@@ -1,6 +1,6 @@
 import { IconButton } from 'components/IconButton';
-import { IconProps, Info } from 'phosphor-react-native';
-import React, { useMemo } from 'react';
+import { InfoIcon, type Icon as PhosphorIcon } from 'phosphor-react-native';
+import React, { JSX, useMemo } from 'react';
 import { StyleProp, StyleSheet, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium } from 'styles/sharedStyles';
@@ -16,7 +16,7 @@ interface Props extends FieldBaseProps {
   disabled?: boolean;
   textColor?: string;
   iconColor?: string;
-  icon?: (props: IconProps) => JSX.Element;
+  icon?: PhosphorIcon;
   placeholder?: string;
 }
 
@@ -54,7 +54,7 @@ export const TextField = ({
           <IconButton
             color={iconColor ? iconColor : ColorMap.disabled}
             style={infoIconStyle}
-            icon={icon || Info}
+            icon={icon || InfoIcon}
             onPress={onPressRightIcon}
           />
         )}

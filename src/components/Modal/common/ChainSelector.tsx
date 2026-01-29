@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { JSX, useCallback } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ChainInfo } from 'types/index';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
