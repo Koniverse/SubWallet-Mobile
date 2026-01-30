@@ -430,7 +430,6 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
             renderListEmptyComponent={renderEmpty}
             title={i18n.header.groupList}
             renderItem={renderItem}
-            estimatedItemSize={74}
             flatListStyle={{
               paddingHorizontal: theme.padding,
               paddingBottom: theme.paddingXS,

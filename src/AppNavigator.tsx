@@ -317,7 +317,6 @@ export const getFilteredAccount = (chainInfo: _ChainInfo) => (account: AccountJs
 };
 
 const AppNavigator = ({ isAppReady }: Props) => {
-  console.log('isAppReady', isAppReady);
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   const appTheme = useSubWalletTheme().swThemes;
@@ -602,17 +601,19 @@ const AppNavigator = ({ isAppReady }: Props) => {
     }
   }, [currentRoute, isLogin, navigationRef, needMigrateMasterPassword]);
 
+  console.log('isLogin', isLogin);
   useEffect(() => {
     if (isLogin && !!accounts.length && isNavigationReady) {
       confirmModal.hideConfirmModal();
       if (currentRoute && currentRoute.name === 'Confirmations') {
         setTimeout(() => navigationRef.current?.dispatch(StackActions.replace('Login')), 300);
       } else {
+        console.log('run to this');
         setTimeout(() => navigationRef.current?.navigate('Login'), 300);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLogin, isNavigationReady, accounts, currentRoute]);
+  }, [isLogin, isNavigationReady, accounts, currentRoute?.name]);
 
   useEffect(() => {
     if (isEmptyAccounts) {
@@ -756,7 +757,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
               </Stack.Group>
             </>
           )}
-          {/*{!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}*/}
+          {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
         </Stack.Navigator>
         <PortalHost name="SimpleModalHost" />
       </ErrorBoundary>

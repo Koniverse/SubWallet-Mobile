@@ -294,7 +294,6 @@ export const AddressBookModal = ({ chainSlug, modalVisible, onSelect, value = ''
         isShowMainHeader={false}
         searchMarginBottom={theme.sizeXS}
         flatListStyle={stylesheet.flatListStyle}
-        estimatedItemSize={60}
       />
     </SwFullSizeModal>
   );

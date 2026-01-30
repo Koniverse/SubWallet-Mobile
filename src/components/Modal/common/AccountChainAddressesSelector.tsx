@@ -360,7 +360,6 @@ export const AccountChainAddressesSelector = ({
         renderCustomItem={renderItem}
         searchFunc={searchFunction}
         keyExtractor={item => `${item.slug}_${item.address}`}
-        estimatedItemSize={60}
         isShowInput={isShowInput}>
         {children}
       </FullSizeSelectModal>

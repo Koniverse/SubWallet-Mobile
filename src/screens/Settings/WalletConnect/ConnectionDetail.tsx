@@ -156,7 +156,6 @@ export const ConnectionDetail = ({
                     )}
                     searchFunc={searchFunction}
                     placeholder={i18n.placeholder.networkName}
-                    estimatedItemSize={60}
                   />
                 </MetaInfo.Default>
               </MetaInfo>

@@ -163,7 +163,6 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
         searchString={searchString}
         filterFunction={filterFunction}
         selectedFilters={selectedFilters}
-        estimatedItemSize={122}
       />
 
       {selectedMissionPool && (

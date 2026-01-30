@@ -20,7 +20,7 @@ interface Props extends TextInputProps {
   searchText: string;
   onClearSearchString: () => void;
   autoFocus?: boolean;
-  searchRef?: React.RefObject<TextInput>;
+  searchRef?: React.RefObject<TextInput | null>;
   onSubmitEditing?: TextInputProps['onSubmitEditing'];
   isShowFilterBtn?: boolean;
   isHasSelectedFilter?: boolean;

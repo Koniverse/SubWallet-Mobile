@@ -309,10 +309,7 @@ export const AccountsScreen = ({
           navigation.goBack();
           navigation.goBack();
         } else if (pathName === 'SendFund' || pathName === 'BuyToken') {
-          navigation.navigate('Home', {
-            screen: 'Main',
-            params: { screen: 'Tokens', params: { screen: 'TokenGroups' } },
-          });
+          navigation.goBack();
           navigation.goBack();
         } else if (pathName && EARNING_SCREEN_LIST.includes(pathName)) {
           navigation.navigate('Home', {
@@ -320,7 +317,7 @@ export const AccountsScreen = ({
             params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 1 } } },
           });
         } else {
-          navigation.navigate('Home');
+          navigation.goBack();
         }
       };
     },
@@ -478,7 +475,6 @@ export const AccountsScreen = ({
         loading={!isReady}
         afterListItem={renderFooterComponent()}
         placeholder={i18n.placeholder.accountName}
-        estimatedItemSize={64}
         keyExtractor={item => {
           return `${item.id}`;
         }}

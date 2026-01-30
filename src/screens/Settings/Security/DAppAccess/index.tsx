@@ -186,7 +186,6 @@ export const DAppAccessScreen = () => {
       isShowFilterBtn
       filterFunction={filterFunction}
       filterOptions={FILTER_OPTIONS}
-      estimatedItemSize={60}
       afterListItem={
         <MoreOptionModal
           modalVisible={modalVisible}

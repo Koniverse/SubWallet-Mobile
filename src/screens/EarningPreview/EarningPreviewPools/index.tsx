@@ -310,7 +310,6 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
         filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onBack}
-        estimatedItemSize={113}
         // rightIconOption={rightIconOption}
         isShowFilterBtn
         refreshControl={

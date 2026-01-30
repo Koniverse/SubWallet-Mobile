@@ -1,8 +1,8 @@
-import React, { ComponentType, JSX, useContext, useEffect, useState } from 'react';
+import React, { ComponentType, useContext, useEffect, useState } from 'react';
+import { View } from 'react-native';
 import { DataContext } from 'providers/DataContext';
 import { StoreName } from 'stores/index';
 import { ActivityIndicator } from './design-system-ui';
-import { View } from 'react-native';
 
 const Loading = () => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -10,16 +10,34 @@ const Loading = () => (
   </View>
 );
 
-const PageWrapper = (Component: ComponentType<any>, stateNames: StoreName[]) => {
-  const [isLoading, setLoading] = useState(true);
-  const dataContext = useContext(DataContext);
+function withPageWrapper<P>(
+  WrappedComponent: ComponentType<P>,
+  stateNames: StoreName[],
+) {
+  return function PageWrapper(props: P) {
+    const [isLoading, setLoading] = useState(true);
+    const dataContext = useContext(DataContext);
 
-  useEffect(() => {
-    dataContext.awaitStores(stateNames).finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    useEffect(() => {
+      let mounted = true;
 
-  return (props: JSX.IntrinsicAttributes) => (isLoading ? <Loading /> : <Component {...props} />);
-};
+      dataContext.awaitStores(stateNames).finally(() => {
+        if (mounted) {
+          setLoading(false);
+        }
+      });
 
-export default PageWrapper;
+      return () => {
+        mounted = false;
+      };
+    }, [dataContext, stateNames]);
+
+    if (isLoading) {
+      return <Loading />;
+    }
+
+    return <WrappedComponent {...props} />;
+  };
+}
+
+export default withPageWrapper;

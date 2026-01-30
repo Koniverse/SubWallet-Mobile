@@ -23,16 +23,17 @@ const NEED_CHECK_TO_SHOW_WARNING_SLUGS = [
 let isShowAlert = false;
 export const EarningList = ({
   navigation,
-  route: {
-    params: { step, noAccountValid, chain, accountType },
-  },
+  route,
 }: EarningListProps) => {
   const data = useGroupYieldPosition();
   const hasData = !!data?.length;
   const hasDataFlag = useRef(hasData);
   const { isLocked } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const [currentStep, setCurrentStep] = useState(step || 1);
+  const noAccountValid = route.params?.noAccountValid;
+  const chain = route.params?.chain;
+  const accountType = route.params?.accountType;
+  const [currentStep, setCurrentStep] = useState(route.params?.step ?? 1);
   const [firstLoading, setFirstLoading] = useState(true);
   const [warningModalVisible, setWarningModalVisible] = useState<boolean>(false);
   const [positionLoading, setPositionLoading] = useState(false);

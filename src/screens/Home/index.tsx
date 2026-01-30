@@ -130,6 +130,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
 
   return (
     <Tab.Navigator
+      id="MainTabs"
       initialRouteName={'Tokens'}
       screenOptions={{
         headerShown: false,
@@ -236,6 +237,7 @@ const Wrapper = () => {
   const Drawer = createDrawerNavigator<WrapperParamList>();
   return (
     <Drawer.Navigator
+      id="HomeDrawer"
       drawerContent={getSettingsContent}
       screenOptions={{
         drawerStyle: {

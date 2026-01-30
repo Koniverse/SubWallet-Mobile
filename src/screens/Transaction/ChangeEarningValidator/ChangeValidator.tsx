@@ -532,7 +532,6 @@ export const ChangeValidator = ({
             renderItem={renderItem}
             renderListEmptyComponent={renderEmpty}
             filterFunction={filterFunction}
-            estimatedItemSize={58}
             extraData={JSON.stringify(selectedValidators)}
             keyExtractor={item => getValidatorKey(item.address, item.identity)}
             searchFunction={searchFunction}

@@ -54,12 +54,14 @@ export const ToggleItem = ({
         </View>
       </View>
 
-      <Switch
-        ios_backgroundColor={ColorMap.switchInactiveButtonColor}
-        value={isEnabled}
-        onValueChange={onValueChange}
-        disabled={disabled}
-      />
+      <View>
+        <Switch
+          ios_backgroundColor={ColorMap.switchInactiveButtonColor}
+          value={isEnabled}
+          onValueChange={onValueChange}
+          disabled={disabled}
+        />
+      </View>
     </View>
   );
 };

@@ -100,7 +100,6 @@ export const TokenSearchModal = ({
       title={i18n.header.selectToken}
       placeholder={i18n.placeholder.searchToken}
       closeModalAfterSelect={true}
-      estimatedItemSize={76}
       renderListEmptyComponent={() => (
         <EmptyList
           icon={Coins}

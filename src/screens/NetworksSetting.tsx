@@ -158,21 +158,21 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<ChainInfoWithStateAnhStatus>) => {
+    const isDisableSwitching = item.slug === 'polkadot' || item.slug === 'kusama' || Object.keys(pendingChainMap).includes(item.slug);
+    const isEnabled =
+      Object.keys(pendingChainMap).includes(item.slug)
+        ? pendingChainMap[item.slug]
+        : chainInfoMap[item.slug]?.active || false;
+
     return (
       <NetworkAndTokenToggleItem
-        isDisableSwitching={
-          item.slug === 'polkadot' || item.slug === 'kusama' || Object.keys(pendingChainMap).includes(item.slug)
-        }
+        isDisableSwitching={isDisableSwitching}
         key={`${item.slug}-${item.name}`}
         itemName={item.name}
         itemKey={item.slug}
         connectionStatus={item.connectionStatus}
         // @ts-ignore
-        isEnabled={
-          Object.keys(pendingChainMap).includes(item.slug)
-            ? pendingChainMap[item.slug]
-            : chainInfoMap[item.slug]?.active || false
-        }
+        isEnabled={isEnabled}
         onValueChange={() => onToggleItem(item)}
         showEditButton
         onPressEditBtn={() => {
@@ -219,7 +219,6 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
       isShowFilterBtn
       filterFunction={filterFunction}
       isShowListWrapper={true}
-      estimatedItemSize={61}
     />
   );
 };

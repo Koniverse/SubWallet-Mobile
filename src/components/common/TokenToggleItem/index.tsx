@@ -36,12 +36,14 @@ export const TokenToggleItem = ({ item, onPress, isEnabled, onValueChange, isDis
           </Typography.Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Switch
-            disabled={isDisableSwitching}
-            ios_backgroundColor={ColorMap.switchInactiveButtonColor}
-            value={isEnabled}
-            onValueChange={onValueChange}
-          />
+          <View>
+            <Switch
+              disabled={isDisableSwitching}
+              ios_backgroundColor={ColorMap.switchInactiveButtonColor}
+              value={isEnabled}
+              onValueChange={onValueChange}
+            />
+          </View>
           <Button
             onPress={onPress}
             icon={<Icon phosphorIcon={PencilSimpleLineIcon} iconColor={theme['gray-5']} size={'sm'} />}

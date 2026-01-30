@@ -646,7 +646,6 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
         searchFunction={searchFunction}
         isShowCustomContent={!enableNotification}
         renderCustomContent={renderEnableNotifications}
-        estimatedItemSize={88}
         extraData={JSON.stringify(viewDetailItem)}
         rightIconOption={{ icon: Gear, onPress: openNotificationSetting }}
         flatListStyle={{

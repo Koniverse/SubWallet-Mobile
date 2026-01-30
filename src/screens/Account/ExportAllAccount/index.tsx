@@ -301,7 +301,6 @@ export const ExportAllAccount = () => {
         filterFunction={filterFunction}
         extraData={JSON.stringify(selectedValueMap)}
         keyExtractor={item => item.id}
-        estimatedItemSize={80}
         placeholder={'Account name'}
       />
 

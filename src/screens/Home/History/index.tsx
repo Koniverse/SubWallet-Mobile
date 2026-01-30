@@ -718,7 +718,6 @@ function History({
             sortSectionFunction={grouping.sortSection}
             groupBy={grouping.groupBy}
             renderSectionHeader={grouping.renderSectionHeader}
-            estimatedItemSize={76}
             stickyHeader={false}
           />
         </View>

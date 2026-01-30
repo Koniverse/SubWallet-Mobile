@@ -235,7 +235,6 @@ export const AccountSelector = ({
       closeModalAfterSelect={closeModalAfterSelect}
       isShowContent={isShowContent}
       renderCustomItem={renderCustomItem}
-      estimatedItemSize={60}
       onCloseModal={onCloseModal}
       grouping={grouping}
       isShowBitcoinAttr={isShowBitcoinAttr}

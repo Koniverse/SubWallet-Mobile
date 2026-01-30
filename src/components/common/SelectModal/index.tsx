@@ -82,7 +82,6 @@ interface Props<T> {
     sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
   showAccountSignModeIcon?: boolean;
-  estimatedItemSize?: number;
   extraData?: any;
   keyExtractor?: (item: T, index: number) => string;
   flatListStyle?: ViewStyle;
@@ -130,7 +129,6 @@ function Component<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     level,
     grouping,
     showAccountSignModeIcon,
-    estimatedItemSize,
     extraData,
     keyExtractor,
     flatListStyle,
@@ -362,7 +360,6 @@ function Component<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
                 afterListItem={
                   selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
                 }
-                estimatedItemSize={estimatedItemSize || 80}
                 searchMarginBottom={grouping ? theme.sizeXS : undefined}
                 extraData={extraData}
                 keyExtractor={keyExtractor}

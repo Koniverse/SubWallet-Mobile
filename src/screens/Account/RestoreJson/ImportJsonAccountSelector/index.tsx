@@ -60,7 +60,6 @@ export const ImportJsonAccountSelector = ({ grouping, items, accountProxiesSelec
         renderListEmptyComponent={renderEmptyList}
         groupBy={grouping?.groupBy}
         renderSectionHeader={grouping?.renderSectionHeader}
-        estimatedItemSize={60}
         extraData={accountProxiesSelected}
       />
     </View>

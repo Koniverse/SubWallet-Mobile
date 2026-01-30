@@ -197,7 +197,6 @@ const NftItemList = ({
         items={_nftItems}
         numberColumns={2}
         searchMarginBottom={16}
-        estimatedItemSize={220}
         refreshControl={
           <RefreshControl
             style={{ backgroundColor: ColorMap.dark1 }}

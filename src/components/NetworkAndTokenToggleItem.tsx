@@ -98,12 +98,14 @@ export const NetworkAndTokenToggleItem = ({
           </Text>
         </View>
 
-        <Switch
-          disabled={isDisableSwitching}
-          ios_backgroundColor={ColorMap.switchInactiveButtonColor}
-          value={isEnabled}
-          onValueChange={onValueChange}
-        />
+        <View>
+          <Switch
+            disabled={isDisableSwitching}
+            ios_backgroundColor={ColorMap.switchInactiveButtonColor}
+            value={isEnabled}
+            onValueChange={onValueChange}
+          />
+        </View>
 
         {showEditButton && (
           <Button

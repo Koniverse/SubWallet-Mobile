@@ -264,7 +264,6 @@ export const ChangeEarningValidator = ({
             items={list}
             title={'Your validator'}
             renderItem={renderItem}
-            estimatedItemSize={58}
             renderListEmptyComponent={renderEmpty}
             withSearchInput={false}
             afterListItem={

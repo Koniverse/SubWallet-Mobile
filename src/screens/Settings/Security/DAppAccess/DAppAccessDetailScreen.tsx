@@ -252,7 +252,6 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
             message={i18n.emptyScreen.manageDAppDetailEmptyMessage}
           />
         )}
-        estimatedItemSize={60}
         rightIconOption={rightIconOption}
         renderItem={renderItem}
         afterListItem={

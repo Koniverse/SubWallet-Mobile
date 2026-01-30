@@ -166,13 +166,12 @@ export function getReformatedAddressRelatedToChain(
 
 // Keychain configuration
 const keychainConfig: RNSensitiveInfoOptions = {
-  touchID: true,
-  showModal: true,
-  kSecAccessControl: 'kSecAccessControlBiometryCurrentSet',
-  sharedPreferencesName: 'swSharedPrefs',
   keychainService: 'swKeychain',
-  kSecAttrAccessible: 'kSecAttrAccessibleWhenUnlocked',
+  sharedPreferencesName: 'swSharedPrefs',
+  kSecAccessControl: 'kSecAccessControlBiometryCurrentSet',
+  kSecAttrAccessible: 'kSecAttrAccessibleWhenUnlockedThisDeviceOnly',
   kSecUseOperationPrompt: 'Unlock app using biometric',
+  showModal: true,
 };
 const maxAttempsData = ['Biometry is locked out', 'Quá nhiều lần thử', 'Too many attempts'];
 function alertFailedAttempts(e: any) {
@@ -189,6 +188,7 @@ function alertFailedAttempts(e: any) {
 const username = 'sw-user';
 export const createKeychainPassword = async (password: string) => {
   try {
+    await SInfo.deleteItem(username, keychainConfig);
     await SInfo.setItem(username, password, keychainConfig);
     return true;
   } catch (e) {
@@ -200,8 +200,8 @@ export const createKeychainPassword = async (password: string) => {
 
 export const getKeychainPassword = async () => {
   try {
-    const password = await SInfo.getItem(username, keychainConfig);
-    return password;
+    const sensitiveInfo = await SInfo.getItem(username, keychainConfig);
+    return sensitiveInfo?.value;
   } catch (e) {
     alertFailedAttempts(e);
     throw e;
@@ -211,7 +211,7 @@ export const getKeychainPassword = async () => {
 export const resetKeychainPassword = async () => {
   try {
     // return await Keychain.resetGenericPassword();
-    SInfo.deleteItem(username, keychainConfig);
+    await SInfo.deleteItem(username, keychainConfig);
     return true;
   } catch (e) {
     console.warn('reset keychain failed:', e);

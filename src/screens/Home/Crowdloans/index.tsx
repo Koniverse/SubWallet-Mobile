@@ -131,7 +131,6 @@ export const CrowdloansScreen = () => {
       filterFunction={getListByFilterOpt}
       placeholder={i18n.placeholder.searchProject}
       refreshControl={<RefreshControl tintColor={theme.colorWhite} refreshing={isRefresh} onRefresh={onRefresh} />}
-      estimatedItemSize={76}
       beforeListItem={
         !!(banners && banners.length) ? (
           <View

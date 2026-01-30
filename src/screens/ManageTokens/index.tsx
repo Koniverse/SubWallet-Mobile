@@ -147,7 +147,6 @@ export const CustomTokenSetting = () => {
         filterFunction={filterFunction}
         searchFunction={searchFunction}
         renderItem={renderItem}
-        estimatedItemSize={61}
         renderListEmptyComponent={() => (
           <EmptyList
             icon={CoinsIcon}

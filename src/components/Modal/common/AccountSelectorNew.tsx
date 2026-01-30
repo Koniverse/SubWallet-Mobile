@@ -168,7 +168,6 @@ export const AccountProxySelector = ({
       closeModalAfterSelect={closeModalAfterSelect}
       isShowContent={isShowContent}
       renderCustomItem={renderCustomItem}
-      estimatedItemSize={60}
       onCloseModal={onCloseModal}
       grouping={grouping}
       isShowInput={isShowInput}>

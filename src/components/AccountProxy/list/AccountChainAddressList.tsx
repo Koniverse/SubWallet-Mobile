@@ -365,7 +365,6 @@ export const AccountChainAddressList = ({ accountProxy }: Props) => {
           data={filteredItems}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
-          estimatedItemSize={52}
         />
       ) : (
         renderEmptyList()

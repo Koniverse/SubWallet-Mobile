@@ -220,7 +220,6 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
         renderListEmptyComponent={renderListEmptyComponent}
         isLoadingData={isLoadingData}
         isShowListWrapper
-        estimatedItemSize={57}
         placeholder={i18n.placeholder.networkName}
       />
     </SwFullSizeModal>

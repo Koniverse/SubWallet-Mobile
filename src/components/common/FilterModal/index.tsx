@@ -16,7 +16,7 @@ export interface FilterModalProps {
   onChangeOption?: (value: string, isChecked: boolean) => void;
   onApplyFilter?: () => void;
   optionSelectionMap: Record<string, boolean>;
-  filterModalRef: React.MutableRefObject<ModalRef | undefined>;
+  filterModalRef: React.RefObject<ModalRef | null>;
   searchFunction?: (items: OptionType[], searchString: string) => OptionType[];
   onChangeModalVisible?: () => void;
 }

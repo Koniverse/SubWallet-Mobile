@@ -151,7 +151,6 @@ export const ConnectionList = ({
           autoFocus={false}
           renderListEmptyComponent={renderEmptyList}
           searchFunction={searchFunc}
-          estimatedItemSize={64}
           afterListItem={
             <Button
               style={{ marginHorizontal: 16, marginBottom: 16 }}

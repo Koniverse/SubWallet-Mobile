@@ -75,7 +75,6 @@ const NftCollectionList = () => {
         searchFunction={filteredCollection}
         items={nftCollections}
         placeholder={i18n.placeholder.searchCollectionName}
-        estimatedItemSize={228.7}
         isHideBottomSafeArea={true}
         rightIconOption={{
           icon: PlusIcon,

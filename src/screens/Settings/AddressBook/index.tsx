@@ -243,7 +243,6 @@ export const ManageAddressBook = () => {
         searchMarginBottom={theme.sizeXS}
         flatListStyle={stylesheet.flatListStyle}
         onPressBack={() => navigation.goBack()}
-        estimatedItemSize={60}
       />
 
       <AddContactModal modalVisible={isShowAddContactModal} setModalVisible={setShowAddContactModal} />

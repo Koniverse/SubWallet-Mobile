@@ -447,7 +447,6 @@ export const EarningPoolSelector = forwardRef(
               return item.address;
             }
           }}
-          estimatedItemSize={82}
           renderSelected={renderSelected}>
           <>
             {!!selectedItem && (
