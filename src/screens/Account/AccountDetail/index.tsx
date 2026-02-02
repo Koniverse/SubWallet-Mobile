@@ -108,7 +108,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
     [accountProxy.name],
   );
 
-  const saveTimeOutRef = useRef<NodeJS.Timeout>();
+  const saveTimeOutRef = useRef<NodeJS.Timeout | null>(null);
 
   const getDefaultTab = () => {
     if (requestViewDerivedAccounts && showDerivedAccounts) {
@@ -159,7 +159,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
 
   const onSave = useCallback(
     (editName: string) => {
-      clearTimeout(saveTimeOutRef.current);
+      saveTimeOutRef.current && clearTimeout(saveTimeOutRef.current);
       if (editName.trim()) {
         editAccount(accountProxy.id, editName.trim()).catch((e: Error) => {
           onUpdateErrors('accountName')([e.message]);
@@ -185,7 +185,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
   const onChangeName = useCallback(
     (value: string) => {
       onChangeValue('accountName')(value);
-      clearTimeout(saveTimeOutRef.current);
+      saveTimeOutRef.current && clearTimeout(saveTimeOutRef.current);
       saveTimeOutRef.current = setTimeout(() => {
         onSave(value);
       }, 300);

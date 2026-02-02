@@ -1,7 +1,7 @@
 import React, { JSX, useCallback, useEffect, useMemo } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
-import { Keyboard, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { ModalRef } from 'types/modalRef';
 import { AccountAddressItemType } from 'types/account';
 import { VoidFunction } from 'types/index';
@@ -15,6 +15,7 @@ import { AccountProxyType } from '@subwallet/extension-base/types';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 import { isBitcoinAddress } from '@subwallet/keyring';
 import { getBitcoinAccountDetails } from 'utils/account/account';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 interface Props {
   items: AccountAddressItemType[];
@@ -22,7 +23,7 @@ interface Props {
   onSelectItem?: (item: AccountAddressItemType) => void;
   disabled?: boolean;
   renderSelected?: () => JSX.Element;
-  accountSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  accountSelectorRef?: React.RefObject<ModalRef | null>;
   closeModalAfterSelect?: boolean;
   isShowContent?: boolean;
   isShowInput?: boolean;

@@ -30,7 +30,7 @@ function withPageWrapper<P>(
       return () => {
         mounted = false;
       };
-    }, [dataContext, stateNames]);
+    }, [dataContext]);
 
     if (isLoading) {
       return <Loading />;

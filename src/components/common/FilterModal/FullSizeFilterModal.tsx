@@ -34,7 +34,7 @@ interface Props<OptionType> {
   onCloseModal?: () => void;
 }
 
-function _FullSizeFilterModal(
+function Component(
   {
     modalTitle = i18n.header.filter,
     options,
@@ -163,4 +163,4 @@ function _FullSizeFilterModal(
 }
 
 export const FullSizeFilterModal: React.ForwardRefExoticComponent<Props<any> & React.RefAttributes<any>> =
-  forwardRef(_FullSizeFilterModal);
+  forwardRef(Component);

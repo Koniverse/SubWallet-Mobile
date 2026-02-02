@@ -296,7 +296,7 @@ export const Confirmations = () => {
           | 'bitcoinWatchTransactionRequest'
           | 'bitcoinSendTransactionRequestAfterConfirmation'][0];
 
-        account = request.payload.account;
+        account = findAccountByAddress(accounts, request.payload.address) || undefined;
         canSign = request.payload.canSign;
         isMessage = confirmation.type === 'bitcoinSignatureRequest';
       }

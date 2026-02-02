@@ -500,6 +500,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
                     title={_props.title}
                     description={_props.description}
                     iconColor={_props.icon_color}
+                    titleColor={theme.colorTextLight1}
                     icon={getBannerButtonIcon(_props.icon) as PhosphorIcon}
                   />
                 );

@@ -71,7 +71,7 @@ export const NetworkSettingDetail = ({
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
-  const rpcSelectorRef = useRef<ModalRef>();
+  const rpcSelectorRef = useRef<ModalRef | null>(null);
 
   const _chainInfo = useFetchChainInfo(chainSlug);
   const [chainInfo, setChainInfo] = useState(_chainInfo);

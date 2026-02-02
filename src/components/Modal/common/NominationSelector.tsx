@@ -43,7 +43,7 @@ export const NominationSelector = ({
   chain,
   placeholder,
 }: Props) => {
-  const collatorRef = useRef<ModalRef>();
+  const collatorRef = useRef<ModalRef | null>(null);
   const selectedCollator = useMemo(() => {
     return nominators.find(item => item.validatorAddress === selectedValue);
   }, [nominators, selectedValue]);

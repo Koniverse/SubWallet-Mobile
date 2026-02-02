@@ -156,8 +156,8 @@ export const EarningPoolSelector = forwardRef(
     const { compound } = useYieldPositionDetail(slug, from);
     const { hideAll, show } = useToast();
 
-    const poolSelectorRef = useRef<ModalRef>();
-    const sortingModalRef = useRef<ModalRef>();
+    const poolSelectorRef = useRef<ModalRef | null>(null);
+    const sortingModalRef = useRef<ModalRef | null>(null);
 
     const [sortSelection, setSortSelection] = useState<EarningPoolSelectorSortKey>(EarningPoolSelectorSortKey.DEFAULT);
     const nominationPoolValueList = useMemo((): string[] => {

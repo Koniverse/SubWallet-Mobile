@@ -16,7 +16,6 @@ import {
   GlobeHemisphereWestIcon,
   IconProps,
   LockIcon,
-  RocketIcon,
   ShareNetworkIcon,
   ShieldCheckIcon,
   UserCircleGearIcon,
@@ -107,13 +106,6 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
           onPress: () => navigation.navigate('History', {}),
           backgroundColor: '#2595E6',
-        },
-        {
-          icon: RocketIcon,
-          title: i18n.tabName.crowdloans,
-          rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
-          onPress: () => navigation.navigate('Crowdloans'),
-          backgroundColor: '#15B776',
         },
       ],
       [

@@ -2,7 +2,7 @@ import { MetadataRequest } from '@subwallet/extension-base/background/types';
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import { Button, Icon } from 'components/design-system-ui';
-import { CheckCircle, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, XCircleIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { approveMetaRequest, rejectMetaRequest } from 'messaging/index';
@@ -68,11 +68,11 @@ const MetadataConfirmation: React.FC<Props> = (props: Props) => {
         </View>
       </ConfirmationContent>
       <ConfirmationFooter>
-        <Button icon={<Icon phosphorIcon={XCircle} weight={'fill'} />} block={true} type="secondary" onPress={onCancel}>
+        <Button icon={<Icon phosphorIcon={XCircleIcon} weight={'fill'} />} block={true} type="secondary" onPress={onCancel}>
           {i18n.common.cancel}
         </Button>
         <Button
-          icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}
+          icon={<Icon phosphorIcon={CheckCircleIcon} weight={'fill'} />}
           block={true}
           onPress={onConfirm}
           loading={loading}>

@@ -1,7 +1,7 @@
 import React, { JSX, useCallback, useMemo } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
-import { Keyboard, ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { Typography } from 'components/design-system-ui';
 import { AccountGroupLabel, AccountGroupType, AccountProxyItem } from 'screens/Account/AccountsScreen';
 import { ThemeTypes } from 'styles/themes';
@@ -11,6 +11,7 @@ import { isAccountAll } from '@subwallet/extension-base/utils';
 import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { VoidFunction } from 'types/index';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 interface Props {
   items: AccountProxy[];

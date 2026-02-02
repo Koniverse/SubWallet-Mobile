@@ -1,7 +1,7 @@
 import { Button, Icon, PageIcon, SwModal } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { IconProps, TrashIcon, XCircleIcon } from 'phosphor-react-native';
-import React, { JSX, useCallback, useMemo, useRef } from 'react';
+import { type Icon as PhosphorIcon, TrashIcon, XCircleIcon } from 'phosphor-react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { Text, View } from 'react-native';
 import { VoidFunction } from 'types/index';
 import i18n from 'utils/i18n/i18n';
@@ -15,7 +15,7 @@ interface Props {
   title: string;
   visible: boolean;
   buttonTitle?: string;
-  buttonIcon?: (iconProps: IconProps) => JSX.Element;
+  buttonIcon?: PhosphorIcon;
   loading?: boolean;
   setVisible: (arg: boolean) => void;
 }

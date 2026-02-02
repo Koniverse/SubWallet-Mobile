@@ -12,7 +12,7 @@ interface Props {
   renderSelectModalBtn?: (onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => JSX.Element;
   disabled?: boolean;
   acceptDefaultValue?: boolean;
-  chainSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  chainSelectorRef?: React.RefObject<ModalRef | null>;
   extraData?: string;
   keyExtractor?: (item: ChainInfo, index: number) => string;
 }

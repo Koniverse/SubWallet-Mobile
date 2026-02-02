@@ -14,7 +14,6 @@ import { isAccountAll } from '@subwallet/extension-base/utils';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
 import { ModalRef } from 'types/modalRef';
-import { Swipeable } from 'react-native-gesture-handler';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
 import DeleteModal from 'components/common/Modal/DeleteModal';
@@ -27,6 +26,7 @@ import { SelectAccountAllItem } from 'components/common/SelectAccountAllItem';
 import { AccountChainAddressesSelector } from 'components/Modal/common/AccountChainAddressesSelector';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList.tsx';
+import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 export enum AccountGroupType {
   ALL_ACCOUNT = 'all',
@@ -127,9 +127,9 @@ export const AccountsScreen = ({
   const createAccountRef = useRef<ModalRef | null>(null);
   const importAccountRef = useRef<ModalRef | null>(null);
   const attachAccountRef = useRef<ModalRef | null>(null);
-  const accountChainAddressSelectorRef = useRef<ModalRef>(undefined);
-  let row = useRef<(Swipeable | undefined)[]>([]);
-  let prevOpenedRow = useRef<Swipeable>(undefined);
+  const accountChainAddressSelectorRef = useRef<ModalRef | null>(null);
+  let row = useRef<(SwipeableMethods | null)[]>([]);
+  let prevOpenedRow = useRef<SwipeableMethods | null>(null);
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
@@ -381,12 +381,13 @@ export const AccountsScreen = ({
         <Swipeable
           key={item.id}
           enabled={!isAllAccount}
-          ref={ref => (row.current[index] = ref)}
+          ref={(ref: SwipeableMethods | null) => (row.current[index] = ref)}
           friction={2}
           leftThreshold={80}
           rightThreshold={40}
           onSwipeableWillOpen={() => closeOpenedRow(index)}
-          renderRightActions={renderRightSwipeActions(item, index)}>
+          renderRightActions={renderRightSwipeActions(item, index)}
+        >
           {isAllAccount ? (
             <SelectAccountAllItem
               isSelected={item.id === currentAccountProxy?.id}

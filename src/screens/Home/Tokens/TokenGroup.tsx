@@ -71,7 +71,7 @@ export const TokenGroups = () => {
   const [isShowTonWarning = true, setIsShowTonWarning] = useMMKVBoolean(IS_SHOW_TON_CONTRACT_VERSION_WARNING);
 
   const tonAddress = useMemo(() => {
-    return '';
+    return currentAccountProxy?.accounts.find(acc => isTonAddress(acc.address))?.address;
   }, [currentAccountProxy]);
   const [currentTonAddress, setCurrentTonAddress] = useState(isAllAccount ? undefined : tonAddress);
 

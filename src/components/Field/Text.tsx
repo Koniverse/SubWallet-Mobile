@@ -1,6 +1,6 @@
 import { IconButton } from 'components/IconButton';
 import { InfoIcon, type Icon as PhosphorIcon } from 'phosphor-react-native';
-import React, { JSX, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium } from 'styles/sharedStyles';

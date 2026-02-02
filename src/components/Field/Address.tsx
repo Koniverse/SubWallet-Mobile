@@ -3,7 +3,7 @@ import React, { JSX, useMemo } from 'react';
 import { toShort } from 'utils/index';
 import { StyleSheet, View } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';
-import { IconProps, Info } from 'phosphor-react-native';
+import { IconProps, InfoIcon } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Button, Icon, Typography } from 'components/design-system-ui';
@@ -75,7 +75,7 @@ export const AddressField = ({
             size={'xs'}
             style={styles.button}
             type={'ghost'}
-            icon={<Icon size={'sm'} iconColor={theme['gray-5']} phosphorIcon={RightIcon || Info} />}
+            icon={<Icon size={'sm'} iconColor={theme['gray-5']} phosphorIcon={RightIcon || InfoIcon} />}
             onPress={onPressRightIcon}
             disabled={disableRightIcon}
           />

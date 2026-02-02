@@ -91,7 +91,6 @@ import { mmkvStore } from 'utils/storage';
 import { EarningPreview } from 'screens/EarningPreview';
 import { EarningPreviewPools } from 'screens/EarningPreview/EarningPreviewPools';
 import { ExportAllAccount } from 'screens/Account/ExportAllAccount';
-import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 import { AccountJson } from '@subwallet/extension-base/types';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/types';
 import { Notification } from 'screens/Settings/Notifications/Notification';
@@ -163,9 +162,6 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
                 },
               },
             },
-            // Crowdloans: {
-            //   path: 'crowdloans',
-            // },
             Earning: {
               path: 'earning',
               screens: {
@@ -290,10 +286,6 @@ const HistoryScreen = (props: JSX.IntrinsicAttributes) => {
 
 const ConnectionListScreen = (props: JSX.IntrinsicAttributes) => {
   return withPageWrapper(ConnectionList as ComponentType, ['walletConnect'])(props);
-};
-
-const CrowdloanListScreen = (props: JSX.IntrinsicAttributes) => {
-  return withPageWrapper(CrowdloansScreen as ComponentType, ['crowdloan'])(props);
 };
 
 const NotificationScreen = (props: JSX.IntrinsicAttributes) => {
@@ -601,14 +593,12 @@ const AppNavigator = ({ isAppReady }: Props) => {
     }
   }, [currentRoute, isLogin, navigationRef, needMigrateMasterPassword]);
 
-  console.log('isLogin', isLogin);
   useEffect(() => {
     if (isLogin && !!accounts.length && isNavigationReady) {
       confirmModal.hideConfirmModal();
       if (currentRoute && currentRoute.name === 'Confirmations') {
         setTimeout(() => navigationRef.current?.dispatch(StackActions.replace('Login')), 300);
       } else {
-        console.log('run to this');
         setTimeout(() => navigationRef.current?.navigate('Login'), 300);
       }
     }
@@ -685,7 +675,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ConnectList" component={ConnectionListScreen} />
                 <Stack.Screen name="ConnectDetail" component={ConnectionDetail} />
                 <Stack.Screen name="ConnectWalletConnect" component={ConnectWalletConnect} />
-                <Stack.Screen name="Crowdloans" component={CrowdloanListScreen} />
                 <Stack.Screen
                   name="CreatePassword"
                   component={CreateMasterPassword}

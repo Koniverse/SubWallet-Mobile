@@ -23,7 +23,7 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
   const navigation = useNavigation<RootNavigationProps>();
   const [selectedAccountProxy, setSelectedAccountProxy] = useState<{ name?: string; proxyId?: string } | undefined>();
-  const accountChainAddressSelectorRef = useRef<ModalRef>();
+  const accountChainAddressSelectorRef = useRef<ModalRef | null>(null);
   const [searchString, setSearchString] = useState<string>('');
   const theme = useSubWalletTheme().swThemes;
 

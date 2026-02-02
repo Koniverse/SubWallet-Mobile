@@ -21,10 +21,10 @@ import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
 import { getVersion } from 'react-native-device-info';
 import { copyAndroidWebBundle } from 'providers/WebRunnerProvider/androidWebBundle';
 import { WEBVIEW_ANDROID_SYSTEM_MIN_VERSION } from 'constants/index';
-interface WebRunnerGlobalState {
+export interface WebRunnerGlobalState {
   uri?: string;
   injectScript: string;
-  runnerRef: React.RefObject<WebView<{}>>;
+  runnerRef: React.RefObject<WebView<{}> | undefined>;
   stateRef: React.RefObject<WebRunnerState>;
   eventEmitter: EventEmitter;
 }
@@ -54,34 +54,12 @@ const storedCompleteBackUpData = mmkvStore.getBoolean('backup-data-for-android')
 
 const completeBackUpData = !isFirstLaunch ? storedCompleteBackUpData : true;
 const isDevMode = getDevMode();
-let needFallBack = false;
 let server: StaticServer | null = null;
 let started = false;
 
-const waitForServerListening = async (
-  port: number,
-  retry = 20,
-  delay = 200
-): Promise<boolean> => {
-  for (let i = 0; i < retry; i++) {
-    try {
-      const res = await fetch(`http://localhost:${port}`);
-      console.log('res--', res);
-      if (res.ok || res.status === 404) {
-        return true;
-      }
-    } catch (e) {
-      console.log('error waitForServerListening', e);
-    }
-
-    await new Promise(r => setTimeout(r, delay));
-  }
-  return false;
-};
-
 export class WebRunnerHandler {
   eventEmitter?: EventEmitter;
-  webRef?: React.RefObject<WebView<{}>>;
+  webRef?: React.RefObject<WebView<{}> | undefined>;
   state?: WebRunnerGlobalState;
   runnerState: WebRunnerState = {};
   lastTimeResponse?: number;
@@ -110,15 +88,7 @@ export class WebRunnerHandler {
           await copyAndroidWebBundle(BUNDLE_PATH);
           this.reload();
         })();
-        console.log('ANDROID_BUNDLE_PATH', ANDROID_BUNDLE_PATH);
-        // this.server = new StaticServer({ fileDir: ANDROID_BUNDLE_PATH, port: WEB_SERVER_PORT });
       }
-    } else {
-      let target = isDevMode ? '/DevModeWeb.bundle' : '/Web.bundle';
-      if (needFallBack) {
-        target = '/Fallback.bundle';
-      }
-      // this.server = new StaticServer({ port: WEB_SERVER_PORT, fileDir: RNFS.MainBundlePath + target + '/site' });
     }
 
     AppState.addEventListener('change', this.onAppStateChange)
@@ -137,7 +107,6 @@ export class WebRunnerHandler {
       this.status = 'activating';
       this.serverReady()
         .then(() => {
-          console.log('run to sever ready');
           this.dispatch && this.dispatch({ type: 'active' });
           this.status = 'active';
         })
@@ -167,7 +136,6 @@ export class WebRunnerHandler {
   }
 
   async serverReady() {
-    console.log('started', started);
     if (started) {
       return true;
     }
@@ -192,7 +160,7 @@ export class WebRunnerHandler {
       const target = isDevMode ? '/DevModeWeb.bundle' : '/Web.bundle';
       fileDir = RNFS.MainBundlePath + target + '/site';
     }
-    console.log('fileDir', fileDir);
+
     server = new StaticServer({
       port: WEB_SERVER_PORT,
       fileDir,
@@ -288,7 +256,6 @@ export class WebRunnerHandler {
       }
       const { id, response } = unHandleData as { id: string; response: Object };
       if (id === '0') {
-        console.log('run to 0');
         const statusData = response as { status: WebRunnerStatus };
         const webViewStatus = statusData?.status;
         this.runnerState.status = webViewStatus;

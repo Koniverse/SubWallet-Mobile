@@ -5,7 +5,7 @@ import { Button, Icon, SwFullSizeModal } from 'components/design-system-ui';
 import { SubHeader } from 'components/SubHeader';
 import useCheckCamera from 'hooks/common/useCheckCamera';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { QrCode } from 'phosphor-react-native';
+import { QrCodeIcon } from 'phosphor-react-native';
 import React, { JSX, useMemo, useRef } from 'react';
 import { Platform, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
@@ -50,7 +50,7 @@ const DisplayPayloadModal: React.FC<Props> = (props: Props) => {
           <Button
             style={styles.footer}
             onPress={checkCamera(undefined, onOpenScan)}
-            icon={<Icon phosphorIcon={QrCode} weight="fill" />}>
+            icon={<Icon phosphorIcon={QrCodeIcon} weight="fill" />}>
             {i18n.common.scanQr}
           </Button>
         </View>

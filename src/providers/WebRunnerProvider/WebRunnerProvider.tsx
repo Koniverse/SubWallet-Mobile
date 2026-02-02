@@ -17,7 +17,7 @@ const eventEmitter = new EventEmitter();
 let lastIsReady = false;
 let lastIsNetConnected = true;
 export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.ReactElement<WebRunnerProviderProps> => {
-  const webRef = useRef<WebView>(null);
+  const webRef = useRef<WebView>(undefined);
   const apiSDKInitializedRef = useRef(false);
   const webStateRef = useRef<WebRunnerState>({
     status: 'init',
@@ -43,7 +43,6 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
       const _isReady = status === 'crypto_ready';
 
       if (_isReady && !apiSDKInitializedRef.current) {
-        console.log('[API SDK] setupApiSDK()');
         setupApiSDK();
         apiSDKInitializedRef.current = true;
       }

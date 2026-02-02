@@ -1,10 +1,10 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
-import React, { JSX } from 'react';
+import React from 'react';
 import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { CaretDownIcon, IconProps, ShareNetworkIcon } from 'phosphor-react-native';
+import { CaretDownIcon, ShareNetworkIcon, type Icon as PhosphorIcon } from 'phosphor-react-native';
 import { Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
@@ -13,8 +13,8 @@ interface Props extends FieldBaseProps {
   showRightIcon?: boolean;
   outerStyle?: StyleProp<any>;
   value?: string;
-  leftIcon?: (iconProps: IconProps) => JSX.Element;
-  rightIcon?: (iconProps: IconProps) => JSX.Element;
+  leftIcon?: PhosphorIcon;
+  rightIcon?: PhosphorIcon;
 }
 
 const getTextStyle = (disabled: boolean): StyleProp<any> => {

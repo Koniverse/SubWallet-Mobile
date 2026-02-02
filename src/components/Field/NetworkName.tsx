@@ -6,7 +6,7 @@ import { StyleProp, View, ViewStyle } from 'react-native';
 import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { Globe } from 'phosphor-react-native';
+import { GlobeIcon } from 'phosphor-react-native';
 import { _getChainName } from '@subwallet/extension-base/services/chain-service/utils';
 import { Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -42,7 +42,7 @@ export const NetworkNameField = ({ chain, disabled, label, customStyle, ...field
     <FieldBase label={label} {...fieldBase}>
       <View style={[blockContentStyle, customStyle, !label && { paddingTop: 12 }]}>
         <View style={{ flexDirection: 'row' }}>
-          <Icon phosphorIcon={Globe} size={'md'} iconColor={theme.colorTextLight5} weight={'bold'} />
+          <Icon phosphorIcon={GlobeIcon} size={'md'} iconColor={theme.colorTextLight5} weight={'bold'} />
           <Text style={getTextStyle(!!disabled)}>{chainInfoMap[chain] ? _getChainName(chainInfoMap[chain]) : ''}</Text>
         </View>
       </View>

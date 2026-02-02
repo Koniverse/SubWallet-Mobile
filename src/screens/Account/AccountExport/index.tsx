@@ -274,7 +274,6 @@ export const AccountExport = ({
                       height={276}
                       errorLevel={'Q'}
                       value={qrData}
-                      QRSize={4}
                       outerEyesRadius={11}
                       innerEyesRadius={5}
                       pieceBorderRadius={2}

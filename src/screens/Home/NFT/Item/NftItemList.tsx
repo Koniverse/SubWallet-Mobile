@@ -173,10 +173,7 @@ const NftItemList = ({
       <FlatListScreen
         headerContent={headerContent}
         onPressBack={() =>
-          navigation.navigate('Home', {
-            screen: 'Main',
-            params: { screen: 'NFTs', params: { screen: 'CollectionList' } },
-          })
+          navigation.goBack()
         }
         isHideBottomSafeArea={true}
         isShowMainHeader

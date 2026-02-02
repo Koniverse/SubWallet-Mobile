@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
-import { DotsThree, GlobeSimple, Plugs, PlugsConnected, X } from 'phosphor-react-native';
+import { DotsThreeIcon, GlobeSimpleIcon, PlugsIcon, PlugsConnectedIcon, XIcon } from 'phosphor-react-native';
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -107,7 +107,7 @@ export const DAppAccessScreen = () => {
 
   const rightIconOption = useMemo(() => {
     return {
-      icon: DotsThree,
+      icon: DotsThreeIcon,
       onPress: () => setModalVisible(true),
     };
   }, []);
@@ -117,7 +117,7 @@ export const DAppAccessScreen = () => {
       {
         key: 'forgetAll',
         name: i18n.common.forgetAll,
-        icon: X,
+        icon: XIcon,
         backgroundColor: theme['yellow-6'],
         onPress: () => {
           forgetAllSite(updateAuthUrls).catch(console.error);
@@ -127,7 +127,7 @@ export const DAppAccessScreen = () => {
       {
         key: 'disconnectAll',
         name: i18n.common.disconnectAll,
-        icon: Plugs,
+        icon: PlugsIcon,
         backgroundColor: theme['gray-3'],
         onPress: () => {
           changeAuthorizationAll(false, updateAuthUrls).catch(console.error);
@@ -137,7 +137,7 @@ export const DAppAccessScreen = () => {
       {
         key: 'connectAll',
         name: i18n.common.connectAll,
-        icon: PlugsConnected,
+        icon: PlugsConnectedIcon,
         backgroundColor: theme['green-6'],
         onPress: () => {
           changeAuthorizationAll(true, updateAuthUrls).catch(console.error);
@@ -176,7 +176,7 @@ export const DAppAccessScreen = () => {
       placeholder={i18n.placeholder.searchOrEnterWebsite}
       renderListEmptyComponent={() => (
         <EmptyList
-          icon={GlobeSimple}
+          icon={GlobeSimpleIcon}
           title={i18n.emptyScreen.manageDAppEmptyTitle}
           message={i18n.emptyScreen.manageDAppEmptyMessage}
         />

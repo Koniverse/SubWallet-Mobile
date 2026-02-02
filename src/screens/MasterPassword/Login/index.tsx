@@ -65,7 +65,6 @@ const BEFORE_KEYCHAIN_BUILD_NUMBER = 211;
 
 const Login: React.FC<LoginProps> = ({ navigation }) => {
   const { faceIdEnabled, isUseBiometric, timeAutoLock } = useSelector((state: RootState) => state.mobileSettings);
-  console.log('isUseBiometric', isUseBiometric);
   const { buildNumber } = useSelector((state: RootState) => state.appVersion);
   const { numberOfConfirmations } = useConfirmationsInfo();
   const [loading, setLoading] = useState<boolean>(false);
@@ -74,7 +73,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [resetAccLoading, setAccLoading] = useState(false);
   const [eraseAllLoading, setEraseAllLoading] = useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(isUseBiometric);
-  console.log('isBiometricEnabled', isBiometricEnabled);
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
 

@@ -18,7 +18,7 @@ interface Props {
   value: string;
   disabled?: boolean;
   loading?: boolean;
-  selectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  selectorRef?: React.RefObject<ModalRef | null>;
   onSelectItem?: (item: ChainItemType) => void;
 }
 

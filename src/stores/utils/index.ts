@@ -11,7 +11,6 @@ import {
   ConfirmationsQueue,
   ConfirmationsQueueBitcoin,
   ConfirmationsQueueTon,
-  CrowdloanJson,
   KeyringState,
   MantaPayConfig,
   MantaPaySyncState,
@@ -453,17 +452,6 @@ export const subscribeBalance = lazySubscribeMessage(
   null,
   updateBalance,
   updateBalance,
-);
-
-export const updateCrowdloan = (data: CrowdloanJson) => {
-  store.dispatch({ type: 'crowdloan/update', payload: data.details });
-};
-
-export const subscribeCrowdloan = lazySubscribeMessage(
-  'pri(crowdloan.getSubscription)',
-  null,
-  updateCrowdloan,
-  updateCrowdloan,
 );
 
 export const updateNftItems = (data: NftJson) => {

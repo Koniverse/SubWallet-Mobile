@@ -42,6 +42,8 @@ export const EARNING_POOL_DETAIL_DATA: StaticDataProps[] = [
         icon_color: '#008dff',
       },
     ],
+    title: null,
+    media: null,
   },
   {
     id: '2',
@@ -84,6 +86,8 @@ export const EARNING_POOL_DETAIL_DATA: StaticDataProps[] = [
         icon_color: '#008dff',
       },
     ],
+    title: null,
+    media: null,
   },
   {
     id: '3',
@@ -125,6 +129,8 @@ export const EARNING_POOL_DETAIL_DATA: StaticDataProps[] = [
         icon_color: '#008dff',
       },
     ],
+    title: null,
+    media: null,
   },
   {
     id: '4',
@@ -165,6 +171,8 @@ export const EARNING_POOL_DETAIL_DATA: StaticDataProps[] = [
         icon_color: '#008dff',
       },
     ],
+    title: null,
+    media: null,
   },
   {
     id: '5',
@@ -205,6 +213,8 @@ export const EARNING_POOL_DETAIL_DATA: StaticDataProps[] = [
         icon_color: '#008dff',
       },
     ],
+    title: null,
+    media: null,
   },
   {
     id: '6',
@@ -247,6 +257,8 @@ export const EARNING_POOL_DETAIL_DATA: StaticDataProps[] = [
         icon_color: '#008dff',
       },
     ],
+    title: null,
+    media: null,
   },
 ];
 

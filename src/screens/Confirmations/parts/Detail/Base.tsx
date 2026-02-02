@@ -1,7 +1,7 @@
 import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { SWModalProps } from 'components/design-system-ui/modal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { ArrowCircleUpRight, XCircle } from 'phosphor-react-native';
+import { ArrowCircleUpRightIcon, XCircleIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
@@ -33,7 +33,7 @@ const BaseDetailModal: React.FC<Props> = (props: Props) => {
       <Button
         type="ghost"
         onPress={onOpen}
-        icon={<Icon phosphorIcon={ArrowCircleUpRight} iconColor={theme['gray-4']} />}>
+        icon={<Icon phosphorIcon={ArrowCircleUpRightIcon} iconColor={theme['gray-4']} />}>
         {i18n.common.viewDetail}
       </Button>
       <SwModal
@@ -48,7 +48,7 @@ const BaseDetailModal: React.FC<Props> = (props: Props) => {
           <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <TouchableOpacity activeOpacity={1}>{children}</TouchableOpacity>
           </ScrollView>
-          <Button style={{ marginTop: 16 }} onPress={onClose} icon={<Icon phosphorIcon={XCircle} weight="fill" />}>
+          <Button style={{ marginTop: 16 }} onPress={onClose} icon={<Icon phosphorIcon={XCircleIcon} weight="fill" />}>
             {i18n.common.close}
           </Button>
         </View>

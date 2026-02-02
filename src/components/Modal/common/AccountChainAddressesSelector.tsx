@@ -28,7 +28,7 @@ interface Props {
   selectedValueMap: Record<string, boolean>;
   disabled?: boolean;
   renderSelected?: () => JSX.Element;
-  accountSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  accountSelectorRef?: React.RefObject<ModalRef | null>;
   closeModalAfterSelect?: boolean;
   isShowContent?: boolean;
   isShowInput?: boolean;
@@ -276,13 +276,6 @@ export const AccountChainAddressesSelector = ({
     ({ item }: ListRenderItemInfo<AccountChainAddress>) => {
       const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(item.slug);
       const isBitcoinChain = isBitcoinAddress(item.address);
-      let tooltip = '';
-
-      if (isPolkadotUnifiedChain) {
-        tooltip = 'This network has two address formats';
-      } else if (isBitcoinChain) {
-        tooltip = 'This network has three address types';
-      }
 
       let isShowBitcoinInfoButton = false;
 
@@ -293,7 +286,6 @@ export const AccountChainAddressesSelector = ({
 
       return (
         <AccountChainAddressItem
-          infoButtonTooltip={tooltip}
           isShowInfoButton={isPolkadotUnifiedChain || isShowBitcoinInfoButton}
           item={item}
           key={`${item.slug}_${item.address}`}

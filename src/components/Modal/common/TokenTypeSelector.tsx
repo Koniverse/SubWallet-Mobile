@@ -12,7 +12,7 @@ interface Props {
   onSelectItem: (item: AssetTypeOption) => void;
   selectedValueMap: Record<string, boolean>;
   disabled?: boolean;
-  tokenTypeRef: React.MutableRefObject<ModalRef | undefined>;
+  tokenTypeRef: React.RefObject<ModalRef | null>;
   renderSelected?: () => JSX.Element;
 }
 

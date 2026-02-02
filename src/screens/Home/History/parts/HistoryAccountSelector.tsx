@@ -13,7 +13,7 @@ interface Props {
   items: AccountAddressItemType[];
   value: string;
   disabled?: boolean;
-  selectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  selectorRef?: React.RefObject<ModalRef | null>;
   onSelectItem?: (item: AccountAddressItemType) => void;
 }
 

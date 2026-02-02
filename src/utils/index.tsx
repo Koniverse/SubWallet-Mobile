@@ -1,11 +1,11 @@
-import React, { JSX } from 'react';
+import React from 'react';
 import { AccountType } from 'types/ui-types';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { StyleProp } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { IconProps, type Icon as PhosphorIcon } from 'phosphor-react-native';
+import { type Icon as PhosphorIcon } from 'phosphor-react-native';
 import { Logo as SWLogo } from 'components/design-system-ui';
 import { AccountJson } from '@subwallet/extension-base/types';
 

@@ -29,6 +29,7 @@ import { useSelector } from 'react-redux';
 import { GenericExtrinsicPayload } from '@polkadot/types';
 import { compactFromU8a, hexStripPrefix, isAscii, isHex, isString, isU8a, u8aConcat, u8aToHex } from '@polkadot/util';
 import { isEthereumAddress, keccakAsHex } from '@polkadot/util-crypto';
+import { _isChainEnabled } from '@subwallet/extension-base/services/chain-service/utils';
 
 type ScannerStoreState = {
   busy: boolean;
@@ -104,7 +105,7 @@ interface ScannerContextProviderProps {
 
 export function ScannerContextProvider({ children }: ScannerContextProviderProps): React.ReactElement {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
 
   const initialState = DEFAULT_STATE;
 
@@ -122,10 +123,9 @@ export function ScannerContextProvider({ children }: ScannerContextProviderProps
     setState({ busy: true });
   }, []);
 
-  const _integrateMultiPartData = useCallback(
-    (multipartData: Array<Uint8Array | null>, totalFrameCount: number): SubstrateCompletedParsedData => {
-      // concatenate all the parts into one binary blob
-      let concatMultipartData = multipartData.reduce((acc: Uint8Array, part: Uint8Array | null): Uint8Array => {
+  const _integrateMultiPartData = useCallback((multipartData: Array<Uint8Array | null>, totalFrameCount: number): SubstrateCompletedParsedData => {
+    // concatenate all the parts into one binary blob
+    let concatMultipartData = multipartData.reduce((acc: Uint8Array, part: Uint8Array | null): Uint8Array => {
         if (part === null) {
           throw new Error('part data is not completed');
         }
@@ -136,17 +136,18 @@ export function ScannerContextProvider({ children }: ScannerContextProviderProps
         c.set(part, acc.length);
 
         return c;
-      }, new Uint8Array(0));
+      },
+      new Uint8Array(0));
 
-      // unshift the frame info
-      const frameInfo = u8aConcat(MULTIPART, encodeNumber(totalFrameCount), encodeNumber(0));
+    // unshift the frame info
+    const frameInfo = u8aConcat(MULTIPART,
+      encodeNumber(totalFrameCount),
+      encodeNumber(0));
 
-      concatMultipartData = u8aConcat(frameInfo, concatMultipartData);
+    concatMultipartData = u8aConcat(frameInfo, concatMultipartData);
 
-      return constructDataFromBytes(concatMultipartData, true, networkMap, accounts) as SubstrateCompletedParsedData;
-    },
-    [networkMap, accounts],
-  );
+    return (constructDataFromBytes(concatMultipartData, true, chainInfoMap, chainStateMap, accounts)) as SubstrateCompletedParsedData;
+  }, [chainInfoMap, chainStateMap, accounts]);
 
   const setPartData = useCallback(
     (currentFrame: number, frameCount: number, partData: string): MultiFramesInfo | SubstrateCompletedParsedData => {
@@ -237,7 +238,7 @@ export function ScannerContextProvider({ children }: ScannerContextProviderProps
           }
 
           evmChainId = new BigN(tx.ethereumChainId).toNumber();
-          recipientAddress = tx.action;
+          recipientAddress = tx.to;
           dataToSign = txRequest.data.rlp;
         } else {
           tx = '';
@@ -361,124 +362,113 @@ export function ScannerContextProvider({ children }: ScannerContextProviderProps
   );
 
   // signing data with legacy account.
-  const signDataLegacy = useCallback(
-    async (savePass: boolean, password = ''): Promise<void> => {
-      const { dataToSign, evmChainId, genesisHash, isEthereumStructure, isHash, rawPayload, senderAddress, type } =
-        state;
-      const sender = !!senderAddress && findAccountByAddress(accounts, senderAddress);
-      const info: undefined | number | string = isEthereumStructure ? evmChainId : genesisHash;
-      const senderNetwork = getNetworkJsonByInfo(
-        networkMap,
-        isEthereumAddress(senderAddress || ''),
-        isEthereumStructure,
-        info,
-      );
+  const signDataLegacy = useCallback(async (): Promise<void> => {
+    const { dataToSign, evmChainId, genesisHash, isEthereumStructure, isHash, rawPayload, senderAddress, type } = state;
+    const sender = !!senderAddress && findAccountByAddress(accounts, senderAddress);
+    const info: undefined | number | string = isEthereumStructure ? evmChainId : genesisHash;
+    const senderNetwork = getNetworkJsonByInfo(chainInfoMap, isEthereumAddress(senderAddress || ''), isEthereumStructure, info);
+    const senderNetworkState = chainStateMap[senderNetwork?.slug || ''];
 
-      if (!senderNetwork) {
-        throw new Error('Signing Error: network could not be found.');
-      }
+    if (!senderNetwork) {
+      throw new Error('Failed to sign. Network not found');
+    }
 
-      if (!senderNetwork.active) {
-        throw new Error(`Signing Error: Network ${senderNetwork.chain?.replace(' Relay Chain', '')} is not active.`);
-      }
+    if (!_isChainEnabled(senderNetworkState)) {
+      throw new Error(`Signing Error: Network ${senderNetwork.name?.replace(' Relay Chain', '')} is not active.`);
+    }
 
-      if (!sender) {
-        throw new Error('Signing Error: sender could not be found.');
-      }
+    if (!sender) {
+      throw new Error('Signing Error: sender could not be found.');
+    }
 
-      if (!type) {
-        throw new Error('Signing Error: type could not be found.');
-      }
+    if (!type) {
+      throw new Error('Signing Error: type could not be found.');
+    }
 
-      const signData = async (): Promise<string> => {
-        if (isEthereumStructure) {
-          let signable;
+    const signData = async (): Promise<string> => {
+      if (isEthereumStructure) {
+        let signable;
 
-          if (isU8a(dataToSign)) {
-            signable = u8aToHex(dataToSign);
-          } else if (isHex(dataToSign)) {
-            signable = dataToSign;
-          } else if (isAscii(dataToSign)) {
-            signable = dataToSign;
-          } else if (isHash) {
-            signable = dataToSign;
-          } else {
-            throw new Error('Signing Error: cannot signing message');
-          }
+        if (isU8a(dataToSign)) {
+          signable = u8aToHex(dataToSign);
+        } else if (isHex(dataToSign)) {
+          signable = dataToSign;
+        } else if (isAscii(dataToSign)) {
+          signable = dataToSign;
+        } else if (isHash) {
+          signable = dataToSign;
+        } else {
+          throw new Error('Signing Error: cannot signing message');
+        }
 
-          const { signature } = await qrSignEvm({
+        const { signature } = await qrSignEvm({
+          address: senderAddress,
+          message: signable,
+          type: type,
+          chainId: evmChainId
+        });
+
+        return signature;
+      } else {
+        let signable;
+
+        if (dataToSign instanceof GenericExtrinsicPayload) {
+          signable = u8aToHex(dataToSign.toU8a(true));
+        } else if (isU8a(dataToSign)) {
+          signable = u8aToHex(dataToSign);
+        } else if (isAscii(dataToSign) || isHash) {
+          signable = dataToSign;
+        } else {
+          throw new Error('Signing Error: cannot signing message');
+        }
+
+        try {
+          const { signature } = await qrSignSubstrate({
             address: senderAddress,
-            password: password,
-            message: signable,
-            type: type,
-            chainId: evmChainId,
+            data: signable,
+            networkKey: senderNetwork.slug
           });
 
-          return signature;
-        } else {
-          let signable;
-
-          if (dataToSign instanceof GenericExtrinsicPayload) {
-            signable = u8aToHex(dataToSign.toU8a(true));
-          } else if (isU8a(dataToSign)) {
-            signable = u8aToHex(dataToSign);
-          } else if (isAscii(dataToSign) || isHash) {
-            signable = dataToSign;
-          } else {
-            throw new Error('Signing Error: cannot signing message');
+          if (type === 'message') {
+            return hexStripPrefix(signature).substring(2);
           }
 
-          try {
-            const { signature } = await qrSignSubstrate({
-              address: senderAddress,
-              data: signable,
-              savePass: savePass,
-              password: password,
-              networkKey: senderNetwork.key,
-            });
+          return hexStripPrefix(signature);
+        } catch (e) {
+          console.error(e);
+          throw new Error((e as Error).message);
+        }
+      }
+    };
 
-            if (type === 'message') {
-              return hexStripPrefix(signature).substring(2);
-            }
+    const parseTransaction = async (): Promise<ResponseQrParseRLP | ResponseParseTransactionSubstrate | null> => {
+      if (type === 'message') {
+        return null;
+      } else {
+        if (!isEthereumStructure) {
+          if (genesisHash && rawPayload) {
+            const _rawPayload = isString(rawPayload) ? rawPayload : u8aToHex(rawPayload);
 
-            return hexStripPrefix(signature);
-          } catch (e) {
-            // console.error(e);
-            throw new Error((e as Error).message);
+            return parseSubstrateTransaction({ data: _rawPayload, networkKey: senderNetwork.slug });
+          } else {
+            return null;
+          }
+        } else {
+          if (dataToSign) {
+            const _raw = isString(dataToSign) ? dataToSign : u8aToHex(dataToSign);
+
+            return await parseEVMTransaction(_raw);
+          } else {
+            return null;
           }
         }
-      };
+      }
+    };
 
-      const parseTransaction = async (): Promise<ResponseQrParseRLP | ResponseParseTransactionSubstrate | null> => {
-        if (type === 'message') {
-          return null;
-        } else {
-          if (!isEthereumStructure) {
-            if (genesisHash && rawPayload) {
-              const _rawPayload = isString(rawPayload) ? rawPayload : u8aToHex(rawPayload);
+    const [signedData, parsedTx] = await Promise.all([signData(), parseTransaction()]);
 
-              return await parseSubstrateTransaction({ data: _rawPayload, networkKey: senderNetwork.key });
-            } else {
-              return null;
-            }
-          } else {
-            if (dataToSign) {
-              const _raw = isString(dataToSign) ? dataToSign : u8aToHex(dataToSign);
-
-              return await parseEVMTransaction(_raw);
-            } else {
-              return null;
-            }
-          }
-        }
-      };
-
-      const [signedData, parsedTx] = await Promise.all([signData(), parseTransaction()]);
-
-      setState({ signedData, parsedTx, step: SCANNER_QR_STEP.FINAL_STEP });
-    },
-    [accounts, networkMap, state],
-  );
+    setState({ signedData, parsedTx, step: SCANNER_QR_STEP.FINAL_STEP });
+  }, [accounts, chainInfoMap, chainStateMap, state]);
 
   const clearMultipartProgress = useCallback((): void => {
     setState({

@@ -105,8 +105,8 @@ export const EarningValidatorSelector = forwardRef(
     const items = useGetPoolTargetList(slug) as ValidatorDataType[];
     const insets = useSafeAreaInsets();
 
-    const validatorSelectModalRef = useRef<ModalRef>();
-    const sortingModalRef = useRef<ModalRef>();
+    const validatorSelectModalRef = useRef<ModalRef | null>(null);
+    const sortingModalRef = useRef<ModalRef | null>(null);
 
     const { compound } = useYieldPositionDetail(slug, from);
 
@@ -175,7 +175,7 @@ export const EarningValidatorSelector = forwardRef(
       onCancelSelectValidator,
       onChangeSelectedValidator,
       onInitValidators,
-    } = useSelectValidators(chain, maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
+    } = useSelectValidators(chain, maxCount, onSelectItem, isSingleSelect, undefined);
     const { keyboardHeight } = useKeyboardVisible();
     const defaultValueRef = useRef({ _default: '_', selected: '_' });
     const [detailItem, setDetailItem] = useState<ValidatorDataType | undefined>(undefined);
@@ -224,11 +224,6 @@ export const EarningValidatorSelector = forwardRef(
         ? nominations.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity))
         : [];
     }, [nominations]);
-
-    console.log(
-      'check',
-      items.filter(i => nominatorValueList.includes(getValidatorKey(i.address, i.identity))),
-    );
 
     const sortValidator = useCallback(
       (a: ValidatorDataType, b: ValidatorDataType) => {

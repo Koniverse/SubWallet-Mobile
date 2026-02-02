@@ -5,7 +5,7 @@ import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { changeAuthorizationBlock, changeAuthorizationPerSite } from 'messaging/index';
 import { Button, Icon, Typography } from 'components/design-system-ui';
-import { CheckCircle, GlobeHemisphereWest, ShieldCheck, ShieldSlash, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, GlobeHemisphereWestIcon, ShieldCheckIcon, ShieldSlashIcon, XCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ConfirmationGeneralInfo } from 'components/Confirmation/ConfirmationGeneralInfo';
 import { isAccountAll } from 'utils/accountAll';
@@ -23,9 +23,6 @@ import SwitchNetworkAuthorizeModal from 'components/Modal/SwitchNetworkAuthorize
 import { ModalRef } from 'types/modalRef';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { NetworkItem } from 'components/NetworkItem';
-// import { DAppConfigurationModal } from 'components/Modal/DAppConfigurationModal.tsx';
-// import { useNavigation } from '@react-navigation/native';
-// import { RootNavigationProps } from 'routes/index.ts';
 
 interface Props {
   modalVisible: boolean;
@@ -42,15 +39,15 @@ type ConnectIcon = {
 };
 
 const ButtonIconMap = {
-  XCircle: (color: string) => <Icon phosphorIcon={XCircle} size={'lg'} iconColor={color} weight={'fill'} />,
-  ShieldCheck: (color: string) => <Icon phosphorIcon={ShieldCheck} size={'lg'} iconColor={color} weight={'fill'} />,
-  CheckCircle: (color: string) => <Icon phosphorIcon={CheckCircle} size={'lg'} iconColor={color} weight={'fill'} />,
+  XCircle: (color: string) => <Icon phosphorIcon={XCircleIcon} size={'lg'} iconColor={color} weight={'fill'} />,
+  ShieldCheck: (color: string) => <Icon phosphorIcon={ShieldCheckIcon} size={'lg'} iconColor={color} weight={'fill'} />,
+  CheckCircle: (color: string) => <Icon phosphorIcon={CheckCircleIcon} size={'lg'} iconColor={color} weight={'fill'} />,
 };
 
 // todo: i18n;
 export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, isBlocked, authInfo, url }: Props) => {
   // const navigation = useNavigation<RootNavigationProps>();
-  const chainSelectorRef = useRef<ModalRef>();
+  const chainSelectorRef = useRef<ModalRef | null>(null);
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
@@ -193,14 +190,14 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
   const connectIconProps = useMemo<ConnectIcon>(() => {
     if (_isNotConnected) {
       return {
-        linkIcon: <Icon size="md" phosphorIcon={GlobeHemisphereWest} />,
+        linkIcon: <Icon size="md" phosphorIcon={GlobeHemisphereWestIcon} />,
         linkIconBg: theme.colorWarning,
       };
     }
 
     if (isBlocked) {
       return {
-        linkIcon: <Icon size="md" phosphorIcon={ShieldSlash} />,
+        linkIcon: <Icon size="md" phosphorIcon={ShieldSlashIcon} />,
         linkIconBg: theme.colorError,
       };
     }

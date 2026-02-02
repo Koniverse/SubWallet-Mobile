@@ -235,8 +235,8 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     }
   };
 
-  const tokenTypeRef = useRef<ModalRef>();
-  const chainSelectorRef = useRef<ModalRef>();
+  const tokenTypeRef = useRef<ModalRef | null>(null);
+  const chainSelectorRef = useRef<ModalRef | null>(null);
   const tokenTypeOptions = useMemo(() => {
     return getTokenTypeSupported(chainInfoMap[chain]);
   }, [chainInfoMap, chain]);

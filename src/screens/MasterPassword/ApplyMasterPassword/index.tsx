@@ -62,7 +62,7 @@ const ApplyMasterPassword = () => {
   const [isDisabled, setIsDisable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const selectedAction = useRef<SelectedActionType>();
+  const selectedAction = useRef<SelectedActionType>('');
   const navigation = useNavigation<RootNavigationProps>();
   useHandlerHardwareBackPress(true);
   const migrateAddressRef = useRef<string>('');

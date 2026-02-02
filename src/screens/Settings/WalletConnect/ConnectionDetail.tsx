@@ -16,7 +16,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import i18n from 'utils/i18n/i18n';
-import { Globe, Info, Plugs } from 'phosphor-react-native';
+import { GlobeIcon, InfoIcon, PlugsIcon } from 'phosphor-react-native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import { disconnectWalletConnectConnection } from 'messaging/index';
 import { EmptyList } from 'components/EmptyList';
@@ -151,7 +151,7 @@ export const ConnectionDetail = ({
                           }}>
                           {i18n.formatString(i18n.message.connectedNetworks, chains.length)}
                         </Typography.Text>
-                        <Icon phosphorIcon={Info} weight={'fill'} size={'sm'} iconColor={theme.colorTextTertiary} />
+                        <Icon phosphorIcon={InfoIcon} weight={'fill'} size={'sm'} iconColor={theme.colorTextTertiary} />
                       </View>
                     )}
                     searchFunc={searchFunction}
@@ -186,7 +186,7 @@ export const ConnectionDetail = ({
             </ScrollView>
             <Button
               onPress={() => setDisconnectModalVisible(true)}
-              icon={<Icon phosphorIcon={Plugs} size={'lg'} weight={'fill'} />}
+              icon={<Icon phosphorIcon={PlugsIcon} size={'lg'} weight={'fill'} />}
               style={{ margin: theme.padding }}
               type={'danger'}>
               {i18n.buttonTitles.disconnect}
@@ -198,7 +198,7 @@ export const ConnectionDetail = ({
               message={i18n.message.disconnectModalMessage}
               onCompleteModal={onDisconnect}
               buttonTitle={i18n.buttonTitles.disconnect}
-              buttonIcon={Plugs}
+              buttonIcon={PlugsIcon}
               loading={loading}
               setVisible={setDisconnectModalVisible}
             />
@@ -206,7 +206,7 @@ export const ConnectionDetail = ({
         ) : (
           <EmptyList
             title={i18n.emptyScreen.walletConnectDetailEmptyTitle}
-            icon={Globe}
+            icon={GlobeIcon}
             message={i18n.emptyScreen.walletConnectEmptyDetailMessage}
           />
         )}

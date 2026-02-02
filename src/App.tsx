@@ -269,11 +269,11 @@ export const App = () => {
             </ToastProvider>
           </View>
         )}
-        {/*{!isAppReady && (*/}
-        {/*  <View style={styles.layerScreenStyle}>*/}
-        {/*    <LoadingScreen />*/}
-        {/*  </View>*/}
-        {/*)}*/}
+        {!isAppReady && (
+          <View style={styles.layerScreenStyle}>
+            <LoadingScreen />
+          </View>
+        )}
         {needUpdateChrome && (
           <View style={{ width: deviceWidth, height: deviceHeight, justifyContent: 'flex-end' }}>
             <ImageBackground source={Images.backgroundImg} resizeMode={'contain'} style={imageBackgroundStyle}>

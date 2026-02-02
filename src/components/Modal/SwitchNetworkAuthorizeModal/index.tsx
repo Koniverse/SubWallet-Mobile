@@ -13,7 +13,7 @@ import { ModalRef } from 'types/modalRef';
 import { useToast } from 'react-native-toast-notifications';
 
 export interface SwitchNetworkAuthorizeModalProps {
-  selectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  selectorRef?: React.RefObject<ModalRef | null>;
   authUrlInfo: AuthUrlInfo;
   onComplete: (authInfo: AuthUrls) => void;
   needsTabAuthCheck?: boolean;

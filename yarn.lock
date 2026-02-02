@@ -2129,10 +2129,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:8.57.1":
-  version: 8.57.1
-  resolution: "@eslint/js@npm:8.57.1"
-  checksum: 2afb77454c06e8316793d2e8e79a0154854d35e6782a1217da274ca60b5044d2c69d6091155234ed0551a1e408f86f09dd4ece02752c59568fa403e60611e880
+"@eslint/js@npm:8.55.0":
+  version: 8.55.0
+  resolution: "@eslint/js@npm:8.55.0"
+  checksum: fa33ef619f0646ed15649b0c2e313e4d9ccee8425884bdbfc78020d6b6b64c0c42fa9d83061d0e6158e1d4274f03f0f9008786540e2efab8fcdc48082259908c
   languageName: node
   linkType: hard
 
@@ -2605,14 +2605,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@humanwhocodes/config-array@npm:^0.13.0":
-  version: 0.13.0
-  resolution: "@humanwhocodes/config-array@npm:0.13.0"
+"@humanwhocodes/config-array@npm:^0.11.13":
+  version: 0.11.14
+  resolution: "@humanwhocodes/config-array@npm:0.11.14"
   dependencies:
-    "@humanwhocodes/object-schema": ^2.0.3
+    "@humanwhocodes/object-schema": ^2.0.2
     debug: ^4.3.1
     minimatch: ^3.0.5
-  checksum: eae69ff9134025dd2924f0b430eb324981494be26f0fddd267a33c28711c4db643242cf9fddf7dadb9d16c96b54b2d2c073e60a56477df86e0173149313bd5d6
+  checksum: 861ccce9eaea5de19546653bccf75bf09fe878bc39c3aab00aeee2d2a0e654516adad38dd1098aab5e3af0145bbcbf3f309bdf4d964f8dab9dcd5834ae4c02f2
   languageName: node
   linkType: hard
 
@@ -2623,7 +2623,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@humanwhocodes/object-schema@npm:^2.0.3":
+"@humanwhocodes/object-schema@npm:^2.0.2":
   version: 2.0.3
   resolution: "@humanwhocodes/object-schema@npm:2.0.3"
   checksum: d3b78f6c5831888c6ecc899df0d03bcc25d46f3ad26a11d7ea52944dc36a35ef543fad965322174238d677a43d5c694434f6607532cff7077062513ad7022631
@@ -8490,7 +8490,8 @@ __metadata:
     crypto-browserify: ^3.12.0
     deprecated-react-native-prop-types: ^4.0.0
     discord-webhook-node: ^1.1.8
-    eslint: ^8.29.0
+    eslint: 8.55.0
+    eslint-plugin-jest: ^29.12.1
     ethereum-cryptography: ^3.2.0
     eventemitter3: ^5.0.1
     expo-modules-core: ^3.0.26
@@ -8528,7 +8529,7 @@ __metadata:
     react-native-expo-crypto: ^2.1.4
     react-native-fast-image: ^8.6.3
     react-native-fast-pbkdf2: ^0.3.1
-    react-native-gesture-handler: ^2.29.1
+    react-native-gesture-handler: ^2.30.0
     react-native-http: ^0.0.3
     react-native-image-picker: ^8.2.1
     react-native-in-app-review: ^4.3.3
@@ -8560,7 +8561,7 @@ __metadata:
     react-native-svg: ^15.15.1
     react-native-svg-transformer: ^1.5.2
     react-native-system-navigation-bar: ^2.8.0
-    react-native-tab-view: ^3.5.2
+    react-native-tab-view: ^4.2.2
     react-native-toast-notifications: ^3.4.0
     react-native-url-polyfill: ^3.0.0
     react-native-user-inactivity: ^1.2.0
@@ -12188,7 +12189,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:^29.0.1":
+"eslint-plugin-jest@npm:^29.0.1, eslint-plugin-jest@npm:^29.12.1":
   version: 29.12.1
   resolution: "eslint-plugin-jest@npm:29.12.1"
   dependencies:
@@ -12302,15 +12303,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.29.0, eslint@npm:^8.46.0":
-  version: 8.57.1
-  resolution: "eslint@npm:8.57.1"
+"eslint@npm:8.55.0":
+  version: 8.55.0
+  resolution: "eslint@npm:8.55.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.6.1
     "@eslint/eslintrc": ^2.1.4
-    "@eslint/js": 8.57.1
-    "@humanwhocodes/config-array": ^0.13.0
+    "@eslint/js": 8.55.0
+    "@humanwhocodes/config-array": ^0.11.13
     "@humanwhocodes/module-importer": ^1.0.1
     "@nodelib/fs.walk": ^1.2.8
     "@ungap/structured-clone": ^1.2.0
@@ -12346,7 +12347,7 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: e2489bb7f86dd2011967759a09164e65744ef7688c310bc990612fc26953f34cc391872807486b15c06833bdff737726a23e9b4cdba5de144c311377dc41d91b
+  checksum: 83f82a604559dc1faae79d28fdf3dfc9e592ca221052e2ea516e1b379b37e77e4597705a16880e2f5ece4f79087c1dd13fd7f6e9746f794a401175519db18b41
   languageName: node
   linkType: hard
 
@@ -19058,7 +19059,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:^2.29.1":
+"react-native-gesture-handler@npm:^2.30.0":
   version: 2.30.0
   resolution: "react-native-gesture-handler@npm:2.30.0"
   dependencies:
@@ -19489,16 +19490,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-tab-view@npm:^3.5.2":
-  version: 3.5.2
-  resolution: "react-native-tab-view@npm:3.5.2"
+"react-native-tab-view@npm:^4.2.2":
+  version: 4.2.2
+  resolution: "react-native-tab-view@npm:4.2.2"
   dependencies:
-    use-latest-callback: ^0.1.5
+    use-latest-callback: ^0.2.4
   peerDependencies:
-    react: "*"
+    react: ">= 18.2.0"
     react-native: "*"
-    react-native-pager-view: "*"
-  checksum: bd287e5543881aa662ee55418a3bd5dacb25033425a9fcb0fff21c3a3b96f956af1a77cd9bab4e7a8e94590080a5d8e3cb99cfa8613b19bf6da24bfc9b4942d4
+    react-native-pager-view: ">= 6.0.0"
+  checksum: 6b1edaf96d2773e225e90abd2e9daead9395e7bdc1f4f491fe0b54253a9e66e9bb79eab2b5f0417babba4b395cb051abf2dce5a541ca3197d4479d42a34815fc
   languageName: node
   linkType: hard
 
@@ -22667,15 +22668,6 @@ __metadata:
     node-gyp: latest
     node-gyp-build: ^4.5.0
   checksum: 59474e106bb0e261c0c107994c948e4493b0d390671a738f386054263f6fdeea8f990ae22256dcf28812717844ec757b58501a9950ad9ca18ccb4791505870b0
-  languageName: node
-  linkType: hard
-
-"use-latest-callback@npm:^0.1.5":
-  version: 0.1.11
-  resolution: "use-latest-callback@npm:0.1.11"
-  peerDependencies:
-    react: ">=16.8"
-  checksum: cc6df404a4ed3a39d0eb014a815c2e568a6abbe8c5ff09f9205a08bf68e86201826ed633865a6056ca0fd9581e0e7e70f18ca26c592a9eaccea5d244cf283b1f
   languageName: node
   linkType: hard
 

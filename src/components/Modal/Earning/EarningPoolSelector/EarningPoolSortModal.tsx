@@ -8,7 +8,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EarningPoolSelectorSortKey, EarningPoolSelectorSortOption } from '../EarningPoolSelector';
 
 interface Props {
-  sortingModalRef: React.MutableRefObject<ModalRef | undefined>;
+  sortingModalRef: React.RefObject<ModalRef | null>;
   sortSelection: EarningPoolSelectorSortKey;
   onPressResetSorting: () => void;
   onPressItem: (item: EarningPoolSelectorSortOption) => void;

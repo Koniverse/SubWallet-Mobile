@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import React from 'react';
 import { StyleProp, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import { type Icon as PhosphorIcon } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';

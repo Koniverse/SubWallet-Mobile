@@ -15,7 +15,7 @@ import { StakingNominationItem } from 'components/common/StakingNominationItem';
 import BigN from 'bignumber.js';
 import { Button, Icon } from 'components/design-system-ui';
 import { EmptyValidator } from 'components/EmptyValidator';
-import { Book, MagnifyingGlass } from 'phosphor-react-native';
+import { BookIcon, MagnifyingGlassIcon } from 'phosphor-react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { ValidatorSelectorDetailModal } from 'components/Modal/common/ValidatorSelectorDetailModal';
@@ -131,7 +131,7 @@ export const ChangeEarningValidator = ({
         isDataEmpty={items.length === 0}
         onClickReload={setForceFetchValidator}
         validatorTitle={handleValidatorLabel}
-        icon={MagnifyingGlass}
+        icon={MagnifyingGlassIcon}
         title={''}
       />
     );
@@ -148,7 +148,7 @@ export const ChangeEarningValidator = ({
       return acc;
     }, {});
 
-    const mappedNominations = nominations.map(nomination => {
+    const mappedNominations = nominations.map((nomination) => {
       const matched = validatorMap[reformatAddress(nomination.validatorAddress)];
 
       return {
@@ -156,7 +156,7 @@ export const ChangeEarningValidator = ({
         validatorIdentity: matched?.identity,
         commission: matched?.commission,
         expectedReturn: matched?.expectedReturn,
-        eraRewardPoint: matched?.eraRewardPoint,
+        eraRewardPoint: matched?.eraRewardPoint
       };
     });
 
@@ -168,7 +168,9 @@ export const ChangeEarningValidator = ({
       return currentEra.isGreaterThan(maxEra) ? current : max;
     }, mappedNominations[0]);
 
-    const remainingNominations = mappedNominations.filter(nomination => nomination !== maxEraNomination);
+    const remainingNominations = mappedNominations.filter(
+      (nomination) => nomination !== maxEraNomination
+    );
 
     // Sort nomination by apy
     const sortedRemaining = remainingNominations.sort((a, b) => {
@@ -269,7 +271,7 @@ export const ChangeEarningValidator = ({
             afterListItem={
               <View style={styles.footerArea}>
                 {!readOnly && (
-                  <Button icon={<Icon phosphorIcon={Book} weight={'fill'} />} onPress={onPress}>
+                  <Button icon={<Icon phosphorIcon={BookIcon} weight={'fill'} />} onPress={onPress}>
                     {'Change validators'}
                   </Button>
                 )}

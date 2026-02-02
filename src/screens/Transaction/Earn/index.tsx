@@ -170,7 +170,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const currentAmount = useWatch<StakeFormValues>({ name: 'value', control });
   const chain = useWatch<StakeFormValues>({ name: 'chain', control });
   const poolTarget = useWatch<StakeFormValues>({ name: 'target', control });
-  const accountSelectorRef = useRef<ModalRef>();
+  const accountSelectorRef = useRef<ModalRef | null>(null);
   const validatorSelectorRef = useRef<ValidatorSelectorRef>(null);
   const poolSelectorRef = useRef<PoolSelectorRef>(null);
   const isReadyToShowAlertRef = useRef<boolean>(true);

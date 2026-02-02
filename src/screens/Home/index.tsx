@@ -97,6 +97,7 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
     }
     // @ts-ignore
     props.style = [[...props.style], customStyle];
+    // @ts-ignore
     return <TouchableOpacity {...props} activeOpacity={1} />;
   };
   const storedLiveMissionPools = useMemo(() => {

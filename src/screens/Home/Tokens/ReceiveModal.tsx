@@ -29,7 +29,6 @@ import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RELAY_CHAINS_TO_MIGRATE } from 'constants/chain';
 import { Images } from 'assets/index';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AccountTokenAddress } from 'types/account';
 import { getKeypairTypeByAddress, isBitcoinAddress } from '@subwallet/keyring';
 import { getBitcoinKeypairAttributes } from 'utils/account/account';
@@ -171,25 +170,6 @@ export const ReceiveModal = ({
     setTonWalletContractVisible(true);
   };
 
-  const qrSize = useMemo(() => {
-    if (isEthereumAddress(currentAddress)) {
-      return 232 / 37;
-    } else {
-      if (!!bitcoinAttributes && !!bitcoinAttributes.label) {
-        switch (bitcoinAttributes.label) {
-          case 'Legacy':
-            return 232 / 33;
-          case 'Taproot':
-            return 232 / 45;
-          case 'Native SegWit':
-            return 232 / 37;
-        }
-      } else {
-        return 232 / 41;
-      }
-    }
-  }, [bitcoinAttributes, currentAddress]);
-
   // @ts-ignore
   return (
     <SwModal
@@ -224,7 +204,7 @@ export const ReceiveModal = ({
 
           <View>
             {!isRelayChainToMigrate ? (
-              <QRCode width={232} height={232} QRSize={qrSize} qrRef={(ref?) => (svg = ref)} value={currentAddress} />
+              <QRCode width={232} height={232} qrRef={(ref?) => (svg = ref)} value={currentAddress} />
             ) : (
               <Image src={Images.blurredQr} style={{ width: 288, height: 288 }} />
             )}

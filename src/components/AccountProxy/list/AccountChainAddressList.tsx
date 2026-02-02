@@ -275,13 +275,6 @@ export const AccountChainAddressList = ({ accountProxy }: Props) => {
     ({ item }: ListRenderItemInfo<AccountChainAddress>) => {
       const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(item.slug);
       const isBitcoinChain = isBitcoinAddress(item.address);
-      let tooltip = '';
-
-      if (isPolkadotUnifiedChain) {
-        tooltip = 'This network has two address formats';
-      } else if (isBitcoinChain) {
-        tooltip = 'This network has three address types';
-      }
 
       let isShowBitcoinInfoButton = false;
 
@@ -292,7 +285,6 @@ export const AccountChainAddressList = ({ accountProxy }: Props) => {
 
       return (
         <AccountChainAddressItem
-          infoButtonTooltip={tooltip}
           isShowInfoButton={isPolkadotUnifiedChain || isShowBitcoinInfoButton}
           item={item}
           key={`${item.slug}_${item.address}`}

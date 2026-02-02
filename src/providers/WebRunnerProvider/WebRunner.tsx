@@ -8,7 +8,7 @@ import { WebRunnerState } from 'providers/contexts';
 import { backupStorageData, mmkvStore } from 'utils/storage';
 import { WEB_SERVER_PORT } from './constant';
 import { getJsInjectContent, safeJSONParse } from 'providers/WebRunnerProvider/utils';
-import { WebRunnerHandler } from 'providers/WebRunnerProvider/WebRunnerHandler';
+import { WebRunnerGlobalState, WebRunnerHandler } from 'providers/WebRunnerProvider/WebRunnerHandler';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 
 const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
@@ -29,14 +29,6 @@ export const getMajorVersionIOS = (): number => {
 
 const webRunnerHandler = new WebRunnerHandler();
 
-interface WebRunnerGlobalState {
-  uri?: string;
-  injectScript: string;
-  runnerRef: React.RefObject<WebView<{}>>;
-  stateRef: React.RefObject<WebRunnerState>;
-  eventEmitter: EventEmitter;
-}
-
 interface WebRunnerControlAction {
   type: string;
   payload?: Partial<WebRunnerGlobalState>;
@@ -44,7 +36,7 @@ interface WebRunnerControlAction {
 
 const now = new Date().getTime();
 
-const URI_PARAMS = '?platform=' + Platform.OS + `&version=1.2.32&build=511&time=${now}`;
+const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${now}`;
 
 const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
 
@@ -89,7 +81,7 @@ const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlA
 };
 
 interface Props {
-  webRunnerRef: React.RefObject<WebView<{}>>;
+  webRunnerRef: React.RefObject<WebView<{}> | undefined>;
   webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
   isReady: boolean;

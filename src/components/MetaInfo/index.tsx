@@ -43,7 +43,7 @@ interface Props extends InfoItemGeneralProps {
   spaceSize?: 'xs' | 'sm' | 'ms' | 'none';
 }
 
-const _MetaInfo: React.FC<Props> = ({
+const Component: React.FC<Props> = ({
   children,
   style,
   hasBackgroundWrapper = false,
@@ -91,7 +91,7 @@ type CompoundedComponent = React.ForwardRefExoticComponent<Props> & {
   TransactionProcess: typeof TransactionProcessItem;
 };
 
-const MetaInfo = _MetaInfo as unknown as CompoundedComponent;
+const MetaInfo = Component as unknown as CompoundedComponent;
 
 MetaInfo.Data = DataItem;
 MetaInfo.Status = StatusItem;

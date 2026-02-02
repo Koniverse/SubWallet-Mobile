@@ -4,7 +4,6 @@ import {
   PaperPlaneTiltIcon,
   ProhibitInsetIcon,
   QueueIcon,
-  RecordIcon,
   SpinnerIcon,
   StopCircleIcon,
 } from 'phosphor-react-native';

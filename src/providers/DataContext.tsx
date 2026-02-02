@@ -14,7 +14,6 @@ import {
   subscribeChainStakingMetadata,
   subscribeChainStateMap,
   subscribeConfirmationRequests,
-  subscribeCrowdloan,
   subscribeKeyringState,
   subscribeMetadataRequests,
   subscribeMultiChainAssetMap,
@@ -206,7 +205,6 @@ type WebRunnerFlagContext = {
 export const DataContextProvider = ({ children }: DataContextProviderProps) => {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
   const readyFlag = useRef<WebRunnerFlagContext>({ isStart: true, beforeWebRunnerReady: isWebRunnerReady });
-  console.log('isWebRunnerReady', isWebRunnerReady);
   useEffect(() => {
     // Init subscription
     // Common
@@ -422,11 +420,6 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           name: 'subscribeBalance',
           relatedStores: ['balance'],
           isStartImmediately: true,
-        });
-        _DataContext.addHandler({
-          ...subscribeCrowdloan,
-          name: 'subscribeCrowdloan',
-          relatedStores: ['crowdloan'],
         });
         _DataContext.addHandler({
           ...subscribeNftItems,

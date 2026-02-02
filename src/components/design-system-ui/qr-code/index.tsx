@@ -4,7 +4,6 @@ import { ActivityIndicator, Typography } from '..';
 import QRCodeStyles from './style';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import QRCodeStyled, { GradientProps, QRCodeMessage } from 'react-native-qrcode-styled';
-import Svg from 'react-native-svg';
 
 const gradient: GradientProps = {
   type: 'radial',
@@ -21,18 +20,16 @@ export interface SWQRCodeProps {
   errorLevel?: 'L' | 'M' | 'Q' | 'H';
   status?: 'active' | 'expired' | 'loading';
   value: QRCodeMessage;
-  QRSize?: number;
   pieceBorderRadius?: number;
   outerEyesRadius?: number;
   innerEyesRadius?: number;
   onRefresh?: () => void;
-  qrRef?: Ref<Svg> | undefined;
+  qrRef?: Ref<any>;
   width: number;
   height: number;
 }
 
 const QRCode: React.FC<SWQRCodeProps> = ({
-  QRSize = 7,
   status,
   errorLevel = 'H',
   value,
@@ -66,7 +63,6 @@ const QRCode: React.FC<SWQRCodeProps> = ({
       <QRCodeStyled
         ref={qrRef}
         data={value}
-        pieceSize={QRSize}
         pieceBorderRadius={pieceBorderRadius}
         gradient={gradient}
         errorCorrectionLevel={errorLevel}
@@ -74,6 +70,7 @@ const QRCode: React.FC<SWQRCodeProps> = ({
         innerEyesOptions={innerEyesOptions}
         width={width}
         height={height}
+        size={width}
       />
 
       {status === 'loading' && (

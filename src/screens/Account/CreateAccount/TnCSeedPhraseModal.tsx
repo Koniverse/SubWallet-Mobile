@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import InputCheckBox from 'components/Input/InputCheckBox';
@@ -165,7 +165,7 @@ function InstructionItem({ value, content, onPress, valueMap }: InstructionItemP
       }}>
       <View style={{ justifyContent: 'center', height: 40, width: 40, alignItems: 'center' }}>
         <Icon
-          phosphorIcon={CheckCircle}
+          phosphorIcon={CheckCircleIcon}
           iconColor={valueMap[value] ? '#4CEAAC' : '#737373'}
           weight="fill"
           size={'sm'}

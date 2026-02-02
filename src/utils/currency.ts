@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { CurrencyDollar, CurrencyEur, CurrencyGbp, CurrencyJpy, CurrencyRub } from 'phosphor-react-native';
+import { CurrencyDollarIcon, CurrencyEurIcon, CurrencyGbpIcon, CurrencyJpyIcon, CurrencyRubIcon } from 'phosphor-react-native';
 import React from 'react';
 import { IconProps } from 'phosphor-react-native';
 
@@ -24,23 +24,23 @@ export enum CurrencyType {
 export const getCurrencySymbol = (key: string): CurrencySymbol => {
   switch (key) {
     case CurrencyType.USD:
-      return { icon: CurrencyDollar as React.ElementType<IconProps> };
+      return { icon: CurrencyDollarIcon as React.ElementType<IconProps> };
     case CurrencyType.BRL:
       return { icon: CurrencyType.BRL };
     case CurrencyType.CNY:
       return { icon: CurrencyType.CNY };
     case CurrencyType.EUR:
-      return { icon: CurrencyEur as React.ElementType<IconProps> };
+      return { icon: CurrencyEurIcon as React.ElementType<IconProps> };
     case CurrencyType.GBP:
-      return { icon: CurrencyGbp as React.ElementType<IconProps> };
+      return { icon: CurrencyGbpIcon as React.ElementType<IconProps> };
     case CurrencyType.JPY:
-      return { icon: CurrencyJpy as React.ElementType<IconProps> };
+      return { icon: CurrencyJpyIcon as React.ElementType<IconProps> };
     case CurrencyType.HKD:
       return { icon: CurrencyType.HKD };
     case CurrencyType.VND:
       return { icon: CurrencyType.VND };
     case CurrencyType.RUB:
-      return { icon: CurrencyRub as React.ElementType<IconProps> };
+      return { icon: CurrencyRubIcon as React.ElementType<IconProps> };
     default:
       throw new Error(`Unknown currency type: ${key}`);
   }

@@ -7,7 +7,7 @@ import { InfoItemBase } from 'components/MetaInfo/types';
 import { TransactionHistoryDisplayItem } from 'types/history';
 import { RootState } from 'stores/index';
 import { Button, Icon, SwModal } from 'components/design-system-ui';
-import { ArrowSquareUpRight } from 'phosphor-react-native';
+import { ArrowSquareUpRightIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { Linking, View } from 'react-native';
 import {
@@ -75,7 +75,7 @@ export function HistoryDetailModal({
     if (link) {
       return (
         <View style={{ alignSelf: 'stretch' }}>
-          <Button icon={<Icon phosphorIcon={ArrowSquareUpRight} weight={'fill'} />} onPress={openBlockExplorer(link)}>
+          <Button icon={<Icon phosphorIcon={ArrowSquareUpRightIcon} weight={'fill'} />} onPress={openBlockExplorer(link)}>
             {i18n.common.viewOnExplorer}
           </Button>
         </View>

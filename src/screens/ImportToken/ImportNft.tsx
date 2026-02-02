@@ -96,14 +96,14 @@ export const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) =>
   const [checking, setChecking] = useState(true);
   const [isValidName, setIsValidName] = useState(true);
   const [isValidContract, setIsValidContract] = useState<boolean>(true);
-  const tokenTypeRef = useRef<ModalRef>();
-  const chainSelectorRef = useRef<ModalRef>();
+  const tokenTypeRef = useRef<ModalRef | null>(null);
+  const chainSelectorRef = useRef<ModalRef | null>(null);
   useHandlerHardwareBackPress(loading);
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
   const { isNetConnected, isReady, reload } = useContext(WebRunnerContext);
   const onBack = useCallback(() => {
-    navigation.navigate('Home');
+    navigation.goBack();
   }, [navigation]);
   const chainOptions = useMemo(() => {
     return Object.values(chainInfoMap).map(item => ({

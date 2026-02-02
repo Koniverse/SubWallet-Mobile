@@ -29,7 +29,6 @@ import BuyServiceReducer from './feature/Buy';
 import AssetRegistryReducer from './feature/common/AssetRegistry';
 import ChainStoreReducer from './feature/common/ChainStore';
 import ChainInfoMapReducer from './feature/common/ChainInfoMap';
-import CrowdloanReducer from './feature/Crowdloan';
 import NftReducer from './feature/Nft';
 import PriceReducer from './feature/Price';
 import EarningReducer from './feature/Earning';
@@ -73,7 +72,6 @@ const rootReducer = combineReducers({
 
   // Feature
   transactionHistory: TransactionHistoryReducer,
-  crowdloan: CrowdloanReducer,
   nft: NftReducer,
   staking: StakingReducer,
   price: persistReducer({ key: 'price', storage: mmkvReduxStore } as PersistConfig<PriceJson>, PriceReducer),
