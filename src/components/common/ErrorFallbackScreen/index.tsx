@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Platform, View } from 'react-native';
 import { Button, Icon, Typography } from '../../design-system-ui';
 import LinearGradient from 'react-native-linear-gradient';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { House, Share } from 'phosphor-react-native';
 import ErrorStyles from './style';

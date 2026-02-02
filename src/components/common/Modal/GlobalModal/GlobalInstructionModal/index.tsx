@@ -18,7 +18,7 @@ import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { BoxProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { AppContentButtonInstruction } from 'types/staticContent';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import AlertBoxMarkdown from 'components/design-system-ui/alert-box/markdown';
 import { ThemeTypes } from 'styles/themes';
 import { CaretDownIcon, XIcon } from 'phosphor-react-native';

@@ -15,7 +15,7 @@ import { createAccountExternalV2 } from 'messaging/index';
 import { QrCodeIcon, XIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ImageRequireSource, Linking, Text, View } from 'react-native';
-import { Source } from 'react-native-fast-image';
+import { Source } from  '@d11/react-native-fast-image';
 import { useToast } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';

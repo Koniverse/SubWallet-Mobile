@@ -47,9 +47,7 @@ export const EmptyList = ({
             refreshing={!!isRefresh}
             onRefresh={onPressReload}
           />
-        ) : (
-          <></>
-        )
+        ) : undefined
       }>
       <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1, paddingBottom: theme.padding }}>
         <PageIcon icon={icon} color={theme.colorTextTertiary} backgroundColor={'rgba(77, 77, 77, 0.1)'} />

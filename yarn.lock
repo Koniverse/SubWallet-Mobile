@@ -1748,6 +1748,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@d11/react-native-fast-image@npm:^8.13.0":
+  version: 8.13.0
+  resolution: "@d11/react-native-fast-image@npm:8.13.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 225942c3910022ca51cf9254760edad9e81cc140f1a39a94522bff2ab3daf3dec1e7c37c05e12529b6747ee159240cd4d3208e21a9f84188ff391c4863a54f9b
+  languageName: node
+  linkType: hard
+
 "@darwinia/types-known@npm:2.8.10":
   version: 2.8.10
   resolution: "@darwinia/types-known@npm:2.8.10"
@@ -4992,18 +5002,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/async-storage@npm:^1.6.1":
-  version: 1.12.1
-  resolution: "@react-native-community/async-storage@npm:1.12.1"
-  dependencies:
-    deep-assign: ^3.0.0
-  peerDependencies:
-    react: ^16.8
-    react-native: ">=0.59"
-  checksum: 68b519eb9fc50899257878440fd49a500d4b35c3899311c56c672e779df6516f0760204f6c8edcb3e83398c61a775822996aac6974be4b55a04ad30448d8662d
-  languageName: node
-  linkType: hard
-
 "@react-native-community/blur@npm:^4.4.1":
   version: 4.4.1
   resolution: "@react-native-community/blur@npm:4.4.1"
@@ -5563,19 +5561,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/material-top-tabs@npm:^6.6.3":
-  version: 6.6.14
-  resolution: "@react-navigation/material-top-tabs@npm:6.6.14"
+"@react-navigation/material-top-tabs@npm:^7.4.13":
+  version: 7.4.13
+  resolution: "@react-navigation/material-top-tabs@npm:7.4.13"
   dependencies:
+    "@react-navigation/elements": ^2.9.5
     color: ^4.2.3
-    warn-once: ^0.1.0
+    react-native-tab-view: ^4.2.2
   peerDependencies:
-    "@react-navigation/native": ^6.0.0
-    react: "*"
+    "@react-navigation/native": ^7.1.28
+    react: ">= 18.2.0"
     react-native: "*"
-    react-native-pager-view: ">= 4.0.0"
-    react-native-tab-view: ">= 3.0.0"
-  checksum: 565919b1a9a948ab30d6448dd2d59035cb05f1d87d559f3710072a0795b344fdcc543f2eeb8884b5d699a965cac7db5d88641ba87ec7544e23245404ffb860ec
+    react-native-pager-view: ">= 6.0.0"
+    react-native-safe-area-context: ">= 4.0.0"
+  checksum: 7f3677f09d13d1116ade3d8aca743e01e25c2cfe21d3a9da6e5680666a7f42c497cbd0694f8c424d938f94b0226f76dd9d9231f50b2832e2fa9e56c75b52dd6e
   languageName: node
   linkType: hard
 
@@ -8415,6 +8414,7 @@ __metadata:
     "@babel/runtime": ^7.25.0
     "@bitcoinerlab/secp256k1": ^1.1.1
     "@coinbase/cbpay-js": ^1.7.0
+    "@d11/react-native-fast-image": ^8.13.0
     "@dr.pogodin/react-native-fs": ^2.36.1
     "@dr.pogodin/react-native-static-server": ^0.25.3
     "@exodus/patch-broken-hermes-typed-arrays": ^1.0.0-alpha.1
@@ -8449,7 +8449,7 @@ __metadata:
     "@react-native/typescript-config": 0.82.1
     "@react-navigation/bottom-tabs": ^7.8.12
     "@react-navigation/drawer": ^7.7.9
-    "@react-navigation/material-top-tabs": ^6.6.3
+    "@react-navigation/material-top-tabs": ^7.4.13
     "@react-navigation/native": ^7.1.25
     "@react-navigation/native-stack": ^7.8.6
     "@reduxjs/toolkit": ^2.11.1
@@ -8523,11 +8523,9 @@ __metadata:
     react-native-config: ^1.6.1
     react-native-crypto: ^2.2.1
     react-native-device-info: ^15.0.1
-    react-native-dynamic-tab-view: ^1.0.7-0
     react-native-elements: ^3.4.3
-    react-native-error-boundary: ^1.2.3
+    react-native-error-boundary: ^3.1.0
     react-native-expo-crypto: ^2.1.4
-    react-native-fast-image: ^8.6.3
     react-native-fast-pbkdf2: ^0.3.1
     react-native-gesture-handler: ^2.30.0
     react-native-http: ^0.0.3
@@ -8547,7 +8545,6 @@ __metadata:
     react-native-path: ^0.0.5
     react-native-permissions: ^5.4.4
     react-native-progress: ^5.0.1
-    react-native-qrcode-scanner: ^1.5.5
     react-native-qrcode-styled: ^0.4.0
     react-native-randombytes: ^3.6.2
     react-native-reanimated: ^4.1.5
@@ -8567,7 +8564,7 @@ __metadata:
     react-native-user-inactivity: ^1.2.0
     react-native-vector-icons: ^10.3.0
     react-native-video: ^6.19.0
-    react-native-view-shot: ^3.5.0
+    react-native-view-shot: ^4.0.3
     react-native-vision-camera: ^4.7.3
     react-native-walkthrough-tooltip: ^1.6.0
     react-native-webview: 13.15.0
@@ -11210,15 +11207,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deep-assign@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "deep-assign@npm:3.0.0"
-  dependencies:
-    is-obj: ^1.0.0
-  checksum: 9041ccc72ae1980f014d4b745d6135d8f0e71d60ac433397550789c27e6b4d14bc0de2af69777e09f97e1d0da3007a8d78de36f7bf9df931c9968b68fc9546ab
-  languageName: node
-  linkType: hard
-
 "deep-extend@npm:^0.6.0":
   version: 0.6.0
   resolution: "deep-extend@npm:0.6.0"
@@ -12234,7 +12222,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:^7.30.1, eslint-plugin-react@npm:^7.33.0":
+"eslint-plugin-react@npm:^7.30.1":
   version: 7.37.5
   resolution: "eslint-plugin-react@npm:7.37.5"
   dependencies:
@@ -18964,19 +18952,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-dynamic-tab-view@npm:^1.0.7-0":
-  version: 1.1.0
-  resolution: "react-native-dynamic-tab-view@npm:1.1.0"
-  dependencies:
-    eslint: ^8.46.0
-    eslint-plugin-react: ^7.33.0
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: caeb35f18030dc8bad7b8b5c06eb83d42420793e53eefb421012ae0968aee4e3e0041c051776ab8a722974085513d26584b9b85139452ca863e42eeed5a2c1f6
-  languageName: node
-  linkType: hard
-
 "react-native-elements@npm:^3.4.3":
   version: 3.4.3
   resolution: "react-native-elements@npm:3.4.3"
@@ -18996,17 +18971,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-error-boundary@npm:^1.2.3":
-  version: 1.2.9
-  resolution: "react-native-error-boundary@npm:1.2.9"
+"react-native-error-boundary@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "react-native-error-boundary@npm:3.1.0"
   peerDependencies:
-    "@types/react-native": ">=0.57.7"
     react: ">=16.6.0"
-    react-native: ">=0.57.7"
-  peerDependenciesMeta:
-    "@types/react-native":
-      optional: true
-  checksum: 2343a5893d4042069d13eb8b2587f094d1727f01ed9c3c2624c883ca8937316213af43db804ead396bddaf597586d7e86199da77d771dea3c5308efe4d6ffa5e
+    react-native: ">=0.74.0"
+    react-native-safe-area-context: ">=5.0.0"
+  checksum: 61cd8284cfdd523d3ec1bdc392930797f07e3305c1c7dcd07075561d774ded16adcbcd5343fba933d83a1a7bab5dceee1a3353fe620bba4453a045c734f20e36
   languageName: node
   linkType: hard
 
@@ -19027,16 +18999,6 @@ __metadata:
   peerDependencies:
     expo-random: ^10.0.0
   checksum: 818a730136106c944d92e14f21adec3cd1304d8b8b63b3b800fa3df04ce4e74bb003404df78cf7d8ec8974aaebbfb87aefc9e5d8b3468740adf2a88bd6a2f878
-  languageName: node
-  linkType: hard
-
-"react-native-fast-image@npm:^8.6.3":
-  version: 8.6.3
-  resolution: "react-native-fast-image@npm:8.6.3"
-  peerDependencies:
-    react: ^17 || ^18
-    react-native: ">=0.60.0"
-  checksum: 29289cb6b2eae0983c8922b22e2d9de3be07322bb7991c5def19f95eadefaedb0e308ff0b38cc1d0444e8bd4fe94a7621a99a2d3d9298100bcb60b3144677234
   languageName: node
   linkType: hard
 
@@ -19261,16 +19223,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-permissions@npm:^2.0.2":
-  version: 2.2.2
-  resolution: "react-native-permissions@npm:2.2.2"
-  peerDependencies:
-    react: ">=16.8.6"
-    react-native: ">=0.60.0"
-  checksum: cfc2b9d9c1e70a965faea108f546b34909cff36bc453e854ea6f129d3fa41c67d0db2fedd13d6041417276f9fd30c03b1aa44e0e20ffb883be3135a28fc94993
-  languageName: node
-  linkType: hard
-
 "react-native-permissions@npm:^5.4.4":
   version: 5.4.4
   resolution: "react-native-permissions@npm:5.4.4"
@@ -19293,19 +19245,6 @@ __metadata:
   peerDependencies:
     react-native-svg: "*"
   checksum: fc9b68f1ca381b011859f8900c89595d62461cfa5b4faf65527639e8d8247d494cc75d5eb86e6dd393bca8dec18996b451775670d7ef2ae70247fa4079c9a8cf
-  languageName: node
-  linkType: hard
-
-"react-native-qrcode-scanner@npm:^1.5.5":
-  version: 1.6.0
-  resolution: "react-native-qrcode-scanner@npm:1.6.0"
-  dependencies:
-    "@react-native-community/async-storage": ^1.6.1
-    prop-types: ^15.5.10
-    react-native-permissions: ^2.0.2
-  peerDependencies:
-    react-native-camera: ">=1.0.2"
-  checksum: 89fdd8132fa0944949f54d902c7245da96cd488536eae0b2f9923d518a822a4dec606f22001871344b6438149f446639b952fe2be281965d1be91b9af1a47bed
   languageName: node
   linkType: hard
 
@@ -19562,15 +19501,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-view-shot@npm:^3.5.0":
-  version: 3.8.0
-  resolution: "react-native-view-shot@npm:3.8.0"
+"react-native-view-shot@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "react-native-view-shot@npm:4.0.3"
   dependencies:
     html2canvas: ^1.4.1
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 9e3044da325b44c90238d1eac54ab0a0a9bdab9b7b93f05409e402890c982ee854ae93ff3b6f0d7befe8f2c53df7cf0c708782c007c4c3c4a007a4844b658fde
+  checksum: d795849b5e2d1c75f66675aea073dae7d109b2b0a266d54f8c0ac8b30d4516dd83a5a7494fd2c44adf0e6e7286d3c29e9b025dbea3536332bf7165715f8a97de
   languageName: node
   linkType: hard
 
