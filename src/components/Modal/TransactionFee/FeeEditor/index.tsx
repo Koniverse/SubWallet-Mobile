@@ -274,9 +274,9 @@ const FeeEditor = ({
                     type={'ghost'}
                     icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />}
                     style={{ marginRight: -10 }}
-                    disabled={!isDataReady || isEvmButNoCustomFeeSupport}
+                    disabled={!isDataReady}
                     loading={isLoadingToken}
-                    onPress={isEvmButNoCustomFeeSupport ? undefined : onPressEdit}
+                    onPress={onPressEdit}
                   />
                 </Tooltip>
               )}
