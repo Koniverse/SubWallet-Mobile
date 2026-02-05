@@ -13,6 +13,7 @@ const config = {
   },
   resolver: {
     assetExts: assetExts.filter(ext => ext !== 'svg'),
+    unstable_enablePackageExports: false,
     sourceExts: [...sourceExts, 'svg'],
     extraNodeModules: {
       // Override fs with @dr.pogodin/react-native-fs

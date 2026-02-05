@@ -27,6 +27,7 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
           key={node.key}
           contentWidth={deviceWidth - 32}
           systemFonts={['PlusJakartaSans-Medium']}
+          enableCSSInlineProcessing
           source={{ html: `${node.content}` }}
         />
       );
@@ -37,10 +38,13 @@ export const ContentGenerator = ({ content, markdownStyle }: Props) => {
         key={node.key}
         contentWidth={deviceWidth - 32}
         systemFonts={['PlusJakartaSans-Medium']}
+        enableCSSInlineProcessing
         source={{ html: `${node.content}` }}
       />
     ),
   };
+
+
 
   return (
     <Markdown

@@ -1,15 +1,14 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import { toShort } from 'utils/index';
-import { StyleProp, StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, View } from 'react-native';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { Typography } from 'components/design-system-ui';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FieldHorizontal } from 'components/design-system-ui/field/HorizontalField';
-import { TextStyle } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 
 interface Props extends FieldBaseProps {
@@ -48,7 +47,7 @@ export const AccountSelectField = ({
             {!value && <Typography.Text style={styles.placeholderStyle}>{i18n.header.selectAccount}</Typography.Text>}
           </View>
 
-          {!!showIcon && <CaretDown size={20} color={theme.colorTextLight2} weight={'bold'} />}
+          {!!showIcon && <CaretDownIcon size={20} color={theme.colorTextLight2} weight={'bold'} />}
         </View>
       </FieldHorizontal>
     );
@@ -68,7 +67,7 @@ export const AccountSelectField = ({
           {!value && <Typography.Text style={styles.placeholderStyle}>{i18n.header.selectAccount}</Typography.Text>}
         </View>
 
-        {!!showIcon && <CaretDown size={20} color={theme.colorTextLight2} weight={'bold'} />}
+        {!!showIcon && <CaretDownIcon size={20} color={theme.colorTextLight2} weight={'bold'} />}
       </View>
     </FieldBase>
   );

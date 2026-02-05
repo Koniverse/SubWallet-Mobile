@@ -107,8 +107,7 @@ export const BrowserListByTabview = ({ route, navigation }: BrowserListByTabview
 
         <Tab.Navigator
           overScrollMode={'always'}
-          initialRouteName="TabBrowserHome0"
-          sceneContainerStyle={transparent}
+          initialRouteName="all"
           screenOptions={screenOptions}
           screenListeners={screenListener}
           style={transparent}>

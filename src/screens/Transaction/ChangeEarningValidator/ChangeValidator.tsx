@@ -110,7 +110,7 @@ export const ChangeValidator = ({
   setForceFetchValidator,
   onCancel,
 }: Props) => {
-  const sortingModalRef = useRef<ModalRef>();
+  const sortingModalRef = useRef<ModalRef | null>(null);
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyle(theme);
   const [isTransactionDone, setTransactionDone] = useState(false);

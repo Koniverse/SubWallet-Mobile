@@ -4,6 +4,7 @@ import { ActivityIndicator, Typography } from '..';
 import QRCodeStyles from './style';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import QRCodeStyled, { GradientProps, QRCodeMessage } from 'react-native-qrcode-styled';
+import { StyleProp, ViewStyle } from 'react-native';
 
 const gradient: GradientProps = {
   type: 'radial',
@@ -27,6 +28,7 @@ export interface SWQRCodeProps {
   qrRef?: Ref<any>;
   width: number;
   height: number;
+  style?: StyleProp<ViewStyle>;
 }
 
 const QRCode: React.FC<SWQRCodeProps> = ({
@@ -39,6 +41,7 @@ const QRCode: React.FC<SWQRCodeProps> = ({
   qrRef,
   width,
   height,
+  style,
 }) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = QRCodeStyles(theme);
@@ -71,6 +74,7 @@ const QRCode: React.FC<SWQRCodeProps> = ({
         width={width}
         height={height}
         size={width}
+        style={style}
       />
 
       {status === 'loading' && (

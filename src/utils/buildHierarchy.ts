@@ -1,11 +1,12 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
+import type { AccountWithChildren } from '@subwallet/extension-base/background/types';
 
 import { isAccountAll } from './accountAll';
 
 import getNetworkMap from './getNetworkMap';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 type ChildFilter = (account: AccountJson) => AccountWithChildren;
 

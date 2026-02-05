@@ -6,16 +6,6 @@
   "bundleVersionStaging": "a(v11)-i(v16)",
   "private": true,
   "license": "Apache-2.0",
-  "reactNativePermissionsIOS": [
-    "Camera",
-    "FaceID",
-    "MediaLibrary",
-    "Notifications",
-    "Microphone",
-    "LocationWhenInUse",
-    "PhotoLibrary",
-    "PhotoLibraryAddOnly"
-  ],
   "scripts": {
     "postinstall": "patch-package && rm -rf node_modules/@subwallet/extension-base/node_modules node_modules/@polkadot/types/node_modules",
     "android": "react-native run-android",
@@ -115,7 +105,7 @@
     "react-native-mmkv": "^4.0.1",
     "react-native-modal": "^14.0.0-rc.1",
     "react-native-nitro-modules": "^0.33.2",
-    "react-native-pager-view": "^6.2.0",
+    "react-native-pager-view": "^8.0.0",
     "react-native-path": "^0.0.5",
     "react-native-permissions": "^5.4.4",
     "react-native-progress": "^5.0.1",

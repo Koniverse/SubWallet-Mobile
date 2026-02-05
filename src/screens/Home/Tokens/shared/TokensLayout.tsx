@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  ListRenderItem,
   ListRenderItemInfo,
   RefreshControl,
   ScrollView,
@@ -41,7 +40,7 @@ interface Props {
   style?: StyleProp<ViewStyle>;
   layoutFooter?: React.ReactElement;
   items: TokenBalanceItemType[];
-  renderItem: ListRenderItem<TokenBalanceItemType>;
+  renderItem: ({item}: ListRenderItemInfo<TokenBalanceItemType>) => React.JSX.Element;
   refresh?: () => void;
   loading?: boolean;
   banners?: AppBannerData[];

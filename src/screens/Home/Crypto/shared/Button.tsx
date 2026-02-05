@@ -1,9 +1,9 @@
-import { ArrowsLeftRight, CopySimple, PaperPlaneTilt, ShoppingCartSimple } from 'phosphor-react-native';
+import { ArrowsLeftRightIcon, CopySimpleIcon, PaperPlaneTiltIcon, ShoppingCartSimpleIcon } from 'phosphor-react-native';
 import { getButtonIcon } from 'utils/button';
 
 export const ButtonIcon = {
-  Receive: getButtonIcon(CopySimple, 'duotone', 'md'),
-  SendFund: getButtonIcon(PaperPlaneTilt, 'duotone', 'md'),
-  Buy: getButtonIcon(ShoppingCartSimple, 'duotone', 'md'),
-  Swap: getButtonIcon(ArrowsLeftRight, 'duotone', 'md'),
+  Receive: getButtonIcon(CopySimpleIcon, 'duotone', 'md'),
+  SendFund: getButtonIcon(PaperPlaneTiltIcon, 'duotone', 'md'),
+  Buy: getButtonIcon(ShoppingCartSimpleIcon, 'duotone', 'md'),
+  Swap: getButtonIcon(ArrowsLeftRightIcon, 'duotone', 'md'),
 };

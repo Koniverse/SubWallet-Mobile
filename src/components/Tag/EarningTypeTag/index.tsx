@@ -1,7 +1,7 @@
 import { YieldPoolType } from '@subwallet/extension-base/types';
 import { Icon, Tag, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Medal, MegaphoneSimple } from 'phosphor-react-native';
+import { MedalIcon, MegaphoneSimpleIcon } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { FontBold } from 'styles/sharedStyles';
 import { EarningTagType } from 'types/earning';
@@ -30,14 +30,14 @@ const EarningTypeTag: React.FC<Props> = (props: Props) => {
             bgColor: 'default',
             color: 'default',
             label: 'Coming soon',
-            icon: MegaphoneSimple,
+            icon: MegaphoneSimpleIcon,
             weight: 'fill',
           }
         : {
             bgColor: 'lime',
             color: 'lime',
             label: 'Exclusive rewards',
-            icon: Medal,
+            icon: MedalIcon,
             weight: 'fill',
           },
     [comingSoon, earningTagTypes, type],

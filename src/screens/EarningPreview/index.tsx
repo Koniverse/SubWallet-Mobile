@@ -3,7 +3,13 @@ import { Alert, Linking } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import usePreviewYieldGroupInfo from 'hooks/earning/usePreviewYieldGroupInfo';
 import { DataContext } from 'providers/DataContext';
-import { NominationPoolInfo, YieldPoolInfo, YieldPoolTarget, YieldPoolType } from '@subwallet/extension-base/types';
+import {
+  AccountJson,
+  NominationPoolInfo,
+  YieldPoolInfo,
+  YieldPoolTarget,
+  YieldPoolType,
+} from '@subwallet/extension-base/types';
 import { fetchStaticCache } from '@subwallet/extension-base/utils/fetchStaticCache';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { YieldGroupInfo } from 'types/earning';
@@ -17,7 +23,6 @@ import { fetchPoolTarget, saveCurrentAccountAddress } from 'messaging/index';
 import { isAccountAll } from 'utils/accountAll';
 import { getValidatorKey } from 'utils/transaction/stake';
 import { ValidatorInfo } from '@subwallet/extension-base/types/yield/info/chain/target';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { getFilteredAccount } from '../../AppNavigator';
 import { analysisAccounts } from 'hooks/screen/Home/Crypto/useGetChainSlugsByAccountType';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
@@ -30,7 +35,7 @@ import { mmkvStore } from 'utils/storage';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import i18n from 'utils/i18n/i18n';
 import { EmptyList } from 'components/EmptyList';
-import { Trophy } from 'phosphor-react-native';
+import { TrophyIcon } from 'phosphor-react-native';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 
 interface EarningPreviewScreen {
@@ -408,7 +413,7 @@ const EarningPreviewScreen = ({ poolInfoMap, targetParam, typeParam, chainParam 
     return (
       <EmptyList
         title={i18n.emptyScreen.groupEmptyTitle}
-        icon={Trophy}
+        icon={TrophyIcon}
         message={i18n.emptyScreen.groupEmptyMessage}
         addBtnLabel={i18n.buttonTitles.startStaking}
       />

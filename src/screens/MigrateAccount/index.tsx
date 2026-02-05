@@ -6,7 +6,7 @@ import PasswordModal from 'components/Modal/PasswordModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { RequestMigrateSoloAccount, SoloAccountToBeMigrated } from '@subwallet/extension-base/background/KoniTypes';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { MigrateAccountProps, RootNavigationProps } from 'routes/index';
 import { hasAnyAccountForMigration } from '@subwallet/extension-base/services/keyring-service/utils';
 import { migrateSoloAccount, migrateUnifiedAndFetchEligibleSoloAccounts } from 'messaging/migrate-unified-account';
@@ -56,8 +56,7 @@ const MigrateAccount = ({
   }, [isAcknowledgedUnifiedAccountMigration, isMigrationNotice]);
 
   const backToAccountSettings = useCallback(() => {
-    navigation.dispatch(DrawerActions.openDrawer());
-    navigation.navigate('AccountSettings');
+    navigation.goBack();
   }, [navigation]);
 
   const onPressDismiss = useCallback(() => {

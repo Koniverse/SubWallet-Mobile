@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Button, PageIcon, SwModal, Typography } from 'components/design-system-ui';
 import { Linking, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { ShieldCheck } from 'phosphor-react-native';
+import { ShieldCheckIcon } from 'phosphor-react-native';
 import { FontMedium } from 'styles/sharedStyles';
 import { mmkvStore } from 'utils/storage';
 import { useSelector } from 'react-redux';
@@ -25,7 +25,7 @@ export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { accountProxies, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
-  const accountSelectorRef = useRef<ModalRef>();
+  const accountSelectorRef = useRef<ModalRef | null>(null);
   const onSetCurrentRemindBackupTimeout = () => {
     mmkvStore.set('lastTimeLogin', Date.now());
     mmkvStore.set('remindBackupTimeout', Date.now());
@@ -60,7 +60,7 @@ export const RemindBackupModal = ({ modalVisible, setVisible }: Props) => {
           modalTitle={'Back up your seed phrase!'}>
           <View style={{ position: 'relative' }}>
             <View style={{ alignItems: 'center' }}>
-              <PageIcon icon={ShieldCheck} color={theme.colorPrimary} />
+              <PageIcon icon={ShieldCheckIcon} color={theme.colorPrimary} />
 
               <Typography.Text
                 style={{

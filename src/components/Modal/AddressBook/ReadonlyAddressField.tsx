@@ -4,7 +4,7 @@ import { Button, Field, Icon, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
 import React, { useCallback } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { Copy } from 'phosphor-react-native';
+import { CopyIcon } from 'phosphor-react-native';
 import createStylesheet from './style/ReadonlyAddressField';
 import Toast from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
@@ -43,7 +43,7 @@ export const ReadonlyAddressField = ({ address, label, showAvatar = true, toastR
           size={'xs'}
           type={'ghost'}
           onPress={copyToClipboard}
-          icon={<Icon phosphorIcon={Copy} size={'sm'} iconColor={theme['gray-5']} />}
+          icon={<Icon phosphorIcon={CopyIcon} size={'sm'} iconColor={theme['gray-5']} />}
         />
       </View>
     </Field>

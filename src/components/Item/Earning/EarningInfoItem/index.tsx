@@ -2,7 +2,7 @@ import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { Icon, Number, Tag, Typography } from 'components/design-system-ui';
 import EarningTypeTag from 'components/Tag/EarningTypeTag';
-import { CaretRight, Moon, Sun } from 'phosphor-react-native';
+import { CaretRightIcon, MoonIcon, SunIcon } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -48,7 +48,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
 
   const getTagItem = (isTestnet: boolean) => {
     const tagContent = isTestnet ? 'Testnet' : 'Mainnet';
-    const TagIcon = isTestnet ? Moon : Sun;
+    const TagIcon = isTestnet ? MoonIcon : SunIcon;
     const tagBgc = isTestnet ? 'rgba(217, 197, 0, 0.1)' : 'rgba(45, 167, 63, 0.1)';
     const tagColor = isTestnet ? 'yellow' : 'green';
     const tagIconColor = isTestnet ? theme['yellow-6'] : theme['green-7'];
@@ -173,7 +173,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
         {isTempEarningCondition && (
           <Typography.Text style={styleSheet.viewOnDAppTextStyle}>View on dApp</Typography.Text>
         )}
-        <Icon phosphorIcon={CaretRight} iconColor={theme['gray-5']} size={'sm'} />
+        <Icon phosphorIcon={CaretRightIcon} iconColor={theme['gray-5']} size={'sm'} />
       </View>
     </TouchableOpacity>
   );

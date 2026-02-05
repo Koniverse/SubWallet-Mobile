@@ -11,7 +11,7 @@ import MetaInfo from 'components/MetaInfo';
 import EarningNominationModal from 'components/Modal/Earning/EarningNominationModal';
 import { EarningStatusUi } from 'constants/stakingStatusUi';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { ArrowSquareOut, CaretDown, CaretUp } from 'phosphor-react-native';
+import { ArrowSquareOutIcon, CaretDownIcon, CaretUpIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -211,7 +211,7 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
                 style={disableButton ? styles.buttonDisable : undefined}
                 onPress={canChangeValidator ? createOpenValidator(item) : createOpenNomination(item)}>
                 <MetaInfo.Default label={canChangeValidator ? 'Your validators' : i18n.inputLabel.nominationInfo}>
-                  <Icon phosphorIcon={ArrowSquareOut} iconColor={theme['gray-5']} />
+                  <Icon phosphorIcon={ArrowSquareOutIcon} iconColor={theme['gray-5']} />
                 </MetaInfo.Default>
               </TouchableOpacity>
             </>
@@ -253,7 +253,7 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
         <Button
           type="ghost"
           size="xs"
-          icon={<Icon phosphorIcon={showDetail ? CaretUp : CaretDown} size="sm" iconColor={theme['gray-5']} />}
+          icon={<Icon phosphorIcon={showDetail ? CaretUpIcon : CaretDownIcon} size="sm" iconColor={theme['gray-5']} />}
           onPress={toggleDetail}
         />
       </TouchableOpacity>

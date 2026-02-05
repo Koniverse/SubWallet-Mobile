@@ -13,7 +13,7 @@ import { BN_ZERO } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
 import { ActivityIndicator, Button, Icon, Number, Typography } from 'components/design-system-ui';
-import { ArrowSquareOut, CaretDown, CaretUp } from 'phosphor-react-native';
+import { ArrowSquareOutIcon, CaretDownIcon, CaretUpIcon } from 'phosphor-react-native';
 import { customFormatDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -179,7 +179,7 @@ const RewardInfoPart: React.FC<Props> = (props: Props) => {
             <Button
               type="ghost"
               size="xs"
-              icon={<Icon phosphorIcon={showDetail ? CaretUp : CaretDown} size="sm" iconColor={theme['gray-5']} />}
+              icon={<Icon phosphorIcon={showDetail ? CaretUpIcon : CaretDownIcon} size="sm" iconColor={theme['gray-5']} />}
               onPress={toggleDetail}
             />
           </TouchableOpacity>
@@ -206,7 +206,7 @@ const RewardInfoPart: React.FC<Props> = (props: Props) => {
             size={'sm'}
             type={'ghost'}
             onPress={onPressViewExplore}
-            icon={<Icon phosphorIcon={ArrowSquareOut} iconColor={theme.colorTextLight4} />}>
+            icon={<Icon phosphorIcon={ArrowSquareOutIcon} iconColor={theme.colorTextLight4} />}>
             {i18n.common.viewOnExplorer}
           </Button>
         </MetaInfo>

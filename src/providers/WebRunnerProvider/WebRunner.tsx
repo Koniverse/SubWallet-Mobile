@@ -19,14 +19,6 @@ const completeBackUpData = !isFirstLaunch ? storedCompleteBackUpData : true;
 
 let needFallBack = false;
 
-export const getMajorVersionIOS = (): number => {
-  if (Platform.OS !== 'ios') {
-    return 17;
-  }
-
-  return parseFloat(Platform.Version);
-};
-
 const webRunnerHandler = new WebRunnerHandler();
 
 interface WebRunnerControlAction {
@@ -177,7 +169,6 @@ export const WebRunner = React.memo(
             onLoadProgress={onLoadProgress}
             onError={e => console.debug('### WebRunner error', e.nativeEvent)}
             onHttpError={e => {
-              console.log('e', e.nativeEvent);
               const old = needFallBack;
               needFallBack = true;
               if (!old) {

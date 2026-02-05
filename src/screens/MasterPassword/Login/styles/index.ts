@@ -4,7 +4,7 @@ import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 export interface LoginStyle {
   container: ViewStyle;
   subLogo: ViewStyle;
-  subTitle: ViewStyle;
+  subTitle: TextStyle;
   submitButton: ViewStyle;
   forgotpasswordText: TextStyle;
   forgotpasswordButton: ViewStyle;
@@ -15,7 +15,7 @@ export interface LoginStyle {
 export default () => {
   const theme = useSubWalletTheme().swThemes;
   return StyleSheet.create<LoginStyle>({
-    container: { width: '100%', alignItems: 'center', paddingTop: 93 },
+    container: { width: '100%', alignItems: 'center' },
     subLogo: { paddingTop: 20, paddingBottom: 12 },
     subTitle: { marginBottom: 40, color: theme.colorTextLabel },
     submitButton: { width: '100%', marginTop: 8 },

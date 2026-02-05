@@ -31,11 +31,12 @@ const screenOptions:
   | MaterialTopTabNavigationOptions
   | ((props: { route: RouteProp<ParamListBase, string>; navigation: any }) => MaterialTopTabNavigationOptions)
   | undefined = () => ({
-  tabBarStyle: { height: 28, ...transparent },
+  tabBarStyle: { height: 40, ...transparent },
   tabBarItemStyle: {
     width: 'auto',
     paddingLeft: 0,
     paddingRight: 0,
+    paddingTop: 0
   },
   tabBarIconStyle: { width: 'auto', marginLeft: -2, marginRight: -2, top: -12 },
   tabBarScrollEnabled: true,
@@ -129,7 +130,6 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
         />
         <Tab.Navigator
           overScrollMode={'always'}
-          sceneContainerStyle={transparent}
           screenOptions={screenOptions}
           screenListeners={screenListener}
           style={transparent}>

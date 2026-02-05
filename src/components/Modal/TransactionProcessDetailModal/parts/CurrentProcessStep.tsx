@@ -12,7 +12,7 @@ import {
   YieldStepType,
 } from '@subwallet/extension-base/types';
 import { Icon, Typography } from 'components/design-system-ui';
-import { CheckCircle, ClockCounterClockwise, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
+import { CheckCircleIcon, ClockCounterClockwiseIcon, ProhibitInsetIcon, SpinnerGapIcon } from 'phosphor-react-native';
 import { CommonStepType } from '@subwallet/extension-base/types/service-base';
 import { isStepCompleted, isStepFailed, isStepTimeout } from 'utils/transaction';
 import { convertHexColorToRGBA } from 'utils/color';
@@ -41,14 +41,14 @@ const CurrentProcessStep: React.FC<Props> = (props: Props) => {
 
   const icon = useMemo(() => {
     if (isStepCompleted(processData.status)) {
-      return <Icon phosphorIcon={CheckCircle} weight={'fill'} iconColor={theme.colorSuccess} />;
+      return <Icon phosphorIcon={CheckCircleIcon} weight={'fill'} iconColor={theme.colorSuccess} />;
     } else if (isStepFailed(processData.status)) {
-      return <Icon size={'md'} phosphorIcon={ProhibitInset} weight={'fill'} iconColor={theme.colorError} />;
+      return <Icon size={'md'} phosphorIcon={ProhibitInsetIcon} weight={'fill'} iconColor={theme.colorError} />;
     } else if (isStepTimeout(processData.status)) {
-      return <Icon phosphorIcon={ClockCounterClockwise} iconColor={theme.gold} weight={'fill'} />;
+      return <Icon phosphorIcon={ClockCounterClockwiseIcon} iconColor={theme.gold} weight={'fill'} />;
     }
 
-    return <RollingIcon icon={<Icon phosphorIcon={SpinnerGap} iconColor={'#D9A33E'} />} />;
+    return <RollingIcon icon={<Icon phosphorIcon={SpinnerGapIcon} iconColor={'#D9A33E'} />} />;
   }, [processData.status, theme.colorError, theme.colorSuccess, theme.gold]);
 
   const currentStep: ProcessStep | undefined = useMemo(() => {

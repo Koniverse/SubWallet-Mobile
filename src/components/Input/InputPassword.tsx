@@ -3,7 +3,7 @@ import { TextInput } from 'react-native';
 import { InputProps } from 'components/design-system-ui/input';
 import { Button, Icon, Input } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Eye, EyeSlash } from 'phosphor-react-native';
+import { EyeIcon, EyeSlashIcon } from 'phosphor-react-native';
 import createStylesheet from 'components/Input/style/InputPassword';
 
 interface Props extends InputProps {
@@ -29,7 +29,7 @@ const Component = ({ showEyeButton = true, ...inputProps }: Props, ref: Forwarde
         style={stylesheet.eyeButton}
         icon={
           <Icon
-            phosphorIcon={isShowPassword ? EyeSlash : Eye}
+            phosphorIcon={isShowPassword ? EyeSlashIcon : EyeIcon}
             size={'sm'}
             iconColor={inputProps.readonly ? theme.colorTextLight5 : theme.colorTextLight3}
           />

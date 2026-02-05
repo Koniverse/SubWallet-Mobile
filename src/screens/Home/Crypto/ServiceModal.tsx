@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import i18n from 'utils/i18n/i18n';
-import { ListRenderItemInfo, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ServiceSelectItem } from 'components/ServiceSelectItem';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
@@ -10,10 +10,11 @@ import { Image } from 'components/design-system-ui';
 import { ImageLogosMap } from 'assets/logo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 interface Props {
   items: ServiceItem[];
-  serviceRef?: React.MutableRefObject<ModalRef | undefined>;
+  serviceRef?: React.RefObject<ModalRef | null>;
   disabled?: boolean;
   onPressItem: (currentValue: SupportService) => void;
   selectedService?: string;

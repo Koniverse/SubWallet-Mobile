@@ -18,7 +18,7 @@ const Item: React.FC<Props> = (props: Props) => {
     return getStepText(processStep, combineInfo);
   }, [combineInfo, getStepText, processStep]);
 
-  return <ProcessStepItem index={index} isLastItem={isLastItem} status={processStep.status} text={text} />;
+  return <ProcessStepItem index={index} isLastItem={isLastItem} status={processStep.status} content={text} />;
 };
 
 export default Item;

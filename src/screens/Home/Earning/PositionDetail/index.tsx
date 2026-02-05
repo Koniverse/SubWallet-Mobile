@@ -13,7 +13,7 @@ import { Button, Icon, Number, Typography } from 'components/design-system-ui';
 import { EarningInfoPart, RewardInfoPart, WithdrawInfoPart, AccountAndNominationInfoPart } from 'components/Earning';
 import { useYieldPositionDetail } from 'hooks/earning';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { MinusCircle, Plus, PlusCircle } from 'phosphor-react-native';
+import { MinusCircleIcon, PlusIcon, PlusCircleIcon } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -245,7 +245,7 @@ const Component: React.FC<Props> = (props: Props) => {
       showRightBtn={true}
       isHideBottomSafeArea
       disableRightButton={isChainUnsupported}
-      rightIcon={Plus}>
+      rightIcon={PlusIcon}>
       <ScrollView contentContainerStyle={styles.wrapper} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Typography.Text style={styles.activeTitle}>Active stake</Typography.Text>
@@ -286,7 +286,7 @@ const Component: React.FC<Props> = (props: Props) => {
             <Button
               block={true}
               type="secondary"
-              icon={<Icon phosphorIcon={MinusCircle} weight="fill" />}
+              icon={<Icon phosphorIcon={MinusCircleIcon} weight="fill" />}
               onPress={onLeavePool}>
               {poolInfo?.type === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
             </Button>
@@ -297,7 +297,7 @@ const Component: React.FC<Props> = (props: Props) => {
               externalTextStyle={{ flexShrink: 1 }}
               icon={
                 <Icon
-                  phosphorIcon={PlusCircle}
+                  phosphorIcon={PlusCircleIcon}
                   iconColor={isChainUnsupported ? theme.colorTextLight5 : theme.colorWhite}
                   weight="fill"
                 />

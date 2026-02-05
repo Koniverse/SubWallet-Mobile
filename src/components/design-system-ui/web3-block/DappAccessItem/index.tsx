@@ -4,7 +4,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
 import { Image, StyleProp, View, ViewStyle } from 'react-native';
 import createStyle from './styles';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRightIcon } from 'phosphor-react-native';
 import { DAppIconMap, DAppTitleMap } from '../../../../predefined/dAppSites';
 import { ColorMap } from 'styles/color';
 import { getHostName } from 'utils/browser';
@@ -60,7 +60,7 @@ const DappAccessItem: React.FC<DappAccessItemProps> = (props: DappAccessItemProp
           </View>
         )
       }
-      rightItem={rightItem || <CaretRight color={ColorMap.disabled} size={20} weight={'bold'} />}
+      rightItem={rightItem || <CaretRightIcon color={ColorMap.disabled} size={20} weight={'bold'} />}
     />
   );
 };

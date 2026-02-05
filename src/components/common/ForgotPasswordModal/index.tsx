@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';
-import { ArrowCounterClockwise, TrashSimple, WarningCircle, X } from 'phosphor-react-native';
+import { ArrowCounterClockwiseIcon, TrashSimpleIcon, WarningCircleIcon, XIcon } from 'phosphor-react-native';
 import { Button, Icon, PageIcon, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
@@ -17,10 +17,10 @@ interface Props {
 }
 
 const renderLeftBtnIcon = (color: string) => (
-  <Icon phosphorIcon={ArrowCounterClockwise} size={'lg'} iconColor={color} />
+  <Icon phosphorIcon={ArrowCounterClockwiseIcon} size={'lg'} iconColor={color} />
 );
 
-const renderRightBtnIcon = (color: string) => <Icon phosphorIcon={TrashSimple} weight={'fill'} iconColor={color} />;
+const renderRightBtnIcon = (color: string) => <Icon phosphorIcon={TrashSimpleIcon} weight={'fill'} iconColor={color} />;
 
 export const ForgotPasswordModal = ({
   modalVisible,
@@ -41,12 +41,12 @@ export const ForgotPasswordModal = ({
       renderHeader={
         <ActionHeader
           title={i18n.common.forgotPassword}
-          renderLeftAction={<Icon phosphorIcon={X} size="md" />}
+          renderLeftAction={<Icon phosphorIcon={XIcon} size="md" />}
           onPressLeft={onCloseModalVisible}
         />
       }>
       <View style={styles.contentWrapper}>
-        <PageIcon icon={WarningCircle} color={theme.colorError} />
+        <PageIcon icon={WarningCircleIcon} color={theme.colorError} />
         <Typography.Text style={styles.forgotMessage}>{i18n.message.forgotPasswordMessage}</Typography.Text>
         <View style={styles.buttonWrapper}>
           <Button

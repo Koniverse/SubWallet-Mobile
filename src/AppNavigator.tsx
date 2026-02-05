@@ -249,10 +249,7 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
         group: (group: string) => group,
         symbol: (symbol: string) => symbol,
       },
-    },
-    Crowdloans: {
-      path: 'crowdloans',
-    },
+    }
   },
 };
 

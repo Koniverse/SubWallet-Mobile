@@ -21,6 +21,7 @@ const SafeAreaStyle: StyleProp<ViewStyle> = { backgroundColor: 'transparent' };
 
 const CameraStyle: StyleProp<ViewStyle> = {
   height: '100%',
+  position: 'absolute',
 };
 
 const RectangleContainerStyle: StyleProp<ViewStyle> = {

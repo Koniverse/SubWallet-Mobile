@@ -44,7 +44,7 @@ interface Props {
   onSelectItem?: (item: TokenSelectorItemType) => void;
   disabled?: boolean;
   renderSelected?: () => JSX.Element;
-  tokenSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  tokenSelectorRef?: React.RefObject<ModalRef | null>;
   closeModalAfterSelect?: boolean;
   isShowContent?: boolean;
   isShowInput?: boolean;

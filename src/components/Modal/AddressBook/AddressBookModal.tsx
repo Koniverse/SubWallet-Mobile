@@ -1,5 +1,5 @@
 import { FlatListScreen } from 'components/FlatListScreen';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { EmptyList } from 'components/EmptyList';
@@ -81,7 +81,7 @@ const filterFunction = (items: AnalyzeAddress[], filters: string[]) => {
 const emptyList = () => {
   return (
     <EmptyList
-      icon={MagnifyingGlass}
+      icon={MagnifyingGlassIcon}
       title={i18n.emptyScreen.selectorEmptyTitle}
       message={i18n.emptyScreen.selectorEmptyMessage}
     />

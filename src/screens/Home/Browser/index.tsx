@@ -39,7 +39,7 @@ const screenOptions = (
     elevation: 5,
   },
   tabBarStyle: {
-    height: 28,
+    height: 40,
     backgroundColor: '#0C0C0C',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 5 },
@@ -51,8 +51,8 @@ const screenOptions = (
     width: 'auto',
     paddingLeft: 0,
     paddingRight: 0,
+    paddingTop: 0
   },
-  tabBarIconStyle: { width: 'auto', marginLeft: -2, marginRight: -2, top: -12 },
   tabBarScrollEnabled: true,
   lazy: true,
   tabBarShowLabel: false,
@@ -121,16 +121,15 @@ export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
 
         <Tab.Navigator
           initialLayout={initialLayout}
-          sceneContainerStyle={transparent}
-          initialRouteName="TabBrowserHome0"
+          initialRouteName="all"
           screenListeners={screenListener}
           screenOptions={screenOptions(currentTabIndex)}>
           {allTabRoutes.map((item, index) => {
             if (index === 0) {
               return (
                 <Tab.Screen
-                  key={'TabBrowserHome0'}
-                  name="TabBrowserHome0"
+                  key={'all'}
+                  name="all"
                   component={BrowserHome}
                   options={tabScreenOptions(item)}
                 />

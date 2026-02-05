@@ -1,5 +1,4 @@
 import {
-  BitcoinSignatureRequest,
   BitcoinSignPsbtRequest,
   ConfirmationDefinitionsBitcoin,
   ConfirmationResult,
@@ -32,6 +31,8 @@ import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress.ts';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 
 interface Props {
   id: string;
@@ -70,10 +71,12 @@ export const BitcoinSignArea: React.FC<Props> = (props: Props) => {
   const { canSign, editedPayload, extrinsicType, id, payload, type, navigation } = props;
   const [isScanning, setIsScanning] = useState(false);
   const [isShowQr, setIsShowQr] = useState(false);
-  const { account } = payload.payload as BitcoinSignatureRequest;
+  const { address, errors } = payload.payload;
+  const account = useGetAccountByAddress(address);
   const { hideAll, show } = useToast();
   const dispatch = useDispatch();
   const signMode = useMemo(() => getSignMode(account), [account]);
+  const isErrorTransaction = useMemo(() => errors && errors.length > 0, [errors]);
   // TODO: [Review] type generic_ledger or legacy_ledger
 
   const [loading, setLoading] = useState(false);
@@ -107,7 +110,7 @@ export const BitcoinSignArea: React.FC<Props> = (props: Props) => {
         await makeBitcoinDappTransferConfirmation(editedPayload);
       } else if (type === 'bitcoinSignPsbtRequest') {
         const {
-          payload: { account: _account, broadcast, network, psbt, to, tokenSlug, txInput, txOutput, value },
+          payload: { address: _address, broadcast, network, psbt, to, tokenSlug, txInput, txOutput, value },
         } = payload.payload as BitcoinSignPsbtRequest;
 
         if (broadcast) {
@@ -118,7 +121,7 @@ export const BitcoinSignArea: React.FC<Props> = (props: Props) => {
             txInput,
             tokenSlug,
             psbt,
-            from: _account,
+            from: _address,
             to,
             value,
           });
@@ -208,32 +211,49 @@ export const BitcoinSignArea: React.FC<Props> = (props: Props) => {
   );
 
   return (
-    <ConfirmationFooter>
-      <Button
-        block
-        disabled={loading}
-        icon={<Icon phosphorIcon={XCircleIcon} weight="fill" />}
-        onPress={onCancel}
-        type={'secondary'}>
-        {i18n.common.cancel}
-      </Button>
-      <Button
-        block
-        disabled={!(canSign === undefined ? payload.payload.canSign : canSign && payload.payload.canSign) || loading}
-        icon={<Icon phosphorIcon={approveIcon} weight="fill" />}
-        loading={loading}
-        onPress={onConfirm}>
-        {i18n.buttonTitles.approve}
-      </Button>
-      {signMode === AccountSignMode.QR && (
-        <>
-          <DisplayPayloadModal visible={isShowQr} onOpenScan={openScanning} setVisible={setIsShowQr}>
-            <>
-              <SignatureScanner visible={isScanning} onSuccess={onSuccess} setVisible={setIsScanning} />
-            </>
-          </DisplayPayloadModal>
-        </>
+    <>
+      {isErrorTransaction && errors && (
+        <AlertBox description={errors[0].message} title={errors[0].name} type={'error'} />
       )}
-    </ConfirmationFooter>
+      <ConfirmationFooter>
+        {isErrorTransaction ? (
+          <Button block disabled={loading} onPress={onCancel} type={'primary'}>
+            {i18n.buttonTitles.iUnderstand}
+          </Button>
+        ) : (
+          <Button
+            block
+            disabled={loading}
+            icon={<Icon phosphorIcon={XCircleIcon} weight="fill" />}
+            onPress={onCancel}
+            type={'secondary'}
+          >
+            {i18n.common.cancel}
+          </Button>
+        )}
+        {!isErrorTransaction &&
+          <Button
+            block
+            disabled={
+              !(canSign === undefined ? payload.payload.canSign : canSign && payload.payload.canSign) || loading
+            }
+            icon={<Icon phosphorIcon={approveIcon} weight="fill" />}
+            loading={loading}
+            onPress={onConfirm}
+          >
+            {i18n.buttonTitles.approve}
+          </Button>
+        }
+        {!isErrorTransaction && signMode === AccountSignMode.QR && (
+          <>
+            <DisplayPayloadModal visible={isShowQr} onOpenScan={openScanning} setVisible={setIsShowQr}>
+              <>
+                <SignatureScanner visible={isScanning} onSuccess={onSuccess} setVisible={setIsScanning} />
+              </>
+            </DisplayPayloadModal>
+          </>
+        )}
+      </ConfirmationFooter>
+    </>
   );
 };

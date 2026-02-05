@@ -1,16 +1,15 @@
 import { isHex } from '@polkadot/util';
 import React, { useCallback, useEffect, useState } from 'react';
-import { StatusBar, SafeAreaView } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { ScannerStyles } from 'styles/scanner';
 import { SigData } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
-import { BarCodeReadEvent } from 'react-native-camera';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { QrCodeScanner } from 'components/QrCodeScanner';
 import { launchImageLibrary } from 'react-native-image-picker';
 import RNQRGenerator from 'rn-qr-generator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   visible: boolean;
@@ -19,15 +18,14 @@ interface Props {
 }
 
 const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
-  const theme = useSubWalletTheme().swThemes;
   const [error, setError] = useState<string>('');
+  const insets = useSafeAreaInsets();
 
   const onHideModal = () => setVisible(false);
 
   const handleRead = useCallback(
-    (event: BarCodeReadEvent) => {
+    (data: string) => {
       try {
-        const data = event.data;
         const signature = `0x${data}`;
 
         if (isHex(signature)) {
@@ -77,19 +75,19 @@ const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
   return (
     <ModalBase
       isVisible={visible}
-      style={{ flex: 1, width: '100%', margin: 0 }}
+      style={{ flex: 1, width: '100%', margin: 0, zIndex: 10000 }}
       isUseForceHidden={false}
       onBackButtonPress={onHideModal}>
-      <SafeAreaView style={[ScannerStyles.SafeAreaStyle, { backgroundColor: theme.colorBgSecondary }]} />
-      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={theme.colorBgSecondary} translucent={true} />
-      {/*<QrCodeScanner*/}
-      {/*  onPressCancel={onHideModal}*/}
-      {/*  onPressLibraryBtn={onPressLibraryBtn}*/}
-      {/*  onSuccess={handleRead}*/}
-      {/*  error={error}*/}
-      {/*/>*/}
+      <View style={[ScannerStyles.SafeAreaStyle, { backgroundColor: 'transparent', paddingTop: insets.top }]} />
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={'transparent'} translucent={true} />
+      <QrCodeScanner
+        onPressCancel={onHideModal}
+        onPressLibraryBtn={onPressLibraryBtn}
+        onSuccess={handleRead}
+        error={error}
+      />
     </ModalBase>
   );
 };
 
-export default React.memo(QrAddressScanner);
+export default QrAddressScanner;

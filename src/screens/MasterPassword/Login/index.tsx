@@ -20,7 +20,7 @@ import createStyles from './styles';
 import useAppLock from 'hooks/useAppLock';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ForgotPasswordModal } from 'components/common/ForgotPasswordModal';
 import { useToast } from 'react-native-toast-notifications';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
@@ -72,7 +72,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [modalMigrateVisible, setModalMigrateVisible] = useState<boolean>(false);
   const [resetAccLoading, setAccLoading] = useState(false);
   const [eraseAllLoading, setEraseAllLoading] = useState(false);
-  const [isBiometricEnabled, setIsBiometricEnabled] = useState(isUseBiometric);
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
 
@@ -80,6 +79,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [authMethod, setAuthMethod] = useState<AuthMethod>(isUseBiometric ? 'biometric' : 'master-password');
   const styles = createStyles();
   const { unlockApp, resetPinCode } = useAppLock();
+  const insets = useSafeAreaInsets();
   const formConfig = {
     password: {
       name: i18n.common.walletPassword,
@@ -163,7 +163,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
           if (isBiometricAvailable?.available) {
             requestUnlockWithBiometric();
           } else {
-            setIsBiometricEnabled(false);
             setAuthMethod('master-password');
           }
         } catch (e) {
@@ -188,7 +187,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     } catch (e) {
       console.warn(e);
       if (JSON.stringify(e).indexOf('Biometry is not available') !== -1) {
-        setIsBiometricEnabled(false);
         setAuthMethod('master-password');
       } else {
         setAuthMethod('master-password');
@@ -257,7 +255,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={imageBackgroundStyle}>
       <TouchableWithoutFeedback onPress={dismissKeyboard}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.fullscreen}>
-          <SafeAreaView style={styles.container}>
+          <View style={[styles.container, { paddingTop: insets.top + 93, paddingBottom: insets.bottom }]}>
             <Image src={Images.SubWalletLogoGradient} style={{ width: 66, height: 100 }} />
             <View style={styles.subLogo}>
               <SVGImages.SubwalletStyled width={139} height={23} />
@@ -307,7 +305,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
               resetAccLoading={resetAccLoading}
               eraseAllLoading={eraseAllLoading}
             />
-          </SafeAreaView>
+          </View>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
       {/* Deprecated: Migrate master password for biometric user */}

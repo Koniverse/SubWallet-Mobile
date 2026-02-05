@@ -2,7 +2,6 @@ import { SCAN_TYPE } from 'constants/qr';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { QrAccount } from 'types/qr/attach';
 import i18n from 'utils/i18n/i18n';
-import { BarCodeReadEvent } from 'react-native-vision-camera';
 import { getFunctionScan } from 'utils/scanner/attach';
 import { launchImageLibrary } from 'react-native-image-picker';
 import RNQRGenerator from 'rn-qr-generator';
@@ -27,10 +26,10 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVis
   const isDevMode = getDevMode();
   const dispatch = useDispatch();
   const handleRead = useCallback(
-    (event: BarCodeReadEvent) => {
+    (data: string) => {
       try {
         const funcRead = getFunctionScan(type);
-        const qrAccount = funcRead(event.data);
+        const qrAccount = funcRead(data);
 
         if (!qrAccount) {
           setError(i18n.warningMessage.invalidQRCode);
@@ -94,12 +93,12 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVis
       modalVisible={visible}
       modalBaseV2Ref={addressScannerRef}
       setVisible={setQrModalVisible}>
-      {/*<QrCodeScanner*/}
-      {/*  onPressCancel={onHideModal}*/}
-      {/*  onPressLibraryBtn={onPressLibraryBtn}*/}
-      {/*  onSuccess={handleRead}*/}
-      {/*  error={error}*/}
-      {/*/>*/}
+      <QrCodeScanner
+        onPressCancel={onHideModal}
+        onPressLibraryBtn={onPressLibraryBtn}
+        onSuccess={handleRead}
+        error={error}
+      />
     </SwFullSizeModal>
   );
 };

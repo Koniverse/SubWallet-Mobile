@@ -128,7 +128,6 @@ export const Welcome = () => {
 
   const onShowGeneralTermModal = (action: SelectedActionType) => {
     return () => {
-      console.log('run to thisss');
       setSelectedActionType(action);
       setGeneralTermVisible(true);
     };
@@ -137,7 +136,6 @@ export const Welcome = () => {
   const onCreate = useCallback(() => {
     setSelectedMnemonicType('general');
     mmkvStore.set('use-default-create-content', false);
-    console.log('hasMasterPassword', hasMasterPassword);
     if (hasMasterPassword) {
       navigation.navigate('CreateAccount', {});
     } else {

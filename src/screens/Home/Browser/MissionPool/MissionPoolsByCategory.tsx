@@ -4,7 +4,7 @@ import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { EmptyList } from 'components/EmptyList';
-import { GlobeHemisphereWest } from 'phosphor-react-native';
+import { GlobeHemisphereWestIcon } from 'phosphor-react-native';
 import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MissionInfo } from 'types/missionPool';
@@ -125,7 +125,7 @@ export const MissionPoolsByCategory: React.FC<NativeStackScreenProps<RootStackPa
     return (
       <EmptyList
         title={i18n.emptyScreen.missionPoolsEmptyTitle}
-        icon={GlobeHemisphereWest}
+        icon={GlobeHemisphereWestIcon}
         message={i18n.emptyScreen.missionPoolsEmptyMessage}
         isRefresh={isRefresh}
       />

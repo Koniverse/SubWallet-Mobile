@@ -1,5 +1,5 @@
 import React from 'react';
-import { FadersHorizontal } from 'phosphor-react-native';
+import { FadersHorizontalIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { ModalRef } from 'types/modalRef';
@@ -48,7 +48,7 @@ const FilterModal = ({
         onChangeModalVisible={onChangeModalVisible}
         applyBtn={{
           label: i18n.buttonTitles.applyFilter,
-          icon: FadersHorizontal,
+          icon: FadersHorizontalIcon,
           onPressApplyBtn: onApplyFilter || noop,
         }}
       />

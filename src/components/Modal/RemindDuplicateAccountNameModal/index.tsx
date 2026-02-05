@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { Button, PageIcon, SwModal, Typography } from 'components/design-system-ui';
 import { Linking, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Warning } from 'phosphor-react-native';
+import { WarningIcon } from 'phosphor-react-native';
 import { FontMedium } from 'styles/sharedStyles';
 import { BACKUP_SEED_PHRASE_CODE_URL } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
@@ -34,7 +34,7 @@ export const RemindDuplicateAccountNameModal = ({ modalVisible, setVisible }: Pr
       modalTitle={'Duplicate account name'}>
       <View style={{ position: 'relative' }}>
         <View style={{ alignItems: 'center' }}>
-          <PageIcon icon={Warning} color={theme['colorWarning-5']} />
+          <PageIcon icon={WarningIcon} color={theme['colorWarning-5']} />
 
           <Typography.Text
             style={{

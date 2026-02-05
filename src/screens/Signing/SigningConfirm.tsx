@@ -120,8 +120,8 @@ const SigningConfirm = () => {
         </View>
 
         <PasswordModal
+          setModalVisible={setVisible}
           visible={isVisible}
-          closeModal={() => setVisible(false)}
           isBusy={isBusy}
           onConfirm={onSubmit}
           errorArr={errorArr}

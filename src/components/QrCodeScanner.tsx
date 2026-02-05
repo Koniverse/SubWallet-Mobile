@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScannerStyles } from 'styles/scanner';
-import { AppState, StyleProp, View, ViewStyle } from 'react-native';
+import { AppState, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
 import { IconButton } from 'components/IconButton';
@@ -39,7 +39,6 @@ interface Props {
 export const QrCodeScanner = ({ error, onPressLibraryBtn, onPressCancel, onSuccess }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const device = useCameraDevice('back');
-  console.log('device', device);
   const [isActive, setIsActive] = useState(true);
   const scannedRef = useRef(false);
 
@@ -77,7 +76,7 @@ export const QrCodeScanner = ({ error, onPressLibraryBtn, onPressCancel, onSucce
 
   return (
     <View style={{ width: '100%', height: '100%' }}>
-      {device && <Camera device={device} isActive={isActive} style={ScannerStyles.CameraStyle} codeScanner={codeScanner} />}
+      {device && <Camera  device={device} isActive={isActive} style={StyleSheet.absoluteFill} codeScanner={codeScanner} />}
 
       <View style={ScannerStyles.RectangleContainerStyle}>
         <View style={ScannerStyles.TopOverlayStyle}>

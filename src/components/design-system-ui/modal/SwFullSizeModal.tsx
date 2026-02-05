@@ -6,6 +6,7 @@ import ModalBase from 'components/design-system-ui/modal/ModalBase';
 import { Portal } from '@gorhom/portal';
 import ModalBaseV2, { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { deviceHeight } from 'constants/index';
+import { noop } from 'utils/function';
 
 interface Props {
   children: React.ReactNode;
@@ -92,10 +93,10 @@ const SwFullSizeModal = ({
           animationIn={animationIn || 'slideInUp'}
           animationOut={animationOut || 'slideOutDown'}
           useNativeDriver
-          backdropColor={backdropColor}
+          backdropColor={backdropColor || ''}
           hideModalContentWhileAnimating
           statusBarTranslucent
-          onBackButtonPress={onBackButtonPress}
+          onBackButtonPress={onBackButtonPress || noop}
           isUseForceHidden={isUseForceHidden}
           propagateSwipe>
           <View style={[subWalletModalContainer, modalStyle]}>{children}</View>

@@ -7,7 +7,7 @@ import { FontMedium } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { SlippageType } from '@subwallet/extension-base/types/swap';
-import { PencilSimpleLine } from 'phosphor-react-native';
+import { PencilSimpleLineIcon } from 'phosphor-react-native';
 import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 
@@ -118,7 +118,7 @@ export const BondedBalance = ({
                 unitColor={isSlippageAcceptable ? theme['gray-5'] : theme.colorError}
               />
 
-              <Icon phosphorIcon={PencilSimpleLine} iconColor={theme['gray-5']} size={'xs'} />
+              <Icon phosphorIcon={PencilSimpleLineIcon} iconColor={theme['gray-5']} size={'xs'} />
             </TouchableOpacity>
           </View>
 

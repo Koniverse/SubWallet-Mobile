@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ListRenderItemInfo, View } from 'react-native';
+import { View } from 'react-native';
 import { CryptoNavigationProps, TokenGroupsDetailProps } from 'routes/home';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { TokenBalanceItemType } from 'types/balance';
@@ -35,6 +35,7 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { isTonAddress } from '@subwallet/keyring';
 import { sortTokensByStandard } from 'utils/sort/token';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -46,7 +47,7 @@ export const TokenGroupsDetail = ({
     params: { slug: tokenGroupSlug },
   },
 }: TokenGroupsDetailProps) => {
-  const tonAccountRef = useRef<ModalRef>();
+  const tonAccountRef = useRef<ModalRef | null>(null);
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<CryptoNavigationProps>();
   const priorityTokens = useSelector((root: RootState) => root.chainStore.priorityTokens);

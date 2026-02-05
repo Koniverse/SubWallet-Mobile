@@ -11,7 +11,7 @@ import { BN_TEN, BN_ZERO } from '@subwallet/extension-base/utils';
 import { Button, Divider, Icon, SwModal, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import { Info } from 'phosphor-react-native';
+import { InfoIcon } from 'phosphor-react-native';
 import { FontSemiBold } from 'styles/sharedStyles';
 
 export interface SwapFeesModalProps {
@@ -78,7 +78,7 @@ const SwapFeeItem: React.FC<SwapFeeItemProps> = ({ item }: SwapFeeItemProps) => 
           }>
           <TouchableOpacity style={styles.tooltipLabelStyle} onPress={() => setTooltipVisible(true)}>
             <Typography.Text style={{ color: theme.colorTextLight4, ...FontSemiBold }}>{item.label}</Typography.Text>
-            <Icon phosphorIcon={Info} size="xs" iconColor={theme.colorTextLight4} weight={'bold'} />
+            <Icon phosphorIcon={InfoIcon} size="xs" iconColor={theme.colorTextLight4} weight={'bold'} />
           </TouchableOpacity>
         </Tooltip>
       }

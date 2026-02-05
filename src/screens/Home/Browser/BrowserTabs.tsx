@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { FlatList, Image, ListRenderItemInfo, TouchableOpacity, View } from 'react-native';
-import { Browsers, House, Plus, X } from 'phosphor-react-native';
+import { BrowsersIcon, HouseIcon, PlusIcon, XIcon } from 'phosphor-react-native';
 import { closeAllTab, closeTab } from 'stores/updater';
 import { getHostName } from 'utils/browser';
 import { RootStackParamList } from 'routes/index';
@@ -42,7 +42,8 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
 
   const goToBrowserHome = useCallback(() => {
     if (navigation.canGoBack()) {
-      navigation.navigate('Home', { screen: 'Browser' });
+      // @ts-ignore
+      navigation.navigate('Home', { screen: 'Main', params: { screen: 'Browser' } });
     } else {
       navigation.reset({
         index: 0,
@@ -71,7 +72,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
           <Button
             type={'ghost'}
             size={'xs'}
-            icon={<Icon phosphorIcon={X} weight={'bold'} iconColor={theme['gray-5']} size={'xs'} />}
+            icon={<Icon phosphorIcon={XIcon} weight={'bold'} iconColor={theme['gray-5']} size={'xs'} />}
             style={stylesheet.tabItemCloseButton}
             onPress={() => closeTab(item.id)}
           />
@@ -95,7 +96,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
             size={'xs'}
             type={'ghost'}
             style={stylesheet.headerHomeButton}
-            icon={<Icon phosphorIcon={House} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
+            icon={<Icon phosphorIcon={HouseIcon} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
             onPress={goToBrowserHome}
           />
         </View>
@@ -110,7 +111,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
             contentContainerStyle={stylesheet.tabListContentContainer}
           />
         )}
-        {!tabs.length && <EmptyList title={i18n.common.emptyBrowserTabsMessage} icon={Browsers} />}
+        {!tabs.length && <EmptyList title={i18n.common.emptyBrowserTabsMessage} icon={BrowsersIcon} />}
         <View
           style={{
             flexDirection: 'row',
@@ -130,7 +131,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
           <Button
             type={'ghost'}
             size={'sm'}
-            icon={<Icon phosphorIcon={Plus} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
+            icon={<Icon phosphorIcon={PlusIcon} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
             onPress={onCreateNewTab}
           />
 

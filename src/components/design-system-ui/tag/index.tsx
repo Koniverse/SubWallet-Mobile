@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import Icon from '../icon';
 import { TagPropsType } from './PropsType';
-import { X } from 'phosphor-react-native';
+import { XIcon } from 'phosphor-react-native';
 import capitalize from 'utils/capitalize.ts';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TagStyles from './style';
@@ -80,7 +80,7 @@ const Tag: React.FC<TagNativeProps> = props => {
   const textStyle = _styles[`${color}${capitalize(bgType)}Text`] || getTagColorText;
   const closableDom = closable ? (
     <TouchableOpacity style={_styles.close} onPress={onTagClose}>
-      <Icon type="phosphor" phosphorIcon={X} customSize={12} iconColor={theme.colorTextDescription} />
+      <Icon type="phosphor" phosphorIcon={XIcon} customSize={12} iconColor={theme.colorTextDescription} />
     </TouchableOpacity>
   ) : null;
 

@@ -20,7 +20,7 @@ import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
 import { findNodeHandle, Keyboard, ScrollView, UIManager, View } from 'react-native';
-import { MinusCircle } from 'phosphor-react-native';
+import { MinusCircleIcon } from 'phosphor-react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { NominationSelector } from 'components/Modal/common/NominationSelector';
@@ -117,7 +117,7 @@ export const Unbond = ({
   },
 }: UnbondProps) => {
   const theme = useSubWalletTheme().swThemes;
-  const accountSelectorRef = useRef<ModalRef>();
+  const accountSelectorRef = useRef<ModalRef | null>(null);
   const {
     form: {
       setValue,
@@ -416,7 +416,6 @@ export const Unbond = ({
   );
 
   const onSubmit = useCallback(() => {
-    console.log('run to submit');
     if (!positionInfo) {
       return;
     }
@@ -757,7 +756,7 @@ export const Unbond = ({
                 loading={loading || taoSubmitLoading}
                 icon={
                   <Icon
-                    phosphorIcon={MinusCircle}
+                    phosphorIcon={MinusCircleIcon}
                     weight={'fill'}
                     size={'lg'}
                     iconColor={isDisableSubmitBtn ? theme.colorTextLight5 : theme.colorWhite}

@@ -8,7 +8,7 @@ import {
 import { Button, Icon, Number, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CaretDown, CaretUp } from 'phosphor-react-native';
+import { CaretDownIcon, CaretUpIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { isAccountAll } from 'utils/accountAll';
@@ -65,7 +65,7 @@ const EarningNominationInfo: React.FC<Props> = (props: Props) => {
         <Button
           type="ghost"
           size="xs"
-          icon={<Icon phosphorIcon={showDetail ? CaretUp : CaretDown} size="sm" iconColor={theme['gray-5']} />}
+          icon={<Icon phosphorIcon={showDetail ? CaretUpIcon : CaretDownIcon} size="sm" iconColor={theme['gray-5']} />}
           onPress={toggleDetail}
         />
       </TouchableOpacity>

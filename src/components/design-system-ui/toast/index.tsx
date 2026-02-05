@@ -4,7 +4,7 @@ import { Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import { ToastProps } from 'react-native-toast-notifications/lib/typescript/toast';
-import { CheckCircle, Info, WarningCircle, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, InfoIcon, WarningCircleIcon, XCircleIcon } from 'phosphor-react-native';
 import { FontMedium } from 'styles/sharedStyles';
 
 interface Props {
@@ -13,10 +13,10 @@ interface Props {
 }
 
 const typeToIcon = {
-  success: CheckCircle,
-  normal: Info,
-  danger: XCircle,
-  warning: WarningCircle,
+  success: CheckCircleIcon,
+  normal: InfoIcon,
+  danger: XCircleIcon,
+  warning: WarningCircleIcon,
 };
 
 export const CustomToast = ({ toast, direction = 'horizontal' }: Props) => {

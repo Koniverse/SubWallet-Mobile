@@ -7,7 +7,7 @@ import {
 import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
 import { HideBalanceItem } from 'components/HideBalanceItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRightIcon } from 'phosphor-react-native';
 import React from 'react';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { HistoryStatusMap } from 'screens/Home/History/shared';
@@ -121,7 +121,7 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
           </View>
 
           <View style={_style.arrowWrapper}>
-            <Icon phosphorIcon={CaretRight} size="sm" />
+            <Icon phosphorIcon={CaretRightIcon} size="sm" />
           </View>
         </View>
       </TouchableOpacity>

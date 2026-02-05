@@ -71,6 +71,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
 
   const onScanAddress = useCallback(
     (data: string) => {
+      console.log('data', data);
       if (isAddress(data)) {
         setError(undefined);
         setIsScanning(false);

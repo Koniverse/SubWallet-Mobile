@@ -263,21 +263,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         hideAccountTokenAddressModal,
       },
     }),
-    [
-      hideConfirmModal,
-      addressQrModalState,
-      hideAddressQrModal,
-      deriveModalState,
-      hideDeriveModal,
-      transactionStepsModalState,
-      hideTransactionStepsModal,
-      transactionProcessDetailModalState,
-      hideTransactionProcessDetailModal,
-      selectAddressFormatModalState,
-      hideSelectAddressFormatModal,
-      accountTokenAddressModalState,
-      hideAccountTokenAddressModal,
-    ],
+    [confirmModal, hideConfirmModal, addressQrModalState, hideAddressQrModal, deriveModalState, hideDeriveModal, transactionStepsModalState, hideTransactionStepsModal, transactionProcessDetailModalState, hideTransactionProcessDetailModal, selectAddressFormatModalState, hideSelectAddressFormatModal, accountTokenAddressModalState, hideAccountTokenAddressModal],
   );
   // TODO: Add back and cancel
   return (

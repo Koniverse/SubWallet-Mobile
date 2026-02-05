@@ -1,7 +1,8 @@
 import React from 'react';
 import { SubHeader } from 'components/SubHeader';
-import { CaretRight } from 'phosphor-react-native';
-import { SafeAreaView } from 'react-native';
+import { CaretRightIcon } from 'phosphor-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 
 interface Props {
   index: number;
@@ -20,14 +21,16 @@ export const ConfirmationHeader = ({
   index,
   isFullHeight,
 }: Props) => {
+  const { top } = useSafeAreaInsets();
+
   return (
     <>
-      {isFullHeight && <SafeAreaView />}
+      {isFullHeight && <View style={{ paddingTop: top }} />}
       <SubHeader
         onPressBack={onPressPrev}
         title={title}
         titleTextAlign="center"
-        rightIcon={index === numberOfConfirmations - 1 || numberOfConfirmations <= 1 ? undefined : CaretRight}
+        rightIcon={index === numberOfConfirmations - 1 || numberOfConfirmations <= 1 ? undefined : CaretRightIcon}
         onPressRightIcon={onPressNext}
         showLeftBtn={index > 0}
       />

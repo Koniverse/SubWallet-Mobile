@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { BarCodeReadEvent } from 'react-native-vision-camera';
 import { launchImageLibrary } from 'react-native-image-picker';
 import RNQRGenerator from 'rn-qr-generator';
 import { QrCodeScanner } from 'components/QrCodeScanner';
@@ -25,9 +24,9 @@ export const AddressScanner = ({
   isShowError = false,
 }: AddressScannerProps) => {
   const addressScannerRef = useRef<SWModalRefProps>(null);
-  const onSuccess = (e: BarCodeReadEvent) => {
+  const onSuccess = (data: string) => {
     try {
-      onChangeAddress(e.data);
+      onChangeAddress(data);
       !isShowError && onPressCancel();
     } catch (err) {
       console.log(err);

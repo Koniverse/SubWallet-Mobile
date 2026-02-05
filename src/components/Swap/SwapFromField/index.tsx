@@ -46,7 +46,7 @@ export const SwapFromField = ({
   fromAsset,
 }: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const tokenSelectorRef = useRef<ModalRef>();
+  const tokenSelectorRef = useRef<ModalRef | null>(null);
   const decimals = _getAssetDecimals(fromAsset);
   const theme = useSubWalletTheme().swThemes;
   const chainName = chainInfo ? _getChainName(chainInfo) : '';

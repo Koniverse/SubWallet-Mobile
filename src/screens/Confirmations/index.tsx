@@ -36,7 +36,7 @@ import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from '@gorhom/portal';
 import { findAccountByAddress, getSignMode } from 'utils/index';
 import { isEthereumAddress } from '@polkadot/util-crypto';
@@ -79,6 +79,7 @@ export const Confirmations = () => {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
   const [index, setIndex] = useState(0);
+  const insets = useSafeAreaInsets();
   const confirmation = confirmationQueue[index] || null;
   const {
     confirmModal: { setConfirmModal, hideConfirmModal },
@@ -446,7 +447,7 @@ export const Confirmations = () => {
           isFullHeight={confirmation && confirmation.item.isInternal}
         />
         {content}
-        <SafeAreaView edges={['bottom']} />
+        <View style={{ paddingBottom: insets.bottom }} />
       </View>
     </View>
   );

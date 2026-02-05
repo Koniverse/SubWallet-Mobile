@@ -4,7 +4,7 @@ import { Button, Icon, PageIcon, SwModal, Typography } from 'components/design-s
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ModalStyle from './style';
 import { View } from 'react-native';
-import { ArrowCircleRight, ShieldStar } from 'phosphor-react-native';
+import { ArrowCircleRightIcon, ShieldStarIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {
@@ -31,13 +31,13 @@ const MigrateToKeychainPasswordModal = ({ modalVisible, setModalVisible, isBiome
       titleTextAlign="center"
       modalTitle={i18n.header.applyMasterPassword}>
       <View style={_style.modalWrapper}>
-        <PageIcon icon={ShieldStar} color={theme.colorSuccess} />
+        <PageIcon icon={ShieldStarIcon} color={theme.colorSuccess} />
         <Typography.Text style={_style.textStyle}>
           {isBiometricV1Enabled ? i18n.message.migrateMasterPasswordForBiometric : i18n.message.noticeForNewLoginMethod}
         </Typography.Text>
 
         <Button
-          icon={<Icon phosphorIcon={ArrowCircleRight} iconColor="white" size="md" weight="fill" />}
+          icon={<Icon phosphorIcon={ArrowCircleRightIcon} iconColor="white" size="md" weight="fill" />}
           style={_style.footerAreaStyle}
           onPress={onPressButton}>
           {i18n.buttonTitles.enterMasterPassword}

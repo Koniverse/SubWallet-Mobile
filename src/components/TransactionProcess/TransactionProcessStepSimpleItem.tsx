@@ -2,7 +2,7 @@ import { TransactionProcessStepItemType } from 'types/component';
 import React, { useMemo, useState } from 'react';
 import { isStepCompleted, isStepFailed, isStepPending, isStepProcessing, isStepTimeout } from 'utils/transaction';
 import { Icon, Logo, Typography } from 'components/design-system-ui';
-import { CheckCircle, ClockCounterClockwise, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
+import { CheckCircleIcon, ClockCounterClockwiseIcon, ProhibitInsetIcon, SpinnerGapIcon } from 'phosphor-react-native';
 import { RollingIcon } from 'components/RollingIcon';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -51,13 +51,13 @@ export const TransactionProcessStepSimpleItem = (props: Props) => {
     }
 
     if (isStepCompleted(status)) {
-      return <Icon size={'xs'} phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} weight={'fill'} />;
+      return <Icon size={'xs'} phosphorIcon={CheckCircleIcon} iconColor={theme.colorSuccess} weight={'fill'} />;
     } else if (isStepFailed(status)) {
-      return <Icon phosphorIcon={ProhibitInset} size={'xs'} iconColor={theme.colorError} weight={'fill'} />;
+      return <Icon phosphorIcon={ProhibitInsetIcon} size={'xs'} iconColor={theme.colorError} weight={'fill'} />;
     } else if (isStepProcessing(status)) {
-      return <RollingIcon icon={<Icon phosphorIcon={SpinnerGap} size={'xs'} iconColor={'#D9A33E'} />} />;
+      return <RollingIcon icon={<Icon phosphorIcon={SpinnerGapIcon} size={'xs'} iconColor={'#D9A33E'} />} />;
     } else if (isStepTimeout(status)) {
-      return <Icon phosphorIcon={ClockCounterClockwise} size={'xs'} iconColor={theme.gold} weight={'fill'} />;
+      return <Icon phosphorIcon={ClockCounterClockwiseIcon} size={'xs'} iconColor={theme.gold} weight={'fill'} />;
     }
 
     return (

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { View } from 'react-native';
 import { Button, PageIcon, Typography } from 'components/design-system-ui';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TransactionDoneStyle from './style';
 import { RootNavigationProps } from 'routes/index';
@@ -90,7 +90,7 @@ export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) =
     <ContainerWithSubHeader showLeftBtn={false} title={i18n.message.submitted}>
       <View style={_style.transactionDoneContainer}>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <PageIcon icon={CheckCircle} color={theme.colorSuccess} />
+          <PageIcon icon={CheckCircleIcon} color={theme.colorSuccess} />
           <Typography.Title style={_style.transactionDoneTitle}>{i18n.message.transactionSubmit}</Typography.Title>
 
           <Typography.Text style={_style.transactionDoneMessage}>

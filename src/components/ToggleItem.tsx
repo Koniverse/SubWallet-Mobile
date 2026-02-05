@@ -11,7 +11,7 @@ import { ThemeTypes } from 'styles/themes';
 interface Props extends ViewProps {
   label: string;
   isEnabled: boolean;
-  onValueChange: () => void;
+  onValueChange: (value: boolean) => void;
   disabled?: boolean;
   backgroundIcon?: React.ElementType<IconProps>;
   backgroundIconColor?: string;

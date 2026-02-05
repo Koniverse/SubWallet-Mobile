@@ -1,6 +1,6 @@
 import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
-import { ArrowSquareUpRight, Desktop, IconProps, Star, StarHalf } from 'phosphor-react-native';
+import { ArrowSquareUpRightIcon, DesktopIcon, IconProps, StarIcon, StarHalfIcon } from 'phosphor-react-native';
 import { SiteInfo } from 'stores/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -16,7 +16,7 @@ import { ToggleItem } from 'components/ToggleItem';
 interface Props {
   visibleModal: boolean;
   setVisibleModal: (arg: boolean) => void;
-  webviewRef: React.RefObject<WebView<{}>>;
+  webviewRef: React.RefObject<WebView<{}> | null>;
   initWebViewSource: string | null;
   desktopMode: boolean;
   addToDesktopMode: () => void;
@@ -75,7 +75,7 @@ const Component = (
   const OPTIONS: OptionType[] = [
     {
       key: 'toggleFavouriteSite',
-      icon: isBookmarked ? StarHalf : Star,
+      icon: isBookmarked ? StarHalfIcon : StarIcon,
       label: isBookmarked ? i18n.common.removeFromFavourites : i18n.common.addToFavourites,
       iconBackgroundColor: isBookmarked ? theme['gray-3'] : theme['green-6'],
       onPress: () => {
@@ -89,7 +89,7 @@ const Component = (
     },
     {
       key: 'openInBrowser',
-      icon: ArrowSquareUpRight,
+      icon: ArrowSquareUpRightIcon,
       label: i18n.common.openInBrowser,
       iconBackgroundColor: theme['geekblue-7'],
       onPress: () => {
@@ -144,7 +144,7 @@ const Component = (
           isEnabled={isDesktopModeOn}
           label={i18n.common.desktopMode}
           onValueChange={onValueChange}
-          backgroundIcon={Desktop}
+          backgroundIcon={DesktopIcon}
           backgroundIconColor={theme['geekblue-7']}
         />
       </View>

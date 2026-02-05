@@ -31,7 +31,7 @@ import { AppModalContextProvider } from 'providers/AppModalContext';
 import { CustomToast } from 'components/design-system-ui/toast';
 import { PortalProvider } from '@gorhom/portal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { LockTimeout } from 'stores/types';
 import { keyringLock } from './messaging';
 import { updateAutoLockTime } from 'stores/MobileSettings';
@@ -238,7 +238,7 @@ export const App = () => {
   // TODO: merge GlobalModalContextProvider and AppModalContextProvider
 
   return (
-    <SafeAreaProvider style={{ flex: 1 }}>
+    <SafeAreaProvider style={{ flex: 1 }} initialMetrics={initialWindowMetrics}>
       <>
         {!isUpdateComplete && (
           <View style={{ flex: 1 }}>

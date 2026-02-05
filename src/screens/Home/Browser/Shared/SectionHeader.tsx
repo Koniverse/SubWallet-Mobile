@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { Icon, Typography } from 'components/design-system-ui';
 import { TouchableOpacity, View } from 'react-native';
 import createStylesheet from '../styles/BrowserHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRightIcon } from 'phosphor-react-native';
 
 interface HeaderProps {
   title: string;
@@ -23,7 +23,7 @@ const SectionHeader: React.FC<HeaderProps> = ({ title, actionTitle, onPress }): 
       <TouchableOpacity onPress={onPress}>
         <View style={stylesheet.sectionAction}>
           <Typography.Text style={stylesheet.sectionActionTitle}>{actionTitle}</Typography.Text>
-          <Icon phosphorIcon={CaretRight} weight="bold" customSize={16} iconColor={theme.colorTextLight1} />
+          <Icon phosphorIcon={CaretRightIcon} weight="bold" customSize={16} iconColor={theme.colorTextLight1} />
         </View>
       </TouchableOpacity>
     </View>

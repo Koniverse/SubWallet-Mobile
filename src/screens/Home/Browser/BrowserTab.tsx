@@ -1,7 +1,6 @@
 import React, {
   ForwardedRef,
   forwardRef,
-  JSX,
   useCallback,
   useContext,
   useEffect,
@@ -23,8 +22,8 @@ import {
   DotsThreeIcon,
   GlobeSimpleIcon,
   HouseIcon,
-  IconProps,
-  X,
+  XIcon,
+  type Icon as PhosphorIcon
 } from 'phosphor-react-native';
 import { WebRunnerContext } from 'providers/contexts';
 import WebView from 'react-native-webview';
@@ -74,7 +73,7 @@ type Props = {
 
 type BrowserActionButtonType = {
   key: string;
-  icon?: (iconProps: IconProps) => JSX.Element;
+  icon?: PhosphorIcon;
   onPress: () => void;
   isDisabled?: boolean;
 };
@@ -319,11 +318,11 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
 
   const goBack = () => {
     if (navigation.canGoBack()) {
-      navigation.navigate('Home', { screen: 'Browser' });
+      navigation.goBack();
     } else {
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Home', params: { screen: 'Browser' } }],
+        routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Browser' } } }],
       });
     }
   };
@@ -609,7 +608,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
           type={'ghost'}
           size={'xs'}
           style={stylesheet.closeButton}
-          icon={<Icon phosphorIcon={X} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
+          icon={<Icon phosphorIcon={XIcon} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
           onPress={goBack}
         />
       </View>

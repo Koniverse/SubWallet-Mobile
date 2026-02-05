@@ -23,7 +23,7 @@ import { _ChainInfo } from '@subwallet/chain-list/types';
 import MetaInfo from 'components/MetaInfo';
 import { isAccountAll } from 'utils/accountAll';
 import { Button, Icon } from 'components/design-system-ui';
-import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
+import { ArrowCircleRightIcon, XCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
@@ -121,7 +121,7 @@ export const Withdraw = ({
       return undefined;
     }
   }, [getCurrentConfirmation, slug]);
-  const accountSelectorRef = useRef<ModalRef>();
+  const accountSelectorRef = useRef<ModalRef | null>(null);
   const handleDataForInsufficientAlert = useCallback(
     (estimateFee: AmountData) => {
       return {
@@ -301,7 +301,7 @@ export const Withdraw = ({
                 onPress={() => navigation.goBack()}
                 icon={
                   <Icon
-                    phosphorIcon={XCircle}
+                    phosphorIcon={XCircleIcon}
                     weight={'fill'}
                     size={'lg'}
                     iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
@@ -315,7 +315,7 @@ export const Withdraw = ({
                 loading={loading}
                 icon={
                   <Icon
-                    phosphorIcon={ArrowCircleRight}
+                    phosphorIcon={ArrowCircleRightIcon}
                     weight={'fill'}
                     size={'lg'}
                     iconColor={

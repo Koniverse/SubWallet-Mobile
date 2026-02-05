@@ -62,14 +62,14 @@ export const DeriveAccountActionModal = ({
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
   const theme = useSubWalletTheme().swThemes;
   const [, setUpdate] = useState({});
-  const infoRef = useRef<DerivePathInfo | undefined>();
+  const infoRef = useRef<DerivePathInfo | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const networkType = infoRef.current?.type;
   const chainTypes = useMemo(
     () => convertToChainType(networkType, accountProxy?.chainTypes),
     [networkType, accountProxy?.chainTypes],
   );
-  const timeOutRef = useRef<NodeJS.Timeout>();
+  const timeOutRef = useRef<NodeJS.Timeout | null>(null);
   const modalRef = useRef<SWModalRefProps>(null);
   const [validating, setValidating] = useState(false);
   const accountNameValidator = useCallback(async (value: string) => {

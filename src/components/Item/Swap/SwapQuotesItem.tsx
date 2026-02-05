@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import { Icon, Typography, Web3Block, Logo, NumberDisplay, Tag } from 'components/design-system-ui';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapQuote } from '@subwallet/extension-base/types/swap';
 import { swapNumberMetadata } from '@subwallet/extension-base/utils';
@@ -114,7 +114,7 @@ export const SwapQuotesItem = ({ isRecommend, quote, selected, onSelect }: Props
       return <View style={{ width: 20 }} />;
     }
 
-    return <Icon size={'sm'} phosphorIcon={CheckCircle} weight={'fill'} iconColor={theme.colorSuccess} />;
+    return <Icon size={'sm'} phosphorIcon={CheckCircleIcon} weight={'fill'} iconColor={theme.colorSuccess} />;
   }, [selected, theme.colorSuccess]);
 
   return (

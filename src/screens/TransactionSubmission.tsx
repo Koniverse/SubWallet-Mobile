@@ -2,7 +2,7 @@ import { ProcessTransactionData, ProcessType, ResponseSubscribeProcessById } fro
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, TransactionSubmissionProps } from 'routes/index';
-import { CheckCircle, ClockCounterClockwise, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
+import { CheckCircleIcon, ClockCounterClockwiseIcon, ProhibitInsetIcon, SpinnerGapIcon } from 'phosphor-react-native';
 import { cancelSubscription } from 'messaging/base';
 import { subscribeProcess } from 'messaging/transaction';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -52,7 +52,7 @@ const SwapProcessingContentComponent = (props: SwapProcessingContentComponentPro
         <PageIcon
           customIcon={
             <RollingIcon
-              icon={<Icon phosphorIcon={SpinnerGap} weight={'fill'} iconColor={'#D9A33E'} customSize={64} />}
+              icon={<Icon phosphorIcon={SpinnerGapIcon} weight={'fill'} iconColor={'#D9A33E'} customSize={64} />}
             />
           }
           color={''}
@@ -96,22 +96,22 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
 
   const icon = useMemo<React.ReactNode>(() => {
     if (isStepCompleted(processData?.status)) {
-      return <PageIcon icon={CheckCircle} weight={'fill'} color={theme.colorSuccess} />;
+      return <PageIcon icon={CheckCircleIcon} weight={'fill'} color={theme.colorSuccess} />;
     }
 
     if (isStepFailed(processData?.status)) {
-      return <PageIcon icon={ProhibitInset} weight={'fill'} color={theme.colorError} />;
+      return <PageIcon icon={ProhibitInsetIcon} weight={'fill'} color={theme.colorError} />;
     }
 
     if (isStepTimeout(processData?.status)) {
-      return <PageIcon icon={ClockCounterClockwise} weight={'fill'} color={theme.gold} />;
+      return <PageIcon icon={ClockCounterClockwiseIcon} weight={'fill'} color={theme.gold} />;
     }
 
     return (
       <PageIcon
         customIcon={
           <RollingIcon
-            icon={<Icon phosphorIcon={SpinnerGap} weight={'fill'} iconColor={'#D9A33E'} customSize={64} />}
+            icon={<Icon phosphorIcon={SpinnerGapIcon} weight={'fill'} iconColor={'#D9A33E'} customSize={64} />}
           />
         }
         color={''}

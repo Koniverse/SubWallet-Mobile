@@ -32,7 +32,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AddressInputRef, InputAddress } from 'components/Input/InputAddress';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon, PageIcon } from 'components/design-system-ui';
-import { ArrowsDownUp, Book, Warning } from 'phosphor-react-native';
+import { ArrowsDownUpIcon, BookIcon, WarningIcon } from 'phosphor-react-native';
 import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
 import { BN_TEN, BN_ZERO } from 'utils/chainBalances';
 import { ChooseFeeTokenModal } from 'components/Modal/Swap/ChooseFeeTokenModal';
@@ -248,7 +248,7 @@ const Component = ({
   const onPreCheck = usePreCheckAction(fromValue, undefined, preCheckMessage);
   const oneSign = useOneSignProcess(fromValue);
   const getReformatAddress = useCoreCreateReformatAddress();
-  const accountSelectorRef = useRef<ModalRef>();
+  const accountSelectorRef = useRef<ModalRef | null>(null);
   const [showQuoteArea, setShowQuoteArea] = useState<boolean>(false);
   const [quoteOptions, setQuoteOptions] = useState<SwapQuote[]>([]);
   const [currentQuote, setCurrentQuote] = useState<SwapQuote | undefined>(undefined);
@@ -828,7 +828,7 @@ const Component = ({
           onCancelModal: () => {
             confirmModal.hideConfirmModal();
           },
-          customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+          customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
         });
       } else {
         transactionBlockProcess();
@@ -1323,7 +1323,7 @@ const Component = ({
                   activeStyle={styles.switchableActiveBtn}
                   style={styles.switchableBtn}
                   size={'xs'}
-                  icon={<Icon phosphorIcon={ArrowsDownUp} size={'sm'} iconColor={theme['gray-5']} />}
+                  icon={<Icon phosphorIcon={ArrowsDownUpIcon} size={'sm'} iconColor={theme['gray-5']} />}
                   shape={'circle'}
                 />
               </View>
@@ -1333,7 +1333,7 @@ const Component = ({
                   <View style={{ position: 'absolute', top: -2, zIndex: 10, right: 4 }}>
                     <Button
                       type={'ghost'}
-                      icon={<Icon phosphorIcon={Book} size={'xs'} iconColor={theme['gray-5']} />}
+                      icon={<Icon phosphorIcon={BookIcon} size={'xs'} iconColor={theme['gray-5']} />}
                       size={'xs'}
                       onPress={toggleAddressInputManually}
                     />

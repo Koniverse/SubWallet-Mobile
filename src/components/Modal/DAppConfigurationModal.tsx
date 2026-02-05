@@ -19,7 +19,7 @@ interface Props {
 }
 
 export const DAppConfigurationModal: React.FC<Props> = ({ authInfo, navigation, setModalVisible, modalVisible }) => {
-  const chainSelectorRef = useRef<ModalRef>();
+  const chainSelectorRef = useRef<ModalRef | null>(null);
   const theme = useSubWalletTheme().swThemes;
 
   const dAppAccessDetailMoreOptions: MoreOptionItemType[] = useMemo(() => {

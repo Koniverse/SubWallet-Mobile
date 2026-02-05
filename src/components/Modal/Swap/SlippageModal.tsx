@@ -2,7 +2,7 @@ import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { Platform, ScrollView, TouchableOpacity, View } from 'react-native';
-import { CheckCircle, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, XCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import MetaInfo from 'components/MetaInfo';
 import { useForm } from 'react-hook-form';
@@ -107,13 +107,13 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
   const footerNode = useMemo(
     () => (
       <View style={{ flexDirection: 'row', gap: theme.sizeSM, paddingTop: theme.padding }}>
-        <Button block onPress={onCancel} icon={<Icon phosphorIcon={XCircle} weight={'fill'} />} type={'secondary'}>
+        <Button block onPress={onCancel} icon={<Icon phosphorIcon={XCircleIcon} weight={'fill'} />} type={'secondary'}>
           Cancel
         </Button>
         <Button
           block
           onPress={handleSubmit(handleApplySlippage)}
-          icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}>
+          icon={<Icon phosphorIcon={CheckCircleIcon} weight={'fill'} />}>
           Apply
         </Button>
       </View>

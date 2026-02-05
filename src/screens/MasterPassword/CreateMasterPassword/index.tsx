@@ -75,13 +75,11 @@ const CreateMasterPassword = ({
       if (password) {
 
         setIsBusy(true);
-        console.log('1123');
         keyringChangeMasterPassword({
           createNew: true,
           newPassword: password,
         })
           .then(res => {
-            console.log('1123');
             if (!res.status) {
               setErrors(res.errors);
             } else {
@@ -93,7 +91,6 @@ const CreateMasterPassword = ({
             }
           })
           .catch(e => {
-            console.log('1123');
             setErrors([e.message]);
           })
           .finally(() => {

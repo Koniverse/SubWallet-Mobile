@@ -80,7 +80,6 @@ export class WebRunnerHandler {
         const ANDROID_BUNDLE_PATH = `${DOCUMENT_DIRECTORY_PATH}/${BUNDLE_PATH}/site`;
         (async () => {
           const exists = await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`);
-          console.log('exists--', exists);
           const lastAppCopyVersion = mmkvStore.getString('last-app-copy-version');
           if (exists && getVersion() === lastAppCopyVersion) {
             return;

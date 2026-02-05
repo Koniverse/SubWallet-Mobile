@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PageIcon, Typography } from 'components/design-system-ui';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { VoidFunction } from 'types/index';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -22,7 +22,7 @@ export const EmptySwapPairs = ({ onPressReload }: Props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <PageIcon icon={MagnifyingGlass} color={theme['gray-4']} weight={'fill'} />
+      <PageIcon icon={MagnifyingGlassIcon} color={theme['gray-4']} weight={'fill'} />
 
       <Typography.Text style={styles.title}>{'Unable to load data'}</Typography.Text>
       <Typography.Text style={styles.description}>

@@ -8,7 +8,7 @@ import { FullSizeSelectModal } from 'components/common/SelectModal';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { EmptyList } from 'components/EmptyList';
-import { Coins } from 'phosphor-react-native';
+import { CoinsIcon } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { AccountBalanceHookType, TokenGroupHookType } from 'types/hook';
@@ -22,7 +22,7 @@ interface Props {
   tokenBalanceMap: AccountBalanceHookType['tokenBalanceMap'];
   tokenSlugs: TokenGroupHookType['tokenSlugs'];
   isShowBalance: boolean;
-  tokenSearchRef: React.MutableRefObject<ModalRef | undefined>;
+  tokenSearchRef: React.RefObject<ModalRef | null>;
 }
 
 const searchFunction = (items: TokenBalanceItemType[], searchString: string) => {
@@ -102,7 +102,7 @@ export const TokenSearchModal = ({
       closeModalAfterSelect={true}
       renderListEmptyComponent={() => (
         <EmptyList
-          icon={Coins}
+          icon={CoinsIcon}
           title={i18n.emptyScreen.tokenEmptyTitle}
           message={i18n.emptyScreen.tokenEmptyMessage}
           addBtnLabel={i18n.header.importToken}

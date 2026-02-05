@@ -57,8 +57,8 @@ export const TokenGroups = () => {
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyles(theme);
   const navigation = useNavigation<CryptoNavigationProps>();
-  const tokenSearchRef = useRef<TokenSearchRef>(undefined);
-  const tonAccountRef = useRef<ModalRef>(undefined);
+  const tokenSearchRef = useRef<ModalRef | null>(null);
+  const tonAccountRef = useRef<ModalRef | null>(null);
   const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
   const { tokenGroups, tokenGroupMap, tokenSlugs } = useTokenGroup(chainsByAccountType);
   const { tokenGroupBalanceMap, totalBalanceInfo, tokenBalanceMap } = useAccountBalance(tokenGroupMap);
@@ -446,8 +446,8 @@ function createStyles(theme: ThemeTypes) {
       alignItems: 'center',
       width: '100%',
       height: 40,
-      marginTop: 6,
-      marginBottom: 4,
+      marginTop: theme.paddingXS - 2,
+      marginBottom: theme.marginXXS,
     }
   })
 }

@@ -8,7 +8,7 @@ import { useGroupYieldPosition } from 'hooks/earning';
 import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
-import { Plus, Vault, Warning } from 'phosphor-react-native';
+import { PlusIcon, VaultIcon, WarningIcon } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import { Alert, Keyboard, Linking, RefreshControl, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -205,7 +205,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
     return (
       <EmptyList
         title={i18n.emptyScreen.positionEmptyTitle}
-        icon={Vault}
+        icon={VaultIcon}
         message={i18n.emptyScreen.positionEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}
@@ -224,7 +224,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
           {index === items.length - 1 && (
             <View style={{ alignItems: 'center' }}>
               <LeftIconButton
-                icon={Plus}
+                icon={PlusIcon}
                 title={i18n.buttonTitles.exploreEarningOptions}
                 onPress={handlePressStartStaking}
               />
@@ -238,7 +238,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
 
   const rightIconOption = useMemo(() => {
     return {
-      icon: Plus,
+      icon: PlusIcon,
       onPress: handlePressStartStaking,
     };
   }, [handlePressStartStaking]);
@@ -273,7 +273,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
       confirmModal.setConfirmModal({
         visible: true,
         title: `Unstake your ${symbol} now!`,
-        customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+        customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
         message: (
           <Typography.Text>
             <Typography.Text>

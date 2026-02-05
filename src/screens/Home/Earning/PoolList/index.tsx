@@ -8,7 +8,7 @@ import useYieldPoolInfoByGroup from 'hooks/earning/useYieldPoolInfoByGroup';
 import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
-import { Vault } from 'phosphor-react-native';
+import { VaultIcon } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Keyboard, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -252,7 +252,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     return (
       <EmptyList
         title={i18n.emptyScreen.poolEmptyTitle}
-        icon={Vault}
+        icon={VaultIcon}
         message={i18n.emptyScreen.poolEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}

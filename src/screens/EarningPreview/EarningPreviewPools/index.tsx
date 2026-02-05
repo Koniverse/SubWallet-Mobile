@@ -1,5 +1,5 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
+import { AccountJson, YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { EmptyList } from 'components/EmptyList';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -7,7 +7,7 @@ import EarningPoolItem from 'components/Item/Earning/EarningPoolItem';
 import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron, saveCurrentAccountAddress } from 'messaging/index';
-import { Trophy } from 'phosphor-react-native';
+import { TrophyIcon } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Keyboard, Linking, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -27,7 +27,6 @@ import { usePreviewYieldPoolInfoByGroup } from 'hooks/earning';
 import { mmkvStore } from 'utils/storage';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { getFilteredAccount } from '../../../AppNavigator';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { getStartEarningUrl } from '..';
 import { analysisAccounts } from 'hooks/screen/Home/Crypto/useGetChainSlugsByAccountType';
@@ -243,7 +242,7 @@ const Component = ({ poolGroup, poolInfoMap, symbol }: ComponentProps) => {
     return (
       <EmptyList
         title={i18n.emptyScreen.poolEmptyTitle}
-        icon={Trophy}
+        icon={TrophyIcon}
         message={i18n.emptyScreen.poolEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}

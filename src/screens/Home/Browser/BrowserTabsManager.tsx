@@ -13,7 +13,7 @@ import { BrowserTabs } from 'screens/Home/Browser/BrowserTabs';
 import { RootState } from 'stores/index';
 import { BrowserSliceTab, SiteInfo } from 'stores/types';
 import { clearAllTabScreenshots, createNewTabIfEmpty, updateActiveTab } from 'stores/updater';
-import { Plug, Plugs, PlugsConnected } from 'phosphor-react-native';
+import { PlugIcon, PlugsIcon, PlugsConnectedIcon } from 'phosphor-react-native';
 import { useGetCurrentAuth } from 'hooks/auth/useGetCurrentAuth';
 import { ConnectWebsiteModal } from 'components/Modal/ConnectWebsiteModal';
 import { funcSortByName } from 'utils/account';
@@ -32,11 +32,11 @@ enum ConnectionStatement {
 }
 
 const iconMap = {
-  [ConnectionStatement.NOT_CONNECTED]: { icon: Plug, themeKey: 'gray-3' },
-  [ConnectionStatement.CONNECTED]: { icon: PlugsConnected, themeKey: 'green-6' },
-  [ConnectionStatement.PARTIAL_CONNECTED]: { icon: PlugsConnected, themeKey: 'colorWarning' },
-  [ConnectionStatement.DISCONNECTED]: { icon: Plugs, themeKey: 'gray-3' },
-  [ConnectionStatement.BLOCKED]: { icon: Plugs, themeKey: 'colorError' },
+  [ConnectionStatement.NOT_CONNECTED]: { icon: PlugIcon, themeKey: 'gray-3' },
+  [ConnectionStatement.CONNECTED]: { icon: PlugsConnectedIcon, themeKey: 'green-6' },
+  [ConnectionStatement.PARTIAL_CONNECTED]: { icon: PlugsConnectedIcon, themeKey: 'colorWarning' },
+  [ConnectionStatement.DISCONNECTED]: { icon: PlugsIcon, themeKey: 'gray-3' },
+  [ConnectionStatement.BLOCKED]: { icon: PlugsIcon, themeKey: 'colorError' },
 };
 
 // todo: move to style.

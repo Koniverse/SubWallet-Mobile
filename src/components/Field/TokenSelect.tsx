@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { getTokenLogo } from 'utils/index';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import { Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -51,7 +51,7 @@ export const TokenSelectField = ({
           </Typography.Text>
         )}
 
-        {!!showIcon && <CaretDown size={20} color={theme.colorTextLight3} weight={'bold'} />}
+        {!!showIcon && <CaretDownIcon size={20} color={theme.colorTextLight3} weight={'bold'} />}
       </View>
     </FieldBase>
   );

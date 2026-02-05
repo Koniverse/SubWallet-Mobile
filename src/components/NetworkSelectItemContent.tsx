@@ -4,7 +4,7 @@ import Text from '../components/Text';
 import { getNetworkLogo } from 'utils/index';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
@@ -75,7 +75,7 @@ export const NetworkSelectItemContent = ({
 
         {isSelected && (
           <View style={{ height: 40, width: 40, alignItems: 'center', justifyContent: 'center', marginRight: -8 }}>
-            <Icon phosphorIcon={CheckCircle} size={'sm'} weight={'fill'} iconColor={theme.colorSuccess} />
+            <Icon phosphorIcon={CheckCircleIcon} size={'sm'} weight={'fill'} iconColor={theme.colorSuccess} />
           </View>
         )}
 

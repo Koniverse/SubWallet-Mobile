@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoredSiteInfo } from 'stores/types';
 import { addBookmark, removeBookmark } from 'stores/updater';
-import { Star } from 'phosphor-react-native';
+import { StarIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 function isSiteBookmark(url: string, bookmarks: StoredSiteInfo[]) {
@@ -39,7 +39,7 @@ export const BookmarkItem: React.FC<BookmarkItemProps> = ({ url, title }) => {
           size={'sm'}
           weight={_isSiteBookmark ? 'fill' : undefined}
           iconColor={_isSiteBookmark ? theme.colorTextLight1 : theme.colorTextLight4}
-          phosphorIcon={Star}
+          phosphorIcon={StarIcon}
         />
       }
       onPress={onPressStar}

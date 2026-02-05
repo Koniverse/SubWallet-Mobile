@@ -22,7 +22,7 @@ import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
 import MetaInfo from 'components/MetaInfo';
 import { Button, Icon } from 'components/design-system-ui';
-import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
+import { ArrowCircleRightIcon, XCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import InputCheckBox from 'components/Input/InputCheckBox';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
@@ -98,7 +98,7 @@ const ClaimReward = ({
     params: { slug },
   },
 }: ClaimRewardProps) => {
-  const accountSelectorRef = useRef<ModalRef>();
+  const accountSelectorRef = useRef<ModalRef | null>(null);
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { isAllAccount, accountProxies } = useSelector((state: RootState) => state.accountState);
@@ -299,7 +299,7 @@ const ClaimReward = ({
                 onPress={() => navigation.goBack()}
                 icon={
                   <Icon
-                    phosphorIcon={XCircle}
+                    phosphorIcon={XCircleIcon}
                     weight={'fill'}
                     size={'lg'}
                     iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
@@ -313,7 +313,7 @@ const ClaimReward = ({
                 loading={loading}
                 icon={
                   <Icon
-                    phosphorIcon={ArrowCircleRight}
+                    phosphorIcon={ArrowCircleRightIcon}
                     weight={'fill'}
                     size={'lg'}
                     iconColor={

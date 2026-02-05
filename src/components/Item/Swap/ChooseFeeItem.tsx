@@ -3,7 +3,7 @@ import Web3Block from '../../design-system-ui/web3-block/Web3Block';
 import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
 import { View } from 'react-native';
 import BigN from 'bignumber.js';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { swapCustomFormatter } from '@subwallet/extension-base/utils';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -52,7 +52,7 @@ export const ChooseFeeItem = ({ tokenSlug, value, symbol, selected, onSelect }: 
 
   const rightItem = useMemo(() => {
     return (
-      <>{selected && <Icon phosphorIcon={CheckCircle} size={'sm'} iconColor={theme.colorSuccess} weight={'fill'} />}</>
+      <>{selected && <Icon phosphorIcon={CheckCircleIcon} size={'sm'} iconColor={theme.colorSuccess} weight={'fill'} />}</>
     );
   }, [selected, theme.colorSuccess]);
 

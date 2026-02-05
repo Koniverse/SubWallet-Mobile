@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import AccountItemBase from 'components/common/Account/Item/AccountItemBase';
 import { Icon, Typography } from 'components/design-system-ui';
-import { DotsThree } from 'phosphor-react-native';
+import { DotsThreeIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
@@ -45,7 +45,7 @@ export const WCAccountInput = ({ accounts, selected }: Props) => {
             : i18n.inputLabel.selectAcc}
         </Typography.Text>
       }
-      rightItem={<Icon phosphorIcon={DotsThree} weight={'fill'} />}
+      rightItem={<Icon phosphorIcon={DotsThreeIcon} weight={'fill'} />}
     />
   );
 };

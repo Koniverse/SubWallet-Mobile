@@ -24,7 +24,7 @@ import { RootNavigationProps } from 'routes/index';
 import { Button, Icon } from 'components/design-system-ui';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 import { _ChainAsset } from '@subwallet/chain-list/types';
-import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
+import { ArrowCircleRightIcon, XCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { submitClaimAvailBridge, submitClaimPolygonBridge } from 'messaging/transaction/bridge';
@@ -187,7 +187,7 @@ const Component = ({
                 onPress={() => navigation.goBack()}
                 icon={
                   <Icon
-                    phosphorIcon={XCircle}
+                    phosphorIcon={XCircleIcon}
                     weight={'fill'}
                     size={'lg'}
                     iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
@@ -201,7 +201,7 @@ const Component = ({
                 loading={loading}
                 icon={
                   <Icon
-                    phosphorIcon={ArrowCircleRight}
+                    phosphorIcon={ArrowCircleRightIcon}
                     weight={'fill'}
                     size={'lg'}
                     iconColor={

@@ -31,7 +31,7 @@ export const AccountNameModal = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const modalRef = useRef<SWModalRefProps>(null);
-  const timeOutRef = useRef<NodeJS.Timeout>();
+  const timeOutRef = useRef<NodeJS.Timeout | null>(null);
   const [validating, setValidating] = useState(false);
   const validatorFunc = useCallback(async (value: string) => {
     let result: string[] = [];
