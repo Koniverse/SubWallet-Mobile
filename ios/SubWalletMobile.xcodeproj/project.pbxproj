@@ -11,8 +11,9 @@
 		3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */; };
 		4627831F29CEA0080046230D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4627831E29CEA0080046230D /* fonts */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
+		7F4C288B1E55425982E2043F /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F9A26545C5674915A5A3564C /* BootSplash.storyboard */; };
 		81AB9BB82462601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72462601600AC10FF /* LaunchScreen.storyboard */; };
-		F1554EF9292D4F5B00302F08 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8292D4F5B00302F08 /* Images-2.xcassets */; };
+		F1554EF9292D4F5B00302F08 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8292D4F5B00302F08 /* Images.xcassets */; };
 		F16143B12EF2B64200BCFC7E /* PageJs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F16143B02EF2B64200BCFC7E /* PageJs.bundle */; };
 		F19ED00C2F2868880074C13A /* DevModeWeb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F19ED00B2F2868880074C13A /* DevModeWeb.bundle */; };
 		F19ED00E2F2868970074C13A /* Web.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F19ED00D2F2868970074C13A /* Web.bundle */; };
@@ -32,10 +33,11 @@
 		990CC4AB2A46246200AB6D8B /* SubWalletMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SubWalletMobile.entitlements; path = SubWalletMobile/SubWalletMobile.entitlements; sourceTree = "<group>"; };
 		CD45F407AD884FBE16F4088F /* libPods-SubWalletMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED3021.2.75141F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F1554EF8292D4F5B00302F08 /* Images-2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Images-2.xcassets"; path = "SubWalletMobile/Images-2.xcassets"; sourceTree = "<group>"; };
+		F1554EF8292D4F5B00302F08 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SubWalletMobile/Images.xcassets; sourceTree = "<group>"; };
 		F16143B02EF2B64200BCFC7E /* PageJs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = PageJs.bundle; sourceTree = "<group>"; };
 		F19ED00B2F2868880074C13A /* DevModeWeb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = DevModeWeb.bundle; path = ../html/DevModeWeb.bundle; sourceTree = SOURCE_ROOT; };
 		F19ED00D2F2868970074C13A /* Web.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Web.bundle; path = ../html/Web.bundle; sourceTree = SOURCE_ROOT; };
+		F9A26545C5674915A5A3564C /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = SubWalletMobile/BootSplash.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,13 +55,14 @@
 		13B07FAE1A68108700A75B9A /* SubWalletMobile */ = {
 			isa = PBXGroup;
 			children = (
-				F1554EF8292D4F5B00302F08 /* Images-2.xcassets */,
+				F1554EF8292D4F5B00302F08 /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72462601600AC10FF /* LaunchScreen.storyboard */,
 				3531DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */,
 				462FCA132A7236F000B46279 /* NativeModules */,
 				990CC4AB2A46246200AB6D8B /* SubWalletMobile.entitlements */,
+				F9A26545C5674915A5A3564C /* BootSplash.storyboard */,
 			);
 			name = SubWalletMobile;
 			sourceTree = "<group>";
@@ -213,8 +216,9 @@
 				3531DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */,
 				81AB9BB82462601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				4627831F29CEA0080046230D /* fonts in Resources */,
-				F1554EF9292D4F5B00302F08 /* Images-2.xcassets in Resources */,
+				F1554EF9292D4F5B00302F08 /* Images.xcassets in Resources */,
 				F19ED00C2F2868880074C13A /* DevModeWeb.bundle in Resources */,
+				7F4C288B1E55425982E2043F /* BootSplash.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

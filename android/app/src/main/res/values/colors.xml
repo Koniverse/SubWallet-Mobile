@@ -7,4 +7,5 @@
   <color name="transparent">#00ffffff</color>
   <color name="light_color">#a2191f</color>
   <color name="ic_launcher_background">#242424</color>
+  <color name="bootsplash_background">#ffffff</color>
 </resources>

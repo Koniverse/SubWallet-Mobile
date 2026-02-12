@@ -2875,6 +2875,34 @@ PODS:
     - Yoga
   - rn-fetch-blob (0.13.0-beta.2):
     - React-Core
+  - RNBootSplash (7.0.2):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNCAsyncStorage (2.2.0):
     - boost
     - DoubleConversion
@@ -3563,6 +3591,7 @@ DEPENDENCIES:
   - "ReactNativeStaticServer (from `../node_modules/@dr.pogodin/react-native-static-server`)"
   - RestartNewArch (from `../node_modules/react-native-restart-newarch`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
+  - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
@@ -3792,6 +3821,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-restart-newarch"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
+  RNBootSplash:
+    :path: "../node_modules/react-native-bootsplash"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
@@ -3932,6 +3963,7 @@ SPEC CHECKSUMS:
   ReactNativeStaticServer: 768e2622900b4743dedf135945986d21aab4f03e
   RestartNewArch: 630491c985915511da20fafe55809100fee9994c
   rn-fetch-blob: d469adb2e1d17f9d02ceb2b7bdd35ae5bd5db66b
+  RNBootSplash: ccceb8b3fd2aa0adbc5839f33f04758561dadbb2
   RNCAsyncStorage: 302f2fac014fd450046c120567ca364632da682b
   RNCClipboard: 962296f7af77f6c039b683e21c2e2255af9c05df
   RNCMaskedView: 63268de1986a098b5f4d1fb5b1bc1e97fade0aee

@@ -27,7 +27,6 @@ import { ConfigureToken } from 'screens/ManageTokens/ConfigureToken';
 import { ImportToken } from 'screens/ImportToken/ImportToken';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import SigningScreen from 'screens/Signing/SigningScreen';
-import { LoadingScreen } from 'screens/LoadingScreen';
 import { RootRouteProps, RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -743,7 +742,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
               </Stack.Group>
             </>
           )}
-          {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
         </Stack.Navigator>
         <PortalHost name="SimpleModalHost" />
       </ErrorBoundary>

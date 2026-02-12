@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { ScrollView, View } from 'react-native';
 import SectionHeader from './SectionHeader';
 import i18n from 'utils/i18n/i18n';

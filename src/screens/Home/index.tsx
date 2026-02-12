@@ -329,8 +329,7 @@ export const Home = ({ navigation }: Props) => {
   useEffect(() => {
     if (isReady && isLoading && isWebRunnerReady) {
       const osConfig = { type: Platform.OS.toLowerCase(), version: DeviceInfo.getSystemVersion() };
-      saveOSConfig({ osConfig });
-      setTimeout(() => setLoading(false), 1500);
+      saveOSConfig({ osConfig }).finally(() => setLoading(false));
     }
   }, [isReady, isLoading, isWebRunnerReady]);
 

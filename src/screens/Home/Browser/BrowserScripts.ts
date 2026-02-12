@@ -1,7 +1,5 @@
 import { MESSAGE_ORIGIN_PAGE } from '@subwallet/extension-base/defaults';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import { predefinedDApps } from '../../../predefined/dAppSites';
-import { getHostName } from 'utils/browser';
 
 export const ConnectToNovaScript = `
 (function () {  
@@ -77,16 +75,6 @@ export const BridgeScript = `(function () {
 
 const autoTriggerSubstrateHosts: string[] = [];
 const autoTriggerEthereumHosts: string[] = [];
-
-predefinedDApps.dapps.forEach(s => {
-  if (s.isSupportSubstrateAccount) {
-    autoTriggerSubstrateHosts.push(getHostName(s.url));
-  }
-
-  if (s.isSupportEthereumAccount) {
-    autoTriggerEthereumHosts.push(getHostName(s.url));
-  }
-});
 
 export const DAppScript = `(function () {
   if (window.SubWallet) {

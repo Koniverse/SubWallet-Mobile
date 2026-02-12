@@ -1,6 +1,6 @@
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson } from '@subwallet/extension-base/background/types';
+import { AccountJson } from '@subwallet/extension-base/types';
 import { ALL_KEY } from 'constants/index';
 import {
   _getSubstrateGenesisHash,

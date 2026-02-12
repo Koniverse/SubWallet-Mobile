@@ -5,7 +5,7 @@ import { CheckCircleIcon } from 'phosphor-react-native';
 import AccountInfoField from 'components/common/Field/AccountInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ApplyMasterPasswordStyle from './style';
-import { AccountJson } from '@subwallet/extension-base/background/types';
+import { AccountJson } from '@subwallet/extension-base/types';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {

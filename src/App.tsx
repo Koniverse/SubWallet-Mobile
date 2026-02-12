@@ -2,7 +2,7 @@ import { ExternalRequestContextProvider } from 'providers/ExternalRequestContext
 import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
-import React, { Suspense, useContext, useEffect, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AppState,
   DeviceEventEmitter,
@@ -13,6 +13,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import BootSplash from 'react-native-bootsplash';
 import { ThemeContext, WebRunnerContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -153,7 +154,7 @@ export const App = () => {
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   const { isUseBiometric, timeAutoLock, isPreventLock } = useSelector((state: RootState) => state.mobileSettings);
-  const { hasMasterPassword, isLocked } = useSelector((state: RootState) => state.accountState);
+  const { hasMasterPassword, isLocked, isReady: isAccountReady } = useSelector((state: RootState) => state.accountState);
   const language = useSelector((state: RootState) => state.settings.language);
   const { lock, unlockApp } = useAppLock();
   const dispatch = useDispatch();
@@ -166,7 +167,10 @@ export const App = () => {
   const { getBrowserConfig } = useGetBrowserConfig();
   const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
-  const { isUpdateComplete, setUpdateComplete } = useContext(WebRunnerContext);
+  const { isUpdateComplete, setUpdateComplete, isReady: isWebRunnerReady } = useContext(WebRunnerContext);
+  const hasHiddenSplash = useRef(false);
+  const [initDone, setInitDone] = useState(false);
+  console.log('isUpdateComplete', isUpdateComplete);
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -198,18 +202,27 @@ export const App = () => {
     }
   }, [dispatch, timeAutoLock]);
 
+  const isAppReady = useMemo(() => {
+    return isRequiredStoresReady && isCryptoReady && isI18nReady && !!isWebRunnerReady && isAccountReady;
+  }, [isAccountReady, isCryptoReady, isI18nReady, isRequiredStoresReady, isWebRunnerReady]);
+
   useEffect(() => {
-    // setTimeout(() => {
-    //   SplashScreen.hide();
-    // }, 100);
-    checkIsShowBuyToken();
-    // getPoolInfoMap();
-    mmkvStore.remove('poolInfoMap'); // remove unused mmkvStore
-    getDAppsData();
-    getConfig();
-    getBrowserConfig();
-    getAppInstructionData();
-    getShowReviewPopupScreen();
+    let mounted = true;
+
+    const init = async () => {
+      try {
+        checkIsShowBuyToken();
+        mmkvStore.remove('poolInfoMap');
+        await Promise.all([getDAppsData(), getDAppsData(), getConfig(), getBrowserConfig(), getAppInstructionData(), getShowReviewPopupScreen()]);
+      } catch (e) {
+        console.warn('Init error', e);
+      } finally {
+        if (mounted) {
+          setInitDone(true);
+        }
+      }
+    }
+    init();
 
     DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {
       setNeedUpdateChrome(data);
@@ -222,7 +235,14 @@ export const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
+  useEffect(() => {
+    if (initDone && isAppReady && !hasHiddenSplash.current) {
+      hasHiddenSplash.current = true;
+
+      console.log('run to this');
+      BootSplash.hide({ fade: true }).catch(() => {});
+    }
+  }, [initDone, isAppReady]);
 
   const onPressUpdateWebView = () => {
     Linking.canOpenURL('market://details?id=com.google.android.webview').then(() =>
@@ -240,7 +260,7 @@ export const App = () => {
   return (
     <SafeAreaProvider style={{ flex: 1 }} initialMetrics={initialWindowMetrics}>
       <>
-        {!isUpdateComplete && (
+        {!isUpdateComplete && isAppReady && (
           <View style={{ flex: 1 }}>
             <ToastProvider duration={TOAST_DURATION} renderToast={toast => <CustomToast toast={toast} />} placement={'top'} style={{ borderRadius: 8 }} normalColor={theme.colors.notification} textStyle={{ textAlign: 'center', ...FontMedium }} successColor={theme.colors.primary} warningColor={theme.colors.notification_warning} offsetTop={STATUS_BAR_HEIGHT + 40} dangerColor={theme.colors.notification_danger}>
               <ThemeContext.Provider value={theme}>
@@ -437,14 +457,16 @@ function createStyles() {
       zIndex: 10,
     },
     gestureRootStyle: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      bottom: 0,
-      right: 0,
-      width: '100%',
-      height: '100%',
-      zIndex: 9999,
+      width: deviceWidth,
+      height: deviceHeight,
+      // position: 'absolute',
+      // top: 0,
+      // left: 0,
+      // bottom: 0,
+      // right: 0,
+      // width: '100%',
+      // height: '100%',
+      // zIndex: 9999,
     }
   });
 }
