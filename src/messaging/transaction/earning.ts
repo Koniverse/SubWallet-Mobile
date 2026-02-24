@@ -21,6 +21,7 @@ import {
   ValidatorInfo,
   YieldPoolInfo,
   RequestEarningImpact,
+  SubmitChangeValidatorStaking,
 } from '@subwallet/extension-base/types';
 import { sendMessage } from '..';
 
@@ -78,4 +79,8 @@ export async function yieldSubmitRedeem(data: RequestYieldFastWithdrawal) {
 
 export async function getEarningImpact(data: RequestEarningImpact) {
   return sendMessage('pri(yield.getEarningImpact)', data);
+}
+
+export async function changeEarningValidator(data: SubmitChangeValidatorStaking) {
+  return sendMessage('pri(yield.changeValidator.submit)', data);
 }

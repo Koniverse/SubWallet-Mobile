@@ -3,7 +3,7 @@ import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo
 import { Icon, Typography } from 'components/design-system-ui';
 import { NominationPoolDataType } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
-import { Keyboard, ListRenderItemInfo, View } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { StakingPoolItem } from 'components/common/StakingPoolItem';
 import { PoolSelectorField } from 'components/Field/PoolSelector';
 import { PoolSelectorDetailModal } from 'components/Modal/common/PoolSelectorDetailModal';
@@ -24,6 +24,8 @@ import { fetchStaticData } from 'utils/fetchStaticData';
 import { useToast } from 'react-native-toast-notifications';
 import { EarningPoolSortModal } from 'components/Modal/Earning/EarningPoolSelector/EarningPoolSortModal';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import { ListRenderItemInfo } from '@shopify/flash-list';
+import { ThemeTypes } from 'styles/themes';
 
 enum EarningPoolGroup {
   RECOMMEND = 'recommend',
@@ -146,6 +148,7 @@ export const EarningPoolSelector = forwardRef(
     ref: React.Ref<PoolSelectorRef>,
   ) => {
     const theme = useSubWalletTheme().swThemes;
+    const styles = createStyle(theme);
     const items = useGetPoolTargetList(slug) as NominationPoolDataType[];
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState<NominationPoolDataType | undefined>(undefined);
@@ -194,23 +197,8 @@ export const EarningPoolSelector = forwardRef(
       (item: string) => {
         if (defaultPoolMap?.[chain] && defaultPoolMap?.[chain].length) {
           return (
-            <View
-              style={{
-                paddingBottom: theme.sizeXS,
-                paddingHorizontal: theme.size,
-                backgroundColor: theme.colorBgDefault,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: theme.sizeXXS,
-              }}>
-              <Typography.Text
-                size={'sm'}
-                style={{
-                  // paddingTop: theme.sizeXXS,
-                  color: theme.colorTextLight3,
-                  textTransform: 'uppercase',
-                  ...FontSemiBold,
-                }}>
+            <View style={styles.header}>
+              <Typography.Text size={'sm'} style={styles.titleStyle}>
                 {`${item.split('|')[1]}`}
               </Typography.Text>
               {item.includes('recommended') && (
@@ -222,7 +210,7 @@ export const EarningPoolSelector = forwardRef(
           return <></>;
         }
       },
-      [chain, defaultPoolMap, theme],
+      [chain, defaultPoolMap, styles.header, styles.titleStyle, theme],
     );
 
     const grouping = useMemo(() => {
@@ -483,3 +471,21 @@ export const EarningPoolSelector = forwardRef(
     );
   },
 );
+
+function createStyle(theme: ThemeTypes) {
+  return StyleSheet.create({
+    header: {
+      paddingBottom: theme.sizeXS,
+      paddingHorizontal: theme.size,
+      backgroundColor: theme.colorBgDefault,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.sizeXXS,
+    },
+    titleStyle: {
+      color: theme.colorTextLight3,
+      textTransform: 'uppercase',
+      ...FontSemiBold,
+    },
+  });
+}

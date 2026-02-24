@@ -56,7 +56,7 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
     }
   }
 
-  if (item.type === ExtrinsicType.STAKING_UNBOND) {
+  if (item.type === ExtrinsicType.STAKING_UNBOND || item.type === ExtrinsicType.CHANGE_EARNING_VALIDATOR) {
     const additionalInfo = item.additionalInfo as RequestClaimBridge;
 
     if (additionalInfo?.symbol) {

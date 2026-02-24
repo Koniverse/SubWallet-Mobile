@@ -5,3 +5,4 @@ export { default as useYieldPoolInfoByGroup } from './useYieldPoolInfoByGroup';
 export { default as usePreviewYieldPoolInfoByGroup } from './usePreviewYieldPoolInfoByGroup';
 export { default as useYieldPositionDetail } from './useYieldPositionDetail';
 export { default as useYieldRewardTotal } from './useYieldRewardTotal';
+export { default as useCreateGetSubnetStakingTokenName } from './useCreateGetSubnetStakingTokenName';

@@ -16,7 +16,8 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { BuyTokenInfo } from '@subwallet/extension-base/types';
-import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import { ActionBtn } from 'screens/Home/Crypto/TokenGroupsUpperBlock';
+import useGetChainAndExcludedTokenByCurrentAccountProxy from 'hooks/chain/useGetChainAndExcludedTokenByCurrentAccountProxy';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
@@ -27,6 +28,8 @@ interface Props {
   onOpenSendFund?: () => void;
   onOpenReceive?: () => void;
   onOpenSwap?: () => void;
+  isSwapSupported?: boolean;
+  isSupportSendFund?: boolean;
 }
 
 export const TokenGroupsDetailUpperBlock = ({
@@ -38,6 +41,8 @@ export const TokenGroupsDetailUpperBlock = ({
   groupSymbol,
   tokenGroupSlug,
   tokenGroupMap,
+  isSwapSupported,
+  isSupportSendFund,
 }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
@@ -45,15 +50,15 @@ export const TokenGroupsDetailUpperBlock = ({
   const { isShowBuyToken } = useShowBuyToken();
   const { tokens } = useSelector((state: RootState) => state.buyService);
   const _style = createStyleSheet(theme);
-  const allowedChains = useGetChainSlugsByCurrentAccountProxy();
+  const { allowedChains, excludedTokens } = useGetChainAndExcludedTokenByCurrentAccountProxy();
 
   const buyInfos = useMemo(() => {
-    const groupSlug = tokenGroupSlug || '';
-    const groupSlugs = tokenGroupMap[groupSlug] ? tokenGroupMap[groupSlug] : [groupSlug];
+    const slug = tokenGroupSlug || '';
+    const slugs = tokenGroupMap[slug] ? tokenGroupMap[slug] : [slug];
     const result: BuyTokenInfo[] = [];
 
     Object.values(tokens).forEach(item => {
-      if (!allowedChains.includes(item.network) || !groupSlugs.includes(item.slug)) {
+      if (!allowedChains.includes(item.network) || !slugs.includes(item.slug) || excludedTokens.includes(item.slug)) {
         return;
       }
 
@@ -61,9 +66,9 @@ export const TokenGroupsDetailUpperBlock = ({
     });
 
     return result;
-  }, [allowedChains, tokenGroupMap, tokenGroupSlug, tokens]);
+  }, [allowedChains, excludedTokens, tokenGroupMap, tokenGroupSlug, tokens]);
 
-  const onOpenBuyTokens = useCallback(() => {
+  const openBuyTokens = useCallback(() => {
     let symbol = '';
 
     if (buyInfos.length) {
@@ -79,6 +84,46 @@ export const TokenGroupsDetailUpperBlock = ({
       params: { symbol },
     });
   }, [buyInfos, navigation]);
+
+  const actionBtnList = useMemo((): ActionBtn[] => {
+    const result: ActionBtn[] = [
+      {
+        icon: ButtonIcon.Receive,
+        onPress: onOpenReceive,
+      },
+      {
+        icon: ButtonIcon.SendFund,
+        onPress: onOpenSendFund,
+        disabled: !isSupportSendFund,
+      },
+    ];
+
+    if (isShowBuyToken) {
+      result.push(
+        {
+          icon: ButtonIcon.Swap,
+          onPress: onOpenSwap,
+          disabled: !isSwapSupported,
+        },
+        {
+          icon: ButtonIcon.Buy,
+          onPress: openBuyTokens,
+          disabled: !buyInfos.length,
+        },
+      );
+    }
+
+    return result;
+  }, [
+    buyInfos.length,
+    isShowBuyToken,
+    isSupportSendFund,
+    isSwapSupported,
+    onOpenReceive,
+    onOpenSendFund,
+    onOpenSwap,
+    openBuyTokens,
+  ]);
 
   return (
     <View style={_style.containerStyle} pointerEvents="box-none">
@@ -99,37 +144,20 @@ export const TokenGroupsDetailUpperBlock = ({
       <BalancesVisibility value={balanceValue} symbol={currencyData.symbol} subFloatNumber />
 
       <View style={[_style.actionButtonWrapper]} pointerEvents="box-none">
-        <ActionButton
-          icon={ButtonIcon.Receive}
-          onPress={onOpenReceive}
-          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
-        />
-        <ActionButton
-          icon={ButtonIcon.SendFund}
-          onPress={onOpenSendFund}
-          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
-        />
-        {isShowBuyToken && (
+        {actionBtnList.map(({ label, icon, onPress, disabled }) => (
           <ActionButton
-            icon={ButtonIcon.Swap}
-            onPress={onOpenSwap}
-            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
+            label={label}
+            icon={icon}
+            onPress={onPress}
+            disabled={disabled}
+            buttonWrapperStyle={_style.actionBtn}
           />
-        )}
-        {isShowBuyToken && (
-          <ActionButton
-            icon={ButtonIcon.Buy}
-            onPress={onOpenBuyTokens}
-            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM - 1 }}
-            disabled={!buyInfos.length}
-          />
-        )}
+        ))}
       </View>
     </View>
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function createStyleSheet(theme: ThemeTypes) {
   return StyleSheet.create({
     actionButtonWrapper: {
@@ -158,5 +186,6 @@ function createStyleSheet(theme: ThemeTypes) {
       marginRight: 40,
       justifyContent: 'center',
     },
+    actionBtn: { paddingHorizontal: theme.paddingSM - 1 },
   });
 }

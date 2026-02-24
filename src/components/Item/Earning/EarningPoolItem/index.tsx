@@ -15,7 +15,7 @@ import { ThemeTypes } from 'styles/themes';
 import { BN_TEN } from 'utils/number';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
-import { ImageLogosMap } from 'assets/logo';
+import { useCreateGetSubnetStakingTokenName } from 'hooks/earning';
 
 interface Props {
   poolInfo: YieldPoolInfo;
@@ -31,6 +31,7 @@ const EarningPoolItem = (props: Props) => {
   const totalApy = poolInfo?.statistic?.totalApy;
   const totalApr = poolInfo?.statistic?.totalApr;
   const tvl = poolInfo?.statistic?.tvl;
+  const getSubnetStakingTokenName = useCreateGetSubnetStakingTokenName();
 
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
@@ -71,14 +72,17 @@ const EarningPoolItem = (props: Props) => {
   }, [asset, priceMap, tvl]);
 
   const isSubnetStaking = useMemo(() => [YieldPoolType.SUBNET_STAKING].includes(poolInfo.type), [poolInfo.type]);
+  const subnetToken = useMemo(() => {
+    return getSubnetStakingTokenName(poolInfo.chain, poolInfo.metadata.subnetData?.netuid || 0);
+  }, [getSubnetStakingTokenName, poolInfo.chain, poolInfo.metadata.subnetData?.netuid]);
   const isBittensor = useMemo(() => poolInfo.chain === 'bittensor', [poolInfo.chain]);
 
   return (
     <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={() => onStakeMore(slug)}>
       <View style={styleSheet.infoContainer}>
-        {!isSubnetStaking || !ImageLogosMap[`subnet-${poolInfo.metadata.subnetData?.netuid || 0}`]
+        {!isSubnetStaking
           ? getNetworkLogo(logo || chain, 40)
-          : getNetworkLogo(`subnet-${poolInfo.metadata.subnetData?.netuid || 0}`, 40)}
+          : getNetworkLogo(logo || chain, 40, 'default', subnetToken)}
         <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>
           <View style={styleSheet.containerRow}>
             <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>

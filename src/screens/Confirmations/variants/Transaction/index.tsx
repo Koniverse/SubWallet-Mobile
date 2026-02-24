@@ -40,6 +40,7 @@ import BaseProcessConfirmation from 'screens/Confirmations/variants/Transaction/
 import { VoidFunction } from 'types/index';
 import { ConfirmModalInfo } from 'providers/AppModalContext';
 import SubmitApiArea from 'screens/Confirmations/parts/SubmitApiArea';
+import ChangeValidatorTransactionConfirmation from './variants/ChangeEarningValidator';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
@@ -76,6 +77,8 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
       return BondTransactionConfirmation;
     case ExtrinsicType.STAKING_UNBOND:
       return UnbondTransactionConfirmation;
+    case ExtrinsicType.CHANGE_EARNING_VALIDATOR:
+      return ChangeValidatorTransactionConfirmation;
     case ExtrinsicType.STAKING_WITHDRAW:
     case ExtrinsicType.STAKING_POOL_WITHDRAW:
       return WithdrawTransactionConfirmation;
