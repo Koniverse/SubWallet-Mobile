@@ -35,6 +35,7 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { isTonAddress } from '@subwallet/keyring';
 import { sortTokensByStandard } from 'utils/sort/token';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import useGetChainAndExcludedTokenByCurrentAccountProxy from 'hooks/chain/useGetChainAndExcludedTokenByCurrentAccountProxy';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -56,6 +57,7 @@ export const TokenGroupsDetail = ({
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
   const { banners, dismissBanner, onPressBanner } = useGetBannerByScreen('token_detail', tokenGroupSlug);
   const { accountProxies, currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const { excludedTokens } = useGetChainAndExcludedTokenByCurrentAccountProxy();
   const [isShowTonWarning = true, setIsShowTonWarning] = useMMKVBoolean(IS_SHOW_TON_CONTRACT_VERSION_WARNING);
   const [isTonVersionSelectorVisible, setTonVersionSelectorVisible] = useState<boolean>(false);
   const tonAddress = useMemo(() => {
@@ -215,6 +217,10 @@ export const TokenGroupsDetail = ({
     }
   }, [accountProxies, currentAccountProxy, isAllAccount]);
 
+  const isSupportSendFund = useMemo(() => {
+    return !excludedTokens.length || tokenBalanceItems.some(({ slug }) => !excludedTokens.includes(slug));
+  }, [excludedTokens, tokenBalanceItems]);
+
   const isReadonlyAccount = useMemo(() => {
     return currentAccountProxy && currentAccountProxy.accountType === AccountProxyType.READ_ONLY;
   }, [currentAccountProxy]);
@@ -317,6 +323,7 @@ export const TokenGroupsDetail = ({
         tokenGroupSlug={tokenGroupSlug}
         tokenGroupMap={tokenGroupMap}
         isSwapSupported={isSwapSupported}
+        isSupportSendFund={isSupportSendFund}
       />
     );
   }, [
@@ -329,6 +336,7 @@ export const TokenGroupsDetail = ({
     tokenGroupSlug,
     tokenGroupMap,
     isSwapSupported,
+    isSupportSendFund,
   ]);
 
   const renderItem = useCallback(

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { TRANSACTION_TITLE_MAP } from 'constants/transaction';
 import { useSelector } from 'react-redux';
@@ -37,6 +37,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
   action: string,
   formOptions: UseFormProps<T, TContext> = {},
 ) => {
+  const isShowEnableNetworkPopupRef = useRef<boolean>(false);
   const { currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { turnOnChain, checkChainConnected } = useChainChecker();
@@ -152,9 +153,11 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
             title: i18n.common.enableChain,
             onCancelModal: () => {
               confirmModal.hideConfirmModal();
+              isShowEnableNetworkPopupRef.current = true;
             },
             onCompleteModal: () => {
               turnOnChain(chain);
+              isShowEnableNetworkPopupRef.current = true;
               setTimeout(() => confirmModal.hideConfirmModal(), 300);
             },
             messageIcon: chain,
@@ -199,8 +202,11 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
   );
 
   useEffect(() => {
-    chainValue && showPopupEnableChain(chainValue);
-  }, [chainValue, showPopupEnableChain]);
+    chainValue &&
+      !isShowEnableNetworkPopupRef.current &&
+      !confirmModal.confirmModalState.visible &&
+      showPopupEnableChain(chainValue);
+  }, [chainValue, confirmModal.confirmModalState.visible, showPopupEnableChain]);
 
   return {
     title,

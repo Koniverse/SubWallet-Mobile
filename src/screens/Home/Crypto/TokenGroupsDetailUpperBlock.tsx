@@ -16,8 +16,8 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { BuyTokenInfo } from '@subwallet/extension-base/types';
-import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 import { ActionBtn } from 'screens/Home/Crypto/TokenGroupsUpperBlock';
+import useGetChainAndExcludedTokenByCurrentAccountProxy from 'hooks/chain/useGetChainAndExcludedTokenByCurrentAccountProxy';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
@@ -29,6 +29,7 @@ interface Props {
   onOpenReceive?: () => void;
   onOpenSwap?: () => void;
   isSwapSupported?: boolean;
+  isSupportSendFund?: boolean;
 }
 
 export const TokenGroupsDetailUpperBlock = ({
@@ -41,6 +42,7 @@ export const TokenGroupsDetailUpperBlock = ({
   tokenGroupSlug,
   tokenGroupMap,
   isSwapSupported,
+  isSupportSendFund,
 }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
@@ -48,15 +50,15 @@ export const TokenGroupsDetailUpperBlock = ({
   const { isShowBuyToken } = useShowBuyToken();
   const { tokens } = useSelector((state: RootState) => state.buyService);
   const _style = createStyleSheet(theme);
-  const allowedChains = useGetChainSlugsByCurrentAccountProxy();
+  const { allowedChains, excludedTokens } = useGetChainAndExcludedTokenByCurrentAccountProxy();
 
   const buyInfos = useMemo(() => {
-    const groupSlug = tokenGroupSlug || '';
-    const groupSlugs = tokenGroupMap[groupSlug] ? tokenGroupMap[groupSlug] : [groupSlug];
+    const slug = tokenGroupSlug || '';
+    const slugs = tokenGroupMap[slug] ? tokenGroupMap[slug] : [slug];
     const result: BuyTokenInfo[] = [];
 
     Object.values(tokens).forEach(item => {
-      if (!allowedChains.includes(item.network) || !groupSlugs.includes(item.slug)) {
+      if (!allowedChains.includes(item.network) || !slugs.includes(item.slug) || excludedTokens.includes(item.slug)) {
         return;
       }
 
@@ -64,7 +66,7 @@ export const TokenGroupsDetailUpperBlock = ({
     });
 
     return result;
-  }, [allowedChains, tokenGroupMap, tokenGroupSlug, tokens]);
+  }, [allowedChains, excludedTokens, tokenGroupMap, tokenGroupSlug, tokens]);
 
   const openBuyTokens = useCallback(() => {
     let symbol = '';
@@ -92,6 +94,7 @@ export const TokenGroupsDetailUpperBlock = ({
       {
         icon: ButtonIcon.SendFund,
         onPress: onOpenSendFund,
+        disabled: !isSupportSendFund,
       },
     ];
 
@@ -105,13 +108,22 @@ export const TokenGroupsDetailUpperBlock = ({
         {
           icon: ButtonIcon.Buy,
           onPress: openBuyTokens,
-          disabled: !!buyInfos.length,
+          disabled: !buyInfos.length,
         },
       );
     }
 
     return result;
-  }, [buyInfos.length, isShowBuyToken, isSwapSupported, onOpenReceive, onOpenSendFund, onOpenSwap, openBuyTokens]);
+  }, [
+    buyInfos.length,
+    isShowBuyToken,
+    isSupportSendFund,
+    isSwapSupported,
+    onOpenReceive,
+    onOpenSendFund,
+    onOpenSwap,
+    openBuyTokens,
+  ]);
 
   return (
     <View style={_style.containerStyle} pointerEvents="box-none">
