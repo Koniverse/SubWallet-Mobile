@@ -46,6 +46,8 @@ const settingsSlice = createSlice({
       payload['tanssi-tanssi'] = ImageLogosMap.tanssi;
       payload['tanssi-native-tanssi'] = ImageLogosMap.tanssi;
       payload['ethereum-erc20-tanssi-0x553f4cb7256d8fc038e91d36cb63fa7c13b624ab'] = ImageLogosMap.tanssi;
+      payload['energy_web_x-local-stewt'] = ImageLogosMap.stewt;
+      payload['energy_web_x-local-usdc'] = ImageLogosMap.usdc;
 
       return {
         ...state,

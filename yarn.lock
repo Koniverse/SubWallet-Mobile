@@ -7565,13 +7565,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subwallet-monorepos/subwallet-services-sdk@npm:^0.1.13-beta.6":
-  version: 0.1.14
-  resolution: "@subwallet-monorepos/subwallet-services-sdk@npm:0.1.14"
+"@subwallet-monorepos/subwallet-services-sdk@npm:^0.1.14":
+  version: 0.1.16
+  resolution: "@subwallet-monorepos/subwallet-services-sdk@npm:0.1.16"
   dependencies:
     "@koniverse/utils": ^0.0.9
-    "@subwallet/chain-list": 0.2.121
-  checksum: 7168911545267b7fcab3cec591c46d8a37f12cbeb41f721e7900c0b881d369f4d9dd583230b76f155c382a98fec82a10d9e306be44fd99d0bd3f931913447158
+    "@subwallet/chain-list": 0.2.123
+  checksum: 2f71a0cc8dc3763e0f48b60c5f4acaabe2049f36dfbf22a8a527a1f6d46f16050d7a8a8a586387ae48b536f32ae800ef64a3764a2072aee5606434a4b03bd9c0
   languageName: node
   linkType: hard
 
@@ -7585,13 +7585,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subwallet/chain-list@npm:0.2.107-mobile.3":
-  version: 0.2.107-mobile.3
-  resolution: "@subwallet/chain-list@npm:0.2.107-mobile.3"
+"@subwallet/chain-list@npm:0.2.107-mobile.5":
+  version: 0.2.107-mobile.5
+  resolution: "@subwallet/chain-list@npm:0.2.107-mobile.5"
   dependencies:
     "@polkadot/util": ^12.5.1
     ts-md5: ^1.3.1
-  checksum: ead516e2bfe053e7b82e83efc5fbeb9ae494829f9f6789a7e7b46a52b66d3b81dfc9122c0f6d4ac2fe09616b1cde93e1004fcb67e7f00458925f95b3be74e0dd
+  checksum: 841e9743df2c2fc162d2522a292fe5c4077230b214ea43bc0a1b625bbb586baa3b6b1f0182cf6edc3701c3f19d1580f5bd2845de97d388cfecd20a5db63693da
   languageName: node
   linkType: hard
 
@@ -9680,8 +9680,8 @@ __metadata:
     "@react-navigation/native-stack": ^6.9.8
     "@reduxjs/toolkit": ^1.9.2
     "@shopify/flash-list": ^1.7.1
-    "@subwallet-monorepos/subwallet-services-sdk": ^0.1.13-beta.6
-    "@subwallet/chain-list": 0.2.107-mobile.3
+    "@subwallet-monorepos/subwallet-services-sdk": ^0.1.14
+    "@subwallet/chain-list": 0.2.107-mobile.5
     "@subwallet/extension-base": 1.3.62-0
     "@subwallet/extension-chains": 1.3.42-0
     "@subwallet/extension-dapp": 1.3.42-0

@@ -40,6 +40,8 @@ export const ImageLogosMap = {
   ordinal_rune: require('./ordinal_rune.png'),
   kyber: require('./kyber.png'),
   tanssi: require('./tanssi.png'),
+  stewt: require('./energy_web_x-local-stewt.png'),
+  usdc: require('./energy_web_x-local-usdc.png'),
   'subnet-0': require('./bittensor/subnet-0.png'),
   'subnet-1': require('./bittensor/subnet-1.png'),
   'subnet-2': require('./bittensor/subnet-2.png'),

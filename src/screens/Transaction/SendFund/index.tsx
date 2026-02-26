@@ -209,6 +209,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     ...useWatch<TransferFormValues>({ control }),
     ...getValues(),
   };
+  console.log('toValue', assetValue);
   const scrollViewRef = useRef<ScrollView>(null);
   const { chainInfoMap, ledgerGenericAllowNetworks, priorityTokens, chainStateMap } = useSelector(
     (root: RootState) => root.chainStore,
