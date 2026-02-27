@@ -1,3 +1,7 @@
+## 1.2.35 (515)
+- cherry-pick code from issue 4950 to fix bug cannot stsake Moonbase Alpha (#2033)
+- cherry-pick code to update Paraspell v5 and some XCM (#2033)
+
 ## 1.2.34 (514)
 - fix bug cannot use biometric (#2013)
 
