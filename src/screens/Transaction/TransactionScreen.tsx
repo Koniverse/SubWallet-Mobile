@@ -11,6 +11,7 @@ import SendNFT from 'screens/Transaction/NFT';
 import withPageWrapper from 'components/pageWrapper';
 import Swap from 'screens/Transaction/Swap';
 import { ClaimBridge } from 'screens/Transaction/ClaimBridge';
+import { ChangeEarningValidator } from 'screens/Transaction/ChangeEarningValidator';
 
 const TransactionScreen = () => {
   const TransactionActionStack = createNativeStackNavigator<TransactionActionStackParamList>();
@@ -33,6 +34,10 @@ const TransactionScreen = () => {
         component={withPageWrapper(EarnTransaction, ['price', 'balance', 'earning'])}
       />
       <TransactionActionStack.Screen name="Swap" component={withPageWrapper(Swap, ['price', 'balance', 'swap'])} />
+      <TransactionActionStack.Screen
+        name="ChangeEarningValidator"
+        component={withPageWrapper(ChangeEarningValidator, ['chainStore', 'assetRegistry', 'balance'])}
+      />
     </TransactionActionStack.Navigator>
   );
 };

@@ -12,6 +12,7 @@ import {
   ListBullets,
   Rocket,
   Spinner,
+  Pencil,
 } from 'phosphor-react-native';
 import {
   ExtrinsicStatus,
@@ -67,6 +68,7 @@ IconMap = {
   nft: Aperture,
   processing: Spinner,
   swap: ArrowsLeftRight,
+  nominate: Pencil,
   default: ClockCounterClockwise,
 };
 
@@ -97,6 +99,10 @@ function getIcon(item: TransactionHistoryItem): React.ElementType<IconProps> {
 
   if (item.type === ExtrinsicType.SWAP) {
     return IconMap.swap;
+  }
+
+  if (item.type === ExtrinsicType.CHANGE_EARNING_VALIDATOR) {
+    return IconMap.nominate;
   }
 
   if (isTypeStaking(item.type)) {
@@ -339,6 +345,7 @@ function History({
       [ExtrinsicType.STAKING_LEAVE_POOL]: i18n.historyScreen.title.unstakeTransaction,
       [ExtrinsicType.STAKING_BOND]: i18n.historyScreen.title.bondTransaction,
       [ExtrinsicType.STAKING_UNBOND]: i18n.historyScreen.title.unbondTransaction,
+      [ExtrinsicType.CHANGE_EARNING_VALIDATOR]: 'Stake transaction',
       [ExtrinsicType.STAKING_CLAIM_REWARD]: i18n.historyScreen.title.claimRewardTransaction,
       [ExtrinsicType.STAKING_WITHDRAW]: i18n.historyScreen.title.withdrawTransaction,
       [ExtrinsicType.STAKING_CANCEL_UNSTAKE]: i18n.historyScreen.title.cancelUnstakeTransaction,

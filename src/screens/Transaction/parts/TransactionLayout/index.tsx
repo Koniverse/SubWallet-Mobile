@@ -2,7 +2,7 @@ import React from 'react';
 import TransactionHeader from 'screens/Transaction/parts/TransactionHeader';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
-import { TransactionContainer } from 'components/TransactionContainer.tsx';
+import { TransactionContainer } from 'components/TransactionContainer';
 
 interface Props {
   title: string;
@@ -13,6 +13,8 @@ interface Props {
   onPressRightHeaderBtn?: () => void;
   children: React.ReactNode;
   onPressBack?: () => void;
+  showMainHeader?: boolean;
+  titleTextAlign?: 'left' | 'center';
 }
 
 export const TransactionLayout = ({
@@ -24,6 +26,8 @@ export const TransactionLayout = ({
   disableRightButton,
   disableMainHeader,
   onPressBack,
+  showMainHeader,
+  titleTextAlign,
 }: Props) => {
   const navigation = useNavigation<StakingScreenNavigationProps>();
 
@@ -39,6 +43,8 @@ export const TransactionLayout = ({
           disableLeftButton={disableLeftButton}
           disableMainHeader={disableMainHeader}
           onPressBack={onPressBack}
+          showMainHeader={showMainHeader}
+          titleTextAlign={titleTextAlign}
         />
 
         {children}

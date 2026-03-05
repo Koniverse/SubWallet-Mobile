@@ -48,7 +48,7 @@ const SwapProcessingContentComponent = (props: SwapProcessingContentComponentPro
 
   return (
     <View style={{ flex: 1, width: '100%' }}>
-      <View style={{ alignItems: 'center', width: '100%' }}>
+      <View style={styles.swapProcessingWrapper}>
         <PageIcon
           customIcon={
             <RollingIcon
@@ -60,7 +60,7 @@ const SwapProcessingContentComponent = (props: SwapProcessingContentComponentPro
 
         <Typography.Title style={styles.transactionSubmissionTitle}>{'Swap in process'}</Typography.Title>
         <Typography.Text style={styles.transactionSubmissionSubtitle}>{'DO NOT close the app!'}</Typography.Text>
-        <View style={{ minHeight: 44, width: '100%', paddingHorizontal: 40, marginBottom: 16 }}>
+        <View style={styles.transactionSubmissionMessageWrapper}>
           <Typography.Text style={styles.transactionSubmissionMessage}>{messages[messageIndex]}</Typography.Text>
         </View>
 
@@ -160,9 +160,7 @@ export const TransactionSubmission = ({ route: { params } }: TransactionSubmissi
   return (
     <ContainerWithSubHeader style={{ flex: 1 }} title={isSwapProcessing ? 'Swap' : 'Submitted'} showLeftBtn={false}>
       <View style={styles.transactionSubmissionContainer}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: theme.paddingXL + 4, width: '100%' }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollViewContentContainer}>
           {!processData && <LoadingScreen />}
 
           {!!processData && isSwapProcessing && !isFinal && (
@@ -231,5 +229,7 @@ function createStyle(theme: ThemeTypes) {
       gap: theme.padding,
       paddingTop: theme.padding,
     },
+    scrollViewContentContainer: { paddingTop: theme.paddingXL + 4, width: '100%' },
+    swapProcessingWrapper: { alignItems: 'center', width: '100%' },
   });
 }

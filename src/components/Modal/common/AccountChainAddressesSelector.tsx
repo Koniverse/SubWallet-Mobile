@@ -22,6 +22,7 @@ import { _getChainNativeTokenSlug } from '@subwallet/extension-base/services/cha
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
+import { Keyboard } from 'react-native';
 
 interface Props {
   accountProxy: AccountProxy;
@@ -217,6 +218,7 @@ export const AccountChainAddressesSelector = ({
   const onCopyAddress = useCallback(
     (item: AccountChainAddress) => {
       return () => {
+        Keyboard.dismiss();
         const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(item.slug);
         const isBitcoinChain = isBitcoinAddress(item.address);
 
@@ -225,7 +227,7 @@ export const AccountChainAddressesSelector = ({
         };
 
         if (isPolkadotUnifiedChain) {
-          openSelectAddressFormatModal(item);
+          setTimeout(() => openSelectAddressFormatModal(item), 200);
           return;
         }
 
@@ -233,7 +235,7 @@ export const AccountChainAddressesSelector = ({
           const accountTokenAddressList = getBitcoinTokenAddresses(item.slug, bitcoinAccountList);
 
           if (accountTokenAddressList.length > 1) {
-            openAccountTokenAddressModal(accountTokenAddressList);
+            setTimeout(() => openAccountTokenAddressModal(accountTokenAddressList), 200);
             return;
           }
         }
@@ -255,6 +257,7 @@ export const AccountChainAddressesSelector = ({
   const onPressInfoButton = useCallback(
     (item: AccountChainAddress) => {
       return () => {
+        Keyboard.dismiss();
         const isBitcoinChain = isBitcoinAddress(item.address);
 
         if (isBitcoinChain) {

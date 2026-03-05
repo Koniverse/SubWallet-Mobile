@@ -14,6 +14,8 @@ interface Props {
   disableLeftButton?: boolean;
   disableMainHeader?: boolean;
   onPressBack?: () => void;
+  showMainHeader?: boolean;
+  titleTextAlign?: 'left' | 'center';
 }
 
 const TransactionHeader = ({
@@ -25,6 +27,8 @@ const TransactionHeader = ({
   disableLeftButton,
   disableMainHeader,
   onPressBack,
+  showMainHeader = true,
+  titleTextAlign = 'left',
 }: Props) => {
   const onBack = useCallback(() => {
     if (onPressBack) {
@@ -36,13 +40,13 @@ const TransactionHeader = ({
 
   return (
     <>
-      <Header disabled={disableMainHeader} />
+      {showMainHeader && <Header disabled={disableMainHeader} />}
 
       <View style={{ marginTop: 16 }}>
         <SubHeader
           onPressBack={onBack}
           title={title}
-          titleTextAlign={'left'}
+          titleTextAlign={titleTextAlign}
           rightIcon={showRightIcon ? Info : undefined}
           onPressRightIcon={onPressRightIcon}
           disableRightButton={disableRightButton}

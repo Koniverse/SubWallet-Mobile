@@ -1,6 +1,8 @@
 declare module 'react-native-config' {
   export interface NativeConfig {
     // Buy Token
+    MELD_TEST_MODE?: undefined;
+    MELD_API_KEY?: string;
     TRANSAK_API_KEY?: string;
     TRANSAK_URL?: string;
     COINBASE_PAY_ID?: string;

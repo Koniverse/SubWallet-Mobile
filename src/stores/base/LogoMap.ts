@@ -31,10 +31,10 @@ const settingsSlice = createSlice({
       payload.uniswap = ImageLogosMap.rococo_assethub; // TODO: change later
       payload.kyber = ImageLogosMap.kyber;
       payload.tanssi = ImageLogosMap.tanssi;
-      for (let i = 0; i < 86; i++) {
-        // @ts-ignore
-        payload[`subnet-${i}`] = ImageLogosMap[`subnet-${i}`];
-      }
+      // for (let i = 0; i < 86; i++) {
+      //   // @ts-ignore
+      //   payload[`subnet-${i}`] = ImageLogosMap[`subnet-${i}`];
+      // }
 
       return {
         ...state,

@@ -45,7 +45,7 @@ export const ContainerWithSubHeader = ({
   return (
     <SafeAreaView edges={edges} style={{ flex: 1, backgroundColor: subHeaderProps.backgroundColor || '#0C0C0C' }}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.select({ ios: 0, android: androidKeyboardVerticalOffset })}
         style={[getContainerStyle(subHeaderProps.backgroundColor), style]}>
         {isShowMainHeader && (

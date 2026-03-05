@@ -35,6 +35,7 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { isTonAddress } from '@subwallet/keyring';
 import { sortTokensByStandard } from 'utils/sort/token';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import useGetChainAndExcludedTokenByCurrentAccountProxy from 'hooks/chain/useGetChainAndExcludedTokenByCurrentAccountProxy';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -56,6 +57,7 @@ export const TokenGroupsDetail = ({
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
   const { banners, dismissBanner, onPressBanner } = useGetBannerByScreen('token_detail', tokenGroupSlug);
   const { accountProxies, currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const { excludedTokens } = useGetChainAndExcludedTokenByCurrentAccountProxy();
   const [isShowTonWarning = true, setIsShowTonWarning] = useMMKVBoolean(IS_SHOW_TON_CONTRACT_VERSION_WARNING);
   const [isTonVersionSelectorVisible, setTonVersionSelectorVisible] = useState<boolean>(false);
   const tonAddress = useMemo(() => {
@@ -110,6 +112,36 @@ export const TokenGroupsDetail = ({
   const toast = useToast();
 
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+
+  const isSwapSupported = useMemo(() => {
+    const isSupportAccount = (currentAcc: AccountProxy) => {
+      const isReadOnlyAccount = currentAcc.accountType === AccountProxyType.READ_ONLY;
+      const isLedgerAccount = currentAcc.accountType === AccountProxyType.LEDGER;
+      const isSoloAccount = currentAcc.accountType === AccountProxyType.SOLO;
+      const validEcosystem = [AccountChainType.ETHEREUM, AccountChainType.SUBSTRATE, AccountChainType.BITCOIN].includes(
+        currentAcc.chainTypes[0],
+      );
+      const invalidSoloAccount = isSoloAccount && !validEcosystem;
+
+      return !invalidSoloAccount && !isLedgerAccount && !isReadOnlyAccount;
+    };
+
+    const isSupportAllAccount = (_accountProxies: AccountProxy[]) => {
+      return _accountProxies
+        .filter(account => account.accountType !== AccountProxyType.ALL_ACCOUNT)
+        .some(account => isSupportAccount(account));
+    };
+
+    if (!currentAccountProxy || currentAccountProxy.chainTypes.length <= 0) {
+      return false;
+    }
+
+    if (isAllAccount) {
+      return isSupportAllAccount(accountProxies);
+    } else {
+      return isSupportAccount(currentAccountProxy);
+    }
+  }, [accountProxies, currentAccountProxy, isAllAccount]);
 
   const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
   const { tokenGroupMap, isComputing: isTokenGroupComputing } = useTokenGroup(chainsByAccountType, true);
@@ -184,6 +216,10 @@ export const TokenGroupsDetail = ({
       return currentAccountProxy && checkValidAcc(currentAccountProxy);
     }
   }, [accountProxies, currentAccountProxy, isAllAccount]);
+
+  const isSupportSendFund = useMemo(() => {
+    return !excludedTokens.length || tokenBalanceItems.some(({ slug }) => !excludedTokens.includes(slug));
+  }, [excludedTokens, tokenBalanceItems]);
 
   const isReadonlyAccount = useMemo(() => {
     return currentAccountProxy && currentAccountProxy.accountType === AccountProxyType.READ_ONLY;
@@ -286,6 +322,8 @@ export const TokenGroupsDetail = ({
         groupSymbol={groupSymbol}
         tokenGroupSlug={tokenGroupSlug}
         tokenGroupMap={tokenGroupMap}
+        isSwapSupported={isSwapSupported}
+        isSupportSendFund={isSupportSendFund}
       />
     );
   }, [
@@ -297,6 +335,8 @@ export const TokenGroupsDetail = ({
     groupSymbol,
     tokenGroupSlug,
     tokenGroupMap,
+    isSwapSupported,
+    isSupportSendFund,
   ]);
 
   const renderItem = useCallback(

@@ -371,6 +371,7 @@ export const AccountsScreen = ({
 
   const onPressCopyBtn = useCallback((accountProxy: AccountProxy) => {
     return () => {
+      Keyboard.dismiss();
       setSelectedAccountProxy({ name: accountProxy.name, proxyId: accountProxy.id });
       setTimeout(() => accountChainAddressSelectorRef.current?.onOpenModal(), 100);
     };

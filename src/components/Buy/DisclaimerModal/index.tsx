@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { CheckCircle, XCircle } from 'phosphor-react-native';
-import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
+import { Button, Icon, SwModal } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import modalStyle from './styles';
 
@@ -32,7 +32,7 @@ export const DisclaimerModal = ({ modalVisible, onCloseModalVisible, onConfirm, 
       titleTextAlign={'center'}
       modalTitle="Disclaimer">
       <View style={styles.contentWrapper}>
-        <Typography.Text style={styles.content}>{content}</Typography.Text>
+        {content}
         <View style={styles.buttonWrapper}>
           <Button style={{ flex: 1 }} type={'secondary'} onPress={onConfirm(false)} icon={renderLeftBtnIcon}>
             {i18n.common.cancel}

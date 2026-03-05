@@ -698,7 +698,9 @@
     "xcmTransferWarningTitle": "Pay attention!",
     "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
     "generalTermWarning": "Vui lòng đánh dấu vào ô \"Tôi đã hiểu và đồng ý với bản Điều khoản sử dụng, và chấp thuận rằng tất cả các điều khoản kể trên áp dụng cho việc tôi sử dụng SubWallet và toàn bộ tính năng của ứng dụng này\" để đi tiếp",
-    "masterPasswordWarning": "Vui lòng đánh dấu vào ô \"Tôi hiểu rằng SubWallet không thể khôi phục mật khẩu này cho tôi\" để đi tiếp"
+    "masterPasswordWarning": "Vui lòng đánh dấu vào ô \"Tôi hiểu rằng SubWallet không thể khôi phục mật khẩu này cho tôi\" để đi tiếp",
+    "validatorChangeFeeInfo": "A fee equivalent of {0} TAO will be deducted from your stake amount on the new validator once the transaction is complete",
+    "validatorChangeFeeTitle": "Validator change fee"
   },
   "filterOptions": {
     "polkadotParachain": "Polkadot Parachain",
@@ -1337,5 +1339,13 @@
   "notification": {
     "markAsRead": "Mark as read",
     "markAsUnread": "Mark as unread"
+  },
+  "toast": {
+    "canOnlyChooseOneDapp": "You can only choose {0} dApp",
+    "canOnlyChooseOneCollator": "You can only choose {0} collator",
+    "canOnlyChooseOneValidator": "You can only choose {0} validator",
+    "canOnlyChooseNumberDapps": "You can only choose {0} dApps",
+    "canOnlyChooseNumberCollators": "You can only choose {0} collators",
+    "canOnlyChooseNumberValidators": "You can only choose {0} validators"
   }
 }

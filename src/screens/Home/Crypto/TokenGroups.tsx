@@ -115,6 +115,36 @@ export const TokenGroups = () => {
       }));
   }, [accountProxies]);
 
+  const isSwapSupported = useMemo(() => {
+    const isSupportAccount = (currentAcc: AccountProxy) => {
+      const isReadOnlyAccount = currentAcc.accountType === AccountProxyType.READ_ONLY;
+      const isLedgerAccount = currentAcc.accountType === AccountProxyType.LEDGER;
+      const isSoloAccount = currentAcc.accountType === AccountProxyType.SOLO;
+      const validEcosystem = [AccountChainType.ETHEREUM, AccountChainType.SUBSTRATE, AccountChainType.BITCOIN].includes(
+        currentAcc.chainTypes[0],
+      );
+      const invalidSoloAccount = isSoloAccount && !validEcosystem;
+
+      return !invalidSoloAccount && !isLedgerAccount && !isReadOnlyAccount;
+    };
+
+    const isSupportAllAccount = (_accountProxies: AccountProxy[]) => {
+      return _accountProxies
+        .filter(account => account.accountType !== AccountProxyType.ALL_ACCOUNT)
+        .some(account => isSupportAccount(account));
+    };
+
+    if (!currentAccountProxy || currentAccountProxy.chainTypes.length <= 0) {
+      return false;
+    }
+
+    if (isAllAccount) {
+      return isSupportAllAccount(accountProxies);
+    } else {
+      return isSupportAccount(currentAccountProxy);
+    }
+  }, [accountProxies, currentAccountProxy, isAllAccount]);
+
   const onCloseAccountSelector = useCallback(() => {
     setIsShowTonWarning(false);
     tonAccountRef && tonAccountRef.current?.closeModal?.();
@@ -316,6 +346,7 @@ export const TokenGroups = () => {
         isPriceDecrease={isTotalBalanceDecrease}
         onOpenSendFund={_onOpenSendFund}
         onOpenSwap={_onPressSwap}
+        isSwapSupported={isSwapSupported}
       />
     );
   }, [
@@ -326,6 +357,7 @@ export const TokenGroups = () => {
     isTotalBalanceDecrease,
     _onOpenSendFund,
     _onPressSwap,
+    isSwapSupported,
   ]);
 
   const listFooterNode = useMemo(() => {

@@ -15,4 +15,5 @@ export { default as UnbondTransactionConfirmation } from './Unbond';
 export { default as WithdrawTransactionConfirmation } from './Withdraw';
 export { default as SwapTransactionConfirmation } from './Swap';
 export { default as ClaimBridgeTransactionConfirmation } from './ClaimBridge';
+export { default as ChangeValidatorTransactionConfirmation } from './ChangeEarningValidator';
 export * from './Process';

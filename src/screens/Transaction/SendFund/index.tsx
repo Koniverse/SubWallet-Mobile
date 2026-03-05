@@ -89,13 +89,7 @@ import {
 import useFetchChainAssetInfo from 'hooks/screen/useFetchChainAssetInfo';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
-import {
-  AccountProxy,
-  AccountProxyType,
-  BasicTxWarningCode,
-  FeeChainType,
-  TransactionFee,
-} from '@subwallet/extension-base/types';
+import { AccountProxy, AccountProxyType, BasicTxWarningCode, TransactionFee } from '@subwallet/extension-base/types';
 import { AccountAddressItemType } from 'types/account';
 import { SelectModalField } from 'components/common/SelectModal/parts/SelectModalField';
 import { ActionType } from '@subwallet/extension-base/core/types';
@@ -167,8 +161,6 @@ function getTokenAvailableDestinations(
 
   return result;
 }
-
-const FEE_SHOW_TYPES: Array<FeeChainType | undefined> = ['substrate', 'evm'];
 
 const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -428,18 +420,21 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const { nativeTokenBalance, nativeTokenSlug } = useGetBalance(chainValue, fromValue);
 
   const hideMaxButton = useMemo(() => {
-    const chainInfo = chainInfoMap[chainValue];
+    const _chainInfo = chainInfoMap[chainValue];
 
     if (_isPolygonChainBridge(chainValue, destChainValue) || _isPosChainBridge(chainValue, destChainValue)) {
       return true;
     }
 
     return (
-      !!chainInfo &&
+      !!_chainInfo &&
       !!assetInfo &&
       destChainValue === chainValue &&
       _isNativeToken(assetInfo) &&
-      (_isChainEvmCompatible(chainInfo) || _isChainCardanoCompatible(chainInfo) || _isChainBitcoinCompatible(chainInfo))
+      _isChainEvmCompatible(_chainInfo) &&
+      (_isChainEvmCompatible(_chainInfo) ||
+        _isChainCardanoCompatible(_chainInfo) ||
+        _isChainBitcoinCompatible(_chainInfo))
     );
   }, [chainInfoMap, chainValue, assetInfo, destChainValue]);
 
@@ -530,6 +525,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     setForceUpdateMaxValue(undefined);
     setCurrentTokenPayFee(chainValue === chain ? defaultTokenPayFee : undefined);
     setIsTransferAll(false);
+    setSelectedTransactionFee(undefined);
   };
 
   const _onChangeDestChain = (item: ChainInfo) => {
@@ -1069,6 +1065,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
           feeOption: selectedTransactionFee?.feeOption,
           feeCustom: selectedTransactionFee?.feeCustom,
           tokenPayFeeSlug: currentTokenPayFee,
+          transferAll: isTransferAll,
         },
         callback,
       )
@@ -1095,6 +1092,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     destChainValue,
     fromValue,
     getValues,
+    isTransferAll,
     nativeTokenSlug,
     selectedTransactionFee?.feeCustom,
     selectedTransactionFee?.feeOption,
@@ -1204,8 +1202,8 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   }, [chainValue, fromValue, nativeTokenSlug, nativeTokenBalance]);
 
   const isShowFeeEditor = useMemo(
-    () => FEE_SHOW_TYPES.includes(transferInfo?.feeType) && !!toValue && !!transferAmount && !!nativeTokenSlug,
-    [nativeTokenSlug, toValue, transferAmount, transferInfo?.feeType],
+    () => !TON_CHAINS.includes(chainValue) && !!toValue && !!transferAmount && !!nativeTokenSlug,
+    [chainValue, nativeTokenSlug, toValue, transferAmount],
   );
 
   const scrollToBottom = () => {
@@ -1425,29 +1423,26 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                     </View>
                     {viewStep === 2 && (
                       <>
-                        {FEE_SHOW_TYPES.includes(transferInfo?.feeType) &&
-                          !!toValue &&
-                          !!transferAmount &&
-                          !!nativeTokenSlug && (
-                            <FeeEditor
-                              chainValue={chainValue}
-                              currentTokenPayFee={currentTokenPayFee}
-                              destChainValue={destChainValue}
-                              estimateFee={estimatedNativeFee}
-                              feeOptionsInfo={transferInfo?.feeOptions}
-                              feePercentageSpecialCase={transferInfo?.feePercentageSpecialCase}
-                              feeType={transferInfo?.feeType}
-                              isLoadingFee={isFetchingInfo}
-                              isLoadingToken={isFetchingListFeeToken}
-                              listTokensCanPayFee={listTokensCanPayFee}
-                              nativeTokenSlug={nativeTokenSlug}
-                              onSelect={setSelectedTransactionFee}
-                              onSetTokenPayFee={onSetTokenPayFee}
-                              selectedFeeOption={selectedTransactionFee}
-                              tokenPayFeeSlug={currentTokenPayFee || nativeTokenSlug}
-                              tokenSlug={assetValue}
-                            />
-                          )}
+                        {!TON_CHAINS.includes(chainValue) && !!toValue && !!transferAmount && !!nativeTokenSlug && (
+                          <FeeEditor
+                            chainValue={chainValue}
+                            currentTokenPayFee={currentTokenPayFee}
+                            destChainValue={destChainValue}
+                            estimateFee={estimatedNativeFee}
+                            feeOptionsInfo={transferInfo?.feeOptions}
+                            feePercentageSpecialCase={transferInfo?.feePercentageSpecialCase}
+                            feeType={transferInfo?.feeType}
+                            isLoadingFee={isFetchingInfo}
+                            isLoadingToken={isFetchingListFeeToken}
+                            listTokensCanPayFee={listTokensCanPayFee}
+                            nativeTokenSlug={nativeTokenSlug}
+                            onSelect={setSelectedTransactionFee}
+                            onSetTokenPayFee={onSetTokenPayFee}
+                            selectedFeeOption={selectedTransactionFee}
+                            tokenPayFeeSlug={currentTokenPayFee || nativeTokenSlug}
+                            tokenSlug={assetValue}
+                          />
+                        )}
                       </>
                     )}
                   </View>

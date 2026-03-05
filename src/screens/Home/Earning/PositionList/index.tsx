@@ -111,7 +111,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
       .sort((firstItem, secondItem) => {
         const getValue = (item: ExtraYieldPositionInfo): number => {
           return new BigNumber(item.totalStake)
-            .dividedBy(BN_TEN.pow(item.asset.decimals || 0))
+            .dividedBy(BN_TEN.pow(item.asset?.decimals || 0))
             .multipliedBy(item.price)
             .toNumber();
         };

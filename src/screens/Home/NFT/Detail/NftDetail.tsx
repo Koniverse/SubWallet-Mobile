@@ -9,19 +9,17 @@ import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
-import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { accountCanSign, findAccountByAddress, getSignMode } from 'utils/account';
+import { ContainerHorizontalPadding, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import { NFTDetailProps } from 'screens/Home/NFT/NFTStackScreen';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { ActivityIndicator, Button } from 'components/design-system-ui';
+import { ActivityIndicator, Button, Typography } from 'components/design-system-ui';
 import useFetchChainInfo from 'hooks/common/useFetchChainInfo';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import WebView from 'react-native-webview';
@@ -29,176 +27,43 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deviceWidth } from 'constants/index';
 import { SHOW_3D_MODELS_CHAIN } from 'constants/nft';
 import { reformatAddress } from '@subwallet/extension-base/utils';
-
-const ContainerHeaderStyle: StyleProp<any> = {
-  width: '100%',
-  position: 'relative',
-};
-
-const ContainerDetailStyle: StyleProp<any> = {
-  marginTop: 20,
-  paddingHorizontal: 16,
-};
-
-const PropContainerStyle: StyleProp<ViewStyle> = {
-  marginTop: 24,
-  display: 'flex',
-  flexWrap: 'wrap',
-  flexDirection: 'row',
-  marginHorizontal: -8,
-  marginBottom: -16,
-};
-
-const PropDetailStyle: StyleProp<ViewStyle> = {
-  paddingTop: 4,
-  paddingBottom: 10,
-  paddingHorizontal: 16,
-  backgroundColor: ColorMap.dark2,
-  borderRadius: 5,
-};
-
-const PropWrapperStyle: StyleProp<ViewStyle> = {
-  paddingHorizontal: 8,
-  marginBottom: 16,
-};
-
-const PropTitleStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.smallText,
-  ...FontMedium,
-  color: ColorMap.disabled,
-  fontSize: 12,
-};
-
-const PropValueStyle: StyleProp<any> = {
-  ...sharedStyles.smallText,
-  ...FontMedium,
-  fontSize: 15,
-  color: ColorMap.light,
-};
-
-const AttTitleStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
-  ...FontSemiBold,
-  marginTop: 12,
-  color: ColorMap.light,
-};
-
-const AttValueStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  marginTop: 8,
-  fontSize: 15,
-  color: ColorMap.disabled,
-};
-
-const ImageContainerStyle: StyleProp<any> = {
-  display: 'flex',
-  alignItems: 'center',
-};
-
-const ImageStyle: StyleProp<ViewStyle> = {
-  width: '100%',
-  aspectRatio: 1,
-};
-
-const ResourceContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginTop: 8,
-  marginBottom: 16,
-};
-
-const ResourceIconContainerStyle: StyleProp<ViewStyle> = {
-  width: 40,
-  height: 40,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-};
-
-const ResourceTitleStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
-  ...FontSemiBold,
-  marginLeft: 4,
-  color: ColorMap.light,
-};
-
-const LoadingIconWrapperStyle: StyleProp<ViewStyle> = {
-  position: 'absolute',
-  backgroundColor: '#1A1A1A',
-  top: 0,
-  bottom: 0,
-  left: 0,
-  right: 0,
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: 14.32,
-};
-
-const propDetail = (title: string, valueDict: Record<string, any>, key: number): JSX.Element => {
-  if (!valueDict.type || valueDict.type === 'string') {
-    return (
-      <View style={PropWrapperStyle} key={key}>
-        <View style={PropDetailStyle}>
-          <Text style={PropTitleStyle}>{title}</Text>
-          <Text numberOfLines={1} style={PropValueStyle}>
-            {valueDict.value}
-          </Text>
-        </View>
-      </View>
-    );
-  }
-
-  return <View key={key} />;
-};
+import useGetAccountInfoByAddress from 'hooks/screen/useGetAccountInfoByAddress';
+import { getTransactionFromAccountProxyValue } from 'hooks/screen/Transaction/useTransaction';
+import { ThemeTypes } from 'styles/themes';
 
 const NftDetail = ({
   route: {
-    params: { collectionId, nftId },
+    params: { collectionId: _collectionId, nftId },
   },
 }: NFTDetailProps) => {
   const theme = useSubWalletTheme().swThemes;
+  const styles = createStyle(theme);
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
   const [isLoading3dNft, setIsLoading3dNft] = useState(true);
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
-  const accounts = useSelector((state: RootState) => state.accountState.accounts);
+  const { accounts, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
 
-  const collection = useMemo(() => {
-    return nftCollections.find(i => collectionId === `${i.collectionName}-${i.collectionId}`) || {};
-  }, [collectionId, nftCollections]);
+  const collectionInfo = useMemo((): NftCollection => {
+    return nftCollections.find(i => _collectionId === `${i.collectionName}-${i.collectionId}`) || ({} as NftCollection);
+  }, [_collectionId, nftCollections]);
 
-  const data = useMemo(() => {
+  const nftItem = useMemo(() => {
     return nftItems.find(item => nftId === `${item.collectionId}-${item.id}`) || ({} as NftItem);
   }, [nftId, nftItems]);
 
-  const { image: collectionImage, collectionId: collectionRawId, collectionName, chain } = collection as NftCollection;
-
   const goHome = useGoHome({ screen: 'NFTs', params: { screen: 'CollectionList' } });
-  useHandleGoHome({ goHome: goHome, networkKey: data.chain || chain || '', networkFocusRedirect: false });
+  useHandleGoHome({
+    goHome: goHome,
+    networkKey: nftItem.chain || collectionInfo.chain || '',
+    networkFocusRedirect: false,
+  });
 
-  const originChainInfo = useFetchChainInfo(data.chain as string);
-  const ownerUrl = useScanExplorerAddressUrl(originChainInfo?.slug || '', data.owner || '');
-
-  const ownerAccount = useMemo(() => {
-    if (data.owner) {
-      return findAccountByAddress(accounts, data.owner);
-    }
-
-    return undefined;
-  }, [accounts, data.owner]);
-
-  const canSend = useMemo((): boolean => {
-    if (ownerAccount) {
-      const signMode = getSignMode(ownerAccount);
-      return accountCanSign(signMode);
-    } else {
-      return false;
-    }
-  }, [ownerAccount]);
+  const originChainInfo = useFetchChainInfo(nftItem.chain);
+  const ownerAccountInfo = useGetAccountInfoByAddress(nftItem.owner || '');
+  const ownerUrl = useScanExplorerAddressUrl(originChainInfo?.slug || '', nftItem.owner || '');
+  const nftDetailImageUrl = useMemo(() => nftItem.image || collectionInfo.image, [nftItem.image, collectionInfo.image]);
 
   const show = useCallback(
     (message: string, type?: 'normal' | 'success' | 'danger' | 'warning' | '') => {
@@ -212,11 +77,35 @@ const NftDetail = ({
     show(i18n.notificationMessage.comingSoon);
   }, [show]);
 
-  const handleClickTransfer = useCallback(() => {
-    if (!originChainInfo || !canSend || !data.chain) {
-      show(i18n.common.anErrorHasOccurred, 'danger');
+  const propDetail = useCallback(
+    (title: string, valueDict: Record<string, any>, key: number): JSX.Element => {
+      if (!valueDict.type || valueDict.type === 'string') {
+        return (
+          <View style={styles.propWrapper} key={key}>
+            <View style={styles.propDetail}>
+              <Typography.Text style={styles.propTitleStyle}>{title}</Typography.Text>
+              <Typography.Text ellipsis style={styles.propValueStyle}>
+                {valueDict.value}
+              </Typography.Text>
+            </View>
+          </View>
+        );
+      }
 
-      return;
+      return <View key={key} />;
+    },
+    [styles.propDetail, styles.propTitleStyle, styles.propValueStyle, styles.propWrapper],
+  );
+
+  const onPressSend = useCallback(() => {
+    if (nftItem && nftItem.owner) {
+      const ownerAddress = reformatAddress(nftItem.owner, 42);
+      const owner = accounts.find(a => a.address === ownerAddress);
+
+      if (owner?.isReadOnly) {
+        show('The NFT owner is a watch-only account, you cannot send the NFT with it');
+        return;
+      }
     }
 
     navigation.navigate('Drawer', {
@@ -224,18 +113,15 @@ const NftDetail = ({
       params: {
         screen: 'SendNFT',
         params: {
-          itemId: data.id,
-          chain: data.chain,
-          collectionId: collectionRawId,
-          owner: reformatAddress(
-            data.owner || currentAccount?.address || '',
-            _getChainSubstrateAddressPrefix(originChainInfo),
-            false,
-          ),
+          from: nftItem.owner,
+          itemId: nftItem.id,
+          chain: nftItem.chain,
+          collectionId: nftItem.collectionId,
+          owner: getTransactionFromAccountProxyValue(currentAccountProxy),
         },
       },
     });
-  }, [canSend, data, originChainInfo, navigation, collectionRawId, currentAccount?.address, show]);
+  }, [nftItem, navigation, currentAccountProxy, accounts, show]);
 
   const handleClickInfoIcon = useCallback((url?: string) => {
     if (!url) {
@@ -250,18 +136,20 @@ const NftDetail = ({
     setTimeout(() => setIsLoading3dNft(false), 1000);
   }, []);
 
+  const show3DModel = SHOW_3D_MODELS_CHAIN.includes(nftItem.chain);
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
       titleTextAlign={'left'}
       isShowMainHeader={true}
-      title={data.name || i18n.title.nftDetail}
-      style={ContainerHeaderStyle}
+      title={nftItem.name || i18n.title.nftDetail}
+      style={styles.containerHeader}
       isHideBottomSafeArea={true}
       onPressBack={() => navigation.goBack()}>
       <>
-        <ScrollView style={ContainerDetailStyle} showsVerticalScrollIndicator={false} nestedScrollEnabled>
-          {SHOW_3D_MODELS_CHAIN.includes(chain) ? (
+        <ScrollView style={styles.containerDetail} showsVerticalScrollIndicator={false} nestedScrollEnabled>
+          {show3DModel ? (
             <View style={{ width: deviceWidth - 32, height: deviceWidth - 32, position: 'relative' }}>
               <WebView
                 style={{ borderRadius: 14.32, flex: 1, backgroundColor: theme.colorBgSecondary }}
@@ -270,80 +158,79 @@ const NftDetail = ({
                 source={{
                   html:
                     `<html><head><script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script><style>body, html { background-color: ${theme.colorBgSecondary} }</style>\n` +
-                    `</head><body><model-viewer id="model-viewer" src="${data.image}" alt="model-viewer" ar-status="not-presenting" auto-rotate="true" auto-rotate-delay="100" rotation-per-second="30deg" bounds="tight" disable-pan="true" disable-scroll="true" disable-tap="true" disable-zoom="true" environment-image="neutral" interaction-prompt="none" loading="eager" style="width: 100%; height: 100%" touch-action="none"></model-viewer></body></html>`,
+                    `</head><body><model-viewer id="model-viewer" src="${nftItem.image}" alt="model-viewer" ar-status="not-presenting" auto-rotate="true" auto-rotate-delay="100" rotation-per-second="30deg" bounds="tight" disable-pan="true" disable-scroll="true" disable-tap="true" disable-zoom="true" environment-image="neutral" interaction-prompt="none" loading="eager" style="width: 100%; height: 100%" touch-action="none"></model-viewer></body></html>`,
                 }}
               />
               {isLoading3dNft && (
-                <View style={LoadingIconWrapperStyle}>
+                <View style={styles.loadingIconWrapperStyle}>
                   <ActivityIndicator size={32} />
                 </View>
               )}
             </View>
           ) : (
-            <View style={ImageContainerStyle}>
+            <View style={styles.imageContainerStyle}>
               <ImagePreview
-                style={ImageStyle}
-                mainUrl={data.image}
-                backupUrl={collectionImage}
+                style={styles.imageStyle}
+                mainUrl={nftDetailImageUrl}
+                backupUrl={collectionInfo.image}
                 borderRadius={14.32}
                 borderPlace={'full'}
               />
             </View>
           )}
-          {!!data.description && (
+          {!!nftItem.description && (
             <View>
-              <Text style={AttTitleStyle}>{i18n.inputLabel.nftDetails}</Text>
-              <Text style={AttValueStyle}>{data?.description}</Text>
+              <Typography.Text style={styles.attTitle}>{i18n.inputLabel.nftDetails}</Typography.Text>
+              <Typography.Text style={styles.attValue}>{nftItem?.description}</Typography.Text>
             </View>
           )}
-          <TouchableOpacity style={ResourceContainerStyle} activeOpacity={0.5} onPress={handleClickComingSoon}>
-            <View style={ResourceIconContainerStyle}>
-              <SlidersHorizontal size={20} color={ColorMap.primary} />
+          <TouchableOpacity style={styles.resourceContainerStyle} activeOpacity={0.5} onPress={handleClickComingSoon}>
+            <View style={styles.resourceIconContainerStyle}>
+              <SlidersHorizontal size={20} color={theme.colorSuccess} />
             </View>
-            <Text style={ResourceTitleStyle}>{i18n.nftScreen.nftDetail.resourcesOrInventory}</Text>
+            <Text style={styles.resourceTitleStyle}>{i18n.nftScreen.nftDetail.resourcesOrInventory}</Text>
           </TouchableOpacity>
           <TextField
-            text={collectionName || ''}
+            text={collectionInfo.collectionName || collectionInfo.collectionId}
             label={i18n.inputLabel.nftCollectionName}
-            showRightIcon={!!data.externalUrl}
-            onPressRightIcon={handleClickInfoIcon(data.externalUrl)}
+            showRightIcon={!!nftItem.externalUrl}
+            onPressRightIcon={handleClickInfoIcon(nftItem.externalUrl)}
           />
-          {!!data.owner && (
+          {!!nftItem.owner && (
             <AddressField
-              name={ownerAccount?.name}
-              address={data.owner}
+              name={ownerAccountInfo?.name}
+              address={nftItem?.owner}
               networkPrefix={_getChainSubstrateAddressPrefix(originChainInfo)}
               label={i18n.inputLabel.ownedBy}
               onPressRightIcon={handleClickInfoIcon(ownerUrl)}
             />
           )}
-          {/*<AddressField address={currentAccount?.address || ''} label={i18n.nftScreen.nftDetail.createdBy} />*/}
-          <NetworkField networkKey={data.chain || chain || ''} label={i18n.inputLabel.network} />
-          {!!data.rarity && (
+          <NetworkField networkKey={nftItem.chain || collectionInfo.chain || ''} label={i18n.inputLabel.network} />
+          {!!nftItem.rarity && (
             <View>
-              <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
-              <Text style={AttValueStyle}>{data?.rarity}</Text>
+              <Typography.Text style={styles.attTitle}>{i18n.nftScreen.nftDetail.rarity}</Typography.Text>
+              <Typography.Text style={styles.attValue}>{nftItem?.rarity}</Typography.Text>
             </View>
           )}
 
           <View>
-            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.properties}</Text>
-            <View style={PropContainerStyle}>
+            <Typography.Text style={styles.attTitle}>{i18n.nftScreen.nftDetail.properties}</Typography.Text>
+            <View style={styles.propContainer}>
               {propDetail(
                 i18n.inputLabel.nftId,
-                { value: data.id },
-                (data?.properties ? Object.keys(data?.properties).length : 0) + 1,
+                { value: nftItem.id },
+                (nftItem?.properties ? Object.keys(nftItem?.properties).length : 0) + 1,
               )}
               {propDetail(
                 i18n.inputLabel.collectionId,
-                { value: data.collectionId },
-                (data?.properties ? Object.keys(data?.properties).length : 0) + 2,
+                { value: nftItem.collectionId },
+                (nftItem?.properties ? Object.keys(nftItem?.properties).length : 0) + 2,
               )}
-              {!!data.properties && (
+              {!!nftItem.properties && (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                  {Object.keys(data?.properties).map((key, index) => {
+                  {Object.keys(nftItem?.properties).map((key, index) => {
                     // @ts-ignore
-                    return propDetail(key, data?.properties[key], index);
+                    return propDetail(key, nftItem?.properties[key], index);
                   })}
                 </View>
               )}
@@ -351,16 +238,110 @@ const NftDetail = ({
           </View>
         </ScrollView>
 
-        {canSend ? (
-          <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
-            <Button onPress={handleClickTransfer}>{i18n.buttonTitles.send}</Button>
-          </View>
-        ) : (
-          <View style={{ marginBottom: theme.margin }} />
-        )}
+        <View style={{ ...ContainerHorizontalPadding, marginTop: theme.margin, marginBottom: theme.margin }}>
+          <Button onPress={onPressSend}>{i18n.buttonTitles.send}</Button>
+        </View>
       </>
     </ContainerWithSubHeader>
   );
 };
+
+function createStyle(theme: ThemeTypes) {
+  return StyleSheet.create({
+    containerHeader: {
+      width: '100%',
+      position: 'relative',
+    },
+    containerDetail: {
+      marginTop: theme.marginMD,
+      paddingHorizontal: theme.padding,
+    },
+    propContainer: {
+      marginTop: theme.marginLG,
+      display: 'flex',
+      flexWrap: 'wrap',
+      flexDirection: 'row',
+      marginHorizontal: -theme.marginXS,
+      marginBottom: -theme.margin,
+    },
+    propDetail: {
+      paddingTop: theme.paddingXXS,
+      paddingBottom: theme.paddingXS + 2,
+      paddingHorizontal: theme.padding,
+      backgroundColor: theme.colorBgSecondary,
+      borderRadius: theme.borderRadius,
+    },
+    propWrapper: {
+      paddingHorizontal: theme.paddingXS,
+      marginBottom: theme.margin,
+    },
+    propTitleStyle: {
+      color: theme.colorTextTertiary,
+      fontSize: theme.fontSizeSM,
+      lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+      ...FontMedium,
+    },
+    propValueStyle: {
+      ...FontMedium,
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      color: theme.colorTextLight1,
+    },
+    attTitle: {
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      marginTop: theme.marginSM,
+      color: theme.colorTextLight1,
+      ...FontSemiBold,
+    },
+    attValue: {
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      marginTop: theme.marginXS,
+      color: theme.colorTextTertiary,
+      ...FontMedium,
+    },
+    imageContainerStyle: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    imageStyle: {
+      width: '100%',
+      aspectRatio: 1,
+    },
+    resourceContainerStyle: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: theme.marginXS,
+      marginBottom: theme.margin,
+    },
+    resourceIconContainerStyle: {
+      width: 40,
+      height: 40,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    resourceTitleStyle: {
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      marginLeft: 4,
+      color: theme.colorTextLight1,
+      ...FontSemiBold,
+    },
+    loadingIconWrapperStyle: {
+      position: 'absolute',
+      backgroundColor: theme.colorBgSecondary,
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 14.32,
+    },
+  });
+}
 
 export default React.memo(NftDetail);
