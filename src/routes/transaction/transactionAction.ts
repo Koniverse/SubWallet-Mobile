@@ -8,7 +8,6 @@ export type TransactionActionStackParamList = {
     chain: string;
     collectionId: string;
     itemId: string;
-    owner: string;
   };
   Stake: { chain?: string; type?: string };
   Earning: { slug: string; target?: string; redirectFromPreview?: boolean };

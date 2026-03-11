@@ -80,7 +80,7 @@ interface SendNftFormValues extends TransactionFormValues {
 
 const SendNFT: React.FC<SendNFTProps> = ({
   route: {
-    params: { chain: nftChain, collectionId, itemId, owner, from: defaultFromValue },
+    params: { chain: nftChain, collectionId, itemId, from: defaultFromValue },
   },
 }: SendNFTProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -153,8 +153,8 @@ const SendNFT: React.FC<SendNFTProps> = ({
   }, [navigation]);
 
   const disableSubmit = useMemo(
-    () => !owner || !isAddress(recipientAddressValue) || !isNetConnected || loading,
-    [isNetConnected, loading, owner, recipientAddressValue],
+    () => !isAddress(recipientAddressValue) || !isNetConnected || loading,
+    [isNetConnected, loading, recipientAddressValue],
   );
 
   const onSubmitForm = useCallback(

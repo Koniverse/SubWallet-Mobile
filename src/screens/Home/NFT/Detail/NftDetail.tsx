@@ -28,7 +28,6 @@ import { deviceWidth } from 'constants/index';
 import { SHOW_3D_MODELS_CHAIN } from 'constants/nft';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import useGetAccountInfoByAddress from 'hooks/screen/useGetAccountInfoByAddress';
-import { getTransactionFromAccountProxyValue } from 'hooks/screen/Transaction/useTransaction';
 import { ThemeTypes } from 'styles/themes';
 
 const NftDetail = ({
@@ -43,7 +42,7 @@ const NftDetail = ({
   const [isLoading3dNft, setIsLoading3dNft] = useState(true);
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
-  const { accounts, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
+  const { accounts } = useSelector((state: RootState) => state.accountState);
 
   const collectionInfo = useMemo((): NftCollection => {
     return nftCollections.find(i => _collectionId === `${i.collectionName}-${i.collectionId}`) || ({} as NftCollection);
@@ -117,11 +116,10 @@ const NftDetail = ({
           itemId: nftItem.id,
           chain: nftItem.chain,
           collectionId: nftItem.collectionId,
-          owner: getTransactionFromAccountProxyValue(currentAccountProxy),
         },
       },
     });
-  }, [nftItem, navigation, currentAccountProxy, accounts, show]);
+  }, [nftItem, navigation, accounts, show]);
 
   const handleClickInfoIcon = useCallback((url?: string) => {
     if (!url) {
