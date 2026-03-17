@@ -19,6 +19,10 @@ import {
 import { NotificationSetup } from '@subwallet/extension-base/services/inapp-notification-service/interfaces';
 import { sendMessage } from '..';
 
+export interface RequestSaveSubscanApiKey {
+  apiKey: string;
+}
+
 export async function toggleBalancesVisibility(): Promise<boolean> {
   return sendMessage('pri(settings.changeBalancesVisibility)', null);
 }
@@ -111,4 +115,12 @@ export function saveBrowserConfig(request: RequestSaveBrowserConfig): Promise<bo
 
 export function saveOSConfig(request: RequestSaveOSConfig): Promise<boolean> {
   return sendMessage('pri(settings.saveOSConfig)', request);
+}
+
+export function saveSubscanApiKey(request: RequestSaveSubscanApiKey): Promise<boolean> {
+  return sendMessage('pri(settings.saveSubscanApiKey)', request);
+}
+
+export function getSubscanApiKey(): Promise<string | null> {
+  return sendMessage('pri(settings.getSubscanApiKey)', null);
 }

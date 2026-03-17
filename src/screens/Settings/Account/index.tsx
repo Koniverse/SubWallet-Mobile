@@ -3,12 +3,13 @@ import { ScrollView, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { BackgroundIcon, Icon, SelectItem } from 'components/design-system-ui';
-import { CaretRight, CornersOut, Icon as IconType, Strategy } from 'phosphor-react-native';
+import { CaretRight, CornersOut, Icon as IconType, Key, Strategy } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
 import { SVGImages } from 'assets/index';
 import { useToast } from 'react-native-toast-notifications';
+import { SubscanApiConfigModal } from 'components/Modal/SubscanApiConfigModal';
 
 type SettingItemType = {
   key: string;
@@ -23,6 +24,7 @@ type SettingItemType = {
 const AccountSettings = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
+  const [subscanApiModalVisible, setSubscanModalVisible] = React.useState<boolean>(false);
   const { show, hideAll } = useToast();
 
   const onPressMigrate = () => navigation.navigate('MigrateAccount', {});
@@ -30,6 +32,10 @@ const AccountSettings = () => {
   const onPressSplit = () => {
     hideAll();
     show(i18n.notificationMessage.comingSoon);
+  };
+
+  const onOpenSubscanApiModal = () => {
+    setSubscanModalVisible(true);
   };
 
   const accountSettingList: SettingItemType[] = [
@@ -47,6 +53,14 @@ const AccountSettings = () => {
       title: 'Split unified account',
       rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
       onPress: onPressSplit,
+      leftIconBgColor: '#d84a1b',
+    },
+    {
+      key: 'config-subscan-api',
+      leftIcon: Key,
+      title: 'Config Subscan API key',
+      rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+      onPress: onOpenSubscanApiModal,
       leftIconBgColor: '#d84a1b',
     },
   ];
@@ -77,6 +91,14 @@ const AccountSettings = () => {
             />
           ))}
         </View>
+
+        {subscanApiModalVisible && (
+          <SubscanApiConfigModal
+            modalVisible={subscanApiModalVisible}
+            onClose={() => setSubscanModalVisible(false)}
+            setModalVisible={setSubscanModalVisible}
+          />
+        )}
       </ScrollView>
     </ContainerWithSubHeader>
   );
