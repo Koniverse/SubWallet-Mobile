@@ -7,7 +7,7 @@ buildscript {
         compileSdkVersion = 35
         targetSdkVersion = 35
         androidXBrowser = "1.4.0"
-        kotlinVersion = "1.9.0"
+        kotlinVersion = "2.0.21"
         ndkVersion = "26.1.10909125"
     }
     subprojects { subproject ->
@@ -30,7 +30,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:8.1.1")
         classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21")
         classpath('org.mozilla.rust-android-gradle:plugin:0.9.3')
     }
 }
@@ -39,14 +39,14 @@ buildscript {
 allprojects {
     configurations.all {
         resolutionStrategy {
-            force "org.jetbrains.kotlin:kotlin-stdlib:1.9.0"
-            force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0"
-            force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0"
-            force "org.jetbrains.kotlin:kotlin-reflect:1.9.0"
-            // Force Okio compatible with Kotlin 1.9
-            force "com.squareup.okio:okio:3.6.0"
+            force "org.jetbrains.kotlin:kotlin-stdlib:2.0.21"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.21"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21"
+            force "org.jetbrains.kotlin:kotlin-reflect:2.0.21"
+            // Force Okio compatible with Kotlin 2.0
+            force "com.squareup.okio:okio:3.9.0"
 
-            // Force OkHttp 4.x (last before Kotlin 2.2 bump)
+            // Force OkHttp 4.x
             force "com.squareup.okhttp3:okhttp:4.12.0"
             force "com.squareup.okhttp3:okhttp-urlconnection:4.12.0"
         }
