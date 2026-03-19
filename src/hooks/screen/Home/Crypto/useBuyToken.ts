@@ -357,7 +357,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
 
   useEffect(() => {
     if (!fixedTokenSlug && tokenItems.length) {
-      const tokenSlug = formState.data.tokenSlug;
+      const { tokenSlug } = formState.data;
 
       if (!tokenSlug) {
         onChangeValue('tokenSlug')(tokenItems[0].slug);
@@ -373,7 +373,8 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
         onChangeValue('tokenSlug')(fixedTokenSlug);
       }, 100);
     }
-  }, [fixedTokenSlug, formState.data.tokenSlug, onChangeValue, tokenItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fixedTokenSlug, formState.data, onChangeValue, tokenItems.toString()]);
 
   useEffect(() => {
     formState.data.tokenSlug && checkAsset(formState.data.tokenSlug);

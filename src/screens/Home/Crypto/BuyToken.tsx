@@ -87,6 +87,7 @@ export const BuyToken = ({
     return {
       symbol: selectedBuyToken ? tokens[selectedBuyToken].symbol : '',
       slug: selectedBuyToken ? tokens[selectedBuyToken].slug : '',
+      chainSlug: selectedBuyToken ? tokens[selectedBuyToken].network : '',
     };
   }, [selectedBuyToken, tokens]);
 
@@ -130,7 +131,12 @@ export const BuyToken = ({
                 onSelectItem={onSelectBuyToken}
                 tokenSelectorRef={tokenBuyRef}
                 renderSelected={() => (
-                  <TokenSelectField logoKey={selectedBuyTokenInfo.slug} value={selectedBuyTokenInfo.symbol} showIcon />
+                  <TokenSelectField
+                    logoKey={selectedBuyTokenInfo.slug}
+                    value={selectedBuyTokenInfo.symbol}
+                    subLogoKey={selectedBuyTokenInfo.chainSlug}
+                    showIcon
+                  />
                 )}
                 selectedValue={selectedBuyTokenInfo.slug}
               />
