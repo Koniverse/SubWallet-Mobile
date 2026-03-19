@@ -129,7 +129,7 @@ dependencies {
   implementation "androidx.core:core-splashscreen:1.0.0"
 
   // Fix duplicate Kotlin JDK 7 & JDK 8
-  implementation platform('org.jetbrains.kotlin:kotlin-bom:2.0.21')
+  implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
 
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")

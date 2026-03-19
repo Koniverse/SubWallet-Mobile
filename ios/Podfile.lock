@@ -3,7 +3,7 @@ PODS:
   - boost (1.83.0)
   - BVLinearGradient (2.8.3):
     - React-Core
-  - CodePush (8.2.1):
+  - CodePush (8.3.1):
     - Base64 (~> 1.1)
     - JWT (~> 3.0.0-beta.12)
     - React-Core
@@ -1522,7 +1522,7 @@ SPEC CHECKSUMS:
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
-  CodePush: 84c9a5792cb3c8e311197d595610c803f0b01739
+  CodePush: d892f13c5012e9e2cb36640f4929654b7be21fe5
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   FBLazyVector: b46891061bfe0a9b07f601813114c8653a72a45c
   FBReactNativeSpec: 9a01850c21d81027fa7b20b9dcc25d9bfae083da
