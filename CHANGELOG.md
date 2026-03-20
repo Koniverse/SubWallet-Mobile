@@ -1,3 +1,10 @@
+## 1.2.36 (516)
+- Add user-configurable Subscan API Key in settings (#2033)
+- Add user-configurable Subscan API Key in settings (#2033)
+- Add user-configurable Subscan API Key in settings (#2033)
+- Fix UI bug (#2033)
+- Update wr 1.3.57 (#2033)
+
 ## 1.2.35 (515)
 - cherry-pick code from issue 4950 to fix bug cannot stsake Moonbase Alpha (#2033)
 - cherry-pick code to update Paraspell v5 and some XCM (#2033)
