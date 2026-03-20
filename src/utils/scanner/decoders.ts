@@ -234,7 +234,7 @@ export const constructDataFromBytes = (
       }
 
       default:
-        throw new Error('Payload is not formated correctly: ' + bytes.toString());
+        throw new Error('Payload is not formatted correctly: ' + bytes.toString());
     }
   } catch (e: unknown) {
     if (e instanceof Error) {
