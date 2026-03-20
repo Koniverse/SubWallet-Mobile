@@ -10,14 +10,14 @@ import { RootState } from 'stores/index';
 import { BalanceValueInfo } from 'types/balance';
 import { YieldGroupInfo } from 'types/earning';
 import { BN_ZERO } from '@subwallet/extension-base/utils';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { YieldPoolType } from '@subwallet/extension-base/types';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 const useYieldGroupInfo = (): YieldGroupInfo[] => {
   const poolInfoMap = useSelector((state: RootState) => state.earning.poolInfoMap);
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const chainsByAccountType = useGetChainSlugsByAccount();
+  const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, true);
 

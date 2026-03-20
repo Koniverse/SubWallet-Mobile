@@ -15,7 +15,7 @@ import { TouchableOpacity, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
 import { getEarningTimeText } from 'utils/earning';
-import { ImageLogosMap } from 'assets/logo';
+import { useCreateGetSubnetStakingTokenName } from 'hooks/earning';
 
 type Props = {
   inputAsset: _ChainAsset;
@@ -48,12 +48,11 @@ const EarningInfoPart: React.FC<Props> = (props: Props) => {
 
   const isSubnetStaking = useMemo(() => [YieldPoolType.SUBNET_STAKING].includes(poolInfo.type), [poolInfo.type]);
 
-  const networkKey = useMemo(() => {
-    const netuid = poolInfo.metadata.subnetData?.netuid || 0;
+  const getSubnetStakingTokenName = useCreateGetSubnetStakingTokenName();
 
-    // @ts-ignore
-    return ImageLogosMap[`subnet-${netuid}`] ? `subnet-${netuid}` : 'subnet-0';
-  }, [poolInfo.metadata.subnetData?.netuid]);
+  const subnetToken = useMemo(() => {
+    return getSubnetStakingTokenName(poolInfo.chain, poolInfo.metadata.subnetData?.netuid || 0);
+  }, [getSubnetStakingTokenName, poolInfo.chain, poolInfo.metadata.subnetData?.netuid]);
 
   const [showDetail, setShowDetail] = useState(false);
 
@@ -87,7 +86,7 @@ const EarningInfoPart: React.FC<Props> = (props: Props) => {
           ) : (
             <MetaInfo.Default label={'Subnet'}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
-                <Logo size={24} isShowSubLogo={false} network={networkKey} shape={'circle'} />
+                <Logo size={24} isShowSubLogo={false} network={poolInfo.chain} shape={'circle'} token={subnetToken} />
                 <Typography.Text style={{ color: theme.colorTextLight1 }}>
                   {poolInfo.metadata.shortName}
                 </Typography.Text>

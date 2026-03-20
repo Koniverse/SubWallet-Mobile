@@ -33,12 +33,12 @@ import { TonWalletContractSelectorModal } from 'components/Modal/TonWalletContra
 import { AccountAddressItemType } from 'types/account';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { ModalRef } from 'types/modalRef';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { useMMKVBoolean } from 'react-native-mmkv';
 import { isTonAddress } from '@subwallet/keyring';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { sortTokensByStandard } from 'utils/sort/token';
 import useDebouncedValue from 'hooks/common/useDebouncedValue';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -61,8 +61,8 @@ export const TokenGroups = () => {
   const navigation = useNavigation<CryptoNavigationProps>();
   const tokenSearchRef = useRef<TokenSearchRef>();
   const tonAccountRef = useRef<ModalRef>();
-  const chainsByAccountType = useGetChainSlugsByAccount();
-  const { sortedTokenGroups, tokenGroupMap, sortedTokenSlugs } = useTokenGroup(chainsByAccountType);
+  const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
+  const { tokenGroups, tokenGroupMap, tokenSlugs } = useTokenGroup(chainsByAccountType);
   const { tokenGroupBalanceMap, totalBalanceInfo, tokenBalanceMap } = useAccountBalance(tokenGroupMap);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const priorityTokens = useSelector((state: RootState) => state.chainStore.priorityTokens);
@@ -114,6 +114,36 @@ export const TokenGroups = () => {
         accountActions: item.accountActions,
       }));
   }, [accountProxies]);
+
+  const isSwapSupported = useMemo(() => {
+    const isSupportAccount = (currentAcc: AccountProxy) => {
+      const isReadOnlyAccount = currentAcc.accountType === AccountProxyType.READ_ONLY;
+      const isLedgerAccount = currentAcc.accountType === AccountProxyType.LEDGER;
+      const isSoloAccount = currentAcc.accountType === AccountProxyType.SOLO;
+      const validEcosystem = [AccountChainType.ETHEREUM, AccountChainType.SUBSTRATE, AccountChainType.BITCOIN].includes(
+        currentAcc.chainTypes[0],
+      );
+      const invalidSoloAccount = isSoloAccount && !validEcosystem;
+
+      return !invalidSoloAccount && !isLedgerAccount && !isReadOnlyAccount;
+    };
+
+    const isSupportAllAccount = (_accountProxies: AccountProxy[]) => {
+      return _accountProxies
+        .filter(account => account.accountType !== AccountProxyType.ALL_ACCOUNT)
+        .some(account => isSupportAccount(account));
+    };
+
+    if (!currentAccountProxy || currentAccountProxy.chainTypes.length <= 0) {
+      return false;
+    }
+
+    if (isAllAccount) {
+      return isSupportAllAccount(accountProxies);
+    } else {
+      return isSupportAccount(currentAccountProxy);
+    }
+  }, [accountProxies, currentAccountProxy, isAllAccount]);
 
   const onCloseAccountSelector = useCallback(() => {
     setIsShowTonWarning(false);
@@ -175,7 +205,7 @@ export const TokenGroups = () => {
 
   const tokenGroupBalanceItems = useMemo<TokenBalanceItemType[]>(() => {
     const result: TokenBalanceItemType[] = [];
-    sortedTokenGroups.forEach(tokenGroupSlug => {
+    tokenGroups.forEach(tokenGroupSlug => {
       if (debouncedTokenGroupBalanceMap[tokenGroupSlug]) {
         result.push(debouncedTokenGroupBalanceMap[tokenGroupSlug]);
       }
@@ -184,7 +214,7 @@ export const TokenGroups = () => {
     sortTokensByStandard(result, priorityTokens, true);
 
     return result;
-  }, [debouncedTokenGroupBalanceMap, priorityTokens, sortedTokenGroups]);
+  }, [debouncedTokenGroupBalanceMap, priorityTokens, tokenGroups]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (
@@ -316,6 +346,7 @@ export const TokenGroups = () => {
         isPriceDecrease={isTotalBalanceDecrease}
         onOpenSendFund={_onOpenSendFund}
         onOpenSwap={_onPressSwap}
+        isSwapSupported={isSwapSupported}
       />
     );
   }, [
@@ -326,6 +357,7 @@ export const TokenGroups = () => {
     isTotalBalanceDecrease,
     _onOpenSendFund,
     _onPressSwap,
+    isSwapSupported,
   ]);
 
   const listFooterNode = useMemo(() => {
@@ -427,7 +459,7 @@ export const TokenGroups = () => {
           tokenSearchRef={tokenSearchRef}
           onSelectItem={onPressSearchItem}
           isShowBalance={isShowBalance}
-          sortedTokenSlugs={sortedTokenSlugs}
+          tokenSlugs={tokenSlugs}
           tokenBalanceMap={tokenBalanceMap}
         />
 

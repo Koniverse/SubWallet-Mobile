@@ -250,8 +250,8 @@ const Component: React.FC<SwNumberProps> = props => {
       {suffix && (
         <Typography.Text
           style={{
-            ...textStyle,
             ...unitStyle,
+            ...textStyle,
             fontSize: decimalFontSize,
           }}>
           &nbsp;{suffix}

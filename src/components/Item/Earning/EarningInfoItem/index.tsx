@@ -13,7 +13,7 @@ import { getNetworkLogo, getTokenLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import { BN_TEN } from 'utils/number';
-import { ImageLogosMap } from 'assets/logo';
+import { useCreateGetSubnetStakingTokenName } from 'hooks/earning';
 
 interface Props {
   positionInfo: ExtraYieldPositionInfo;
@@ -28,13 +28,14 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
+  const getSubnetStakingTokenName = useCreateGetSubnetStakingTokenName();
   const poolInfo: YieldPoolInfo | undefined = poolInfoMap[slug];
   const isTempEarningCondition = ['ASTR___native_staking___astar', 'SDN___native_staking___shiden'].includes(
     positionInfo.slug,
   );
 
   const poolName = useMemo(() => {
-    return (multiChainAssetMap[group] || assetRegistry[group]).symbol;
+    return (multiChainAssetMap[group] || assetRegistry[group])?.symbol || '';
   }, [assetRegistry, group, multiChainAssetMap]);
 
   const balanceValue = useMemo(() => {
@@ -58,17 +59,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
         color={tagColor}
         bgType={'default'}
         bgColor={tagBgc}>
-        <Typography.Text
-          ellipsis
-          style={{
-            fontSize: theme.fontSizeXS,
-            textAlign: 'center',
-            lineHeight: theme.fontSizeXS * theme.lineHeightXS,
-            paddingLeft: 4,
-            color: tagColor,
-            flexShrink: 1,
-            ...FontBold,
-          }}>
+        <Typography.Text ellipsis style={[styleSheet.tagTextStyle, { color: tagColor }]}>
           {tagContent}
         </Typography.Text>
       </Tag>
@@ -88,18 +79,26 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
     [poolInfo],
   );
 
+  const subnetToken = useMemo(() => {
+    if (!poolInfo) {
+      return undefined;
+    }
+
+    return getSubnetStakingTokenName(poolInfo.chain, poolInfo.metadata.subnetData?.netuid || 0);
+  }, [getSubnetStakingTokenName, poolInfo]);
+
   if (!poolInfo) {
     return <></>;
   }
 
   return (
     <TouchableOpacity style={styleSheet.infoContainer} activeOpacity={0.5} onPress={onPress(positionInfo)}>
-      {!isSubnetStaking || !ImageLogosMap[`subnet-${poolInfo.metadata.subnetData?.netuid || 0}`]
+      {!isSubnetStaking
         ? getTokenLogo(balanceToken, poolInfo.metadata.logo || poolInfo.chain, 40)
-        : getNetworkLogo(`subnet-${poolInfo.metadata.subnetData?.netuid || 0}`, 40)}
-      <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>
+        : getNetworkLogo(poolInfo.chain, 40, 'default', subnetToken)}
+      <View style={styleSheet.balanceInfoWrapper}>
         <View style={styleSheet.balanceInfoRow}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, overflow: 'hidden', gap: theme.sizeXXS }}>
+          <View style={styleSheet.balanceNameArea}>
             <View style={{ flexShrink: 1 }}>
               <Typography.Text ellipsis={true} style={styleSheet.networkName} numberOfLines={1}>
                 {poolName}
@@ -132,7 +131,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
             ))}
         </View>
         <View style={styleSheet.balanceInfoRow}>
-          <View style={{ flexDirection: 'row', gap: theme.paddingXXS, flex: 1 }}>
+          <View style={styleSheet.tagWrapper}>
             <EarningTypeTag type={type} chain={chain} />
             {isTestnet && getTagItem(isTestnet)}
           </View>
@@ -172,9 +171,7 @@ const EarningInfoItem = ({ positionInfo, onPress, isShowBalance }: Props) => {
           },
         ]}>
         {isTempEarningCondition && (
-          <Typography.Text style={{ color: 'rgba(255,255,255, 0.45)', marginRight: 12, fontSize: 12, lineHeight: 20 }}>
-            View on dApp
-          </Typography.Text>
+          <Typography.Text style={styleSheet.viewOnDAppTextStyle}>View on dApp</Typography.Text>
         )}
         <Icon phosphorIcon={CaretRight} iconColor={theme['gray-5']} size={'sm'} />
       </View>
@@ -206,7 +203,7 @@ function createStyleSheet(theme: ThemeTypes) {
       display: 'flex',
       flexDirection: 'row',
     },
-
+    balanceInfoWrapper: { flex: 1, paddingLeft: theme.paddingXS },
     balanceInfoRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -214,7 +211,7 @@ function createStyleSheet(theme: ThemeTypes) {
       flex: 1,
       gap: theme.padding,
     },
-
+    balanceNameArea: { flexDirection: 'row', alignItems: 'center', flex: 1, overflow: 'hidden', gap: theme.sizeXXS },
     networkName: {
       fontSize: theme.fontSizeLG,
       lineHeight: theme.fontSizeLG * theme.lineHeightLG,
@@ -238,6 +235,16 @@ function createStyleSheet(theme: ThemeTypes) {
       marginLeft: theme.marginXXS,
       marginRight: theme.marginXXS,
     },
+    viewOnDAppTextStyle: { color: 'rgba(255,255,255, 0.45)', marginRight: 12, fontSize: 12, lineHeight: 20 },
+    tagTextStyle: {
+      fontSize: theme.fontSizeXS,
+      textAlign: 'center',
+      lineHeight: theme.fontSizeXS * theme.lineHeightXS,
+      paddingLeft: 4,
+      flexShrink: 1,
+      ...FontBold,
+    },
+    tagWrapper: { flexDirection: 'row', gap: theme.paddingXXS, flex: 1 },
   });
 }
 

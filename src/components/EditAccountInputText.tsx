@@ -76,7 +76,7 @@ export const EditAccountInputText = forwardRef((inputProps: Props, ref: React.Re
           }}>
           <Typography.Text style={labelStyle}>{label}</Typography.Text>
 
-          <AccountProxyTypeTag type={accountType} />
+          {accountType && <AccountProxyTypeTag type={accountType} />}
         </View>
 
         <View style={contentWrapper}>

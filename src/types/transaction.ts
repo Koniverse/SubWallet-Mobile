@@ -67,6 +67,10 @@ export interface UnStakeParams extends TransactionFormBaseProps {
   fastLeave: boolean;
 }
 
+export interface ChangeValidatorParams extends EarnParams {
+  originValidator: string;
+}
+
 export interface CancelUnStakeParams extends TransactionFormBaseProps {
   unstake: string;
   slug: string;

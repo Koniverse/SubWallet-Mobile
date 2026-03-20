@@ -23,16 +23,18 @@ const settingsSlice = createSlice({
       payload.chain_flip_testnet = ImageLogosMap.chain_flip_testnet;
       payload.hydradx_mainnet = ImageLogosMap.hydradx_mainnet;
       payload.hydradx_testnet = ImageLogosMap.hydradx_testnet;
+      payload.ordinal_rune = ImageLogosMap.ordinal_rune;
       payload.simple_swap = ImageLogosMap.simple_swap;
       payload[SwapProviderId.POLKADOT_ASSET_HUB.toLowerCase()] = ImageLogosMap.polkadot_assethub;
       payload[SwapProviderId.KUSAMA_ASSET_HUB.toLowerCase()] = ImageLogosMap.kusama_assethub;
       payload[SwapProviderId.ROCOCO_ASSET_HUB.toLowerCase()] = ImageLogosMap.rococo_assethub;
       payload.uniswap = ImageLogosMap.rococo_assethub; // TODO: change later
       payload.kyber = ImageLogosMap.kyber;
-      for (let i = 0; i < 86; i++) {
-        // @ts-ignore
-        payload[`subnet-${i}`] = ImageLogosMap[`subnet-${i}`];
-      }
+      payload.tanssi = ImageLogosMap.tanssi;
+      // for (let i = 0; i < 86; i++) {
+      //   // @ts-ignore
+      //   payload[`subnet-${i}`] = ImageLogosMap[`subnet-${i}`];
+      // }
 
       return {
         ...state,
@@ -41,6 +43,11 @@ const settingsSlice = createSlice({
     },
     updateAssetLogoMaps(state, action: PayloadAction<Record<string, string>>) {
       const payload = action.payload;
+      payload['tanssi-tanssi'] = ImageLogosMap.tanssi;
+      payload['tanssi-native-tanssi'] = ImageLogosMap.tanssi;
+      payload['ethereum-erc20-tanssi-0x553f4cb7256d8fc038e91d36cb63fa7c13b624ab'] = ImageLogosMap.tanssi;
+      payload['energy_web_x-local-stewt'] = ImageLogosMap.stewt;
+      payload['energy_web_x-local-usdc'] = ImageLogosMap.usdc;
 
       return {
         ...state,

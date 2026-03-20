@@ -6,6 +6,8 @@ import {
   ChainStakingMetadata,
   ConfirmationDefinitions,
   ConfirmationsQueue,
+  ConfirmationsQueueBitcoin,
+  ConfirmationsQueueCardano,
   ConfirmationsQueueTon,
   ConfirmationType,
   CrowdloanItem,
@@ -195,7 +197,12 @@ export interface AccountState extends AccountsContext, KeyringState, AddressBook
   isAllAccount: boolean;
 }
 
-export interface RequestState extends ConfirmationsQueue, ConfirmationsQueueTon, BaseReduxStore {
+export interface RequestState
+  extends ConfirmationsQueue,
+    ConfirmationsQueueTon,
+    ConfirmationsQueueCardano,
+    ConfirmationsQueueBitcoin,
+    BaseReduxStore {
   authorizeRequest: Record<string, AuthorizeRequest>;
   metadataRequest: Record<string, MetadataRequest>;
   signingRequest: Record<string, SigningRequest>;

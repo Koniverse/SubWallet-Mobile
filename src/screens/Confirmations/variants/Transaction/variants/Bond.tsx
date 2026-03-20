@@ -45,14 +45,6 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
         />
       </MetaInfo>
 
-      <AlertBox
-        title={'Your staked funds will be locked'}
-        description={
-          'Once staked, your funds will be locked and become non-transferable. To unlock your funds, you need to unstake manually, wait for the unstaking period to end and then withdraw manually.'
-        }
-        type={'warning'}
-      />
-
       {!!stakingFee && (
         <AlertBox
           title={'TAO unstaking fee'}

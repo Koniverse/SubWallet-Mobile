@@ -10,30 +10,12 @@ import { RootNavigationProps } from 'routes/index';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { BalanceValueInfo } from 'types/balance';
-import { CurrencyJson } from '@subwallet/extension-base/background/KoniTypes';
 
 export type TokenItemType = {
   name: string;
   slug: string;
   symbol: string;
   originChain: string;
-};
-
-export type TokenSelectorItemType = {
-  name: string;
-  slug: string;
-  symbol: string;
-  originChain: string;
-  balanceInfo?: {
-    isReady: boolean;
-    isNotSupport: boolean;
-    free: BalanceValueInfo;
-    locked: BalanceValueInfo;
-    total: BalanceValueInfo;
-    currency?: CurrencyJson;
-  };
-  showBalance?: boolean;
 };
 
 interface Props {
@@ -105,27 +87,11 @@ export const TokenSelector = ({
     (_items: TokenItemType[], searchString: string) => {
       const lowerCaseSearchString = searchString.toLowerCase();
 
-      const filteredList = (_items as TokenItemType[]).filter(
+      return (_items as TokenItemType[]).filter(
         ({ symbol, originChain }) =>
           symbol.toLowerCase().includes(lowerCaseSearchString) ||
           chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
       );
-
-      if (lowerCaseSearchString === 'ton') {
-        const tonItemIndex = filteredList.findIndex(item => item.slug === 'ton-NATIVE-TON');
-
-        if (tonItemIndex !== -1) {
-          const [tonItem] = filteredList.splice(tonItemIndex, 1);
-
-          if (tonItem) {
-            filteredList.unshift(tonItem);
-          }
-        }
-
-        return filteredList;
-      } else {
-        return filteredList;
-      }
     },
     [chainInfoMap],
   );

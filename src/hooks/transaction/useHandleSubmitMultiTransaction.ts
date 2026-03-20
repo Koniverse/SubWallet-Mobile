@@ -5,13 +5,13 @@ import { useToast } from 'react-native-toast-notifications';
 import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
 import { ProcessType } from '@subwallet/extension-base/types';
+import { TransactionWarning } from '@subwallet/extension-base/background/warnings/TransactionWarning';
 
 const useHandleSubmitMultiTransaction = (
   onDone: (id: string) => void,
   setTransactionDone: (value: boolean) => void,
   dispatchProcessState: (value: CommonProcessAction) => void,
-  triggerOnChangeValue?: () => void,
-  setIgnoreWarnings?: (value: boolean) => void,
+  handleWarning?: (value: TransactionWarning[]) => void,
   processType?: ProcessType, // to show exactly title for TransactionSubmission
 ) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -59,24 +59,22 @@ const useHandleSubmitMultiTransaction = (
 
               return false;
             } else {
-              if (!warnings[0] || warnings[0].warningType !== 'notEnoughExistentialDeposit' || !setIgnoreWarnings) {
-                hideAll();
-                currentErrorMessage = _errors[0]?.message || '';
-                show(_errors[0]?.message || warnings[0]?.message, {
-                  type: _errors.length ? 'danger' : 'warning',
-                  duration: 8000,
-                });
-              }
+              hideAll();
+              currentErrorMessage = _errors[0]?.message || '';
+              show(_errors[0]?.message || warnings[0]?.message, {
+                type: _errors.length ? 'danger' : 'warning',
+                duration: 8000,
+              });
             }
 
             if (!_errors.length) {
-              warnings[0] && setIgnoreWarnings?.(true);
+              handleWarning?.(warnings);
             } else {
               if (currentErrorMessage !== _errors[0].message) {
                 onError(_errors[0]);
+                handleWarning?.([]);
               }
             }
-            currentErrorMessage = '';
 
             return false;
           } else {
@@ -84,7 +82,6 @@ const useHandleSubmitMultiTransaction = (
               type: needRollback ? CommonActionType.STEP_ERROR_ROLLBACK : CommonActionType.STEP_ERROR,
               payload: _errors[0],
             });
-            triggerOnChangeValue && triggerOnChangeValue();
             setTransactionDone(false);
             return false;
           }
@@ -109,14 +106,13 @@ const useHandleSubmitMultiTransaction = (
     },
     [
       dispatchProcessState,
+      handleWarning,
       hideAll,
       onDone,
       onError,
       onHandleOneSignConfirmation,
-      setIgnoreWarnings,
       setTransactionDone,
       show,
-      triggerOnChangeValue,
     ],
   );
 

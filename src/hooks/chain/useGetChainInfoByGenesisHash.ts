@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { findChainInfoByGenesisHash } from 'utils/chain';
+import { findChainInfoByGenesisHash } from 'utils/chain/chain';
 
 const useGetChainInfoByGenesisHash = (genesisHash?: string) => {
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);

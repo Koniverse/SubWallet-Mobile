@@ -56,7 +56,7 @@ interface Props {
   nativeTokenSlug: string;
 }
 
-const FEE_TYPES_CAN_SHOW: Array<FeeChainType | undefined> = ['substrate', 'evm'];
+const FEE_TYPES_CAN_SHOW: Array<FeeChainType | undefined> = ['substrate', 'evm', 'bitcoin'];
 
 const FeeEditor = ({
   chainValue,
@@ -134,7 +134,11 @@ const FeeEditor = ({
     return chainValue && destChainValue && chainValue !== destChainValue;
   }, [chainValue, destChainValue]);
 
-  const isEditButton = useMemo(() => {
+  const isEnergyWebChain = useMemo(() => {
+    return chainValue === 'energy_web_chain';
+  }, [chainValue]);
+
+  const { isEditButton, isEvmButNoCustomFeeSupport } = useMemo(() => {
     const isSubstrateSupport = !!(
       chainValue &&
       feeType === 'substrate' &&
@@ -142,14 +146,22 @@ const FeeEditor = ({
       isChainSupportTokenPayFee(chainValue)
     );
     const isEvmSupport = !!(chainValue && feeType === 'evm');
+    const isEvmCustomFeeEditable =
+      isEvmSupport && !!feeOptionsInfo && 'options' in feeOptionsInfo && feeOptionsInfo.options != null;
 
-    return (isSubstrateSupport || isEvmSupport) && !isXcm;
-  }, [isXcm, chainValue, feeType, listTokensCanPayFee.length]);
+    const _isEvmButNoCustomFeeSupport = isEvmSupport && !isEvmCustomFeeEditable;
+    const _isEditButton = (isSubstrateSupport || isEvmSupport) && !isXcm && !isEnergyWebChain;
+
+    return {
+      isEvmButNoCustomFeeSupport: _isEvmButNoCustomFeeSupport,
+      isEditButton: _isEditButton,
+    };
+  }, [chainValue, feeType, listTokensCanPayFee.length, feeOptionsInfo, isXcm, isEnergyWebChain]);
 
   const onPressEdit = useCallback(() => {
     Keyboard.dismiss();
 
-    if (!isEditButton) {
+    if (!isEditButton || isEvmButNoCustomFeeSupport) {
       setTimeout(() => {
         setTooltipVisible(true);
       }, 500);
@@ -170,7 +182,7 @@ const FeeEditor = ({
         setFeeEditorModalVisible(true);
       }, 100);
     }
-  }, [chainValue, isEditButton, setFeeEditorModalVisible]);
+  }, [chainValue, isEditButton, setFeeEditorModalVisible, isEvmButNoCustomFeeSupport]);
 
   const customFieldNode = useMemo(() => {
     if (!renderFieldNode) {
@@ -237,31 +249,37 @@ const FeeEditor = ({
                 prefix={`~ ${(currencyData.isPrefix && currencyData.symbol) || ''}`}
                 suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
               />
-              <Tooltip
-                isVisible={tooltipVisible}
-                disableShadow={true}
-                placement={'top'}
-                displayInsets={{ right: 0, top: 0, bottom: 0, left: 0 }}
-                showChildInTooltip={false}
-                topAdjustment={Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0}
-                contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
-                closeOnBackgroundInteraction={true}
-                onClose={() => setTooltipVisible(false)}
-                content={
-                  <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
-                    {'Coming soon!'}
-                  </Typography.Text>
-                }>
-                <Button
-                  size={'xs'}
-                  type={'ghost'}
-                  icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />}
-                  style={{ marginRight: -10 }}
-                  disabled={!isDataReady}
-                  loading={isLoadingToken}
-                  onPress={onPressEdit}
-                />
-              </Tooltip>
+              {isEditButton && (
+                <Tooltip
+                  isVisible={tooltipVisible}
+                  disableShadow={true}
+                  placement={'top'}
+                  displayInsets={{ right: 0, top: 0, bottom: 0, left: 0 }}
+                  showChildInTooltip={false}
+                  topAdjustment={
+                    Platform.OS === 'android' ? (StatusBar.currentHeight ? -StatusBar.currentHeight : 0) : 0
+                  }
+                  contentStyle={{ backgroundColor: theme.colorBgSpotlight, borderRadius: theme.borderRadiusLG }}
+                  closeOnBackgroundInteraction={true}
+                  onClose={() => setTooltipVisible(false)}
+                  content={
+                    <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
+                      {isEvmButNoCustomFeeSupport
+                        ? "This fee can't be edited with the current RPC connection"
+                        : undefined}
+                    </Typography.Text>
+                  }>
+                  <Button
+                    size={'xs'}
+                    type={'ghost'}
+                    icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />}
+                    style={{ marginRight: -10 }}
+                    disabled={!isDataReady}
+                    loading={isLoadingToken}
+                    onPress={onPressEdit}
+                  />
+                </Tooltip>
+              )}
             </View>
           )}
         </View>

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   EvmEIP1559FeeOption,
   FeeCustom,
@@ -18,8 +18,8 @@ import { FeeOptionItem } from 'components/Modal/TransactionFee/FeeEditor/FeeOpti
 import BigN from 'bignumber.js';
 import { _SUPPORT_TOKEN_PAY_FEE_GROUP } from '@subwallet/extension-base/constants';
 import { InputAmount } from 'components/Input/InputAmount';
-import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { BN_TEN, BN_ZERO, formatNumber } from '@subwallet/extension-base/utils';
+import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
+import { BN_TEN, BN_ZERO, formatNumber, isEvmEIP1559FeeDetail } from '@subwallet/extension-base/utils';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deviceHeight } from 'constants/index';
 
@@ -61,8 +61,6 @@ export const FeeEditorModal = ({
   tokenSlug,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const timeOutRef = useRef<NodeJS.Timeout>();
-  const [validating, setValidating] = useState(false);
   const [currentViewMode, setViewMode] = useState<string>(
     selectedFeeOption?.feeOption === 'custom' ? 'custom' : 'recommended',
   );
@@ -139,22 +137,128 @@ export const FeeEditorModal = ({
     return undefined;
   }, [feeOptionsInfo?.options, selectedFeeOption]);
 
+  const minRequiredMaxFeePerGas = useMemo(() => {
+    if (isEvmEIP1559FeeDetail(feeOptionsInfo)) {
+      const baseGasFee = new BigN(feeOptionsInfo.baseGasFee);
+      const priorityFee = feeOptionsInfo?.options?.slow?.maxPriorityFeePerGas || 0;
+
+      return baseGasFee.multipliedBy(1.5).plus(priorityFee).integerValue(BigN.ROUND_CEIL);
+    }
+
+    return undefined;
+  }, [feeOptionsInfo]);
+
+  const customPriorityValidateFunc = useCallback(
+    (value: string) => {
+      let result: string[] = [];
+      if (!value) {
+        return result;
+      }
+
+      if (new BigN(value).lt(BN_ZERO)) {
+        result = ['The priority fee must be equal or greater than 0'];
+      }
+
+      if (isEvmEIP1559FeeDetail(feeOptionsInfo)) {
+        const fastOption = feeOptionsInfo?.options?.fast;
+
+        if (fastOption?.maxPriorityFeePerGas) {
+          const fastPriorityMax = new BigN(fastOption.maxPriorityFeePerGas).multipliedBy(2);
+
+          if (new BigN(value).gt(fastPriorityMax)) {
+            result = ['Priority fee is higher than necessary. You may pay more than needed'];
+          }
+        }
+      }
+
+      return result;
+    },
+    [feeOptionsInfo],
+  );
+
+  const customValueValidateFunc = useCallback((value: string) => {
+    let result: string[] = [];
+
+    if (!value) {
+      return result;
+    }
+
+    if (new BigN(value).lt(BN_ZERO)) {
+      result = ['The custom value must be greater than 0'];
+    }
+
+    return result;
+  }, []);
+
+  const customMaxFeeValidateFunc = useCallback(
+    (value: string, formValue: Record<string, string>) => {
+      let result: string[] = [];
+
+      if (!value) {
+        result = ['Amount is required'];
+      }
+
+      if (new BigN(value).lte(BN_ZERO)) {
+        result = ['The maximum fee must be greater than 0'];
+      }
+
+      const priorityFeeValue = formValue.priorityFeeValue;
+
+      if (priorityFeeValue && value && new BigN(value).lt(new BigN(priorityFeeValue))) {
+        result = ['Max fee cannot be lower than priority fee'];
+      }
+
+      if (isEvmEIP1559FeeDetail(feeOptionsInfo)) {
+        if (minRequiredMaxFeePerGas && value && new BigN(value).lt(minRequiredMaxFeePerGas)) {
+          const message = `Max fee per gas must be higher than ${formatNumber(
+            minRequiredMaxFeePerGas,
+            9,
+            s => s,
+          )} GWEI`;
+          result = [message];
+        }
+
+        const fastOption = feeOptionsInfo?.options?.fast;
+
+        if (minRequiredMaxFeePerGas && fastOption?.maxFeePerGas) {
+          const fastMax = new BigN(fastOption.maxFeePerGas).multipliedBy(2);
+
+          if (new BigN(value).gt(fastMax) && fastMax.gt(minRequiredMaxFeePerGas)) {
+            result = ['Max fee is higher than necessary'];
+          }
+        }
+      }
+
+      return result;
+    },
+    [feeOptionsInfo, minRequiredMaxFeePerGas],
+  );
+
   const formConfig = useMemo(
-    () => ({
+    (): FormControlConfig => ({
       maxFeeValue: {
         name: 'maxFeeValue',
         value: feeDefaultValue?.maxFeePerGas || '',
+        validateFunc: customMaxFeeValidateFunc,
       },
       priorityFeeValue: {
         name: 'priorityFeeValue',
         value: feeDefaultValue?.maxPriorityFeePerGas || '',
+        validateFunc: customPriorityValidateFunc,
       },
       customValue: {
         name: 'customValue',
         value: '',
+        validateFunc: customValueValidateFunc,
       },
     }),
-    [feeDefaultValue?.maxFeePerGas, feeDefaultValue?.maxPriorityFeePerGas],
+    [
+      customMaxFeeValidateFunc,
+      customPriorityValidateFunc,
+      customValueValidateFunc,
+      feeDefaultValue?.maxFeePerGas,
+      feeDefaultValue?.maxPriorityFeePerGas,
+    ],
   );
 
   const _onSubmitCustomOption = async (formState: FormState) => {
@@ -169,7 +273,7 @@ export const FeeEditorModal = ({
     }
 
     const [rs1, rs2] = await Promise.all([
-      customMaxFeeValidateFunc(maxFeeValue),
+      customMaxFeeValidateFunc(maxFeeValue, formState.data),
       customPriorityValidateFunc(priorityFeeValue),
     ]);
 
@@ -191,7 +295,7 @@ export const FeeEditorModal = ({
     }
   };
 
-  const { formState, onChangeValue, onUpdateErrors } = useFormControl(formConfig, {
+  const { formState, onChangeValue } = useFormControl(formConfig, {
     onSubmitForm: onPressSubmit,
   });
 
@@ -208,148 +312,6 @@ export const FeeEditorModal = ({
   const convertedCustomEvmFeeToUSD = useMemo(() => {
     return convertedCustomEvmFee.multipliedBy(priceValue).dividedBy(BN_TEN.pow(decimals));
   }, [convertedCustomEvmFee, decimals, priceValue]);
-
-  const customMaxFeeValidateFunc = useCallback(
-    async (value: string) => {
-      let result: string[] = [];
-
-      if (!value) {
-        result = ['Amount is required'];
-      }
-
-      if (feeOptionsInfo && 'baseGasFee' in feeOptionsInfo) {
-        const baseGasFee = feeOptionsInfo.baseGasFee;
-        const minFee = new BigN(baseGasFee || 0).multipliedBy(1.5);
-
-        if (baseGasFee && value && new BigN(value).lte(minFee)) {
-          const message = `Max fee per gas must be higher than ${formatNumber(minFee, 9, s => s)} GWEI`;
-          result = [message];
-        }
-
-        if (new BigN(value).lte(BN_ZERO)) {
-          result = ['The maximum fee must be greater than 0'];
-        }
-      }
-
-      return result;
-    },
-    [feeOptionsInfo],
-  );
-
-  const customPriorityValidateFunc = useCallback(async (value: string) => {
-    let result: string[] = [];
-
-    if (!value) {
-      return result;
-    }
-
-    if (new BigN(value).lt(BN_ZERO)) {
-      result = ['The priority fee must be equal or greater than 0'];
-    }
-
-    return result;
-  }, []);
-
-  const customValueValidateFunc = useCallback(async (value: string) => {
-    let result: string[] = [];
-
-    if (!value) {
-      return result;
-    }
-
-    if (new BigN(value).lt(BN_ZERO)) {
-      result = ['The custom value must be greater than 0'];
-    }
-
-    return result;
-  }, []);
-
-  useEffect(() => {
-    let amount = true;
-
-    if (timeOutRef.current) {
-      clearTimeout(timeOutRef.current);
-    }
-    if (amount) {
-      if (formState.data.maxFeeValue) {
-        setValidating(true);
-        timeOutRef.current = setTimeout(() => {
-          customMaxFeeValidateFunc(formState.data.maxFeeValue)
-            .then(res => {
-              onUpdateErrors('maxFeeValue')(res);
-            })
-            .catch((error: Error) => console.log('error validate max fee', error.message))
-            .finally(() => {
-              if (amount) {
-                setValidating(false);
-              }
-            });
-        }, 500);
-      } else {
-        setValidating(false);
-      }
-    }
-
-    return () => {
-      amount = false;
-    };
-  }, [customMaxFeeValidateFunc, formState.data.accountName, formState.data.maxFeeValue, onUpdateErrors]);
-
-  useEffect(() => {
-    let amount = true;
-
-    if (timeOutRef.current) {
-      clearTimeout(timeOutRef.current);
-    }
-
-    if (amount) {
-      setValidating(true);
-      timeOutRef.current = setTimeout(() => {
-        customPriorityValidateFunc(formState.data.priorityFeeValue)
-          .then(res => {
-            onUpdateErrors('priorityFeeValue')(res);
-          })
-          .catch((error: Error) => console.log('error validate priorityFeeValue', error.message))
-          .finally(() => {
-            if (amount) {
-              setValidating(false);
-            }
-          });
-      }, 500);
-    }
-
-    return () => {
-      amount = false;
-    };
-  }, [customPriorityValidateFunc, formState.data.priorityFeeValue, onUpdateErrors]);
-
-  useEffect(() => {
-    let amount = true;
-
-    if (timeOutRef.current) {
-      clearTimeout(timeOutRef.current);
-    }
-
-    if (amount) {
-      setValidating(true);
-      timeOutRef.current = setTimeout(() => {
-        customValueValidateFunc(formState.data.customValue)
-          .then(res => {
-            onUpdateErrors('customValue')(res);
-          })
-          .catch((error: Error) => console.log('error validate customValue', error.message))
-          .finally(() => {
-            if (amount) {
-              setValidating(false);
-            }
-          });
-      }, 500);
-    }
-
-    return () => {
-      amount = false;
-    };
-  }, [customValueValidateFunc, formState.data.customValue, onUpdateErrors]);
 
   const viewOptions = useMemo((): TabItem[] => {
     return [
@@ -436,6 +398,14 @@ export const FeeEditorModal = ({
     </View>
   );
 
+  const disabledSubmitBtn = useMemo(() => {
+    return (
+      !!formState.errors.customValue.length ||
+      !!formState.errors.maxFeeValue.length ||
+      !!formState.errors.priorityFeeValue.length
+    );
+  }, [formState.errors.customValue, formState.errors.maxFeeValue, formState.errors.priorityFeeValue]);
+
   return (
     <SwModal
       modalVisible={modalVisible}
@@ -449,7 +419,7 @@ export const FeeEditorModal = ({
       isUseModalV2
       footer={
         <View style={{ paddingTop: theme.padding }}>
-          <Button disabled={validating} loading={validating} onPress={onPressSubmit}>
+          <Button disabled={disabledSubmitBtn && currentViewMode === 'custom'} onPress={onPressSubmit}>
             {'Apply fee'}
           </Button>
         </View>

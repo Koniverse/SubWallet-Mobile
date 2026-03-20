@@ -24,6 +24,8 @@ import { findAccountByAddress, toShort } from 'utils/index';
 import createStyles from './styles';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { isSameAddress } from '@subwallet/extension-base/utils';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -37,11 +39,12 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
   const { type } = compound;
 
   const theme = useSubWalletTheme().swThemes;
+  const navigation = useNavigation<RootNavigationProps>();
 
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { accounts } = useSelector((state: RootState) => state.accountState);
 
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useMemo(() => createStyles(theme, list.length), [theme, list]);
 
   const deriveAsset = useMemo(() => {
     if ('derivativeToken' in compound) {
@@ -61,8 +64,17 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
   const isAllAccount = useMemo(() => isAccountAll(compound.address), [compound.address]);
   const isSpecial = useMemo(() => [YieldPoolType.LENDING, YieldPoolType.LIQUID_STAKING].includes(type), [type]);
   const haveNomination = useMemo(() => {
-    return [YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(poolInfo?.type);
+    return [YieldPoolType.NOMINATION_POOL].includes(poolInfo.type);
   }, [poolInfo?.type]);
+
+  const haveValidator = useMemo(() => {
+    return [YieldPoolType.NATIVE_STAKING, YieldPoolType.SUBNET_STAKING].includes(poolInfo.type);
+  }, [poolInfo?.type]);
+
+  const canChangeValidator = useMemo(() => {
+    return poolInfo.metadata.availableMethod.changeValidator;
+  }, [poolInfo]);
+
   const noNomination = useMemo(
     () => !haveNomination || isAllAccount || !compound.nominations.length,
     [compound.nominations.length, haveNomination, isAllAccount],
@@ -104,6 +116,29 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
       setVisible(true);
     };
   }, []);
+
+  const createOpenValidator = useCallback(
+    (item: YieldPositionInfo) => {
+      return () => {
+        setSelectedAddress(item.address);
+        navigation.navigate('Drawer', {
+          screen: 'TransactionAction',
+          params: {
+            screen: 'ChangeEarningValidator',
+            params: {
+              slug: poolInfo.slug,
+              chain: poolInfo.chain,
+              from: item.address,
+              displayType: 'nomination',
+              compound: compound,
+              nominations: item.nominations,
+            },
+          },
+        });
+      };
+    },
+    [compound, navigation, poolInfo.chain, poolInfo.slug],
+  );
 
   const accountInfoItemsNode = useMemo(() => {
     return list.map(item => {
@@ -168,14 +203,14 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
           {metaInfoItems.map(_item => (
             <MetaInfo.Number key={_item.label} {..._item} valueColorSchema="even-odd" />
           ))}
-          {isAllAccount && haveNomination && (
+          {isAllAccount && (haveNomination || haveValidator) && (
             <>
               <View style={styles.separator} />
               <TouchableOpacity
                 disabled={disableButton}
                 style={disableButton ? styles.buttonDisable : undefined}
-                onPress={createOpenNomination(item)}>
-                <MetaInfo.Default label={i18n.inputLabel.nominationInfo}>
+                onPress={canChangeValidator ? createOpenValidator(item) : createOpenNomination(item)}>
+                <MetaInfo.Default label={canChangeValidator ? 'Your validators' : i18n.inputLabel.nominationInfo}>
                   <Icon phosphorIcon={ArrowSquareOut} iconColor={theme['gray-5']} />
                 </MetaInfo.Default>
               </TouchableOpacity>
@@ -185,12 +220,15 @@ const EarningAccountInfo: React.FC<Props> = (props: Props) => {
       );
     });
   }, [
+    canChangeValidator,
     createOpenNomination,
+    createOpenValidator,
     deriveAsset?.decimals,
     deriveAsset?.symbol,
     earningTagType.color,
     earningTagType.label,
     haveNomination,
+    haveValidator,
     inputAsset,
     isAllAccount,
     isSpecial,

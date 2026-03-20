@@ -37,17 +37,17 @@ import { useWatch } from 'react-hook-form';
 import { FormItem } from 'components/common/FormItem';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
-import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
+import { reformatAddress } from '@subwallet/extension-base/utils';
 import { ActionType } from '@subwallet/extension-base/core/types';
-import { findAccountByAddress } from 'utils/account';
+import { findAccountByAddress } from 'utils/index';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 
-const DEFAULT_ITEM: NftItem = {
-  collectionId: 'unknown',
-  chain: 'unknown',
-  owner: 'unknown',
-  id: 'unknown',
-};
+// const DEFAULT_ITEM: NftItem = {
+//   collectionId: 'unknown',
+//   chain: 'unknown',
+//   owner: 'unknown',
+//   id: 'unknown',
+// };
 
 const DEFAULT_COLLECTION: NftCollection = {
   collectionId: 'unknown',
@@ -80,7 +80,7 @@ interface SendNftFormValues extends TransactionFormValues {
 
 const SendNFT: React.FC<SendNFTProps> = ({
   route: {
-    params: { chain: nftChain, collectionId, itemId, owner },
+    params: { chain: nftChain, collectionId, itemId, from: defaultFromValue },
   },
 }: SendNFTProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -112,17 +112,9 @@ const SendNFT: React.FC<SendNFTProps> = ({
     [accounts, chainInfoMap, ledgerGenericAllowNetworks],
   );
 
-  const nftItem = useMemo(
-    (): NftItem =>
-      nftItems.find(
-        item =>
-          isSameAddress(item.owner, owner) &&
-          nftChain === item.chain &&
-          item.collectionId === collectionId &&
-          item.id === itemId,
-      ) || DEFAULT_ITEM,
-    [collectionId, itemId, nftChain, nftItems, owner],
-  );
+  const nftItem = useMemo(() => {
+    return nftItems.find(item => itemId === item.id) || ({} as NftItem);
+  }, [itemId, nftItems]);
 
   const collectionInfo = useMemo(
     (): NftCollection =>
@@ -141,7 +133,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      from: owner,
+      from: defaultFromValue,
       recipientAddress: '',
     },
   });
@@ -161,8 +153,8 @@ const SendNFT: React.FC<SendNFTProps> = ({
   }, [navigation]);
 
   const disableSubmit = useMemo(
-    () => !owner || !isAddress(recipientAddressValue) || !isNetConnected || loading,
-    [isNetConnected, loading, owner, recipientAddressValue],
+    () => !isAddress(recipientAddressValue) || !isNetConnected || loading,
+    [isNetConnected, loading, recipientAddressValue],
   );
 
   const onSubmitForm = useCallback(

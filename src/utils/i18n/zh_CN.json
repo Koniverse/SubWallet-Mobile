@@ -212,7 +212,9 @@
     "noFaceIdPermission": "This app use Face ID to unlock password",
     "tooManyAttemps": "尝试的失败次数过多。请稍后重试或输入密码。",
     "ratingAlertTitle": "Rate our app!",
-    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday."
+    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday.",
+    "enterPassword": "Enter password",
+    "enterPasswordToMigrate": "Enter your master password to migrate account"
   },
   "title": {
     "exportAccount": "导出账户",
@@ -439,7 +441,9 @@
     "cancelUnstake": "Cancel unstake",
     "exploreEarningOptions": "Explore earning options",
     "enterAstarPortal": "登录Astar portal",
-    "iUnderstand": "I understand"
+    "iUnderstand": "I understand",
+    "dismiss": "Dismiss",
+    "migrateNow": "Migrate now"
   },
   "inputLabel": {
     "selectAcc": "选择账户",
@@ -693,7 +697,9 @@
     "xcmTransferWarningTitle": "Pay attention!",
     "xcmTransferWarningMessage": "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
     "generalTermWarning": "请选中“我理解并同意本协议的条款，该条款适用于我对 SubWallet 及其所有功能的使用”框以继续",
-    "masterPasswordWarning": "请选中“我了解 SubWallet 无法为我恢复此密码”框以继续"
+    "masterPasswordWarning": "请选中“我了解 SubWallet 无法为我恢复此密码”框以继续",
+    "validatorChangeFeeInfo": "A fee equivalent of {0} TAO will be deducted from your stake amount on the new validator once the transaction is complete",
+    "validatorChangeFeeTitle": "Validator change fee"
   },
   "filterOptions": {
     "polkadotParachain": "Polkadot平行链",
@@ -980,7 +986,8 @@
       "fromAccount": "从账户",
       "transactionFail": "输",
       "estimatedReceivables": " Estimated receivables",
-      "minimumReceivables": "Minimum receivables"
+      "minimumReceivables": "Minimum receivables",
+      "submittedTime": "Submitted time"
     },
     "title": {
       "transaction": "交易",
@@ -1331,5 +1338,13 @@
   "notification": {
     "markAsRead": "Mark as read",
     "markAsUnread": "Mark as unread"
+  },
+  "toast": {
+    "canOnlyChooseOneDapp": "You can only choose {0} dApp",
+    "canOnlyChooseOneCollator": "You can only choose {0} collator",
+    "canOnlyChooseOneValidator": "You can only choose {0} validator",
+    "canOnlyChooseNumberDapps": "You can only choose {0} dApps",
+    "canOnlyChooseNumberCollators": "You can only choose {0} collators",
+    "canOnlyChooseNumberValidators": "You can only choose {0} validators"
   }
 }

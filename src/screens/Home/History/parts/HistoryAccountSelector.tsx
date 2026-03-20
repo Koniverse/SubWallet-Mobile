@@ -62,6 +62,7 @@ export const HistoryAccountSelector = ({ items, value, onSelectItem, disabled, s
   return (
     <AccountSelector
       items={items}
+      autoSelectFirstItem
       selectedValueMap={selectedValueMap}
       onSelectItem={onSelectItem}
       renderSelected={renderSelected}

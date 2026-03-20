@@ -33,7 +33,26 @@ export type AccountChainAddress = {
   slug: string;
   address: string;
   accountType: KeypairType;
+  logoKey?: string;
 };
+
+export type AccountInfoType = {
+  address: string;
+  type: KeypairType;
+};
+
+export type AccountTokenAddress = {
+  accountInfo: AccountInfoType;
+  tokenSlug: string;
+  chainSlug: string;
+};
+
+export interface BitcoinAccountInfo {
+  name: string;
+  network: string;
+  logoKey?: string;
+  order: number;
+}
 
 export type AccountAddressItemType = {
   accountName: string;
@@ -42,4 +61,10 @@ export type AccountAddressItemType = {
   accountType: KeypairType;
   address: string;
   accountActions?: AccountActions[];
+
+  /**
+   * Alternative display version of the address (for UI only).
+   * The original `address` remains the source of truth for identity, selection, and comparison.
+   */
+  displayAddress?: string;
 };

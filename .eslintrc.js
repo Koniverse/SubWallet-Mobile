@@ -3,6 +3,9 @@ module.exports = {
   extends: '@react-native',
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
+  rules: {
+    'react/no-unstable-nested-components': 'off',
+  },
   overrides: [
     {
       files: ['*.ts', '*.tsx'],

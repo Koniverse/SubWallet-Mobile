@@ -19,6 +19,7 @@ export const createMeldOrder: CreateBuyOrderFunction = (symbol, address) => {
       params.publicKey = MELD_API_KEY;
     }
 
+    console.log('params', params);
     const query = qs.stringify(params);
 
     resolve(`${MELD_URL}?${query}`);

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Icon, Logo, PageIcon, SwModal, Typography } from 'components/design-system-ui';
-import { Keyboard, Platform, View } from 'react-native';
+import { Button, Icon, PageIcon, SwModal, Typography } from 'components/design-system-ui';
+import { Keyboard, Platform } from 'react-native';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
 import { deriveAccountV3, deriveSuggest, validateAccountName, validateDerivePathV2 } from 'messaging/index';
@@ -8,14 +8,16 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { CheckCircle, Warning } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
-import { AccountProxyType, DerivePathInfo } from '@subwallet/extension-base/types';
+import { AccountChainType, AccountProxyType, DerivePathInfo } from '@subwallet/extension-base/types';
 import InputText from 'components/Input/InputText';
-import { KeypairType } from '@subwallet/keyring/types';
+import { BitcoinKeypairTypes } from '@subwallet/keyring/types';
 import { ConfirmModalInfo } from 'providers/AppModalContext';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { getAccountChainTypeFromKeypairType } from '@subwallet/extension-base/utils';
+import { AccountChainTypeLogos } from 'components/AccountProxy/AccountChainTypeLogos';
 
 interface Props {
   modalVisible: boolean;
@@ -28,7 +30,19 @@ interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
-const alertTypes: DerivePathInfo['type'][] = ['unified', 'ton', 'ethereum', 'cardano'];
+const alertTypes: DerivePathInfo['type'][] = ['unified', 'ton', 'ethereum', 'cardano', ...BitcoinKeypairTypes];
+
+const convertToChainType = (type?: DerivePathInfo['type'], chainTypes?: AccountChainType[]): AccountChainType[] => {
+  if (!type) {
+    return [];
+  }
+
+  if (type === 'unified') {
+    return chainTypes || [];
+  }
+
+  return [getAccountChainTypeFromKeypairType(type)];
+};
 
 const normalizeApostrophes = (input: string) => {
   return input.replace(/[\u2018\u2019]/g, "'"); // U+2018 (LEFT) and U+2019 (RIGHT) single quotation marks
@@ -51,6 +65,10 @@ export const DeriveAccountActionModal = ({
   const infoRef = useRef<DerivePathInfo | undefined>();
   const [loading, setLoading] = useState(false);
   const networkType = infoRef.current?.type;
+  const chainTypes = useMemo(
+    () => convertToChainType(networkType, accountProxy?.chainTypes),
+    [networkType, accountProxy?.chainTypes],
+  );
   const timeOutRef = useRef<NodeJS.Timeout>();
   const modalRef = useRef<SWModalRefProps>(null);
   const [validating, setValidating] = useState(false);
@@ -172,24 +190,6 @@ export const DeriveAccountActionModal = ({
     }),
     [],
   );
-
-  const keypairTypeLogoMap = useMemo((): Record<KeypairType, string> => {
-    return {
-      sr25519: 'polkadot',
-      ed25519: 'polkadot',
-      ecdsa: 'polkadot',
-      ethereum: 'ethereum',
-      ton: 'ton',
-      'ton-native': 'ton',
-      'bitcoin-44': 'bitcoin',
-      'bitcoin-84': 'bitcoin',
-      'bitcoin-86': 'bitcoin',
-      'bittest-44': 'bitcoin',
-      'bittest-84': 'bitcoin',
-      'bittest-86': 'bitcoin',
-      cardano: 'cardano',
-    };
-  }, []);
 
   const { formState, onChangeValue, onUpdateErrors, onSubmitField, focus } = useFormControl(formConfig, {
     onSubmitForm: onPressSubmit(onSubmit),
@@ -370,21 +370,7 @@ export const DeriveAccountActionModal = ({
         accountType={networkType === 'unified' ? AccountProxyType.UNIFIED : AccountProxyType.SOLO}
         isDisabled={loading}
         errorMessages={formState.errors.accountName}
-        suffix={
-          <View style={{ flexDirection: 'row' }}>
-            {networkType ? (
-              networkType === 'unified' ? (
-                accountProxy?.accounts.map(({ type }) => (
-                  <View style={{ marginLeft: -theme.marginXS }}>
-                    <Logo size={16} network={keypairTypeLogoMap[type]} />
-                  </View>
-                ))
-              ) : (
-                <Logo size={16} network={keypairTypeLogoMap[networkType]} />
-              )
-            ) : null}
-          </View>
-        }
+        suffix={<AccountChainTypeLogos chainTypes={chainTypes} />}
       />
     </SwModal>
   );

@@ -53,6 +53,7 @@ export const SelectAccAndTokenModal = ({
         closeModalAfterSelect={false}
         isShowContent={isAllAccount}
         isShowInput={false}
+        isShowBitcoinAttr={false}
       />
     </>
   );

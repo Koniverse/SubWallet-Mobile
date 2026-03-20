@@ -35,7 +35,7 @@ export const AccountChainAddressItem = ({
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress} disabled={disabled}>
-      <Logo network={item.slug} shape={'circle'} size={28} />
+      <Logo network={item.logoKey || item.slug} shape={'circle'} size={28} />
 
       <View style={styles.centerPart}>
         <Typography.Text ellipsis style={styles.chainName}>

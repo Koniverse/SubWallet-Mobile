@@ -11,7 +11,24 @@ import {
   _isValidSubstrateAddressFormat,
   _isValidTonAddressFormat,
 } from '@subwallet/extension-base/core/utils';
-import { isSubstrateAddress, isTonAddress } from '@subwallet/keyring';
+import {
+  getBitcoinAddressInfo,
+  isBitcoinAddress,
+  isSubstrateAddress,
+  isTonAddress,
+  validateBitcoinAddress,
+} from '@subwallet/keyring';
+
+export function _isValidBitcoinAddressFormat(validateRecipientParams: ValidateRecipientParams): string {
+  const { destChainInfo, toAddress } = validateRecipientParams;
+  const addressInfo = validateBitcoinAddress(toAddress) ? getBitcoinAddressInfo(toAddress) : null;
+
+  if (addressInfo?.network !== destChainInfo.bitcoinInfo?.bitcoinNetwork) {
+    return `Recipient address must be a valid ${destChainInfo.name} address`;
+  }
+
+  return '';
+}
 
 function getConditions(validateRecipientParams: ValidateRecipientParams): ValidationCondition[] {
   const { account, actionType, autoFormatValue, destChainInfo, srcChain, toAddress } = validateRecipientParams;
@@ -29,6 +46,10 @@ function getConditions(validateRecipientParams: ValidateRecipientParams): Valida
 
   if (isTonAddress(toAddress)) {
     conditions.push(ValidationCondition.IS_VALID_TON_ADDRESS_FORMAT);
+  }
+
+  if (isBitcoinAddress(toAddress)) {
+    conditions.push(ValidationCondition.IS_VALID_BITCOIN_ADDRESS_FORMAT);
   }
 
   if (srcChain === destChainInfo.slug && isSendAction && !destChainInfo.tonInfo) {
@@ -79,6 +100,12 @@ function getValidationFunctions(
 
       case ValidationCondition.IS_VALID_TON_ADDRESS_FORMAT: {
         validationFunctions.push(_isValidTonAddressFormat);
+
+        break;
+      }
+
+      case ValidationCondition.IS_VALID_BITCOIN_ADDRESS_FORMAT: {
+        validationFunctions.push(_isValidBitcoinAddressFormat);
 
         break;
       }

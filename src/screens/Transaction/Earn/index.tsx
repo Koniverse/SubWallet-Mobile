@@ -75,13 +75,12 @@ import FreeBalanceToYield from 'screens/Transaction/parts/FreeBalanceToEarn';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { RootState, store } from 'stores/index';
-import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ModalRef } from 'types/modalRef';
 import i18n from 'utils/i18n/i18n';
 import { parseNominations } from 'utils/transaction/stake';
 import { getJoinYieldParams } from '../helper/earning';
 import createStyle from './style';
-import { useYieldPositionDetail } from 'hooks/earning';
+import { useCreateGetSubnetStakingTokenName, useYieldPositionDetail } from 'hooks/earning';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
@@ -103,11 +102,10 @@ import { VoidFunction } from 'types/index';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import useOneSignProcess from 'hooks/account/useOneSignProcess';
-import useReformatAddress from 'hooks/common/useReformatAddress';
-import { ImageLogosMap } from 'assets/logo';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { SlippageModal } from 'components/Modal/Swap/SlippageModal';
 import { useTaoStakingFee } from 'hooks/earning/useTaoStakingFee';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 interface StakeFormValues extends TransactionFormValues {
@@ -181,7 +179,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const isShowNoPoolInfoPopupRef = useRef<boolean>(false);
   const oneSign = useOneSignProcess(currentFrom);
   const nativeTokenSlug = useGetNativeTokenSlug(chain);
-  const getReformatAddress = useReformatAddress();
+  const getReformatAddress = useCoreCreateReformatAddress();
+  const getSubnetStakingTokenName = useCreateGetSubnetStakingTokenName();
 
   const [processState, dispatchProcessState] = useReducer(earningReducer, DEFAULT_YIELD_PROCESS);
 
@@ -277,7 +276,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [forceFetchValidator, setForceFetchValidator] = useState(false);
-  const [targetLoading, setTargetLoading] = useState(true);
+  const [targetLoading, setTargetLoading] = useState(false);
   const [stepLoading, setStepLoading] = useState<boolean>(true);
   const [tooltipVisible, setTooltipVisible] = useState<boolean>(false);
   const [submitString, setSubmitString] = useState<string | undefined>();
@@ -456,7 +455,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const onError = useCallback(
     (error: Error) => {
-      console.log('error', error);
       const { chain: _chain, isXCM, minJoinPool, symbol } = handleDataForInsufficientAlert();
       const balanceDisplayInfo = _handleDisplayInsufficientEarningError(
         error,
@@ -576,6 +574,10 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const isSubnetStaking = useMemo(() => [YieldPoolType.SUBNET_STAKING].includes(poolType), [poolType]);
 
+  const subnetToken = useMemo(() => {
+    return getSubnetStakingTokenName(poolInfo.chain, poolInfo.metadata.subnetData?.netuid || 0);
+  }, [getSubnetStakingTokenName, poolInfo.chain, poolInfo.metadata.subnetData?.netuid]);
+
   // For subnet staking
   const scrollViewRef = useRef<ScrollView>(null);
   const alertBoxRef = useRef<View>(null);
@@ -598,13 +600,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       }
     }
   }, []);
-
-  const networkKey = useMemo(() => {
-    const _netuid = poolInfo.metadata.subnetData?.netuid || 0;
-
-    // @ts-ignore
-    return ImageLogosMap[`subnet-${_netuid}`] ? `subnet-${_netuid}` : 'subnet-0';
-  }, [poolInfo.metadata.subnetData?.netuid]);
 
   const isDisabledSubnetContent = useMemo(
     () => !isSubnetStaking || !currentAmount || (mustChooseTarget && !poolTarget),
@@ -639,8 +634,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     return (
       <>
         <MetaInfo.Default label={'Subnet'}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
-            <Logo size={24} isShowSubLogo={false} network={networkKey} shape={'circle'} />
+          <View style={styles.subnetLogoAndNameStyle}>
+            <Logo size={24} isShowSubLogo={false} network={poolChain} shape={'circle'} token={subnetToken} />
             <Typography.Text style={{ color: theme['gray-5'] }}>{poolInfo.metadata.shortName}</Typography.Text>
           </View>
         </MetaInfo.Default>
@@ -655,7 +650,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             />
 
             <MetaInfo.Default label={'Conversion rate'}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={styles.conversionRateStyle}>
                 <Typography.Text style={{ color: theme['gray-5'] }}>{`1 ${inputAsset.symbol} = `}</Typography.Text>
                 <Number
                   size={14}
@@ -685,22 +680,18 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
               closeOnBackgroundInteraction={true}
               onClose={() => setTooltipVisible(false)}
               content={
-                <Typography.Text size={'sm'} style={{ color: theme.colorWhite, textAlign: 'center' }}>
+                <Typography.Text size={'sm'} style={styles.tooltipTextStyle}>
                   {'If slippage exceeds this limit, transaction will not be executed'}
                 </Typography.Text>
               }>
-              <TouchableOpacity
-                style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}
-                onPress={() => setTooltipVisible(true)}>
+              <TouchableOpacity style={styles.btnStyle} onPress={() => setTooltipVisible(true)}>
                 <Typography.Text style={{ color: theme['gray-5'] }}>{'Slippage'}</Typography.Text>
                 <Icon phosphorIcon={Info} size="xs" iconColor={theme['gray-5']} weight={'bold'} />
               </TouchableOpacity>
             </Tooltip>
           }>
-          <TouchableOpacity
-            style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}
-            onPress={() => onOpenSlippageModal()}>
-            <Typography.Text style={{ color: isSlippageAcceptable ? theme['gray-5'] : '#BF1616' }}>
+          <TouchableOpacity style={styles.btnStyle} onPress={() => onOpenSlippageModal()}>
+            <Typography.Text style={{ color: isSlippageAcceptable ? theme['gray-5'] : theme['red-6'] }}>
               {maxSlippage.slippage.toNumber() * 100}%
             </Typography.Text>
             <Icon phosphorIcon={PencilSimpleLine} size={'xs'} iconColor={theme['gray-5']} weight={'bold'} />
@@ -716,10 +707,15 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     isDisabledSubnetContent,
     isSlippageAcceptable,
     maxSlippage.slippage,
-    networkKey,
     onOpenSlippageModal,
+    poolChain,
     poolInfo.metadata.shortName,
     poolInfo.metadata?.subnetData?.subnetSymbol,
+    styles.btnStyle,
+    styles.conversionRateStyle,
+    styles.subnetLogoAndNameStyle,
+    styles.tooltipTextStyle,
+    subnetToken,
     theme,
     tooltipVisible,
   ]);
@@ -1090,7 +1086,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             <Typography.Text>
               <Typography.Text>{`You're currently staking ${symbol} via ${stakedPoolType}. Due to ${originChain}'s `}</Typography.Text>
               <Typography.Text
-                style={{ color: theme.colorPrimary, textDecorationLine: 'underline' }}
+                style={styles.highlightTextStyle}
                 onPress={() =>
                   Linking.openURL(
                     'https://support.polkadot.network/support/solutions/articles/65000188140-changes-for-nomination-pool-members-and-opengov-participation',
@@ -1122,7 +1118,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     onSubmit,
     poolType,
     renderConfirmationButtons,
-    theme.colorPrimary,
+    styles.highlightTextStyle,
     theme.colorWarning,
   ]);
 
@@ -1494,7 +1490,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           onPressRightHeaderBtn={handleOpenDetailModal}>
           <>
             {(isLoading || checkValidAccountLoading) && (
-              <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+              <View style={styles.loadingWrapper}>
                 <ActivityIndicator size={32} />
               </View>
             )}
@@ -1504,7 +1500,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                 <ScrollView
                   ref={scrollViewRef}
                   showsVerticalScrollIndicator={false}
-                  style={{ flex: 1, paddingHorizontal: 16, marginTop: 16 }}
+                  style={styles.scrollViewStyle}
                   keyboardShouldPersistTaps={'handled'}>
                   {processState.steps && (
                     <>
@@ -1535,6 +1531,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       setFrom(item.address);
                       fromRef.current = item.address;
                       accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                      if (poolType === YieldPoolType.NOMINATION_POOL || poolType === YieldPoolType.NATIVE_STAKING) {
+                        setValue('target', '');
+                      }
                     }}
                     renderSelected={() => (
                       <AccountSelectField
@@ -1610,6 +1609,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                       <EarningValidatorSelector
                         from={currentFrom}
                         chain={chain}
+                        key={`render-earning-validator-${currentFrom}`}
                         slug={slug}
                         setForceFetchValidator={setForceFetchValidator}
                         validatorLoading={targetLoading}
@@ -1643,7 +1643,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                     )}
                   </View>
                 </ScrollView>
-                <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
+                <View style={styles.footer}>
                   <Button
                     disabled={isDisabledButton}
                     loading={submitLoading}

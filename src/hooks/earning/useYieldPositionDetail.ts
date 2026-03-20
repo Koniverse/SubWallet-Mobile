@@ -17,8 +17,8 @@ import BigN from 'bignumber.js';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import { isSameAddress } from '@subwallet/extension-base/utils';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 interface Result {
   compound: YieldPositionInfo | undefined;
@@ -28,7 +28,7 @@ interface Result {
 const useYieldPositionDetail = (slug: string, address?: string): Result => {
   const { poolInfoMap, yieldPositions } = useSelector((state: RootState) => state.earning);
   const { currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
-  const chainsByAccountType = useGetChainSlugsByAccount();
+  const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
 
   return useMemo(() => {
     const checkAddress = (item: YieldPositionInfo) => {

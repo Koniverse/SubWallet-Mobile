@@ -1,11 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
-import { ActivityIndicator, Button, Icon } from 'components/design-system-ui';
+import { Button, Icon } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Export, FloppyDiskBack, GitMerge, Trash, X } from 'phosphor-react-native';
+import { Export, GitMerge, Trash, X } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { EditAccountProps, RootNavigationProps } from 'routes/index';
@@ -25,6 +25,7 @@ import useConfirmModal from 'hooks/modal/useConfirmModal';
 import { useToast } from 'react-native-toast-notifications';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import { AppModalContext } from 'providers/AppModalContext';
+import { AccountChainTypeLogos } from 'components/AccountProxy/AccountChainTypeLogos';
 
 export type AccountDetailTab = {
   label: string;
@@ -119,7 +120,6 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
     }
   };
 
-  const [saving, setSaving] = useState(false);
   const [selectedTab, setSelectedTab] = useState<string>(getDefaultTab());
   const _onSelectType = (value: string) => {
     setSelectedTab(value);
@@ -161,11 +161,9 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
     (editName: string) => {
       clearTimeout(saveTimeOutRef.current);
       if (editName.trim()) {
-        editAccount(accountProxy.id, editName.trim())
-          .catch((e: Error) => {
-            onUpdateErrors('accountName')([e.message]);
-          })
-          .finally(() => setSaving(false));
+        editAccount(accountProxy.id, editName.trim()).catch((e: Error) => {
+          onUpdateErrors('accountName')([e.message]);
+        });
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -187,7 +185,6 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
   const onChangeName = useCallback(
     (value: string) => {
       onChangeValue('accountName')(value);
-      setSaving(true);
       clearTimeout(saveTimeOutRef.current);
       saveTimeOutRef.current = setTimeout(() => {
         onSave(value);
@@ -338,11 +335,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
             accountType={accountProxy?.accountType}
             suffix={
               <View style={{ width: 40, height: 40, justifyContent: 'center', alignItems: 'center' }}>
-                {saving ? (
-                  <ActivityIndicator size={20} indicatorColor={theme['gray-5']} />
-                ) : (
-                  <Icon phosphorIcon={FloppyDiskBack} size="sm" iconColor={theme['gray-3']} />
-                )}
+                <AccountChainTypeLogos chainTypes={accountProxy.chainTypes} />
               </View>
             }
           />

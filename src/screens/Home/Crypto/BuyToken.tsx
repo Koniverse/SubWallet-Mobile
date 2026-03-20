@@ -16,12 +16,13 @@ import { RootNavigationProps } from 'routes/index';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { BackHandler, Linking, StyleSheet, View } from 'react-native';
 import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
-import { FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { BuyTokenProps } from 'routes/wrapper';
 import { DisclaimerModal } from 'components/Buy/DisclaimerModal';
 import { SupportService } from 'types/buy';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
+import { AccountChainType } from '@subwallet/extension-base/types';
 
 const submitButtonIcon = (iconColor: string) => (
   <Icon phosphorIcon={ShoppingCartSimple} weight={'fill'} iconColor={iconColor} />
@@ -86,6 +87,7 @@ export const BuyToken = ({
     return {
       symbol: selectedBuyToken ? tokens[selectedBuyToken].symbol : '',
       slug: selectedBuyToken ? tokens[selectedBuyToken].slug : '',
+      chainSlug: selectedBuyToken ? tokens[selectedBuyToken].network : '',
     };
   }, [selectedBuyToken, tokens]);
 
@@ -129,7 +131,12 @@ export const BuyToken = ({
                 onSelectItem={onSelectBuyToken}
                 tokenSelectorRef={tokenBuyRef}
                 renderSelected={() => (
-                  <TokenSelectField logoKey={selectedBuyTokenInfo.slug} value={selectedBuyTokenInfo.symbol} showIcon />
+                  <TokenSelectField
+                    logoKey={selectedBuyTokenInfo.slug}
+                    value={selectedBuyTokenInfo.symbol}
+                    subLogoKey={selectedBuyTokenInfo.chainSlug}
+                    showIcon
+                  />
                 )}
                 selectedValue={selectedBuyTokenInfo.slug}
               />
@@ -149,7 +156,7 @@ export const BuyToken = ({
               selectedValueMap={selectedAccount ? { [selectedAccount.address]: true } : {}}
               onSelectItem={openSelectBuyAccount}
               accountSelectorRef={accountBuyRef}
-              disabled={!isAllAccount}
+              disabled={!isAllAccount && !currentAccountProxy?.chainTypes.includes(AccountChainType.BITCOIN)}
               renderSelected={() => (
                 <AccountSelectField
                   label={'To:'}
@@ -176,28 +183,35 @@ export const BuyToken = ({
           setVisible={setVisible}
           onConfirm={onConfirm}
           content={
-            <Typography.Text style={styles.textAlignBoth}>
-              You are now leaving SubWallet for{' '}
-              <Typography.Text style={styles.link} onPress={openUrl}>
-                {serviceName}
+            <View>
+              <Typography.Text style={[styles.content, styles.textAlignBoth]}>
+                You are now leaving SubWallet for{' '}
+                <Typography.Text style={styles.link} onPress={openUrl}>
+                  {serviceName}
+                </Typography.Text>
+                . Services related to card payments are provided by {serviceName}, a separate third-party platform. By
+                proceeding and procuring services from {serviceName}, you acknowledge that you have read and agreed to{' '}
+                {serviceName}'s{' '}
+                <Typography.Text style={styles.link} onPress={opentermUrl}>
+                  Term of service
+                </Typography.Text>{' '}
+                and{' '}
+                <Typography.Text style={styles.link} onPress={openpolicyUrl}>
+                  Privacy Pollicy
+                </Typography.Text>{' '}
+                . For any question related to {serviceName}'s services, please visit {serviceName}
+                's{' '}
+                <Typography.Text style={styles.link} onPress={opencontactUrl}>
+                  Support site
+                </Typography.Text>{' '}
+                .
               </Typography.Text>
-              . Services related to card payments are provided by {serviceName}, a separate third-party platform. By
-              proceeding and procuring services from {serviceName}, you acknowledge that you have read and agreed to{' '}
-              {serviceName}'s{' '}
-              <Typography.Text style={styles.link} onPress={opentermUrl}>
-                Term of service
-              </Typography.Text>{' '}
-              and{' '}
-              <Typography.Text style={styles.link} onPress={openpolicyUrl}>
-                Privacy Pollicy
-              </Typography.Text>{' '}
-              . For any question related to {serviceName}'s services, please visit {serviceName}
-              's{' '}
-              <Typography.Text style={styles.link} onPress={opencontactUrl}>
-                Support site
-              </Typography.Text>{' '}
-              .
-            </Typography.Text>
+              <Typography.Text
+                style={[
+                  styles.content,
+                  styles.textAlignBoth,
+                ]}>{`Note that some tokens may not be available for buying depending on your region. Review your chosen token & region before proceeding with the transaction via ${serviceName}`}</Typography.Text>
+            </View>
           }
         />
       </>
@@ -235,12 +249,18 @@ function createStyle(theme: ThemeTypes) {
       color: theme.colorTextLight1,
       textAlign: 'center',
     },
+    content: {
+      ...FontMedium,
+      color: theme.colorTextLight3,
+      textAlign: 'center',
+      marginBottom: theme.margin,
+    },
     row: {
       flexDirection: 'row',
       gap: theme.sizeSM,
       marginBottom: theme.marginSM,
     },
     link: { color: theme.colorLink },
-    textAlignBoth: { textAlign: 'justify' },
+    textAlignBoth: { textAlign: 'auto' },
   });
 }

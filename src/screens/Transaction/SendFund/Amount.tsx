@@ -17,7 +17,7 @@ interface InputAmountProps extends Omit<InputProps, 'onChange' | 'onChangeText'>
   clearErrors: (name?: string | string[] | readonly string[] | undefined) => void;
   onInputChange?: () => void;
   showMaxButton?: boolean;
-  forceUpdateValue?: { value: string | null }; // null means reset
+  forceUpdateMaxValue?: { value: string | null }; // null means reset
   onSideEffectChange?: () => void; // callback for useEffect that change value
 }
 
@@ -53,7 +53,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     decimals,
     onChangeValue,
     onInputChange,
-    forceUpdateValue,
+    forceUpdateMaxValue,
     onSideEffectChange,
     value = '',
     inputStyle,
@@ -126,20 +126,20 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
   }, [preservedDecimals, decimals, inputValue, onChangeInput, isDirty, onSideEffectChange]);
 
   useEffect(() => {
-    if (forceUpdateValue) {
-      if (forceUpdateValue.value) {
-        const transformVal = getInputValuesFromString(forceUpdateValue.value, decimals);
+    if (forceUpdateMaxValue) {
+      if (forceUpdateMaxValue.value) {
+        const transformVal = getInputValuesFromString(forceUpdateMaxValue.value, decimals);
 
         setIsDirty(true);
         setInputValue(transformVal);
-        onChangeValue(forceUpdateValue.value);
+        onChangeValue(forceUpdateMaxValue.value);
         onSideEffectChange?.();
-      } else if (forceUpdateValue.value === null) {
+      } else if (forceUpdateMaxValue.value === null) {
         setIsDirty(false);
         setInputValue('');
       }
     }
-  }, [decimals, forceUpdateValue, onChangeValue, onSideEffectChange]);
+  }, [decimals, forceUpdateMaxValue, onChangeValue, onSideEffectChange]);
 
   return (
     <>

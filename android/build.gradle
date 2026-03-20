@@ -45,6 +45,7 @@ allprojects {
             force "org.jetbrains.kotlin:kotlin-reflect:1.9.0"
             // Force Okio compatible with Kotlin 1.9
             force "com.squareup.okio:okio:3.6.0"
+            force "androidx.annotation:annotation:1.8.0"
 
             // Force OkHttp 4.x (last before Kotlin 2.2 bump)
             force "com.squareup.okhttp3:okhttp:4.12.0"

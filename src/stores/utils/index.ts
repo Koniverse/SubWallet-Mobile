@@ -9,6 +9,7 @@ import {
   CampaignBanner,
   ChainStakingMetadata,
   ConfirmationsQueue,
+  ConfirmationsQueueBitcoin,
   ConfirmationsQueueTon,
   CrowdloanJson,
   KeyringState,
@@ -199,6 +200,17 @@ export const subscribeConfirmationRequestsTon = lazySubscribeMessage(
   null,
   updateConfirmationRequestsTon,
   updateConfirmationRequestsTon,
+);
+
+export const updateConfirmationRequestsBitcoin = (data: ConfirmationsQueueBitcoin) => {
+  store.dispatch({ type: 'requestState/updateConfirmationRequestsBitcoin', payload: data });
+};
+
+export const subscribeConfirmationRequestsBitcoin = lazySubscribeMessage(
+  'pri(confirmationsBitcoin.subscribe)',
+  null,
+  updateConfirmationRequestsBitcoin,
+  updateConfirmationRequestsBitcoin,
 );
 
 export const updateTransactionRequests = (data: Record<string, SWTransactionResult>) => {

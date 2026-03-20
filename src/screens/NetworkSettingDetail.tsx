@@ -19,11 +19,14 @@ import {
   _getCrowdloanUrlFromChain,
   _getEvmChainId,
   _getSubstrateParaId,
+  _isChainBitcoinCompatible,
+  _isChainCardanoCompatible,
   _isChainEvmCompatible,
   _isChainSubstrateCompatible,
+  _isChainTonCompatible,
   _isCustomChain,
   _isPureEvmChain,
-  _isPureTonChain,
+  _isPureSubstrateChain,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import InputText from 'components/Input/InputText';
 import { Button, Icon } from 'components/design-system-ui';
@@ -92,14 +95,6 @@ export const NetworkSettingDetail = ({
     return _getEvmChainId(chainInfo) as number;
   }, [chainInfo]);
 
-  const isPureTonChain = useMemo(() => {
-    return chainInfo && _isPureTonChain(chainInfo);
-  }, [chainInfo]);
-
-  const isPureEvmChain = useMemo(() => {
-    return chainInfo && _isPureEvmChain(chainInfo);
-  }, [chainInfo]);
-
   const chainTypeString = useCallback(() => {
     let result = '';
     const types: string[] = [];
@@ -112,8 +107,16 @@ export const NetworkSettingDetail = ({
       types.push('EVM');
     }
 
-    if (chainInfo.slug === 'ton') {
-      types.push('TON');
+    if (_isChainTonCompatible(chainInfo)) {
+      types.push('Ton');
+    }
+
+    if (_isChainCardanoCompatible(chainInfo)) {
+      types.push('Cardano');
+    }
+
+    if (_isChainBitcoinCompatible(chainInfo)) {
+      types.push('Bitcoin');
     }
 
     for (let i = 0; i < types.length; i++) {
@@ -294,6 +297,27 @@ export const NetworkSettingDetail = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const { isAddressPrefixVisible, isChainIdVisible, isCrowdloanURLVisible, isParaIdVisible } = useMemo(() => {
+    if (!chainInfo) {
+      return {
+        isParaIdVisible: false,
+        isChainIdVisible: false,
+        isAddressPrefixVisible: false,
+        isCrowdloanURLVisible: false,
+      };
+    }
+
+    const isPureSubstrateChain = _isPureSubstrateChain(chainInfo);
+    const isPureEvmChain = _isPureEvmChain(chainInfo);
+
+    return {
+      isParaIdVisible: isPureSubstrateChain,
+      isChainIdVisible: isPureEvmChain,
+      isAddressPrefixVisible: isPureSubstrateChain,
+      isCrowdloanURLVisible: isPureSubstrateChain,
+    };
+  }, [chainInfo]);
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
@@ -339,30 +363,26 @@ export const NetworkSettingDetail = ({
 
           <View style={{ flexDirection: 'row', width: '100%' }}>
             <TextField outerStyle={{ flex: 1, marginRight: 12 }} text={decimals.toString()} />
-            {!isPureTonChain && (
-              <>
-                {!isPureEvmChain ? (
-                  <TextField outerStyle={{ flex: 1 }} text={paraId > -1 ? paraId.toString() : 'ParaId'} />
-                ) : (
-                  <TextField outerStyle={{ flex: 1 }} text={chainId > -1 ? chainId.toString() : 'None'} />
-                )}
-              </>
-            )}
-            {isPureTonChain && (
-              <TextField outerStyle={{ flex: 1 }} text={chainTypeString()} placeholder={'Network type'} />
+
+            {isParaIdVisible && (
+              <TextField outerStyle={{ flex: 1 }} text={paraId > -1 ? paraId.toString() : 'ParaId'} />
             )}
           </View>
 
-          <View style={[{ width: '100%' }, !isPureEvmChain && { flexDirection: 'row' }]}>
-            {!isPureEvmChain && !isPureTonChain && (
+          <View style={{ flexDirection: 'row', width: '100%' }}>
+            {isChainIdVisible && (
+              <TextField outerStyle={{ flex: 1, marginRight: 12 }} text={chainId > -1 ? `${chainId}` : 'None'} />
+            )}
+
+            {isAddressPrefixVisible && (
               <TextField
-                outerStyle={[{ flex: 1 }, !isPureEvmChain && { marginRight: 12 }]}
+                outerStyle={[{ flex: 1 }, isAddressPrefixVisible && { marginRight: 12 }]}
                 text={addressPrefix.toString()}
+                placeholder={'Address prefix'}
               />
             )}
-            {!isPureTonChain && (
-              <TextField outerStyle={{ flex: 1 }} text={chainTypeString()} placeholder={'Network type'} />
-            )}
+
+            <TextField outerStyle={{ flex: 1 }} text={chainTypeString()} placeholder={'Network type'} />
           </View>
 
           <InputText
@@ -374,7 +394,7 @@ export const NetworkSettingDetail = ({
             placeholder={formState.labels.blockExplorer}
           />
 
-          {!_isPureEvmChain(chainInfo) && !isPureTonChain && (
+          {isCrowdloanURLVisible && (
             <InputText
               ref={formState.refs.crowdloanUrl}
               value={formState.data.crowdloanUrl}

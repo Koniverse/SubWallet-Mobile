@@ -32,7 +32,7 @@ export const ImportJsonAccountSelector = ({ grouping, items, accountProxiesSelec
       return (
         <ImportJsonAccountItem
           disabled={item.group === 'existed_accounts'}
-          key={`${item.id}-${item.name}`}
+          key={`account-${item.id}`}
           accountProxy={item}
           isSelected={selected}
           onPress={onSelect(item)}

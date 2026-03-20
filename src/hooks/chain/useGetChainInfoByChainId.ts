@@ -4,7 +4,7 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { findChainInfoByChainId } from 'utils/chain';
+import { findChainInfoByChainId } from 'utils/chain/chain';
 
 const useGetChainInfoByChainId = (chainId?: number) => {
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);

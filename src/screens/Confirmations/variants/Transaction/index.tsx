@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import {
   ConfirmationDefinitions,
+  ConfirmationDefinitionsBitcoin,
   ConfirmationDefinitionsTon,
   ExtrinsicType,
 } from '@subwallet/extension-base/background/KoniTypes';
@@ -12,7 +13,7 @@ import { SigningRequest } from '@subwallet/extension-base/background/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
-import { EvmSignArea, SubstrateSignArea, TonSignArea } from '../../parts';
+import { BitcoinSignArea, EvmSignArea, SubstrateSignArea, TonSignArea } from '../../parts';
 import {
   JoinPoolTransactionConfirmation,
   SendNftTransactionConfirmation,
@@ -39,6 +40,7 @@ import BaseProcessConfirmation from 'screens/Confirmations/variants/Transaction/
 import { VoidFunction } from 'types/index';
 import { ConfirmModalInfo } from 'providers/AppModalContext';
 import SubmitApiArea from 'screens/Confirmations/parts/SubmitApiArea';
+import ChangeValidatorTransactionConfirmation from './variants/ChangeEarningValidator';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
@@ -75,6 +77,8 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
       return BondTransactionConfirmation;
     case ExtrinsicType.STAKING_UNBOND:
       return UnbondTransactionConfirmation;
+    case ExtrinsicType.CHANGE_EARNING_VALIDATOR:
+      return ChangeValidatorTransactionConfirmation;
     case ExtrinsicType.STAKING_WITHDRAW:
     case ExtrinsicType.STAKING_POOL_WITHDRAW:
       return WithdrawTransactionConfirmation;
@@ -187,6 +191,24 @@ export const TransactionConfirmation = (props: Props) => {
           id={item.id}
           payload={item as ConfirmationDefinitionsTon['tonSendTransactionRequest' | 'tonWatchTransactionRequest'][0]}
           txExpirationTime={txExpirationTime}
+          type={type}
+        />
+      )}
+      {(type === 'bitcoinSignatureRequest' ||
+        type === 'bitcoinSendTransactionRequest' ||
+        type === 'bitcoinWatchTransactionRequest' ||
+        type === 'bitcoinSignPsbtRequest') && (
+        <BitcoinSignArea
+          navigation={navigation}
+          extrinsicType={_transaction.extrinsicType}
+          id={item.id}
+          payload={
+            item as ConfirmationDefinitionsBitcoin[
+              | 'bitcoinSignatureRequest'
+              | 'bitcoinSendTransactionRequest'
+              | 'bitcoinWatchTransactionRequest'
+              | 'bitcoinSignPsbtRequest'][0]
+          }
           type={type}
         />
       )}

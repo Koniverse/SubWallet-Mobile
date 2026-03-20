@@ -9,6 +9,7 @@ export interface ComponentStyle {
   accountName: TextStyle;
   accountAddress: TextStyle;
   accountAddressHorizontal: TextStyle;
+  middleContentWrapper: ViewStyle;
 }
 
 export default (theme: ThemeTypes) => {
@@ -16,9 +17,15 @@ export default (theme: ThemeTypes) => {
     contentWrapper: {
       display: 'flex',
     },
+    middleContentWrapper: {
+      paddingTop: theme.paddingSM - 2,
+      paddingBottom: theme.paddingSM - 2,
+      width: '100%',
+    },
     contentDirectionHorizontal: {
       flexDirection: 'row',
       paddingRight: theme.padding,
+      alignItems: 'center',
     },
     contentDirectionVertical: {
       flexDirection: 'column',

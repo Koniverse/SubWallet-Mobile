@@ -14,12 +14,13 @@ import { _getOriginChainOfAsset, _isAssetFungibleToken } from '@subwallet/extens
 import { AccountProxy, BuyTokenInfo } from '@subwallet/extension-base/types';
 import { AccountAddressItemType } from 'types/account';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
-import { useGetChainSlugsByAccount } from 'hooks/useGetChainSlugsByAccount';
 import useAssetChecker from 'hooks/chain/useAssetChecker';
 import { reformatAddress } from '@subwallet/extension-base/utils';
-import useReformatAddress from 'hooks/common/useReformatAddress';
 import { useGetAccountTokenBalance } from 'hooks/balance';
 import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/token';
+import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
+import { useToast } from 'react-native-toast-notifications';
 
 type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
 
@@ -27,13 +28,14 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
   const { accountProxies } = useSelector((state: RootState) => state.accountState);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { isLocked } = useAppLock();
+  const { show } = useToast();
   const { walletReference } = useSelector((state: RootState) => state.settings);
   const { chainInfoMap, chainStateMap, priorityTokens } = useSelector((state: RootState) => state.chainStore);
   const { services, tokens } = useSelector((state: RootState) => state.buyService);
   const getAccountTokenBalance = useGetAccountTokenBalance();
   const checkAsset = useAssetChecker();
-  const allowedChains = useGetChainSlugsByAccount();
-  const getReformatAddress = useReformatAddress();
+  const allowedChains = useGetChainSlugsByCurrentAccountProxy();
+  const getReformatAddress = useCoreCreateReformatAddress();
   const fixedTokenSlug = useMemo((): string | undefined => {
     if (currentSymbol) {
       return Object.values(tokens).filter(value => value.slug === currentSymbol || value.symbol === currentSymbol)[0]
@@ -315,9 +317,22 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
         await sleep(50);
         const errorMessage = (error as Error).message || (error as string);
         console.log('error message for buy feature', errorMessage);
+
+        show('Unable to redirect you to the selected supplier at the moment. Try again later', {
+          type: 'danger',
+          duration: 8000,
+        });
       }
     },
-    [chainInfoMap, formState.data.address, formState.data.service, formState.data.tokenSlug, tokens, walletReference],
+    [
+      chainInfoMap,
+      formState.data.address,
+      formState.data.service,
+      formState.data.tokenSlug,
+      show,
+      tokens,
+      walletReference,
+    ],
   );
 
   const onPressItem = (currentValue: SupportService) => {
@@ -342,7 +357,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
 
   useEffect(() => {
     if (!fixedTokenSlug && tokenItems.length) {
-      const tokenSlug = formState.data.tokenSlug;
+      const { tokenSlug } = formState.data;
 
       if (!tokenSlug) {
         onChangeValue('tokenSlug')(tokenItems[0].slug);
@@ -358,7 +373,8 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
         onChangeValue('tokenSlug')(fixedTokenSlug);
       }, 100);
     }
-  }, [fixedTokenSlug, formState.data.tokenSlug, onChangeValue, tokenItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fixedTokenSlug, formState.data, onChangeValue, tokenItems.toString()]);
 
   useEffect(() => {
     formState.data.tokenSlug && checkAsset(formState.data.tokenSlug);

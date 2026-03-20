@@ -1,3 +1,40 @@
+## 1.2.36 (516)
+- Add user-configurable Subscan API Key in settings (#2033)
+- Add user-configurable Subscan API Key in settings (#2033)
+- Add user-configurable Subscan API Key in settings (#2033)
+- Fix UI bug (#2033)
+- Update wr 1.3.57 (#2033)
+
+## 1.2.35 (515)
+- cherry-pick code from issue 4950 to fix bug cannot stsake Moonbase Alpha (#2033)
+- cherry-pick code to update Paraspell v5 and some XCM (#2033)
+
+## 1.2.34 (514)
+- fix bug cannot use biometric (#2013)
+
+## 1.2.34 (513)
+- fix bug do not show BTC token balance (#2013)
+
+## 1.2.33 (512)
+- fix bug UI (#2013)
+- fix bug UI (#2013)
+- fix bug UI (#2013)
+- fix bug UI for wr 1.3.42 and remove unused log (#2013)
+- fix bug UI for wr 1.3.42 (#2013)
+- add missing property for ios (#2013)
+- fix UI bug (#2013)
+- add Tanssi network (#2013)
+- fix some UI bug for Bitcoin (#2013)
+- Fix bug cannot import JSON Bitcoin account (#2013)
+- remove TransferAll alert (#2013)
+- feat: wr 1.3.42 (#2013)
+
+## 1.2.32 (511)
+
+
+## 1.2.31 (510)
+- update chain-list 0.2.107-mobile.1 (#2013)
+
 ## 1.2.30 (509)
 
 
