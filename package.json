@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "postinstall": "patch-package && rm -rf node_modules/react-native-qrcode-scanner/node_modules/react-native-permissions && npx react-native setup-ios-permissions",
-    "android": "ENVFILE=.env.development react-native run-android",
+    "android": "cd android && ./gradlew clean && cd .. && ENVFILE=.env.development react-native run-android",
     "ios": "ENVFILE=.env.development react-native run-ios",
     "android:production": "cd android && export ENVFILE=.env.production && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
     "android:staging": "cd android && export ENVFILE=.env.development && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
@@ -26,6 +26,7 @@
     "ios:staging": "scripts/build-ios.sh staging",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "node --max-old-space-size=8192 node_modules/react-native/local-cli/cli.js start",
+    "dev": "yarn postinstall && node --max-old-space-size=8192 node_modules/react-native/local-cli/cli.js start --reset-cache --experimental-debugger",
     "test": "jest",
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "prepare": "husky install",
