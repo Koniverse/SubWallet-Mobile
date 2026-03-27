@@ -8,7 +8,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { FadersHorizontal, MagnifyingGlass, XCircle } from 'phosphor-react-native';
+import { FadersHorizontalIcon, MagnifyingGlassIcon, XCircleIcon } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { Button, Icon } from 'components/design-system-ui';
@@ -20,7 +20,7 @@ interface Props extends TextInputProps {
   searchText: string;
   onClearSearchString: () => void;
   autoFocus?: boolean;
-  searchRef?: React.RefObject<TextInput>;
+  searchRef?: React.RefObject<TextInput | null>;
   onSubmitEditing?: TextInputProps['onSubmitEditing'];
   isShowFilterBtn?: boolean;
   isHasSelectedFilter?: boolean;
@@ -37,7 +37,7 @@ const searchContainerStyle: StyleProp<any> = {
   position: 'relative',
 };
 
-const CancelIcon = XCircle;
+const CancelIcon = XCircleIcon;
 
 export const Search = (searchProps: Props) => {
   const {
@@ -59,7 +59,7 @@ export const Search = (searchProps: Props) => {
   const filterIcon = useMemo(
     () => (
       <DotBadge dot={!!isHasSelectedFilter}>
-        <Icon phosphorIcon={FadersHorizontal} size={'sm'} iconColor={'#A6A6A6'} />
+        <Icon phosphorIcon={FadersHorizontalIcon} size={'sm'} iconColor={'#A6A6A6'} />
       </DotBadge>
     ),
     [isHasSelectedFilter],
@@ -69,7 +69,7 @@ export const Search = (searchProps: Props) => {
     <TouchableWithoutFeedback onPress={() => searchRef?.current?.focus()}>
       <View style={[searchContainerStyle, style]}>
         <View style={{ position: 'absolute', margin: 'auto', left: 12 }}>
-          <Icon phosphorIcon={MagnifyingGlass} iconColor={theme.colorWhite} size={'md'} />
+          <Icon phosphorIcon={MagnifyingGlassIcon} iconColor={theme.colorWhite} size={'md'} />
         </View>
 
         <TextInput

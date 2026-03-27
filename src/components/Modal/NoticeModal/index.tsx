@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, PageIcon, SwModal, Typography } from 'components/design-system-ui';
 import { Linking, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Warning } from 'phosphor-react-native';
+import { WarningIcon } from 'phosphor-react-native';
 import { FontMedium } from 'styles/sharedStyles';
 import { USER_GUIDE_URL } from 'constants/index';
 import { mmkvStore } from 'utils/storage';
@@ -38,7 +38,7 @@ export const NoticeModal = ({ modalVisible, setVisible }: Props) => {
       modalTitle={'Update your iOS now!'}>
       <View style={{ position: 'relative' }}>
         <View style={{ alignItems: 'center' }}>
-          <PageIcon icon={Warning} color={theme.colorWarning} weight={'regular'} />
+          <PageIcon icon={WarningIcon} color={theme.colorWarning} weight={'regular'} />
 
           <Typography.Text
             style={{

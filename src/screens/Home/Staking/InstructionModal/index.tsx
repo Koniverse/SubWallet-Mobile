@@ -2,7 +2,7 @@ import React, { RefObject } from 'react';
 import { SwModal, Button, Icon, Typography } from 'components/design-system-ui';
 import { deviceHeight } from 'constants/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Aperture, CheckCircle, Coins, Eye, PlusCircle, ThumbsUp } from 'phosphor-react-native';
+import { ApertureIcon, CheckCircleIcon, CoinsIcon, EyeIcon, PlusCircleIcon, ThumbsUpIcon } from 'phosphor-react-native';
 import { View, Text, Linking } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
@@ -18,7 +18,7 @@ interface Props {
 
 const INSTRUCTION_DATA = [
   {
-    icon: Aperture,
+    icon: ApertureIcon,
     color: 'rgba(230, 71, 142, 1)',
     id: 'ins_1',
     title: 'Mint an NFT before staking',
@@ -26,7 +26,7 @@ const INSTRUCTION_DATA = [
       "If you're participating in the Coinbase - Vara quests, be sure to mint an NFT before staking to qualify for Coinbase rewards.",
   },
   {
-    icon: Coins,
+    icon: CoinsIcon,
     color: 'rgba(230, 220, 37, 1)',
     id: 'state_2',
     title: 'Unstake and withdraw',
@@ -34,7 +34,7 @@ const INSTRUCTION_DATA = [
       'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after a 7-day period. Keep in mind that these actions are not automated and will incur network fees.',
   },
   {
-    icon: CheckCircle,
+    icon: CheckCircleIcon,
     color: 'rgba(76, 234, 172, 1)',
     id: 'state_3',
     title: 'Keep your free balance',
@@ -42,14 +42,14 @@ const INSTRUCTION_DATA = [
       'Ensure that your free balance (transferrable balance) includes a minimum of 12 VARA to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
   },
   {
-    icon: Eye,
+    icon: EyeIcon,
     color: 'rgba(78, 180, 242, 1)',
     id: 'state_4',
     title: 'Track your stake',
     content: 'Keep an eye on your stake periodically, as rewards and staking status can fluctuate over time.',
   },
   {
-    icon: ThumbsUp,
+    icon: ThumbsUpIcon,
     color: 'rgba(170, 218, 98, 1)',
     id: 'state_5',
     title: 'Select active pool',
@@ -66,7 +66,7 @@ export function InstructionModal({ setDetailModalVisible, modalRef, modalVisible
           style={{ width: '100%' }}
           type={'primary'}
           onPress={onPressStake}
-          icon={<Icon phosphorIcon={PlusCircle} weight="fill" size={'lg'} iconColor={theme.colorWhite} />}>
+          icon={<Icon phosphorIcon={PlusCircleIcon} weight="fill" size={'lg'} iconColor={theme.colorWhite} />}>
           Stake
         </Button>
       </View>

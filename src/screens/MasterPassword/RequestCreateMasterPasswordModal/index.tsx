@@ -3,7 +3,7 @@ import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ModalStyle from './style';
 import { View } from 'react-native';
-import { ShieldPlus } from 'phosphor-react-native';
+import { ShieldPlusIcon } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
@@ -29,7 +29,7 @@ const RequestCreateMasterPasswordModal = ({ visible }: Props) => {
         <Typography.Text style={_style.textStyle}>{i18n.message.requestCreateMasterPassword}</Typography.Text>
 
         <View style={_style.footerAreaStyle}>
-          <Button icon={<Icon phosphorIcon={ShieldPlus} size={'lg'} weight={'fill'} />} onPress={onPressButton}>
+          <Button icon={<Icon phosphorIcon={ShieldPlusIcon} size={'lg'} weight={'fill'} />} onPress={onPressButton}>
             {i18n.buttonTitles.createMasterPassword}
           </Button>
         </View>

@@ -5,7 +5,7 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { ContentGenerator } from 'components/StaticContent/ContentGenerator';
 import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
-import { CheckCircle, Warning, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, WarningIcon, XCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
@@ -22,7 +22,7 @@ type ContentDataType = {
   title: string;
 };
 
-export const BriefView = React.memo(({ isForcedMigration, onDismiss, onMigrateNow, isBusy }: Props) => {
+export const BriefView = ({ isForcedMigration, onDismiss, onMigrateNow, isBusy }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const [contentData, setContentData] = useState<ContentDataType>({
     content: '',
@@ -56,30 +56,30 @@ export const BriefView = React.memo(({ isForcedMigration, onDismiss, onMigrateNo
     if (isForcedMigration) {
       setIsFetchingBriefContent(false);
     }
-  }, [isBusy, isForcedMigration]);
+  }, [isForcedMigration]);
 
   if (isFetchingBriefContent || isBusy) {
     return <LoadingScreen />;
   }
-
   return (
     <ContainerWithSubHeader
       showLeftBtn={false}
+      style={{ paddingHorizontal: theme.padding }}
       title={!isForcedMigration ? contentData.title : 'Migration incomplete!'}>
-      <View style={{ flex: 1, paddingHorizontal: theme.padding }}>
+      <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
           {!isForcedMigration && <ContentGenerator content={contentData.content} />}
 
           {isForcedMigration && (
             <>
               <View style={{ alignItems: 'center', paddingTop: theme.paddingLG }}>
-                <PageIcon icon={Warning} color={theme.colorWarning} />
+                <PageIcon icon={WarningIcon} color={theme.colorWarning} />
               </View>
 
               <View style={{ gap: theme.sizeMD, paddingTop: theme.paddingMD }}>
                 <Typography.Text style={{ color: theme.colorTextTertiary, textAlign: 'center' }}>
                   {
-                    'Account migration is not yet complete. If this process remains incomplete, you will not be able to perform any action on SubWallet mobile.'
+                    'Account migration is not yet complete. If this process remains incomplete, you will not be able to perform any action on SubWallet extension.'
                   }
                 </Typography.Text>
                 <Typography.Text style={{ color: theme.colorTextTertiary, textAlign: 'center' }}>
@@ -97,21 +97,13 @@ export const BriefView = React.memo(({ isForcedMigration, onDismiss, onMigrateNo
             <View style={{ flexDirection: 'row', gap: theme.size }}>
               <Button
                 block
-                icon={<Icon phosphorIcon={XCircle} weight={'fill'} />}
+                icon={<Icon phosphorIcon={XCircleIcon} weight={'fill'} />}
                 type={'secondary'}
                 onPress={onDismiss}>
                 {i18n.buttonTitles.cancel}
               </Button>
-              <Button
-                block
-                icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}
-                externalTextStyle={{
-                  flexGrow: 0,
-                  flexShrink: 1,
-                  flexBasis: 'auto',
-                }}
-                onPress={onMigrateNow}>
-                {i18n.buttonTitles.migrateNow}
+              <Button block icon={<Icon phosphorIcon={CheckCircleIcon} weight={'fill'} />} onPress={onMigrateNow}>
+                {'Migrate now'}
               </Button>
             </View>
           )}
@@ -121,4 +113,4 @@ export const BriefView = React.memo(({ isForcedMigration, onDismiss, onMigrateNo
       </View>
     </ContainerWithSubHeader>
   );
-});
+};

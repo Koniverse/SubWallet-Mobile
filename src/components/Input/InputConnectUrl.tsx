@@ -3,7 +3,7 @@ import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useSt
 import { TextInput } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Button, Icon } from 'components/design-system-ui';
-import { Scan } from 'phosphor-react-native';
+import { ScanIcon } from 'phosphor-react-native';
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressScanner';
@@ -65,7 +65,7 @@ const Component = (
           onPress={onPressQrButton}
           icon={
             <Icon
-              phosphorIcon={Scan}
+              phosphorIcon={ScanIcon}
               size={'sm'}
               iconColor={inputProps.readonly ? theme.colorTextLight5 : theme.colorTextLight3}
             />

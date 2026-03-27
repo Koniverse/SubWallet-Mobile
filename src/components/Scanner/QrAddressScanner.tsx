@@ -2,16 +2,15 @@ import { SCAN_TYPE } from 'constants/qr';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { QrAccount } from 'types/qr/attach';
 import i18n from 'utils/i18n/i18n';
-import { BarCodeReadEvent } from 'react-native-camera';
 import { getFunctionScan } from 'utils/scanner/attach';
 import { launchImageLibrary } from 'react-native-image-picker';
 import RNQRGenerator from 'rn-qr-generator';
 import { updatePreventLock } from 'stores/MobileSettings';
 import { useDispatch } from 'react-redux';
-import { QrCodeScanner } from 'components/QrCodeScanner';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { getDevMode } from 'utils/storage';
+import { QrCodeScanner } from 'components/QrCodeScanner';
 
 interface Props {
   visible: boolean;
@@ -27,10 +26,10 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVis
   const isDevMode = getDevMode();
   const dispatch = useDispatch();
   const handleRead = useCallback(
-    (event: BarCodeReadEvent) => {
+    (data: string) => {
       try {
         const funcRead = getFunctionScan(type);
-        const qrAccount = funcRead(event.data);
+        const qrAccount = funcRead(data);
 
         if (!qrAccount) {
           setError(i18n.warningMessage.invalidQRCode);

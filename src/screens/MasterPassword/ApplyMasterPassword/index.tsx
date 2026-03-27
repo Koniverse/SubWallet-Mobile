@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { ScrollView, View } from 'react-native';
 import { Button, Icon } from 'components/design-system-ui';
-import { ArrowCircleRight, CheckCircle, Info, Trash } from 'phosphor-react-native';
+import { ArrowCircleRightIcon, CheckCircleIcon, InfoIcon, TrashIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ApplyMasterPasswordStyle from './style';
 import { RootState } from 'stores/index';
@@ -31,11 +31,11 @@ import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-p
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
-const finishIcon = <Icon phosphorIcon={CheckCircle} size={'lg'} weight="fill" />;
+const finishIcon = <Icon phosphorIcon={CheckCircleIcon} size={'lg'} weight="fill" />;
 
-const removeIcon = <Icon phosphorIcon={Trash} size={'lg'} iconColor={'#737373'} />;
+const removeIcon = <Icon phosphorIcon={TrashIcon} size={'lg'} iconColor={'#737373'} />;
 
-const nextIcon = <Icon phosphorIcon={ArrowCircleRight} size={'lg'} weight={'fill'} />;
+const nextIcon = <Icon phosphorIcon={ArrowCircleRightIcon} size={'lg'} weight={'fill'} />;
 
 const intersectionArray = (array1: AccountJson[], array2: AccountJson[]): AccountJson[] => {
   return array1.filter(account => array2.find(acc => acc.address === account.address));
@@ -62,7 +62,7 @@ const ApplyMasterPassword = () => {
   const [isDisabled, setIsDisable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const selectedAction = useRef<SelectedActionType>();
+  const selectedAction = useRef<SelectedActionType>('');
   const navigation = useNavigation<RootNavigationProps>();
   useHandlerHardwareBackPress(true);
   const migrateAddressRef = useRef<string>('');
@@ -276,7 +276,7 @@ const ApplyMasterPassword = () => {
             disabled={isDisabled || deleting || !!formState.errors.password.length || loading}
             icon={
               <Icon
-                phosphorIcon={ArrowCircleRight}
+                phosphorIcon={ArrowCircleRightIcon}
                 size={'lg'}
                 weight={'fill'}
                 iconColor={
@@ -317,7 +317,7 @@ const ApplyMasterPassword = () => {
       onPressBack={_onPressBack}
       title={title}
       showRightBtn={true}
-      rightIcon={Info}>
+      rightIcon={InfoIcon}>
       <View style={{ flex: 1 }}>
         {step === 'Introduction' && <Introduction />}
         {step === 'Migrate' && migrateAccount && (

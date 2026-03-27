@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SwapBaseTxData } from '@subwallet/extension-base/types/swap';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { Typography, Number } from 'components/design-system-ui';
 import { _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
 import { SwapTransactionBlock } from 'components/Swap/SwapTransactionBlock';
@@ -14,6 +13,7 @@ import MetaInfo from 'components/MetaInfo';
 import i18n from 'utils/i18n/i18n';
 import { getCurrentCurrencyTotalFee } from 'utils/common/balance';
 import { getTokenPairFromStep } from '@subwallet/extension-base/services/swap-service/utils';
+import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 
 type Props = TransactionInfoBlockProps;
 

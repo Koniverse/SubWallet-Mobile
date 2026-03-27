@@ -26,7 +26,7 @@ import { AppModalContext } from 'providers/AppModalContext';
 import { TransactionError } from '@subwallet/extension-base/background/errors/TransactionError';
 import i18n from 'utils/i18n/i18n';
 import { changeEarningValidator } from 'messaging/index';
-import { CheckCircle, Info, Warning } from 'phosphor-react-native';
+import { CheckCircleIcon, InfoIcon, WarningIcon } from 'phosphor-react-native';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { formatBalance } from 'utils/number';
@@ -292,7 +292,7 @@ export const ChangeBittensorValidator = ({
                 confirmModal.hideConfirmModal();
                 send(bondedValue);
               },
-              customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+              customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
             });
           } else {
             onError(error);
@@ -405,7 +405,7 @@ export const ChangeBittensorValidator = ({
                     onPress={() => setTooltipVisible(true)}
                     style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
                     <Typography.Text style={{ color: theme.colorWhite }}>{'Change staking amount'}</Typography.Text>
-                    <Icon phosphorIcon={Info} size={'sm'} weight={'fill'} />
+                    <Icon phosphorIcon={InfoIcon} size={'sm'} weight={'fill'} />
                   </TouchableOpacity>
                 </Tooltip>
 
@@ -456,7 +456,7 @@ export const ChangeBittensorValidator = ({
             <Button
               icon={
                 <Icon
-                  phosphorIcon={CheckCircle}
+                  phosphorIcon={CheckCircleIcon}
                   weight={'fill'}
                   iconColor={isDisabled || submitLoading ? theme.colorTextTertiary : theme.colorWhite}
                 />

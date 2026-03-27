@@ -1,5 +1,5 @@
 import { StyleSheet, ViewStyle } from 'react-native';
-import { ImageStyle as FastImageStyle } from 'react-native-fast-image';
+import { ImageStyle as FastImageStyle } from '@d11/react-native-fast-image';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ImageStyle {

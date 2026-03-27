@@ -7,11 +7,11 @@ import { RootState } from 'stores/index';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { CommonFeeComponent } from '@subwallet/extension-base/types/service-base';
-import { ConfirmationContent } from 'components/common/Confirmation';
 import MetaInfo from 'components/MetaInfo';
-import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import i18n from 'utils/i18n/i18n';
 import { getCurrentCurrencyTotalFee } from 'utils/common/balance';
+import ConfirmationContent from 'components/common/Confirmation/ConfirmationContent';
+import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 
 type Props = TransactionInfoBlockProps;
 

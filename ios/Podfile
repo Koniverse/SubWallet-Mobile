@@ -1,26 +1,33 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "react-native/scripts/react_native_pods.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
+def node_require(script)
+  # Resolve script with node to allow for hoisting
+  require Pod::Executable.execute_command('node', ['-p',
+    "require.resolve(
+      '#{script}',
+      {paths: [process.argv[1]]},
+    )", __dir__]).strip
+end
+
+node_require('react-native/scripts/react_native_pods.rb')
+node_require('react-native-permissions/scripts/setup.rb')
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
-# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
-# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
-#
-# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
-# ```js
-# module.exports = {
-#   dependencies: {
-#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
-# ```
-flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+
+setup_permissions([
+  'Camera',
+  'FaceID',
+  'MediaLibrary',
+  'Notifications',
+  'Microphone',
+  'LocationWhenInUse',
+  'PhotoLibrary',
+  'PhotoLibraryAddOnly',
+])
+
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
- Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
- use_frameworks! :linkage => linkage.to_sym
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
 end
 
 target 'SubWalletMobile' do
@@ -28,81 +35,24 @@ target 'SubWalletMobile' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # Enables Flipper.
-    #
-    # Note that if you have use_frameworks! enabled, Flipper will not work and
-    # you should disable the next line.
-    :flipper_configuration => FlipperConfiguration.disabled,
+    hermes_enabled: true,
+    fabric_enabled: false,
+    :new_arch_enabled => true,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => true
-
-
-  target 'SubWalletMobileTests' do
-    inherit! :complete
-    # Pods for testing
-  end
-
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
     )
-    # Get main project development team id
-    dev_team = ""
-    project = installer.aggregate_targets[0].user_project
-    project.targets.each do |target|
-        target.build_configurations.each do |config|
-            if dev_team.empty? and !config.build_settings['DEVELOPMENT_TEAM'].nil?
-                dev_team = config.build_settings['DEVELOPMENT_TEAM']
-            end
-        end
-    end
-
-    # Fix error when upgrade react native from 0.71.12 to 0.72.4 & build fail
-    installer.generated_projects.each do |project|
-      project.targets.each do |target|
-        target.build_configurations.each do |config|
-          if target.name === "RNReanimated"
-            config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-          end
-        end
-      end
-    end
-
-    # Force glog to use modular headers
-    installer.pods_project.targets.each do |target|
-      if target.name == 'glog'
-        target.build_configurations.each do |config|
-          config.build_settings['DEFINES_MODULE'] = 'YES'
-        end
-      end
-    end
-    installer.pods_project.targets.each do |target|
-      if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
-        target.build_configurations.each do |config|
-          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-        end
-      end
-    end
-
-    # Fix bundle targets' 'Signing Certificate' to 'Sign to Run Locally'
-    installer.pods_project.targets.each do |target|
-        if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
-            target.build_configurations.each do |config|
-                config.build_settings['DEVELOPMENT_TEAM'] = dev_team
-            end
-        end
-    end
 
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-        # Force Swift optimization to -Onone
-        config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
+        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
       end
     end
 

@@ -16,7 +16,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import { Linking, StyleSheet, View } from 'react-native';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 
@@ -175,7 +175,7 @@ export const TonWalletContractSelectorModal = ({
         <Button
           disabled={isSubmitting}
           loading={isSubmitting}
-          icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}
+          icon={<Icon phosphorIcon={CheckCircleIcon} weight={'fill'} />}
           onPress={onConfirmButton}>
           Confirm
         </Button>

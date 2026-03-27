@@ -4,7 +4,7 @@ import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import ResultAccountProxyItem, {
   ResultAccountProxyItemType,
 } from 'screens/MigrateAccount/SummaryView/ResultAccountProxyItem';
@@ -73,7 +73,7 @@ const SummaryView: React.FC<Props> = ({ resultProxyIds, onPressFinish }: Props) 
       <>
         <View style={{ flex: 1 }}>
           <View style={{ width: '100%', alignItems: 'center', paddingTop: theme.paddingLG }}>
-            <PageIcon icon={CheckCircle} weight={'fill'} color={theme.colorSuccess} />
+            <PageIcon icon={CheckCircleIcon} weight={'fill'} color={theme.colorSuccess} />
           </View>
 
           <Typography.Title
@@ -142,7 +142,7 @@ const SummaryView: React.FC<Props> = ({ resultProxyIds, onPressFinish }: Props) 
         </View>
         <View style={{ paddingBottom: theme.padding }}>
           <Button
-            icon={hasAnyAccountToMigrate ? <Icon phosphorIcon={CheckCircle} weight="fill" /> : undefined}
+            icon={hasAnyAccountToMigrate ? <Icon phosphorIcon={CheckCircleIcon} weight="fill" /> : undefined}
             onPress={onPressFinish}>
             {hasAnyAccountToMigrate ? 'Finish' : 'Back to home'}
           </Button>

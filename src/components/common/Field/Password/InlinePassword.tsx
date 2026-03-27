@@ -5,7 +5,7 @@ import { FieldBaseProps } from 'components/Field/Base';
 import { Warning } from 'components/Warning';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Button, Icon, Input } from 'components/design-system-ui';
-import { Eye, EyeSlash, Key } from 'phosphor-react-native';
+import { EyeIcon, EyeSlashIcon, KeyIcon } from 'phosphor-react-native';
 import createStyles from './styles';
 
 interface Props extends FieldBaseProps {
@@ -56,7 +56,7 @@ const InlinePassword = forwardRef((passwordFieldProps: Props, ref: React.Ref<Tex
       <Input
         ref={ref}
         containerStyle={[styles.inputContainer, containerStyle, disabled && DisabledStyle]}
-        leftPart={<Icon phosphorIcon={Key} weight={'regular'} size={'sm'} iconColor={theme['gray-5']} />}
+        leftPart={<Icon phosphorIcon={KeyIcon} weight={'regular'} size={'sm'} iconColor={theme['gray-5']} />}
         leftPartStyle={styles.leftInputStyle}
         inputStyle={styles.textInput}
         rightPart={
@@ -67,7 +67,7 @@ const InlinePassword = forwardRef((passwordFieldProps: Props, ref: React.Ref<Tex
               onPress={() => setShowPassword(false)}
               size={'xs'}
               type={'ghost'}
-              icon={<Icon phosphorIcon={Eye} weight={'regular'} size={'sm'} iconColor={theme['gray-5']} />}
+              icon={<Icon phosphorIcon={EyeIcon} weight={'regular'} size={'sm'} iconColor={theme['gray-5']} />}
             />
           ) : (
             <Button
@@ -75,7 +75,7 @@ const InlinePassword = forwardRef((passwordFieldProps: Props, ref: React.Ref<Tex
               onPress={() => setShowPassword(true)}
               size={'xs'}
               type={'ghost'}
-              icon={<Icon phosphorIcon={EyeSlash} weight={'regular'} size={'sm'} iconColor={theme['gray-5']} />}
+              icon={<Icon phosphorIcon={EyeSlashIcon} weight={'regular'} size={'sm'} iconColor={theme['gray-5']} />}
             />
           ))
         }

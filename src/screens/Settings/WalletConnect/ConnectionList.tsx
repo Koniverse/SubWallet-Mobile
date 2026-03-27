@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
-import { GlobeHemisphereWest } from 'phosphor-react-native';
+import { GlobeHemisphereWestIcon } from 'phosphor-react-native';
 import { SessionTypes } from '@walletconnect/types';
 import { stripUrl } from '@subwallet/extension-base/utils';
 import { Button } from 'components/design-system-ui';
@@ -100,7 +100,7 @@ export const ConnectionList = ({
       <EmptyList
         title={i18n.emptyScreen.manageDAppEmptyTitle}
         message={i18n.emptyScreen.manageDAppEmptyMessage}
-        icon={GlobeHemisphereWest}
+        icon={GlobeHemisphereWestIcon}
       />
     );
   };
@@ -114,28 +114,6 @@ export const ConnectionList = ({
     <ConnectionItem session={item} onPress={onPressItem} />
   );
 
-  const convertWCErrorMessage = useCallback((e: Error): string => {
-    const message = e.message.toLowerCase();
-
-    let newStandardMessage = 'Connection unsuccessful. Review our user guide and try connecting again.';
-
-    if (message.includes('pairing already exists')) {
-      newStandardMessage = i18n.errorMessage.connectionAlreadyExist;
-    }
-
-    if (message.includes('socket hang up') || message.includes('stalled') || message.includes('interrupted')) {
-      newStandardMessage =
-        ' Turn off VPN/ad blocker apps, reload the dApp, and try again. If the issue persists, contact support at agent@subwallet.app';
-    }
-
-    if (message.includes('failed for host')) {
-      newStandardMessage =
-        'Turn off some networks on the wallet or close any privacy protection apps (e.g. VPN, ad blocker apps) and try again. If the issue persists, contact support at agent@subwallet.app';
-    }
-
-    return newStandardMessage;
-  }, []);
-
   const onScanAddress = (data: string) => {
     if (!validWalletConnectUri(data)) {
       addConnection({ uri: data })
@@ -145,7 +123,10 @@ export const ConnectionList = ({
           navigation.goBack();
         })
         .catch(e => {
-          const message = convertWCErrorMessage(e);
+          const errMessage = (e as Error).message;
+          const message = errMessage.includes('Pairing already exists')
+            ? i18n.errorMessage.connectionAlreadyExist
+            : i18n.errorMessage.failToAddConnection;
 
           setError(message);
         });
@@ -170,7 +151,6 @@ export const ConnectionList = ({
           autoFocus={false}
           renderListEmptyComponent={renderEmptyList}
           searchFunction={searchFunc}
-          estimatedItemSize={64}
           afterListItem={
             <Button
               style={{ marginHorizontal: 16, marginBottom: 16 }}

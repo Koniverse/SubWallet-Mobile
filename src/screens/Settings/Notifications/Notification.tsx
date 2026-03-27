@@ -1,18 +1,18 @@
 import {
-  ArrowsLeftRight,
-  ArrowSquareDownLeft,
-  ArrowSquareUpRight,
-  BellSimpleRinging,
-  BellSimpleSlash,
-  Checks,
-  Coins,
-  Database,
-  DownloadSimple,
-  Gear,
-  Gift,
+  ArrowsLeftRightIcon,
+  ArrowSquareDownLeftIcon,
+  ArrowSquareUpRightIcon,
+  BellSimpleRingingIcon,
+  BellSimpleSlashIcon,
+  ChecksIcon,
+  CoinsIcon,
+  DatabaseIcon,
+  DownloadSimpleIcon,
+  GearIcon,
+  GiftIcon,
   IconProps,
-  Info,
-  ListBullets,
+  InfoIcon,
+  ListBulletsIcon,
 } from 'phosphor-react-native';
 import {
   _NotificationInfo,
@@ -79,15 +79,15 @@ export enum NotificationIconBackgroundColorMap {
 }
 
 export const NotificationIconMap = {
-  SEND: ArrowSquareUpRight,
-  RECEIVE: ArrowSquareDownLeft,
-  WITHDRAW: DownloadSimple,
-  CLAIM: Gift,
-  CLAIM_AVAIL_BRIDGE_ON_AVAIL: Coins, // temporary set
-  CLAIM_AVAIL_BRIDGE_ON_ETHEREUM: Coins,
-  CLAIM_POLYGON_BRIDGE: Coins,
-  SWAP: ArrowsLeftRight,
-  EARNING: Database,
+  SEND: ArrowSquareUpRightIcon,
+  RECEIVE: ArrowSquareDownLeftIcon,
+  WITHDRAW: DownloadSimpleIcon,
+  CLAIM: GiftIcon,
+  CLAIM_AVAIL_BRIDGE_ON_AVAIL: CoinsIcon, // temporary set
+  CLAIM_AVAIL_BRIDGE_ON_ETHEREUM: CoinsIcon,
+  CLAIM_POLYGON_BRIDGE: CoinsIcon,
+  SWAP: ArrowsLeftRightIcon,
+  EARNING: DatabaseIcon,
 };
 
 export const Notification = ({ route: { params } }: NotificationProps) => {
@@ -202,7 +202,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
   }, []);
 
   const onPressBack = useCallback(() => {
-    navigation.navigate('Home');
+    navigation.goBack();
   }, [navigation]);
 
   const showActiveChainModal = useCallback(
@@ -247,7 +247,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
           setViewDetailItem(undefined);
           confirmModal.hideConfirmModal();
         },
-        customIcon: <PageIcon icon={Info} color={theme.colorInfo} />,
+        customIcon: <PageIcon icon={InfoIcon} color={theme.colorInfo} />,
         onCancelModal: () => {
           setViewDetailItem(undefined);
           confirmModal.hideConfirmModal();
@@ -526,18 +526,18 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
 
   const renderEmptyList = () => {
     return (
-      <EmptyList icon={ListBullets} title={'No notifications yet'} message={'Your notifications will appear here'} />
+      <EmptyList icon={ListBulletsIcon} title={'No notifications yet'} message={'Your notifications will appear here'} />
     );
   };
 
   const renderEnableNotifications = useCallback(() => {
     return (
       <EmptyList
-        icon={BellSimpleSlash}
+        icon={BellSimpleSlashIcon}
         title={'Notifications are disabled'}
         message={'Enable notifications now to not miss anything!'}
         addBtnLabel={'Enable notifications'}
-        iconButton={BellSimpleRinging}
+        iconButton={BellSimpleRingingIcon}
         onPressAddBtn={onEnableNotification}
         addBtnLoading={loadingNotification}
       />
@@ -599,7 +599,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
         <Button
           icon={
             <Icon
-              phosphorIcon={Checks}
+              phosphorIcon={ChecksIcon}
               size={'sm'}
               iconColor={!enableNotification ? theme.colorTextLight4 : theme.colorWhite}
             />
@@ -646,9 +646,8 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
         searchFunction={searchFunction}
         isShowCustomContent={!enableNotification}
         renderCustomContent={renderEnableNotifications}
-        estimatedItemSize={88}
         extraData={JSON.stringify(viewDetailItem)}
-        rightIconOption={{ icon: Gear, onPress: openNotificationSetting }}
+        rightIconOption={{ icon: GearIcon, onPress: openNotificationSetting }}
         flatListStyle={{
           paddingHorizontal: theme.padding,
           paddingBottom: theme.paddingXS,

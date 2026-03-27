@@ -1,6 +1,7 @@
 import { Alert, AlertButton, Linking, Platform } from 'react-native';
-import i18n from 'utils/i18n/i18n';
-import { mmkvStore } from 'utils/storage';
+
+import i18n from '../../utils/i18n/i18n.ts';
+import { mmkvStore } from '../../utils/storage.ts';
 
 export function notifyUnstable() {
   const now = new Date().getTime();

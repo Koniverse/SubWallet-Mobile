@@ -2,7 +2,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useCallback, useMemo, useState } from 'react';
 import { NotificationInfoItem } from 'screens/Settings/Notifications/Notification';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { Checks, Coins, DownloadSimple, Eye, Gift, IconProps, X } from 'phosphor-react-native';
+import { ChecksIcon, CoinsIcon, DownloadSimpleIcon, EyeIcon, GiftIcon, IconProps, XIcon } from 'phosphor-react-native';
 import { switchReadNotificationStatus } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
 import { SwModal } from 'components/design-system-ui';
@@ -56,22 +56,22 @@ export const NotificationDetailModal = ({
       case ExtrinsicType.STAKING_WITHDRAW:
         return {
           title: 'Withdraw tokens',
-          icon: DownloadSimple,
+          icon: DownloadSimpleIcon,
         };
       case ExtrinsicType.STAKING_CLAIM_REWARD:
         return {
           title: 'Claim tokens',
-          icon: Gift,
+          icon: GiftIcon,
         };
       case ExtrinsicType.CLAIM_BRIDGE:
         return {
           title: 'Claim tokens',
-          icon: Coins,
+          icon: CoinsIcon,
         };
       default:
         return {
           title: 'View details',
-          icon: Eye,
+          icon: EyeIcon,
         };
     }
   };
@@ -118,7 +118,7 @@ export const NotificationDetailModal = ({
       {
         key: '2',
         backgroundColor: readNotification ? theme['gray-3'] : theme['green-6'],
-        icon: readNotification ? Checks : X,
+        icon: readNotification ? ChecksIcon : XIcon,
         label: readNotification ? i18n.notification.markAsUnread : i18n.notification.markAsRead,
         onPress: onPressReadButton,
       },

@@ -1,5 +1,5 @@
 import { CampaignStore, ReduxStatus } from 'stores/types';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 
 const initialState: CampaignStore = {

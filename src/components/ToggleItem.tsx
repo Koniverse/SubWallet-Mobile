@@ -11,7 +11,7 @@ import { ThemeTypes } from 'styles/themes';
 interface Props extends ViewProps {
   label: string;
   isEnabled: boolean;
-  onValueChange: () => void;
+  onValueChange: (value: boolean) => void;
   disabled?: boolean;
   backgroundIcon?: React.ElementType<IconProps>;
   backgroundIconColor?: string;
@@ -54,12 +54,14 @@ export const ToggleItem = ({
         </View>
       </View>
 
-      <Switch
-        ios_backgroundColor={ColorMap.switchInactiveButtonColor}
-        value={isEnabled}
-        onValueChange={onValueChange}
-        disabled={disabled}
-      />
+      <View>
+        <Switch
+          ios_backgroundColor={ColorMap.switchInactiveButtonColor}
+          value={isEnabled}
+          onValueChange={onValueChange}
+          disabled={disabled}
+        />
+      </View>
     </View>
   );
 };

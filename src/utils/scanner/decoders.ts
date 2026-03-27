@@ -1,8 +1,6 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import {
   EthereumParsedData,
   ParsedData,
@@ -11,9 +9,17 @@ import {
 } from 'types/qr/scanner';
 import { findAccountByAddress } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
-import { getNetworkJsonByGenesisHash } from 'utils/network';
+import { getNetworkJsonByInfo } from 'utils/network';
 import { compactFromU8a, hexStripPrefix, hexToU8a, u8aToHex } from '@polkadot/util';
-import { blake2AsHex } from '@polkadot/util-crypto';
+import { blake2AsHex, isEthereumAddress } from '@polkadot/util-crypto';
+import { _ChainInfo } from '@subwallet/chain-list/types';
+import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
+import { createTransactionFromRLP } from '@subwallet/extension-base/utils/eth';
+import BigN from 'bignumber.js';
+import { _isChainEnabled, _isChainEvmCompatible } from '@subwallet/extension-base/services/chain-service/utils';
+import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
+import strings from 'constants/strings.ts';
+import { AccountJson } from '@subwallet/extension-base/types';
 
 // from https://github.com/maciejhirsz/uos#substrate-payload
 const SUBSTRATE_SIGN = '53';
@@ -77,12 +83,7 @@ export const rawDataToU8A = (rawData: string): Uint8Array | null => {
   return bytes;
 };
 
-export const constructDataFromBytes = (
-  bytes: Uint8Array,
-  multipartComplete = false,
-  networkMap: Record<string, NetworkJson>,
-  accounts: AccountJson[],
-): ParsedData => {
+export const constructDataFromBytes = (bytes: Uint8Array, multipartComplete = false, networkMap: Record<string, _ChainInfo>, networkStateMap: Record<string, _ChainState>, accounts: AccountJson[]): ParsedData => {
   const frameInfo = hexStripPrefix(u8aToHex(bytes.slice(0, 5)));
   const frameCount = parseInt(frameInfo.substr(2, 4), 16);
   const isMultipart = frameCount > 1; // for simplicity, even single frame payloads are marked as multipart.
@@ -100,7 +101,7 @@ export const constructDataFromBytes = (
       currentFrame,
       frameCount,
       isMultipart,
-      partData: uosAfterFrames,
+      partData: uosAfterFrames
     } as SubstrateMultiParsedData;
   }
 
@@ -121,15 +122,36 @@ export const constructDataFromBytes = (
           firstByte === EVM_SIGN_HASH || firstByte === EVM_SIGN_MESSAGE
             ? 'signData'
             : firstByte === EVM_SIGN_TRANSACTION
-            ? 'signTransaction'
-            : null;
+              ? 'signTransaction'
+              : null;
         const address = '0x' + uosAfterFrames.substr(4, 40);
 
         data.action = action;
         data.data.account = address;
+        const sender = findAccountByAddress(accounts, data.data.account);
 
         if (action === 'signTransaction') {
           data.data.rlp = '0x' + uosAfterFrames.slice(44);
+          const tx = createTransactionFromRLP(data.data.rlp);
+
+          if (!tx) {
+            throw new Error('Cannot parse rlp transaction');
+          }
+
+          const evmChainId = new BigN(tx.ethereumChainId).toNumber();
+          const senderNetwork = getNetworkJsonByInfo(networkMap, isEthereumAddress(address), true, evmChainId);
+
+          if (!senderNetwork) {
+            throw new Error('Failed to sign. Network not found');
+          }
+
+          if (!_isChainEnabled(networkStateMap[senderNetwork.slug])) {
+            throw new Error('Inactive network. Please enable {{networkName}} on this device and try again'.replace('{{networkName}}', senderNetwork.name?.replace(' Relay Chain', '')));
+          }
+
+          if (!sender) {
+            throw new Error('Account has not been imported into this device. Please import an account and try again.');
+          }
         } else if (action === 'signData') {
           if (firstByte === EVM_SIGN_HASH) {
             data.isHash = true;
@@ -137,8 +159,8 @@ export const constructDataFromBytes = (
 
           data.data.data = uosAfterFrames.slice(44);
         } else {
-          console.error('Could not determine action type.');
-          throw new Error('Could not determine action type.');
+          console.error('Failed to identify action type.');
+          throw new Error();
         }
 
         return data;
@@ -172,12 +194,17 @@ export const constructDataFromBytes = (
             networkMap,
             accounts,
             genesisHash,
-            pubKeyHex,
+            pubKeyHex
           );
 
           if (!network) {
             console.error(i18n.errorMessage.noNetwork);
             throw new Error(i18n.errorMessage.noNetwork);
+          }
+
+          if (network && !_isChainEnabled(networkStateMap[network.slug])) {
+            console.error(strings.ERROR_NETWORK_INACTIVE.replace('(network name)', network.name));
+            throw new Error(strings.ERROR_NETWORK_INACTIVE.replace('(network name)', network.name));
           }
 
           if (!account) {
@@ -201,10 +228,15 @@ export const constructDataFromBytes = (
               data.oversized = isOversized;
               data.isHash = isOversized;
 
+              // Need to review, new version cannot use blake2AsHex to encode data as dataToSign
+              // eslint-disable-next-line no-case-declarations
               const [offset] = compactFromU8a(rawPayload);
+              // eslint-disable-next-line no-case-declarations
               const payload = rawPayload.subarray(offset);
 
-              data.data.data = isOversized ? blake2AsHex(u8aToHex(payload, -1, false)) : rawPayload;
+              data.data.data = isOversized
+                ? blake2AsHex(u8aToHex(payload, -1, false))
+                : rawPayload;
 
               data.data.rawPayload = rawPayload;
 
@@ -223,10 +255,11 @@ export const constructDataFromBytes = (
           data.data.account = account.address;
         } catch (e) {
           console.log(e);
+
           if (e instanceof Error) {
             throw new Error(e.message);
           } else {
-            throw new Error('Something went wrong decoding the Substrate UOS payload: ' + uosAfterFrames);
+            throw new Error('Failed to decode the Substrate UOS payload: ' + uosAfterFrames);
           }
         }
 
@@ -234,48 +267,51 @@ export const constructDataFromBytes = (
       }
 
       default:
-        throw new Error('Payload is not formated correctly: ' + bytes.toString());
+        throw new Error('Failed to decode: ' + bytes.toString());
     }
   } catch (e: unknown) {
     if (e instanceof Error) {
       throw new Error(e.message);
     } else {
-      throw new Error('unknown error :(');
+      throw new Error('Error');
     }
   }
 };
 
 const findNetworkAndAccountByGenesisHash = (
-  networkMap: Record<string, NetworkJson>,
+  networkMap: Record<string, _ChainInfo>,
   accounts: AccountJson[],
   genesisHash: string,
-  pubKeyHex: string,
-): { network: NetworkJson | null; account: AccountJson | null; addressLength: number } => {
-  let network: null | NetworkJson = null;
+  pubKeyHex: string
+): { network: _ChainInfo | null; account: AccountJson | null; addressLength: number } => {
+  let network: null | _ChainInfo = null;
   let account: AccountJson | null = null;
+
   for (const forceEthereum of [false, true]) {
-    network = getNetworkJsonByGenesisHash(networkMap, genesisHash, forceEthereum);
+    network = findNetworkJsonByGenesisHash(networkMap, genesisHash, forceEthereum);
+
     if (!network) {
       continue;
     }
 
-    const addressLength = !network.isEthereum ? 64 : 40;
+    const addressLength = !_isChainEvmCompatible(network) ? 64 : 40;
     const address = pubKeyHex.substring(0, addressLength);
+
     account = findAccountByAddress(accounts, '0x' + address);
 
     if (account) {
       return {
         account: account,
         network: network,
-        addressLength: addressLength,
+        addressLength: addressLength
       };
     }
   }
 
   return {
-    account: account,
     network: network,
     addressLength: 0,
+    account: account
   };
 };
 

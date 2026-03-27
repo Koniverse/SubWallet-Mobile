@@ -1,81 +1,35 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { qrcode } from '@polkadot/react-qr/qrcode';
 import { objectSpread } from '@polkadot/util';
 import { xxhashAsHex } from '@polkadot/util-crypto';
 import { createFrames } from 'utils/qr';
 
-const FRAME_DELAY = 100;
-const TIMER_INC = 10;
+const FRAME_DELAY = 1000;
+const TIMER_INC = 100;
 
-const getDataUrl = (value: Uint8Array): string => {
-  const qr = qrcode(0, 'M'); // HACK See our qrcode stringToBytes override as used internally. This
-  // will only work for the case where we actually pass `Bytes` in here
-
-  qr.addData(value as unknown as string, 'Byte');
-  qr.make();
-
-  return qr.createDataURL(16, 0);
+const getDataString = (value: Uint8Array): string => {
+  return Buffer.from(value).toString('binary');
 };
 
 interface FrameState {
   index: number;
   frames: Uint8Array[];
-  images: string[];
+  data: string[];
   valueHash: null | string;
 }
 
-const useCreateQrPayload = (value: Uint8Array, skipEncoding?: boolean): { images: string[]; index: number } => {
-  const [{ images, index }, setFrameState] = useState<FrameState>({
+const useCreateQrPayload = (value: Uint8Array, skipEncoding?: boolean): { data: string[]; index: number } => {
+  const [{ data, index }, setFrameState] = useState<FrameState>({
     index: 0,
     frames: [],
-    images: [],
-    valueHash: null,
+    data: [],
+    valueHash: null
   });
 
-  const timerRef = useRef<{ timerDelay: number; timerId: null | NodeJS.Timeout | number }>({
-    timerDelay: FRAME_DELAY,
-    timerId: null,
-  });
+  const timeOutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeDelayRef = useRef<number>(FRAME_DELAY);
 
   useEffect(() => {
-    const nextFrame = () =>
-      setFrameState(state => {
-        // when we have a single frame, we only ever fire once
-        if (state.frames.length <= 1) {
-          return state;
-        }
-
-        let frameIdx = state.index + 1; // when we overflow, skip to the first and slightly increase the delay between frames
-
-        if (frameIdx === state.frames.length) {
-          frameIdx = 0;
-          timerRef.current.timerDelay = timerRef.current.timerDelay + TIMER_INC;
-        }
-
-        timerRef.current.timerId = setTimeout(nextFrame, timerRef.current.timerDelay); // only encode the frames on demand, not above as part of the
-        // state derivation - in the case of large payloads, this should
-        // be slightly more responsive on initial load
-
-        return objectSpread({}, state, {
-          index: frameIdx,
-        });
-      });
-
-    timerRef.current.timerId = setTimeout(nextFrame, FRAME_DELAY);
-
-    return () => {
-      timerRef.current.timerId &&
-        clearTimeout(
-          typeof timerRef.current.timerId === 'number'
-            ? timerRef.current.timerId
-            : // eslint-disable-next-line react-hooks/exhaustive-deps
-              timerRef.current.timerId[Symbol.toPrimitive](),
-        );
-    };
-  }, []);
-
-  useEffect(() => {
-    setFrameState(state => {
+    setFrameState((state) => {
       const valueHash = xxhashAsHex(value);
 
       if (valueHash === state.valueHash) {
@@ -83,23 +37,77 @@ const useCreateQrPayload = (value: Uint8Array, skipEncoding?: boolean): { images
       }
 
       const frames = skipEncoding ? [value] : createFrames(value); // encode on demand
-      const _images = frames.map(frame => getDataUrl(frame));
+      const _images = frames.map((frame) => getDataString(frame));
 
       return {
         index: 0,
         frames,
-        images: _images,
-        valueHash,
+        data: _images,
+        valueHash
       };
     });
   }, [skipEncoding, value]);
 
-  return useMemo(() => {
-    return {
-      images: images,
-      index: index,
+  useEffect(() => {
+    let amount = true;
+
+    const nextFrame = () => {
+      if (!amount) {
+        return;
+      }
+
+      new Promise<boolean>((resolve) => {
+        setFrameState((state) => {
+          // when we have a single frame, we only ever fire once
+          if (state.frames.length <= 1) {
+            resolve(false);
+
+            return state;
+          }
+
+          let frameIdx = state.index + 1; // when we overflow, skip to the first and slightly increase the delay between frames
+
+          if (frameIdx === state.frames.length) {
+            frameIdx = 0;
+            timeDelayRef.current = timeDelayRef.current + TIMER_INC;
+          }
+
+          resolve(true);
+
+          // state derivation - in the case of large payloads, this should
+          // be slightly more responsive on initial load
+
+          return objectSpread({}, state, {
+            index: frameIdx
+          });
+        });
+      })
+        .then((_value) => {
+          if (_value) {
+            timeOutRef.current = setTimeout(nextFrame, timeDelayRef.current);
+          }
+        })
+        .catch(console.log)
+      ;
     };
-  }, [images, index]);
+
+    timeOutRef.current = setTimeout(() => {
+      if (amount) {
+        nextFrame();
+      }
+    }, FRAME_DELAY);
+
+    return () => {
+      amount = false;
+
+      timeOutRef.current && clearTimeout(timeOutRef.current);
+    };
+  }, []);
+
+  return useMemo(() => ({
+    data: data,
+    index: index
+  }), [data, index]);
 };
 
 export default useCreateQrPayload;

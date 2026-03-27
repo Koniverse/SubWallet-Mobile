@@ -109,7 +109,6 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
           data={listByCategory}
           keyExtractor={keyExtractor}
           renderItem={renderBrowserItem}
-          estimatedItemSize={70}
         />
       ) : (
         <CategoryEmptyList />

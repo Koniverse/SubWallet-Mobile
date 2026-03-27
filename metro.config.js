@@ -1,8 +1,8 @@
 /**
  * Metro configuration
- * https://facebook.github.io/metro/docs/configuration
+ * https://reactnative.dev/docs/metro
  *
- * @type {import('metro-config').MetroConfig}
+ * @type {import('@react-native/metro-config').MetroConfig}
  */
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const defaultConfig = getDefaultConfig(__dirname);
@@ -13,10 +13,11 @@ const config = {
   },
   resolver: {
     assetExts: assetExts.filter(ext => ext !== 'svg'),
+    unstable_enablePackageExports: false,
     sourceExts: [...sourceExts, 'svg'],
     extraNodeModules: {
-      // Override fs with react-native-fs
-      fs: require.resolve('react-native-fs'),
+      // Override fs with @dr.pogodin/react-native-fs
+      fs: require.resolve('@dr.pogodin/react-native-fs'),
       path: require.resolve('react-native-path'),
       crypto: require.resolve('react-native-crypto'),
       stream: require.resolve('stream-browserify'),
@@ -24,10 +25,7 @@ const config = {
       https: require.resolve('https-browserify'),
       zlib: require.resolve('react-zlib-js'),
       url: require.resolve('react-native-url-polyfill'),
-      'expo-crypto': require.resolve('react-native-expo-crypto'),
-      'tiny-secp256k1': require.resolve('@bitcoinerlab/secp256k1'),
-      '@emurgo/cardano-serialization-lib-nodejs': require.resolve('@emurgo/csl-mobile-bridge'),
-      '@emurgo/cardano-message-signing-browser': require.resolve('@emurgo/csl-mobile-bridge'),
+      'expo-crypto': require.resolve('react-native-expo-crypto')
     },
   },
 };

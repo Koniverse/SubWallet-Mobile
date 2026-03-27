@@ -16,7 +16,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { EmptyList } from 'components/EmptyList';
 import useGetBitcoinAccounts from 'hooks/common/useGetBitcoinAccounts';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { FlashList, ListRenderItemInfo } from '@shopify/flash-list';
 import { Search } from 'components/Search';
@@ -25,6 +25,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import { VoidFunction } from 'types/index';
 
 interface Props {
   accountProxy: AccountProxy;
@@ -274,13 +275,6 @@ export const AccountChainAddressList = ({ accountProxy }: Props) => {
     ({ item }: ListRenderItemInfo<AccountChainAddress>) => {
       const isPolkadotUnifiedChain = checkIsPolkadotUnifiedChain(item.slug);
       const isBitcoinChain = isBitcoinAddress(item.address);
-      let tooltip = '';
-
-      if (isPolkadotUnifiedChain) {
-        tooltip = 'This network has two address formats';
-      } else if (isBitcoinChain) {
-        tooltip = 'This network has three address types';
-      }
 
       let isShowBitcoinInfoButton = false;
 
@@ -291,7 +285,6 @@ export const AccountChainAddressList = ({ accountProxy }: Props) => {
 
       return (
         <AccountChainAddressItem
-          infoButtonTooltip={tooltip}
           isShowInfoButton={isPolkadotUnifiedChain || isShowBitcoinInfoButton}
           item={item}
           key={`${item.slug}_${item.address}`}
@@ -315,7 +308,7 @@ export const AccountChainAddressList = ({ accountProxy }: Props) => {
   const renderEmptyList = useCallback(() => {
     return (
       <EmptyList
-        icon={MagnifyingGlass}
+        icon={MagnifyingGlassIcon}
         title={i18n.emptyScreen.selectorEmptyTitle}
         message={i18n.emptyScreen.selectorEmptyMessage}
       />
@@ -364,7 +357,6 @@ export const AccountChainAddressList = ({ accountProxy }: Props) => {
           data={filteredItems}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
-          estimatedItemSize={52}
         />
       ) : (
         renderEmptyList()

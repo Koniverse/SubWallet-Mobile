@@ -1,6 +1,6 @@
 import { Button, Icon, PageIcon, SwModal } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { IconProps, Trash, XCircle } from 'phosphor-react-native';
+import { type Icon as PhosphorIcon, TrashIcon, XCircleIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Text, View } from 'react-native';
 import { VoidFunction } from 'types/index';
@@ -15,7 +15,7 @@ interface Props {
   title: string;
   visible: boolean;
   buttonTitle?: string;
-  buttonIcon?: (iconProps: IconProps) => JSX.Element;
+  buttonIcon?: PhosphorIcon;
   loading?: boolean;
   setVisible: (arg: boolean) => void;
 }
@@ -53,7 +53,7 @@ const DeleteModal: React.FC<Props> = (props: Props) => {
           <Button
             disabled={loading}
             loading={loading}
-            icon={<Icon phosphorIcon={ButtonIcon || XCircle} size={'lg'} weight={'fill'} />}
+            icon={<Icon phosphorIcon={ButtonIcon || XCircleIcon} size={'lg'} weight={'fill'} />}
             type="danger"
             onPress={onCompleteModal}>
             {buttonTitle || i18n.buttonTitles.delete}
@@ -64,7 +64,7 @@ const DeleteModal: React.FC<Props> = (props: Props) => {
       onChangeModalVisible={onCancelModal}>
       <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
         <View style={{ paddingBottom: 20 }}>
-          <PageIcon icon={Trash} color={theme.colorError} />
+          <PageIcon icon={TrashIcon} color={theme.colorError} />
         </View>
         <Text style={styles.deleteModalMessageTextStyle}>{message}</Text>
       </View>

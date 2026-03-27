@@ -3,7 +3,7 @@
 
 import { BackgroundIcon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CheckCircle, PlusCircle, Spinner, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, PlusCircleIcon, SpinnerIcon, XCircleIcon } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { StyleProp, TextStyle, View } from 'react-native';
 import { EarningStepStatus } from 'reducers/earning';
@@ -27,7 +27,7 @@ const EarningProcessItem = ({ index, stepName, stepStatus }: Props) => {
           <BackgroundIcon
             backgroundColor={convertHexColorToRGBA(theme['gold-6'], 0.1)}
             iconColor={theme['gold-6']}
-            phosphorIcon={Spinner}
+            phosphorIcon={SpinnerIcon}
             size="lg"
             weight="fill"
             shape="circle"
@@ -38,7 +38,7 @@ const EarningProcessItem = ({ index, stepName, stepStatus }: Props) => {
           <BackgroundIcon
             backgroundColor={theme.colorErrorBg}
             iconColor={theme.colorError}
-            phosphorIcon={XCircle}
+            phosphorIcon={XCircleIcon}
             size="lg"
             weight="fill"
             shape="circle"
@@ -49,7 +49,7 @@ const EarningProcessItem = ({ index, stepName, stepStatus }: Props) => {
           <BackgroundIcon
             backgroundColor={convertHexColorToRGBA(theme.colorSuccess, 0.1)}
             iconColor={theme.colorSuccess}
-            phosphorIcon={CheckCircle}
+            phosphorIcon={CheckCircleIcon}
             size="lg"
             weight="fill"
             shape="circle"
@@ -60,7 +60,7 @@ const EarningProcessItem = ({ index, stepName, stepStatus }: Props) => {
           <BackgroundIcon
             backgroundColor={convertHexColorToRGBA(theme['gray-6'], 0.1)}
             iconColor={theme['gray-6']}
-            phosphorIcon={PlusCircle}
+            phosphorIcon={PlusCircleIcon}
             size="lg"
             weight="fill"
             shape="circle"
@@ -72,7 +72,7 @@ const EarningProcessItem = ({ index, stepName, stepStatus }: Props) => {
           <BackgroundIcon
             backgroundColor={convertHexColorToRGBA(theme['gray-6'], 0.1)}
             iconColor={theme['gray-3']}
-            phosphorIcon={PlusCircle}
+            phosphorIcon={PlusCircleIcon}
             size="lg"
             weight="fill"
             shape="circle"

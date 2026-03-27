@@ -4,7 +4,7 @@ import { _ChainAsset } from '@subwallet/chain-list/types';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { TouchableOpacity, View } from 'react-native';
 import { Icon, Typography } from 'components/design-system-ui';
-import { PencilSimpleLine } from 'phosphor-react-native';
+import { PencilSimpleLineIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -66,7 +66,7 @@ const SelectedValidatorInfoPart = ({ compound, poolInfo }: Props) => {
       onPress={onPress}>
       <Typography.Text style={{ color: theme.colorTextLight1 }}>{'Your validators'}</Typography.Text>
       <View style={{ width: 40, alignItems: 'center', justifyContent: 'center', marginRight: -theme.padding }}>
-        <Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />
+        <Icon phosphorIcon={PencilSimpleLineIcon} size={'sm'} iconColor={theme['gray-5']} />
       </View>
     </TouchableOpacity>
   );

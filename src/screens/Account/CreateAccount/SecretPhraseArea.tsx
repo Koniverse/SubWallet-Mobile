@@ -13,8 +13,8 @@ import {
 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
-import { CheckCircle, Download } from 'phosphor-react-native';
-import { DownloadSeedPhraseModal } from 'components/common/DownloadSeedPhraseModal';
+import { CheckCircleIcon, DownloadIcon } from 'phosphor-react-native';
+import { DownloadSeedPhraseModal } from 'components/Modal/DownloadSeedPhraseModal';
 
 interface Props {
   onPressSubmit: () => void;
@@ -86,7 +86,7 @@ export const SecretPhraseArea = ({ seed, onPressSubmit }: Props) => {
                   Download seed phrase
                   <View>
                     <View style={{ marginLeft: 4, marginBottom: -4 }}>
-                      <Icon phosphorIcon={Download} weight="fill" size={'sm'} iconColor={'#737373'} />
+                      <Icon phosphorIcon={DownloadIcon} weight="fill" size={'sm'} iconColor={'#737373'} />
                     </View>
                   </View>
                 </Typography.Text>
@@ -96,7 +96,7 @@ export const SecretPhraseArea = ({ seed, onPressSubmit }: Props) => {
           />
         </View>
         <View style={footerAreaStyle}>
-          <Button icon={<Icon size={'lg'} phosphorIcon={CheckCircle} weight={'fill'} />} onPress={onPressSubmit}>
+          <Button icon={<Icon size={'lg'} phosphorIcon={CheckCircleIcon} weight={'fill'} />} onPress={onPressSubmit}>
             {i18n.buttonTitles.saveItSomeWhereSafe}
           </Button>
         </View>

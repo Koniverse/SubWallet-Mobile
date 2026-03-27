@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { Dimensions, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';

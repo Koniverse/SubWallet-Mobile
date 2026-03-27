@@ -1,20 +1,14 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AccountAuthType, AuthorizeRequest } from '@subwallet/extension-base/background/types';
+import { AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import { Button, Icon } from 'components/design-system-ui';
-import {
-  ALL_ACCOUNT_AUTH_TYPES,
-  DEFAULT_ACCOUNT_TYPES,
-  EVM_ACCOUNT_TYPE,
-  SUBSTRATE_ACCOUNT_TYPE,
-  TON_ACCOUNT_TYPE,
-} from 'constants/index';
+import { ALL_ACCOUNT_AUTH_TYPES } from 'constants/index';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { PlusCircle, ShieldSlash, XCircle } from 'phosphor-react-native';
+import { PlusCircleIcon, ShieldSlashIcon, XCircleIcon } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { DeviceEventEmitter, Platform, Text, View } from 'react-native';
 import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from 'messaging/index';
@@ -29,7 +23,6 @@ import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 import { useHandleInternetConnectionForConfirmation } from 'hooks/useHandleInternetConnectionForConfirmation';
 import { AccountChainType } from '@subwallet/extension-base/types';
 import { convertAuthorizeTypeToChainTypes, filterAuthorizeAccountProxies } from 'utils/accountProxy';
-import { KeypairType } from '@subwallet/keyring/types';
 import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
 import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
 
@@ -152,24 +145,9 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   }, [accountAuthTypes, accounts, request, selectedMap]);
 
   const onAddAccount = useCallback(() => {
-    let types: KeypairType[];
-
-    const addAccountType: Record<AccountAuthType, KeypairType> = {
-      evm: EVM_ACCOUNT_TYPE,
-      substrate: SUBSTRATE_ACCOUNT_TYPE,
-      ton: TON_ACCOUNT_TYPE,
-    };
-
-    if (accountAuthTypes) {
-      types = accountAuthTypes.map(type => addAccountType[type]);
-    } else {
-      types = DEFAULT_ACCOUNT_TYPES;
-    }
-    console.log('types', types);
-
     setSelectedMnemonicType('general');
     navigation.replace('CreateAccount', { isBack: true });
-  }, [accountAuthTypes, navigation, setSelectedMnemonicType]);
+  }, [navigation, setSelectedMnemonicType]);
 
   const { onPress: onPressCreateOne } = useUnlockModal(navigation);
 
@@ -250,7 +228,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
       <ConfirmationFooter>
         {visibleAccountProxies.length > 0 ? (
           <>
-            <Button icon={<Icon phosphorIcon={ShieldSlash} weight="fill" />} type="danger" onPress={onBlock} />
+            <Button icon={<Icon phosphorIcon={ShieldSlashIcon} weight="fill" />} type="danger" onPress={onBlock} />
             <Button block={true} type="secondary" onPress={onCancel}>
               {i18n.common.cancel}
             </Button>
@@ -261,7 +239,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
         ) : (
           <>
             <Button
-              icon={<Icon phosphorIcon={XCircle} weight="fill" />}
+              icon={<Icon phosphorIcon={XCircleIcon} weight="fill" />}
               block={true}
               type="secondary"
               onPress={onCancel}>
@@ -273,7 +251,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
                 Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
                 onPressCreateOne(onAddAccount)();
               }}
-              icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
+              icon={<Icon phosphorIcon={PlusCircleIcon} weight="fill" />}>
               {i18n.buttonTitles.createOne}
             </Button>
           </>

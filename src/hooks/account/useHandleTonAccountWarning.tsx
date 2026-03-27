@@ -8,7 +8,7 @@ import { VoidFunction } from 'types/index';
 import { AppModalContext } from 'providers/AppModalContext';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { Warning } from 'phosphor-react-native';
+import { WarningIcon } from 'phosphor-react-native';
 import { PageIcon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { mmkvStore } from 'utils/storage';
@@ -32,7 +32,7 @@ export default function useHandleTonAccountWarning(callback?: VoidFunction): Hoo
             title: 'Incompatible seed phrase',
             message:
               "This address's seed phrase is not compatible with TON-native wallets. Continue using this address or create a new account that can be used on both SubWallet and TON-native wallets",
-            customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+            customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
             completeBtnTitle: 'Get address',
             cancelBtnTitle: 'Create new',
             onCompleteModal: () => {

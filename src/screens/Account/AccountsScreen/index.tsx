@@ -5,7 +5,7 @@ import { InteractionManager, Keyboard, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { Export, FileArrowDown, GitMerge, MagnifyingGlass, PlusCircle, Swatches, Trash } from 'phosphor-react-native';
+import { ExportIcon, FileArrowDownIcon, GitMergeIcon, MagnifyingGlassIcon, PlusCircleIcon, SwatchesIcon, TrashIcon } from 'phosphor-react-native';
 import { AccountsScreenProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
@@ -13,10 +13,7 @@ import { forgetAccount, saveCurrentAccountAddress } from 'messaging/index';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
-import { FlatListScreen } from 'components/FlatListScreen';
-import { EmptyList } from 'components/EmptyList';
 import { ModalRef } from 'types/modalRef';
-import { Swipeable } from 'react-native-gesture-handler';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
 import DeleteModal from 'components/common/Modal/DeleteModal';
@@ -27,6 +24,9 @@ import { AccountActions, AccountProxy, AccountProxyType } from '@subwallet/exten
 import createStylesheet from 'screens/Settings/AddressBook/style';
 import { SelectAccountAllItem } from 'components/common/SelectAccountAllItem';
 import { AccountChainAddressesSelector } from 'components/Modal/common/AccountChainAddressesSelector';
+import { FlatListScreen } from 'components/FlatListScreen';
+import { EmptyList } from 'components/EmptyList.tsx';
+import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 export enum AccountGroupType {
   ALL_ACCOUNT = 'all',
@@ -65,7 +65,7 @@ export interface AccountProxyItem extends AccountProxy {
 const renderListEmptyComponent = () => {
   return (
     <EmptyList
-      icon={MagnifyingGlass}
+      icon={MagnifyingGlassIcon}
       title={i18n.emptyScreen.selectorEmptyTitle}
       message={i18n.emptyScreen.selectorEmptyMessage}
     />
@@ -124,12 +124,12 @@ export const AccountsScreen = ({
 }: AccountsScreenProps) => {
   const { accountProxies, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
 
-  const createAccountRef = useRef<ModalRef>();
-  const importAccountRef = useRef<ModalRef>();
-  const attachAccountRef = useRef<ModalRef>();
-  const accountChainAddressSelectorRef = useRef<ModalRef>();
-  let row = useRef<(Swipeable | null)[]>([]);
-  let prevOpenedRow = useRef<Swipeable>(null);
+  const createAccountRef = useRef<ModalRef | null>(null);
+  const importAccountRef = useRef<ModalRef | null>(null);
+  const attachAccountRef = useRef<ModalRef | null>(null);
+  const accountChainAddressSelectorRef = useRef<ModalRef | null>(null);
+  let row = useRef<(SwipeableMethods | null)[]>([]);
+  let prevOpenedRow = useRef<SwipeableMethods | null>(null);
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
@@ -309,10 +309,7 @@ export const AccountsScreen = ({
           navigation.goBack();
           navigation.goBack();
         } else if (pathName === 'SendFund' || pathName === 'BuyToken') {
-          navigation.navigate('Home', {
-            screen: 'Main',
-            params: { screen: 'Tokens', params: { screen: 'TokenGroups' } },
-          });
+          navigation.goBack();
           navigation.goBack();
         } else if (pathName && EARNING_SCREEN_LIST.includes(pathName)) {
           navigation.navigate('Home', {
@@ -320,7 +317,7 @@ export const AccountsScreen = ({
             params: { screen: 'Earning', params: { screen: 'EarningList', params: { step: 1 } } },
           });
         } else {
-          navigation.navigate('Home');
+          navigation.goBack();
         }
       };
     },
@@ -337,7 +334,7 @@ export const AccountsScreen = ({
               shape={'circle'}
               style={{ backgroundColor: 'rgba(217, 163, 62, 0.1)' }}
               type={'ghost'}
-              icon={<Icon phosphorIcon={GitMerge} size={'sm'} iconColor={theme['gold-6']} />}
+              icon={<Icon phosphorIcon={GitMergeIcon} size={'sm'} iconColor={theme['gold-6']} />}
               size={'xs'}
               onPress={() => {
                 navigation.navigate('EditAccount', {
@@ -353,7 +350,7 @@ export const AccountsScreen = ({
             shape={'circle'}
             style={{ backgroundColor: 'rgba(191, 22, 22, 0.1)' }}
             type={'ghost'}
-            icon={<Icon phosphorIcon={Trash} size={'sm'} iconColor={theme.colorError} />}
+            icon={<Icon phosphorIcon={TrashIcon} size={'sm'} iconColor={theme.colorError} />}
             size={'xs'}
             onPress={() => {
               Keyboard.dismiss();
@@ -385,12 +382,13 @@ export const AccountsScreen = ({
         <Swipeable
           key={item.id}
           enabled={!isAllAccount}
-          ref={ref => (row.current[index] = ref)}
+          ref={(ref: SwipeableMethods | null) => (row.current[index] = ref)}
           friction={2}
           leftThreshold={80}
           rightThreshold={40}
           onSwipeableWillOpen={() => closeOpenedRow(index)}
-          renderRightActions={renderRightSwipeActions(item, index)}>
+          renderRightActions={renderRightSwipeActions(item, index)}
+        >
           {isAllAccount ? (
             <SelectAccountAllItem
               isSelected={item.id === currentAccountProxy?.id}
@@ -438,7 +436,7 @@ export const AccountsScreen = ({
         <Button
           style={{ marginRight: 12 }}
           block
-          icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
+          icon={<Icon phosphorIcon={PlusCircleIcon} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           externalTextStyle={{ flex: 1 }}
           onPress={() => onPressFooterBtn(() => createAccountRef?.current?.onOpenModal())}>
@@ -446,12 +444,12 @@ export const AccountsScreen = ({
         </Button>
         <Button
           style={{ marginRight: 12 }}
-          icon={<Icon phosphorIcon={FileArrowDown} size={'lg'} weight={'fill'} />}
+          icon={<Icon phosphorIcon={FileArrowDownIcon} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => onPressFooterBtn(() => importAccountRef?.current?.onOpenModal())}
         />
         <Button
-          icon={<Icon phosphorIcon={Swatches} size={'lg'} weight={'fill'} />}
+          icon={<Icon phosphorIcon={SwatchesIcon} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => onPressFooterBtn(() => attachAccountRef?.current?.onOpenModal())}
         />
@@ -479,12 +477,11 @@ export const AccountsScreen = ({
         loading={!isReady}
         afterListItem={renderFooterComponent()}
         placeholder={i18n.placeholder.accountName}
-        estimatedItemSize={64}
         keyExtractor={item => {
           return `${item.id}`;
         }}
         rightIconOption={{
-          icon: ({ color }) => <Icon phosphorIcon={Export} weight={'fill'} iconColor={color} size={'md'} />,
+          icon: ({ color }) => <Icon phosphorIcon={ExportIcon} weight={'fill'} iconColor={color} size={'md'} />,
           onPress: () => navigation.navigate('ExportAllAccount'),
         }}
       />

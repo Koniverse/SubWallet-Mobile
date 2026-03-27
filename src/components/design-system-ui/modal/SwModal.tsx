@@ -18,7 +18,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 import Button from '../button';
 import { Icon } from 'components/design-system-ui';
-import { CaretLeft, Gear } from 'phosphor-react-native';
+import { CaretLeftIcon, GearIcon } from 'phosphor-react-native';
+import { noop } from 'utils/function';
 
 export interface SWModalProps {
   children: React.ReactNode;
@@ -38,7 +39,7 @@ export interface SWModalProps {
   onBackButtonPress?: () => void;
   isUseModalV2?: boolean;
   setVisible: (arg: boolean) => void;
-  modalBaseV2Ref?: React.RefObject<SWModalRefProps>;
+  modalBaseV2Ref?: React.RefObject<SWModalRefProps | null>;
   level?: number;
   isUseSafeAreaView?: boolean;
   disabledOnPressBackDrop?: boolean;
@@ -169,7 +170,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
             <Button
               style={{ position: 'absolute', left: 0 }}
               size={'xs'}
-              icon={<Icon phosphorIcon={CaretLeft} />}
+              icon={<Icon phosphorIcon={CaretLeftIcon} />}
               type={'ghost'}
               onPress={onPressLeftBtn}
             />
@@ -190,7 +191,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
             <Button
               style={{ position: 'absolute', right: 0 }}
               size={'xs'}
-              icon={<Icon phosphorIcon={Gear} />}
+              icon={<Icon phosphorIcon={GearIcon} />}
               type={'ghost'}
               onPress={onPressRightBtn}
             />
@@ -237,17 +238,17 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
         ) : (
           <ModalBase
             isVisible={modalVisible}
-            onModalHide={onModalHide} // Auto trigger when close modal
+            onModalHide={onModalHide || noop} // Auto trigger when close modal
             swipeDirection={onChangeModalVisible ? 'down' : undefined}
             style={{ margin: 0 }}
             backdropColor={'#1A1A1A'}
             backdropOpacity={0.8}
             onSwipeComplete={onChangeModalVisible}
-            onBackdropPress={onBackdropPress || onChangeModalVisible}
+            onBackdropPress={onBackdropPress || onChangeModalVisible || noop}
             animationIn={'slideInUp'}
             animationOut={'slideOutDown'}
             avoidKeyboard={true}
-            onBackButtonPress={onBackButtonPress}
+            onBackButtonPress={onBackButtonPress || noop}
             // useNativeDriver
             hideModalContentWhileAnimating
             isUseForceHidden={isUseForceHidden}

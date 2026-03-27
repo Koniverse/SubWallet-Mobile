@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { BuyServiceInfo, BuyTokenInfo } from '@subwallet/extension-base/types';
 import { BuyServiceStore, ReduxStatus } from 'stores/types';
 

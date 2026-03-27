@@ -1,9 +1,9 @@
 import { StyleProp, TouchableOpacity } from 'react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { Button, Icon } from 'components/design-system-ui';
-import { X } from 'phosphor-react-native';
+import { XIcon } from 'phosphor-react-native';
 import React, { useCallback, useContext, useMemo } from 'react';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StaticDataProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { mmkvStore } from 'utils/storage';
@@ -96,7 +96,7 @@ const Banner = ({
         />
         {!!dismissBanner && (
           <Button
-            icon={<Icon phosphorIcon={X} weight="bold" size="xs" />}
+            icon={<Icon phosphorIcon={XIcon} weight="bold" size="xs" />}
             onPress={() => dismissBanner([bannerId])}
             style={{ position: 'absolute', right: 0, top: 0 }}
             size="xs"

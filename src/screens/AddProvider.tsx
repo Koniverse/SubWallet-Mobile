@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { Globe, Info, WifiHigh, WifiSlash } from 'phosphor-react-native';
+import { GlobeIcon, InfoIcon, WifiHighIcon, WifiSlashIcon } from 'phosphor-react-native';
 import { DeviceEventEmitter, Keyboard, StyleProp, ScrollView, View, ViewStyle } from 'react-native';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import InputText from 'components/Input/InputText';
@@ -12,7 +12,7 @@ import {
   _isChainSubstrateCompatible,
   _isCustomProvider,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { ValidateStatus } from '@subwallet/react-ui/es/form/FormItem';
+import { ValidateStatus } from 'types/form';
 import { _NetworkUpsertParams } from '@subwallet/extension-base/services/chain-service/types';
 import { upsertChain, validateCustomChain } from 'messaging/index';
 import { useToast } from 'react-native-toast-notifications';
@@ -192,7 +192,7 @@ export const AddProvider = ({
 
     if (providerValidation.status === 'success') {
       return (
-        <Icon size={'sm'} iconColor={theme.colorSuccess} phosphorIcon={WifiHigh} type={'phosphor'} weight={'bold'} />
+        <Icon size={'sm'} iconColor={theme.colorSuccess} phosphorIcon={WifiHighIcon} type={'phosphor'} weight={'bold'} />
       );
     }
 
@@ -205,7 +205,7 @@ export const AddProvider = ({
         <Icon
           size={'sm'}
           iconColor={theme.colorTextLight4}
-          phosphorIcon={WifiSlash}
+          phosphorIcon={WifiSlashIcon}
           type={'phosphor'}
           weight={'bold'}
         />
@@ -252,7 +252,7 @@ export const AddProvider = ({
     <ContainerWithSubHeader
       showLeftBtn
       onPressBack={() => navigation.goBack()}
-      rightIcon={Info}
+      rightIcon={InfoIcon}
       title={i18n.header.addNewProvider}>
       <View style={ContainerStyle}>
         <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps={'handled'}>
@@ -270,7 +270,7 @@ export const AddProvider = ({
             <View style={{ flexDirection: 'row' }}>
               <InputText
                 containerStyle={{ flex: 2, marginRight: 6 }}
-                leftIcon={Globe}
+                leftIcon={GlobeIcon}
                 placeholder={formState.labels.name}
                 ref={formState.refs.name}
                 value={formState.data.name}

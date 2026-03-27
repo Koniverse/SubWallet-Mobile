@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRightIcon } from 'phosphor-react-native';
 import { Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { getNetworkLogo } from 'utils/index';
@@ -28,7 +28,7 @@ export const NetworkItem = ({ itemName, itemKey, onSelectNetwork, defaultItemKey
             {itemName}
           </Typography.Text>
         </View>
-        <Icon phosphorIcon={CaretRight} size={'xs'} iconColor={theme.colorWhite} />
+        <Icon phosphorIcon={CaretRightIcon} size={'xs'} iconColor={theme.colorWhite} />
       </View>
     </TouchableOpacity>
   );

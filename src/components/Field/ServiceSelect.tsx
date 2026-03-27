@@ -4,7 +4,7 @@ import { Image, StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { Typography } from 'components/design-system-ui';
 
@@ -64,7 +64,7 @@ export const ServiceSelectField = ({
           {!value && <Text style={getPlaceholderStyle}>{i18n.placeholder.selectService}</Text>}
         </View>
 
-        {!!showIcon && <CaretDown size={20} color={ColorMap.disabled} weight={'bold'} />}
+        {!!showIcon && <CaretDownIcon size={20} color={ColorMap.disabled} weight={'bold'} />}
       </View>
     </FieldBase>
   );

@@ -97,9 +97,9 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
     return services[formState.data.service] || { name: '', url: '', contactUrl: '', policyUrl: '', termUrl: '' };
   }, [formState.data.service, services]);
 
-  const accountBuyRef = useRef<ModalRef>();
-  const tokenBuyRef = useRef<ModalRef>();
-  const serviceBuyRef = useRef<ModalRef>();
+  const accountBuyRef = useRef<ModalRef | null>(null);
+  const tokenBuyRef = useRef<ModalRef | null>(null);
+  const serviceBuyRef = useRef<ModalRef | null>(null);
 
   const accountAddressItems = useMemo(() => {
     const selectedTokenSlug = formState.data.tokenSlug;

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { CirclesThreePlus, Eye, GitCommit, Needle, QrCode, Question, Strategy, Swatches } from 'phosphor-react-native';
+import { CirclesThreePlusIcon, EyeIcon, GitCommitIcon, NeedleIcon, QrCodeIcon, QuestionIcon, StrategyIcon, SwatchesIcon } from 'phosphor-react-native';
 import { AccountProxyType } from '@subwallet/extension-base/types';
 import { Icon, Tag } from 'components/design-system-ui';
 import { SWIconProps } from 'components/design-system-ui/icon';
@@ -39,41 +39,41 @@ export const AccountProxyTypeTag = ({ type, style }: Props) => {
 
     if (type === AccountProxyType.ALL_ACCOUNT) {
       result.label = 'All account';
-      result.icon.phosphorIcon = CirclesThreePlus;
+      result.icon.phosphorIcon = CirclesThreePlusIcon;
     } else if (type === AccountProxyType.SOLO) {
       result.color = 'blue';
       result.label = 'Solo account';
       result.icon.iconColor = theme['blue-7'];
-      result.icon.phosphorIcon = GitCommit;
+      result.icon.phosphorIcon = GitCommitIcon;
     } else if (type === AccountProxyType.UNIFIED) {
       result.color = 'success';
       result.label = 'Unified account';
-      result.icon.phosphorIcon = Strategy;
+      result.icon.phosphorIcon = StrategyIcon;
       result.icon.iconColor = theme.colorSuccess;
     } else if (type === AccountProxyType.QR) {
       result.color = 'default';
       result.label = 'QR signer account';
-      result.icon.phosphorIcon = QrCode;
+      result.icon.phosphorIcon = QrCodeIcon;
       result.bgColor = 'rgba(217, 217, 217, 0.1)';
       result.color = 'gray';
     } else if (type === AccountProxyType.LEDGER) {
       result.label = 'Ledger account';
       result.color = 'gray';
-      result.icon.phosphorIcon = Swatches;
+      result.icon.phosphorIcon = SwatchesIcon;
       result.bgColor = 'rgba(217, 217, 217, 0.1)';
     } else if (type === AccountProxyType.READ_ONLY) {
       result.label = 'Watch-only account';
-      result.icon.phosphorIcon = Eye;
+      result.icon.phosphorIcon = EyeIcon;
       result.bgColor = 'rgba(217, 217, 217, 0.1)';
       result.color = 'gray';
     } else if (type === AccountProxyType.INJECTED) {
       result.label = 'injected account';
-      result.icon.phosphorIcon = Needle;
+      result.icon.phosphorIcon = NeedleIcon;
       result.bgColor = 'rgba(217, 217, 217, 0.1)';
       result.color = 'gray';
     } else if (type === AccountProxyType.UNKNOWN) {
       result.label = 'Unknown account';
-      result.icon.phosphorIcon = Question;
+      result.icon.phosphorIcon = QuestionIcon;
       result.bgColor = 'rgba(217, 217, 217, 0.1)';
       result.color = 'gray';
     }

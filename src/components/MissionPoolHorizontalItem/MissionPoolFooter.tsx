@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { Linking, StyleProp, View, ViewStyle } from 'react-native';
 import { Button, Icon } from 'components/design-system-ui';
-import { GlobeHemisphereWest, PlusCircle } from 'phosphor-react-native';
+import { GlobeHemisphereWestIcon, PlusCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { MissionInfo } from 'types/missionPool';
 import i18n from 'utils/i18n/i18n';
@@ -22,7 +22,7 @@ export const MissionPoolFooter = ({ data, style, disabledJoinNowBtn, onPressJoin
     <View style={style}>
       <Button
         style={{ borderWidth: 2, borderColor: theme.colorBgBorder }}
-        icon={<Icon phosphorIcon={GlobeHemisphereWest} size={'sm'} weight={'fill'} />}
+        icon={<Icon phosphorIcon={GlobeHemisphereWestIcon} size={'sm'} weight={'fill'} />}
         size={'xs'}
         shape={'circle'}
         type={'secondary'}
@@ -45,7 +45,7 @@ export const MissionPoolFooter = ({ data, style, disabledJoinNowBtn, onPressJoin
         icon={
           <Icon
             iconColor={disabledJoinNowBtn ? theme.colorTextLight5 : theme.colorWhite}
-            phosphorIcon={PlusCircle}
+            phosphorIcon={PlusCircleIcon}
             size={'sm'}
             weight={'fill'}
           />

@@ -14,7 +14,7 @@ import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useModalScanner from 'hooks/qr/useModalScanner';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { checkPublicAndPrivateKey, createAccountWithSecret } from 'messaging/index';
-import { QrCode, Scan } from 'phosphor-react-native';
+import { QrCodeIcon, ScanIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Linking, Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -151,7 +151,7 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
         <View>
           <DualLogo
             leftLogo={<Image {...imageProps} src={ImageLogosMap.subwallet} />}
-            linkIcon={<Icon phosphorIcon={Scan} size="md" />}
+            linkIcon={<Icon phosphorIcon={ScanIcon} size="md" />}
             rightLogo={<Image {...imageProps} src={ImageLogosMap.__qr_code__} />}
           />
         </View>
@@ -168,7 +168,7 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
       </View>
       <View style={styles.footer}>
         <Button
-          icon={<Icon phosphorIcon={QrCode} weight="fill" />}
+          icon={<Icon phosphorIcon={QrCodeIcon} weight="fill" />}
           onPress={onPressSubmit(onOpenModal)}
           loading={loading}
           disabled={loading}>

@@ -12,7 +12,7 @@ import { View } from 'react-native';
 import { Search } from 'components/Search';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {
@@ -23,7 +23,7 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
   const navigation = useNavigation<RootNavigationProps>();
   const [selectedAccountProxy, setSelectedAccountProxy] = useState<{ name?: string; proxyId?: string } | undefined>();
-  const accountChainAddressSelectorRef = useRef<ModalRef>();
+  const accountChainAddressSelectorRef = useRef<ModalRef | null>(null);
   const [searchString, setSearchString] = useState<string>('');
   const theme = useSubWalletTheme().swThemes;
 
@@ -99,7 +99,7 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
   const renderEmptyList = () => {
     return (
       <EmptyList
-        icon={MagnifyingGlass}
+        icon={MagnifyingGlassIcon}
         title={i18n.emptyScreen.selectorEmptyTitle}
         message={i18n.emptyScreen.selectorEmptyMessage}
       />
@@ -148,7 +148,6 @@ export const DerivedAccountList = ({ accountProxy }: Props) => {
           data={filteredItems}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
-          estimatedItemSize={52}
         />
       ) : (
         renderEmptyList()

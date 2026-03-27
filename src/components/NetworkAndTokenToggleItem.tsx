@@ -4,7 +4,7 @@ import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { BackgroundIcon, Button, Icon, Logo } from 'components/design-system-ui';
-import { CircleNotch, IconProps, PencilSimpleLine, WifiHigh, WifiSlash } from 'phosphor-react-native';
+import { CircleNotchIcon, IconProps, PencilSimpleLineIcon, WifiHighIcon, WifiSlashIcon } from 'phosphor-react-native';
 import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
 
 interface Props {
@@ -59,10 +59,10 @@ const NetworkStatusIconMap: Record<
     backgroundColor: string;
   }
 > = {
-  [_ChainConnectionStatus.CONNECTED]: { phosphorIcon: WifiHigh, backgroundColor: '#2DA73F' },
-  [_ChainConnectionStatus.DISCONNECTED]: { phosphorIcon: WifiSlash, backgroundColor: '#737373' },
-  [_ChainConnectionStatus.CONNECTING]: { phosphorIcon: CircleNotch, backgroundColor: '#D9A33E' },
-  [_ChainConnectionStatus.UNSTABLE]: { phosphorIcon: WifiSlash, backgroundColor: '#E68F25' },
+  [_ChainConnectionStatus.CONNECTED]: { phosphorIcon: WifiHighIcon, backgroundColor: '#2DA73F' },
+  [_ChainConnectionStatus.DISCONNECTED]: { phosphorIcon: WifiSlashIcon, backgroundColor: '#737373' },
+  [_ChainConnectionStatus.CONNECTING]: { phosphorIcon: CircleNotchIcon, backgroundColor: '#D9A33E' },
+  [_ChainConnectionStatus.UNSTABLE]: { phosphorIcon: WifiSlashIcon, backgroundColor: '#E68F25' },
 };
 
 export const NetworkAndTokenToggleItem = ({
@@ -98,19 +98,21 @@ export const NetworkAndTokenToggleItem = ({
           </Text>
         </View>
 
-        <Switch
-          disabled={isDisableSwitching}
-          ios_backgroundColor={ColorMap.switchInactiveButtonColor}
-          value={isEnabled}
-          onValueChange={onValueChange}
-        />
+        <View>
+          <Switch
+            disabled={isDisableSwitching}
+            ios_backgroundColor={ColorMap.switchInactiveButtonColor}
+            value={isEnabled}
+            onValueChange={onValueChange}
+          />
+        </View>
 
         {showEditButton && (
           <Button
             style={{ marginLeft: 8 }}
             size={'xs'}
             type={'ghost'}
-            icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={'rgba(166, 166, 166, 1)'} />}
+            icon={<Icon phosphorIcon={PencilSimpleLineIcon} size={'sm'} iconColor={'rgba(166, 166, 166, 1)'} />}
             onPress={onPressEditBtn}
           />
         )}

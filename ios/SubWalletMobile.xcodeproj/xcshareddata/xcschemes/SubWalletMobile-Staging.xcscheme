@@ -68,8 +68,8 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "SubWalletMobileTests.xctest"
+               BlueprintIdentifier = "00E462ED1AD99517003FC87E"
+               BuildableName = "SubWalletMobileTests"
                BlueprintName = "SubWalletMobileTests"
                ReferencedContainer = "container:SubWalletMobile.xcodeproj">
             </BuildableReference>

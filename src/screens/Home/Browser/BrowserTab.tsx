@@ -16,14 +16,14 @@ import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import {
-  ArrowClockwise,
-  CaretLeft,
-  CaretRight,
-  DotsThree,
-  GlobeSimple,
-  House,
-  IconProps,
-  X,
+  ArrowClockwiseIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+  DotsThreeIcon,
+  GlobeSimpleIcon,
+  HouseIcon,
+  XIcon,
+  type Icon as PhosphorIcon
 } from 'phosphor-react-native';
 import { WebRunnerContext } from 'providers/contexts';
 import WebView from 'react-native-webview';
@@ -33,7 +33,7 @@ import {
   WebViewNavigationEvent,
   WebViewProgressEvent,
 } from 'react-native-webview/lib/WebViewTypes';
-import * as RNFS from 'react-native-fs';
+import * as RNFS from '@dr.pogodin/react-native-fs';
 import { DEVICE, regex } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
@@ -73,7 +73,7 @@ type Props = {
 
 type BrowserActionButtonType = {
   key: string;
-  icon?: (iconProps: IconProps) => JSX.Element;
+  icon?: PhosphorIcon;
   onPress: () => void;
   isDisabled?: boolean;
 };
@@ -318,11 +318,11 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
 
   const goBack = () => {
     if (navigation.canGoBack()) {
-      navigation.navigate('Home', { screen: 'Browser' });
+      navigation.goBack();
     } else {
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Home', params: { screen: 'Browser' } }],
+        routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Browser' } } }],
       });
     }
   };
@@ -330,7 +330,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   const bottomButtonList: BrowserActionButtonType[] = [
     {
       key: 'back',
-      icon: CaretLeft,
+      icon: CaretLeftIcon,
       onPress: () => {
         if (!canGoBack) {
           return;
@@ -342,7 +342,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     },
     {
       key: 'forward',
-      icon: CaretRight,
+      icon: CaretRightIcon,
       onPress: () => {
         if (!canGoForward) {
           return;
@@ -354,7 +354,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     },
     {
       key: 'home',
-      icon: House,
+      icon: HouseIcon,
       onPress: goBack,
     },
     {
@@ -379,7 +379,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     },
     {
       key: 'more',
-      icon: DotsThree,
+      icon: DotsThreeIcon,
       isDisabled: !isWebviewReady,
       onPress: () => {
         setModalVisible(true);
@@ -528,7 +528,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
       return <NoInternetScreen />;
     }
     if (!isWebviewReady) {
-      return <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />;
+      return <EmptyList icon={GlobeSimpleIcon} title={i18n.common.emptyBrowserMessage} />;
     }
 
     return (
@@ -596,7 +596,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
             type={'ghost'}
             size={'xs'}
             style={stylesheet.reloadButton}
-            icon={<Icon phosphorIcon={ArrowClockwise} weight={'bold'} iconColor={theme['gray-5']} size={'sm'} />}
+            icon={<Icon phosphorIcon={ArrowClockwiseIcon} weight={'bold'} iconColor={theme['gray-5']} size={'sm'} />}
             onPress={() => {
               const { current } = webviewRef;
               current && current.reload && current.reload();
@@ -608,7 +608,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
           type={'ghost'}
           size={'xs'}
           style={stylesheet.closeButton}
-          icon={<Icon phosphorIcon={X} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
+          icon={<Icon phosphorIcon={XIcon} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
           onPress={goBack}
         />
       </View>

@@ -1,13 +1,11 @@
 import { InputProps } from 'components/design-system-ui/input';
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, TextInput, View } from 'react-native';
+import { Keyboard, TextInput, View, FocusEvent, BlurEvent } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Button, Icon, Input, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
-import { Book, Scan } from 'phosphor-react-native';
+import { BookIcon, ScanIcon } from 'phosphor-react-native';
 import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal';
-import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
-import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressScanner';
 import { CHAINS_SUPPORTED_DOMAIN, isAzeroDomain } from '@subwallet/extension-base/koni/api/dotsama/domain';
 import { saveRecentAccount, resolveAddressToDomain, resolveDomainToAddress } from 'messaging/index';
@@ -246,7 +244,7 @@ const Component = (
             onPress={() => setShowAddressBookModal(true)}
             icon={
               <Icon
-                phosphorIcon={Book}
+                phosphorIcon={BookIcon}
                 size={'sm'}
                 iconColor={inputProps.readonly ? theme.colorTextLight5 : theme.colorTextLight3}
               />
@@ -261,7 +259,7 @@ const Component = (
           onPress={onPressQrButton}
           icon={
             <Icon
-              phosphorIcon={Scan}
+              phosphorIcon={ScanIcon}
               size={'sm'}
               iconColor={inputProps.readonly ? theme.colorTextLight5 : theme.colorTextLight3}
             />
@@ -295,13 +293,13 @@ const Component = (
     [onChangeInputText, onSideEffectChange],
   );
 
-  const onInputFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  const onInputFocus = (e: FocusEvent) => {
     setInputBlur(false);
     inputProps.onFocus && inputProps.onFocus(e);
   };
 
   const onInputBlur = useCallback(
-    (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+    (e: BlurEvent) => {
       setInputBlur(true);
       const isValidAddress = isAddress(value);
       const shouldReformatAddress = isOldSubstrateAddress(value) && isValidAddress && chainInfo && !selectedOption;

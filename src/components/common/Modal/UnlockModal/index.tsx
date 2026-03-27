@@ -13,7 +13,7 @@ import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl from 'hooks/screen/useFormControl';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { keyringUnlock } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStyle from './style';
@@ -207,7 +207,7 @@ export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
               disabled={isDisabled}
               icon={
                 <Icon
-                  phosphorIcon={CheckCircle}
+                  phosphorIcon={CheckCircleIcon}
                   size={'lg'}
                   weight={'fill'}
                   iconColor={isDisabled ? theme.colorTextLight5 : theme.colorTextLight1}

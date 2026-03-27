@@ -5,13 +5,13 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountTokenAddress } from 'types/account';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
 import { AppModalContext } from 'providers/AppModalContext';
-import { AccountTokenAddressItem } from 'components/AccountProxy/AccountTokenAddressItem';
 import { SwModal, Typography } from 'components/design-system-ui';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
+import { AccountTokenAddressItem } from 'components/AccountProxy/AccountTokenAddressItem';
 
 interface Props {
   modalVisible: boolean;
@@ -77,7 +77,7 @@ export const AccountTokenAddressModal = ({ items, onCancel, modalVisible, setMod
   const renderEmpty = useCallback(
     () => (
       <EmptyList
-        icon={MagnifyingGlass}
+        icon={MagnifyingGlassIcon}
         title={i18n.emptyScreen.selectorEmptyTitle}
         message={i18n.emptyScreen.selectorEmptyMessage}
       />

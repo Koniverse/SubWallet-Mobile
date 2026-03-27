@@ -2,7 +2,7 @@ import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { isAccountAll } from 'utils/accountAll';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { AddressBook, CheckCircle, DownloadSimple, Export, MagnifyingGlass } from 'phosphor-react-native';
+import { AddressBookIcon, CheckCircleIcon, DownloadSimpleIcon, ExportIcon, MagnifyingGlassIcon } from 'phosphor-react-native';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { Button, Icon, SelectItem, SwFullSizeModal, Typography } from 'components/design-system-ui';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
@@ -28,7 +28,7 @@ import { SelectAccountAllItem } from 'components/common/SelectAccountAllItem';
 const renderListEmptyComponent = () => {
   return (
     <EmptyList
-      icon={MagnifyingGlass}
+      icon={MagnifyingGlassIcon}
       title={i18n.emptyScreen.selectorEmptyTitle}
       message={i18n.emptyScreen.selectorEmptyMessage}
     />
@@ -273,7 +273,7 @@ export const ExportAllAccount = () => {
           disabled={selectedAccounts.length === 0}
           icon={
             <Icon
-              phosphorIcon={Export}
+              phosphorIcon={ExportIcon}
               weight={'fill'}
               iconColor={selectedAccounts.length === 0 ? theme.colorTextLight4 : theme.colorWhite}
             />
@@ -301,7 +301,6 @@ export const ExportAllAccount = () => {
         filterFunction={filterFunction}
         extraData={JSON.stringify(selectedValueMap)}
         keyExtractor={item => item.id}
-        estimatedItemSize={80}
         placeholder={'Account name'}
       />
 
@@ -330,11 +329,11 @@ export const ExportAllAccount = () => {
 
               <SelectItem
                 onPress={onExportJson}
-                icon={AddressBook}
+                icon={AddressBookIcon}
                 backgroundColor={theme.colorPrimary}
                 label={jsonFileName}
                 rightIcon={
-                  <Icon phosphorIcon={DownloadSimple} size={'sm'} iconColor={theme.colorTextTertiary} weight={'bold'} />
+                  <Icon phosphorIcon={DownloadSimpleIcon} size={'sm'} iconColor={theme.colorTextTertiary} weight={'bold'} />
                 }
               />
 
@@ -346,7 +345,7 @@ export const ExportAllAccount = () => {
             </View>
 
             <Button
-              icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}
+              icon={<Icon phosphorIcon={CheckCircleIcon} size={'lg'} weight={'fill'} />}
               onPress={() => navigation.navigate('Home')}>
               Finish
             </Button>

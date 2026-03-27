@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { ListChecks, Plus } from 'phosphor-react-native';
+import { ListChecksIcon, PlusIcon } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, NetworksSettingProps } from 'routes/index';
 import { updateChainActiveState } from 'messaging/index';
@@ -158,21 +158,21 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<ChainInfoWithStateAnhStatus>) => {
+    const isDisableSwitching = item.slug === 'polkadot' || item.slug === 'kusama' || Object.keys(pendingChainMap).includes(item.slug);
+    const isEnabled =
+      Object.keys(pendingChainMap).includes(item.slug)
+        ? pendingChainMap[item.slug]
+        : chainInfoMap[item.slug]?.active || false;
+
     return (
       <NetworkAndTokenToggleItem
-        isDisableSwitching={
-          item.slug === 'polkadot' || item.slug === 'kusama' || Object.keys(pendingChainMap).includes(item.slug)
-        }
+        isDisableSwitching={isDisableSwitching}
         key={`${item.slug}-${item.name}`}
         itemName={item.name}
         itemKey={item.slug}
         connectionStatus={item.connectionStatus}
         // @ts-ignore
-        isEnabled={
-          Object.keys(pendingChainMap).includes(item.slug)
-            ? pendingChainMap[item.slug]
-            : chainInfoMap[item.slug]?.active || false
-        }
+        isEnabled={isEnabled}
         onValueChange={() => onToggleItem(item)}
         showEditButton
         onPressEditBtn={() => {
@@ -186,7 +186,7 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
   const renderListEmptyComponent = () => {
     return (
       <EmptyList
-        icon={ListChecks}
+        icon={ListChecksIcon}
         title={i18n.emptyScreen.networkSettingsTitle}
         message={i18n.emptyScreen.networkSettingsMessage}
         addBtnLabel={i18n.header.importNetwork}
@@ -200,7 +200,7 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
   return (
     <FlatListScreen
       rightIconOption={{
-        icon: Plus,
+        icon: PlusIcon,
         onPress: () => {
           navigation.navigate('ImportNetwork');
           setToggleItem(false);
@@ -219,7 +219,6 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
       isShowFilterBtn
       filterFunction={filterFunction}
       isShowListWrapper={true}
-      estimatedItemSize={61}
     />
   );
 };

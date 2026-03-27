@@ -12,7 +12,7 @@ export type SchemeColor =
   | 'cyan-7';
 
 export interface InfoItemBase {
-  label?: string | React.ReactNode;
+  label?: string | React.JSX.Element;
   valueColorSchema?: SchemeColor;
   loading?: boolean;
 }

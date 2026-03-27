@@ -20,11 +20,11 @@ export type ActionItemType = {
 
 export interface AccountActionSelectModalProps {
   items: ActionItemType[];
-  toastRef?: React.RefObject<ToastContainer>;
+  toastRef?: React.RefObject<ToastContainer | null>;
   modalTitle: string;
   onSelectItem: (item: ActionItemType) => void;
   children?: React.ReactNode;
-  accActionRef: React.MutableRefObject<ModalRef | undefined>;
+  accActionRef: React.RefObject<ModalRef | null>;
 }
 
 export const AccountActionSelectModal = ({

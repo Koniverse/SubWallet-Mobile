@@ -39,7 +39,7 @@ export const SwapToField = ({
   loading,
 }: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const tokenSelectorRef = useRef<ModalRef>();
+  const tokenSelectorRef = useRef<ModalRef | null>(null);
   const theme = useSubWalletTheme().swThemes;
   const chainName = chainInfo ? _getChainName(chainInfo) : '';
 

@@ -23,7 +23,7 @@ import { Button, Icon } from 'components/design-system-ui';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
 import { AssetTypeOption } from 'types/asset';
-import { Plus, PlusCircle } from 'phosphor-react-native';
+import { PlusIcon, PlusCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
@@ -96,14 +96,14 @@ export const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) =>
   const [checking, setChecking] = useState(true);
   const [isValidName, setIsValidName] = useState(true);
   const [isValidContract, setIsValidContract] = useState<boolean>(true);
-  const tokenTypeRef = useRef<ModalRef>();
-  const chainSelectorRef = useRef<ModalRef>();
+  const tokenTypeRef = useRef<ModalRef | null>(null);
+  const chainSelectorRef = useRef<ModalRef | null>(null);
   useHandlerHardwareBackPress(loading);
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
   const { isNetConnected, isReady, reload } = useContext(WebRunnerContext);
   const onBack = useCallback(() => {
-    navigation.navigate('Home');
+    navigation.goBack();
   }, [navigation]);
   const chainOptions = useMemo(() => {
     return Object.values(chainInfoMap).map(item => ({
@@ -290,7 +290,7 @@ export const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) =>
   );
 
   const getSubmitIconBtn = (color: string) => {
-    return <Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} iconColor={color} />;
+    return <Icon phosphorIcon={PlusCircleIcon} size={'lg'} weight={'fill'} iconColor={color} />;
   };
 
   useEffect(() => {
@@ -393,7 +393,7 @@ export const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) =>
             />
 
             <Button
-              icon={iconColor => <Icon phosphorIcon={Plus} size={'lg'} iconColor={iconColor} weight={'bold'} />}
+              icon={iconColor => <Icon phosphorIcon={PlusIcon} size={'lg'} iconColor={iconColor} weight={'bold'} />}
               style={{ marginTop: 8 }}
               onPress={() => showPopupEnableChain(chain)}
               type={'ghost'}>

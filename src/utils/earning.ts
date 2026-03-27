@@ -1,6 +1,6 @@
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import { YieldPoolType } from '@subwallet/extension-base/types';
-import { CirclesThreePlus, Database, HandsClapping, Leaf, User, Users } from 'phosphor-react-native';
+import { CirclesThreePlusIcon, DatabaseIcon, HandsClappingIcon, LeafIcon, UserIcon, UsersIcon } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import { EarningTagType } from 'types/earning';
 import { convertHexColorToRGBA } from 'utils/color';
@@ -11,49 +11,49 @@ export const createEarningTypeTags = (theme: ThemeTypes, chain: string): Record<
   return {
     [YieldPoolType.LIQUID_STAKING]: {
       label: 'Liquid staking',
-      icon: Leaf,
+      icon: LeafIcon,
       bgColor: convertHexColorToRGBA(theme['magenta-6'], 0.1),
       color: theme['magenta-6'],
       weight: 'bold',
     },
     [YieldPoolType.LENDING]: {
       label: 'Lending',
-      icon: HandsClapping,
+      icon: HandsClappingIcon,
       bgColor: convertHexColorToRGBA(theme['green-6'], 0.1),
       color: theme['green-6'],
       weight: 'bold',
     },
     [YieldPoolType.SINGLE_FARMING]: {
       label: 'Single farming',
-      icon: User,
+      icon: UserIcon,
       bgColor: convertHexColorToRGBA(theme['green-6'], 0.1),
       color: theme['green-6'],
       weight: 'bold',
     },
     [YieldPoolType.NOMINATION_POOL]: {
       label: 'Nomination pool',
-      icon: Users,
+      icon: UsersIcon,
       bgColor: convertHexColorToRGBA(theme.colorSecondary, 0.1),
       color: theme.colorSecondary,
       weight: 'bold',
     },
     [YieldPoolType.PARACHAIN_STAKING]: {
       label: 'Parachain staking',
-      icon: User,
+      icon: UserIcon,
       bgColor: convertHexColorToRGBA(theme['yellow-6'], 0.1),
       color: theme['yellow-6'],
       weight: 'bold',
     },
     [YieldPoolType.NATIVE_STAKING]: {
       label: _STAKING_CHAIN_GROUP.astar.includes(chain) ? 'dApp staking' : 'Direct nomination',
-      icon: Database,
+      icon: DatabaseIcon,
       bgColor: convertHexColorToRGBA(theme['gold-6'], 0.1),
       color: theme['gold-6'],
       weight: 'fill',
     },
     [YieldPoolType.SUBNET_STAKING]: {
       label: 'Subnet staking',
-      icon: CirclesThreePlus,
+      icon: CirclesThreePlusIcon,
       color: theme['blue-6'],
       weight: 'fill',
       bgColor: convertHexColorToRGBA(theme['blue-6'], 0.1),

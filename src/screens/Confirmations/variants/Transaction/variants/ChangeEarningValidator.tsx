@@ -1,6 +1,5 @@
 import BigN from 'bignumber.js';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { BaseTransactionConfirmationProps } from './Base';
 import {
@@ -18,7 +17,7 @@ import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { TouchableOpacity } from 'react-native';
-import { Info } from 'phosphor-react-native';
+import { InfoIcon } from 'phosphor-react-native';
 import { ConfirmationContent } from 'components/common/Confirmation';
 import { EarningValidatorSelectedModal } from 'components/Modal/Earning/EarningValidatorSelectedModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -89,7 +88,7 @@ const ValidatorGroupModal = ({ accounts, compound, maxValidator, poolInfo, title
         <MetaInfo.Default label={title}>
           <TouchableOpacity onPress={onPress} style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Typography.Text style={{ color: theme.colorTextTertiary }}>{totalValidatorSelected}</Typography.Text>
-            <Icon phosphorIcon={Info} size="sm" iconColor={theme.colorTextTertiary} />
+            <Icon phosphorIcon={InfoIcon} size="sm" iconColor={theme.colorTextTertiary} />
           </TouchableOpacity>
         </MetaInfo.Default>
       </MetaInfo>
@@ -119,8 +118,6 @@ const ChangeValidatorTransactionConfirmation = (props: Props) => {
   const { compound } = useYieldPositionDetail(slug, data.address);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
   const poolInfo = poolInfoMap[slug];
-
-  const { t } = useTranslation();
   const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
 
   const { deselectedValidatorAccounts, newValidatorAccounts, totalSelectedCount } = useMemo(() => {
@@ -176,7 +173,7 @@ const ChangeValidatorTransactionConfirmation = (props: Props) => {
           )}
           <MetaInfo.Number
             decimals={decimals}
-            label={t('Estimated fee')}
+            label={'Estimated fee'}
             suffix={symbol}
             value={transaction.estimateFee?.value || 0}
           />

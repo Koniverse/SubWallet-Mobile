@@ -7,8 +7,8 @@ import ImagePreview from 'components/ImagePreview';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
-import { SlidersHorizontal } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { SlidersHorizontalIcon } from 'phosphor-react-native';
+import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -184,7 +184,7 @@ const NftDetail = ({
           )}
           <TouchableOpacity style={styles.resourceContainerStyle} activeOpacity={0.5} onPress={handleClickComingSoon}>
             <View style={styles.resourceIconContainerStyle}>
-              <SlidersHorizontal size={20} color={theme.colorSuccess} />
+              <SlidersHorizontalIcon size={20} color={theme.colorSuccess} />
             </View>
             <Text style={styles.resourceTitleStyle}>{i18n.nftScreen.nftDetail.resourcesOrInventory}</Text>
           </TouchableOpacity>

@@ -7,10 +7,10 @@ import { Icon, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainInfoByChainId from 'hooks/chain/useGetChainInfoByChainId';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { JSX, useCallback, useMemo, useState } from 'react';
 import { TouchableWithoutFeedback, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRightIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
@@ -113,7 +113,7 @@ const EvmTransactionDetail: React.FC<Props> = (props: Props) => {
                 <Typography.Text style={valueStyle}>{request.data}</Typography.Text>
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                  <Icon phosphorIcon={CaretRight} weight={'fill'} size={'xs'} iconColor={theme.colorTextTertiary} />
+                  <Icon phosphorIcon={CaretRightIcon} weight={'fill'} size={'xs'} iconColor={theme.colorTextTertiary} />
                   <Typography.Text ellipsis style={[valueStyle, { flex: 1 }]}>
                     {request.data}
                   </Typography.Text>

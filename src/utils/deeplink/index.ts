@@ -7,9 +7,9 @@ import { connectWalletConnect } from 'utils/walletConnect';
 import { ToastType } from 'react-native-toast-notifications';
 import { MutableRefObject } from 'react';
 import { AppNavigatorDeepLinkStatus } from 'screens/Home';
-import { prevDeeplinkUrl, setPrevDeeplinkUrl } from '../../App';
-import { firstScreenDeepLink, setFirstScreenDeepLink } from 'screens/Home/FirstScreen';
+import { firstScreenDeepLink, setFirstScreenDeepLink } from 'screens/Home/Welcome';
 import { mmkvStore } from 'utils/storage';
+import { prevDeeplinkUrl, setPrevDeeplinkUrl } from '../../App';
 
 export function transformUniversalToNative(url: string) {
   return url.replace('https://mobile.subwallet.app/', 'subwallet://');

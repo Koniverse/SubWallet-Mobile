@@ -12,7 +12,7 @@ interface Props<T> {
   showBalance?: boolean;
 }
 
-export function _TokenSelectItem<T>({
+export function TokenSelectItemCustom<T>({
   item,
   selectedValueMap,
   onSelectItem,

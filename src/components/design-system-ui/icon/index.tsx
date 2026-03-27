@@ -1,6 +1,6 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { SizeType } from '@subwallet/react-ui/es/config-provider/SizeContext';
+import { SizeType } from 'types/size';
 import { IconProps } from 'phosphor-react-native';
 import { IconWeight } from 'phosphor-react-native/lib/typescript';
 import React from 'react';

@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { DeviceEventEmitter, Platform } from 'react-native';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
@@ -29,7 +29,7 @@ export const DeriveAccount = () => {
   const renderListEmptyComponent = () => {
     return (
       <EmptyList
-        icon={MagnifyingGlass}
+        icon={MagnifyingGlassIcon}
         title={i18n.emptyScreen.selectorEmptyTitle}
         message={i18n.emptyScreen.selectorEmptyMessage}
       />

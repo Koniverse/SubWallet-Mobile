@@ -6,7 +6,7 @@ import Icon from '../../design-system-ui/icon';
 import CreateStyle from './styles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import LogoWithSquircleBorder from '../LogoWithSquircleBorder';
-import { ArrowsLeftRight } from 'phosphor-react-native';
+import { ArrowsLeftRightIcon } from 'phosphor-react-native';
 import React, { Suspense, useMemo } from 'react';
 import { View } from 'react-native';
 
@@ -17,7 +17,7 @@ interface Props {
   linkIconBg?: string;
 }
 
-const defaultLinkIcon = <Icon customSize={24} phosphorIcon={ArrowsLeftRight} />;
+const defaultLinkIcon = <Icon customSize={24} phosphorIcon={ArrowsLeftRightIcon} />;
 const defaultLogo = (
   <Suspense>
     <SVGImages.Logo width={56} height={56} />

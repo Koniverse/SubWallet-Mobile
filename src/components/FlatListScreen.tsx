@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { IconProps } from 'phosphor-react-native';
+import React, { JSX, useEffect, useRef, useState } from 'react';
+import { type Icon as PhosphorIcon } from 'phosphor-react-native';
 import { Keyboard, RefreshControlProps, StyleProp, TextInput, View, ViewStyle } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
@@ -11,12 +11,12 @@ import { NoInternetScreen } from 'components/NoInternetScreen';
 import FilterModal, { OptionType } from 'components/common/FilterModal';
 import { useFilterModal } from 'hooks/useFilterModal';
 import { LazySectionList, SectionItem } from 'components/LazySectionList';
-import { ContentStyle, ListRenderItemInfo } from '@shopify/flash-list';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 import { FullSizeFilterModal } from 'components/common/FilterModal/FullSizeFilterModal';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 
 export interface RightIconOpt {
-  icon?: (iconProps: IconProps) => JSX.Element;
+  icon?: PhosphorIcon;
   title?: string;
   disabled?: boolean;
   onPress: () => void;
@@ -44,7 +44,7 @@ interface Props<T> {
   placeholder?: string;
   numberColumns?: number;
   loading?: boolean;
-  flatListStyle?: ContentStyle;
+  flatListStyle?: StyleProp<ViewStyle>;
   leftButtonDisabled?: boolean;
   headerContent?: () => JSX.Element;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
@@ -64,7 +64,6 @@ interface Props<T> {
   defaultSelectionMap?: Record<string, boolean>;
   androidKeyboardVerticalOffset?: number;
   titleTextAlign?: 'left' | 'center';
-  estimatedItemSize?: number;
   extraData?: any;
   keyExtractor?: (item: T, index: number) => string;
   removeClippedSubviews?: boolean;
@@ -110,7 +109,6 @@ export function FlatListScreen<T>({
   defaultSelectionMap,
   androidKeyboardVerticalOffset,
   titleTextAlign,
-  estimatedItemSize,
   extraData,
   keyExtractor,
   removeClippedSubviews,
@@ -121,7 +119,7 @@ export function FlatListScreen<T>({
   isHideBottomSafeArea,
 }: Props<T>) {
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
-  const searchRef = useRef<TextInput>(null);
+  const searchRef = useRef<TextInput | null>(null);
   const {
     filterSelectionMap,
     openFilterModal,
@@ -183,7 +181,6 @@ export function FlatListScreen<T>({
                 loading={loading}
                 groupBy={grouping.groupBy}
                 renderSectionHeader={grouping.renderSectionHeader}
-                estimatedItemSize={estimatedItemSize}
                 stickyHeader={false}
               />
             ) : (
@@ -201,7 +198,6 @@ export function FlatListScreen<T>({
                 loading={loading}
                 numberColumns={numberColumns}
                 isShowListWrapper={isShowListWrapper}
-                estimatedItemSize={estimatedItemSize}
                 extraData={extraData}
                 keyExtractor={keyExtractor}
                 removeClippedSubviews={removeClippedSubviews}

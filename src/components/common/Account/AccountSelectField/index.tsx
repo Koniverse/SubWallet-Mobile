@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AccountSelectFieldStyles from './style';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import { DisabledStyle } from 'styles/sharedStyles';
 import { AccountProxyAvatarGroup } from 'components/design-system-ui/avatar/account-proxy-avatar-group';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
@@ -29,7 +29,7 @@ const AccountSelectField = ({ disabled, onPress }: Props) => {
         <Typography.Text style={_style.accountNameStyle} ellipsis={true}>
           {isAll ? 'All accounts' : currentAccountProxy?.name}
         </Typography.Text>
-        <Icon phosphorIcon={CaretDown} size={'xxs'} />
+        <Icon phosphorIcon={CaretDownIcon} size={'xxs'} />
       </View>
     </TouchableOpacity>
   );

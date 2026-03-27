@@ -3,8 +3,9 @@ import { AccountType } from 'types/ui-types';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import { StyleProp } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { IconProps } from 'phosphor-react-native';
+import { type Icon as PhosphorIcon } from 'phosphor-react-native';
 import { Logo as SWLogo } from 'components/design-system-ui';
 import { AccountJson } from '@subwallet/extension-base/types';
 
@@ -133,8 +134,8 @@ export function toShort(text: string, preLength = 6, sufLength = 6): string {
   return text;
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default', token?: string) {
-  return <SWLogo network={logoKey} defaultLogoKey={defaultLogoKey} size={size} token={token} />;
+export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default', outerStyle?: StyleProp<any>) {
+  return <SWLogo network={logoKey} defaultLogoKey={defaultLogoKey} size={size} />;
 }
 export function getTokenLogo(
   logoKey: string,
@@ -298,7 +299,7 @@ export function getAccountType(address: string): AccountType {
   return isAccountAll(address) ? 'ALL' : isEthereumAddress(address) ? 'ETHEREUM' : 'SUBSTRATE';
 }
 
-export function getLeftSelectItemIcon(icon: (iconProps: IconProps) => JSX.Element) {
+export function getLeftSelectItemIcon(icon: PhosphorIcon) {
   const Icon = icon;
   return <Icon size={20} color={ColorMap.disabled} weight={'bold'} />;
 }
@@ -308,4 +309,4 @@ export function isUrl(targetString: string) {
 }
 
 export * from './account';
-export * from './chain';
+// export * from './chain';

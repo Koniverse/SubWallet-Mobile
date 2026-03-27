@@ -1,0 +1,7 @@
+diff --git a/node_modules/@polkadot/types-codec/packageInfo.js b/node_modules/@polkadot/types-codec/packageInfo.js
+index 62d8393..e5963e2 100644
+--- a/node_modules/@polkadot/types-codec/packageInfo.js
++++ b/node_modules/@polkadot/types-codec/packageInfo.js
+@@ -1 +1 @@
+-export const packageInfo = { name: '@polkadot/types-codec', path: (import.meta && import.meta.url) ? new URL(import.meta.url).pathname.substring(0, new URL(import.meta.url).pathname.lastIndexOf('/') + 1) : 'auto', type: 'esm', version: '12.0.2' };
++export const packageInfo = { name: '@polkadot/types-codec', path: 'auto', type: 'cjs', version: '12.0.2' };

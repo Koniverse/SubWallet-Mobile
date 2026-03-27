@@ -51,7 +51,7 @@ import {
   unlockDotCheckCanMint,
   validateYieldProcess,
 } from 'messaging/index';
-import { Info, PencilSimpleLine, PlusCircle, Warning } from 'phosphor-react-native';
+import { InfoIcon, PencilSimpleLineIcon, PlusCircleIcon, WarningIcon } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import {
@@ -170,7 +170,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const currentAmount = useWatch<StakeFormValues>({ name: 'value', control });
   const chain = useWatch<StakeFormValues>({ name: 'chain', control });
   const poolTarget = useWatch<StakeFormValues>({ name: 'target', control });
-  const accountSelectorRef = useRef<ModalRef>();
+  const accountSelectorRef = useRef<ModalRef | null>(null);
   const validatorSelectorRef = useRef<ValidatorSelectorRef>(null);
   const poolSelectorRef = useRef<PoolSelectorRef>(null);
   const isReadyToShowAlertRef = useRef<boolean>(true);
@@ -686,7 +686,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
               }>
               <TouchableOpacity style={styles.btnStyle} onPress={() => setTooltipVisible(true)}>
                 <Typography.Text style={{ color: theme['gray-5'] }}>{'Slippage'}</Typography.Text>
-                <Icon phosphorIcon={Info} size="xs" iconColor={theme['gray-5']} weight={'bold'} />
+                <Icon phosphorIcon={InfoIcon} size="xs" iconColor={theme['gray-5']} weight={'bold'} />
               </TouchableOpacity>
             </Tooltip>
           }>
@@ -694,7 +694,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
             <Typography.Text style={{ color: isSlippageAcceptable ? theme['gray-5'] : theme['red-6'] }}>
               {maxSlippage.slippage.toNumber() * 100}%
             </Typography.Text>
-            <Icon phosphorIcon={PencilSimpleLine} size={'xs'} iconColor={theme['gray-5']} weight={'bold'} />
+            <Icon phosphorIcon={PencilSimpleLineIcon} size={'xs'} iconColor={theme['gray-5']} weight={'bold'} />
           </TouchableOpacity>
         </MetaInfo.Default>
       </>
@@ -1080,7 +1080,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         confirmModal.setConfirmModal({
           visible: true,
           completeBtnTitle: i18n.buttonTitles.continue,
-          customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+          customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
           title: 'Continue staking?',
           message: (
             <Typography.Text>
@@ -1649,7 +1649,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                     loading={submitLoading}
                     icon={
                       <Icon
-                        phosphorIcon={PlusCircle}
+                        phosphorIcon={PlusCircleIcon}
                         weight={'fill'}
                         size={'lg'}
                         iconColor={isDisabledButton ? theme.colorTextLight5 : theme.colorWhite}

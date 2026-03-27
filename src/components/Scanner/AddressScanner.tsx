@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
-import { BarCodeReadEvent } from 'react-native-camera';
 import { launchImageLibrary } from 'react-native-image-picker';
 import RNQRGenerator from 'rn-qr-generator';
 import { QrCodeScanner } from 'components/QrCodeScanner';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { View } from 'react-native';
 
 export interface AddressScannerProps {
   onPressCancel: () => void;
@@ -24,9 +24,9 @@ export const AddressScanner = ({
   isShowError = false,
 }: AddressScannerProps) => {
   const addressScannerRef = useRef<SWModalRefProps>(null);
-  const onSuccess = (e: BarCodeReadEvent) => {
+  const onSuccess = (data: string) => {
     try {
-      onChangeAddress(e.data);
+      onChangeAddress(data);
       !isShowError && onPressCancel();
     } catch (err) {
       console.log(err);
@@ -51,12 +51,15 @@ export const AddressScanner = ({
       modalVisible={qrModalVisible}
       setVisible={setQrModalVisible}
       modalBaseV2Ref={addressScannerRef}>
-      <QrCodeScanner
-        onPressCancel={onPressCancel}
-        onPressLibraryBtn={onPressLibraryBtn}
-        onSuccess={onSuccess}
-        error={error}
-      />
+      <View style={{ width: '100%', height: '100%' }}>
+        <QrCodeScanner
+          onPressCancel={onPressCancel}
+          onPressLibraryBtn={onPressLibraryBtn}
+          onSuccess={onSuccess}
+          error={error}
+        />
+      </View>
+
     </SwFullSizeModal>
   );
 };

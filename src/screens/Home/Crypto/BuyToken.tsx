@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
-import { ShoppingCartSimple } from 'phosphor-react-native';
+import { ShoppingCartSimpleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { TokenSelector } from 'components/Modal/common/TokenSelector';
@@ -25,7 +25,7 @@ import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { AccountChainType } from '@subwallet/extension-base/types';
 
 const submitButtonIcon = (iconColor: string) => (
-  <Icon phosphorIcon={ShoppingCartSimple} weight={'fill'} iconColor={iconColor} />
+  <Icon phosphorIcon={ShoppingCartSimpleIcon} weight={'fill'} iconColor={iconColor} />
 );
 export const BuyToken = ({
   route: {
@@ -120,7 +120,7 @@ export const BuyToken = ({
       <>
         <View style={styles.contentWrapper}>
           <View style={styles.pageIconWrapper}>
-            <PageIcon icon={ShoppingCartSimple} color={theme.colorSuccess} />
+            <PageIcon icon={ShoppingCartSimpleIcon} color={theme.colorSuccess} />
           </View>
 
           <View style={styles.tokenAndServiceWrapper}>

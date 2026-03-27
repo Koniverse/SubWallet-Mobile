@@ -8,7 +8,7 @@ import { Button, Icon } from 'components/design-system-ui';
 import { WCAccountInput } from 'components/WalletConnect/Account/WCAccountInput';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { ModalRef } from 'types/modalRef';
 import { AccountChainType, AccountJson } from '@subwallet/extension-base/types';
 import { isSameAddress } from '@subwallet/extension-base/utils';
@@ -24,7 +24,7 @@ interface Props {
   onCancel: () => void;
 }
 
-const renderButtonIcon = (color: string) => <Icon phosphorIcon={CheckCircle} weight={'fill'} iconColor={color} />;
+const renderButtonIcon = (color: string) => <Icon phosphorIcon={CheckCircleIcon} weight={'fill'} iconColor={color} />;
 
 export const WCAccountSelect = ({
   accountType,
@@ -36,7 +36,7 @@ export const WCAccountSelect = ({
   selectedAccounts,
   useModal,
 }: Props) => {
-  const modalRef = useRef<ModalRef>();
+  const modalRef = useRef<ModalRef | null>(null);
 
   const onCloseModal = useCallback(() => {
     modalRef?.current?.onCloseModal();

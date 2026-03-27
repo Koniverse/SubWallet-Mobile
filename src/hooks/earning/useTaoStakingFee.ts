@@ -4,7 +4,7 @@
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import { balanceNoPrefixFormater } from '@subwallet/extension-base/utils';
-import { formatNumber } from '@subwallet/react-ui';
+import { formatNumber } from 'utils/number';
 import { useEffect, useMemo, useState } from 'react';
 import { getEarningImpact } from 'messaging/transaction';
 

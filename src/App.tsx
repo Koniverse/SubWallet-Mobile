@@ -2,8 +2,18 @@ import { ExternalRequestContextProvider } from 'providers/ExternalRequestContext
 import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
-import React, { Suspense, useContext, useEffect, useState } from 'react';
-import { AppState, DeviceEventEmitter, ImageBackground, Linking, StatusBar, StyleProp, View } from 'react-native';
+import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  AppState,
+  DeviceEventEmitter,
+  ImageBackground,
+  Linking,
+  StatusBar,
+  StyleProp,
+  StyleSheet,
+  View,
+} from 'react-native';
+import BootSplash from 'react-native-bootsplash';
 import { ThemeContext, WebRunnerContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -13,7 +23,6 @@ import { RootState } from 'stores/index';
 import useAppLock from 'hooks/useAppLock';
 import useCryptoReady from 'hooks/init/useCryptoReady';
 import useSetupI18n from 'hooks/init/useSetupI18n';
-import SplashScreen from 'react-native-splash-screen';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
@@ -23,15 +32,14 @@ import { AppModalContextProvider } from 'providers/AppModalContext';
 import { CustomToast } from 'components/design-system-ui/toast';
 import { PortalProvider } from '@gorhom/portal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
 import { LockTimeout } from 'stores/types';
 import { keyringLock } from './messaging';
 import { updateAutoLockTime } from 'stores/MobileSettings';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
-import { NEED_UPDATE_CHROME } from 'providers/WebRunnerProvider/WebRunner';
 import { Button, Icon, Image, PageIcon, Typography } from 'components/design-system-ui';
-import { Warning } from 'phosphor-react-native';
+import { WarningIcon } from 'phosphor-react-native';
 import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
@@ -42,31 +50,11 @@ import { useGetConfig } from 'hooks/static-content/useGetConfig';
 import { mmkvStore } from 'utils/storage';
 import { setIsShowRemindBackupModal } from 'screens/Home';
 import { useGetBrowserConfig } from 'hooks/static-content/useGetBrowserConfig';
-import RNRestart from 'react-native-restart';
+import RNRestart from 'react-native-restart-newarch';
 import { ImageLogosMap } from 'assets/logo';
 import { GlobalInstructionModalContextProvider } from 'providers/GlobalInstructionModalContext';
 import { useGetShowReviewPopupScreen } from 'hooks/static-content/useGetShowReviewPopupScreen';
-
-const layerScreenStyle: StyleProp<any> = {
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  position: 'absolute',
-  backgroundColor: ColorMap.dark1,
-  zIndex: 10,
-};
-
-const gestureRootStyle: StyleProp<any> = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-  width: '100%',
-  height: '100%',
-  zIndex: 9999,
-};
+import { NEED_UPDATE_CHROME } from 'providers/WebRunnerProvider/constant.ts';
 
 const logoTextStyle: StyleProp<any> = {
   fontSize: 38,
@@ -161,10 +149,12 @@ export function setIsHandleDeeplinkPromise(value: boolean) {
 export const App = () => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
+
+  const styles = createStyles();
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   const { isUseBiometric, timeAutoLock, isPreventLock } = useSelector((state: RootState) => state.mobileSettings);
-  const { hasMasterPassword, isLocked } = useSelector((state: RootState) => state.accountState);
+  const { hasMasterPassword, isLocked, isReady: isAccountReady } = useSelector((state: RootState) => state.accountState);
   const language = useSelector((state: RootState) => state.settings.language);
   const { lock, unlockApp } = useAppLock();
   const dispatch = useDispatch();
@@ -177,7 +167,10 @@ export const App = () => {
   const { getBrowserConfig } = useGetBrowserConfig();
   const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
-  const { isUpdateComplete, setUpdateComplete } = useContext(WebRunnerContext);
+  const { isUpdateComplete, setUpdateComplete, isReady: isWebRunnerReady } = useContext(WebRunnerContext);
+  const hasHiddenSplash = useRef(false);
+  const [initDone, setInitDone] = useState(false);
+  console.log('isUpdateComplete', isUpdateComplete);
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -209,18 +202,27 @@ export const App = () => {
     }
   }, [dispatch, timeAutoLock]);
 
+  const isAppReady = useMemo(() => {
+    return isRequiredStoresReady && isCryptoReady && isI18nReady && !!isWebRunnerReady && isAccountReady;
+  }, [isAccountReady, isCryptoReady, isI18nReady, isRequiredStoresReady, isWebRunnerReady]);
+
   useEffect(() => {
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 100);
-    checkIsShowBuyToken();
-    // getPoolInfoMap();
-    mmkvStore.delete('poolInfoMap'); // remove unused mmkvStore
-    getDAppsData();
-    getConfig();
-    getBrowserConfig();
-    getAppInstructionData();
-    getShowReviewPopupScreen();
+    let mounted = true;
+
+    const init = async () => {
+      try {
+        checkIsShowBuyToken();
+        mmkvStore.remove('poolInfoMap');
+        await Promise.all([getDAppsData(), getDAppsData(), getConfig(), getBrowserConfig(), getAppInstructionData(), getShowReviewPopupScreen()]);
+      } catch (e) {
+        console.warn('Init error', e);
+      } finally {
+        if (mounted) {
+          setInitDone(true);
+        }
+      }
+    }
+    init();
 
     DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {
       setNeedUpdateChrome(data);
@@ -233,7 +235,14 @@ export const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
+  useEffect(() => {
+    if (initDone && isAppReady && !hasHiddenSplash.current) {
+      hasHiddenSplash.current = true;
+
+      console.log('run to this');
+      BootSplash.hide({ fade: true }).catch(() => {});
+    }
+  }, [initDone, isAppReady]);
 
   const onPressUpdateWebView = () => {
     Linking.canOpenURL('market://details?id=com.google.android.webview').then(() =>
@@ -249,27 +258,17 @@ export const App = () => {
   // TODO: merge GlobalModalContextProvider and AppModalContextProvider
 
   return (
-    <SafeAreaProvider style={{ flex: 1 }}>
+    <SafeAreaProvider style={{ flex: 1 }} initialMetrics={initialWindowMetrics}>
       <>
-        {!isUpdateComplete && (
+        {!isUpdateComplete && isAppReady && (
           <View style={{ flex: 1 }}>
-            <ToastProvider
-              duration={TOAST_DURATION}
-              renderToast={toast => <CustomToast toast={toast} />}
-              placement="top"
-              style={{ borderRadius: 8 }}
-              normalColor={theme.colors.notification}
-              textStyle={{ textAlign: 'center', ...FontMedium }}
-              successColor={theme.colors.primary}
-              warningColor={theme.colors.notification_warning}
-              offsetTop={STATUS_BAR_HEIGHT + 40}
-              dangerColor={theme.colors.notification_danger}>
+            <ToastProvider duration={TOAST_DURATION} renderToast={toast => <CustomToast toast={toast} />} placement={'top'} style={{ borderRadius: 8 }} normalColor={theme.colors.notification} textStyle={{ textAlign: 'center', ...FontMedium }} successColor={theme.colors.primary} warningColor={theme.colors.notification_warning} offsetTop={STATUS_BAR_HEIGHT + 40} dangerColor={theme.colors.notification_danger}>
               <ThemeContext.Provider value={theme}>
                 <SigningContextProvider>
                   <ExternalRequestContextProvider>
                     <QrSignerContextProvider>
                       <ScannerContextProvider>
-                        <GestureHandlerRootView style={gestureRootStyle}>
+                        <GestureHandlerRootView style={styles.gestureRootStyle}>
                           <PortalProvider>
                             <GlobalModalContextProvider>
                               <AppOnlineContentContextProvider>
@@ -291,7 +290,7 @@ export const App = () => {
           </View>
         )}
         {!isAppReady && (
-          <View style={layerScreenStyle}>
+          <View style={styles.layerScreenStyle}>
             <LoadingScreen />
           </View>
         )}
@@ -344,7 +343,7 @@ export const App = () => {
                     {'Outdated Webview'}
                   </Typography.Title>
                   <PageIcon
-                    customIcon={<Icon phosphorIcon={Warning} iconColor={theme.swThemes.colorWarning} customSize={64} />}
+                    customIcon={<Icon phosphorIcon={WarningIcon} iconColor={theme.swThemes.colorWarning} customSize={64} />}
                     color={theme.swThemes.colorWarning}
                     backgroundColor={'rgba(217, 197, 0, 0.1)'}
                   />
@@ -442,7 +441,34 @@ export const App = () => {
         )}
       </>
     </SafeAreaProvider>
+
   );
-};
+}
+
+function createStyles() {
+  return StyleSheet.create({
+    layerScreenStyle: {
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      position: 'absolute',
+      backgroundColor: ColorMap.dark1,
+      zIndex: 10,
+    },
+    gestureRootStyle: {
+      width: deviceWidth,
+      height: deviceHeight,
+      // position: 'absolute',
+      // top: 0,
+      // left: 0,
+      // bottom: 0,
+      // right: 0,
+      // width: '100%',
+      // height: '100%',
+      // zIndex: 9999,
+    }
+  });
+}
 
 export default App;

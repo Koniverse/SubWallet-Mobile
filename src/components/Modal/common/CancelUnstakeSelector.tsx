@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { ListRenderItemInfo } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { CancelUnstakeSelectorField } from 'components/Field/CancelUnstakeSelector';
 import { CancelUnstakeItem } from 'components/common/CancelUnstakeItem';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
 import { UnstakingInfo } from '@subwallet/extension-base/types';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 
 export interface UnstakeItem extends UnstakingInfo {
   key: string;
@@ -26,7 +26,7 @@ const searchFunction = (items: UnstakeItem[], searchString: string) => {
 };
 
 export const CancelUnstakeSelector = ({ nominators, onSelectItem, selectedValue, disabled }: Props) => {
-  const cancelUnstakeRef = useRef<ModalRef>();
+  const cancelUnstakeRef = useRef<ModalRef | null>(null);
   const items = useMemo((): UnstakeItem[] => {
     return nominators.map((item, index) => ({ ...item, key: String(index) }));
   }, [nominators]);

@@ -4,7 +4,7 @@ import React, { useCallback, useEffect } from 'react';
 import { RefreshControl, View } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import i18n from 'utils/i18n/i18n';
-import { Image, Plus } from 'phosphor-react-native';
+import { ImageIcon, PlusIcon } from 'phosphor-react-native';
 import useFetchNftCollection from 'hooks/screen/Home/Nft/useFetchNftCollection';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { NFTNavigationProps } from 'screens/Home/NFT/NFTStackScreen';
@@ -53,7 +53,7 @@ const NftCollectionList = () => {
     return (
       <EmptyList
         title={i18n.emptyScreen.nftEmptyTitle}
-        icon={Image}
+        icon={ImageIcon}
         message={i18n.emptyScreen.nftEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'nft' }))}
         isRefresh={isRefresh}
@@ -75,10 +75,9 @@ const NftCollectionList = () => {
         searchFunction={filteredCollection}
         items={nftCollections}
         placeholder={i18n.placeholder.searchCollectionName}
-        estimatedItemSize={228.7}
         isHideBottomSafeArea={true}
         rightIconOption={{
-          icon: Plus,
+          icon: PlusIcon,
           onPress: () => {
             navigation.navigate('ImportNft');
           },

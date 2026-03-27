@@ -6,7 +6,7 @@ import BigN from 'bignumber.js';
 import { Keyboard, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Typography, Number, Button, Icon } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
-import { PencilSimpleLine } from 'phosphor-react-native';
+import { PencilSimpleLineIcon } from 'phosphor-react-native';
 import { _SUPPORT_TOKEN_PAY_FEE_GROUP, isChainSupportTokenPayFee } from '@subwallet/extension-base/constants';
 import {
   _getAssetDecimals,
@@ -272,7 +272,7 @@ const FeeEditor = ({
                   <Button
                     size={'xs'}
                     type={'ghost'}
-                    icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />}
+                    icon={<Icon phosphorIcon={PencilSimpleLineIcon} size={'sm'} iconColor={theme['gray-5']} />}
                     style={{ marginRight: -10 }}
                     disabled={!isDataReady}
                     loading={isLoadingToken}

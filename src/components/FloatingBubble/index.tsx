@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Icon from 'components/design-system-ui/icon';
-import { WarningCircle } from 'phosphor-react-native';
+import { WarningCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { convertHexColorToRGBA } from 'utils/color';
 import { ThemeTypes } from 'styles/themes';
@@ -73,7 +73,7 @@ const FloatingBubble = ({ navigateToNotification }: Props) => {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Icon size={'md'} phosphorIcon={WarningCircle} iconColor={theme.colorWarning} weight={'fill'} />
+            <Icon size={'md'} phosphorIcon={WarningCircleIcon} iconColor={theme.colorWarning} weight={'fill'} />
           </View>
 
           {showText && (

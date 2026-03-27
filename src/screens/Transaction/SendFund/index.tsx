@@ -63,7 +63,7 @@ import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { FormItem } from 'components/common/FormItem';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { Amount, isInvalidAmountValue } from 'screens/Transaction/SendFund/Amount';
-import { ArrowCircleRight, PaperPlaneRight, PaperPlaneTilt, Warning } from 'phosphor-react-native';
+import { ArrowCircleRightIcon, PaperPlaneRightIcon, PaperPlaneTiltIcon, WarningIcon } from 'phosphor-react-native';
 import { getButtonIcon } from 'utils/button';
 import { UseControllerReturn } from 'react-hook-form/dist/types';
 import { AmountValueConverter } from 'screens/Transaction/SendFund/AmountValueConverter';
@@ -177,9 +177,9 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [viewStep, setViewStep] = useState<ViewStep>(1);
   const [transactionDone, setTransactionDone] = useState<boolean>(false);
-  const accountSelectorRef = useRef<ModalRef>();
-  const tokenSelectorRef = useRef<ModalRef>();
-  const chainSelectorRef = useRef<ModalRef>();
+  const accountSelectorRef = useRef<ModalRef | null>(null);
+  const tokenSelectorRef = useRef<ModalRef | null>(null);
+  const chainSelectorRef = useRef<ModalRef | null>(null);
 
   const {
     title,
@@ -816,7 +816,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
             title: isMythosFromHydrationToMythos ? 'High fee alert!' : 'Pay attention!', // TODO: i18n
             message: _getXcmUnstableWarning(originChainInfo, destChainInfo, assetSlug),
             completeBtnTitle: 'Continue',
-            customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+            customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
             onCompleteModal: () => {
               doSubmit(values);
               confirmModal.hideConfirmModal();
@@ -853,7 +853,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                   visible: true,
                   title: 'Unsupported address',
                   message: `Transferring to an ${bounceableAddressPrefix} address is not supported. Continuing will result in a transfer to the corresponding ${formattedAddressPrefix} address (same seed phrase)`,
-                  customIcon: <PageIcon icon={Warning} color={theme.colorWarning} />,
+                  customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
                   completeBtnTitle: 'Continue',
                   onCompleteModal: () => {
                     setValue('to', formattedAddress, {
@@ -1258,7 +1258,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                   </View>
 
                   <View style={stylesheet.paperPlaneIconWrapper}>
-                    <Icon phosphorIcon={PaperPlaneRight} size={'md'} iconColor={theme['gray-5']} />
+                    <Icon phosphorIcon={PaperPlaneRightIcon} size={'md'} iconColor={theme['gray-5']} />
                   </View>
 
                   <View style={stylesheet.rowItem}>
@@ -1298,7 +1298,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                   </View>
 
                   <View style={stylesheet.paperPlaneIconWrapper}>
-                    <Icon phosphorIcon={PaperPlaneRight} size={'md'} iconColor={theme['gray-5']} />
+                    <Icon phosphorIcon={PaperPlaneRightIcon} size={'md'} iconColor={theme['gray-5']} />
                   </View>
 
                   <View style={stylesheet.rowItem}>
@@ -1405,7 +1405,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
 
             <View style={stylesheet.footer}>
               {viewStep === 1 && (
-                <Button disabled={isNextButtonDisable} icon={getButtonIcon(ArrowCircleRight)} onPress={onPressNextStep}>
+                <Button disabled={isNextButtonDisable} icon={getButtonIcon(ArrowCircleRightIcon)} onPress={onPressNextStep}>
                   {i18n.buttonTitles.next}
                 </Button>
               )}
@@ -1463,7 +1463,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                     loading={loading}
                     type={undefined}
                     onPress={checkAction(handleSubmit(onPressSubmit), extrinsicType)}
-                    icon={getButtonIcon(PaperPlaneTilt)}>
+                    icon={getButtonIcon(PaperPlaneTiltIcon)}>
                     {i18n.buttonTitles.transfer}
                   </Button>
                 </>

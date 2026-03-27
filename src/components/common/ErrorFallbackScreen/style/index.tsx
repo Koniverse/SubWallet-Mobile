@@ -1,5 +1,5 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { ImageStyle } from 'react-native-fast-image';
+import { ImageStyle } from '@d11/react-native-fast-image';
 import { ThemeTypes } from 'styles/themes';
 export interface ButtonStyles {
   buttonSubmit: ViewStyle;

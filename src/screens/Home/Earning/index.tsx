@@ -6,22 +6,37 @@ import PositionDetail from 'screens/Home/Earning/PositionDetail';
 import PoolList from './PoolList';
 import { EarningList } from 'screens/Home/Earning/List';
 
-const EarningScreen = () => {
-  const StakingScreenStack = createNativeStackNavigator<EarningScreenStackParamList>();
+const StakingScreenStack = createNativeStackNavigator<EarningScreenStackParamList>();
 
+const WrappedEarningList = withPageWrapper(
+  EarningList,
+  ['earning', 'price', 'balance']
+);
+
+const WrappedPoolList = withPageWrapper(
+  PoolList,
+  ['earning', 'price']
+);
+
+const WrappedPositionDetail = withPageWrapper(
+  PositionDetail,
+  ['earning', 'price', 'balance']
+);
+
+const EarningScreen = () => {
   return (
     <StakingScreenStack.Navigator
       initialRouteName="EarningList"
       screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <StakingScreenStack.Screen
         name="EarningList"
-        initialParams={{ step: 1 }}
-        component={withPageWrapper(EarningList, ['earning', 'price', 'balance'])}
+        component={WrappedEarningList}
+        options={{ animation: 'none' }}
       />
-      <StakingScreenStack.Screen name="EarningPoolList" component={withPageWrapper(PoolList, ['earning', 'price'])} />
+      <StakingScreenStack.Screen name="EarningPoolList" component={WrappedPoolList} />
       <StakingScreenStack.Screen
         name="EarningPositionDetail"
-        component={withPageWrapper(PositionDetail, ['earning', 'price', 'balance'])}
+        component={WrappedPositionDetail}
       />
     </StakingScreenStack.Navigator>
   );

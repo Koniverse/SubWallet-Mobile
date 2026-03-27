@@ -1,13 +1,22 @@
-import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, {
+  ForwardedRef,
+  forwardRef,
+  JSX,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { Button, Icon, SwFullSizeModal } from 'components/design-system-ui';
 import { FlatListScreen, RightIconOpt } from 'components/FlatListScreen';
 import { Keyboard, Platform, View, ViewStyle } from 'react-native';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { OptionType } from 'components/common/FilterModal';
 import { AccountSelectItem } from 'components/common/SelectModal/parts/AccountSelectItem';
-import { _TokenSelectItem } from 'components/common/SelectModal/parts/TokenSelectItem';
+import { TokenSelectItemCustom } from 'components/common/SelectModal/parts/TokenSelectItem';
 import { ChainSelectItem } from 'components/common/SelectModal/parts/ChainSelectItem';
-import { IconProps, MagnifyingGlass } from 'phosphor-react-native';
+import { IconProps, MagnifyingGlassIcon } from 'phosphor-react-native';
 import { SelectModalField } from 'components/common/SelectModal/parts/SelectModalField';
 import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
@@ -73,7 +82,6 @@ interface Props<T> {
     sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
   showAccountSignModeIcon?: boolean;
-  estimatedItemSize?: number;
   extraData?: any;
   keyExtractor?: (item: T, index: number) => string;
   flatListStyle?: ViewStyle;
@@ -84,7 +92,7 @@ interface Props<T> {
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
-function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
+function Component<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   const {
     items,
     renderCustomItem,
@@ -121,7 +129,6 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     level,
     grouping,
     showAccountSignModeIcon,
-    estimatedItemSize,
     extraData,
     keyExtractor,
     flatListStyle,
@@ -232,7 +239,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
       );
     } else if (selectModalItemType === 'token') {
       return (
-        <_TokenSelectItem
+        <TokenSelectItemCustom
           item={item}
           selectedValueMap={selectedValueMap}
           onSelectItem={_onSelectItem}
@@ -257,7 +264,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   const _renderListEmptyComponent = () => {
     return (
       <EmptyList
-        icon={MagnifyingGlass}
+        icon={MagnifyingGlassIcon}
         title={i18n.emptyScreen.selectorEmptyTitle}
         message={i18n.emptyScreen.selectorEmptyMessage}
       />
@@ -353,7 +360,6 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
                 afterListItem={
                   selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
                 }
-                estimatedItemSize={estimatedItemSize || 80}
                 searchMarginBottom={grouping ? theme.sizeXS : undefined}
                 extraData={extraData}
                 keyExtractor={keyExtractor}
@@ -373,4 +379,4 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
 }
 
 export const FullSizeSelectModal: React.ForwardRefExoticComponent<Props<any> & React.RefAttributes<any>> =
-  forwardRef(_SelectModal);
+  forwardRef(Component);

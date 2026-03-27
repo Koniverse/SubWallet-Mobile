@@ -2,7 +2,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import EarningGroupItem from 'components/Item/Earning/EarningGroupItem';
 import { useGroupYieldPosition, useYieldGroupInfo } from 'hooks/earning';
-import { Vault } from 'phosphor-react-native';
+import { VaultIcon } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Alert, Keyboard, Linking, RefreshControl, View } from 'react-native';
 import { EarningScreenNavigationProps } from 'routes/earning';
@@ -190,7 +190,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
     return (
       <EmptyList
         title={i18n.emptyScreen.groupEmptyTitle}
-        icon={Vault}
+        icon={VaultIcon}
         message={i18n.emptyScreen.groupEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}
@@ -364,7 +364,6 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         flatListStyle={styles.container}
         renderItem={renderItem}
         onPressBack={onBack}
-        estimatedItemSize={74}
         isShowFilterBtn
         isShowMainHeader
         isHideBottomSafeArea

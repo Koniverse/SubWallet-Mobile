@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { DotsThree, Plugs, PlugsConnected, Users, Plug } from 'phosphor-react-native';
+import { DotsThreeIcon, PlugsIcon, PlugsConnectedIcon, UsersIcon, PlugIcon } from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { DAppAccessDetailProps, RootNavigationProps } from 'routes/index';
@@ -23,7 +23,7 @@ import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { getAccountCount } from 'screens/Settings/Security/DAppAccess/index';
 import { AccountProxyItem } from 'components/AccountProxy/AccountProxyItem';
 import { convertAuthorizeTypeToChainTypes } from 'utils/accountProxy';
-import { DAppConfigurationModal } from 'components/Modal/DAppConfigurationModal.tsx';
+import { DAppConfigurationModal } from 'components/Modal/DAppConfigurationModal';
 
 type Props = {
   origin: string;
@@ -40,11 +40,11 @@ enum ConnectionStatement {
 }
 
 const iconMap = {
-  [ConnectionStatement.NOT_CONNECTED]: Plug,
-  [ConnectionStatement.CONNECTED]: PlugsConnected,
-  [ConnectionStatement.PARTIAL_CONNECTED]: PlugsConnected,
-  [ConnectionStatement.DISCONNECTED]: Plugs,
-  [ConnectionStatement.BLOCKED]: Plugs,
+  [ConnectionStatement.NOT_CONNECTED]: PlugIcon,
+  [ConnectionStatement.CONNECTED]: PlugsConnectedIcon,
+  [ConnectionStatement.PARTIAL_CONNECTED]: PlugsConnectedIcon,
+  [ConnectionStatement.DISCONNECTED]: PlugsIcon,
+  [ConnectionStatement.BLOCKED]: PlugsIcon,
 };
 
 const searchFunction = (items: AccountProxy[], searchString: string) => {
@@ -169,7 +169,7 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
 
   const rightIconOption = useMemo(() => {
     return {
-      icon: DotsThree,
+      icon: DotsThreeIcon,
       onPress: () => setModalVisible(true),
     };
   }, []);
@@ -247,12 +247,11 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
         placeholder={i18n.placeholder.accountName}
         renderListEmptyComponent={() => (
           <EmptyList
-            icon={Users}
+            icon={UsersIcon}
             title={i18n.emptyScreen.manageDAppDetailEmptyTitle}
             message={i18n.emptyScreen.manageDAppDetailEmptyMessage}
           />
         )}
-        estimatedItemSize={60}
         rightIconOption={rightIconOption}
         renderItem={renderItem}
         afterListItem={

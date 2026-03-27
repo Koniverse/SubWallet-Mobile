@@ -5,7 +5,7 @@ import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Typography } from './design-system-ui';
 import { Icon } from 'components/design-system-ui';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 
 interface Props {
   logo: React.ReactNode;
@@ -25,7 +25,7 @@ export const ServiceSelectItem = ({ logo, serviceName, onPressItem, disabled, is
         <Typography.Text style={styles.itemTextStyle}>{serviceName}</Typography.Text>
       </View>
 
-      {isSelected && <Icon phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} weight={'fill'} size={'sm'} />}
+      {isSelected && <Icon phosphorIcon={CheckCircleIcon} iconColor={theme.colorSuccess} weight={'fill'} size={'sm'} />}
     </TouchableOpacity>
   );
 };

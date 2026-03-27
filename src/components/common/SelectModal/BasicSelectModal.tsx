@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import React, { ForwardedRef, forwardRef, JSX, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { IconProps } from 'phosphor-react-native';
 import { SelectModalField } from 'components/common/SelectModal/parts/SelectModalField';
@@ -42,7 +42,7 @@ interface Props<T> {
   searchFunction?: (items: T[], searchString: string) => T[];
 }
 
-function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
+function Component<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   const {
     title,
     items,
@@ -187,4 +187,4 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
 }
 
 export const BasicSelectModal: React.ForwardRefExoticComponent<Props<any> & React.RefAttributes<any>> =
-  forwardRef(_BasicSelectModal);
+  forwardRef(Component);

@@ -6,7 +6,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Icon, Logo, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
-import { Copy, Info, QrCode } from 'phosphor-react-native';
+import { CopyIcon, InfoIcon, QrCodeIcon } from 'phosphor-react-native';
 import { RELAY_CHAINS_TO_MIGRATE } from 'constants/chain';
 
 interface Props {
@@ -49,14 +49,14 @@ export const AccountChainAddressItem = ({
           <Button
             type={'ghost'}
             size={'xs'}
-            icon={<Icon phosphorIcon={QrCode} size={'sm'} iconColor={theme['gray-5']} />}
+            icon={<Icon phosphorIcon={QrCodeIcon} size={'sm'} iconColor={theme['gray-5']} />}
             onPress={onPressQrButton}
           />
         ) : (
           <Button
             type={'ghost'}
             size={'xs'}
-            icon={<Icon phosphorIcon={Info} size={'sm'} iconColor={theme['gray-5']} weight={'fill'} />}
+            icon={<Icon phosphorIcon={InfoIcon} size={'sm'} iconColor={theme['gray-5']} weight={'fill'} />}
             onPress={onPressInfoButton}
           />
         )}
@@ -66,7 +66,7 @@ export const AccountChainAddressItem = ({
           size={'xs'}
           icon={
             <Icon
-              phosphorIcon={Copy}
+              phosphorIcon={CopyIcon}
               size={'sm'}
               iconColor={!isRelayChainToMigrate ? theme['gray-5'] : theme['gray-3']}
             />

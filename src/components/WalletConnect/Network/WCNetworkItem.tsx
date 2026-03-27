@@ -4,7 +4,7 @@ import { StyleProp, View, ViewStyle } from 'react-native';
 import { getNetworkLogo } from 'utils/index';
 import Text from 'components/Text';
 import { Icon } from 'components/design-system-ui';
-import { WarningCircle } from 'phosphor-react-native';
+import { WarningCircleIcon } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -59,7 +59,7 @@ export const WCNetworkItem = ({ item, selectedValueMap, containerStyle }: Props)
 
         {!isSupported && (
           <View style={{ height: 40, width: 40, alignItems: 'center', justifyContent: 'center', marginRight: -8 }}>
-            <Icon phosphorIcon={WarningCircle} size={'sm'} weight={'fill'} iconColor={theme.colorWarning} />
+            <Icon phosphorIcon={WarningCircleIcon} size={'sm'} weight={'fill'} iconColor={theme.colorWarning} />
           </View>
         )}
       </View>

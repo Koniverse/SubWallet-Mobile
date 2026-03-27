@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
+
 import { AppStateSlice } from 'stores/types';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: AppStateSlice = {
   isLocked: false,

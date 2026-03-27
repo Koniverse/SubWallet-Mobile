@@ -4,7 +4,7 @@ import { Text, View, ViewStyle } from 'react-native';
 import { SelectItem } from '../../design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import SelectExportTypeStyles from './style';
-import { FileJs, IconProps, Leaf, QrCode, Wallet } from 'phosphor-react-native';
+import { FileJsIcon, IconProps, LeafIcon, QrCodeIcon, WalletIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { AccountActions, AccountProxy } from '@subwallet/extension-base/types';
 
@@ -60,7 +60,7 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
   const items = useMemo(
     (): ExportTypeItem[] => [
       {
-        icon: Leaf,
+        icon: LeafIcon,
         key: ExportType.SEED_PHRASE,
         label: i18n.exportAccount.exportSeedPhrase,
         onClick: onClickItem(ExportType.SEED_PHRASE),
@@ -69,7 +69,7 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
         hidden: false,
       },
       {
-        icon: FileJs,
+        icon: FileJsIcon,
         key: ExportType.JSON_FILE,
         label: i18n.exportAccount.exportJsonFile,
         onClick: onClickItem(ExportType.JSON_FILE),
@@ -78,7 +78,7 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
         hidden: false,
       },
       {
-        icon: Wallet,
+        icon: WalletIcon,
         key: ExportType.PRIVATE_KEY,
         label: i18n.exportAccount.exportPrivateKey,
         onClick: onClickItem(ExportType.PRIVATE_KEY),
@@ -87,7 +87,7 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
         hidden: false,
       },
       {
-        icon: QrCode,
+        icon: QrCodeIcon,
         key: ExportType.QR_CODE,
         label: i18n.exportAccount.exportQRCode,
         onClick: onClickItem(ExportType.QR_CODE),

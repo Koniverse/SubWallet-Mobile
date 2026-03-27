@@ -1,4 +1,10 @@
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import { _ChainInfo } from '@subwallet/chain-list/types';
+import {
+  _getEvmChainId,
+  _getSubstrateGenesisHash,
+  _isChainEvmCompatible,
+} from '@subwallet/extension-base/services/chain-service/utils';
 
 export const getNetworkJsonByGenesisHash = (
   networkMap: Record<string, NetworkJson>,
@@ -22,32 +28,27 @@ export const getNetworkJsonByGenesisHash = (
   return null;
 };
 
-export const getNetworkJsonByInfo = (
-  networkMap: Record<string, NetworkJson>,
-  isEthereumAddress: boolean,
-  isEthereumNetwork: boolean,
-  info?: string | null | number,
-): NetworkJson | null => {
+export const getNetworkJsonByInfo = (chainMap: Record<string, _ChainInfo>, isEthereumAddress: boolean, isEthereumNetwork: boolean, info?: string | null | number): _ChainInfo | null => {
   if (!info) {
     if (isEthereumNetwork) {
-      const networks = Object.values(networkMap).filter(network => network.isEthereum);
+      const networks = Object.values(chainMap).filter(_isChainEvmCompatible);
 
-      return networks.find(network => network.active) || networks[0];
+      return networks[0];
     }
 
     return null;
   }
 
-  const networks = Object.values(networkMap);
+  const networks = Object.values(chainMap);
 
-  for (const network of networks) {
+  for (const chain of networks) {
     if (isEthereumNetwork) {
-      if (network.evmChainId === info) {
-        return network;
+      if (_getEvmChainId(chain) === info) {
+        return chain;
       }
     } else {
-      if (network.genesisHash.includes(info as string) && !!network.isEthereum === isEthereumAddress) {
-        return network;
+      if (_getSubstrateGenesisHash(chain) && !_isChainEvmCompatible(chain)) {
+        return chain;
       }
     }
   }

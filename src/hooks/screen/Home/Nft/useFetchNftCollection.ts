@@ -2,7 +2,7 @@ import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { NftCollectionType } from 'hooks/types';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
+import { RootState } from 'stores/index.ts';
 import { isAccountAll, reformatAddress } from '@subwallet/extension-base/utils';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 

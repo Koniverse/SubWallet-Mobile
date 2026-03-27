@@ -12,7 +12,7 @@ interface Props {
   checkBoxSize?: number;
   labelStyle?: StyleProp<TextStyle>;
   wrapperStyle?: StyleProp<ViewStyle>;
-  label: string | ReactElement;
+  label: string | ReactElement<any>;
   style?: StyleProp<ViewStyle>;
   needFocusCheckBox?: boolean;
 }
@@ -84,7 +84,7 @@ const InputCheckBox = ({
   return (
     <View style={containerStyle}>
       <CheckBox
-        title={label}
+        title={label as string | ReactElement<{}>}
         containerStyle={checkBoxWrapperStyle}
         textStyle={checkBoxTextStyle}
         activeOpacity={1}

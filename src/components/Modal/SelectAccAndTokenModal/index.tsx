@@ -9,8 +9,8 @@ import { sortTokensByStandard } from 'utils/sort/token';
 import { TokenSelector } from 'components/Modal/SelectAccAndTokenModal/TokenSelector';
 
 interface Props {
-  accountRef: React.MutableRefObject<ModalRef | undefined>;
-  tokenRef: React.MutableRefObject<ModalRef | undefined>;
+  accountRef: React.RefObject<ModalRef | null>;
+  tokenRef: React.RefObject<ModalRef | null>;
   accountItems: AccountAddressItemType[];
   tokenItems: _ChainAsset[];
   openSelectAccount: (account: AccountAddressItemType) => void;

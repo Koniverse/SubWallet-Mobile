@@ -2,9 +2,9 @@ import React, { useRef, useState } from 'react';
 import { Platform, View } from 'react-native';
 import { Button, Icon, Typography } from '../../design-system-ui';
 import LinearGradient from 'react-native-linear-gradient';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { House, Share } from 'phosphor-react-native';
+import { HouseIcon, ShareIcon } from 'phosphor-react-native';
 import ErrorStyles from './style';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Images } from 'assets/index';
@@ -29,12 +29,13 @@ const ErrorFallbackScreen: React.FC<FallbackComponentProps> = ({ error, resetErr
   const [isUploading, setIsUploading] = useState(false);
   const navigation = useNavigation();
   const routes = navigation?.getState()?.routes;
-  const currentRoutes = useRef(routes);
+  const currentRoutes = useRef<string[]>([]);
   if (routes) {
     currentRoutes.current = routes.map(item => item.name);
   }
 
   const uploadCrashLog = () => {
+
     setIsUploading(true);
     const body = {
       content: JSON.stringify(error),
@@ -72,7 +73,7 @@ const ErrorFallbackScreen: React.FC<FallbackComponentProps> = ({ error, resetErr
         <Button
           loading={isUploading}
           onPress={uploadCrashLog}
-          icon={<Icon phosphorIcon={Share} size="md" weight="fill" />}>
+          icon={<Icon phosphorIcon={ShareIcon} size="md" weight="fill" />}>
           Send report
         </Button>
         <Button
@@ -80,7 +81,7 @@ const ErrorFallbackScreen: React.FC<FallbackComponentProps> = ({ error, resetErr
           disabled={isUploading}
           style={styles.buttonSubmit}
           onPress={() => resetError()}
-          icon={<Icon phosphorIcon={House} size="md" weight="fill" />}>
+          icon={<Icon phosphorIcon={HouseIcon} size="md" weight="fill" />}>
           Back to home
         </Button>
       </SafeAreaView>

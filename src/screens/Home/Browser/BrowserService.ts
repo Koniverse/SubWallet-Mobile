@@ -8,7 +8,7 @@ import { getId } from '@subwallet/extension-base/utils/getId';
 import { Message } from '@subwallet/extension-base/types';
 
 export type BrowserServiceArgs = {
-  browserWebviewRef: React.RefObject<WebView<{}>>;
+  browserWebviewRef: React.RefObject<WebView<{}> | null>;
   webRunnerEventEmitter: EventEmitter;
   url: string;
   onHandlePhishing: () => void;
@@ -21,7 +21,7 @@ type PhishingHandleType = {
 
 export class BrowserService {
   private webRunnerEventEmitter: EventEmitter<string | symbol, any>;
-  private browserWebviewRef: React.RefObject<WebView<{}>>;
+  private browserWebviewRef: React.RefObject<WebView<{}> | null>;
   private handlerIds: string[];
   private readonly phishingHandle: PhishingHandleType;
   private isDisconnected: boolean;

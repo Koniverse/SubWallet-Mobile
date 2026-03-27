@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ImageRequireSource, StyleProp, View, ViewStyle } from 'react-native';
-import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
+import FastImage, { FastImageProps, Source } from '@d11/react-native-fast-image';
 import { ActivityIndicator, Squircle } from '..';
 import ImageStyles from './style';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';

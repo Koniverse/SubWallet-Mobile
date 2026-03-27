@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon, Typography, Web3Block } from 'components/design-system-ui';
 import { WCNetworkAvatarGroup } from 'components/WalletConnect/Network/WCNetworkAvatarGroup';
 import { WalletConnectChainInfo } from 'types/walletConnect';
-import { DotsThree } from 'phosphor-react-native';
+import { DotsThreeIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 
@@ -36,7 +36,7 @@ export const WCNetworkInput = ({ networks, content }: Props) => {
           {content}
         </Typography.Text>
       }
-      rightItem={<Icon phosphorIcon={DotsThree} weight={'fill'} />}
+      rightItem={<Icon phosphorIcon={DotsThreeIcon} weight={'fill'} />}
     />
   );
 };

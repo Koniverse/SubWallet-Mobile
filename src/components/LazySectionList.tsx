@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
-import { RefreshControlProps, View } from 'react-native';
+import { RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useLazyList } from 'hooks/common/useLazyList';
 import { SortFunctionInterface } from 'types/ui-types';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { ContentStyle, FlashList, ListRenderItemInfo } from '@shopify/flash-list';
+import { FlashList, FlashListRef, ListRenderItemInfo } from '@shopify/flash-list';
 
 export type SectionItem<T> = { title: string; data: T[] };
 
@@ -19,13 +19,12 @@ interface Props<T> {
   filterFunction?: (items: T[], filters: string[]) => T[];
   groupBy: (item: T) => string;
   selectedFilters?: string[];
-  listStyle?: ContentStyle;
+  listStyle?: StyleProp<ViewStyle>;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   sortItemFunction?: SortFunctionInterface<T>;
   sortSectionFunction?: SortFunctionInterface<SectionItem<T>>;
   loading?: boolean;
-  estimatedItemSize?: number;
   stickyHeader?: boolean;
   keyExtractor?: (item: T | string, index: number) => string;
   extraData?: any;
@@ -46,12 +45,11 @@ export function LazySectionList<T>({
   loading,
   sortItemFunction,
   sortSectionFunction,
-  estimatedItemSize,
   stickyHeader = true,
   extraData,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
-  const sectionListRef = useRef<FlashList<string | T>>(null);
+  const sectionListRef = useRef<FlashListRef<string | T>>(null);
   const [sections, setSections] = useState<SectionItem<T>[]>([]);
   const sectionData = useMemo(() => {
     const result: (string | T)[] = [];
@@ -185,7 +183,6 @@ export function LazySectionList<T>({
             onEndReachedThreshold={0.5}
             stickyHeaderIndices={stickyHeader ? stickyHeaderIndices : undefined}
             getItemType={getItemType}
-            estimatedItemSize={estimatedItemSize}
             data={sectionData}
             extraData={extraData}
             showsVerticalScrollIndicator={false}

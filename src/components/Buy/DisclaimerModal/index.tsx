@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { CheckCircle, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, XCircleIcon } from 'phosphor-react-native';
 import { Button, Icon, SwModal } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import modalStyle from './styles';
@@ -14,10 +14,10 @@ interface Props {
 }
 
 const renderLeftBtnIcon = (color: string) => (
-  <Icon phosphorIcon={XCircle} size={'lg'} weight="fill" iconColor={color} />
+  <Icon phosphorIcon={XCircleIcon} size={'lg'} weight="fill" iconColor={color} />
 );
 
-const renderRightBtnIcon = (color: string) => <Icon phosphorIcon={CheckCircle} weight={'fill'} iconColor={color} />;
+const renderRightBtnIcon = (color: string) => <Icon phosphorIcon={CheckCircleIcon} weight={'fill'} iconColor={color} />;
 
 export const DisclaimerModal = ({ modalVisible, onCloseModalVisible, onConfirm, content, setVisible }: Props) => {
   const styles = modalStyle();

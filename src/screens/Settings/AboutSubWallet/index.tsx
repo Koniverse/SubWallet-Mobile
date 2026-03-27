@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { Linking, Platform, View } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
-import { Globe, ArrowSquareOut, BookBookmark, Star } from 'phosphor-react-native';
+import { GlobeIcon, ArrowSquareOutIcon, BookBookmarkIcon, StarIcon } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime } from 'stores/MobileSettings';
@@ -80,18 +80,18 @@ export const AboutSubWallet = () => {
       <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
         <View style={{ gap: theme.paddingXS }}>
           <SelectItem
-            icon={Globe}
+            icon={GlobeIcon}
             backgroundColor={theme['purple-7']}
             label={i18n.settings.website}
             onPress={() => Linking.openURL(WEBSITE_URL)}
-            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOutIcon} size={'sm'} iconColor={theme['gray-5']} />}
           />
           <SelectItem
-            icon={BookBookmark}
+            icon={BookBookmarkIcon}
             backgroundColor={theme['volcano-7']}
             label={i18n.settings.termOfUse}
             onPress={() => Linking.openURL(TERMS_OF_USE_URL)}
-            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOutIcon} size={'sm'} iconColor={theme['gray-5']} />}
           />
           <SelectItem
             leftItemIcon={
@@ -101,14 +101,14 @@ export const AboutSubWallet = () => {
                 customIcon={<SVGImages.TwitterLogo width={16} height={16} color={theme.colorWhite} />}
               />
             }
-            icon={BookBookmark}
+            icon={BookBookmarkIcon}
             backgroundColor={theme['volcano-7']}
             label={i18n.settings.xTwitter}
             onPress={() => Linking.openURL(TWITTER_URL)}
-            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOutIcon} size={'sm'} iconColor={theme['gray-5']} />}
           />
           <SelectItem
-            icon={Star}
+            icon={StarIcon}
             backgroundColor={theme['lime-6']}
             label={i18n.settings.rateOurApp}
             onPress={() => {
@@ -118,7 +118,7 @@ export const AboutSubWallet = () => {
                   : 'https://play.google.com/store/apps/details?id=app.subwallet.mobile',
               );
             }}
-            rightIcon={<Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme['gray-5']} />}
+            rightIcon={<Icon phosphorIcon={ArrowSquareOutIcon} size={'sm'} iconColor={theme['gray-5']} />}
           />
         </View>
 

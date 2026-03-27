@@ -5,7 +5,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { VoidFunction } from 'types/index';
 import { Button, Icon, Logo, Tag, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
-import { Copy, QrCode } from 'phosphor-react-native';
+import { CopyIcon, QrCodeIcon } from 'phosphor-react-native';
 import { FontSemiBold } from 'styles/sharedStyles';
 
 interface Props {
@@ -48,13 +48,13 @@ const AccountChainAddressWithStatusItem: React.FC<Props> = ({
       </View>
       <View style={styles.rightPart}>
         <Button
-          icon={<Icon phosphorIcon={QrCode} size={'sm'} />}
+          icon={<Icon phosphorIcon={QrCodeIcon} size={'sm'} />}
           onPress={onPressQrButton}
           size={'xs'}
           type={'ghost'}
         />
         <Button
-          icon={<Icon phosphorIcon={Copy} size={'sm'} />}
+          icon={<Icon phosphorIcon={CopyIcon} size={'sm'} />}
           onPress={onPressCopyButton}
           size={'xs'}
           type={'ghost'}

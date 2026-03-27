@@ -6,7 +6,7 @@ import { ScrollView, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapQuote } from '@subwallet/extension-base/types/swap';
 import { deviceHeight } from 'constants/index';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { VoidFunction } from 'types/index';
 import { QuoteResetTime } from 'components/Swap/QuoteResetTime';
@@ -95,7 +95,7 @@ export const SwapQuotesSelectorModal = ({
           icon={
             <Icon
               iconColor={isDisableConfirmButton ? theme.colorTextLight5 : theme.colorWhite}
-              phosphorIcon={CheckCircle}
+              phosphorIcon={CheckCircleIcon}
               weight={'fill'}
             />
           }>

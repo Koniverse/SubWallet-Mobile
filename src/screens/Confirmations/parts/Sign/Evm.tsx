@@ -3,7 +3,7 @@ import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from 'components/design-system-ui';
-import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, IconProps, QrCodeIcon, SwatchesIcon, XCircleIcon } from 'phosphor-react-native';
 import { DisplayPayloadModal, EvmQr } from 'screens/Confirmations/parts/Qr/DisplayPayload';
 import { EvmSignatureSupportType } from 'types/confirmation';
 import { completeConfirmation } from 'messaging/index';
@@ -78,12 +78,12 @@ export const EvmSignArea = (props: Props) => {
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
       case AccountSignMode.QR:
-        return QrCode;
+        return QrCodeIcon;
       case AccountSignMode.GENERIC_LEDGER:
       case AccountSignMode.LEGACY_LEDGER:
-        return Swatches;
+        return SwatchesIcon;
       default:
-        return CheckCircle;
+        return CheckCircleIcon;
     }
   }, [signMode]);
 
@@ -197,7 +197,7 @@ export const EvmSignArea = (props: Props) => {
         <Button
           block={true}
           disabled={loading}
-          icon={isErrorTransaction && getButtonIcon(XCircle)}
+          icon={isErrorTransaction && getButtonIcon(XCircleIcon)}
           type={'secondary'}
           onPress={onCancel}>
           {isErrorTransaction ? i18n.buttonTitles.iUnderstand : i18n.common.cancel}

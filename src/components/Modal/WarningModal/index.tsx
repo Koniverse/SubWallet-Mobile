@@ -3,7 +3,7 @@ import { Button, Icon, PageIcon, SwModal, Typography } from 'components/design-s
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ModalStyle from './style';
 import { Linking, View } from 'react-native';
-import { ArrowCircleRight, Warning, XCircle } from 'phosphor-react-native';
+import { ArrowCircleRightIcon, WarningIcon, XCircleIcon } from 'phosphor-react-native';
 import { FontMedium } from 'styles/sharedStyles';
 
 interface Props {
@@ -28,7 +28,7 @@ const WarningModal = ({ visible, setVisible, onPressBtn }: Props) => {
       isAllowSwipeDown={false}>
       <View style={{ width: '100%' }}>
         <View style={{ paddingVertical: theme.padding, alignItems: 'center', gap: theme.padding }}>
-          <PageIcon icon={Warning} color={theme.colorWarning} />
+          <PageIcon icon={WarningIcon} color={theme.colorWarning} />
           <Typography.Text
             style={{
               color: theme.colorTextTertiary,
@@ -55,7 +55,7 @@ const WarningModal = ({ visible, setVisible, onPressBtn }: Props) => {
             type={'secondary'}
             style={{ flex: 1 }}
             onPress={onPressBtn}
-            icon={<Icon phosphorIcon={XCircle} size={'lg'} weight={'fill'} />}>
+            icon={<Icon phosphorIcon={XCircleIcon} size={'lg'} weight={'fill'} />}>
             {'Dismiss'}
           </Button>
 
@@ -67,7 +67,7 @@ const WarningModal = ({ visible, setVisible, onPressBtn }: Props) => {
                 'https://support.polkadot.network/support/solutions/articles/65000188140-changes-for-nomination-pool-members-and-opengov-participation',
               );
             }}
-            icon={<Icon phosphorIcon={ArrowCircleRight} size={'lg'} weight={'fill'} />}>
+            icon={<Icon phosphorIcon={ArrowCircleRightIcon} size={'lg'} weight={'fill'} />}>
             {'Read more'}
           </Button>
         </View>

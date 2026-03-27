@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { AuthUrlInfo, AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -13,7 +13,7 @@ import { ModalRef } from 'types/modalRef';
 import { useToast } from 'react-native-toast-notifications';
 
 export interface SwitchNetworkAuthorizeModalProps {
-  selectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  selectorRef?: React.RefObject<ModalRef | null>;
   authUrlInfo: AuthUrlInfo;
   onComplete: (authInfo: AuthUrls) => void;
   needsTabAuthCheck?: boolean;

@@ -1,5 +1,5 @@
 import { Icon, Number, Tag, Typography } from 'components/design-system-ui';
-import { CaretRight, Moon, Sun } from 'phosphor-react-native';
+import { CaretRightIcon, MoonIcon, SunIcon } from 'phosphor-react-native';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
@@ -23,7 +23,7 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
 
   const getTagItem = (isTestnet: boolean) => {
     const tagContent = isTestnet ? 'Testnet' : 'Mainnet';
-    const TagIcon = isTestnet ? Moon : Sun;
+    const TagIcon = isTestnet ? MoonIcon : SunIcon;
     const tagBgc = isTestnet ? 'rgba(217, 197, 0, 0.1)' : 'rgba(45, 167, 63, 0.1)';
     const tagColor = isTestnet ? 'yellow' : 'green';
     const tagIconColor = isTestnet ? theme['yellow-6'] : theme['green-7'];
@@ -127,7 +127,7 @@ const EarningGroupItem = ({ poolGroup, onPress, isShowBalance }: Props) => {
           </Typography.Text>
         )}
         <View style={styleSheet.iconWrapper}>
-          <Icon phosphorIcon={CaretRight} iconColor={theme['gray-5']} size={'sm'} />
+          <Icon phosphorIcon={CaretRightIcon} iconColor={theme['gray-5']} size={'sm'} />
         </View>
       </View>
     </TouchableOpacity>

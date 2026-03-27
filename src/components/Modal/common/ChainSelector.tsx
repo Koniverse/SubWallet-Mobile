@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { JSX, useCallback } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ChainInfo } from 'types/index';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
@@ -12,7 +12,7 @@ interface Props {
   renderSelectModalBtn?: (onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => JSX.Element;
   disabled?: boolean;
   acceptDefaultValue?: boolean;
-  chainSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  chainSelectorRef?: React.RefObject<ModalRef | null>;
   extraData?: string;
   keyExtractor?: (item: ChainInfo, index: number) => string;
 }
@@ -50,7 +50,6 @@ export const ChainSelector = ({
       ref={chainSelectorRef}
       onBackButtonPress={() => chainSelectorRef?.current?.onCloseModal()}
       title={i18n.header.selectNetwork}
-      estimatedItemSize={60}
       extraData={extraData}
       keyExtractor={item => item.slug}
     />

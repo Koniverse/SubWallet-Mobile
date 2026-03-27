@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
 import { InteractionManager, RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
 import { useLazyList } from 'hooks/common/useLazyList';
@@ -6,7 +6,7 @@ import { defaultSortFunc } from 'utils/function';
 import { SortFunctionInterface } from 'types/ui-types';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { ContentStyle, FlashList, ListRenderItemInfo } from '@shopify/flash-list';
+import { FlashList, FlashListRef, ListRenderItemInfo } from '@shopify/flash-list';
 
 interface Props<T> {
   items: T[];
@@ -16,14 +16,13 @@ interface Props<T> {
   filterFunction?: (items: T[], filters: string[]) => T[];
   selectedFilters?: string[];
   numberColumns?: number;
-  flatListStyle?: ContentStyle;
+  flatListStyle?: StyleProp<ViewStyle>;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   sortFunction?: SortFunctionInterface<T>;
   loading?: boolean;
   isShowListWrapper?: boolean;
   removeClippedSubviews?: boolean;
-  estimatedItemSize?: number;
   keyExtractor?: (item: T, index: number) => string;
   extraData?: any;
 }
@@ -48,11 +47,10 @@ export function LazyFlatList<T>({
   isShowListWrapper,
   removeClippedSubviews,
   keyExtractor,
-  estimatedItemSize,
   extraData,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
-  const flatListRef = useRef<FlashList<T>>(null);
+  const flatListRef = useRef<FlashListRef<T>>(null);
   const filteredItems = useMemo(() => {
     let searchItem = searchFunction ? searchFunction(items, searchString) : items;
 
@@ -135,11 +133,7 @@ export function LazyFlatList<T>({
             removeClippedSubviews={removeClippedSubviews}
             showsVerticalScrollIndicator={false}
             keyExtractor={keyExtractor}
-            onBlankArea={() => {
-              return null;
-            }}
             extraData={extraData}
-            estimatedItemSize={estimatedItemSize}
           />
         </View>
       ) : (

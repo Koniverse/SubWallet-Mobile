@@ -7,7 +7,7 @@ import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 
 interface Props extends FieldBaseProps {
@@ -57,7 +57,7 @@ export const NetworkSelectField = ({ networkKey, disabled, showIcon, outerStyle,
           <Text style={getTextStyle(!!disabled)}>{value || getNetworkName(networkKey, networkMap)}</Text>
         </View>
 
-        {!!showIcon && <CaretDown size={20} color={ColorMap.disabled} weight={'bold'} />}
+        {!!showIcon && <CaretDownIcon size={20} color={ColorMap.disabled} weight={'bold'} />}
       </View>
     </FieldBase>
   );

@@ -3,7 +3,7 @@ import React from 'react';
 import { Icon, Squircle, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './styles/BrowserSearchItem';
-import { GlobeHemisphereWest } from 'phosphor-react-native';
+import { GlobeHemisphereWestIcon } from 'phosphor-react-native';
 
 interface Props {
   title: string;
@@ -22,7 +22,7 @@ export const BrowserSearchItem = ({ title, style, onPress, subtitle }: Props) =>
         <View style={stylesheet.logoWrapper}>
           <Squircle customSize={44} backgroundColor={theme.colorBgSecondary} containerStyle={stylesheet.squircleStyle}>
             <View style={stylesheet.logo}>
-              <Icon phosphorIcon={GlobeHemisphereWest} weight={'fill'} iconColor={theme['gray-5']} size={'md'} />
+              <Icon phosphorIcon={GlobeHemisphereWestIcon} weight={'fill'} iconColor={theme['gray-5']} size={'md'} />
             </View>
           </Squircle>
         </View>

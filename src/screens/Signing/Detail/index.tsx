@@ -4,7 +4,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { deviceHeight, statusBarHeight } from 'constants/index';
 import useGetAccountAndNetworkScanned from 'hooks/screen/Signing/useGetAccountAndNetworkScanned';
 import { ScannerContext } from 'providers/ScannerContext';
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { JSX, useCallback, useContext, useMemo } from 'react';
 import { Platform, ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import MessageDetail from 'screens/Signing/Detail/Message';
 import EvmTransactionDetail from 'screens/Signing/Detail/Transaction/Evm';

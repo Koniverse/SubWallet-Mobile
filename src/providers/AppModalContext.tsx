@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import ConfirmModal from 'components/common/Modal/ConfirmModal';
-import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
+import { ReceiveModal } from 'screens/Home/Tokens/ReceiveModal';
 import { noop } from 'utils/function';
 import { VoidFunction } from 'types/index';
 import { DeriveAccountActionModal } from 'components/common/Modal/DeriveAccountModal';
@@ -129,7 +129,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
   const [selectAddressFormatModalState, setSelectAddressFormatModalState] = useState<SelectAddressFormatModalState>({});
   const [accountTokenAddressModalState, setAccountTokenAddressModalState] = useState<AccountTokenAddressModalState>({});
   const hideConfirmModal = useCallback(() => {
-    // setConfirmModal(prevState => ({ ...prevState, visible: false }));
+    setConfirmModal(prevState => ({ ...prevState, visible: false }));
     setTimeout(
       () =>
         setConfirmModal(prevState => ({
@@ -140,7 +140,6 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           messageIcon: undefined,
           onCancelModal: undefined,
           onCompleteModal: undefined,
-          visible: false,
         })),
       300,
     );
@@ -264,22 +263,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         hideAccountTokenAddressModal,
       },
     }),
-    [
-      confirmModal,
-      hideConfirmModal,
-      addressQrModalState,
-      hideAddressQrModal,
-      deriveModalState,
-      hideDeriveModal,
-      transactionStepsModalState,
-      hideTransactionStepsModal,
-      transactionProcessDetailModalState,
-      hideTransactionProcessDetailModal,
-      selectAddressFormatModalState,
-      hideSelectAddressFormatModal,
-      accountTokenAddressModalState,
-      hideAccountTokenAddressModal,
-    ],
+    [confirmModal, hideConfirmModal, addressQrModalState, hideAddressQrModal, deriveModalState, hideDeriveModal, transactionStepsModalState, hideTransactionStepsModal, transactionProcessDetailModalState, hideTransactionProcessDetailModal, selectAddressFormatModalState, hideSelectAddressFormatModal, accountTokenAddressModalState, hideAccountTokenAddressModal],
   );
   // TODO: Add back and cancel
   return (

@@ -14,7 +14,7 @@ import { Button, Icon, QRCode, SelectItem, Typography } from 'components/design-
 import PasswordModal from 'components/Modal/PasswordModal';
 import { exportAccountBatch, exportAccountMnemonic, exportAccountPrivateKey } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { AddressBook, CheckCircle, CopySimple, DownloadSimple, X } from 'phosphor-react-native';
+import { AddressBookIcon, CheckCircleIcon, CopySimpleIcon, DownloadSimpleIcon, XIcon } from 'phosphor-react-native';
 import createStyle from './styles';
 import { toShort } from 'utils/index';
 import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
@@ -204,7 +204,7 @@ export const AccountExport = ({
   }
 
   return (
-    <SubScreenContainer navigation={navigation} disabled={isBusy} title={title} rightIcon={X} onPressRightIcon={goHome}>
+    <SubScreenContainer navigation={navigation} disabled={isBusy} title={title} rightIcon={XIcon} onPressRightIcon={goHome}>
       <View style={styles.layoutContainer}>
         <ScrollView style={styles.bodyArea}>
           <View style={currentViewStep === ViewStep.SELECT_TYPES ? styles.introWarning : styles.rsWarning}>
@@ -241,7 +241,7 @@ export const AccountExport = ({
                       type="ghost"
                       size="xs"
                       onPress={copyToClipboard(privateKey)}
-                      icon={<Icon phosphorIcon={CopySimple} size="md" iconColor={theme.colorTextLight4} />}>
+                      icon={<Icon phosphorIcon={CopySimpleIcon} size="md" iconColor={theme.colorTextLight4} />}>
                       {i18n.common.copyToClipboard}
                     </Button>
                   </View>
@@ -274,7 +274,6 @@ export const AccountExport = ({
                       height={276}
                       errorLevel={'Q'}
                       value={qrData}
-                      QRSize={4}
                       outerEyesRadius={11}
                       innerEyesRadius={5}
                       pieceBorderRadius={2}
@@ -292,12 +291,12 @@ export const AccountExport = ({
                   )}
                   <SelectItem
                     onPress={onExportJson(jsonData, address)}
-                    icon={AddressBook}
+                    icon={AddressBookIcon}
                     backgroundColor={theme.colorPrimary}
                     label={`${toShort(address)}.json`}
                     rightIcon={
                       <Icon
-                        phosphorIcon={DownloadSimple}
+                        phosphorIcon={DownloadSimpleIcon}
                         size={'sm'}
                         iconColor={theme.colorTextTertiary}
                         weight={'bold'}
@@ -320,7 +319,7 @@ export const AccountExport = ({
               block
               disabled={isBusy}
               onPress={onPressDone}
-              icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}>
+              icon={<Icon phosphorIcon={CheckCircleIcon} size={'lg'} weight={'fill'} />}>
               {i18n.common.finish}
             </Button>
           )}

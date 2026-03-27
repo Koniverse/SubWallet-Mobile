@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Keyboard, Platform, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator, Icon, NumberDisplay, Tag, Typography } from 'components/design-system-ui';
-import { CaretRight, Info, ListBullets, PencilSimpleLine, XCircle } from 'phosphor-react-native';
+import { CaretRightIcon, InfoIcon, ListBulletsIcon, PencilSimpleLineIcon, XCircleIcon } from 'phosphor-react-native';
 import { SwapProviderId } from '@subwallet/extension-base/types/swap';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { getAmountAfterSlippage, getSwapChainsFromPath } from '@subwallet/extension-base/services/swap-service/utils';
@@ -115,7 +115,7 @@ export const QuoteInfoArea = (props: Props) => {
           <Tag bgType={'default'}>{'Best'}</Tag>
         )}
 
-        <Icon phosphorIcon={CaretRight} size={'xs'} />
+        <Icon phosphorIcon={CaretRightIcon} size={'xs'} />
       </TouchableOpacity>
     );
   }, [currentQuote?.provider.id, openSwapQuotesModal, quoteOptions, renderRateInfo, styles.row]);
@@ -161,7 +161,7 @@ export const QuoteInfoArea = (props: Props) => {
             <ActivityIndicator size={32} indicatorColor={theme['gray-4']} />
           ) : (
             <Icon
-              phosphorIcon={isError ? XCircle : ListBullets}
+              phosphorIcon={isError ? XCircleIcon : ListBulletsIcon}
               weight={isError ? 'fill' : undefined}
               customSize={36}
             />
@@ -227,10 +227,10 @@ export const QuoteInfoArea = (props: Props) => {
           <TouchableOpacity
             style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}
             onPress={slippageTitle ? onPressInfo : onOpenSlippageModal}>
-            {!!slippageTitle && <Icon phosphorIcon={Info} size={'xxs'} />}
+            {!!slippageTitle && <Icon phosphorIcon={InfoIcon} size={'xxs'} />}
             <Typography.Text style={styles.smallText}>{slippageContent}</Typography.Text>
 
-            {!notSupportSlippageSelection && <Icon size={'xs'} phosphorIcon={PencilSimpleLine} />}
+            {!notSupportSlippageSelection && <Icon size={'xs'} phosphorIcon={PencilSimpleLineIcon} />}
           </TouchableOpacity>
         </Tooltip>
       </MetaInfo.Default>
@@ -298,7 +298,7 @@ export const QuoteInfoArea = (props: Props) => {
             <TouchableOpacity onPress={openProcessModal} style={styles.row}>
               <TransactionProcessPreview chains={processChains} />
 
-              <Icon phosphorIcon={CaretRight} size={'xs'} />
+              <Icon phosphorIcon={CaretRightIcon} size={'xs'} />
             </TouchableOpacity>
           </MetaInfo.Default>
 
@@ -319,7 +319,7 @@ export const QuoteInfoArea = (props: Props) => {
                 value={estimatedFeeValue}
               />
 
-              <Icon phosphorIcon={CaretRight} size={'xs'} />
+              <Icon phosphorIcon={CaretRightIcon} size={'xs'} />
             </TouchableOpacity>
           </MetaInfo.Default>
 

@@ -12,7 +12,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { editContactAddress, removeContactAddress } from 'messaging/index';
 import { AddressJson } from '@subwallet/extension-base/types';
 import { ReadonlyAddressField } from 'components/Modal/AddressBook/ReadonlyAddressField';
-import { Trash } from 'phosphor-react-native';
+import { TrashIcon } from 'phosphor-react-native';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import ToastContainer, { useToast } from 'react-native-toast-notifications';
@@ -59,7 +59,7 @@ export const EditContactModal = ({ modalVisible, addressJson, setModalVisible }:
       [FormFieldName.NAME]: defaultName,
     },
   });
-  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+  const modalBaseV2Ref = useRef<SWModalRefProps | null>(null);
 
   const { name: nameValue } = {
     ...useWatch<FormValues>({ control }),
@@ -189,7 +189,7 @@ export const EditContactModal = ({ modalVisible, addressJson, setModalVisible }:
               onPress={onPressDelete}
               icon={
                 <Icon
-                  phosphorIcon={Trash}
+                  phosphorIcon={TrashIcon}
                   weight={'fill'}
                   size={'lg'}
                   iconColor={loading ? theme.colorTextLight4 : undefined}

@@ -3,7 +3,7 @@ import { SeedWord } from 'components/SeedWord';
 import Text from 'components/Text';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CopySimple } from 'phosphor-react-native';
+import { CopySimpleIcon } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { SeedWordDataType } from 'screens/Account/CreateAccount/types';
@@ -66,7 +66,7 @@ const WordPhrase: React.FC<Props> = (props: Props) => {
         <Button
           type={'ghost'}
           size={'xs'}
-          icon={<Icon phosphorIcon={CopySimple} size={'lg'} iconColor={theme.colorTextLight4} />}
+          icon={<Icon phosphorIcon={CopySimpleIcon} size={'lg'} iconColor={theme.colorTextLight4} />}
           onPress={copyToClipboard(seedPhrase)}>
           <Text style={styles.copyText}>{i18n.common.copyToClipboard}</Text>
         </Button>

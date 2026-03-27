@@ -4,7 +4,7 @@ import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { CaretDown, IconProps, ShareNetwork } from 'phosphor-react-native';
+import { CaretDownIcon, ShareNetworkIcon, type Icon as PhosphorIcon } from 'phosphor-react-native';
 import { Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
@@ -13,8 +13,8 @@ interface Props extends FieldBaseProps {
   showRightIcon?: boolean;
   outerStyle?: StyleProp<any>;
   value?: string;
-  leftIcon?: (iconProps: IconProps) => JSX.Element;
-  rightIcon?: (iconProps: IconProps) => JSX.Element;
+  leftIcon?: PhosphorIcon;
+  rightIcon?: PhosphorIcon;
 }
 
 const getTextStyle = (disabled: boolean): StyleProp<any> => {
@@ -41,8 +41,8 @@ const blockContentStyle: StyleProp<any> = {
 export const RpcSelectField = ({
   disabled,
   showRightIcon,
-  leftIcon = ShareNetwork,
-  rightIcon = CaretDown,
+  leftIcon = CaretDownIcon,
+  rightIcon = ShareNetworkIcon,
   outerStyle,
   value,
   label,

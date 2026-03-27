@@ -3,7 +3,7 @@ import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
 import { getNetworkLogo } from 'utils/index';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import Typography from 'components/design-system-ui/typography';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { ChainItemType } from 'types/index';
@@ -18,7 +18,7 @@ interface Props {
   value: string;
   disabled?: boolean;
   loading?: boolean;
-  selectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  selectorRef?: React.RefObject<ModalRef | null>;
   onSelectItem?: (item: ChainItemType) => void;
 }
 
@@ -64,7 +64,7 @@ export const HistoryChainSelector = ({ items, value, onSelectItem, disabled, sel
 
         <View>
           {loading && <ActivityIndicator size={16} />}
-          {!loading && <CaretDown size={12} color={theme['gray-5']} weight={'bold'} />}
+          {!loading && <CaretDownIcon size={12} color={theme['gray-5']} weight={'bold'} />}
         </View>
       </View>
     );

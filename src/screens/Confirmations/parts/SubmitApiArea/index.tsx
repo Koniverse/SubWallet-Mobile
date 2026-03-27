@@ -4,7 +4,7 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { getSignMode } from 'utils/account';
 import { PhosphorIcon } from 'utils/campaign';
 import { AccountSignMode } from '@subwallet/extension-base/types';
-import { CheckCircle, QrCode, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, QrCodeIcon, XCircleIcon } from 'phosphor-react-native';
 import { SubmitApiType } from 'types/confirmation';
 import {
   ConfirmationDefinitions,
@@ -66,9 +66,9 @@ const SubmitApiArea: React.FC<Props> = (props: Props) => {
   const approveIcon = useMemo((): PhosphorIcon => {
     switch (signMode) {
       case AccountSignMode.QR:
-        return QrCode;
+        return QrCodeIcon;
       default:
-        return CheckCircle;
+        return CheckCircleIcon;
     }
   }, [signMode]);
 
@@ -166,7 +166,7 @@ const SubmitApiArea: React.FC<Props> = (props: Props) => {
 
   return (
     <ConfirmationFooter>
-      <Button disabled={loading} block icon={getButtonIcon(XCircle)} type={'secondary'} onPress={onCancel}>
+      <Button disabled={loading} block icon={getButtonIcon(XCircleIcon)} type={'secondary'} onPress={onCancel}>
         {i18n.common.cancel}
       </Button>
       <Button block disabled={showQuoteExpired} icon={getButtonIcon(approveIcon)} loading={loading} onPress={onConfirm}>

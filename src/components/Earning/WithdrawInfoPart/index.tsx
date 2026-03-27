@@ -4,7 +4,7 @@ import { UnstakingInfo, UnstakingStatus, YieldPoolInfo } from '@subwallet/extens
 import { Button, Icon, Number, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CaretDown, CaretUp, CheckCircle, ProhibitInset } from 'phosphor-react-native';
+import { CaretDownIcon, CaretUpIcon, CheckCircleIcon, ProhibitInsetIcon } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
@@ -130,7 +130,7 @@ const WithdrawInfoPart: React.FC<Props> = (props: Props) => {
                     : i18n.earningScreen.withdrawInfo.waitingForWithdrawal}
                 </Typography.Text>
                 {item.status === UnstakingStatus.CLAIMABLE && (
-                  <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />
+                  <Icon phosphorIcon={CheckCircleIcon} size="sm" iconColor={theme.colorSecondary} weight="fill" />
                 )}
               </View>
             );
@@ -141,7 +141,7 @@ const WithdrawInfoPart: React.FC<Props> = (props: Props) => {
                   {getWaitingTime(currentTimestampMs, item.targetTimestampMs, item.waitingTime)}
                 </Typography.Text>
                 {item.status === UnstakingStatus.CLAIMABLE && (
-                  <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />
+                  <Icon phosphorIcon={CheckCircleIcon} size="sm" iconColor={theme.colorSecondary} weight="fill" />
                 )}
               </View>
             );
@@ -182,7 +182,7 @@ const WithdrawInfoPart: React.FC<Props> = (props: Props) => {
         <Button
           type="ghost"
           size="xs"
-          icon={<Icon phosphorIcon={showDetail ? CaretUp : CaretDown} size="sm" iconColor={theme['gray-5']} />}
+          icon={<Icon phosphorIcon={showDetail ? CaretUpIcon : CaretDownIcon} size="sm" iconColor={theme['gray-5']} />}
           onPress={toggleDetail}
         />
       </TouchableOpacity>
@@ -207,7 +207,7 @@ const WithdrawInfoPart: React.FC<Props> = (props: Props) => {
           <Button
             size="xs"
             type="ghost"
-            icon={<Icon phosphorIcon={ProhibitInset} size="sm" iconColor={theme['gray-4']} weight="fill" />}
+            icon={<Icon phosphorIcon={ProhibitInsetIcon} size="sm" iconColor={theme['gray-4']} weight="fill" />}
             onPress={onPressCancelWithdraw}>
             {i18n.buttonTitles.cancelUnstaking}
           </Button>

@@ -5,7 +5,7 @@ import { RootState } from 'stores/index';
 import { getNetworkLogo } from 'utils/index';
 import { StyleSheet, View } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import { _getChainName } from '@subwallet/extension-base/services/chain-service/utils';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -32,7 +32,7 @@ export const NetworkField = ({ networkKey, disabled, label, showIcon, placeholde
         </Typography.Text>
         {!!showIcon && (
           <View style={styles.iconWrapper}>
-            <CaretDown size={20} color={theme.colorTextLight3} weight={'bold'} />
+            <CaretDownIcon size={20} color={theme.colorTextLight3} weight={'bold'} />
           </View>
         )}
       </View>

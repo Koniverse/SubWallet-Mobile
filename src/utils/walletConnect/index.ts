@@ -14,7 +14,7 @@ import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import { ToastType } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
-import { AccountChainType, AccountProxy } from '@subwallet/extension-base/types';
+import { AccountProxy } from '@subwallet/extension-base/types';
 
 export const chainsToWalletConnectChainInfos = (
   chainMap: Record<string, _ChainInfo>,
@@ -30,7 +30,7 @@ export const chainsToWalletConnectChainInfos = (
         chainInfo,
         slug: chainInfo?.slug || chain,
         supported: !!chainInfo,
-        accountType: AccountChainType.ETHEREUM,
+        accountType: chainInfo ? _chainInfoToChainType(chainInfo) : undefined,
         wcChain: chain,
       };
     } else if (namespace === WALLET_CONNECT_POLKADOT_NAMESPACE) {

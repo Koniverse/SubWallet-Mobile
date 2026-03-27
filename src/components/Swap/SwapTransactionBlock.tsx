@@ -8,7 +8,7 @@ import {
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
-import { ArrowRight } from 'phosphor-react-native';
+import { ArrowRightIcon } from 'phosphor-react-native';
 import { swapCustomFormatter } from '@subwallet/extension-base/utils';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import MetaInfo from 'components/MetaInfo';
@@ -60,7 +60,7 @@ export const SwapTransactionBlock = ({ fromAmount, toAmount, fromAssetSlug, toAs
 
           <Typography.Text style={{ color: theme.colorTextLight4 }}>{_getAssetSymbol(fromAssetInfo)}</Typography.Text>
         </View>
-        <Icon phosphorIcon={ArrowRight} size={'md'} />
+        <Icon phosphorIcon={ArrowRightIcon} size={'md'} />
         <View style={styles.tokenWrapper}>
           <Logo
             size={logoSize}

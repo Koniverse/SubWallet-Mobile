@@ -1,16 +1,16 @@
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountTypeItem } from 'components/common/SelectAccountType';
 import { Logo, SelectItem } from 'components/design-system-ui';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import React, { useCallback, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { ModalRef } from 'types/modalRef';
+import { KeypairType } from '@subwallet/keyring/types';
 
 interface Props {
   onConfirm: (keyTypes: KeypairType[]) => void;
-  selectTypeRef: React.MutableRefObject<ModalRef | undefined>;
+  selectTypeRef: React.RefObject<ModalRef | null>;
 }
 
 export interface AccountTypeModalItem {
@@ -86,7 +86,7 @@ export const SelectAccountTypeModal = ({ onConfirm, selectTypeRef }: Props) => {
             setSelectedValueMap(defaultValueMap);
             _onConfirm(currentKeyTypes)();
           },
-          icon: CheckCircle,
+          icon: CheckCircleIcon,
           disabled: Object.values(selectedValueMap).every(item => !item),
         }}
         onChangeModalVisible={() => {

@@ -18,10 +18,10 @@ import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { getBannerButtonIcon, PhosphorIcon } from 'utils/campaign';
 import { BoxProps } from 'components/Modal/Earning/EarningPoolDetailModal';
 import { AppContentButtonInstruction } from 'types/staticContent';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import AlertBoxMarkdown from 'components/design-system-ui/alert-box/markdown';
 import { ThemeTypes } from 'styles/themes';
-import { CaretDown, X } from 'phosphor-react-native';
+import { CaretDownIcon, XIcon } from 'phosphor-react-native';
 
 interface Props {
   visible: boolean;
@@ -107,7 +107,7 @@ export const GlobalInstructionModal = ({
               <Button
                 type={'ghost'}
                 size={'xs'}
-                icon={<Icon phosphorIcon={X} weight={'bold'} size={'md'} iconColor={theme.colorWhite} />}
+                icon={<Icon phosphorIcon={XIcon} weight={'bold'} size={'md'} iconColor={theme.colorWhite} />}
                 onPress={onPressCancelBtn}
               />
             </View>
@@ -157,7 +157,7 @@ export const GlobalInstructionModal = ({
             {showScrollEnd && !isScrollEnd && (
               <Button
                 size="xs"
-                icon={<Icon phosphorIcon={CaretDown} />}
+                icon={<Icon phosphorIcon={CaretDownIcon} />}
                 style={styles.scrollButton}
                 type="primary"
                 shape="circle"

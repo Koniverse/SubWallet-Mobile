@@ -15,7 +15,7 @@ import MetaInfo from 'components/MetaInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import BigN from 'bignumber.js';
 import { TouchableOpacity, View } from 'react-native';
-import { CaretDown, CaretRight, CaretUp, Info, ListBullets, PencilSimpleLine } from 'phosphor-react-native';
+import { CaretDownIcon, CaretRightIcon, CaretUpIcon, InfoIcon, ListBulletsIcon, PencilSimpleLineIcon } from 'phosphor-react-native';
 import { FeeItem } from 'screens/Transaction/Swap';
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
@@ -95,7 +95,7 @@ export const SwapQuoteDetailModal = ({
               }}>
               <PageIcon
                 customSize={64}
-                icon={ListBullets}
+                icon={ListBulletsIcon}
                 color={theme.colorTextTertiary}
                 backgroundColor={theme['gray-2']}
                 customIcon={<ActivityIndicator size={36} />}
@@ -119,7 +119,7 @@ export const SwapQuoteDetailModal = ({
                 <View style={{ flexDirection: 'row', gap: theme.sizeXXS, alignItems: 'center' }}>
                   <BackgroundIcon
                     backgroundColor={theme.colorPrimary}
-                    phosphorIcon={Info}
+                    phosphorIcon={InfoIcon}
                     weight={'fill'}
                     shape={'circle'}
                   />
@@ -129,7 +129,7 @@ export const SwapQuoteDetailModal = ({
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXS }}>
                   <Typography.Text style={{ color: theme.colorTextLight4 }}>{'View quote'}</Typography.Text>
-                  <Icon phosphorIcon={CaretRight} iconColor={theme['gray-5']} size={'sm'} />
+                  <Icon phosphorIcon={CaretRightIcon} iconColor={theme['gray-5']} size={'sm'} />
                 </View>
               </TouchableOpacity>
 
@@ -186,7 +186,7 @@ export const SwapQuoteDetailModal = ({
                         prefix={currencyData?.symbol}
                         suffixNode={
                           <Icon
-                            phosphorIcon={isViewFeeDetails ? CaretUp : CaretDown}
+                            phosphorIcon={isViewFeeDetails ? CaretUpIcon : CaretDownIcon}
                             size={'sm'}
                             iconColor={theme['gray-5']}
                           />
@@ -225,7 +225,7 @@ export const SwapQuoteDetailModal = ({
                           }}>
                           {_getAssetSymbol(feeAssetInfo)}
                         </Typography.Text>
-                        <Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={theme['gray-5']} />
+                        <Icon phosphorIcon={PencilSimpleLineIcon} size={'sm'} iconColor={theme['gray-5']} />
                       </TouchableOpacity>
                     </View>
                   </MetaInfo>
@@ -240,7 +240,7 @@ export const SwapQuoteDetailModal = ({
                   }}>
                   <PageIcon
                     customSize={64}
-                    icon={ListBullets}
+                    icon={ListBulletsIcon}
                     color={theme.colorTextTertiary}
                     backgroundColor={'rgba(77, 77, 77, 0.1)'}
                   />

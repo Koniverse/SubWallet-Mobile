@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { JSX, useCallback, useEffect, useMemo } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ListRenderItemInfo } from '@shopify/flash-list';
@@ -44,7 +44,7 @@ interface Props {
   onSelectItem?: (item: TokenSelectorItemType) => void;
   disabled?: boolean;
   renderSelected?: () => JSX.Element;
-  tokenSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
+  tokenSelectorRef?: React.RefObject<ModalRef | null>;
   closeModalAfterSelect?: boolean;
   isShowContent?: boolean;
   isShowInput?: boolean;
@@ -94,7 +94,7 @@ export const TokenSelector = ({
   const renderListEmptyComponent = useCallback(() => {
     return (
       <EmptyList
-        icon={MagnifyingGlass}
+        icon={MagnifyingGlassIcon}
         title={i18n.emptyScreen.selectorEmptyTitle}
         message={i18n.emptyScreen.selectorEmptyMessage}
         addBtnLabel={showAddBtn ? i18n.header.importToken : undefined}

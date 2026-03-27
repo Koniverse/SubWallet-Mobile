@@ -13,7 +13,7 @@ import { RootState } from 'stores/index';
 import { Button, Icon, Logo, SwModal, Typography, Number } from 'components/design-system-ui';
 import { SwTab, TabItem } from 'components/design-system-ui/tab';
 import { Platform, ScrollView, View } from 'react-native';
-import { PencilSimpleLine } from 'phosphor-react-native';
+import { PencilSimpleLineIcon } from 'phosphor-react-native';
 import { FeeOptionItem } from 'components/Modal/TransactionFee/FeeEditor/FeeOptionItem';
 import BigN from 'bignumber.js';
 import { _SUPPORT_TOKEN_PAY_FEE_GROUP } from '@subwallet/extension-base/constants';
@@ -447,7 +447,7 @@ export const FeeEditorModal = ({
             <Typography.Text style={{ paddingLeft: theme.paddingXS, color: theme.colorWhite }}>
               {symbol}
             </Typography.Text>
-            {feeType !== 'evm' && <Button size={'xs'} icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} />} />}
+            {feeType !== 'evm' && <Button size={'xs'} icon={<Icon phosphorIcon={PencilSimpleLineIcon} size={'sm'} />} />}
           </View>
         </View>
 

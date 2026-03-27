@@ -2,7 +2,7 @@ import { Icon, Typography } from 'components/design-system-ui';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TextStyle, View } from 'react-native';
-import { Timer } from 'phosphor-react-native';
+import { TimerIcon } from 'phosphor-react-native';
 
 interface Props {
   quoteAliveUntilValue?: number;
@@ -50,7 +50,7 @@ export const QuoteResetTime = ({ quoteAliveUntilValue, style }: Props) => {
 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXXS }}>
-      <Icon phosphorIcon={Timer} weight={'fill'} iconColor={textColor} size={'xxs'} />
+      <Icon phosphorIcon={TimerIcon} weight={'fill'} iconColor={textColor} size={'xxs'} />
       <Typography.Text
         style={[
           { color: textColor, fontSize: theme.sizeSM, lineHeight: theme.fontSizeSM },

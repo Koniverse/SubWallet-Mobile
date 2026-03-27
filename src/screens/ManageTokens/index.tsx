@@ -1,0 +1,163 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import { FlatListScreen } from 'components/FlatListScreen';
+import { EmptyList } from 'components/EmptyList';
+import { CoinsIcon, PlusIcon } from 'phosphor-react-native';
+import i18n from 'utils/i18n/i18n';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
+import { _ChainAsset } from '@subwallet/chain-list/types';
+import { TokenToggleItem } from 'components/common/TokenToggleItem';
+import { updateAssetSetting } from '../../messaging';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { _isCustomAsset, _isNativeToken } from '@subwallet/extension-base/services/chain-service/utils';
+import useChainAssets from 'hooks/chain/useChainAssets';
+import { ListRenderItemInfo } from '@shopify/flash-list';
+
+const searchFunction = (items: _ChainAsset[], searchString: string) => {
+  return items.filter(item => item?.symbol.toLowerCase().includes(searchString.toLowerCase()));
+};
+
+enum FilterValue {
+  ENABLED = 'enabled',
+  DISABLED = 'disabled',
+  CUSTOM = 'custom',
+  NATIVE = 'native',
+}
+
+let cachePendingAssetMap: Record<string, boolean> = {};
+
+export const CustomTokenSetting = () => {
+  const assetItems = useChainAssets({ isFungible: true }).chainAssets;
+  const assetSettingMap = useSelector((state: RootState) => state.assetRegistry.assetSettingMap);
+  const navigation = useNavigation<RootNavigationProps>();
+  const [pendingAssetMap, setPendingAssetMap] = useState<Record<string, boolean>>(cachePendingAssetMap);
+  const FILTER_OPTIONS = [
+    { label: i18n.filterOptions.enabledTokens, value: FilterValue.ENABLED },
+    { label: i18n.filterOptions.disabledTokens, value: FilterValue.DISABLED },
+    { label: i18n.filterOptions.customTokens, value: FilterValue.CUSTOM },
+  ];
+
+  const filterFunction = useCallback(
+    (items: _ChainAsset[], filters: string[]) => {
+      if (!filters.length) {
+        return items;
+      }
+
+      return items.filter(item => {
+        for (const filter of filters) {
+          switch (filter) {
+            case FilterValue.CUSTOM:
+              if (_isCustomAsset(item.slug)) {
+                return true;
+              }
+              break;
+            case FilterValue.ENABLED:
+              if (assetSettingMap[item.slug] && assetSettingMap[item.slug].visible) {
+                return true;
+              }
+              break;
+            case FilterValue.DISABLED:
+              if (!assetSettingMap[item.slug] || !assetSettingMap[item.slug]?.visible) {
+                return true;
+              }
+          }
+        }
+        return false;
+      });
+    },
+    [assetSettingMap],
+  );
+
+  useEffect(() => {
+    setPendingAssetMap(prePendingAssetMap => {
+      Object.entries(prePendingAssetMap).forEach(([key, val]) => {
+        if (assetSettingMap[key]?.visible === val) {
+          delete prePendingAssetMap[key];
+        }
+      });
+
+      return { ...prePendingAssetMap };
+    });
+  }, [assetSettingMap]);
+
+  useEffect(() => {
+    cachePendingAssetMap = pendingAssetMap;
+  }, [pendingAssetMap]);
+
+  const onToggleItem = (item: _ChainAsset) => {
+    setPendingAssetMap({ ...pendingAssetMap, [item.slug]: !assetSettingMap[item.slug]?.visible });
+    const isNativeToken = _isNativeToken(item);
+    const reject = () => {
+      console.warn('Toggle token request failed!');
+      // @ts-ignore
+      delete pendingassetMap[item.key];
+      setPendingAssetMap({ ...pendingAssetMap });
+    };
+
+    updateAssetSetting({
+      tokenSlug: item.slug,
+      assetSetting: {
+        visible: !assetSettingMap[item.slug]?.visible,
+      },
+      autoEnableNativeToken: !isNativeToken,
+    })
+      .then(result => {
+        if (!result) {
+          reject();
+        }
+      })
+      .catch(reject);
+  };
+
+  const renderItem = ({ item }: ListRenderItemInfo<_ChainAsset>) => {
+    return (
+      <TokenToggleItem
+        item={item}
+        onPress={() => {
+          navigation.navigate('ConfigureToken', {
+            tokenDetail: JSON.stringify(item),
+          });
+        }}
+        isEnabled={
+          Object.keys(pendingAssetMap).includes(item.slug)
+            ? pendingAssetMap[item.slug]
+            : assetSettingMap[item.slug]?.visible || false
+        }
+        onValueChange={() => onToggleItem(item)}
+        isDisableSwitching={Object.keys(pendingAssetMap).includes(item.slug)}
+      />
+    );
+  };
+
+  return (
+    <>
+      <FlatListScreen
+        rightIconOption={{
+          icon: PlusIcon,
+          onPress: () => navigation.navigate('ImportToken'),
+        }}
+        onPressBack={() => navigation.goBack()}
+        isShowFilterBtn
+        title={i18n.header.manageTokens}
+        items={assetItems}
+        autoFocus={false}
+        placeholder={i18n.placeholder.searchToken}
+        filterOptions={FILTER_OPTIONS}
+        filterFunction={filterFunction}
+        searchFunction={searchFunction}
+        renderItem={renderItem}
+        renderListEmptyComponent={() => (
+          <EmptyList
+            icon={CoinsIcon}
+            title={i18n.emptyScreen.tokenEmptyTitle}
+            message={i18n.emptyScreen.tokenEmptyMessage}
+            addBtnLabel={i18n.header.importToken}
+            onPressAddBtn={() => navigation.navigate('ImportToken')}
+          />
+        )}
+        isShowListWrapper
+      />
+    </>
+  );
+};

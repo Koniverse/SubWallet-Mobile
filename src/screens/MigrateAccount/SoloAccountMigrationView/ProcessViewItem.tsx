@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SoloAccountToBeMigrated } from '@subwallet/extension-base/background/KoniTypes';
 import { VoidFunction } from 'types/index';
-import { FlatList, Keyboard, StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
@@ -9,13 +9,11 @@ import { validateAccountName } from 'messaging/accounts';
 import { SoloAccountToBeMigratedItem } from 'screens/MigrateAccount/SoloAccountMigrationView/SoloAccountToBeMigratedItem';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { AccountChainType, AccountProxyType } from '@subwallet/extension-base/types';
-import { CheckCircle, XCircle } from 'phosphor-react-native';
-import { SUPPORTED_ACCOUNT_CHAIN_TYPES } from 'constants/account';
+import { AccountProxyType } from '@subwallet/extension-base/types';
+import { CheckCircleIcon, XCircleIcon } from 'phosphor-react-native';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
-import { AccountChainTypeLogos } from 'components/AccountProxy/AccountChainTypeLogos';
 
 interface Props {
   currentProcessOrdinal: number;
@@ -119,9 +117,6 @@ export const ProcessViewItem = ({
 
     return () => {
       amount = false;
-      if (timeOutRef.current) {
-        clearTimeout(timeOutRef.current);
-      }
     };
   }, [formState.data.accountName, onUpdateErrors, validatorFunc]);
 
@@ -132,13 +127,6 @@ export const ProcessViewItem = ({
   const onChangeAccountName = (value: string) => {
     onChangeValue('accountName')(value);
   };
-
-  const renderSoloItem = useCallback(
-    ({ item }: { item: SoloAccountToBeMigrated }) => <SoloAccountToBeMigratedItem {...item} />,
-    [],
-  );
-
-  const disableApprove = loading || !!formState.errors.accountName.length || !formState.data.accountName.length;
 
   return (
     <View style={styles.container}>
@@ -156,17 +144,9 @@ export const ProcessViewItem = ({
 
           <View>
             <Typography.Text style={styles.labelText}>{'Migrate from'}</Typography.Text>
-            <View style={{ maxHeight: 280, borderRadius: 12 }}>
-              <FlatList
-                data={currentSoloAccountToBeMigratedGroup}
-                keyExtractor={item => item.address}
-                renderItem={renderSoloItem}
-                ItemSeparatorComponent={() => <View style={{ height: theme.sizeXS }} />}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-                nestedScrollEnabled
-              />
-            </View>
+            {currentSoloAccountToBeMigratedGroup.map(account => (
+              <SoloAccountToBeMigratedItem key={account.address} {...account} />
+            ))}
           </View>
 
           <View>
@@ -176,7 +156,6 @@ export const ProcessViewItem = ({
               ref={formState.refs.accountName}
               label={formState.labels.accountName}
               editAccountInputStyle={{ marginBottom: theme.marginXS, paddingBottom: theme.paddingXS }}
-              outerInputStyle={{ paddingHorizontal: 0 }}
               value={formState.data.accountName}
               onChangeText={onChangeAccountName}
               onSubmitField={
@@ -184,7 +163,6 @@ export const ProcessViewItem = ({
                   ? onSubmitField('accountName')
                   : Keyboard.dismiss
               }
-              suffix={<AccountChainTypeLogos chainTypes={SUPPORTED_ACCOUNT_CHAIN_TYPES as AccountChainType[]} />}
               accountType={AccountProxyType.UNIFIED}
               placeholder={'Enter the account name'}
               placeholderTextColor={theme.colorTextTertiary}
@@ -202,7 +180,7 @@ export const ProcessViewItem = ({
           type={'secondary'}
           icon={
             <Icon
-              phosphorIcon={XCircle}
+              phosphorIcon={XCircleIcon}
               iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
               weight={'fill'}
             />
@@ -211,13 +189,12 @@ export const ProcessViewItem = ({
         </Button>
         <Button
           block
-          loading={loading}
-          disabled={disableApprove}
+          disabled={loading || !!formState.errors.accountName.length}
           onPress={() => _onApprove(formState)}
           icon={
             <Icon
-              phosphorIcon={CheckCircle}
-              iconColor={disableApprove ? theme.colorTextLight5 : theme.colorWhite}
+              phosphorIcon={CheckCircleIcon}
+              iconColor={loading || !!formState.errors.accountName.length ? theme.colorTextLight5 : theme.colorWhite}
               weight={'fill'}
             />
           }>

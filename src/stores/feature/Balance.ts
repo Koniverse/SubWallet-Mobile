@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { BalanceStore, ReduxStatus } from 'stores/types';
 import { BalanceMap } from '@subwallet/extension-base/types';
 

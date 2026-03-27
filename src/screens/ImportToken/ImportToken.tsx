@@ -28,7 +28,7 @@ import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
 import { AssetTypeOption } from 'types/asset';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
-import { Plus } from 'phosphor-react-native';
+import { PlusIcon } from 'phosphor-react-native';
 import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
 import { ModalRef } from 'types/modalRef';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
@@ -235,8 +235,8 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     }
   };
 
-  const tokenTypeRef = useRef<ModalRef>();
-  const chainSelectorRef = useRef<ModalRef>();
+  const tokenTypeRef = useRef<ModalRef | null>(null);
+  const chainSelectorRef = useRef<ModalRef | null>(null);
   const tokenTypeOptions = useMemo(() => {
     return getTokenTypeSupported(chainInfoMap[chain]);
   }, [chainInfoMap, chain]);
@@ -553,7 +553,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
               />
 
               <Button
-                icon={iconColor => <Icon phosphorIcon={Plus} size={'lg'} iconColor={iconColor} weight={'bold'} />}
+                icon={iconColor => <Icon phosphorIcon={PlusIcon} size={'lg'} iconColor={iconColor} weight={'bold'} />}
                 style={{ marginTop: 8 }}
                 onPress={() => showPopupEnableChain(chain)}
                 type={'ghost'}>

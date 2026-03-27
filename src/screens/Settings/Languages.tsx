@@ -9,7 +9,7 @@ import { RootState } from 'stores/index';
 import { Button, SelectItem } from 'components/design-system-ui';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlassIcon } from 'phosphor-react-native';
 import { saveLanguage } from 'messaging/index';
 import { LanguageType } from '@subwallet/extension-base/background/KoniTypes';
 import { ImageLogosMap } from 'assets/logo';
@@ -115,7 +115,7 @@ export const Languages = () => {
         <EmptyList
           title={i18n.emptyScreen.selectorEmptyTitle}
           message={i18n.emptyScreen.selectorEmptyMessage}
-          icon={MagnifyingGlass}
+          icon={MagnifyingGlassIcon}
         />
       )}
       autoFocus={false}

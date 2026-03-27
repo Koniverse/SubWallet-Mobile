@@ -1,7 +1,7 @@
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { CaretDown, FloppyDiskBack, Plus, Trash } from 'phosphor-react-native';
+import { CaretDownIcon, FloppyDiskBackIcon, PlusIcon, TrashIcon } from 'phosphor-react-native';
 import { DeviceEventEmitter, ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { RpcSelectField } from 'components/Field/RpcSelect';
@@ -71,7 +71,7 @@ export const NetworkSettingDetail = ({
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
-  const rpcSelectorRef = useRef<ModalRef>();
+  const rpcSelectorRef = useRef<ModalRef | null>(null);
 
   const _chainInfo = useFetchChainInfo(chainSlug);
   const [chainInfo, setChainInfo] = useState(_chainInfo);
@@ -321,7 +321,7 @@ export const NetworkSettingDetail = ({
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
-      rightIcon={Trash}
+      rightIcon={TrashIcon}
       disableRightButton={!(_isCustomChain(chainInfo.slug) && !chainState.active)}
       onPressBack={() => navigation.goBack()}
       onPressRightIcon={onPressDelete}
@@ -349,7 +349,7 @@ export const NetworkSettingDetail = ({
                 <RpcSelectField
                   showRightIcon
                   value={chainInfo.providers[formState.data.currentProvider]}
-                  rightIcon={Object.keys(chainInfo.providers).length === 1 ? Plus : CaretDown}
+                  rightIcon={Object.keys(chainInfo.providers).length === 1 ? PlusIcon : CaretDownIcon}
                 />
               </TouchableOpacity>
             )}
@@ -412,7 +412,7 @@ export const NetworkSettingDetail = ({
             loading={loading}
             icon={
               <Icon
-                phosphorIcon={FloppyDiskBack}
+                phosphorIcon={FloppyDiskBackIcon}
                 size={'lg'}
                 weight={'fill'}
                 iconColor={isDisabledSubmitButton ? theme.colorTextLight5 : theme.colorWhite}

@@ -81,6 +81,7 @@ export async function getEarningImpact(data: RequestEarningImpact) {
   return sendMessage('pri(yield.getEarningImpact)', data);
 }
 
-export async function changeEarningValidator(data: SubmitChangeValidatorStaking) {
+export async function changeEarningValidator (data: SubmitChangeValidatorStaking) {
   return sendMessage('pri(yield.changeValidator.submit)', data);
 }
+

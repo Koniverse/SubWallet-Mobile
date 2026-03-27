@@ -13,7 +13,7 @@ import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Button, Icon, Input, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
-import { Book, Scan } from 'phosphor-react-native';
+import { BookIcon, ScanIcon } from 'phosphor-react-native';
 import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal';
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextInput/TextInput';
@@ -291,7 +291,7 @@ const Component = (
             onPress={() => setShowAddressBookModal(true)}
             icon={
               <Icon
-                phosphorIcon={Book}
+                phosphorIcon={BookIcon}
                 size={'sm'}
                 iconColor={inputProps.readonly ? theme.colorTextLight5 : theme.colorTextLight3}
               />
@@ -306,7 +306,7 @@ const Component = (
           onPress={onPressQrButton}
           icon={
             <Icon
-              phosphorIcon={Scan}
+              phosphorIcon={ScanIcon}
               size={'sm'}
               iconColor={inputProps.readonly ? theme.colorTextLight5 : theme.colorTextLight3}
             />

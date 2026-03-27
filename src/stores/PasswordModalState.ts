@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PasswordModalSlice, SelectedActionType } from 'stores/types';
 
 const initialState: PasswordModalSlice = {

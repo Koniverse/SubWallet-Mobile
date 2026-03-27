@@ -22,9 +22,9 @@ export const AccountChainTypeLogos = ({ chainTypes }: Props) => {
   }, [chainTypes]);
 
   return (
-    <View style={{ height: 20, alignItems: 'center', flexDirection: 'row' }}>
+    <View style={{ height: 20, alignItems: 'center', flexDirection: 'row' } as const}>
       {sortedChainTypes.map((nt, index) => (
-        <View style={index !== 0 && { marginLeft: -4 }}>
+        <View style={index !== 0 && { marginLeft: -4 }} key={index}>
           <Logo network={chainTypeLogoMap[nt]} size={16} shape={'circle'} />
         </View>
       ))}

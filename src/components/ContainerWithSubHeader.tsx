@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { JSX, useMemo } from 'react';
 import { KeyboardAvoidingView, Platform, StyleProp, View } from 'react-native';
-import { SubHeader, SubHeaderProps } from 'components/SubHeader';
 import { Header } from 'components/Header';
 import { Edges, SafeAreaView } from 'react-native-safe-area-context';
 import DeviceInfo from 'react-native-device-info';
+import { SubHeader, SubHeaderProps } from 'components/SubHeader';
 
 export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   children: JSX.Element | JSX.Element[];
@@ -45,7 +45,7 @@ export const ContainerWithSubHeader = ({
   return (
     <SafeAreaView edges={edges} style={{ flex: 1, backgroundColor: subHeaderProps.backgroundColor || '#0C0C0C' }}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.select({ ios: 0, android: androidKeyboardVerticalOffset })}
         style={[getContainerStyle(subHeaderProps.backgroundColor), style]}>
         {isShowMainHeader && (

@@ -4,7 +4,7 @@ import { Alert, NativeScrollEvent, Platform, ScrollView, View } from 'react-nati
 import InputCheckBox from 'components/Input/InputCheckBox';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
-import { ArrowCircleRight, CaretDown } from 'phosphor-react-native';
+import { ArrowCircleRightIcon, CaretDownIcon } from 'phosphor-react-native';
 import { deviceHeight } from 'constants/index';
 import Markdown from 'react-native-markdown-display';
 import { mmkvStore } from 'utils/storage';
@@ -92,7 +92,7 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
           {disableAcceptBtn && (
             <Button
               size={'xs'}
-              icon={<Icon phosphorIcon={CaretDown} />}
+              icon={<Icon phosphorIcon={CaretDownIcon} />}
               style={{ position: 'absolute', top: -45, right: 0 }}
               type={'secondary'}
               shape={'circle'}
@@ -104,7 +104,7 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
         <Button
           icon={
             <Icon
-              phosphorIcon={ArrowCircleRight}
+              phosphorIcon={ArrowCircleRightIcon}
               weight={'fill'}
               size={'lg'}
               iconColor={disableAcceptBtn || !checked ? theme.colorTextLight5 : theme.colorWhite}

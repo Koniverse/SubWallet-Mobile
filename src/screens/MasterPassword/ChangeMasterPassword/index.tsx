@@ -3,7 +3,7 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import React, { useCallback, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Alert, Keyboard, Linking, ScrollView, Text, View } from 'react-native';
-import { ArrowCircleRight, CheckCircle, Info } from 'phosphor-react-native';
+import { ArrowCircleRightIcon, CheckCircleIcon, InfoIcon } from 'phosphor-react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useFormControl from 'hooks/screen/useFormControl';
@@ -207,7 +207,7 @@ const ChangeMasterPassword = () => {
           setStep('OldPassword');
         }
       }}
-      rightIcon={Info}
+      rightIcon={InfoIcon}
       title={step === 'OldPassword' ? i18n.header.currentPassword : i18n.header.newPassword}
       style={{ width: '100%' }}
       disabled={isBusy}
@@ -307,7 +307,7 @@ const ChangeMasterPassword = () => {
           loading={isBusy}
           icon={
             <Icon
-              phosphorIcon={step === 'OldPassword' ? ArrowCircleRight : CheckCircle}
+              phosphorIcon={step === 'OldPassword' ? ArrowCircleRightIcon : CheckCircleIcon}
               size={'lg'}
               iconColor={
                 isDisabled || (step === 'OldPassword' ? false : !checked)

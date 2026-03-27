@@ -7,7 +7,7 @@ import { Warning } from 'components/Warning';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { ThemeTypes } from 'styles/themes';
-import { Eye, EyeSlash } from 'phosphor-react-native';
+import { EyeIcon, EyeSlashIcon } from 'phosphor-react-native';
 
 interface Props extends FieldBaseProps {
   onChangeText?: (text: string) => void;
@@ -88,7 +88,7 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
                   onPress={() => setShowPassword(false)}
                   size={'xs'}
                   type={'ghost'}
-                  icon={<Icon phosphorIcon={EyeSlash} weight={'bold'} size={'sm'} iconColor={theme['gray-5']} />}
+                  icon={<Icon phosphorIcon={EyeSlashIcon} weight={'bold'} size={'sm'} iconColor={theme['gray-5']} />}
                 />
               ) : (
                 <Button
@@ -96,7 +96,7 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
                   onPress={() => setShowPassword(true)}
                   size={'xs'}
                   type={'ghost'}
-                  icon={<Icon phosphorIcon={Eye} weight={'bold'} size={'sm'} iconColor={theme['gray-5']} />}
+                  icon={<Icon phosphorIcon={EyeIcon} weight={'bold'} size={'sm'} iconColor={theme['gray-5']} />}
                 />
               )}
             </>

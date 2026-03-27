@@ -7,7 +7,7 @@ import { ValidatorInfo, YieldPoolTarget } from '@subwallet/extension-base/types/
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Alert, ScrollView, View } from 'react-native';
-import { PlusCircle } from 'phosphor-react-native';
+import { PlusCircleIcon } from 'phosphor-react-native';
 import { toShort } from 'utils/index';
 import { balanceFormatter, formatNumber } from 'utils/number';
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
@@ -215,7 +215,7 @@ export const EarningValidatorDetailRWModal = ({
       <View style={{ width: '100%', marginTop: theme.margin }}>
         <Button
           disabled={loading}
-          icon={<Icon phosphorIcon={PlusCircle} weight={'fill'} />}
+          icon={<Icon phosphorIcon={PlusCircleIcon} weight={'fill'} />}
           onPress={onPressButton}
           loading={loading}>
           {'Stake to earn'}

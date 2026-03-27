@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch, View } from 'react-native';
-import { PencilSimpleLine } from 'phosphor-react-native';
+import { PencilSimpleLineIcon } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { Divider } from 'components/Divider';
 import { _ChainAsset } from '@subwallet/chain-list/types';
@@ -36,15 +36,17 @@ export const TokenToggleItem = ({ item, onPress, isEnabled, onValueChange, isDis
           </Typography.Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Switch
-            disabled={isDisableSwitching}
-            ios_backgroundColor={ColorMap.switchInactiveButtonColor}
-            value={isEnabled}
-            onValueChange={onValueChange}
-          />
+          <View>
+            <Switch
+              disabled={isDisableSwitching}
+              ios_backgroundColor={ColorMap.switchInactiveButtonColor}
+              value={isEnabled}
+              onValueChange={onValueChange}
+            />
+          </View>
           <Button
             onPress={onPress}
-            icon={<Icon phosphorIcon={PencilSimpleLine} iconColor={theme['gray-5']} size={'sm'} />}
+            icon={<Icon phosphorIcon={PencilSimpleLineIcon} iconColor={theme['gray-5']} size={'sm'} />}
             size={'xs'}
             type={'ghost'}
           />

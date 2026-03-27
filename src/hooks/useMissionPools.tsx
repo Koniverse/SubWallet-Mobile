@@ -2,17 +2,17 @@ import { useCallback, useMemo } from 'react';
 import { customFormatDate } from 'utils/customFormatDate';
 import { MissionInfo } from 'types/missionPool';
 import {
-  CheckCircle,
-  Coin,
-  Cube,
-  DiceSix,
-  MagicWand,
-  MegaphoneSimple,
-  SelectionBackground,
-  User,
+  CheckCircleIcon,
+  CoinIcon,
+  CubeIcon,
+  DiceSixIcon,
+  MagicWandIcon,
+  MegaphoneSimpleIcon,
+  SelectionBackgroundIcon,
+  UserIcon,
 } from 'phosphor-react-native';
 import { TagInfo, TagStatusType, TagType } from 'components/MissionPoolHorizontalItem';
-import capitalize from '@subwallet/react-ui/es/_util/capitalize';
+import capitalize from 'utils/capitalize.ts';
 
 export const useMissionPools = (data?: MissionInfo) => {
   const timeline = useMemo<string>(
@@ -38,46 +38,46 @@ export const useMissionPools = (data?: MissionInfo) => {
         theme: 'yellow',
         name: 'FCFS',
         slug: TagType.FCFS,
-        icon: User,
+        icon: UserIcon,
       },
       [TagType.POINTS]: {
         theme: 'success',
         name: 'Points',
         slug: TagType.POINTS,
-        icon: Coin,
+        icon: CoinIcon,
         iconWeight: 'fill',
       },
       [TagType.LUCKY_DRAW]: {
         theme: 'gold',
         name: 'Lucky draw',
         slug: TagType.LUCKY_DRAW,
-        icon: DiceSix,
+        icon: DiceSixIcon,
         iconWeight: 'fill',
       },
       [TagType.MANUAL_SELECTION]: {
         theme: 'blue',
         name: 'Manual selection',
         slug: TagType.MANUAL_SELECTION,
-        icon: SelectionBackground,
+        icon: SelectionBackgroundIcon,
       },
       [TagStatusType.UPCOMING]: {
         theme: 'gray',
         name: 'Upcoming',
         slug: TagStatusType.UPCOMING,
-        icon: MegaphoneSimple,
+        icon: MegaphoneSimpleIcon,
       },
       [TagStatusType.ARCHIVED]: {
         theme: 'blue',
         name: 'Archived',
         slug: TagStatusType.ARCHIVED,
-        icon: Cube,
+        icon: CubeIcon,
         iconWeight: 'fill',
       },
       [TagStatusType.LIVE]: {
         theme: 'success',
         name: 'Live',
         slug: TagStatusType.LIVE,
-        icon: CheckCircle,
+        icon: CheckCircleIcon,
         iconWeight: 'fill',
       },
     };
@@ -92,7 +92,7 @@ export const useMissionPools = (data?: MissionInfo) => {
     const theme = tagMap[tagSlug]?.theme || 'gray';
     const name = tagMap[tagSlug]?.name || capitalize(tagSlug.replace('_', ' '));
     const iconWeight = tagMap[tagSlug]?.iconWeight;
-    const icon = tagMap[tagSlug]?.icon || MagicWand;
+    const icon = tagMap[tagSlug]?.icon || MagicWandIcon;
     let missionTheme, missionName, missionIconWeight, missionIcon;
     const missionStatus = _data?.status;
 

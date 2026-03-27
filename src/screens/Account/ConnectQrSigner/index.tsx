@@ -12,10 +12,10 @@ import useModalScanner from 'hooks/qr/useModalScanner';
 import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { createAccountExternalV2 } from 'messaging/index';
-import { QrCode, X } from 'phosphor-react-native';
+import { QrCodeIcon, XIcon } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ImageRequireSource, Linking, Text, View } from 'react-native';
-import { Source } from 'react-native-fast-image';
+import { Source } from  '@d11/react-native-fast-image';
 import { useToast } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
@@ -126,7 +126,7 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
   return (
-    <ContainerWithSubHeader title={title} onPressBack={onBack} rightIcon={X} onPressRightIcon={goHome}>
+    <ContainerWithSubHeader title={title} onPressBack={onBack} rightIcon={XIcon} onPressRightIcon={goHome}>
       <View style={styles.body}>
         <Text style={styles.subTitle}>{subTitle}</Text>
         <View>
@@ -149,7 +149,7 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
       <View style={styles.footer}>
         <Button
           disabled={loading}
-          icon={<Icon phosphorIcon={QrCode} weight="fill" />}
+          icon={<Icon phosphorIcon={QrCodeIcon} weight="fill" />}
           onPress={onPressSubmit(onOpenModal)}
           loading={loading}>
           {loading ? i18n.buttonTitles.creating : i18n.buttonTitles.scanQrCode}

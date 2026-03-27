@@ -104,7 +104,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
     }
   }, [borderPlace, borderRadius]);
 
-  const videoRef = useRef<Video>(null);
+  const videoRef = useRef<typeof Video>(null);
 
   const handleOnLoad = useCallback(() => {
     dispatchImageState({ type: ImageActionType.UPDATE, payload: { loading: false } });

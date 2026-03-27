@@ -5,7 +5,7 @@ import { SubScreenContainer } from 'components/SubScreenContainer';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Export, GitMerge, Trash, X } from 'phosphor-react-native';
+import { ExportIcon, GitMergeIcon, TrashIcon, XIcon } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { EditAccountProps, RootNavigationProps } from 'routes/index';
@@ -108,7 +108,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
     [accountProxy.name],
   );
 
-  const saveTimeOutRef = useRef<NodeJS.Timeout>();
+  const saveTimeOutRef = useRef<NodeJS.Timeout | null>(null);
 
   const getDefaultTab = () => {
     if (requestViewDerivedAccounts && showDerivedAccounts) {
@@ -159,7 +159,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
 
   const onSave = useCallback(
     (editName: string) => {
-      clearTimeout(saveTimeOutRef.current);
+      saveTimeOutRef.current && clearTimeout(saveTimeOutRef.current);
       if (editName.trim()) {
         editAccount(accountProxy.id, editName.trim()).catch((e: Error) => {
           onUpdateErrors('accountName')([e.message]);
@@ -185,7 +185,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
   const onChangeName = useCallback(
     (value: string) => {
       onChangeValue('accountName')(value);
-      clearTimeout(saveTimeOutRef.current);
+      saveTimeOutRef.current && clearTimeout(saveTimeOutRef.current);
       saveTimeOutRef.current = setTimeout(() => {
         onSave(value);
       }, 300);
@@ -212,7 +212,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
       return (
         <Button
           block
-          icon={<Icon phosphorIcon={Trash} weight={'fill'} size={'lg'} />}
+          icon={<Icon phosphorIcon={TrashIcon} weight={'fill'} size={'lg'} />}
           style={styles.noPaddingHorizontal}
           onPress={onPressDelete}
           loading={deleting}
@@ -226,7 +226,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
     return (
       <>
         <Button
-          icon={<Icon phosphorIcon={Trash} weight={'fill'} size={'lg'} />}
+          icon={<Icon phosphorIcon={TrashIcon} weight={'fill'} size={'lg'} />}
           style={styles.noPaddingHorizontal}
           type={'danger'}
           loading={deleting}
@@ -239,7 +239,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
           disabled={!accountProxy.accountActions.includes(AccountActions.DERIVE) || deleting}
           icon={
             <Icon
-              phosphorIcon={GitMerge}
+              phosphorIcon={GitMergeIcon}
               weight={'fill'}
               size={'lg'}
               iconColor={
@@ -260,7 +260,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
           disabled={deleting}
           icon={
             <Icon
-              phosphorIcon={Export}
+              phosphorIcon={ExportIcon}
               weight={'fill'}
               size={'lg'}
               iconColor={deleting ? theme.colorTextLight5 : theme.colorWhite}
@@ -319,7 +319,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
     <SubScreenContainer
       navigation={navigation}
       title={i18n.header.accountDetails}
-      rightIcon={X}
+      rightIcon={XIcon}
       onPressRightIcon={goHome}>
       <>
         <View style={{ flex: 1, paddingHorizontal: 16, alignItems: 'center' }}>

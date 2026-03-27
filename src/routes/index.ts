@@ -67,7 +67,7 @@ export type RootStackParamList = {
   AccountExport: { address: string };
   ExportJson: { address: string };
   ExportAllAccount: undefined;
-  BrowserHome?: NavigatorScreenParams<undefined> | undefined;
+  BrowserHome?: NavigatorScreenParams<{}> | undefined;
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
   BrowserListByTabview: { type: string };
@@ -97,7 +97,6 @@ export type RootStackParamList = {
   TransactionAction: NavigatorScreenParams<TransactionActionStackParamList>;
   ManageAddressBook: undefined;
   DeriveAccount: undefined;
-  Crowdloans: undefined;
   TransactionSubmission: { transactionProcessId?: string; processType?: ProcessType };
 };
 

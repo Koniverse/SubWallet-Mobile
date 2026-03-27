@@ -8,7 +8,7 @@ import createStylesheet from './styles/BrowserItem';
 import { getHostName, searchDomain } from 'utils/browser';
 import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 import { BookmarkItem } from './BookmarkItem';
-import { Desktop } from 'phosphor-react-native';
+import { DesktopIcon } from 'phosphor-react-native';
 import { useGetDesktopMode } from 'hooks/screen/Home/Browser/DesktopMode/useGetDesktopMode';
 
 interface Props {
@@ -120,7 +120,7 @@ const DesktopMode: React.FC<DesktopModeProps> = ({ url }) => {
   };
   return (
     <View style={subIconStyle}>
-      <Icon phosphorIcon={Desktop} size="xxs" />
+      <Icon phosphorIcon={DesktopIcon} size="xxs" />
     </View>
   );
 };

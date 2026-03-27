@@ -1,10 +1,9 @@
 import { AccountItem, Icon } from 'components/design-system-ui';
 import createStyle from './styles';
-import useAccountAvatarInfo from 'hooks/account/useAccountAvatarInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
-import { CheckCircle, Eye, IconProps, QrCode, Swatches } from 'phosphor-react-native';
-
+import { CheckCircleIcon, EyeIcon, IconProps, QrCodeIcon, SwatchesIcon } from 'phosphor-react-native';
+import useAccountAvatarInfo from 'hooks/account/useAccountAvatarInfo';
 import { AccountItemProps } from 'components/design-system-ui';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
@@ -38,11 +37,11 @@ const AccountItemBase: React.FC<AccountItemBaseProps> = (props: AccountItemBaseP
     switch (signMode) {
       case AccountSignMode.GENERIC_LEDGER:
       case AccountSignMode.LEGACY_LEDGER:
-        return Swatches;
+        return SwatchesIcon;
       case AccountSignMode.QR:
-        return QrCode;
+        return QrCodeIcon;
       case AccountSignMode.READ_ONLY:
-        return Eye;
+        return EyeIcon;
     }
 
     return undefined;
@@ -64,7 +63,7 @@ const AccountItemBase: React.FC<AccountItemBaseProps> = (props: AccountItemBaseP
       {(showUnselectIcon || isSelected) && (
         <Icon
           iconColor={isSelected ? theme.colorSuccess : theme.colorTextLight4}
-          phosphorIcon={CheckCircle}
+          phosphorIcon={CheckCircleIcon}
           size="sm"
           type="phosphor"
           weight="fill"

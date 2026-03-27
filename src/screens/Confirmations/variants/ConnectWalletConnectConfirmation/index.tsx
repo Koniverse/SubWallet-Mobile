@@ -17,7 +17,7 @@ import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { View } from 'react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { ConfirmationFooter } from 'components/common/Confirmation';
-import { CheckCircle, PlusCircle, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, PlusCircleIcon, XCircleIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { WCNetworkSelected } from 'components/WalletConnect/Network/WCNetworkSelected';
 import { WCAccountSelect } from 'components/WalletConnect/Account/WCAccountSelect';
@@ -293,7 +293,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
             disabled={loading}
             icon={
               <Icon
-                phosphorIcon={XCircle}
+                phosphorIcon={XCircleIcon}
                 weight={'fill'}
                 iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
               />
@@ -308,7 +308,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
             <Button
               block
               disabled={loading}
-              icon={color => <Icon phosphorIcon={XCircle} weight={'fill'} iconColor={color} />}
+              icon={color => <Icon phosphorIcon={XCircleIcon} weight={'fill'} iconColor={color} />}
               onPress={onCancel}
               type={'secondary'}>
               {i18n.buttonTitles.cancel}
@@ -317,7 +317,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
               block
               disabled={!allowSubmit || loading}
               loading={loading}
-              icon={color => <Icon phosphorIcon={CheckCircle} weight={'fill'} iconColor={color} />}
+              icon={color => <Icon phosphorIcon={CheckCircleIcon} weight={'fill'} iconColor={color} />}
               onPress={onConfirm}>
               {i18n.buttonTitles.approve}
             </Button>
@@ -328,7 +328,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
             <Button
               block
               disabled={loading}
-              icon={<Icon phosphorIcon={XCircle} weight={'fill'} />}
+              icon={<Icon phosphorIcon={XCircleIcon} weight={'fill'} />}
               onPress={onCancel}
               type={'secondary'}>
               {i18n.buttonTitles.cancel}
@@ -336,7 +336,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
             <Button
               block
               disabled={loading}
-              icon={<Icon phosphorIcon={PlusCircle} weight={'fill'} />}
+              icon={<Icon phosphorIcon={PlusCircleIcon} weight={'fill'} />}
               onPress={onAddAccount}>
               {i18n.buttonTitles.createOne}
             </Button>

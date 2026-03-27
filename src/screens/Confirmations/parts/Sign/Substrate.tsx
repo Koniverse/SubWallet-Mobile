@@ -10,7 +10,7 @@ import { RootState } from 'stores/index';
 import { SigData } from 'types/signer';
 import { getSignMode } from 'utils/account';
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';
-import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
+import { CheckCircleIcon, IconProps, QrCodeIcon, SwatchesIcon, XCircleIcon } from 'phosphor-react-native';
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
@@ -271,12 +271,12 @@ export const SubstrateSignArea = (props: Props) => {
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
       case AccountSignMode.QR:
-        return QrCode;
+        return QrCodeIcon;
       case AccountSignMode.GENERIC_LEDGER:
       case AccountSignMode.LEGACY_LEDGER:
-        return Swatches;
+        return SwatchesIcon;
       default:
-        return CheckCircle;
+        return CheckCircleIcon;
     }
   }, [signMode]);
 
@@ -429,7 +429,7 @@ export const SubstrateSignArea = (props: Props) => {
       {/*</SwModal>*/}
 
       <ConfirmationFooter>
-        <Button disabled={loading} block icon={getButtonIcon(XCircle)} type={'secondary'} onPress={onCancel}>
+        <Button disabled={loading} block icon={getButtonIcon(XCircleIcon)} type={'secondary'} onPress={onCancel}>
           {i18n.common.cancel}
         </Button>
         <Button

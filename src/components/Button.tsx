@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import { StyleProp, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';

@@ -11,7 +11,7 @@ import { RootState } from 'stores/index';
 import { FontMedium } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import { Info } from 'phosphor-react-native';
+import { InfoIcon } from 'phosphor-react-native';
 
 interface BalanceInfo {
   token: string;
@@ -245,7 +245,7 @@ const FreeBalanceToYield = (props: Props) => {
             </Typography.Text>
 
             <View style={{ paddingTop: 2 }}>
-              <Icon phosphorIcon={Info} customSize={14} iconColor={theme['gray-5']} />
+              <Icon phosphorIcon={InfoIcon} customSize={14} iconColor={theme['gray-5']} />
             </View>
 
             <Typography.Text

@@ -7,7 +7,7 @@ import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 import { ThemeTypes } from 'styles/themes';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import { Info } from 'phosphor-react-native';
+import { InfoIcon } from 'phosphor-react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 
 interface Props {
@@ -99,7 +99,7 @@ export const FreeBalanceDisplay = ({
 
             {!!labelTooltip && (
               <View style={{ paddingTop: 2, paddingLeft: theme.paddingXXS }}>
-                <Icon phosphorIcon={Info} customSize={14} iconColor={theme['gray-5']} />
+                <Icon phosphorIcon={InfoIcon} customSize={14} iconColor={theme['gray-5']} />
               </View>
             )}
 

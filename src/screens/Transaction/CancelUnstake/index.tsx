@@ -16,7 +16,7 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { CancelUnstakeSelector } from 'components/Modal/common/CancelUnstakeSelector';
 import { Button, Icon } from 'components/design-system-ui';
-import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
+import { ArrowCircleRightIcon, XCircleIcon } from 'phosphor-react-native';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { CancelUnstakeProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
@@ -98,7 +98,7 @@ export const CancelUnstake = ({
   const accountInfo = useGetAccountByAddress(fromValue);
   const { list: allPositionInfos } = useYieldPositionDetail(slug);
   const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
-  const accountSelectorRef = useRef<ModalRef>();
+  const accountSelectorRef = useRef<ModalRef | null>(null);
 
   useEffect(() => {
     setChain(poolChain || '');
@@ -214,7 +214,7 @@ export const CancelUnstake = ({
                 onPress={() => navigation.goBack()}
                 icon={
                   <Icon
-                    phosphorIcon={XCircle}
+                    phosphorIcon={XCircleIcon}
                     weight={'fill'}
                     size={'lg'}
                     iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
@@ -228,7 +228,7 @@ export const CancelUnstake = ({
                 loading={loading}
                 icon={
                   <Icon
-                    phosphorIcon={ArrowCircleRight}
+                    phosphorIcon={ArrowCircleRightIcon}
                     weight={'fill'}
                     size={'lg'}
                     iconColor={!isBalanceReady ? theme.colorTextLight5 : theme.colorWhite}

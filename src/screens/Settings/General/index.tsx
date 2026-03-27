@@ -5,11 +5,11 @@ import { RootNavigationProps } from 'routes/index';
 import { View } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
 import {
-  CaretRight,
-  GlobeHemisphereWest,
-  Image,
-  BellSimpleRinging,
-  CurrencyCircleDollar,
+  CaretRightIcon,
+  GlobeHemisphereWestIcon,
+  ImageIcon,
+  BellSimpleRingingIcon,
+  CurrencyCircleDollarIcon,
   IconProps,
 } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
@@ -124,36 +124,36 @@ export const GeneralSettings = () => {
     <SubScreenContainer navigation={navigation} title={i18n.header.generalSettings} onPressLeftBtn={onGoback}>
       <View style={containerStyle}>
         <SelectItem
-          icon={Image}
+          icon={ImageIcon}
           backgroundColor={theme['geekblue-6']}
           label={i18n.settings.walletTheme}
           onPress={showComingSoon}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
+          rightIcon={<Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />}
         />
 
         <SelectItem
-          icon={CurrencyCircleDollar}
+          icon={CurrencyCircleDollarIcon}
           backgroundColor={theme['gold-6']}
           label={i18n.settings.currency}
           onPress={() => setIsShowCurrencyModal(true)}
           rightItem={<Typography.Text style={{ color: theme.colorTextLight4 }}>{currency}</Typography.Text>}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
+          rightIcon={<Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />}
         />
 
         <SelectItem
-          icon={GlobeHemisphereWest}
+          icon={GlobeHemisphereWestIcon}
           backgroundColor={theme['green-6']}
           label={i18n.settings.language}
           onPress={openLanguageModal}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
+          rightIcon={<Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />}
         />
 
         <SelectItem
-          icon={BellSimpleRinging}
+          icon={BellSimpleRingingIcon}
           backgroundColor={theme['magenta-7']}
           label={'In-app notifications'}
           onPress={openNotificationSetting}
-          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />}
+          rightIcon={<Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />}
         />
       </View>
 

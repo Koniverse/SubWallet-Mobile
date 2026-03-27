@@ -1,7 +1,7 @@
 import { Button, Icon, PageIcon, SwModal, Typography } from 'components/design-system-ui';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { Info } from 'phosphor-react-native';
+import { InfoIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
@@ -18,7 +18,7 @@ export const SwapIdleWarningModal = ({ modalVisible, setModalVisible, onPressOk 
       <Button
         onPress={onPressOk}
         style={{ marginTop: theme.margin }}
-        icon={<Icon phosphorIcon={Info} weight={'fill'} />}>
+        icon={<Icon phosphorIcon={InfoIcon} weight={'fill'} />}>
         {'Yes, show me latest quote'}
       </Button>
     ),
@@ -36,7 +36,7 @@ export const SwapIdleWarningModal = ({ modalVisible, setModalVisible, onPressOk 
       titleTextAlign={'center'}
       modalTitle={'Are you  still there?'}>
       <View style={{ alignItems: 'center' }}>
-        <PageIcon customSize={112} icon={Info} color={theme['gray-5']} />
+        <PageIcon customSize={112} icon={InfoIcon} color={theme['gray-5']} />
         <Typography.Text style={{ color: theme.colorWhite, paddingTop: theme.padding, textAlign: 'center' }}>
           {'We are ready to show you the latest quotes when you want to continue'}
         </Typography.Text>

@@ -5,11 +5,10 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
 import { StyleProp, TextStyle, View } from 'react-native';
 import createStyle from './styles';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { getKeypairTypeByAddress, isBitcoinAddress } from '@subwallet/keyring';
 import { getBitcoinKeypairAttributes } from 'utils/account/account';
-import { FontBold } from 'styles/sharedStyles';
 
 interface CustomStyle extends Web3BlockCustomStyle {
   address?: StyleProp<TextStyle>;
@@ -63,21 +62,13 @@ const AccountItem: React.FC<AccountItemProps> = (props: AccountItemProps) => {
       leftItem={leftItem || <AccountProxyAvatar value={avatarValue || address} size={avatarSize} />}
       middleItem={
         middleItem || (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXS }}>
+          <View>
             <Typography.Text style={[addressStyle]}>
               {toShort(address || '', addressPreLength, addressSufLength)}
             </Typography.Text>
 
             {!!bitcoinAttributes && !!bitcoinAttributes.schema ? (
-              <Typography.Text
-                style={{
-                  fontSize: theme.fontSizeXS,
-                  lineHeight: theme.fontSizeXS * theme.lineHeightXS,
-                  color: theme[bitcoinAttributes.schema],
-                  ...FontBold,
-                }}>
-                {bitcoinAttributes.label}
-              </Typography.Text> //todo: add styles
+              <Typography.Text>{bitcoinAttributes.label}</Typography.Text> //todo: add styles
             ) : null}
           </View>
         )
@@ -85,7 +76,7 @@ const AccountItem: React.FC<AccountItemProps> = (props: AccountItemProps) => {
       rightItem={
         rightItem || (
           <>
-            {isSelected && <Icon phosphorIcon={CheckCircle} size="sm" iconColor={theme.colorSecondary} weight="fill" />}
+            {isSelected && <Icon phosphorIcon={CheckCircleIcon} size="sm" iconColor={theme.colorSecondary} weight="fill" />}
           </>
         )
       }

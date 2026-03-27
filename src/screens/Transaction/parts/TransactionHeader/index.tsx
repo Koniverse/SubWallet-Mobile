@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { Header } from 'components/Header';
 import { View } from 'react-native';
 import { SubHeader } from 'components/SubHeader';
-import { Info } from 'phosphor-react-native';
+import { InfoIcon } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 interface Props {
@@ -47,7 +47,7 @@ const TransactionHeader = ({
           onPressBack={onBack}
           title={title}
           titleTextAlign={titleTextAlign}
-          rightIcon={showRightIcon ? Info : undefined}
+          rightIcon={showRightIcon ? InfoIcon : undefined}
           onPressRightIcon={onPressRightIcon}
           disableRightButton={disableRightButton}
           disabled={disableLeftButton}

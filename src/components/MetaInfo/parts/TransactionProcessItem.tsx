@@ -7,7 +7,7 @@ import MetaInfoStyles from 'components/MetaInfo/style';
 import { renderColContent } from 'components/MetaInfo/shared';
 import useGeneralStyles from 'components/MetaInfo/hooks/useGeneralStyles';
 import { Icon, Typography } from 'components/design-system-ui';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRightIcon } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import TransactionStepsModal from 'components/Modal/TransactionStepsModal';
 import { TransactionProcessPreview } from 'components/TransactionProcess';
@@ -54,7 +54,7 @@ const TransactionProcessItem = (props: TransactionProcessItemType) => {
             <Typography.Text style={{ color: theme.colorWhite }}>{stepText}</Typography.Text>
           )}
 
-          <Icon phosphorIcon={CaretRight} customSize={20} />
+          <Icon phosphorIcon={CaretRightIcon} customSize={20} />
         </TouchableOpacity>
 
         {modalVisible && (

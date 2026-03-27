@@ -8,8 +8,9 @@ import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { getBitcoinAccountDetails } from 'utils/account';
 import { toShort } from 'utils/index';
-import { Copy, QrCode } from 'phosphor-react-native';
+import { CopyIcon, QrCodeIcon } from 'phosphor-react-native';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { VoidFunction } from 'types/index.ts';
 
 interface Props {
   item: AccountTokenAddress;
@@ -55,14 +56,14 @@ export const AccountTokenAddressItem = ({ item, onPress, onPressCopyButton, onPr
     () => (
       <View style={styles.rightArea}>
         <Button
-          icon={<Icon phosphorIcon={QrCode} size={'sm'} iconColor={theme['gray-5']} />}
+          icon={<Icon phosphorIcon={QrCodeIcon} size={'sm'} iconColor={theme['gray-5']} />}
           onPress={onPressQrButton}
           size={'xs'}
           type={'ghost'}
         />
         <Button
           disabled={isRelayChainToMigrate}
-          icon={<Icon phosphorIcon={Copy} size={'sm'} iconColor={theme['gray-5']} />}
+          icon={<Icon phosphorIcon={CopyIcon} size={'sm'} iconColor={theme['gray-5']} />}
           onPress={onPressCopyButton}
           size={'xs'}
           type={'ghost'}

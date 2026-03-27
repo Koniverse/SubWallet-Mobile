@@ -1,5 +1,5 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import React from 'react';
+import React, { JSX } from 'react';
 import { Icon, IconProps } from 'phosphor-react-native';
 import BigN from 'bignumber.js';
 

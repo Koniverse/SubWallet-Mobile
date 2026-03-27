@@ -1,10 +1,8 @@
 import React, { ForwardedRef, forwardRef, useMemo } from 'react';
-import { TextInput, View, ViewStyle } from 'react-native';
+import { StyleProp, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 import createStylesheet from './style';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TextInputProps } from 'react-native/Libraries/Components/TextInput/TextInput';
-import { TextStyle } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
-import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import { DisabledStyle } from 'styles/sharedStyles';
 import { FieldHorizontal } from 'components/design-system-ui/field/HorizontalField';
 

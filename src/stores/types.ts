@@ -10,7 +10,6 @@ import {
   ConfirmationsQueueCardano,
   ConfirmationsQueueTon,
   ConfirmationType,
-  CrowdloanItem,
   KeyringState,
   MantaPayConfig,
   NftCollection,
@@ -88,7 +87,7 @@ export type AppVersionSlice = {
   buildNumber: number;
 };
 
-export type SelectedActionType = 'createAcc' | 'importAcc' | 'attachAcc' | 'migratePassword';
+export type SelectedActionType = 'createAcc' | 'importAcc' | 'attachAcc' | 'migratePassword' | '';
 
 export type PasswordModalSlice = {
   isShowModal: boolean;
@@ -245,10 +244,6 @@ export interface CampaignStore extends BaseReduxStore {
 }
 
 export type PriceStore = PriceJson;
-
-export interface CrowdloanStore extends BaseReduxStore {
-  crowdloanMap: Record<string, CrowdloanItem>;
-}
 
 export interface NftStore extends BaseReduxStore {
   nftItems: NftItem[];

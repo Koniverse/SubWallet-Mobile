@@ -5,11 +5,11 @@ import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { SubmitJoinNominationPool, SummaryEarningProcessData } from '@subwallet/extension-base/types';
 import { CommonFeeComponent } from '@subwallet/extension-base/types/service-base';
 import { useSelector } from 'react-redux';
-import { ConfirmationContent } from 'components/common/Confirmation';
 import MetaInfo from 'components/MetaInfo';
-import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import i18n from 'utils/i18n/i18n';
 import { getCurrentCurrencyTotalFee } from 'utils/common/balance';
+import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
+import ConfirmationContent from 'components/common/Confirmation/ConfirmationContent';
 
 type Props = TransactionInfoBlockProps;
 

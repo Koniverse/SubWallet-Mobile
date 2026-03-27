@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import { Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './styles/AccountSettingButton';
@@ -36,7 +36,7 @@ export const AccountSettingButton = ({ navigation, style }: Props) => {
         </View>
       )}
 
-      <Icon phosphorIcon={CaretDown} weight={'bold'} iconColor={theme['gray-5']} size={'xxs'} />
+      <Icon phosphorIcon={CaretDownIcon} weight={'bold'} iconColor={theme['gray-5']} size={'xxs'} />
     </TouchableOpacity>
   );
 };

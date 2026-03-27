@@ -5,14 +5,14 @@ import { LanguageType } from '@subwallet/extension-base/background/KoniTypes';
 import React, { Suspense, useCallback, useMemo } from 'react';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { CaretDown } from 'phosphor-react-native';
+import { CaretDownIcon } from 'phosphor-react-native';
 import { ImageLogosMap } from 'assets/logo';
-import getLanguageOptions from 'utils/getLanguageOptions';
 import { saveLanguage } from 'messaging/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import getLanguageOptions from 'utils/getLanguageOptions';
 
 interface Props {
   showLanguageModal: boolean;
@@ -109,7 +109,7 @@ export const SelectLanguageModal = ({ showLanguageModal, setShowLanguageModal }:
         <Typography.Text size={'sm'} style={{ color: theme.colorTextLight3 }}>
           {currentLanguageOpt ? currentLanguageOpt.text : ''}
         </Typography.Text>
-        <Icon phosphorIcon={CaretDown} size={'xxs'} weight={'bold'} iconColor={theme['gray-5']} />
+        <Icon phosphorIcon={CaretDownIcon} size={'xxs'} weight={'bold'} iconColor={theme['gray-5']} />
       </TouchableOpacity>
 
       <SwModal

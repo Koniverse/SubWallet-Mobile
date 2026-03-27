@@ -15,7 +15,7 @@ interface Props {
 
 export const WCNetworkSupported = ({ networks }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const modalRef = useRef<ModalRef>();
+  const modalRef = useRef<ModalRef | null>(null);
   const supportedNetworksMap = useMemo(() => {
     return networks.reduce((o, key) => Object.assign(o, { [key.slug]: key.supported }), {});
   }, [networks]);

@@ -1,4 +1,4 @@
-import { Info } from 'phosphor-react-native';
+import { InfoIcon } from 'phosphor-react-native';
 import AlertBoxBase from '../base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
@@ -48,7 +48,7 @@ const AlertBox: React.FC<Props> = (props: Props) => {
       titleColor={colors.titleColor}
       title={title}
       description={description}
-      icon={Info}
+      icon={InfoIcon}
       wrapperStyle={wrapperStyle}
     />
   );

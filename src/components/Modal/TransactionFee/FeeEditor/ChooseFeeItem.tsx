@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
 import { _getAssetDecimals, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
 import { swapCustomFormatter } from '@subwallet/extension-base/utils';
-import { CheckCircle } from 'phosphor-react-native';
+import { CheckCircleIcon } from 'phosphor-react-native';
 import BigN from 'bignumber.js';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -77,7 +77,7 @@ export const ChooseFeeItem = ({ amountToPay, slug, selected, onSelect, balance, 
           </View>
         </View>
       </View>
-      {selected && <Icon phosphorIcon={CheckCircle} size={'md'} weight={'fill'} iconColor={theme.colorSuccess} />}
+      {selected && <Icon phosphorIcon={CheckCircleIcon} size={'md'} weight={'fill'} iconColor={theme.colorSuccess} />}
     </TouchableOpacity>
   );
 };

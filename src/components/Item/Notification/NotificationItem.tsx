@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import Web3Block from '../../design-system-ui/web3-block/Web3Block';
 import { BackgroundIcon, Button, Icon, Typography } from 'components/design-system-ui';
-import { DotsThree } from 'phosphor-react-native';
+import { DotsThreeIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { convertHexColorToRGBA, formatConditionalDuration } from 'utils/color';
 import { NotificationInfoItem } from 'screens/Settings/Notifications/Notification';
@@ -58,7 +58,7 @@ export const NotificationItem = ({
   }, [description, theme.colorTextTertiary, theme.colorWhite, theme.sizeXXS, title]);
 
   const rightItem = useMemo(() => {
-    return <Button icon={<Icon phosphorIcon={DotsThree} />} size={'xs'} type={'ghost'} onPress={onPressMoreBtn} />;
+    return <Button icon={<Icon phosphorIcon={DotsThreeIcon} />} size={'xs'} type={'ghost'} onPress={onPressMoreBtn} />;
   }, [onPressMoreBtn]);
 
   return (

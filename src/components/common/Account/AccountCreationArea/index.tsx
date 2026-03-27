@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import {
-  DeviceTabletCamera,
-  Eye,
-  FileJs,
-  Leaf,
-  PlusCircle,
-  QrCode,
-  ShareNetwork,
-  Swatches,
-  Wallet,
+  DeviceTabletCameraIcon,
+  EyeIcon,
+  FileJsIcon,
+  LeafIcon,
+  PlusCircleIcon,
+  QrCodeIcon,
+  ShareNetworkIcon,
+  SwatchesIcon,
+  WalletIcon,
 } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
@@ -23,9 +23,9 @@ import { mmkvStore } from 'utils/storage';
 import { AccountActions } from '@subwallet/extension-base/types';
 
 interface Props {
-  createAccountRef: React.MutableRefObject<ModalRef | undefined>;
-  importAccountRef: React.MutableRefObject<ModalRef | undefined>;
-  attachAccountRef: React.MutableRefObject<ModalRef | undefined>;
+  createAccountRef: React.RefObject<ModalRef | null>;
+  importAccountRef: React.RefObject<ModalRef | null>;
+  attachAccountRef: React.RefObject<ModalRef | null>;
   allowToShowSelectType?: boolean;
 }
 
@@ -37,25 +37,25 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
     {
       key: 'secretPhrase',
       backgroundColor: '#51BC5E',
-      icon: Leaf,
+      icon: LeafIcon,
       label: i18n.importAccount.importFromSeedPhrase,
     },
     {
       key: 'restoreJson',
       backgroundColor: '#E68F25',
-      icon: FileJs,
+      icon: FileJsIcon,
       label: i18n.importAccount.importFromJson,
     },
     {
       key: 'privateKey',
       backgroundColor: '#4D4D4D',
-      icon: Wallet,
+      icon: WalletIcon,
       label: i18n.importAccount.importFromPrivateKey,
     },
     {
       key: 'qrCode',
       backgroundColor: '#2565E6',
-      icon: QrCode,
+      icon: QrCodeIcon,
       label: i18n.importAccount.importByQRCode,
     },
   ];
@@ -64,25 +64,25 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
     {
       key: 'ledger',
       backgroundColor: '#E68F25',
-      icon: Swatches,
+      icon: SwatchesIcon,
       label: i18n.attachAccount.connectALedgerDevice,
     },
     {
       key: 'polkadotVault',
       backgroundColor: '#E6478E',
-      icon: QrCode,
+      icon: QrCodeIcon,
       label: i18n.attachAccount.connectAPolkadotVaultAcc,
     },
     {
       key: 'keystone',
       backgroundColor: '#2565E6',
-      icon: DeviceTabletCamera,
+      icon: DeviceTabletCameraIcon,
       label: i18n.attachAccount.connectAKeystoneDevice,
     },
     {
       key: 'watchOnly',
       backgroundColor: '#2DA73F',
-      icon: Eye,
+      icon: EyeIcon,
       label: i18n.attachAccount.attachAWatchOnlyAccount,
     },
   ];
@@ -92,7 +92,7 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
     [accountProxies],
   );
 
-  const toastRef = useRef<ToastContainer>(null);
+  const toastRef = useRef<ToastContainer | null>(null);
   const show = useCallback((text: string) => {
     if (toastRef.current) {
       // @ts-ignore
@@ -107,13 +107,13 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
       {
         key: 'createAcc',
         backgroundColor: '#51BC5E',
-        icon: PlusCircle,
+        icon: PlusCircleIcon,
         label: i18n.createAccount.createWithNewSeedPhrase,
       },
       {
         key: 'derive',
         backgroundColor: '#E6478E',
-        icon: ShareNetwork,
+        icon: ShareNetworkIcon,
         label: i18n.createAccount.deriveFromAnExistingAcc,
         disabled: disableDerive,
       },

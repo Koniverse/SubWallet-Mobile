@@ -1,7 +1,7 @@
 import { AuthUrlInfo, AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { MoreOptionItemType, MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { ArrowsLeftRight, Plugs, PlugsConnected, Shield, ShieldSlash, X } from 'phosphor-react-native';
+import { ArrowsLeftRightIcon, PlugsIcon, PlugsConnectedIcon, ShieldIcon, ShieldSlashIcon, XIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { changeAuthorization, forgetSite, toggleAuthorization } from 'messaging/settings';
 import { updateAuthUrls } from 'stores/updater';
@@ -19,7 +19,7 @@ interface Props {
 }
 
 export const DAppConfigurationModal: React.FC<Props> = ({ authInfo, navigation, setModalVisible, modalVisible }) => {
-  const chainSelectorRef = useRef<ModalRef>();
+  const chainSelectorRef = useRef<ModalRef | null>(null);
   const theme = useSubWalletTheme().swThemes;
 
   const dAppAccessDetailMoreOptions: MoreOptionItemType[] = useMemo(() => {
@@ -29,7 +29,7 @@ export const DAppConfigurationModal: React.FC<Props> = ({ authInfo, navigation, 
     const options = [
       {
         key: 'forgetSite',
-        icon: X,
+        icon: XIcon,
         backgroundColor: theme['yellow-6'],
         name: i18n.common.forgetSite,
         onPress: () => {
@@ -43,7 +43,7 @@ export const DAppConfigurationModal: React.FC<Props> = ({ authInfo, navigation, 
       options.push(
         {
           key: 'disconnectAll',
-          icon: Plugs,
+          icon: PlugsIcon,
           name: i18n.common.disconnectAll,
           // @ts-ignore
           backgroundColor: theme['gray-3'],
@@ -54,7 +54,7 @@ export const DAppConfigurationModal: React.FC<Props> = ({ authInfo, navigation, 
         },
         {
           key: 'connectAll',
-          icon: PlugsConnected,
+          icon: PlugsConnectedIcon,
           name: i18n.common.connectAll,
           backgroundColor: theme['green-6'],
           onPress: () => {
@@ -69,7 +69,7 @@ export const DAppConfigurationModal: React.FC<Props> = ({ authInfo, navigation, 
       options.push({
         key: 'switchNetwork',
         name: 'Switch network',
-        icon: ArrowsLeftRight,
+        icon: ArrowsLeftRightIcon,
         // @ts-ignore
         backgroundColor: theme['geekblue-6'],
         onPress: () => {
@@ -81,7 +81,7 @@ export const DAppConfigurationModal: React.FC<Props> = ({ authInfo, navigation, 
     options.push({
       key: 'blockOrUnblock',
       name: isAllowed ? i18n.common.block : i18n.common.unblock,
-      icon: isAllowed ? ShieldSlash : Shield,
+      icon: isAllowed ? ShieldSlashIcon : ShieldIcon,
       // @ts-ignore
       backgroundColor: isAllowed ? theme['red-6'] : theme['green-6'],
       onPress: () => {

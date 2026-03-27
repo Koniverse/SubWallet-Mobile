@@ -1,14 +1,14 @@
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
-import { ArrowsClockwise, SortAscending, SortDescending } from 'phosphor-react-native';
+import { ArrowsClockwiseIcon, SortAscendingIcon, SortDescendingIcon } from 'phosphor-react-native';
 import React, { useCallback } from 'react';
 import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EarningPoolSelectorSortKey, EarningPoolSelectorSortOption } from '../EarningPoolSelector';
 
 interface Props {
-  sortingModalRef: React.MutableRefObject<ModalRef | undefined>;
+  sortingModalRef: React.RefObject<ModalRef | null>;
   sortSelection: EarningPoolSelectorSortKey;
   onPressResetSorting: () => void;
   onPressItem: (item: EarningPoolSelectorSortOption) => void;
@@ -35,7 +35,7 @@ export const EarningPoolSortModal = ({ sortingModalRef, sortSelection, onPressRe
         <SelectItem
           key={item.value}
           label={item.label}
-          icon={item.desc ? SortDescending : SortAscending}
+          icon={item.desc ? SortDescendingIcon : SortAscendingIcon}
           backgroundColor={theme.colorPrimary}
           isSelected={sortSelection === item.value}
           onPress={() => onPressItem(item)}
@@ -57,7 +57,7 @@ export const EarningPoolSortModal = ({ sortingModalRef, sortSelection, onPressRe
       {
         <Button
           style={{ marginTop: 16 }}
-          icon={<Icon phosphorIcon={ArrowsClockwise} size={'md'} />}
+          icon={<Icon phosphorIcon={ArrowsClockwiseIcon} size={'md'} />}
           onPress={onPressResetSorting}>
           {i18n.buttonTitles.resetSorting}
         </Button>

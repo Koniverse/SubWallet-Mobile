@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { JSX, useCallback, useMemo } from 'react';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
-import { PlusCircle, ShareNetwork } from 'phosphor-react-native';
+import { PlusCircleIcon, ShareNetworkIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -20,7 +20,7 @@ interface Props {
   onPressBack: () => void;
   onSelectItem?: (item: ProviderItemType) => void;
   renderSelectModalBtn?: (onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => JSX.Element;
-  rpcSelectorRef: React.MutableRefObject<ModalRef | undefined>;
+  rpcSelectorRef: React.RefObject<ModalRef | null>;
 }
 
 export const RpcSelectorModal = ({
@@ -52,7 +52,7 @@ export const RpcSelectorModal = ({
     (item: { label: string; value: string }) => (
       <SelectItem
         key={item.value}
-        icon={ShareNetwork}
+        icon={ShareNetworkIcon}
         backgroundColor={theme.colorTextLight4}
         label={item.label}
         isSelected={selectedValueMap[item.value]}
@@ -77,7 +77,7 @@ export const RpcSelectorModal = ({
       onBackButtonPress={() => rpcSelectorRef?.current?.onCloseModal()}>
       <Button
         style={{ marginTop: theme.margin }}
-        icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
+        icon={<Icon phosphorIcon={PlusCircleIcon} size={'lg'} weight={'fill'} />}
         onPress={() => {
           onPressBack();
           !!chainInfo && navigation.navigate('AddProvider', { slug: chainInfo.slug });

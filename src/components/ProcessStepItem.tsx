@@ -2,25 +2,16 @@ import React, { useMemo, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { StepStatus } from '@subwallet/extension-base/types';
-import { CheckCircle, ClockCounterClockwise, ProhibitInset, SpinnerGap } from 'phosphor-react-native';
+import { CheckCircleIcon, ClockCounterClockwiseIcon, ProhibitInsetIcon, SpinnerGapIcon } from 'phosphor-react-native';
 import { Icon, Typography } from 'components/design-system-ui';
 import { isStepCompleted, isStepFailed, isStepPending, isStepProcessing, isStepTimeout } from 'utils/transaction';
 import { RollingIcon } from 'components/RollingIcon';
 import { TransactionProcessStepItemType } from 'types/component';
 
-export type ProcessStepItemType = {
-  status: StepStatus;
-  text: React.JSX.Element | '';
-  index: number;
-  isLastItem?: boolean;
-  isFirstItem?: boolean;
-};
-
 type Props = TransactionProcessStepItemType;
 
 const ProcessStepItem: React.FC<Props> = (props: Props) => {
-  const { index, isLastItem, isFirstItem, status, text } = props;
+  const { index, isLastItem, status, content } = props;
   const theme = useSubWalletTheme().swThemes;
   const [textHeight, setTextHeight] = useState(0);
   const color = useMemo(() => {
@@ -47,19 +38,19 @@ const ProcessStepItem: React.FC<Props> = (props: Props) => {
     return 'transparent'; // can be change later
   }, [status, theme.colorError, theme.colorSuccess, theme.colorTextLight7, theme.gold]);
   const styles = useMemo(
-    () => createStyle(theme, color, !!isLastItem, !!isFirstItem, textHeight),
-    [color, isFirstItem, isLastItem, textHeight, theme],
+    () => createStyle(theme, color, !!isLastItem, textHeight),
+    [color, isLastItem, textHeight, theme],
   );
 
   const icon = useMemo(() => {
     if (isStepCompleted(status)) {
-      return <Icon size={'xs'} phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} weight={'fill'} />;
+      return <Icon size={'xs'} phosphorIcon={CheckCircleIcon} iconColor={theme.colorSuccess} weight={'fill'} />;
     } else if (isStepFailed(status)) {
-      return <Icon phosphorIcon={ProhibitInset} size={'xs'} iconColor={theme.colorError} weight={'fill'} />;
+      return <Icon phosphorIcon={ProhibitInsetIcon} size={'xs'} iconColor={theme.colorError} weight={'fill'} />;
     } else if (isStepProcessing(status)) {
-      return <RollingIcon icon={<Icon phosphorIcon={SpinnerGap} size={'xs'} iconColor={'#D9A33E'} />} />;
+      return <RollingIcon icon={<Icon phosphorIcon={SpinnerGapIcon} size={'xs'} iconColor={'#D9A33E'} />} />;
     } else if (isStepTimeout(status)) {
-      return <Icon phosphorIcon={ClockCounterClockwise} size={'xs'} iconColor={theme.gold} weight={'fill'} />;
+      return <Icon phosphorIcon={ClockCounterClockwiseIcon} size={'xs'} iconColor={theme.gold} weight={'fill'} />;
     }
 
     return (
@@ -85,19 +76,19 @@ const ProcessStepItem: React.FC<Props> = (props: Props) => {
           const { height } = event.nativeEvent.layout;
           setTextHeight(height);
         }}>
-        {text}
+        {content}
       </View>
     </TouchableOpacity>
   );
 };
 
-function createStyle(theme: ThemeTypes, color: string, isLastItem: boolean, isFirstItem: boolean, textHeight: number) {
+function createStyle(theme: ThemeTypes, color: string, isLastItem: boolean, textHeight: number) {
   return StyleSheet.create({
     container: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.sizeXS,
-      marginTop: isFirstItem ? (textHeight - 24) / 2 : 0,
+      marginTop: 0,
     },
     iconWrapper: {
       width: 24,
