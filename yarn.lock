@@ -8786,9 +8786,9 @@ __metadata:
     react-native-localization: ^2.3.2
     react-native-localize: ^3.6.0
     react-native-markdown-display: ^7.0.2
-    react-native-mmkv: ^4.0.1
+    react-native-mmkv: 4.0.1
     react-native-modal: ^14.0.0-rc.1
-    react-native-nitro-modules: ^0.33.2
+    react-native-nitro-modules: 0.31.7
     react-native-pager-view: ^8.0.0
     react-native-path: ^0.0.5
     react-native-permissions: ^5.4.4
@@ -19564,14 +19564,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-mmkv@npm:^4.0.1":
-  version: 4.3.0
-  resolution: "react-native-mmkv@npm:4.3.0"
+"react-native-mmkv@npm:4.0.1":
+  version: 4.0.1
+  resolution: "react-native-mmkv@npm:4.0.1"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-nitro-modules: "*"
-  checksum: 191841ad0347a223694ef0cd945d3c8139c4cb300df523b8856659c9103e29f460a0cb3f125fb987559d7d6b1f944a2ead5a7e400d6c9580c0f3e60078b50309
+  checksum: ad663c90d72ee3aaaeeeec731de8d28a8d707f614b73c4eac90e103e12afeb0b2f181527db2117200527a84b1854437ca8d100466df53243e01c9b0546616f5f
   languageName: node
   linkType: hard
 
@@ -19587,13 +19587,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:^0.33.2":
-  version: 0.33.9
-  resolution: "react-native-nitro-modules@npm:0.33.9"
+"react-native-nitro-modules@npm:0.31.7":
+  version: 0.31.7
+  resolution: "react-native-nitro-modules@npm:0.31.7"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: b9f1ebe7621f600046e0c4701e33f3a038a256fdca84394011cdf431bbf7d142a28f2fa042df4f78b8c879740697ff53e0afca933316063eee0f24f27e920131
+  checksum: be7e2f97ab922d452b06a77833231b8a13637ed5bd66ac9be4bf050117147f5b5a388eb406df2abba81db096a4c2b48364f012bb3b1e6efe86955b8443ce72ee
   languageName: node
   linkType: hard
 
