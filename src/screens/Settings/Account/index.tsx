@@ -59,7 +59,7 @@ const AccountSettings = () => {
       key: 'config-subscan-api',
       leftIcon: KeyIcon,
       title: 'Config Subscan API key',
-      rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme['gray-5']} />,
+      rightIcon: <Icon phosphorIcon={CaretRightIcon} size={'sm'} iconColor={theme['gray-5']} />,
       onPress: onOpenSubscanApiModal,
       leftIconBgColor: '#d84a1b',
     },

@@ -2,7 +2,7 @@ import React, { ComponentType, JSX, useCallback, useContext, useEffect, useMemo,
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EarningScreen from 'screens/Home/Earning';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ApertureIcon, GlobeIcon, ParachuteIcon, VaultIcon, WalletIcon } from 'phosphor-react-native';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,7 +30,7 @@ import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 import { TermAndCondition } from 'constants/termAndCondition';
 import { RemindBackupModal } from 'components/Modal/RemindBackupModal';
 import { ALL_ACCOUNT_KEY, UPGRADE_DUPLICATE_ACCOUNT_NAME } from '@subwallet/extension-base/constants';
-import { useIsFocused } from '@react-navigation/native';
+import { StackActions, useIsFocused } from '@react-navigation/native';
 import { updateMktCampaignStatus } from 'stores/AppState';
 import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 import { computeStatus } from 'utils/missionPools';
@@ -77,7 +77,7 @@ const MissionPoolScreen = (props: JSX.IntrinsicAttributes) => {
   return withPageWrapper(MissionPoolsByTabview as ComponentType, ['missionPool'])(props);
 };
 
-const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
+const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
   const theme = useSubWalletTheme().swThemes;
@@ -180,11 +180,18 @@ const MainScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
       <Tab.Screen
         name={'Earning'}
         component={EarningScreen}
-        listeners={{
+        listeners={({ navigation: tabNavigation, route }) => ({
           tabPress: () => {
-            navigation.popToTop();
+            const routeState = tabNavigation.getState().routes.find(item => item.key === route.key)?.state;
+
+            if (routeState?.type === 'stack') {
+              tabNavigation.dispatch({
+                ...StackActions.popToTop(),
+                target: routeState.key,
+              });
+            }
           },
-        }}
+        })}
         options={{
           tabBarLabel: i18n.tabName.earning,
           tabBarHideOnKeyboard: Platform.OS === 'android',
@@ -426,7 +433,7 @@ export const Home = ({ navigation }: Props) => {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, position: 'relative' }}>
+    <GestureHandlerRootView style={styles.root}>
       {lastProcessId && <FloatingBubble navigateToNotification={navigateToNotification(lastProcessId)} />}
       <Wrapper />
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
@@ -455,5 +462,6 @@ export const Home = ({ navigation }: Props) => {
 
 // @ts-ignore
 const styles = StyleSheet.create({
+  root: { flex: 1, position: 'relative' },
   indicatorWrapper: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 });

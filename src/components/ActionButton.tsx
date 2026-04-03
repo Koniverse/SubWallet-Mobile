@@ -20,6 +20,8 @@ function getButtonTextStyle(disabled: boolean, theme: ThemeTypes) {
     lineHeight: 26,
     ...FontMedium,
     paddingTop: 8,
+    textAlign: 'center',
+    width: '100%',
   };
 }
 

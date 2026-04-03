@@ -10,7 +10,7 @@ import { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { InteractionManager, Share, View } from 'react-native';
+import { Share, View } from 'react-native';
 import { toShort } from 'utils/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -18,12 +18,14 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import useGoHome from 'hooks/screen/useGoHome';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { AccountProxy, AccountProxyType, AccountSignMode } from '@subwallet/extension-base/types';
 import { exportAccountBatch } from 'messaging/accounts';
 import { SelectAccountAllItem } from 'components/common/SelectAccountAllItem';
+import { scheduleAfterIdle } from 'utils/idle';
 
 const renderListEmptyComponent = () => {
   return (
@@ -71,6 +73,7 @@ export const ExportAllAccount = () => {
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
+  const goHome = useGoHome();
   const successModalRef = useRef<SWModalRefProps>(null);
   const [selectedValueMap, setSelectedValueMap] = useState<Record<string, boolean>>({});
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
@@ -145,9 +148,7 @@ export const ExportAllAccount = () => {
   }, []);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      setIsReady(true);
-    });
+    return scheduleAfterIdle(() => setIsReady(true));
   }, []);
 
   const allAddress = useMemo(() => {
@@ -224,8 +225,8 @@ export const ExportAllAccount = () => {
   }, [jsonData]);
 
   const onCloseSuccessModal = useCallback(() => {
-    navigation.navigate('Home');
-  }, [navigation]);
+    goHome();
+  }, [goHome]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<AccountProxy>) => {
@@ -346,7 +347,7 @@ export const ExportAllAccount = () => {
 
             <Button
               icon={<Icon phosphorIcon={CheckCircleIcon} size={'lg'} weight={'fill'} />}
-              onPress={() => navigation.navigate('Home')}>
+              onPress={goHome}>
               Finish
             </Button>
           </View>

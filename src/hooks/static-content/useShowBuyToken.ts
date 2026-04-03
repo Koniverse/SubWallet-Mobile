@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { Platform } from 'react-native';
 import { getVersion } from 'react-native-device-info';
 import axios from 'axios';
@@ -10,23 +11,29 @@ export function useShowBuyToken() {
   const isShowBuyToken = useSelector((state: RootState) => state.settings.isShowBuyToken);
   const dispatch = useDispatch();
 
-  const checkIsShowBuyToken = () => {
+  const checkIsShowBuyToken = useCallback(() => {
     if (Platform.OS === 'android') {
-      dispatch(updateIsShowByToken(true));
-      return;
-    }
-    const currentAppVersion = getVersion();
-    axios.get(TOKEN_CONFIG_URL).then(res => {
-      const tokenConfig = res.data;
-
-      if (tokenConfig?.buy?.includes(currentAppVersion)) {
+      if (!isShowBuyToken) {
         dispatch(updateIsShowByToken(true));
-        return;
       }
 
-      dispatch(updateIsShowByToken(false));
-    });
-  };
+      return;
+    }
+
+    const currentAppVersion = getVersion();
+    axios
+      .get(TOKEN_CONFIG_URL)
+      .then(res => {
+        const tokenConfig = res.data;
+        const shouldShowBuyToken = !!tokenConfig?.buy?.includes(currentAppVersion);
+        if (shouldShowBuyToken !== isShowBuyToken) {
+          dispatch(updateIsShowByToken(shouldShowBuyToken));
+        }
+      })
+      .catch(() => {
+        // Ignore network failures and keep current state.
+      });
+  }, [dispatch, isShowBuyToken]);
 
   return { isShowBuyToken, checkIsShowBuyToken };
 }

@@ -209,7 +209,6 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     ...useWatch<TransferFormValues>({ control }),
     ...getValues(),
   };
-  console.log('toValue', assetValue);
   const scrollViewRef = useRef<ScrollView>(null);
   const { chainInfoMap, ledgerGenericAllowNetworks, priorityTokens, chainStateMap } = useSelector(
     (root: RootState) => root.chainStore,
@@ -444,8 +443,6 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
         _isChainBitcoinCompatible(_chainInfo))
     );
   }, [chainInfoMap, chainValue, assetInfo, destChainValue]);
-
-  console.log('hideMaxButton', hideMaxButton);
 
   const disabledToAddressInput = useMemo(() => {
     if (_isPosChainL2Bridge(chainValue, destChainValue)) {

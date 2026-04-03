@@ -17,6 +17,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "react-native start",
     "test": "jest",
+    "clean": "cd android && ./gradlew clean && cd ../ && yarn install",
+    "dev": "react-native start --reset-cache",
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "prepare": "husky install",
     "sync:i18n": "node scripts/sync-i18n.js"

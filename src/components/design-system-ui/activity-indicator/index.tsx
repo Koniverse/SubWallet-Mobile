@@ -32,7 +32,7 @@ const ActivityIndicator: React.FC<ActivityIndicatorProps> = ({ size = 16, indica
         },
       ],
     };
-  }, [rotation.value]);
+  });
 
   useEffect(() => {
     rotation.value = withRepeat(

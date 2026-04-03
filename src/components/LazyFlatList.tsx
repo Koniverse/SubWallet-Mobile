@@ -1,12 +1,13 @@
 import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
-import { InteractionManager, RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
+import { RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
 import { useLazyList } from 'hooks/common/useLazyList';
 import { defaultSortFunc } from 'utils/function';
 import { SortFunctionInterface } from 'types/ui-types';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FlashList, FlashListRef, ListRenderItemInfo } from '@shopify/flash-list';
+import { scheduleAfterIdle } from 'utils/idle';
 
 interface Props<T> {
   items: T[];
@@ -102,9 +103,7 @@ export function LazyFlatList<T>({
   };
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => setIsReady(true), 300);
-    });
+    return scheduleAfterIdle(() => setIsReady(true), 300);
   }, []);
 
   if (loading || !isReady) {

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
-import { useNavigation } from '@react-navigation/native';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { DeviceEventEmitter, Linking, Platform, ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import {
@@ -71,6 +71,20 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
   const theme = useSubWalletTheme().swThemes;
   const { lock } = useAppLock();
   const [hiddenCount, setHiddenCount] = useState(0);
+
+  const onCloseSettings = useCallback(() => {
+    if (drawerNavigation?.dispatch) {
+      drawerNavigation.dispatch(DrawerActions.closeDrawer());
+      return;
+    }
+
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return;
+    }
+
+    navigation.navigate('Home');
+  }, [drawerNavigation, navigation]);
 
   const onPressContactSupport = useCallback(() => {
     Linking.openURL('subwallet://browser?url=https://support.subwallet.app/');
@@ -199,8 +213,8 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
       navigation={navigation}
       icon={<SVGImages.Logo width={24} height={24} />}
       rightIcon={XIcon}
-      onPressLeftBtn={() => (drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack())}
-      onPressRightIcon={() => (drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack())}>
+      onPressLeftBtn={onCloseSettings}
+      onPressRightIcon={onCloseSettings}>
       <>
         <ScrollView
           showsVerticalScrollIndicator={false}

@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { DeviceEventEmitter, Dimensions, Linking, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import ModalStyles from './styleV2';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const MAX_TRANSLATE_Y = -SCREEN_HEIGHT;
+const ROUNDED_TOP_STYLE: ViewStyle = { borderTopLeftRadius: 32, borderTopRightRadius: 32 };
 
 export interface SWModalProps {
   isVisible: boolean;
@@ -51,11 +53,11 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
     ref,
   ) => {
     const translateY = useSharedValue(0);
-    const active = useSharedValue(false);
     const theme = useSubWalletTheme().swThemes;
     const _styles = ModalStyles(theme, level);
     const { numberOfConfirmations } = useConfirmationsInfo();
     const [isForcedHidden, setForcedHidden] = useState<boolean>(false);
+    const [isActive, setIsActive] = useState(false);
 
     useEffect(() => {
       const hiddenEvent = DeviceEventEmitter.addListener(FORCE_HIDDEN_EVENT, (isHidden: boolean) => {
@@ -88,12 +90,13 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
     // };
     const scrollTo = useCallback((destination: number) => {
       'worklet';
-      active.value = destination !== 0;
 
       // if (destination === 0) {
       //   runOnJS(timeout)();
       //   runOnJS(setVisible)(false);
       // }
+
+      scheduleOnRN(setIsActive, destination !== 0);
 
       translateY.value = withTiming(
         destination,
@@ -126,12 +129,9 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       return () => unsubscribe.remove();
     }, [numberOfConfirmations, onClose]);
 
-    const isActive = useCallback(() => {
-      return active.value;
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const getIsActive = useCallback(() => isActive, [isActive]);
 
-    useImperativeHandle(ref, () => ({ scrollTo, isActive, close: onClose }), [scrollTo, isActive, onClose]);
+    useImperativeHandle(ref, () => ({ scrollTo, isActive: getIsActive, close: onClose }), [scrollTo, getIsActive, onClose]);
 
     const context = useSharedValue({ y: 0 });
     const gesture = Gesture.Pan()
@@ -145,7 +145,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       })
       .onEnd(() => {
         if (translateY.value > -height + 10) {
-          runOnJS(onClose)();
+          scheduleOnRN(onClose);
         } else if (translateY.value < context.value.y - 10) {
           scrollTo(-height);
         }
@@ -179,7 +179,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
                     _styles.container,
                     wrapperStyle,
                     rSWModalStyle,
-                    { borderTopLeftRadius: 32, borderTopRightRadius: 32 },
+                    ROUNDED_TOP_STYLE,
                   ]}>
                   {!isFullHeight && <View style={_styles.line} />}
                   {children}

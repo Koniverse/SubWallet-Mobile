@@ -596,21 +596,23 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
           selectedTextStyle={styles.tabTextSelectedStyle}
           isShowDivider={true}
         />
-        <Button
-          icon={
-            <Icon
-              phosphorIcon={ChecksIcon}
-              size={'sm'}
-              iconColor={!enableNotification ? theme.colorTextLight4 : theme.colorWhite}
-            />
-          }
-          type={'ghost'}
-          size={'xs'}
-          disabled={!enableNotification}
-          onPress={markAllRead}
-          externalTextStyle={styles.markAllReadTextStyle}>
-          {'Mark all as read'}
-        </Button>
+        {selectedFilterTab !== NotificationTab.READ && (
+          <Button
+            icon={
+              <Icon
+                phosphorIcon={ChecksIcon}
+                size={'sm'}
+                iconColor={!enableNotification ? theme.colorTextLight4 : theme.colorWhite}
+              />
+            }
+            type={'ghost'}
+            size={'xs'}
+            disabled={!enableNotification}
+            onPress={markAllRead}
+            externalTextStyle={styles.markAllReadTextStyle}>
+            {'Mark all as read'}
+          </Button>
+        )}
       </View>
     );
   }, [

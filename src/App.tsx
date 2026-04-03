@@ -167,8 +167,9 @@ export const App = () => {
   const { getBrowserConfig } = useGetBrowserConfig();
   const { getAppInstructionData } = useGetAppInstructionData(language); // data for app instruction, will replace getEarningStaticData
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
-  const { isUpdateComplete, setUpdateComplete, isReady: isWebRunnerReady } = useContext(WebRunnerContext);
+  const { isUpdateComplete, setUpdateComplete, isReady: isWebRunnerReady, reload: reloadWebRunner } = useContext(WebRunnerContext);
   const hasHiddenSplash = useRef(false);
+  const webRunnerReloadAttemptRef = useRef(0);
   const [initDone, setInitDone] = useState(false);
   console.log('isUpdateComplete', isUpdateComplete);
 
@@ -189,7 +190,7 @@ export const App = () => {
     autoLockParams.lock = lock;
     autoLockParams.timeAutoLock = timeAutoLock;
     autoLockParams.hasMasterPassword = hasMasterPassword;
-    autoLockParams.isUseBiometric = isUseBiometric;
+  autoLockParams.isUseBiometric = isUseBiometric;
     autoLockParams.isPreventLock = isPreventLock;
   }, [timeAutoLock, isUseBiometric, isPreventLock, lock, hasMasterPassword]);
 
@@ -243,6 +244,26 @@ export const App = () => {
       BootSplash.hide({ fade: true }).catch(() => {});
     }
   }, [initDone, isAppReady]);
+
+  useEffect(() => {
+    if (!initDone || isWebRunnerReady) {
+      webRunnerReloadAttemptRef.current = 0;
+      return;
+    }
+
+    // Recover from startup states where WebRunner never reaches crypto_ready.
+    const timeout = setTimeout(() => {
+      if (!isWebRunnerReady && webRunnerReloadAttemptRef.current < 3) {
+        webRunnerReloadAttemptRef.current += 1;
+        console.warn('[Startup watchdog] WebRunner not ready, reloading', {
+          attempt: webRunnerReloadAttemptRef.current,
+        });
+        reloadWebRunner && reloadWebRunner();
+      }
+    }, 15000);
+
+    return () => clearTimeout(timeout);
+  }, [initDone, isWebRunnerReady, reloadWebRunner]);
 
   const onPressUpdateWebView = () => {
     Linking.canOpenURL('market://details?id=com.google.android.webview').then(() =>

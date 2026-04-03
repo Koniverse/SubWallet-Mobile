@@ -1265,25 +1265,25 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     netuid,
   ]);
 
-  useEffect(() => {
-    setCheckMintLoading(true);
+  // useEffect(() => {
+  //   setCheckMintLoading(true);
 
-    unlockDotCheckCanMint({
-      slug: poolInfo?.slug || '',
-      address: currentFrom,
-      network: poolInfo?.chain || '',
-    })
-      .then(value => {
-        setCanMint(value);
-      })
-      .finally(() => {
-        setCheckMintLoading(false);
-      });
+  //   unlockDotCheckCanMint({
+  //     slug: poolInfo?.slug || '',
+  //     address: currentFrom,
+  //     network: poolInfo?.chain || '',
+  //   })
+  //     .then(value => {
+  //       setCanMint(value);
+  //     })
+  //     .finally(() => {
+  //       setCheckMintLoading(false);
+  //     });
 
-    return () => {
-      setCanMint(false);
-    };
-  }, [currentFrom, poolInfo?.chain, poolInfo?.slug]);
+  //   return () => {
+  //     setCanMint(false);
+  //   };
+  // }, [currentFrom, poolInfo?.chain, poolInfo?.slug]);
 
   useEffect(() => {
     let unmount = false;

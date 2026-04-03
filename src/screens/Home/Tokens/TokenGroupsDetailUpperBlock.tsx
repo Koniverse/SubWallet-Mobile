@@ -144,8 +144,9 @@ export const TokenGroupsDetailUpperBlock = ({
       <BalancesVisibility value={balanceValue} symbol={currencyData.symbol} subFloatNumber />
 
       <View style={[_style.actionButtonWrapper]} pointerEvents="box-none">
-        {actionBtnList.map(({ label, icon, onPress, disabled }) => (
+        {actionBtnList.map(({ label, icon, onPress, disabled }, index) => (
           <ActionButton
+            key={`${label}-${index}`}
             label={label}
             icon={icon}
             onPress={onPress}

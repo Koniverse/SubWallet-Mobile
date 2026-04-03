@@ -1,7 +1,7 @@
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -27,6 +27,7 @@ import { AccountChainAddressesSelector } from 'components/Modal/common/AccountCh
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList.tsx';
 import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { scheduleAfterIdle } from 'utils/idle';
 
 export enum AccountGroupType {
   ALL_ACCOUNT = 'all',
@@ -241,9 +242,7 @@ export const AccountsScreen = ({
   }, [groupBy, renderSectionHeader]);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      setIsReady(true);
-    });
+    return scheduleAfterIdle(() => setIsReady(true));
   }, []);
 
   useEffect(() => {
