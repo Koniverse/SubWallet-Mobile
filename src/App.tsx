@@ -190,7 +190,7 @@ export const App = () => {
     autoLockParams.lock = lock;
     autoLockParams.timeAutoLock = timeAutoLock;
     autoLockParams.hasMasterPassword = hasMasterPassword;
-  autoLockParams.isUseBiometric = isUseBiometric;
+    autoLockParams.isUseBiometric = isUseBiometric;
     autoLockParams.isPreventLock = isPreventLock;
   }, [timeAutoLock, isUseBiometric, isPreventLock, lock, hasMasterPassword]);
 

@@ -221,7 +221,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
           disableRightButton={disableSubmit}
           onPressRightIcon={onPreCheck(handleSubmit(onSubmitForm), ExtrinsicType.SEND_NFT)}>
           <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <View>
+            <View style={{ flex: 1 }}>
               <ScrollView
                 style={{ ...ContainerHorizontalPadding, marginTop: 10 }}
                 keyboardShouldPersistTaps={'handled'}>

@@ -27,15 +27,15 @@ PODS:
   - libwebp/sharpyuv (1.5.0)
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
-  - MMKVCore (2.4.0)
-  - NitroMmkv (4.3.0):
+  - MMKVCore (2.2.4)
+  - NitroMmkv (4.0.1):
     - boost
     - DoubleConversion
     - fast_float
     - fmt
     - glog
     - hermes-engine
-    - MMKVCore (= 2.4.0)
+    - MMKVCore (= 2.2.4)
     - NitroModules
     - RCT-Folly
     - RCT-Folly/Fabric
@@ -59,7 +59,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - NitroModules (0.33.9):
+  - NitroModules (0.31.7):
     - boost
     - DoubleConversion
     - fast_float
@@ -3900,9 +3900,9 @@ SPEC CHECKSUMS:
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
-  MMKVCore: 3d16ce9f7d411e135020915fde98a056859a1efa
-  NitroMmkv: 1f66a0e71a3a3c5677921aca853aabf7911d92c1
-  NitroModules: 7268cbdc66d6ead3200894003724f9dce9405b7d
+  MMKVCore: f2dd4c9befea04277a55e84e7812f930537993df
+  NitroMmkv: a30e1565fc7e29e9b5d088411c04a94f20071eb3
+  NitroModules: 53cb8af3c8bcc1a432314de4a2e24786bcfe3ea2
   RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
   RCTDeprecation: f17e2ebc07876ca9ab8eb6e4b0a4e4647497ae3a
   RCTRequired: e2c574c1b45231f7efb0834936bd609d75072b63
