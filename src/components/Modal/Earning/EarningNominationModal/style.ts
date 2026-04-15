@@ -31,12 +31,15 @@ export default (theme: ThemeTypes) => {
       gap: theme.sizeXS,
       overflow: 'hidden',
       flex: 1,
+      minWidth: 0,
     },
     accountText: {
       ...FontMedium,
       color: theme.colorTextBase,
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
+      flex: 1,
+      flexShrink: 1,
     },
     infoText: {
       ...FontMedium,

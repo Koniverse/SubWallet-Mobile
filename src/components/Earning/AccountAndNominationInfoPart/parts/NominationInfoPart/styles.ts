@@ -55,6 +55,7 @@ export default (theme: ThemeTypes) => {
       color: theme.colorTextBase,
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
+      flex: 1,
     },
     infoText: {
       ...FontMedium,

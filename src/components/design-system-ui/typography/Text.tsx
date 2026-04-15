@@ -28,7 +28,11 @@ const Text: React.FC<TextProps> = ({
   const _style = TypographyStyles(theme);
   const allStyle = [FontMedium, monospace && _style?.monospace, size && _style[`${size}Text`], style];
   return (
-    <RNText style={allStyle} numberOfLines={ellipsis ? numberOfLines : undefined} {...restProps}>
+    <RNText
+      style={allStyle}
+      numberOfLines={ellipsis ? numberOfLines : undefined}
+      ellipsizeMode={ellipsis ? 'tail' : undefined}
+      {...restProps}>
       {children}
     </RNText>
   );

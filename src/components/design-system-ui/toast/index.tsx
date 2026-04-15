@@ -79,10 +79,12 @@ function createStyle(theme: ThemeTypes) {
     text: {
       color: theme.colorTextHeading,
       fontSize: theme.fontSize,
-      lineHeight: theme.fontSize,
+      lineHeight: Math.round(theme.fontSize * theme.lineHeight),
       ...FontMedium,
       paddingHorizontal: 4,
       paddingTop: 4,
+      paddingBottom: 2,
+      flexShrink: 1,
     },
     successBorderColor: {
       borderColor: theme.colorSuccess,

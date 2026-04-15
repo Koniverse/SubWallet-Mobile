@@ -101,7 +101,7 @@ export const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) =>
   useHandlerHardwareBackPress(loading);
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
-  const { isNetConnected, isReady, reload } = useContext(WebRunnerContext);
+  const { isNetConnected, isReady } = useContext(WebRunnerContext);
   const onBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
@@ -179,9 +179,6 @@ export const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) =>
             toast.hideAll();
             toast.show(i18n.common.addNftSuccess, { type: 'success' });
             onBack();
-            if (reload) {
-              reload();
-            }
           } else {
             toast.hideAll();
             toast.show(i18n.errorMessage.occurredError, { type: 'danger' });

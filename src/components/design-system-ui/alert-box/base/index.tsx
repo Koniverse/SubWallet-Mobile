@@ -48,7 +48,7 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
   const getTitleClassesStyle = useCallback((): StyleProp<any> => {
     return {
       title: {
-        color: titleColor,
+        color: titleColor || 'white',
         fontSize: 16,
         lineHeight: 24,
         fontWeight: '500',

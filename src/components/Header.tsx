@@ -4,13 +4,12 @@ import { Keyboard, StyleProp, View } from 'react-native';
 import { SpaceStyle } from 'styles/space';
 import { Badge, Button, Icon } from 'components/design-system-ui';
 import AccountSelectField from 'components/common/Account/AccountSelectField';
-import { useNavigation } from '@react-navigation/native';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SVGImages } from 'assets/index';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import i18n from 'utils/i18n/i18n';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { DisabledStyle } from 'styles/sharedStyles';
 import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
@@ -43,7 +42,6 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
   const { unreadNotificationCountMap } = useSelector((state: RootState) => state.notification);
   const [error, setError] = useState<string | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const drawerNavigation = useNavigation<DrawerNavigationProp<RootStackParamList>>();
   const navigationRoutes = navigation.getState().routes;
   const nearestPathName = navigationRoutes[navigationRoutes.length - 1].name;
   const checkCamera = useCheckCamera();
@@ -110,7 +108,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
           icon={<SVGImages.MenuBarLogo />}
           onPress={() => {
             Keyboard.dismiss();
-            delayActionAfterDismissKeyboard(() => drawerNavigation.openDrawer());
+            delayActionAfterDismissKeyboard(() => navigation.dispatch(DrawerActions.openDrawer()));
           }}
         />
       </View>

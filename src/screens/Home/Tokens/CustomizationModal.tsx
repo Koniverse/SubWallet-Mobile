@@ -107,16 +107,27 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
   }, [pendingChainMap]);
 
   const onToggleItem = (item: ChainInfoWithStateAnhStatus) => {
+    if (pendingChainMap[item.slug] !== undefined) {
+      return;
+    }
+
     setIsUpdate(false);
-    setPendingChainMap({ ...pendingChainMap, [item.slug]: !item.active });
+    const currentActiveState = pendingChainMap[item.slug] ?? chainInfoMap[item.slug]?.active ?? false;
+    const nextActiveState = !currentActiveState;
+
+    setPendingChainMap(prevPendingChainMap => ({ ...prevPendingChainMap, [item.slug]: nextActiveState }));
+
     const reject = () => {
       console.warn('Toggle network request failed!');
-      // @ts-ignore
-      delete pendingNetworkMap[item.key];
-      setPendingChainMap({ ...pendingChainMap });
+      setPendingChainMap(prevPendingChainMap => {
+        const nextPendingChainMap = { ...prevPendingChainMap };
+        delete nextPendingChainMap[item.slug];
+
+        return nextPendingChainMap;
+      });
     };
 
-    updateChainActiveState(item.slug, !item.active)
+    updateChainActiveState(item.slug, nextActiveState)
       .then(result => {
         if (!result) {
           reject();

@@ -11,6 +11,7 @@ import { MigrateAccountProps, RootNavigationProps } from 'routes/index';
 import { hasAnyAccountForMigration } from '@subwallet/extension-base/services/keyring-service/utils';
 import { migrateSoloAccount, migrateUnifiedAndFetchEligibleSoloAccounts } from 'messaging/migrate-unified-account';
 import { saveMigrationAcknowledgedStatus } from 'messaging/index';
+import { getKeychainPassword } from 'utils/account';
 
 export enum ScreenView {
   BRIEF = 'brief',
@@ -37,6 +38,7 @@ const MigrateAccount = ({
   );
   const [isBusy, setIsBusy] = useState(false);
   const accountProxies = useSelector((root: RootState) => root.accountState.accountProxies);
+  const { isUseBiometric } = useSelector((root: RootState) => root.mobileSettings);
 
   const onClosePasswordModal = useCallback(() => {
     setIsPasswordModalOpen(false);
@@ -71,16 +73,6 @@ const MigrateAccount = ({
       : backToAccountSettings();
   }, [backToAccountSettings, isMigrationNotice, navigation, onInteractAction]);
 
-  const onPressMigrateNow = useCallback(() => {
-    onInteractAction();
-
-    if (!hasAnyAccountForMigration(accountProxies)) {
-      setCurrentScreenView(ScreenView.SUMMARY);
-    } else {
-      onOpenPasswordModal();
-    }
-  }, [accountProxies, onInteractAction, onOpenPasswordModal]);
-
   const onSubmitPassword = useCallback(
     async (password: string) => {
       // migrate all account
@@ -112,6 +104,29 @@ const MigrateAccount = ({
     },
     [onClosePasswordModal],
   );
+
+  const onPressMigrateNow = useCallback(async () => {
+    onInteractAction();
+
+    if (!hasAnyAccountForMigration(accountProxies)) {
+      setCurrentScreenView(ScreenView.SUMMARY);
+      return;
+    }
+
+    if (isUseBiometric) {
+      try {
+        const password = await getKeychainPassword();
+        if (password) {
+          onSubmitPassword(password);
+          return;
+        }
+      } catch {
+        // biometric failed or cancelled -> fall through to password modal
+      }
+    }
+
+    onOpenPasswordModal();
+  }, [accountProxies, isUseBiometric, onInteractAction, onOpenPasswordModal, onSubmitPassword]);
 
   const onApproveSoloAccountMigration = useCallback(async (request: RequestMigrateSoloAccount) => {
     try {

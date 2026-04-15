@@ -102,8 +102,14 @@ export const BriefView = ({ isForcedMigration, onDismiss, onMigrateNow, isBusy }
                 onPress={onDismiss}>
                 {i18n.buttonTitles.cancel}
               </Button>
-              <Button block icon={<Icon phosphorIcon={CheckCircleIcon} weight={'fill'} />} onPress={onMigrateNow}>
-                {'Migrate now'}
+              <Button block icon={<Icon phosphorIcon={CheckCircleIcon} weight={'fill'} />}
+                externalTextStyle={{
+                  flexGrow: 0,
+                  flexShrink: 1,
+                  flexBasis: 'auto',
+                }}
+                onPress={onMigrateNow}>
+                {i18n.buttonTitles.migrateNow}
               </Button>
             </View>
           )}

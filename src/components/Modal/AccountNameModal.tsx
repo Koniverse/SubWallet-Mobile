@@ -3,6 +3,7 @@ import { AccountProxyType } from '@subwallet/extension-base/types';
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { Keyboard } from 'react-native';
+import { TextStyle } from 'react-native';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
 import { validateAccountName } from 'messaging/index';
@@ -133,8 +134,18 @@ export const AccountNameModal = ({
   }, [formState.data.accountName, onUpdateErrors, validatorFunc]);
 
   useEffect(() => {
-    setTimeout(() => focus('accountName')(), 300);
-  }, [focus]);
+    if (!modalVisible || isLoading) {
+      return;
+    }
+
+    const focusTimeout = setTimeout(() => {
+      focus('accountName')();
+    }, 300);
+
+    return () => {
+      clearTimeout(focusTimeout);
+    };
+  }, [focus, isLoading, modalVisible]);
 
   return (
     <SwModal
@@ -149,7 +160,7 @@ export const AccountNameModal = ({
       isAllowSwipeDown={false}
       modalBaseV2Ref={modalRef}
       footer={footerNode}>
-      <Typography.Text style={{ color: theme.colorTextTertiary, textAlign: 'center', paddingBottom: theme.paddingLG }}>
+<Typography.Text style={{ color: theme.colorTextTertiary, textAlign: 'center', paddingBottom: theme.paddingLG }}>
         {'Enter a name for your account.\n' + ' You can edit this later.'}
       </Typography.Text>
       <EditAccountInputText

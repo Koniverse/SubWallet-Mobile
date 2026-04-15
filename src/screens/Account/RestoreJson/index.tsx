@@ -293,7 +293,8 @@ export const RestoreJson = () => {
             </Typography.Text>
             <Typography.Text
               onPress={() => Linking.openURL(CHANGE_ACCOUNT_NAME_URL)}
-              style={{ color: theme.colorPrimary, textDecorationLine: 'underline' }}>
+              style={{ color: theme.colorPrimary, textDecorationLine: 'underline' }}
+            >
               {'this guide'}
             </Typography.Text>
           </Typography.Text>
@@ -370,19 +371,23 @@ export const RestoreJson = () => {
       return;
     }
 
-
-
     setFileValidating(true);
     setFileValidateState({});
     if (!fileInfo || !(fileInfo as Array<DocumentPickerResponse>).length) {
-
       return;
     }
 
     setIsShowPasswordField(false);
 
     fileInfo = fileInfo as Array<DocumentPickerResponse>;
-    const fileUri = Platform.OS === 'ios' ? decodeURIComponent(fileInfo[0].uri) : fileInfo[0].uri;
+
+    let fileUri: string;
+    try {
+      fileUri = decodeURIComponent(fileInfo[0].uri);
+    } catch {
+      fileUri = fileInfo[0].uri;
+    }
+
     onChangeValue('fileName')(`${fileInfo[0].name}`);
     RNFS.readFile(fileUri, 'ascii')
       .then(res => {
@@ -507,7 +512,8 @@ export const RestoreJson = () => {
       disabled={submitting}
       rightIcon={XIcon}
       onPressRightIcon={goHome}
-      disableRightButton={submitting}>
+      disableRightButton={submitting}
+    >
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>
           <Typography.Text style={styles.title}>
@@ -575,7 +581,8 @@ export const RestoreJson = () => {
             loading={fileValidating || passwordValidating || submitting}
             icon={getButtonIcon(FileArrowDownIcon)}
             onPress={onPressSubmit(onPressSubmitButton)}
-            disabled={disableSubmit || submitting || passwordValidating || !!passwordErrors.length}>
+            disabled={disableSubmit || submitting || passwordValidating || !!passwordErrors.length}
+          >
             {i18n.buttonTitles.importByJsonFile}
           </Button>
         </View>
@@ -594,12 +601,14 @@ export const RestoreJson = () => {
                 focus('password')();
               }, 300);
               setWarningModalVisible(false);
-            }}>
+            }}
+          >
             I understand
           </Button>
         }
         modalTitle={'Pay attention'}
-        titleTextAlign={'center'}>
+        titleTextAlign={'center'}
+      >
         <View style={{ paddingVertical: theme.padding, alignItems: 'center', gap: theme.padding }}>
           <PageIcon icon={WarningIcon} color={theme.colorWarning} />
 
@@ -608,7 +617,8 @@ export const RestoreJson = () => {
               color: theme.colorTextTertiary,
               ...FontMedium,
               textAlign: 'center',
-            }}>
+            }}
+          >
             {
               'Your imported Ledger account(s) will show up as watch-only account(s) because Ledger is not yet supported on SubWallet mobile app'
             }

@@ -44,7 +44,6 @@ import { WebRunnerContext } from 'providers/contexts';
 import { saveAllowOneSign, saveOSConfig } from 'messaging/settings';
 import DeviceInfo from 'react-native-device-info';
 import FloatingBubble from 'components/FloatingBubble';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StepStatus } from '@subwallet/extension-base/types';
 import { LockTimeout } from 'stores/types';
 import { TokensScreen } from './Tokens';
@@ -433,7 +432,7 @@ export const Home = ({ navigation }: Props) => {
   }
 
   return (
-    <GestureHandlerRootView style={styles.root}>
+    <View style={styles.root}>
       {lastProcessId && <FloatingBubble navigateToNotification={navigateToNotification(lastProcessId)} />}
       <Wrapper />
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
@@ -456,7 +455,7 @@ export const Home = ({ navigation }: Props) => {
       {!isEmptyAccounts && !isOpenedNoticeModal && !needMigrate && isFocused && !isShowRemindBackupModal.current && (
         <NoticeModal modalVisible={noticeModalVisible} setVisible={setNoticeModalVisible} /> // Consider deleting this modal
       )}
-    </GestureHandlerRootView>
+    </View>
   );
 };
 
