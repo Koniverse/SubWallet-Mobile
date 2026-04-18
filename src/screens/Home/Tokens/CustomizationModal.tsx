@@ -87,14 +87,19 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
   }, [modalVisible]);
   useEffect(() => {
     setPendingChainMap(prevPendingChainMap => {
-      Object.entries(prevPendingChainMap).forEach(([key, val]) => {
+      const _prevPendingChainMap = { ...prevPendingChainMap };
+      Object.entries(_prevPendingChainMap).forEach(([key, val]) => {
         if (chainInfoMap[key].active === val) {
           // @ts-ignore
-          delete prevPendingChainMap[key];
+          delete _prevPendingChainMap[key];
         }
       });
 
-      return { ...prevPendingChainMap };
+      if (Object.keys(_prevPendingChainMap).length === 0) {
+        setIsUpdate(true);
+      }
+
+      return _prevPendingChainMap;
     });
   }, [chainInfoMap]);
 

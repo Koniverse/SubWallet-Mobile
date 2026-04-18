@@ -126,6 +126,10 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
         }
       });
 
+      if (Object.keys(_prevPendingChainMap).length === 0) {
+        setToggleItem(false);
+      }
+
       return _prevPendingChainMap;
     });
   }, [chainInfoMap]);

@@ -82,10 +82,17 @@ export const ConfigureToken = ({
 
   const onSubmit = (formState: FormState) => {
     if (tokenInfo) {
+      const currentPriceId = formState.data.priceId.trim();
+      const originalPriceId = tokenInfo.priceId?.toString().trim() || '';
+
+      if (!currentPriceId || currentPriceId === originalPriceId) {
+        return;
+      }
+
       const newTokenInfo = {
         ...tokenInfo,
         name: formState.data.tokenName,
-        priceId: formState.data.priceId,
+        priceId: currentPriceId,
       };
       setBusy(true);
       if (!isNetConnected) {
@@ -110,6 +117,13 @@ export const ConfigureToken = ({
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
+
+  const isSubmitDisabled = useCallback(() => {
+    const currentPriceId = formState.data.priceId.trim();
+    const originalPriceId = tokenInfo?.priceId?.toString().trim() || '';
+
+    return !isNetConnected || isBusy || !currentPriceId || currentPriceId === originalPriceId;
+  }, [formState.data.priceId, isBusy, isNetConnected, tokenInfo?.priceId]);
 
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
@@ -257,7 +271,7 @@ export const ConfigureToken = ({
               {i18n.common.cancel}
             </Button>
             <Button
-              disabled={!isNetConnected}
+              disabled={isSubmitDisabled()}
               loading={isBusy}
               style={{ flex: 1, marginLeft: 6 }}
               onPress={() => onSubmit(formState)}>

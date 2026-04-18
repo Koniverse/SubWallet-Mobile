@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="splashscreen_bg">#1B1B1B</color>
   <color name="app_bg">#1B1B1B</color>
   <color name="primary_dark">#0062FF</color>
   <color name="primary_light">#FFFFFF</color>
   <color name="transparent">#00ffffff</color>
   <color name="light_color">#a2191f</color>
   <color name="ic_launcher_background">#242424</color>
-  <color name="bootsplash_background">#ffffff</color>
+  <color name="bootsplash_background">#1B1B1B</color>
 </resources>

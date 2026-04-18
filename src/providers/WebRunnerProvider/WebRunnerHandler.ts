@@ -3,7 +3,7 @@ import React from 'react';
 import WebView from 'react-native-webview';
 import StaticServer from '@dr.pogodin/react-native-static-server';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
-import { AppState, DeviceEventEmitter, NativeSyntheticEvent, Platform } from 'react-native';
+import { AppState, AppStateStatus, DeviceEventEmitter, NativeSyntheticEvent, Platform } from 'react-native';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import * as RNFS from '@dr.pogodin/react-native-fs';
 import { getDevMode, mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
@@ -67,6 +67,7 @@ export class WebRunnerHandler {
   pingTimeout?: NodeJS.Timeout;
   outOfResponseTimeTimeout?: NodeJS.Timeout;
   pingInterval?: NodeJS.Timeout;
+  resumePingTimeout?: NodeJS.Timeout;
   status: 'inactive' | 'activating' | 'active' = 'inactive';
   dispatch?: React.Dispatch<WebRunnerControlAction>;
   shouldReloadHandler: boolean = false;
@@ -90,7 +91,7 @@ export class WebRunnerHandler {
       }
     }
 
-    AppState.addEventListener('change', this.onAppStateChange)
+    AppState.addEventListener('change', this.onAppStateChange);
   }
 
   update(globalState: WebRunnerGlobalState, dispatch: React.Dispatch<WebRunnerControlAction>) {
@@ -197,7 +198,13 @@ export class WebRunnerHandler {
   stopPing() {
     this.pingInterval && clearInterval(this.pingInterval);
     this.pingTimeout && clearTimeout(this.pingTimeout);
+    this.clearResumePingTimeout();
     this.clearOutOfResponseTimeTimeout();
+  }
+
+  clearResumePingTimeout() {
+    this.resumePingTimeout && clearTimeout(this.resumePingTimeout);
+    this.resumePingTimeout = undefined;
   }
 
   clearOutOfResponseTimeTimeout() {
@@ -311,10 +318,12 @@ export class WebRunnerHandler {
     });
   }
 
-  private onAppStateChange = (state: string) => {
+  private onAppStateChange = (state: AppStateStatus) => {
     const now = Date.now();
 
     if (state === 'active') {
+      this.clearResumePingTimeout();
+
       if (this.lastActiveTime && now - this.lastActiveTime > LONG_TIMEOUT) {
         this.reload();
       } else if (this.runnerState.status === 'crypto_ready') {
@@ -322,7 +331,7 @@ export class WebRunnerHandler {
         this.pingCheck(1000, 9000, 0);
         this.startPing();
       } else {
-        setTimeout(() => {
+        this.resumePingTimeout = setTimeout(() => {
           this.ping();
           this.pingCheck(3000, 15000, 0);
           this.startPing();

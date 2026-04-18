@@ -13,6 +13,7 @@ export interface AddressScannerProps {
   setQrModalVisible: (value: boolean) => void;
   error?: string;
   isShowError?: boolean;
+  onLoadingStatusChange?: (loading: boolean) => void;
 }
 
 export const AddressScanner = ({
@@ -22,6 +23,7 @@ export const AddressScanner = ({
   setQrModalVisible,
   error,
   isShowError = false,
+  onLoadingStatusChange,
 }: AddressScannerProps) => {
   const addressScannerRef = useRef<SWModalRefProps>(null);
   const onSuccess = (data: string) => {
@@ -34,20 +36,35 @@ export const AddressScanner = ({
   };
 
   const onPressLibraryBtn = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo' });
-    RNQRGenerator.detect({
-      uri: result.assets && result.assets[0]?.uri,
-    })
-      .then(response => {
-        onChangeAddress(response.values[0]);
-        !isShowError && onPressCancel();
-      })
-      .catch(err => console.log(err));
+    try {
+      const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.7, maxWidth: 1024, maxHeight: 1024 });
+      if (result.didCancel || !result.assets?.[0]?.uri) {
+        return;
+      }
+
+      onLoadingStatusChange?.(true);
+      setQrModalVisible(false);
+
+      const response = await RNQRGenerator.detect({
+        uri: result.assets[0].uri,
+      });
+
+      if (!response.values?.length) {
+        return;
+      }
+
+      onChangeAddress(response.values[0]);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      onLoadingStatusChange?.(false);
+    }
   };
 
   return (
     <SwFullSizeModal
       isUseModalV2
+      hideWhenCloseApp={false}
       modalVisible={qrModalVisible}
       setVisible={setQrModalVisible}
       modalBaseV2Ref={addressScannerRef}>

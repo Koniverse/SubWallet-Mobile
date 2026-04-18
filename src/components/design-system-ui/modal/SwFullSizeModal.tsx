@@ -22,6 +22,7 @@ interface Props {
   isUseModalV2?: boolean;
   setVisible: (arg: boolean) => void;
   level?: number;
+  hideWhenCloseApp?: boolean;
 }
 
 const subWalletModalContainer: StyleProp<any> = {
@@ -44,6 +45,7 @@ const SwFullSizeModal = ({
   setVisible,
   modalBaseV2Ref,
   level,
+  hideWhenCloseApp = true,
 }: Props) => {
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -59,7 +61,7 @@ const SwFullSizeModal = ({
 
   useEffect(() => {
     const unsubscribe = AppState.addEventListener('change', state => {
-      if (state === 'background') {
+      if (state === 'background' && hideWhenCloseApp) {
         setVisible(false);
       }
     });
@@ -67,7 +69,7 @@ const SwFullSizeModal = ({
     return () => {
       unsubscribe.remove();
     };
-  }, [setVisible]);
+  }, [hideWhenCloseApp, setVisible]);
 
   return (
     <>

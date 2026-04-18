@@ -45,6 +45,28 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
   const navigationRoutes = navigation.getState().routes;
   const nearestPathName = navigationRoutes[navigationRoutes.length - 1].name;
   const checkCamera = useCheckCamera();
+
+  const onPressMenuButton = useCallback(() => {
+    Keyboard.dismiss();
+
+    delayActionAfterDismissKeyboard(() => {
+      const drawerNavigation = navigation.getParent();
+
+      if (drawerNavigation) {
+        // Force re-sync drawer state after resume by closing first, then opening.
+        drawerNavigation.dispatch(DrawerActions.closeDrawer());
+
+        setTimeout(() => {
+          drawerNavigation.dispatch(DrawerActions.openDrawer());
+        }, 60);
+
+        return;
+      }
+
+      navigation.dispatch(DrawerActions.openDrawer());
+    });
+  }, [navigation]);
+
   const onPressQrButton = useCallback(async () => {
     const openScannerScreen = () => {
       setIsScanning(true);
@@ -106,10 +128,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
           type={'ghost'}
           size={'xs'}
           icon={<SVGImages.MenuBarLogo />}
-          onPress={() => {
-            Keyboard.dismiss();
-            delayActionAfterDismissKeyboard(() => navigation.dispatch(DrawerActions.openDrawer()));
-          }}
+          onPress={onPressMenuButton}
         />
       </View>
 

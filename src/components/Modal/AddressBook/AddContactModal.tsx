@@ -1,5 +1,5 @@
 import { Button, Icon, SwModal } from 'components/design-system-ui';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -61,13 +61,18 @@ export const AddContactModal = ({ modalVisible, setModalVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const contacts = useSelector((state: RootState) => state.accountState.contacts);
   const [loading, setLoading] = useState(false);
+  const [isAddressScanning, setIsAddressScanning] = useState(false);
   const { show, hideAll } = useToast();
   const stylesheet = createStylesheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
 
   const onChangeModalVisible = useCallback(() => {
+    if (isAddressScanning) {
+      return;
+    }
+
     modalBaseV2Ref?.current?.close();
-  }, []);
+  }, [isAddressScanning]);
 
   const {
     control,
@@ -88,6 +93,7 @@ export const AddContactModal = ({ modalVisible, setModalVisible }: Props) => {
   };
 
   const existNames = useMemo(() => contacts.map(contact => (contact.name || '').trimStart().trimEnd()), [contacts]);
+  const isAndroidPlatform = useMemo(() => Platform.OS === 'android', []);
 
   const nameValidator: UseControllerProps<FormValues>['rules'] = useMemo(
     () => ({
@@ -130,7 +136,7 @@ export const AddContactModal = ({ modalVisible, setModalVisible }: Props) => {
 
   // don't use memo with this, or else it will cause bug
   const isButtonDisabled = (() => {
-    if (loading || !addressValue || !nameValue) {
+    if (loading || isAddressScanning || !addressValue || !nameValue) {
       return true;
     }
 
@@ -151,6 +157,7 @@ export const AddContactModal = ({ modalVisible, setModalVisible }: Props) => {
 
   useEffect(() => {
     if (!modalVisible) {
+      setIsAddressScanning(false);
       reset();
     }
   }, [modalVisible, reset]);
@@ -159,6 +166,8 @@ export const AddContactModal = ({ modalVisible, setModalVisible }: Props) => {
     <SwModal
       isUseModalV2
       modalBaseV2Ref={modalBaseV2Ref}
+      disabledOnPressBackDrop={isAndroidPlatform ? isAddressScanning : undefined}
+      hideWhenCloseApp={isAndroidPlatform ? false : undefined}
       setVisible={setModalVisible}
       modalTitle={i18n.header.addContact}
       modalVisible={modalVisible}
@@ -195,12 +204,13 @@ export const AddContactModal = ({ modalVisible, setModalVisible }: Props) => {
               isError={errors && !!errors[FormFieldName.ADDRESS]}
               ref={ref}
               saveAddress={false}
+              scannerProps={isAndroidPlatform ? { onLoadingStatusChange: setIsAddressScanning } : undefined}
             />
           )}
           name={FormFieldName.ADDRESS}
         />
 
-        <Button icon={ButtonIcon} disabled={isButtonDisabled} onPress={handleSubmit(onSubmit)}>
+        <Button icon={ButtonIcon} disabled={isButtonDisabled} onPress={handleSubmit(onSubmit)} loading={isAddressScanning}>
           {i18n.buttonTitles.addContact}
         </Button>
       </View>
