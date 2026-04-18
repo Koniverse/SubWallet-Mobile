@@ -554,6 +554,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
         allowUniversalAccessFromFileURLs
         allowFileAccessFromFileURLs
         mediaPlaybackRequiresUserAction={false}
+        mediaCapturePermissionGrantType={'prompt'}
         domStorageEnabled
         javaScriptEnabled
         injectedJavaScript={`
