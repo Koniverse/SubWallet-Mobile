@@ -455,7 +455,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
           switchReadNotificationStatus(item)
             .catch(console.error)
             .finally(() => {
-              setTrigger(!isTrigger);
+              setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, isRead: true } : n));
             });
         }
       };
@@ -661,6 +661,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
           isTrigger={isTrigger}
           notificationItem={viewDetailItem}
           onPressAction={onPressItem(viewDetailItem)}
+          setNotifications={setNotifications}
           setTrigger={setTrigger}
           modalVisible={detailModalVisible}
           setModalVisible={setDetailModalVisible}

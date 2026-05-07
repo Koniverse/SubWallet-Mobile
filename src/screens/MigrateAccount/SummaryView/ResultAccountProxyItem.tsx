@@ -16,11 +16,18 @@ export type ResultAccountProxyItemType = {
 interface Props {
   accountName: string;
   accountProxyId: string;
+  excludeChainTypes?: AccountChainType[];
 }
 
-const ResultAccountProxyItem: React.FC<Props> = ({ accountName, accountProxyId }: Props) => {
+const ResultAccountProxyItem: React.FC<Props> = ({ accountName, accountProxyId, excludeChainTypes }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
+
+  const chainTypes = useMemo(() => {
+    return (SUPPORTED_ACCOUNT_CHAIN_TYPES as AccountChainType[]).filter(
+      chainType => !excludeChainTypes?.includes(chainType),
+    );
+  }, [excludeChainTypes]);
 
   return (
     <View style={styles.container}>
@@ -30,7 +37,7 @@ const ResultAccountProxyItem: React.FC<Props> = ({ accountName, accountProxyId }
         {accountName}
       </Typography.Text>
 
-      <AccountChainTypeLogos chainTypes={SUPPORTED_ACCOUNT_CHAIN_TYPES as AccountChainType[]} />
+      <AccountChainTypeLogos chainTypes={chainTypes} />
     </View>
   );
 };

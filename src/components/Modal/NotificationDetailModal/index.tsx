@@ -1,4 +1,4 @@
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { _NotificationInfo } from '@subwallet/extension-base/services/inapp-notification-service/interfaces';
 import React, { useCallback, useMemo, useState } from 'react';
 import { NotificationInfoItem } from 'screens/Settings/Notifications/Notification';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
@@ -8,12 +8,14 @@ import i18n from 'utils/i18n/i18n';
 import { SwModal } from 'components/design-system-ui';
 import { ActionSelectItem } from 'components/common/SelectModal/parts/ActionSelectItem';
 import { View } from 'react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   onCancel?: () => void;
   notificationItem: NotificationInfoItem;
   isTrigger: boolean;
   setTrigger: (value: boolean) => void;
+  setNotifications: (updater: (prev: _NotificationInfo[]) => _NotificationInfo[]) => void;
   onPressAction: () => void;
   modalVisible: boolean;
   setModalVisible: (value: boolean) => void;
@@ -37,8 +39,7 @@ export interface BriefActionInfo {
 export const NotificationDetailModal = ({
   onCancel,
   notificationItem,
-  isTrigger,
-  setTrigger,
+  setNotifications,
   onPressAction,
   modalVisible,
   setModalVisible,
@@ -97,9 +98,9 @@ export const NotificationDetailModal = ({
       .catch(console.error)
       .finally(() => {
         _onCancel();
-        setTrigger(!isTrigger);
+        setNotifications(prev => prev.map(n => n.id === notificationItem.id ? { ...n, isRead: !n.isRead } : n));
       });
-  }, [_onCancel, isTrigger, notificationItem, readNotification, setTrigger]);
+  }, [_onCancel, notificationItem.id, notificationItem.isRead, readNotification, setNotifications]);
 
   const _onPressAction = useCallback(() => {
     onPressAction();

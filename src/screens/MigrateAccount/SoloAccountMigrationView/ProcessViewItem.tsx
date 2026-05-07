@@ -142,7 +142,7 @@ export const ProcessViewItem = ({
             {'Enter a name for this unified account to complete the migration'}
           </Typography.Text>
 
-          <View>
+          <View style={styles.accountList}>
             <Typography.Text style={styles.labelText}>{'Migrate from'}</Typography.Text>
             {currentSoloAccountToBeMigratedGroup.map(account => (
               <SoloAccountToBeMigratedItem key={account.address} {...account} />
@@ -221,6 +221,9 @@ function createStyle(theme: ThemeTypes, insets: EdgeInsets) {
       color: theme.colorTextTertiary,
       paddingBottom: theme.paddingXS,
       ...FontSemiBold,
+    },
+    accountList: {
+      gap: theme.sizeXS,
     },
     footer: { flexDirection: 'row', gap: theme.size, paddingBottom: theme.padding },
   });

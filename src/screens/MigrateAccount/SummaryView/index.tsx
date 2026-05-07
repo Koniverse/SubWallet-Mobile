@@ -8,6 +8,7 @@ import { CheckCircleIcon } from 'phosphor-react-native';
 import ResultAccountProxyItem, {
   ResultAccountProxyItemType,
 } from 'screens/MigrateAccount/SummaryView/ResultAccountProxyItem';
+import { AccountChainType } from '@subwallet/extension-base/types';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { VoidFunction } from 'types/index';
@@ -120,7 +121,11 @@ const SummaryView: React.FC<Props> = ({ resultProxyIds, onPressFinish }: Props) 
 
               <View style={{ paddingTop: theme.paddingXL, gap: theme.paddingXS }}>
                 {resultAccountProxies.slice(0, 2).map(ap => (
-                  <ResultAccountProxyItem key={ap.accountProxyId} {...ap} />
+                  <ResultAccountProxyItem
+                    key={ap.accountProxyId}
+                    {...ap}
+                    excludeChainTypes={[AccountChainType.CARDANO]}
+                  />
                 ))}
               </View>
 

@@ -52,7 +52,7 @@ export const DEFAULT_ACCOUNT_TYPES: KeypairType[] = [SUBSTRATE_ACCOUNT_TYPE, EVM
 const window = Dimensions.get('window');
 export const deviceWidth = window.width;
 export const deviceHeight = window.height;
-export const BOTTOM_BAR_HEIGHT = 60;
+export const BOTTOM_BAR_HEIGHT = 62;
 export const statusBarHeight = getStatusBarHeight();
 export enum BitLengthOption {
   CHAIN_SPEC = 128,

@@ -4,6 +4,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ResultAccountProxyItem, {
   ResultAccountProxyItemType,
 } from 'screens/MigrateAccount/SummaryView/ResultAccountProxyItem';
+import { AccountChainType } from '@subwallet/extension-base/types';
 import { Button, SwModal } from 'components/design-system-ui';
 
 interface Props {
@@ -32,6 +33,7 @@ const ResultAccountProxyListModal: React.FC<Props> = ({ accountProxies, setModal
             key={ap.accountProxyId}
             accountProxyId={ap.accountProxyId}
             accountName={ap.accountName}
+            excludeChainTypes={[AccountChainType.CARDANO]}
           />
         ))}
       </View>

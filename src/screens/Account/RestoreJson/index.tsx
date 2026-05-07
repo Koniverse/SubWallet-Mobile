@@ -1,7 +1,7 @@
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Linking, Platform, ScrollView, View } from 'react-native';
+import { Linking, ScrollView, View } from 'react-native';
 import { InputFile } from 'components/common/Field/InputFile';
 import type { KeyringPair$Json } from '@subwallet/keyring/types';
 import type { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
@@ -155,8 +155,13 @@ export const RestoreJson = () => {
   const renderSectionHeader: (item: string, itemLength?: number) => React.ReactElement | null = useCallback(
     (item: string) => {
       if (item.split('|')[0] === RestoreAccGroupLabel.existed_accounts) {
+        const sectionHeaderStyle = [
+          styles.sectionHeaderContainer,
+          showNoValidAccountAlert && { paddingHorizontal: theme.paddingSM },
+        ];
+
         return (
-          <View key={item} style={styles.sectionHeaderContainer}>
+          <View key={item} style={sectionHeaderStyle}>
             <Typography.Text size={'sm'} style={styles.sectionHeaderTitle}>
               {`${item.split('|')[0]} `}
             </Typography.Text>
@@ -166,7 +171,7 @@ export const RestoreJson = () => {
         return <></>;
       }
     },
-    [styles.sectionHeaderContainer, styles.sectionHeaderTitle],
+    [showNoValidAccountAlert, styles.sectionHeaderContainer, styles.sectionHeaderTitle, theme.paddingSM],
   );
 
   const grouping = useMemo(() => {
@@ -388,7 +393,21 @@ export const RestoreJson = () => {
       fileUri = fileInfo[0].uri;
     }
 
-    onChangeValue('fileName')(`${fileInfo[0].name}`);
+    const fileName = fileInfo[0].name || '';
+    const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+
+    // Validate file type
+    if (fileExtension && fileExtension !== 'json') {
+      setFileValidateState({
+        status: 'error',
+        message: 'Invalid JSON file',
+      });
+      setFileValidating(false);
+      setTimeout(() => focus('password')(), 300);
+      return;
+    }
+
+    onChangeValue('fileName')(`${fileName}`);
     RNFS.readFile(fileUri, 'ascii')
       .then(res => {
         const file = JSON.parse(res) as KeyringPair$Json | KeyringPairs$Json;

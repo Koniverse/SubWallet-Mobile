@@ -20,6 +20,9 @@ import { toShort } from 'utils/index';
 import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
 import { AccountActions } from '@subwallet/extension-base/types';
 import { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { getKeychainPassword } from 'utils/account';
 
 const ViewStep = {
   SELECT_TYPES: 1,
@@ -49,6 +52,7 @@ export const AccountExport = ({
   const [publicKey, setPublicKey] = useState<string>('');
   const [seedPhrase, setSeedPhrase] = useState<string>('');
   const [jsonData, setJsonData] = useState<null | KeyringPairs$Json>(null);
+  const { isUseBiometric } = useSelector((root: RootState) => root.mobileSettings);
   const titleMap: Record<ExportType, string> = useMemo(
     () => ({
       [ExportType.JSON_FILE]: i18n.header.successful,
@@ -187,6 +191,23 @@ export const AccountExport = ({
     navigation.goBack();
   };
 
+  const onPressConfirmExport = useCallback(async () => {
+    if (isUseBiometric) {
+      try {
+        const password = await getKeychainPassword();
+
+        if (password) {
+          onPressSubmit(password);
+          return;
+        }
+      } catch {
+        // biometric failed or cancelled -> fall through to password modal
+      }
+    }
+
+    setModalVisible(true);
+  }, [isUseBiometric, onPressSubmit]);
+
   const title = useMemo(() => {
     if (currentViewStep === ViewStep.SELECT_TYPES) {
       return i18n.header.exportAccount;
@@ -311,7 +332,7 @@ export const AccountExport = ({
 
         <View style={styles.footerArea}>
           {currentViewStep === ViewStep.SELECT_TYPES ? (
-            <Button disabled={!(selectedTypes && selectedTypes.length)} block onPress={() => setModalVisible(true)}>
+            <Button disabled={!(selectedTypes && selectedTypes.length)} block onPress={onPressConfirmExport}>
               {i18n.common.confirm}
             </Button>
           ) : (

@@ -37,27 +37,13 @@ const searchFunction = (items: ChainInfoWithStateAnhStatus[], searchString: stri
 
 const processChainMap = (
   chainInfoMap: Record<string, ChainInfoWithStateAnhStatus>,
-  pendingKeys = Object.keys(cachePendingChainMap),
   updateKeys = false,
 ): ChainInfoWithStateAnhStatus[] => {
-  if (updateKeys) {
-    chainKeys = Object.keys(chainInfoMap)
-      .filter(key => Object.keys(chainInfoMap[key].providers).length > 0)
-      .sort((a, b) => {
-        const aActive = pendingKeys.includes(a) ? cachePendingChainMap[a] : chainInfoMap[a].active;
-        const bActive = pendingKeys.includes(b) ? cachePendingChainMap[b] : chainInfoMap[b].active;
-
-        if (aActive === bActive) {
-          return 0;
-        } else if (aActive) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
+  if (!chainKeys || updateKeys) {
+    chainKeys = Object.keys(chainInfoMap).filter(key => Object.keys(chainInfoMap[key].providers).length > 0);
   }
 
-  return chainKeys ? chainKeys.map(key => chainInfoMap[key]) : [];
+  return chainKeys.map(key => chainInfoMap[key]);
 };
 
 export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
@@ -104,7 +90,7 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
   }, [chainInfoMap]);
 
   useEffect(() => {
-    setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap), isUpdate));
+    setCurrentChainList(processChainMap(chainInfoMap, isUpdate));
   }, [chainInfoMap, isUpdate, pendingChainMap]);
 
   useEffect(() => {

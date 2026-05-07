@@ -26,6 +26,7 @@ import { AccountProxy, AccountProxyType, AccountSignMode } from '@subwallet/exte
 import { exportAccountBatch } from 'messaging/accounts';
 import { SelectAccountAllItem } from 'components/common/SelectAccountAllItem';
 import { scheduleAfterIdle } from 'utils/idle';
+import { getKeychainPassword } from 'utils/account';
 
 const renderListEmptyComponent = () => {
   return (
@@ -84,6 +85,7 @@ export const ExportAllAccount = () => {
   const [jsonFileName, setJsonFileName] = useState('');
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
   const [isReady, setIsReady] = useState<boolean>(false);
+  const { isUseBiometric } = useSelector((root: RootState) => root.mobileSettings);
   const items = useMemo(() => {
     if (accountProxies.length > 2) {
       const foundAccountAll = accountProxies.find(a => isAccountAll(a.id));
@@ -224,6 +226,27 @@ export const ExportAllAccount = () => {
     Share.share({ title: 'Account Json', message: JSON.stringify(jsonData) });
   }, [jsonData]);
 
+  const onPressConfirmExport = useCallback(async () => {
+    if (selectedAccounts.length === 0) {
+      return;
+    }
+
+    if (isUseBiometric) {
+      try {
+        const password = await getKeychainPassword();
+
+        if (password) {
+          onPressSubmit(password);
+          return;
+        }
+      } catch {
+        // biometric failed or cancelled -> fall through to password modal
+      }
+    }
+
+    setPasswordModalVisible(true);
+  }, [isUseBiometric, onPressSubmit, selectedAccounts.length]);
+
   const onCloseSuccessModal = useCallback(() => {
     goHome();
   }, [goHome]);
@@ -270,7 +293,7 @@ export const ExportAllAccount = () => {
     return (
       <View style={{ padding: theme.padding }}>
         <Button
-          onPress={() => setPasswordModalVisible(true)}
+          onPress={onPressConfirmExport}
           disabled={selectedAccounts.length === 0}
           icon={
             <Icon
@@ -283,7 +306,7 @@ export const ExportAllAccount = () => {
         </Button>
       </View>
     );
-  }, [selectedAccounts.length, theme.colorTextLight4, theme.colorWhite, theme.padding]);
+  }, [onPressConfirmExport, selectedAccounts.length, theme.colorTextLight4, theme.colorWhite, theme.padding]);
 
   return (
     <>
