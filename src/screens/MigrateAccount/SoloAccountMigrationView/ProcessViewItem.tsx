@@ -34,7 +34,8 @@ export const ProcessViewItem = ({
   const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyle(theme, insets), [insets, theme]);
   const timeOutRef = useRef<NodeJS.Timeout>();
-  const [loading, setLoading] = useState(false);
+  const [validating, setValidating] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const validatorFunc = useCallback(async (value: string) => {
     let result: string[] = [];
@@ -69,12 +70,13 @@ export const ProcessViewItem = ({
   const _onApprove = useCallback(
     (formState: FormState) => {
       const doApprove = () => {
-        setLoading(true);
+        Keyboard.dismiss();
+        setSubmitting(true);
 
         onApprove(currentSoloAccountToBeMigratedGroup, formState.data.accountName.trim())
           .catch(console.error)
           .finally(() => {
-            setLoading(false);
+            setSubmitting(false);
           });
       };
 
@@ -97,21 +99,21 @@ export const ProcessViewItem = ({
     }
     if (amount) {
       if (formState.data.accountName) {
-        setLoading(true);
+        setValidating(true);
         timeOutRef.current = setTimeout(() => {
           validatorFunc(formState.data.accountName)
-            .then(res => {
-              onUpdateErrors('accountName')(res);
+            .then(res => { 
+              onUpdateErrors('accountName')(res); 
             })
             .catch((error: Error) => console.log('error validate name', error.message))
             .finally(() => {
               if (amount) {
-                setLoading(false);
+                setValidating(false);
               }
             });
         }, 500);
       } else {
-        setLoading(false);
+        setValidating(false);
       }
     }
 
@@ -165,6 +167,7 @@ export const ProcessViewItem = ({
               }
               accountType={AccountProxyType.UNIFIED}
               placeholder={'Enter the account name'}
+              isDisabled={submitting}
               placeholderTextColor={theme.colorTextTertiary}
               errorMessages={formState.errors.accountName}
             />
@@ -175,13 +178,13 @@ export const ProcessViewItem = ({
       <View style={styles.footer}>
         <Button
           block
-          disabled={loading}
+          disabled={submitting}
           onPress={onSkip}
           type={'secondary'}
           icon={
             <Icon
               phosphorIcon={XCircleIcon}
-              iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
+              iconColor={submitting ? theme.colorTextLight5 : theme.colorWhite}
               weight={'fill'}
             />
           }>
@@ -189,12 +192,12 @@ export const ProcessViewItem = ({
         </Button>
         <Button
           block
-          disabled={loading || !!formState.errors.accountName.length}
+          disabled={submitting || validating || !!formState.errors.accountName.length}
           onPress={() => _onApprove(formState)}
           icon={
             <Icon
               phosphorIcon={CheckCircleIcon}
-              iconColor={loading || !!formState.errors.accountName.length ? theme.colorTextLight5 : theme.colorWhite}
+              iconColor={submitting || validating || !!formState.errors.accountName.length ? theme.colorTextLight5 : theme.colorWhite}
               weight={'fill'}
             />
           }>

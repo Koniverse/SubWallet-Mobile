@@ -394,10 +394,11 @@ export const RestoreJson = () => {
     }
 
     const fileName = fileInfo[0].name || '';
-    const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+    const fileExtension = fileName.includes('.') ? fileName.split('.').pop()?.toLowerCase() || '' : '';
 
-    // Validate file type
-    if (fileExtension && fileExtension !== 'json') {
+    // Whitelist supported file types
+    const supportedExtensions = ['json', 'txt', 'bak', 'keystore', ''];
+    if (fileExtension && !supportedExtensions.includes(fileExtension)) {
       setFileValidateState({
         status: 'error',
         message: 'Invalid JSON file',

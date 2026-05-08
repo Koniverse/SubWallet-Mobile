@@ -50,6 +50,7 @@ const versionAppStyle: StyleProp<any> = {
   ...FontMedium,
   ...sharedStyles.mainText,
   paddingBottom: 16,
+  paddingTop: 16,
 };
 
 type settingItemType = {
@@ -200,6 +201,9 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
     [navigation, onPressContactSupport, theme],
   );
 
+  const appVersion = useMemo(() => getVersion(), []);
+  const buildNumber = useMemo(() => getBuildNumber(), []);
+
   const onPressVersionNumber = () => {
     if (hiddenCount > 9) {
       navigation.navigate('WebViewDebugger');
@@ -215,10 +219,10 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
       rightIcon={XIcon}
       onPressLeftBtn={onCloseSettings}
       onPressRightIcon={onCloseSettings}>
-      <>
+      <View style={{ flex: 1 }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          style={{ paddingHorizontal: 16, flex: 1, marginBottom: 16 }}
+          style={{ paddingHorizontal: 16, flex: 1 }}
           contentContainerStyle={{ paddingTop: 16 }}>
           <View style={{ gap: theme.paddingXS }}>
             {settingList[0].map(setting => (
@@ -302,8 +306,9 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         </ScrollView>
         <Text
           onPress={onPressVersionNumber}
-          style={versionAppStyle}>{`SubWallet v${getVersion()} (${getBuildNumber()}) b-${bundleVersion}`}</Text>
-      </>
+          style={versionAppStyle}>{`SubWallet v${appVersion} (${buildNumber}) b-${bundleVersion}`}
+        </Text>
+      </View>
     </SubScreenContainer>
   );
 };
