@@ -136,39 +136,39 @@ export class WebRunnerHandler {
   }
 
   async serverReady() {
-    if (started) {
+    if (started && server) {
       return true;
     }
 
-    const basePath = Platform.OS === 'ios' ? RNFS.MainBundlePath : RNFS.DocumentDirectoryPath;
-    const BUNDLE_PATH = isDevMode ? '/DevModeWeb.bundle' : '/Web.bundle';
-    const dir = `${basePath}/${BUNDLE_PATH}/site`;
+    const BUNDLE_PATH = isDevMode ? 'DevModeWeb.bundle' : 'Web.bundle';
+    const fileDir = Platform.OS === 'android'
+      ? `${RNFS.DocumentDirectoryPath}/${BUNDLE_PATH}/site`
+      : `${RNFS.MainBundlePath}/${BUNDLE_PATH}/site`;
 
     for (let i = 0; i < 20; i++) {
-      if (await RNFS.exists(`${dir}/index.html`)) break;
+      if (await RNFS.exists(`${fileDir}/index.html`)) break;
       await new Promise(r => setTimeout(r, 300));
     }
 
-    if (started && server) {
-      return;
+    try {
+      if (server) {
+        await server.stop();
+      }
+    } catch (_) { }
+
+    server = new StaticServer({ port: WEB_SERVER_PORT, fileDir });
+
+    try {
+      await server.start();
+      started = true;
+    } catch (e: any) {
+      if (e?.message?.includes('Another Server instance is active')) {
+        started = true;
+        return true;
+      }
+      throw e;
     }
-    let fileDir: string;
 
-    if (Platform.OS === 'android') {
-      fileDir = `${RNFS.DocumentDirectoryPath}/${BUNDLE_PATH}/site`;
-    } else {
-      const target = isDevMode ? '/DevModeWeb.bundle' : '/Web.bundle';
-      fileDir = RNFS.MainBundlePath + target + '/site';
-    }
-
-    server = new StaticServer({
-      port: WEB_SERVER_PORT,
-      fileDir,
-    });
-
-    await server.start();
-
-    started = true;
     return true;
   }
 
@@ -328,12 +328,10 @@ export class WebRunnerHandler {
         this.reload();
       } else if (this.runnerState.status === 'crypto_ready') {
         this.ping();
-        this.pingCheck(1000, 9000, 0);
         this.startPing();
       } else {
         this.resumePingTimeout = setTimeout(() => {
           this.ping();
-          this.pingCheck(3000, 15000, 0);
           this.startPing();
         }, 15000);
       }

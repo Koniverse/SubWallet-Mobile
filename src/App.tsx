@@ -214,7 +214,7 @@ export const App = () => {
       try {
         checkIsShowBuyToken();
         mmkvStore.remove('poolInfoMap');
-        await Promise.all([getDAppsData(), getDAppsData(), getConfig(), getBrowserConfig(), getAppInstructionData(), getShowReviewPopupScreen()]);
+        await Promise.all([getDAppsData(), getConfig(), getBrowserConfig(), getAppInstructionData(), getShowReviewPopupScreen()]);
       } catch (e) {
         console.warn('Init error', e);
       } finally {
