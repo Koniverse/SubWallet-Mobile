@@ -320,7 +320,7 @@ export class WebRunnerHandler {
 
   private onAppStateChange = (state: AppStateStatus) => {
     const now = Date.now();
-
+    mmkvStore.set('runnerState', `${this.runnerState.status}`);
     if (state === 'active') {
       this.clearResumePingTimeout();
 
