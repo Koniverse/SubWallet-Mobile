@@ -1,3 +1,6 @@
+## 1.2.37 (518)
+
+
 ## 1.2.37 (517)
 - Fix loading forever bug (#1780)
 - fix bug build for android (#1780)
