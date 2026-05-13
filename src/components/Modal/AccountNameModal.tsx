@@ -3,7 +3,6 @@ import { AccountProxyType } from '@subwallet/extension-base/types';
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { Keyboard } from 'react-native';
-import { TextStyle } from 'react-native';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
 import { validateAccountName } from 'messaging/index';

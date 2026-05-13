@@ -48,7 +48,6 @@ import {
   getOptimalYieldPath,
   submitJoinYieldPool,
   submitProcess,
-  unlockDotCheckCanMint,
   validateYieldProcess,
 } from 'messaging/index';
 import { InfoIcon, PencilSimpleLineIcon, PlusCircleIcon, WarningIcon } from 'phosphor-react-native';
@@ -281,9 +280,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [tooltipVisible, setTooltipVisible] = useState<boolean>(false);
   const [submitString, setSubmitString] = useState<string | undefined>();
   const [connectionError, setConnectionError] = useState<string>();
-  const [, setCanMint] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [checkMintLoading, setCheckMintLoading] = useState(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isShowAlert, setIsShowAlert] = useState<boolean>(false);
@@ -724,7 +721,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const isDisabledButton = useMemo(
     () =>
-      checkMintLoading ||
       stepLoading ||
       !!connectionError ||
       !currentAmount ||
@@ -735,7 +731,6 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       !isSlippageAcceptable ||
       (mustChooseTarget && !poolTarget),
     [
-      checkMintLoading,
       stepLoading,
       connectionError,
       currentAmount,

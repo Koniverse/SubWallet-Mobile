@@ -1,3 +1,9 @@
+## 1.2.37 (517)
+- Fix loading forever bug (#1780)
+- fix bug build for android (#1780)
+- update rn 8.82 (#1780)
+- update rn 8.82 (#1780)
+
 ## 1.2.36 (516)
 - Add user-configurable Subscan API Key in settings (#2033)
 - Add user-configurable Subscan API Key in settings (#2033)
