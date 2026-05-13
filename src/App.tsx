@@ -192,7 +192,6 @@ export const App = () => {
   const hasHiddenSplash = useRef(false);
   const webRunnerReloadAttemptRef = useRef(0);
   const [initDone, setInitDone] = useState(false);
-  console.log('isUpdateComplete', isUpdateComplete);
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -261,7 +260,6 @@ export const App = () => {
     if (initDone && isAppReady && !hasHiddenSplash.current) {
       hasHiddenSplash.current = true;
 
-      console.log('run to this');
       BootSplash.hide({ fade: true }).catch(() => {});
     }
   }, [initDone, isAppReady]);
