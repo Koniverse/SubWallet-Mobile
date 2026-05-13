@@ -96,8 +96,29 @@ const imageBackgroundStyle: StyleProp<any> = {
   backgroundColor: 'black',
 };
 
+const APP_BACKGROUND_RELOAD_TIMEOUT = 20 * 60 * 1000;
+
 let lockWhenActive = false;
+let lastAppInactiveAt: number | undefined;
+let isRestartingAfterLongBackground = false;
+
 AppState.addEventListener('change', (state: string) => {
+  const now = Date.now();
+
+  if (state === 'background' || state === 'inactive') {
+    lastAppInactiveAt = now;
+  } else if (state === 'active' && lastAppInactiveAt !== undefined) {
+    const inactiveDuration = now - lastAppInactiveAt;
+
+    if (inactiveDuration > APP_BACKGROUND_RELOAD_TIMEOUT && !isRestartingAfterLongBackground) {
+      isRestartingAfterLongBackground = true;
+      RNRestart.Restart();
+      return;
+    }
+
+    lastAppInactiveAt = undefined;
+  }
+
   const { isUseBiometric, timeAutoLock, lock, isMasterPasswordLocked } = autoLockParams;
   if (timeAutoLock === undefined) {
     return;
@@ -258,9 +279,9 @@ export const App = () => {
         console.warn('[Startup watchdog] WebRunner not ready, reloading', {
           attempt: webRunnerReloadAttemptRef.current,
         });
-        reloadWebRunner && reloadWebRunner();
+        RNRestart.Restart();
       }
-    }, 15000);
+    }, 15000);  
 
     return () => clearTimeout(timeout);
   }, [initDone, isWebRunnerReady, reloadWebRunner]);
@@ -462,7 +483,6 @@ export const App = () => {
         )}
       </>
     </SafeAreaProvider>
-
   );
 }
 
