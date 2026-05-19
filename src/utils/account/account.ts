@@ -10,7 +10,7 @@ import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { _isChainInfoCompatibleWithAccountInfo } from '@subwallet/extension-base/services/chain-service/utils';
 import { DEFAULT_ACCOUNT_TYPES, EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE, TON_ACCOUNT_TYPE } from 'constants/index';
-import SInfo, { RNSensitiveInfoOptions } from 'react-native-sensitive-info';
+import SInfo, { SensitiveInfoOptions } from 'react-native-sensitive-info';
 import { Alert } from 'react-native';
 import i18n from 'utils/i18n/i18n.ts';
 import ReactNativeBiometrics from 'react-native-biometrics';
@@ -164,14 +164,18 @@ export function getReformatedAddressRelatedToChain(
   return undefined;
 }
 
-// Keychain configuration
-const keychainConfig: RNSensitiveInfoOptions = {
-  keychainService: 'swKeychain',
-  sharedPreferencesName: 'swSharedPrefs',
-  kSecAccessControl: 'kSecAccessControlBiometryCurrentSet',
-  kSecAttrAccessible: 'kSecAttrAccessibleWhenUnlockedThisDeviceOnly',
-  kSecUseOperationPrompt: 'Unlock app using biometric',
-  showModal: true,
+// Keychain configuration — react-native-sensitive-info v6 (Nitro) API.
+// `service` MUST stay 'swKeychain' so items written by older app versions
+// (which used the legacy `keychainService` option) remain readable after an
+// update. v6 silently ignores the pre-v6 option keys (`keychainService`,
+// `kSecAccessControl`, `kSecAttrAccessible`...) and defaults `service` to
+// 'default' — that mismatch is what broke biometric unlock after updating.
+const keychainConfig: SensitiveInfoOptions = {
+  service: 'swKeychain',
+  accessControl: 'biometryCurrentSet',
+  authenticationPrompt: {
+    title: 'Unlock app using biometric',
+  },
 };
 const maxAttempsData = ['Biometry is locked out', 'Quá nhiều lần thử', 'Too many attempts'];
 function alertFailedAttempts(e: any) {
