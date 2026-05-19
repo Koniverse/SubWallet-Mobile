@@ -1,3 +1,6 @@
+## 1.2.37 (519)
+- Update react-native-sensitive-info to v6 and fix biometric unlock compatibility issues. (#1780)
+
 ## 1.2.37 (518)
 
 
