@@ -193,6 +193,8 @@ const username = 'sw-user';
 export const createKeychainPassword = async (password: string) => {
   try {
     await SInfo.deleteItem(username, keychainConfig);
+    // Also purge any legacy iCloud-synchronizable entry written by older app versions.
+    await SInfo.deleteItem(username, { ...keychainConfig, iosSynchronizable: true });
     await SInfo.setItem(username, password, keychainConfig);
     return true;
   } catch (e) {
@@ -204,7 +206,19 @@ export const createKeychainPassword = async (password: string) => {
 
 export const getKeychainPassword = async () => {
   try {
-    const sensitiveInfo = await SInfo.getItem(username, keychainConfig);
+    // v6 returns an object { key, service, value, metadata } | null instead of a raw string.
+    let sensitiveInfo = await SInfo.getItem(username, keychainConfig);
+
+    if (!sensitiveInfo) {
+      // Backward compatibility: the classic (pre-v6) react-native-sensitive-info
+      // stored items with kSecAttrSynchronizable = Any, so iOS keeps them as
+      // iCloud-synchronizable Keychain entries. v6 only queries non-synchronizable
+      // items by default, so retry as a synchronizable lookup to find items
+      // written by older app versions.
+      sensitiveInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
+      console.log('[keychain] legacy synchronizable lookup:', sensitiveInfo ? 'found' : 'not found');
+    }
+
     return sensitiveInfo?.value;
   } catch (e) {
     alertFailedAttempts(e);
@@ -214,8 +228,9 @@ export const getKeychainPassword = async () => {
 
 export const resetKeychainPassword = async () => {
   try {
-    // return await Keychain.resetGenericPassword();
     await SInfo.deleteItem(username, keychainConfig);
+    // Also purge any legacy iCloud-synchronizable entry written by older app versions.
+    await SInfo.deleteItem(username, { ...keychainConfig, iosSynchronizable: true });
     return true;
   } catch (e) {
     console.warn('reset keychain failed:', e);
@@ -232,6 +247,41 @@ export const getSupportedBiometryType = async () => {
     console.warn('Get failed!');
     return null;
   }
+};
+
+// TODO: DEBUG-ONLY — remove once the biometric-after-update bug is confirmed fixed.
+// Probes the Keychain for the biometric password entry across the possible
+// service / synchronizable combinations, WITHOUT triggering a Face ID prompt
+// (`hasItem` only fetches attributes, not the protected value). Used by the
+// Login screen to surface on-device diagnostics on a TestFlight build.
+export const diagnoseKeychain = async (): Promise<string> => {
+  const probes: Array<[string, SensitiveInfoOptions]> = [
+    ['swKc/local', { service: 'swKeychain' }],
+    ['swKc/sync', { service: 'swKeychain', iosSynchronizable: true }],
+    ['def/local', { service: 'default' }],
+    ['def/sync', { service: 'default', iosSynchronizable: true }],
+  ];
+
+  const parts: string[] = [];
+
+  for (const [label, opts] of probes) {
+    try {
+      const exists = await SInfo.hasItem(username, opts);
+      parts.push(`${label}:${exists ? 'YES' : 'no'}`);
+    } catch (e) {
+      parts.push(`${label}:ERR(${JSON.stringify(e).slice(0, 40)})`);
+    }
+  }
+
+  let biometry = '?';
+  try {
+    const levels = await SInfo.getSupportedSecurityLevels();
+    biometry = String(levels.biometry);
+  } catch (e) {
+    biometry = `ERR(${JSON.stringify(e).slice(0, 40)})`;
+  }
+
+  return `${parts.join(' ')} | biometry:${biometry}`;
 };
 
 export function getBitcoinAccountDetails(type: KeypairType): BitcoinAccountInfo {

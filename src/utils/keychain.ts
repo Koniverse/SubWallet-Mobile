@@ -40,7 +40,18 @@ export const createKeychainPassword = async (password: string) => {
 export const getKeychainPassword = async () => {
   try {
     // v6 returns an object { key, service, value, metadata } | null instead of a raw string.
-    const sensitiveInfo = await SInfo.getItem(username, keychainConfig);
+    let sensitiveInfo = await SInfo.getItem(username, keychainConfig);
+
+    if (!sensitiveInfo) {
+      // Backward compatibility: the classic (pre-v6) react-native-sensitive-info
+      // stored items with kSecAttrSynchronizable = Any, so iOS keeps them as
+      // iCloud-synchronizable Keychain entries. v6 only queries non-synchronizable
+      // items by default, so retry as a synchronizable lookup to find items
+      // written by older app versions.
+      sensitiveInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
+      console.log('[keychain] legacy synchronizable lookup:', sensitiveInfo ? 'found' : 'not found');
+    }
+
     return sensitiveInfo?.value;
   } catch (e) {
     alertFailedAttempts(e);
@@ -50,8 +61,9 @@ export const getKeychainPassword = async () => {
 
 export const resetKeychainPassword = async () => {
   try {
-    // return await Keychain.resetGenericPassword();
-    SInfo.deleteItem(username, keychainConfig);
+    await SInfo.deleteItem(username, keychainConfig);
+    // Also purge any legacy iCloud-synchronizable entry written by older app versions.
+    await SInfo.deleteItem(username, { ...keychainConfig, iosSynchronizable: true });
     return true;
   } catch (e) {
     console.warn('reset keychain failed:', e);
