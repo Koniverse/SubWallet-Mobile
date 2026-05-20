@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleProp,
-  Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -29,7 +28,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import {
   createKeychainPassword,
-  diagnoseKeychain,
   getKeychainPassword,
   getSupportedBiometryType,
   resetKeychainPassword,
@@ -74,9 +72,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [modalMigrateVisible, setModalMigrateVisible] = useState<boolean>(false);
   const [resetAccLoading, setAccLoading] = useState(false);
   const [eraseAllLoading, setEraseAllLoading] = useState(false);
-  // TODO: DEBUG-ONLY — on-device diagnostics for the biometric-after-update bug.
-  const [kcDebug, setKcDebug] = useState<string>('checking…');
-  const [kcUnlockDebug, setKcUnlockDebug] = useState<string>('');
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
 
@@ -156,12 +151,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authMethod]);
   useEffect(() => forceCloseModalV2(true), []);
-  // TODO: DEBUG-ONLY — surface Keychain state on screen for TestFlight testing.
-  useEffect(() => {
-    diagnoseKeychain()
-      .then(setKcDebug)
-      .catch(e => setKcDebug(`diag error: ${JSON.stringify(e).slice(0, 120)}`));
-  }, []);
   useEffect(() => {
     if (!isUseBiometric) {
       return;
@@ -190,19 +179,13 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
   async function requestUnlockWithBiometric() {
     try {
-      setKcUnlockDebug('unlock: reading keychain…');
       const password = await getKeychainPassword();
       if (!password) {
-        setKcUnlockDebug('unlock: keychain EMPTY → no item found');
         throw 'Biometry is not available';
       }
-      setKcUnlockDebug(`unlock: keychain OK (password length=${password.length})`);
       setTimeout(() => onUnlock(password), 100);
     } catch (e) {
       console.warn(e);
-      if (JSON.stringify(e).indexOf('Biometry is not available') === -1) {
-        setKcUnlockDebug(`unlock ERR: ${JSON.stringify(e).slice(0, 150)}`);
-      }
       setAuthMethod('master-password');
     }
   }
@@ -276,24 +259,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
             <Typography.Text size="sm" style={styles.subTitle}>
               Polkadot, Substrate & Ethereum wallet
             </Typography.Text>
-            {/* TODO: DEBUG-ONLY — remove after the biometric-after-update bug is verified fixed. */}
-            <View
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.75)',
-                borderRadius: 8,
-                padding: 8,
-                marginBottom: 12,
-                alignSelf: 'stretch',
-              }}>
-              <Text selectable style={{ color: '#39FF14', fontSize: 11 }}>
-                {`KC DIAG: ${kcDebug}`}
-              </Text>
-              {!!kcUnlockDebug && (
-                <Text selectable style={{ color: '#FFD400', fontSize: 11, marginTop: 4 }}>
-                  {kcUnlockDebug}
-                </Text>
-              )}
-            </View>
             {authMethod === 'master-password' && (
               <>
                 <InlinePassword

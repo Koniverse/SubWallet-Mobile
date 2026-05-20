@@ -72,16 +72,23 @@ export const Security = () => {
     if (!password) {
       return;
     }
-    createKeychainPassword(password).then(res => {
-      if (res) {
-        dispatch(updateUseBiometric(true));
-      } else {
+    (async () => {
+      // Ask the iOS Face ID permission RIGHT NOW (right after the master
+      // password is verified) so the user grants it during this setup flow,
+      // not at the next app launch. On Android this resolves to true.
+      const granted = await requestFaceIDPermission();
+      if (!granted) {
         dispatch(updateUseBiometric(false));
+        return;
       }
-    });
-    if (timeAutoLock === LockTimeout.ALWAYS) {
-      keyringLock().catch((e: Error) => console.log(e));
-    }
+
+      const success = await createKeychainPassword(password);
+      dispatch(updateUseBiometric(success));
+
+      if (timeAutoLock === LockTimeout.ALWAYS) {
+        keyringLock().catch((e: Error) => console.log(e));
+      }
+    })();
   };
   const { onPress: onPressSubmit } = useUnlockModal(navigation, () => {}, true);
 
@@ -89,20 +96,15 @@ export const Security = () => {
     if (isUseBiometric) {
       dispatch(updateUseBiometric(false));
       resetKeychainPassword();
-    } else {
-      (async () => {
-        const isBiometricEnabled = await getSupportedBiometryType();
-        if (isBiometricEnabled) {
-          onPressSubmit(onPasswordComplete)();
-          return;
-        }
-        // if Face ID permission denied
-        const result = await requestFaceIDPermission();
-        if (result) {
-          onPressSubmit(onPasswordComplete)();
-        }
-      })();
+      return;
     }
+    (async () => {
+      const isBiometricEnabled = await getSupportedBiometryType();
+      if (!isBiometricEnabled) {
+        return;
+      }
+      onPressSubmit(onPasswordComplete)();
+    })();
   };
 
   const onChangeAutoLockTime = useCallback(

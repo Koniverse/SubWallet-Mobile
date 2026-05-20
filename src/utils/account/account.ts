@@ -216,7 +216,6 @@ export const getKeychainPassword = async () => {
       // items by default, so retry as a synchronizable lookup to find items
       // written by older app versions.
       sensitiveInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
-      console.log('[keychain] legacy synchronizable lookup:', sensitiveInfo ? 'found' : 'not found');
     }
 
     return sensitiveInfo?.value;
@@ -247,41 +246,6 @@ export const getSupportedBiometryType = async () => {
     console.warn('Get failed!');
     return null;
   }
-};
-
-// TODO: DEBUG-ONLY — remove once the biometric-after-update bug is confirmed fixed.
-// Probes the Keychain for the biometric password entry across the possible
-// service / synchronizable combinations, WITHOUT triggering a Face ID prompt
-// (`hasItem` only fetches attributes, not the protected value). Used by the
-// Login screen to surface on-device diagnostics on a TestFlight build.
-export const diagnoseKeychain = async (): Promise<string> => {
-  const probes: Array<[string, SensitiveInfoOptions]> = [
-    ['swKc/local', { service: 'swKeychain' }],
-    ['swKc/sync', { service: 'swKeychain', iosSynchronizable: true }],
-    ['def/local', { service: 'default' }],
-    ['def/sync', { service: 'default', iosSynchronizable: true }],
-  ];
-
-  const parts: string[] = [];
-
-  for (const [label, opts] of probes) {
-    try {
-      const exists = await SInfo.hasItem(username, opts);
-      parts.push(`${label}:${exists ? 'YES' : 'no'}`);
-    } catch (e) {
-      parts.push(`${label}:ERR(${JSON.stringify(e).slice(0, 40)})`);
-    }
-  }
-
-  let biometry = '?';
-  try {
-    const levels = await SInfo.getSupportedSecurityLevels();
-    biometry = String(levels.biometry);
-  } catch (e) {
-    biometry = `ERR(${JSON.stringify(e).slice(0, 40)})`;
-  }
-
-  return `${parts.join(' ')} | biometry:${biometry}`;
 };
 
 export function getBitcoinAccountDetails(type: KeypairType): BitcoinAccountInfo {

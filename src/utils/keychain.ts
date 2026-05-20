@@ -49,7 +49,6 @@ export const getKeychainPassword = async () => {
       // items by default, so retry as a synchronizable lookup to find items
       // written by older app versions.
       sensitiveInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
-      console.log('[keychain] legacy synchronizable lookup:', sensitiveInfo ? 'found' : 'not found');
     }
 
     return sensitiveInfo?.value;
