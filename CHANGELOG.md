@@ -1,3 +1,6 @@
+## 1.2.38 (521)
+- Remove debug tools and revise biometric authentication logic. (#1780)
+
 ## 1.2.37 (520)
 
 
