@@ -1,6 +1,7 @@
 import SInfo, { SensitiveInfoOptions } from 'react-native-sensitive-info';
 import { Alert } from 'react-native';
 import i18n from './i18n/i18n';
+import { readLegacyKeychainPassword } from './legacyKeychain';
 
 // Keychain configuration — react-native-sensitive-info v6 (Nitro) API.
 // `service` MUST stay 'swKeychain' so items written by older app versions
@@ -51,7 +52,25 @@ export const getKeychainPassword = async () => {
       sensitiveInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
     }
 
-    return sensitiveInfo?.value;
+    if (sensitiveInfo?.value) {
+      return sensitiveInfo.value;
+    }
+
+    // Android-only: v6 cannot read data written by v5 (incompatible storage format,
+    // no built-in migration). Recover it via the vendored legacy module, then re-store
+    // through v6 so future launches no longer touch the legacy path.
+    const legacyPassword = await readLegacyKeychainPassword(
+      i18n.buttonTitles.unlockWithBiometric,
+      i18n.buttonTitles.cancel,
+    );
+
+    if (legacyPassword) {
+      // Best-effort re-store; even if this fails the caller still gets the password.
+      await createKeychainPassword(legacyPassword);
+      return legacyPassword;
+    }
+
+    return undefined;
   } catch (e) {
     alertFailedAttempts(e);
     throw e;
