@@ -674,7 +674,7 @@
     "buyMessage": "你将导向到独立提供商以完成此交易",
     "changeMasterPasswordMessage1": "为了设置新密码，你需要准确输入当前密码。",
     "changeMasterPasswordMessage2": "请使用此密码来解锁你的账户。",
-    "forgotPasswordMessage": "我们不保存你的密码。若你无法解锁账户，你将需要使用助记词以重置你的钱包。",
+    "forgotPasswordMessage": "我们不会保存你的密码，也无法为你找回密码。重置将永久删除本设备上的所有账户和你的钱包。若要再次使用这些账户，你必须使用其助记词或私钥重新导入。",
     "cannotGetBalance": "无法获取余额",
     "enableTokenOnChain": "请在 {0}上启用 {1}",
     "disconnectModalMessage": "一旦断开，你将不再在SubWallet及DApp看到该连接。",

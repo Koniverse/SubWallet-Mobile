@@ -674,7 +674,7 @@
     "buyMessage": "Вы будете направлены к выбранному поставщику для завершения этой транзакции.",
     "changeMasterPasswordMessage1": "To create a new password, you must correctly enter your current password.",
     "changeMasterPasswordMessage2": "Используйте этот пароль, чтобы разблокировать свой аккаунт.",
-    "forgotPasswordMessage": "Мы не сохраняем ваш пароль. Если вы забыли свой пароль, вам нужно будет сбросить свой кошелек с помощью Секретной Восстановительной Фразы",
+    "forgotPasswordMessage": "Мы не храним ваш пароль и не можем восстановить его для вас. Сброс приведёт к безвозвратному удалению всех аккаунтов и вашего кошелька на этом устройстве. Чтобы снова использовать эти аккаунты, вам потребуется повторно импортировать их с помощью секретной восстановительной фразы или приватного ключа.",
     "cannotGetBalance": "Не удается получить баланс",
     "enableTokenOnChain": "Пожалуйста, активируйте {0} на {1}",
     "disconnectModalMessage": "Once you disconnect, you will no longer see this connection on SubWallet and on your DApp.",
