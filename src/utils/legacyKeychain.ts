@@ -22,7 +22,8 @@ type LegacyKeychainNativeModule = {
  * is not locked out of biometric unlock.
  *
  * Returns the recovered password, or undefined when there is nothing to migrate / the v5 key
- * was invalidated. Throws only when the user explicitly cancels the biometric prompt.
+ * was invalidated. Never throws — a cancelled or failed migration resolves to undefined so
+ * the caller falls through to manual unlock.
  */
 export const readLegacyKeychainPassword = async (
   promptTitle: string,
@@ -38,12 +39,18 @@ export const readLegacyKeychainPassword = async (
     return undefined;
   }
 
-  const value = await nativeModule.getLegacyItem(
-    LEGACY_KEY,
-    LEGACY_SHARED_PREFS,
-    promptTitle,
-    promptCancel,
-  );
+  try {
+    const value = await nativeModule.getLegacyItem(
+      LEGACY_KEY,
+      LEGACY_SHARED_PREFS,
+      promptTitle,
+      promptCancel,
+    );
 
-  return value ?? undefined;
+    return value ?? undefined;
+  } catch (e) {
+    // The native module rejects on explicit user cancellation. A cancelled migration
+    // should fall through to manual unlock, not surface as an error.
+    return undefined;
+  }
 };
