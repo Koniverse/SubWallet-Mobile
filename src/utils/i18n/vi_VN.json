@@ -675,7 +675,7 @@
     "buyMessage": "Bạn sẽ được chuyển đến trang của Nhà cung cấp để tiếp tục giao dịch",
     "changeMasterPasswordMessage1": "Để tạo mật khẩu mới, bạn phải nhập chính xác mật khẩu hiện tại.",
     "changeMasterPasswordMessage2": "Sử dụng mật khẩu này để mở khóa tài khoản của bạn.",
-    "forgotPasswordMessage": "Chúng tôi không giữ mật khẩu của bạn. Nếu bạn đã quên mật khẩu, hãy cài lại ví bằng cách sử dụng seed phrase",
+    "forgotPasswordMessage": "Chúng tôi không lưu giữ mật khẩu của bạn và không thể khôi phục nó. Việc đặt lại sẽ xóa vĩnh viễn toàn bộ tài khoản và ví của bạn trên thiết bị này. Để sử dụng lại các tài khoản đó, bạn phải nhập lại chúng bằng cụm từ khôi phục hoặc private key.",
     "cannotGetBalance": "Không thể lấy số dư",
     "enableTokenOnChain": "Vui lòng bật {0} trên {1}",
     "disconnectModalMessage": "Khi ngắt kết nối, bạn sẽ không tìm thấy dApp trên SubWallet và dApp không còn kết nối với SubWallet",

@@ -674,7 +674,7 @@
     "buyMessage": "You will be directed to the chosen supplier to complete this transaction",
     "changeMasterPasswordMessage1": "To create a new password, you must correctly enter your current password.",
     "changeMasterPasswordMessage2": "Use this password to unlock your account.",
-    "forgotPasswordMessage": "We do not keep your password. If you forgot your password, you will need to reset your wallet using the Secret Recovery Phrase",
+    "forgotPasswordMessage": "We do not keep your password and cannot recover it for you. Resetting will permanently delete all accounts and your wallet on this device. To use those accounts again, you must re-import them with their recovery phrase or private key.",
     "cannotGetBalance": "Can not get balance",
     "enableTokenOnChain": "Please enable {0} on {1}",
     "disconnectModalMessage": "Once you disconnect, you will no longer see this connection on SubWallet and on your DApp.",
