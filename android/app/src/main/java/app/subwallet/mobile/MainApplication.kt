@@ -8,6 +8,7 @@ import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import app.subwallet.mobile.nativeModules.RCTAppInstallerPackage
 import app.subwallet.mobile.nativeModules.RCTMinimizerPackage
+import app.subwallet.mobile.nativeModules.LegacyKeychainPackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -20,6 +21,7 @@ class MainApplication : Application(), ReactApplication {
           // add(MyReactNativePackage())
           add(RCTMinimizerPackage())
           add(RCTAppInstallerPackage())
+          add(LegacyKeychainPackage())
         },
     )
   }
