@@ -121,6 +121,12 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
                 navigation.goBack();
               });
           } else {
+            // Self-heal: a biometric user who had to unlock manually (e.g. Android after the
+            // v5->v6 update when migration could not recover the old keychain entry) gets the
+            // keychain re-stored under v6 so biometric unlock works again on the next launch.
+            if (isUseBiometric) {
+              createKeychainPassword(password).catch((err: Error) => console.warn(err));
+            }
             navigation.goBack();
             forceCloseModalV2(!!(isDeepLinkConnect || !!numberOfConfirmations));
           }
