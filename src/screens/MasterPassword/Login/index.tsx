@@ -89,7 +89,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   };
   useHandlerHardwareBackPress(true);
 
-  const onUnlock = useCallback((password: string) => {
+  const onUnlock = useCallback((password: string, isManualUnlock = false) => {
     setLoading(true);
     setTimeout(() => {
       keyringUnlock({
@@ -121,10 +121,12 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
                 navigation.goBack();
               });
           } else {
-            // Self-heal: a biometric user who had to unlock manually (e.g. Android after the
+            // Self-heal: a biometric user who had to unlock MANUALLY (e.g. Android after the
             // v5->v6 update when migration could not recover the old keychain entry) gets the
             // keychain re-stored under v6 so biometric unlock works again on the next launch.
-            if (isUseBiometric) {
+            // Only on the manual path — re-storing after a successful biometric unlock would
+            // trigger a redundant biometric prompt on every single launch.
+            if (isUseBiometric && isManualUnlock) {
               createKeychainPassword(password).catch((err: Error) => console.warn(err));
             }
             navigation.goBack();
@@ -198,7 +200,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
   const onSubmit = () => {
     const password = formState.data.password;
-    onUnlock(password);
+    onUnlock(password, true);
   };
 
   const { formState, onChangeValue, onSubmitField, focus, onUpdateErrors } = useFormControl(formConfig, {
