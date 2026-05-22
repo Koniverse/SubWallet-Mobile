@@ -1,6 +1,19 @@
+// Hermes does not support `import.meta`. Some ESM dependencies (notably
+// @polkadot/* `packageInfo.js`) reference it. Replace `import.meta` with `{}`
+// so guarded expressions like `import.meta && import.meta.url` fall back safely.
+const stripImportMeta = ({ types: t }) => ({
+  name: 'strip-import-meta',
+  visitor: {
+    MetaProperty(path) {
+      path.replaceWith(t.objectExpression([]));
+    },
+  },
+});
+
 module.exports = {
   presets: ['module:@react-native/babel-preset'],
   plugins: [
+    stripImportMeta,
     [
       'rewrite-require',
       {
