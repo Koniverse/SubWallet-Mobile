@@ -63,6 +63,12 @@ function forceCloseModalV2(isForceClose: boolean) {
 const isKeychainEnabled = mmkvStore.getBoolean('isKeychainEnabled');
 const BEFORE_KEYCHAIN_BUILD_NUMBER = 211;
 
+// Module-scoped guard so a Login remount during boot (e.g. accounts redux state
+// rehydrating after the screen first appears) cannot fire the biometric prompt
+// a second time while the first one is still in flight. Reset once the in-flight
+// attempt settles.
+let isBiometricUnlockInFlight = false;
+
 const Login: React.FC<LoginProps> = ({ navigation }) => {
   const { faceIdEnabled, isUseBiometric, timeAutoLock } = useSelector((state: RootState) => state.mobileSettings);
   const { buildNumber } = useSelector((state: RootState) => state.appVersion);
@@ -186,6 +192,10 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   }, []);
 
   async function requestUnlockWithBiometric() {
+    if (isBiometricUnlockInFlight) {
+      return;
+    }
+    isBiometricUnlockInFlight = true;
     try {
       const password = await getKeychainPassword();
       if (!password) {
@@ -195,6 +205,8 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     } catch (e) {
       console.warn(e);
       setAuthMethod('master-password');
+    } finally {
+      isBiometricUnlockInFlight = false;
     }
   }
 

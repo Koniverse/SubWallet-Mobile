@@ -25,6 +25,14 @@ jest.mock('../i18n/i18n', () => ({
   default: { buttonTitles: { unlockWithBiometric: 'Unlock', cancel: 'Cancel' }, common: { tooManyAttemps: 'x' } },
 }));
 
+const mockMmkvBackend = new Map<string, unknown>();
+jest.mock('utils/storage', () => ({
+  mmkvStore: {
+    set: (key: string, value: unknown) => mockMmkvBackend.set(key, value),
+    getBoolean: (key: string) => mockMmkvBackend.get(key) as boolean | undefined,
+  },
+}));
+
 import { getKeychainPassword } from '../keychain';
 
 describe('getKeychainPassword Android legacy fallback', () => {

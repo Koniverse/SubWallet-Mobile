@@ -11,10 +11,17 @@ import { _ChainInfo } from '@subwallet/chain-list/types';
 import { _isChainInfoCompatibleWithAccountInfo } from '@subwallet/extension-base/services/chain-service/utils';
 import { DEFAULT_ACCOUNT_TYPES, EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE, TON_ACCOUNT_TYPE } from 'constants/index';
 import SInfo, { SensitiveInfoOptions } from 'react-native-sensitive-info';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import i18n from 'utils/i18n/i18n.ts';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import { readLegacyKeychainPassword } from '../legacyKeychain';
+import { mmkvStore } from 'utils/storage';
+
+// Set once the master password has been written under the v6 (non-synchronizable)
+// namespace. While unset on iOS we treat the keychain as still hosting the v5
+// iCloud-synchronizable entry and skip the v6 lookup — querying both namespaces
+// when only the sync one has the item triggers two FaceID prompts per launch.
+const KEYCHAIN_V6_MIGRATED_KEY = 'keychainV6Migrated';
 
 export const isAddressAllowedWithAuthType = (address: string, authAccountTypes?: AccountAuthType[]) => {
   if (isEthereumAddress(address) && authAccountTypes?.includes('evm')) {
@@ -197,6 +204,7 @@ export const createKeychainPassword = async (password: string) => {
     // Also purge any legacy iCloud-synchronizable entry written by older app versions.
     await SInfo.deleteItem(username, { ...keychainConfig, iosSynchronizable: true });
     await SInfo.setItem(username, password, keychainConfig);
+    mmkvStore.set(KEYCHAIN_V6_MIGRATED_KEY, true);
     return true;
   } catch (e) {
     alertFailedAttempts(e);
@@ -207,6 +215,29 @@ export const createKeychainPassword = async (password: string) => {
 
 export const getKeychainPassword = async () => {
   try {
+    // iOS: until the master password has been re-stored under the v6 namespace,
+    // skip the v6 lookup entirely. The v5 entry only exists in the iCloud-sync
+    // namespace, and running both queries triggers two FaceID prompts per launch
+    // (the v6 lookup hits errSecAuthFailed and Swift retries it via LAContext).
+    if (Platform.OS === 'ios' && !mmkvStore.getBoolean(KEYCHAIN_V6_MIGRATED_KEY)) {
+      const legacyInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
+      if (legacyInfo?.value) {
+        // Re-store under the v6 (non-sync) namespace. setItem does not require
+        // biometric authentication, so this does not add an extra prompt.
+        try {
+          await SInfo.setItem(username, legacyInfo.value, keychainConfig);
+          await SInfo.deleteItem(username, { ...keychainConfig, iosSynchronizable: true });
+        } catch (err) {
+          console.warn('keychain v5->v6 migration failed', err);
+        }
+        mmkvStore.set(KEYCHAIN_V6_MIGRATED_KEY, true);
+        return legacyInfo.value;
+      }
+      // No legacy item — fall through to the regular v6 lookup so a freshly
+      // created v6 entry (e.g. from createMasterPassword in this same session)
+      // is still readable.
+    }
+
     // v6 returns an object { key, service, value, metadata } | null instead of a raw string.
     let sensitiveInfo = await SInfo.getItem(username, keychainConfig);
 
@@ -220,6 +251,9 @@ export const getKeychainPassword = async () => {
     }
 
     if (sensitiveInfo?.value) {
+      if (Platform.OS === 'ios') {
+        mmkvStore.set(KEYCHAIN_V6_MIGRATED_KEY, true);
+      }
       return sensitiveInfo.value;
     }
 

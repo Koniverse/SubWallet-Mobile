@@ -1,7 +1,13 @@
 import SInfo, { SensitiveInfoOptions } from 'react-native-sensitive-info';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import i18n from './i18n/i18n';
 import { readLegacyKeychainPassword } from './legacyKeychain';
+import { mmkvStore } from 'utils/storage';
+
+// Keep in sync with utils/account/account.ts — once the master password has
+// been written under the v6 namespace, skip the legacy iCloud-sync lookup that
+// would otherwise trigger a redundant FaceID prompt on every launch.
+const KEYCHAIN_V6_MIGRATED_KEY = 'keychainV6Migrated';
 
 // Keychain configuration — react-native-sensitive-info v6 (Nitro) API.
 // `service` MUST stay 'swKeychain' so items written by older app versions
@@ -30,6 +36,7 @@ const username = 'sw-user';
 export const createKeychainPassword = async (password: string) => {
   try {
     await SInfo.setItem(username, password, keychainConfig);
+    mmkvStore.set(KEYCHAIN_V6_MIGRATED_KEY, true);
     return true;
   } catch (e) {
     alertFailedAttempts(e);
@@ -40,6 +47,23 @@ export const createKeychainPassword = async (password: string) => {
 
 export const getKeychainPassword = async () => {
   try {
+    // iOS: until the master password has been re-stored under the v6 namespace,
+    // skip the v6 lookup entirely. The v5 entry only exists in the iCloud-sync
+    // namespace, and running both queries triggers two FaceID prompts per launch.
+    if (Platform.OS === 'ios' && !mmkvStore.getBoolean(KEYCHAIN_V6_MIGRATED_KEY)) {
+      const legacyInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
+      if (legacyInfo?.value) {
+        try {
+          await SInfo.setItem(username, legacyInfo.value, keychainConfig);
+          await SInfo.deleteItem(username, { ...keychainConfig, iosSynchronizable: true });
+        } catch (err) {
+          console.warn('keychain v5->v6 migration failed', err);
+        }
+        mmkvStore.set(KEYCHAIN_V6_MIGRATED_KEY, true);
+        return legacyInfo.value;
+      }
+    }
+
     // v6 returns an object { key, service, value, metadata } | null instead of a raw string.
     let sensitiveInfo = await SInfo.getItem(username, keychainConfig);
 
@@ -53,6 +77,9 @@ export const getKeychainPassword = async () => {
     }
 
     if (sensitiveInfo?.value) {
+      if (Platform.OS === 'ios') {
+        mmkvStore.set(KEYCHAIN_V6_MIGRATED_KEY, true);
+      }
       return sensitiveInfo.value;
     }
 
