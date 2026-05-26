@@ -18,6 +18,8 @@ import useUnlockModal, { OnCompleteType } from 'hooks/modal/useUnlockModal';
 import { createKeychainPassword, getSupportedBiometryType, resetKeychainPassword } from 'utils/account';
 import { keyringLock, saveAllowOneSign, saveAutoLockTime } from 'messaging/index';
 import { requestFaceIDPermission } from 'utils/permission/biometric';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import { Platform } from 'react-native';
 import { LockTimeout } from 'stores/types';
 import { AppModalContext } from 'providers/AppModalContext';
 
@@ -80,6 +82,30 @@ export const Security = () => {
       if (!granted) {
         dispatch(updateUseBiometric(false));
         return;
+      }
+
+      // iOS: react-native-sensitive-info v6 no longer prompts FaceID during
+      // SecItemAdd, so the setup flow would otherwise complete without ever
+      // scanning the user's face — leaving them confused about whether the
+      // feature was actually enabled. Trigger an explicit LAContext-based
+      // scan via react-native-biometrics so the setup ends with a visible
+      // FaceID confirmation, matching the pre-v6 behavior.
+      if (Platform.OS === 'ios') {
+        try {
+          const rnBiometrics = new ReactNativeBiometrics();
+          const { success: bioSuccess } = await rnBiometrics.simplePrompt({
+            promptMessage: i18n.buttonTitles.unlockWithBiometric,
+            cancelButtonText: i18n.buttonTitles.cancel,
+          });
+          if (!bioSuccess) {
+            dispatch(updateUseBiometric(false));
+            return;
+          }
+        } catch (e) {
+          console.warn('biometric confirmation failed', e);
+          dispatch(updateUseBiometric(false));
+          return;
+        }
       }
 
       const success = await createKeychainPassword(password);
