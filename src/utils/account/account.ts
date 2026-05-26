@@ -198,15 +198,37 @@ function alertFailedAttempts(e: any) {
   }
 }
 const username = 'sw-user';
+
+// DEBUG-ONLY: in-memory log buffer surfaced via getBioDebugLog() so we can
+// show breadcrumbs in an Alert from release builds (where console.log is
+// stripped). Remove once the biometric double-prompt is diagnosed.
+const bioDebugBuffer: string[] = [];
+const bioLog = (msg: string) => {
+  const stamp = String(Date.now() % 100000).padStart(5, '0');
+  bioDebugBuffer.push(`${stamp} ${msg}`);
+  if (bioDebugBuffer.length > 80) {
+    bioDebugBuffer.shift();
+  }
+};
+export const getBioDebugLog = () => bioDebugBuffer.join('\n');
+export const resetBioDebugLog = () => bioDebugBuffer.splice(0);
+export const pushBioDebugLog = (msg: string) => bioLog(msg);
+
 export const createKeychainPassword = async (password: string) => {
+  bioLog('createKeychainPassword: enter');
   try {
+    bioLog('createKeychainPassword: deleteItem(non-sync)');
     await SInfo.deleteItem(username, keychainConfig);
+    bioLog('createKeychainPassword: deleteItem(sync)');
     // Also purge any legacy iCloud-synchronizable entry written by older app versions.
     await SInfo.deleteItem(username, { ...keychainConfig, iosSynchronizable: true });
+    bioLog('createKeychainPassword: setItem(non-sync) [SecItemAdd]');
     await SInfo.setItem(username, password, keychainConfig);
     mmkvStore.set(KEYCHAIN_V6_MIGRATED_KEY, true);
+    bioLog('createKeychainPassword: OK, flag=true');
     return true;
   } catch (e) {
+    bioLog(`createKeychainPassword: FAIL ${String(e).slice(0, 80)}`);
     alertFailedAttempts(e);
     console.warn('set keychain failed', e);
     return false;
@@ -214,46 +236,51 @@ export const createKeychainPassword = async (password: string) => {
 };
 
 export const getKeychainPassword = async () => {
+  const flag = mmkvStore.getBoolean(KEYCHAIN_V6_MIGRATED_KEY);
+  bioLog(`getKeychainPassword: enter platform=${Platform.OS} flag=${flag}`);
   try {
     // iOS: until the master password has been re-stored under the v6 namespace,
     // skip the v6 lookup entirely. The v5 entry only exists in the iCloud-sync
     // namespace, and running both queries triggers two FaceID prompts per launch
     // (the v6 lookup hits errSecAuthFailed and Swift retries it via LAContext).
-    if (Platform.OS === 'ios' && !mmkvStore.getBoolean(KEYCHAIN_V6_MIGRATED_KEY)) {
+    if (Platform.OS === 'ios' && !flag) {
+      bioLog('legacy path: getItem(sync) >>>');
       const legacyInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
+      bioLog(`legacy path: getItem(sync) <<< hasValue=${!!legacyInfo?.value}`);
       if (legacyInfo?.value) {
-        // Re-store under the v6 (non-sync) namespace. setItem does not require
-        // biometric authentication, so this does not add an extra prompt.
         try {
+          bioLog('legacy path: setItem(non-sync) >>>');
           await SInfo.setItem(username, legacyInfo.value, keychainConfig);
+          bioLog('legacy path: setItem(non-sync) <<<');
+          bioLog('legacy path: deleteItem(sync) >>>');
           await SInfo.deleteItem(username, { ...keychainConfig, iosSynchronizable: true });
+          bioLog('legacy path: deleteItem(sync) <<<');
         } catch (err) {
+          bioLog(`legacy path: re-store FAIL ${String(err).slice(0, 60)}`);
           console.warn('keychain v5->v6 migration failed', err);
         }
         mmkvStore.set(KEYCHAIN_V6_MIGRATED_KEY, true);
+        bioLog('legacy path: return value');
         return legacyInfo.value;
       }
-      // No legacy item — fall through to the regular v6 lookup so a freshly
-      // created v6 entry (e.g. from createMasterPassword in this same session)
-      // is still readable.
     }
 
     // v6 returns an object { key, service, value, metadata } | null instead of a raw string.
+    bioLog('main path: getItem(non-sync) >>>');
     let sensitiveInfo = await SInfo.getItem(username, keychainConfig);
+    bioLog(`main path: getItem(non-sync) <<< hasObj=${!!sensitiveInfo} hasValue=${!!sensitiveInfo?.value}`);
 
     if (!sensitiveInfo) {
-      // Backward compatibility: the classic (pre-v6) react-native-sensitive-info
-      // stored items with kSecAttrSynchronizable = Any, so iOS keeps them as
-      // iCloud-synchronizable Keychain entries. v6 only queries non-synchronizable
-      // items by default, so retry as a synchronizable lookup to find items
-      // written by older app versions.
+      bioLog('main path: getItem(sync) >>>');
       sensitiveInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
+      bioLog(`main path: getItem(sync) <<< hasValue=${!!sensitiveInfo?.value}`);
     }
 
     if (sensitiveInfo?.value) {
       if (Platform.OS === 'ios') {
         mmkvStore.set(KEYCHAIN_V6_MIGRATED_KEY, true);
       }
+      bioLog('main path: return value');
       return sensitiveInfo.value;
     }
 
@@ -266,13 +293,16 @@ export const getKeychainPassword = async () => {
     );
 
     if (legacyPassword) {
+      bioLog('android legacy: re-store');
       // Best-effort re-store; even if this fails the caller still gets the password.
       await createKeychainPassword(legacyPassword);
       return legacyPassword;
     }
 
+    bioLog('all paths empty -> undefined');
     return undefined;
   } catch (e) {
+    bioLog(`THREW ${String(e).slice(0, 80)}`);
     alertFailedAttempts(e);
     throw e;
   }

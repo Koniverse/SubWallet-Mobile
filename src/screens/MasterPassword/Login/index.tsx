@@ -2,6 +2,7 @@ import { Button, Image, Typography } from 'components/design-system-ui';
 import useFormControl from 'hooks/screen/useFormControl';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
   DeviceEventEmitter,
   ImageBackground,
   Keyboard,
@@ -28,8 +29,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import {
   createKeychainPassword,
+  getBioDebugLog,
   getKeychainPassword,
   getSupportedBiometryType,
+  pushBioDebugLog,
+  resetBioDebugLog,
   resetKeychainPassword,
 } from 'utils/account';
 import { updateFaceIdEnable, updateUseBiometric } from 'stores/MobileSettings';
@@ -68,8 +72,27 @@ const BEFORE_KEYCHAIN_BUILD_NUMBER = 211;
 // a second time while the first one is still in flight. Reset once the in-flight
 // attempt settles.
 let isBiometricUnlockInFlight = false;
+// DEBUG-ONLY counters for the in-Alert log dump.
+let loginMountSeq = 0;
+let loginEffectSeq = 0;
+let bioRequestSeq = 0;
+
+function showBioDebugAlert(label: string, onDone?: () => void) {
+  if (Platform.OS !== 'ios') {
+    onDone?.();
+    return;
+  }
+  const log = getBioDebugLog() || '(empty)';
+  resetBioDebugLog();
+  Alert.alert(`BIO ${label}`, log, [{ text: 'OK', onPress: () => onDone?.() }]);
+}
 
 const Login: React.FC<LoginProps> = ({ navigation }) => {
+  const mountSeqRef = React.useRef<number>(0);
+  if (mountSeqRef.current === 0) {
+    mountSeqRef.current = ++loginMountSeq;
+    pushBioDebugLog(`Login MOUNT#${mountSeqRef.current}`);
+  }
   const { faceIdEnabled, isUseBiometric, timeAutoLock } = useSelector((state: RootState) => state.mobileSettings);
   const { buildNumber } = useSelector((state: RootState) => state.appVersion);
   const { numberOfConfirmations } = useConfirmationsInfo();
@@ -166,6 +189,8 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   }, [authMethod]);
   useEffect(() => forceCloseModalV2(true), []);
   useEffect(() => {
+    const eSeq = ++loginEffectSeq;
+    pushBioDebugLog(`effect#${eSeq} isUseBiometric=${isUseBiometric}`);
     if (!isUseBiometric) {
       return;
     }
@@ -173,7 +198,9 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
       // Because only iOS-Face ID is require permission, then we need to check permission's availbility
       (async () => {
         try {
+          pushBioDebugLog(`effect#${eSeq} check biometry available`);
           const isBiometricAvailable = await getSupportedBiometryType();
+          pushBioDebugLog(`effect#${eSeq} available=${!!isBiometricAvailable?.available}`);
           if (isBiometricAvailable?.available) {
             requestUnlockWithBiometric();
           } else {
@@ -192,21 +219,35 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   }, []);
 
   async function requestUnlockWithBiometric() {
+    const rSeq = ++bioRequestSeq;
+    pushBioDebugLog(`req#${rSeq} inFlight=${isBiometricUnlockInFlight}`);
     if (isBiometricUnlockInFlight) {
+      pushBioDebugLog(`req#${rSeq} BAILED`);
       return;
     }
     isBiometricUnlockInFlight = true;
+    let pwd: string | undefined;
     try {
-      const password = await getKeychainPassword();
-      if (!password) {
+      pushBioDebugLog(`req#${rSeq} -> getKeychainPassword`);
+      pwd = await getKeychainPassword();
+      pushBioDebugLog(`req#${rSeq} <- hasPwd=${!!pwd}`);
+      if (!pwd) {
         throw 'Biometry is not available';
       }
-      setTimeout(() => onUnlock(password), 100);
     } catch (e) {
+      pushBioDebugLog(`req#${rSeq} ERROR ${String(e).slice(0, 60)}`);
       console.warn(e);
       setAuthMethod('master-password');
     } finally {
       isBiometricUnlockInFlight = false;
+    }
+    // Show debug Alert AFTER all FaceID prompts settled, BEFORE onUnlock so
+    // the user can screenshot the trace. Tapping OK proceeds with unlock.
+    if (pwd) {
+      const password = pwd;
+      showBioDebugAlert(`req#${rSeq}`, () => setTimeout(() => onUnlock(password), 100));
+    } else {
+      showBioDebugAlert(`req#${rSeq} (no pwd)`);
     }
   }
 
