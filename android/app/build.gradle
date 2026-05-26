@@ -83,8 +83,8 @@ android {
         applicationId "app.subwallet.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 521
-        versionName "1.2.38"
+        versionCode 526
+        versionName "1.2.39"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
 
@@ -123,6 +123,8 @@ android {
 dependencies {
 // If your app supports Android versions before Ice Cream Sandwich (API level 14)
   implementation 'com.facebook.fresco:animated-base-support:1.3.0'
+
+  implementation "androidx.biometric:biometric:1.1.0"
 
   // For animated GIF support
   implementation 'com.facebook.fresco:animated-gif:2.5.0'
