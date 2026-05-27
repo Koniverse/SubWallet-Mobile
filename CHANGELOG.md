@@ -1,3 +1,7 @@
+## 1.2.40 (527)
+- Optimize navigation delays, adjust login logic, and improve button behavior. (#1780)
+- Remove deprecated biometric migration logic and fix navigation edge cases. (#1780)
+
 ## 1.2.39 (526)
 
 
