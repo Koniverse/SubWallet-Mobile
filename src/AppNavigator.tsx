@@ -593,13 +593,13 @@ const AppNavigator = ({ isAppReady }: Props) => {
     if (isLogin && !!accounts.length && isNavigationReady) {
       confirmModal.hideConfirmModal();
       if (currentRoute && currentRoute.name === 'Confirmations') {
-        setTimeout(() => navigationRef.current?.dispatch(StackActions.replace('Login')), 300);
+        setTimeout(() => navigationRef.current?.dispatch(StackActions.replace('Login')), 50);
       } else {
-        currentRoute?.name !== 'Login' && setTimeout(() => navigationRef.current?.navigate('Login'), 300); // fix to
+        currentRoute?.name !== 'Login' && setTimeout(() => navigationRef.current?.navigate('Login'), 50);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLogin, isNavigationReady, accounts, currentRoute?.name]);
+  }, [isLogin, isNavigationReady, accounts.length, currentRoute?.name]);
 
   useEffect(() => {
     if (isEmptyAccounts) {
@@ -625,6 +625,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       <PortalHost name="ConfirmationModalHost" />
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={onError}>
         <Stack.Navigator
+          initialRouteName={isLogin && accounts.length > 0 ? 'Login' : 'Home'}
           screenOptions={{
             animation: 'fade',
           }}

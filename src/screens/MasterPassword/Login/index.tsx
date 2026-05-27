@@ -102,7 +102,12 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
           if (faceIdEnabled && !isUseBiometric) {
             // Deprecated: Migrate use biometrics
           } else {
-            navigation.goBack();
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+            } else {
+              // Login was the initial route (app booted while locked) — no Home in stack to pop back to.
+              navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
+            }
             forceCloseModalV2(!!(isDeepLinkConnect || !!numberOfConfirmations));
           }
         })

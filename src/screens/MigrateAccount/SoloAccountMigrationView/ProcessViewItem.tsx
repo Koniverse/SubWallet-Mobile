@@ -187,20 +187,27 @@ export const ProcessViewItem = ({
               iconColor={submitting ? theme.colorTextLight5 : theme.colorWhite}
               weight={'fill'}
             />
-          }>
+          }
+        >
           {'Skip'}
         </Button>
         <Button
           block
+          loading={submitting}
           disabled={submitting || validating || !!formState.errors.accountName.length}
           onPress={() => _onApprove(formState)}
           icon={
             <Icon
               phosphorIcon={CheckCircleIcon}
-              iconColor={submitting || validating || !!formState.errors.accountName.length ? theme.colorTextLight5 : theme.colorWhite}
+              iconColor={
+                submitting || validating || !!formState.errors.accountName.length
+                  ? theme.colorTextLight5
+                  : theme.colorWhite
+              }
               weight={'fill'}
             />
-          }>
+          }
+        >
           {i18n.buttonTitles.approve}
         </Button>
       </View>
