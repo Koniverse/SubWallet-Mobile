@@ -27,16 +27,13 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import {
-  createKeychainPassword,
   getKeychainPassword,
   getSupportedBiometryType,
   resetKeychainPassword,
 } from 'utils/account';
-import { updateFaceIdEnable, updateUseBiometric } from 'stores/MobileSettings';
+import { updateUseBiometric } from 'stores/MobileSettings';
 import { FORCE_HIDDEN_EVENT } from 'components/design-system-ui/modal/ModalBaseV2';
-import MigrateToKeychainPasswordModal from '../MigrateToKeychainPasswordModal';
-import { backupStorageData, mmkvStore } from 'utils/storage';
-import { setBuildNumber } from 'stores/AppVersion';
+import { backupStorageData } from 'utils/storage';
 import { LockTimeout } from 'stores/types';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
 
@@ -59,17 +56,21 @@ function forceCloseModalV2(isForceClose: boolean) {
     DeviceEventEmitter.emit(FORCE_HIDDEN_EVENT, isForceClose);
   }
 }
-// Deprecated: This key only exist in keychain version
-const isKeychainEnabled = mmkvStore.getBoolean('isKeychainEnabled');
-const BEFORE_KEYCHAIN_BUILD_NUMBER = 211;
+
+const formConfig = {
+  password: {
+    name: i18n.common.walletPassword,
+    value: '',
+    require: false,
+  },
+};
 
 const Login: React.FC<LoginProps> = ({ navigation }) => {
   const { faceIdEnabled, isUseBiometric, timeAutoLock } = useSelector((state: RootState) => state.mobileSettings);
-  const { buildNumber } = useSelector((state: RootState) => state.appVersion);
+  const { accounts } = useSelector((state: RootState) => state.accountState);
   const { numberOfConfirmations } = useConfirmationsInfo();
   const [loading, setLoading] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [modalMigrateVisible, setModalMigrateVisible] = useState<boolean>(false);
   const [resetAccLoading, setAccLoading] = useState(false);
   const [eraseAllLoading, setEraseAllLoading] = useState(false);
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
@@ -80,13 +81,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const styles = createStyles();
   const { unlockApp, resetPinCode } = useAppLock();
   const insets = useSafeAreaInsets();
-  const formConfig = {
-    password: {
-      name: i18n.common.walletPassword,
-      value: '',
-      require: false,
-    },
-  };
   useHandlerHardwareBackPress(true);
 
   const onUnlock = useCallback((password: string) => {
@@ -107,19 +101,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
           }
           if (faceIdEnabled && !isUseBiometric) {
             // Deprecated: Migrate use biometrics
-            createKeychainPassword(password)
-              .then(res => {
-                if (res) {
-                  dispatch(updateUseBiometric(true));
-                } else {
-                  dispatch(updateUseBiometric(false));
-                }
-              })
-              .finally(() => {
-                dispatch(updateFaceIdEnable(false));
-                forceCloseModalV2(!!(isDeepLinkConnect || !!numberOfConfirmations));
-                navigation.goBack();
-              });
           } else {
             navigation.goBack();
             forceCloseModalV2(!!(isDeepLinkConnect || !!numberOfConfirmations));
@@ -136,13 +117,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    // Deprecated: Migrate master password for biometric user
-    if (!isKeychainEnabled && buildNumber <= BEFORE_KEYCHAIN_BUILD_NUMBER && buildNumber > 1) {
-      setModalMigrateVisible(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  useEffect(() => {
     if (authMethod === 'master-password') {
       setTimeout(() => {
         focus('password')();
@@ -151,6 +125,11 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authMethod]);
   useEffect(() => forceCloseModalV2(true), []);
+  useEffect(() => {
+    if (!accounts.length) {
+      navigation.goBack();
+    }
+  }, [accounts.length, navigation]);
   useEffect(() => {
     if (!isUseBiometric) {
       return;
@@ -242,11 +221,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
   const dismissKeyboard = () => Keyboard.dismiss();
 
-  const neverShowMigrateBiometricModalAgain = () => {
-    dispatch(setBuildNumber(1));
-    mmkvStore.set('isKeychainEnabled', true);
-  };
-
   return (
     <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={imageBackgroundStyle}>
       <TouchableWithoutFeedback onPress={dismissKeyboard}>
@@ -304,15 +278,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
           </View>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
-      {/* Deprecated: Migrate master password for biometric user */}
-      {buildNumber <= BEFORE_KEYCHAIN_BUILD_NUMBER && (
-        <MigrateToKeychainPasswordModal
-          modalVisible={modalMigrateVisible}
-          setModalVisible={setModalMigrateVisible}
-          isBiometricV1Enabled={faceIdEnabled && !isUseBiometric}
-          onPress={neverShowMigrateBiometricModalAgain}
-        />
-      )}
     </ImageBackground>
   );
 };

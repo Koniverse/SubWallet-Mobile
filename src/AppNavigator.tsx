@@ -595,7 +595,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       if (currentRoute && currentRoute.name === 'Confirmations') {
         setTimeout(() => navigationRef.current?.dispatch(StackActions.replace('Login')), 300);
       } else {
-        setTimeout(() => navigationRef.current?.navigate('Login'), 300);
+        currentRoute?.name !== 'Login' && setTimeout(() => navigationRef.current?.navigate('Login'), 300); // fix to
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -737,7 +737,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   component={Confirmations}
                   options={{ gestureEnabled: false, animationDuration: 100 }}
                 />
-                {!!accounts.length && <Stack.Screen name="Login" component={LoginScreen} />}
+                <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name={'UnlockModal'} component={UnlockModal} />
               </Stack.Group>
             </>
