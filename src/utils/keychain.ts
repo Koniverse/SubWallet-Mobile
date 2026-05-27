@@ -1,6 +1,7 @@
 import SInfo, { SensitiveInfoOptions } from 'react-native-sensitive-info';
 import { Alert } from 'react-native';
 import i18n from './i18n/i18n';
+import { getLegacyBiometricPassword } from './legacyBiometricMigration';
 
 // Keychain configuration — react-native-sensitive-info v6 (Nitro) API.
 // `service` MUST stay 'swKeychain' so items written by older app versions
@@ -28,6 +29,9 @@ function alertFailedAttempts(e: any) {
 const username = 'sw-user';
 export const createKeychainPassword = async (password: string) => {
   try {
+    await SInfo.deleteItem(username, keychainConfig);
+    // Also purge any legacy iCloud-synchronizable entry written by older app versions.
+    await SInfo.deleteItem(username, { ...keychainConfig, iosSynchronizable: true });
     await SInfo.setItem(username, password, keychainConfig);
     return true;
   } catch (e) {
@@ -49,6 +53,14 @@ export const getKeychainPassword = async () => {
       // items by default, so retry as a synchronizable lookup to find items
       // written by older app versions.
       sensitiveInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
+    }
+
+    if (!sensitiveInfo?.value) {
+      const legacyPassword = await getLegacyBiometricPassword();
+
+      if (legacyPassword) {
+        return legacyPassword;
+      }
     }
 
     return sensitiveInfo?.value;

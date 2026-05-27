@@ -72,26 +72,37 @@ export class WebRunnerHandler {
   dispatch?: React.Dispatch<WebRunnerControlAction>;
   shouldReloadHandler: boolean = false;
   isBackupOnInit = false;
+  androidBundleReadyPromise: Promise<void> = Promise.resolve();
 
   constructor() {
     if (Platform.OS === 'android') {
       if (completeBackUpData) {
-        const DOCUMENT_DIRECTORY_PATH = RNFS.DocumentDirectoryPath;
-        const BUNDLE_PATH = isDevMode ? 'DevModeWeb.bundle' : 'Web.bundle';
-        const ANDROID_BUNDLE_PATH = `${DOCUMENT_DIRECTORY_PATH}/${BUNDLE_PATH}/site`;
-        (async () => {
-          const exists = await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`);
-          const lastAppCopyVersion = mmkvStore.getString('last-app-copy-version');
-          if (exists && getVersion() === lastAppCopyVersion) {
-            return;
-          }
-          await copyAndroidWebBundle(BUNDLE_PATH);
-          this.reload();
-        })();
+        this.androidBundleReadyPromise = this.prepareAndroidBundle();
       }
     }
 
     AppState.addEventListener('change', this.onAppStateChange);
+  }
+
+  private async prepareAndroidBundle() {
+    const BUNDLE_PATH = isDevMode ? 'DevModeWeb.bundle' : 'Web.bundle';
+    const ANDROID_BUNDLE_PATH = `${RNFS.DocumentDirectoryPath}/${BUNDLE_PATH}/site`;
+    const appVersion = getVersion();
+
+    try {
+      const exists = await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`);
+      const lastAppCopyVersion = mmkvStore.getString('last-app-copy-version');
+
+      if (exists && appVersion === lastAppCopyVersion) {
+        return;
+      }
+
+      await copyAndroidWebBundle(BUNDLE_PATH);
+      mmkvStore.set('last-app-copy-version', appVersion);
+      started = false;
+    } catch (e) {
+      console.warn('Failed to prepare Android WebRunner bundle', e);
+    }
   }
 
   update(globalState: WebRunnerGlobalState, dispatch: React.Dispatch<WebRunnerControlAction>) {
@@ -138,6 +149,10 @@ export class WebRunnerHandler {
   async serverReady() {
     if (started && server) {
       return true;
+    }
+
+    if (Platform.OS === 'android') {
+      await this.androidBundleReadyPromise;
     }
 
     const BUNDLE_PATH = isDevMode ? 'DevModeWeb.bundle' : 'Web.bundle';

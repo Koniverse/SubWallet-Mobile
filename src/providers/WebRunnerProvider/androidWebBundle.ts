@@ -1,9 +1,15 @@
 import * as RNFS from '@dr.pogodin/react-native-fs';
 
 export const copyAndroidWebBundle = async (bundleName: string) => {
-  const destRoot = `${RNFS.DocumentDirectoryPath}/${bundleName}/site`;
+  const destBundleRoot = `${RNFS.DocumentDirectoryPath}/${bundleName}`;
+  const tempBundleRoot = `${RNFS.DocumentDirectoryPath}/${bundleName}.tmp`;
+  const tempRoot = `${tempBundleRoot}/site`;
 
-  await RNFS.mkdir(destRoot);
+  if (await RNFS.exists(tempBundleRoot)) {
+    await RNFS.unlink(tempBundleRoot);
+  }
+
+  await RNFS.mkdir(tempRoot);
 
   const copyDir = async (assetPath: string, destPath: string) => {
     const items = await RNFS.readDirAssets(assetPath);
@@ -20,5 +26,11 @@ export const copyAndroidWebBundle = async (bundleName: string) => {
     }
   };
 
-  await copyDir(`${bundleName}/site`, destRoot);
-}
+  await copyDir(`${bundleName}/site`, tempRoot);
+
+  if (await RNFS.exists(destBundleRoot)) {
+    await RNFS.unlink(destBundleRoot);
+  }
+
+  await RNFS.moveFile(tempBundleRoot, destBundleRoot);
+};

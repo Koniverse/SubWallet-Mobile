@@ -13,7 +13,7 @@ import { DEFAULT_ACCOUNT_TYPES, EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE, TON_AC
 import SInfo, { SensitiveInfoOptions } from 'react-native-sensitive-info';
 import { Alert } from 'react-native';
 import i18n from 'utils/i18n/i18n.ts';
-import ReactNativeBiometrics from 'react-native-biometrics';
+import { getLegacyBiometricPassword } from 'utils/legacyBiometricMigration';
 
 export const isAddressAllowedWithAuthType = (address: string, authAccountTypes?: AccountAuthType[]) => {
   if (isEthereumAddress(address) && authAccountTypes?.includes('evm')) {
@@ -218,6 +218,14 @@ export const getKeychainPassword = async () => {
       sensitiveInfo = await SInfo.getItem(username, { ...keychainConfig, iosSynchronizable: true });
     }
 
+    if (!sensitiveInfo?.value) {
+      const legacyPassword = await getLegacyBiometricPassword();
+
+      if (legacyPassword) {
+        return legacyPassword;
+      }
+    }
+
     return sensitiveInfo?.value;
   } catch (e) {
     alertFailedAttempts(e);
@@ -239,9 +247,9 @@ export const resetKeychainPassword = async () => {
 
 export const getSupportedBiometryType = async () => {
   try {
-    const rnBiometrics = new ReactNativeBiometrics();
-
-    return await rnBiometrics.isSensorAvailable();
+    // v6 removed `isSensorAvailable()`; use the security-levels API instead.
+    const levels = await SInfo.getSupportedSecurityLevels();
+    return { available: levels.biometry };
   } catch (e) {
     console.warn('Get failed!');
     return null;

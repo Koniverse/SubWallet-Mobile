@@ -1,11 +1,24 @@
 // Hermes does not support `import.meta`. Some ESM dependencies (notably
-// @polkadot/* `packageInfo.js`) reference it. Replace `import.meta` with `{}`
-// so guarded expressions like `import.meta && import.meta.url` fall back safely.
+// @polkadot/* `packageInfo.js`) reference it. Replace it so guarded
+// expressions like `import.meta && import.meta.url` fall back safely.
 const stripImportMeta = ({ types: t }) => ({
   name: 'strip-import-meta',
   visitor: {
+    MemberExpression(path) {
+      if (
+        path.node.object.type === 'MetaProperty' &&
+        path.node.object.meta.name === 'import' &&
+        path.node.object.property.name === 'meta' &&
+        path.node.property.type === 'Identifier' &&
+        path.node.property.name === 'url'
+      ) {
+        path.replaceWith(t.stringLiteral(''));
+      }
+    },
     MetaProperty(path) {
-      path.replaceWith(t.objectExpression([]));
+      if (path.node.meta.name === 'import' && path.node.property.name === 'meta') {
+        path.replaceWith(t.nullLiteral());
+      }
     },
   },
 });
