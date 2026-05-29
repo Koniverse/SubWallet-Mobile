@@ -1,12 +1,12 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
-import { Image, StyleProp, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDownIcon } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
-import { Typography } from 'components/design-system-ui';
+import { Image, Typography } from 'components/design-system-ui';
 
 interface Props extends FieldBaseProps {
   showIcon?: boolean;
@@ -55,7 +55,7 @@ export const ServiceSelectField = ({
     <FieldBase label={label} {...fieldBase} outerStyle={outerStyle}>
       <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-          {!!value && <Image source={source} style={{ width: 24, height: 24, marginRight: 8 }} />}
+          {!!value && <Image src={source} style={{ width: 24, height: 24, marginRight: 8 }} />}
           {!!value && (
             <Typography.Text ellipsis style={accountNameTextStyle}>
               {serviceName}

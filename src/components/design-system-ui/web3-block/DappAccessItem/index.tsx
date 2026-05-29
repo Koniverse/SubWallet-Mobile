@@ -1,8 +1,8 @@
-import { Typography } from 'components/design-system-ui';
+import { Typography, Image } from 'components/design-system-ui';
 import Web3Block, { Web3BlockProps } from '../Web3Block';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
-import { Image, StyleProp, View, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import createStyle from './styles';
 import { CaretRightIcon } from 'phosphor-react-native';
 import { DAppIconMap, DAppTitleMap } from '../../../../predefined/dAppSites';
@@ -44,7 +44,14 @@ const DappAccessItem: React.FC<DappAccessItemProps> = (props: DappAccessItemProp
         container: [styles.container, containerStyle],
       }}
       {...restProps}
-      leftItem={leftItem || <Image source={{ uri: getImageSource(hostName), width: 28, height: 28 }} />}
+      leftItem={
+        leftItem || (
+          <Image
+            src={getImageSource(hostName)}
+            style={{ width: 28, height: 28 }}
+          />
+        )
+      }
       middleItem={
         middleItem || (
           <View style={{ flexDirection: 'row', alignItems: 'stretch', flex: 1 }}>
@@ -60,7 +67,15 @@ const DappAccessItem: React.FC<DappAccessItemProps> = (props: DappAccessItemProp
           </View>
         )
       }
-      rightItem={rightItem || <CaretRightIcon color={ColorMap.disabled} size={20} weight={'bold'} />}
+      rightItem={
+        rightItem || (
+          <CaretRightIcon
+            color={ColorMap.disabled}
+            size={20}
+            weight={'bold'}
+          />
+        )
+      }
     />
   );
 };

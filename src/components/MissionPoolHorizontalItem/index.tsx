@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, Platform, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Divider, Image, Typography } from 'components/design-system-ui';
 import { IconWeight } from 'phosphor-react-native';
 import { MissionInfo } from 'types/missionPool';
@@ -13,6 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { MissionPoolStatusTag } from 'components/MissionPoolHorizontalItem/MissionPoolStatusTag';
 import { ImageLogosMap } from 'assets/logo';
 import { MissionPoolCategory } from 'components/MissionPoolHorizontalItem/MissionPoolCategories';
+import FastImage from '@d11/react-native-fast-image';
 
 export enum TagType {
   FCFS = 'fcfs',
@@ -48,7 +49,9 @@ export const MissionPoolHorizontalItem = ({ data, onPressItem, containerStyle, i
 
   return (
     <TouchableOpacity activeOpacity={1} onPress={onPressItem} style={[styles.missionItemWrapper, containerStyle]}>
-      <ImageBackground style={styles.backdropImgBlurView} source={{ uri: data.backdrop_image }} blurRadius={30} />
+      <View style={styles.backdropImgBlurView}>
+        <FastImage style={StyleSheet.absoluteFill} source={{ uri: data.backdrop_image }} blurRadius={30} />
+      </View>
       <LinearGradient
         angle={90}
         locations={isAndroid ? [0, 0.1] : [0, 0.1]}

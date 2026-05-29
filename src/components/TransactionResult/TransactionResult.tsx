@@ -1,10 +1,11 @@
 import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import React, { useCallback, useMemo } from 'react';
-import { Image, ImageStyle, Linking, ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { Linking, ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { SubmitButton } from 'components/SubmitButton';
 import i18n from 'utils/i18n/i18n';
+import { Image } from 'components/design-system-ui';
 import {
   centerStyle,
   FontMedium,
@@ -15,6 +16,7 @@ import {
   sharedStyles,
 } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { ImageStyle } from '@d11/react-native-fast-image';
 
 interface Props {
   isTxSuccess: boolean;
@@ -81,7 +83,7 @@ const ButtonStyle: StyleProp<ViewStyle> = {
   marginBottom: 16,
 };
 
-const ImageContentStyle: StyleProp<ImageStyle> = {
+const   ImageContentStyle: StyleProp<ImageStyle> = {
   width: 200,
   marginBottom: 24,
 };
@@ -120,18 +122,18 @@ const TransactionResult = ({
   }, [scanExplorerTxUrl]);
 
   return (
-    <ContainerWithSubHeader onPressBack={() => {}} showLeftBtn={false}>
+    <ContainerWithSubHeader onPressBack={() => { }} showLeftBtn={false}>
       <View style={ContainerStyle}>
         <View style={ResultContainerStyle}>
           {isTxSuccess ? (
             <>
-              <Image source={require('assets/success-status.png')} style={ImageContentStyle} />
+              <Image src={require('assets/success-status.png')} style={ImageContentStyle} />
               <Text style={ResultTitleStyle}>{success.title}</Text>
               <Text style={ResultSubTextStyle}>{success.subText}</Text>
             </>
           ) : (
             <ScrollView style={ScrollContentStyle} contentContainerStyle={ScrollContainerStyle}>
-              <Image source={require('assets/fail-status.png')} style={ImageContentStyle} />
+              <Image src={require('assets/fail-status.png')} style={ImageContentStyle} />
               <Text style={ResultTitleStyle}>{fail.title}</Text>
               <Text style={ResultSubTextStyle}>{fail.subText}</Text>
               <Text style={ErrorTextStyle}>{txError}</Text>

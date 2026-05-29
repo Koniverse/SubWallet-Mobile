@@ -1,7 +1,8 @@
 import Identicon from '@polkadot/reactnative-identicon';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import React, { useMemo } from 'react';
-import { Image, StyleProp, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
+import FastImage from '@d11/react-native-fast-image';
 // @ts-ignore
 import { toDataUrl } from './blockies.js';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -47,7 +48,7 @@ const Avatar: React.FC<SWLogoProps> = ({ theme, size = 40, value, isShowSubIcon,
   if (!value || !isAddress(value)) {
     return (
       <View style={[_style.container, { width: size, height: size, borderWidth: size / 20 }]}>
-        <Image source={Images.avatarPlaceholder} style={getEthereumIdenticonStyle(size - 8)} />
+        <FastImage source={Images.avatarPlaceholder} style={getEthereumIdenticonStyle(size - 8)} />
       </View>
     );
   }
@@ -55,7 +56,7 @@ const Avatar: React.FC<SWLogoProps> = ({ theme, size = 40, value, isShowSubIcon,
   if (_theme === 'ethereum') {
     return (
       <View style={[_style.container, { width: size, height: size, borderWidth: size / 20 }]}>
-        <Image source={{ uri: toDataUrl(formattedAddress) }} style={getEthereumIdenticonStyle(size - 8)} />
+        <FastImage source={{ uri: toDataUrl(formattedAddress) }} style={getEthereumIdenticonStyle(size - 8)} />
         {isShowSubIcon && subIcon}
       </View>
     );

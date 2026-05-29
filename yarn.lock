@@ -8781,7 +8781,7 @@ __metadata:
     react-native-in-app-review: ^4.3.3
     react-native-inappbrowser-reborn: ^3.7.0
     react-native-keyboard-aware-scroll-view: ^0.9.5
-    react-native-keychain: ^8.1.2
+    react-native-keychain: ^10.0.0
     react-native-linear-gradient: ^2.8.3
     react-native-localization: ^2.3.2
     react-native-localize: ^3.6.0
@@ -19499,10 +19499,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-keychain@npm:^8.1.2":
-  version: 8.2.0
-  resolution: "react-native-keychain@npm:8.2.0"
-  checksum: 4c4d5331013b8ab17c21120a2388e1e82aa30586738c0a34ed9dcffb6ce12454125ddb690951cad5563c9290b060eb68ccffa9477650cc3a5ddc347696b5d4ef
+"react-native-keychain@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "react-native-keychain@npm:10.0.0"
+  checksum: 1055cc192df58cb110bd49df1264a401007a354ad28b93adefd740aeac0f746cdab86d7428887694a1b0949ef8d0dc85db8984e77db684d7b967180167b64d42
   languageName: node
   linkType: hard
 
