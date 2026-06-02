@@ -4,7 +4,7 @@ import BrowserHome from './BrowserHome';
 import BrowserHeader from './Shared/BrowserHeader';
 import BrowserListByCategory from './BrowserListByCategory';
 import { MaterialTopTabNavigationOptions, createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { Animated, Dimensions, View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import { ParamListBase, RouteProp, useNavigationState } from '@react-navigation/native';
 import { FakeSearchInput } from 'screens/Home/Browser/Shared/FakeSearchInput';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -91,25 +91,10 @@ export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
     const categoryTabRoutes = dAppCategories ? dAppCategories?.map(item => ({ key: item.slug, title: item.name })) : [];
     return [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
   }, [dAppCategories]);
-  const av = new Animated.Value(0);
-  av.addListener(() => {
-    return;
-  });
-
   const tabScreenOptions = (item: RoutesType) => {
     return {
       tabBarIcon: ({ focused }: TabbarType) => tabbarIcon(focused, item, theme),
     };
-  };
-
-  const screenListener = {
-    focus: () => {
-      Animated.timing(av, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    },
   };
 
   return (
@@ -122,7 +107,6 @@ export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
         <Tab.Navigator
           initialLayout={initialLayout}
           initialRouteName="all"
-          screenListeners={screenListener}
           screenOptions={screenOptions(currentTabIndex)}>
           {allTabRoutes.map((item, index) => {
             if (index === 0) {

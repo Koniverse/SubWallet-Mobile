@@ -11,6 +11,7 @@ export interface SWImageProps extends FastImageProps {
   containerStyle?: StyleProp<ViewStyle>;
   shape?: ImageShape;
   src: Source | ImageRequireSource | string;
+  showLoading?: boolean;
   squircleSize?: number;
 }
 
@@ -18,17 +19,27 @@ const Image: React.FC<SWImageProps> = ({
   containerStyle,
   squircleSize,
   shape = 'default',
+  showLoading = true,
   src,
   style,
+  onError,
+  onLoadEnd: onLoadEndProp,
+  onLoadStart: onLoadStartProp,
   ...restProps
 }) => {
   const [isLoading, setLoading] = useState(true);
 
-  const onLoadStart = () => {
+  const onLoadStart: FastImageProps['onLoadStart'] = () => {
     setLoading(true);
+    onLoadStartProp?.();
   };
-  const onLoadEnd = () => {
+  const onLoadEnd: FastImageProps['onLoadEnd'] = () => {
     setLoading(false);
+    onLoadEndProp?.();
+  };
+  const onImageError: FastImageProps['onError'] = event => {
+    setLoading(false);
+    onError?.(event);
   };
 
   const theme = useSubWalletTheme().swThemes;
@@ -43,20 +54,27 @@ const Image: React.FC<SWImageProps> = ({
 
   const imageNode = (() => {
     const isSrcStringType = typeof src === 'string';
+    const isUriSource = typeof src === 'object' && src !== null && 'uri' in src;
+    const sourceUri = isSrcStringType ? src : isUriSource ? src.uri : undefined;
 
-    if (isSrcStringType) {
-      const iconFragment = src.split('.');
+    if ((isSrcStringType || isUriSource) && !sourceUri) {
+      return null;
+    }
+
+    if (sourceUri) {
+      const iconFragment = sourceUri.split('.');
       if (iconFragment[iconFragment.length - 1]?.toLowerCase() === 'svg') {
-        return <SvgUri width={squircleSize} height={squircleSize} uri={src} onLoad={onLoadEnd} />;
+        return <SvgUri width={squircleSize} height={squircleSize} uri={sourceUri} onLoad={() => setLoading(false)} />;
       }
     }
 
     return (
       <FastImage
-        source={isSrcStringType ? { uri: src } : src}
+        source={isSrcStringType ? { uri: sourceUri } : src}
         style={[customImageStyle]}
         onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}
+        onError={onImageError}
         {...restProps}
       />
     );
@@ -70,7 +88,7 @@ const Image: React.FC<SWImageProps> = ({
           customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
           backgroundColor={'transparent'}>
           {imageNode}
-          {isLoading && (
+          {showLoading && isLoading && (
             <View style={_style.loadingImage}>
               <ActivityIndicator size={squircleSize ? squircleSize / 2 : 20} indicatorColor="#737373" />
             </View>
@@ -82,7 +100,7 @@ const Image: React.FC<SWImageProps> = ({
   return (
     <View style={[{ position: 'relative' }, customStyle]}>
       {imageNode}
-      {isLoading && (
+      {showLoading && isLoading && (
         <View style={[_style.loadingImage, _style[`${shape}Image`]]}>
           <ActivityIndicator size={squircleSize ? squircleSize / 2 : 20} indicatorColor="#737373" />
         </View>

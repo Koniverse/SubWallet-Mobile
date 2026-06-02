@@ -153,7 +153,8 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
       {showImage ? (
         <Image
           style={ImageStyle}
-          src={{ uri: url !== '' ? url : undefined }}
+          src={{ uri: url }}
+          showLoading={false}
           onLoad={handleOnLoad}
           onError={handleImageError}
         />

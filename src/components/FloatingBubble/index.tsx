@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
+import Animated, { cancelAnimation, useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Icon from 'components/design-system-ui/icon';
 import { WarningCircleIcon } from 'phosphor-react-native';
@@ -32,14 +32,25 @@ const FloatingBubble = ({ navigateToNotification }: Props) => {
 
   useEffect(() => {
     // Hide text after 3 seconds
+    let shrinkTimeout: ReturnType<typeof setTimeout> | undefined;
+    let hideTextTimeout: ReturnType<typeof setTimeout> | undefined;
+
     if (!isLocked) {
-      setTimeout(() => {
+      shrinkTimeout = setTimeout(() => {
         textTranslateX.value = withTiming(-20, { duration: 500 });
         opacity.value = withTiming(0, { duration: 500 }); // Fade out text
         bubbleWidth.value = withTiming(48, { duration: 500 }); // Shrink to fit only the icon
-        setTimeout(() => setShowText(false), 500);
+        hideTextTimeout = setTimeout(() => setShowText(false), 500);
       }, 3000);
     }
+
+    return () => {
+      shrinkTimeout && clearTimeout(shrinkTimeout);
+      hideTextTimeout && clearTimeout(hideTextTimeout);
+      cancelAnimation(textTranslateX);
+      cancelAnimation(opacity);
+      cancelAnimation(bubbleWidth);
+    };
   }, [bubbleWidth, isLocked, opacity, textTranslateX]);
 
   const animatedStyle = useAnimatedStyle(() => ({

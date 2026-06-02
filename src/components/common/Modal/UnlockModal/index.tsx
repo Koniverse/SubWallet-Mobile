@@ -29,7 +29,7 @@ import { SVGImages } from 'assets/index';
 import { getKeychainPassword } from 'utils/account';
 import { Portal } from '@gorhom/portal';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 type AuthMethod = 'biometric' | 'master-password';
 const UNLOCK_BIOMETRY_TIMEOUT = Platform.OS === 'ios' ? 0 : 300;
@@ -180,8 +180,14 @@ export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
       .catch(() => setAuthMethod('master-password'));
   };
 
+  const translateY = useSharedValue(0);
+
+  useEffect(() => {
+    translateY.value = withTiming(-keyboardOffset, { duration: 150 });
+  }, [keyboardOffset, translateY]);
+
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: withTiming(-keyboardOffset, { duration: 150 }) }],
+    transform: [{ translateY: translateY.value }],
   }));
 
   const renderMainContent = () => (
