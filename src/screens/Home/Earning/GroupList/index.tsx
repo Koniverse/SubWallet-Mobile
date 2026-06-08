@@ -32,6 +32,8 @@ import { ListRenderItemInfo } from '@shopify/flash-list';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken.ts';
+import { useToast } from 'react-native-toast-notifications';
 
 enum FilterOptionType {
   MAIN_NETWORK = 'MAIN_NETWORK',
@@ -122,6 +124,8 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
   const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('earning');
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [selectedPoolGroup, setSelectedPoolGroup] = React.useState<YieldGroupInfo | undefined>(undefined);
+  const { isShowBuyToken } = useShowBuyToken();
+  const { show, hideAll } = useToast();
 
   const positionSlugs = useMemo(() => {
     return yieldPositions.map(p => p.slug);
@@ -309,7 +313,12 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
                   style: 'default',
                   isPreferred: false,
                   onPress: () => {
-                    Linking.openURL('subwallet://browser?url=portal.astar.network');
+                    if (isShowBuyToken) {
+                      Linking.openURL('subwallet://browser?url=portal.astar.network');
+                    } else {
+                      hideAll();
+                      show(i18n.notificationMessage.comingSoon);
+                    }
                   },
                 },
               ]);
@@ -322,7 +331,7 @@ export const GroupList = ({ isHasAnyPosition, setStep }: Props) => {
         />
       );
     },
-    [isShowBalance, onPressItem],
+    [hideAll, isShowBalance, isShowBuyToken, onPressItem, show],
   );
 
   const onBack = useCallback(() => {
