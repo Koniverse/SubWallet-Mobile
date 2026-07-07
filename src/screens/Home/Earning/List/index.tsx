@@ -12,6 +12,8 @@ import { mmkvStore } from 'utils/storage';
 import BigN from 'bignumber.js';
 import { updateMktCampaignStatus } from 'stores/AppState';
 import WarningModal from 'components/Modal/WarningModal';
+import { EarningTermModal } from 'components/Modal/TermModal/parts/EarningTermModal';
+import { CONFIRM_COMPLIANCE_TERM } from 'constants/localStorage';
 
 const NEED_CHECK_TO_SHOW_WARNING_SLUGS = [
   'DOT___nomination_pool___polkadot',
@@ -21,10 +23,7 @@ const NEED_CHECK_TO_SHOW_WARNING_SLUGS = [
 ];
 
 let isShowAlert = false;
-export const EarningList = ({
-  navigation,
-  route,
-}: EarningListProps) => {
+export const EarningList = ({ navigation, route }: EarningListProps) => {
   const data = useGroupYieldPosition();
   const hasData = !!data?.length;
   const hasDataFlag = useRef(hasData);
@@ -39,9 +38,15 @@ export const EarningList = ({
   const [positionLoading, setPositionLoading] = useState(false);
   const rootNavigation = useNavigation<RootNavigationProps>();
   const isOpenedWarningPopup = mmkvStore.getBoolean('isOpenedWarningPopup');
+  const [earningTermVisible, setEarningTermVisible] = useState(() => !mmkvStore.getBoolean(CONFIRM_COMPLIANCE_TERM));
   const { yieldPositions } = useSelector((state: RootState) => state.earning);
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
+
+  const onAcceptEarningTerm = () => {
+    mmkvStore.set(CONFIRM_COMPLIANCE_TERM, true);
+    setEarningTermVisible(false);
+  };
 
   const isShowWarningPopup = useMemo(() => {
     const filteredYieldPositionList = yieldPositions.filter(y => {
@@ -159,6 +164,12 @@ export const EarningList = ({
       ) : (
         <GroupList isHasAnyPosition={!!data.length} setStep={setCurrentStep} />
       )}
+
+      <EarningTermModal
+        modalVisible={earningTermVisible}
+        setModalVisible={setEarningTermVisible}
+        onPressAcceptBtn={onAcceptEarningTerm}
+      />
 
       <WarningModal
         visible={warningModalVisible}
