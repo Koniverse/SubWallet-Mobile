@@ -1,3 +1,6 @@
+## 1.2.43 (530)
+- Update webrunner to use paraspell v1 (#2054)
+
 ## 1.2.42 (529)
 - Support earning term (#2054)
 
