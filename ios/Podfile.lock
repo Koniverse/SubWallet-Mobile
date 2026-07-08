@@ -3079,8 +3079,34 @@ PODS:
     - Yoga
   - RNInAppBrowser (3.7.1):
     - React-Core
-  - RNKeychain (8.2.0):
+  - RNKeychain (10.0.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNLocalize (3.7.0):
     - boost
     - DoubleConversion
@@ -3994,7 +4020,7 @@ SPEC CHECKSUMS:
   RNFastImage: e75f88269b52687d6907db4f04f50095a6b1c921
   RNGestureHandler: 67d0939149fdc7d619ca6bb2de7ecf5b959539ae
   RNInAppBrowser: b53e6f6072c931115bc22ac9dc9510ac2cbea62d
-  RNKeychain: bfe3d12bf4620fe488771c414530bf16e88f3678
+  RNKeychain: 182d986f809280edd9444a557adc21845f7d1e6f
   RNLocalize: cb5b0df30f7c0cbaf2de6b48cdb12673b79e442a
   RNPermissions: 4c90ae9900d47c7c94d62f990ce83a94c541de86
   RNQrGenerator: 36f1af182d7673bc36e317aca0d293d19883d6e3

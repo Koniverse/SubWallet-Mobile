@@ -34,6 +34,8 @@ import { SVGImages } from 'assets/index';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import packageJSON from '../../../package.json';
 import env from 'react-native-config';
+import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken.ts';
+import { useToast } from 'react-native-toast-notifications';
 
 const settingTitleStyle: StyleProp<any> = {
   fontSize: 12,
@@ -70,8 +72,10 @@ const bundleVersion =
 export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponentProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
+  const { isShowBuyToken } = useShowBuyToken();
   const { lock } = useAppLock();
   const [hiddenCount, setHiddenCount] = useState(0);
+  const { show, hideAll } = useToast();
 
   const onCloseSettings = useCallback(() => {
     if (drawerNavigation?.dispatch) {
@@ -88,8 +92,13 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
   }, [drawerNavigation, navigation]);
 
   const onPressContactSupport = useCallback(() => {
-    Linking.openURL('subwallet://browser?url=https://support.subwallet.app/');
-  }, []);
+    if (isShowBuyToken) {
+      Linking.openURL('subwallet://browser?url=https://support.subwallet.app/');
+    } else {
+      hideAll();
+      show(i18n.notificationMessage.comingSoon);
+    }
+  }, [hideAll, isShowBuyToken, show]);
 
   const settingList: settingItemType[][] = useMemo(
     () => [

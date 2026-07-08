@@ -157,7 +157,8 @@ const MainScreen = () => {
         },
         tabBarActiveTintColor: ColorMap.light,
         tabBarInactiveTintColor: '#777777',
-      }}>
+      }}
+    >
       <Tab.Screen
         name={'Tokens'}
         component={TokensScreen}
@@ -207,34 +208,36 @@ const MainScreen = () => {
           }}
         />
       )}
-      <Tab.Screen
-        name={'MissionPools'}
-        initialParams={{ type: 'all' }}
-        listeners={() => ({
-          tabPress: () => {
-            const missionPoolActiveIds = activeMissionPool.map(item => item.id);
-            setMissionPoolIds(missionPoolActiveIds);
-            mmkvStore.set('storedLiveMissionPools', JSON.stringify(missionPoolActiveIds));
-          },
-        })}
-        component={MissionPoolScreen}
-        options={{
-          tabBarLabel: 'Missions',
-          tabBarHideOnKeyboard: Platform.OS === 'android',
-          tabBarIcon: missionPoolTabBarIcon,
-          tabBarBadge: activeMissionPoolNumb === 0 ? undefined : activeMissionPoolNumb,
-          tabBarBadgeStyle: {
-            top: Platform.OS === 'ios' ? 0 : 9,
-            minWidth: 14,
-            maxHeight: 14,
-            borderRadius: 7,
-            fontSize: 10,
-            lineHeight: 13,
-            alignSelf: undefined,
-            backgroundColor: theme.colorError,
-          },
-        }}
-      />
+      {isShowBuyToken && (
+        <Tab.Screen
+          name={'MissionPools'}
+          initialParams={{ type: 'all' }}
+          listeners={() => ({
+            tabPress: () => {
+              const missionPoolActiveIds = activeMissionPool.map(item => item.id);
+              setMissionPoolIds(missionPoolActiveIds);
+              mmkvStore.set('storedLiveMissionPools', JSON.stringify(missionPoolActiveIds));
+            },
+          })}
+          component={MissionPoolScreen}
+          options={{
+            tabBarLabel: 'Missions',
+            tabBarHideOnKeyboard: Platform.OS === 'android',
+            tabBarIcon: missionPoolTabBarIcon,
+            tabBarBadge: activeMissionPoolNumb === 0 ? undefined : activeMissionPoolNumb,
+            tabBarBadgeStyle: {
+              top: Platform.OS === 'ios' ? 0 : 9,
+              minWidth: 14,
+              maxHeight: 14,
+              borderRadius: 7,
+              fontSize: 10,
+              lineHeight: 13,
+              alignSelf: undefined,
+              backgroundColor: theme.colorError,
+            },
+          }}
+        />
+      )}
     </Tab.Navigator>
   );
 }
