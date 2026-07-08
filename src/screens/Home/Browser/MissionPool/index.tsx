@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { MaterialTopTabNavigationOptions, createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Animated, View } from 'react-native';
+import { View } from 'react-native';
 import { Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
@@ -73,25 +73,10 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
   const { banners, onPressBanner, dismissBanner } = useGetBannerByScreen('missionPools');
   const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
     useFilterModal();
-  const av = new Animated.Value(0);
-  av.addListener(() => {
-    return;
-  });
-
   const tabScreenOptions = (item: RoutesType) => {
     return {
       tabBarIcon: ({ focused }: TabbarType) => tabbarIcon(focused, item, theme),
     };
-  };
-
-  const screenListener = {
-    focus: () => {
-      Animated.timing(av, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    },
   };
 
   const filterOptions = useMemo(
@@ -131,7 +116,6 @@ export const MissionPoolsByTabview = ({ route }: MissionPoolsNavigationProps) =>
         <Tab.Navigator
           overScrollMode={'always'}
           screenOptions={screenOptions}
-          screenListeners={screenListener}
           style={transparent}>
           {allTabRoutes.map(item => {
             return (

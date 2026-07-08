@@ -38,6 +38,7 @@ const Banner = ({
   const theme = useSubWalletTheme().swThemes;
   const { setGlobalModal, hideGlobalModal } = useContext(GlobalInstructionModalContext);
   const bannerId = useMemo(() => `${data.position}-${data.id}`, [data.id, data.position]);
+  const url = data.action?.url;
 
   const currentInstructionData = useMemo(() => {
     if (data.instruction) {
@@ -48,7 +49,6 @@ const Banner = ({
   }, [data.instruction, instructionDataList]);
 
   const _onPressBanner = useCallback(() => {
-    const url = data.action?.url;
     const instruction = data.instruction;
     if (instruction) {
       setGlobalModal({
@@ -60,7 +60,7 @@ const Banner = ({
         onPressCancelBtn: () => hideGlobalModal(),
         onPressConfirmBtn: () => {
           hideGlobalModal();
-          onPressBanner && onPressBanner(bannerId)(data.action.url);
+          onPressBanner && onPressBanner(bannerId)(url);
         },
         faq_url: currentInstructionData?.faq_url,
       });
@@ -76,11 +76,11 @@ const Banner = ({
     currentInstructionData?.instructions,
     currentInstructionData?.media,
     currentInstructionData?.title,
-    data.action.url,
     data.instruction,
     hideGlobalModal,
     onPressBanner,
     setGlobalModal,
+    url,
   ]);
 
   return (

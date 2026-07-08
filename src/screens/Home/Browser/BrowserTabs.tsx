@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { FlatList, Image, ListRenderItemInfo, TouchableOpacity, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, TouchableOpacity, View } from 'react-native';
 import { BrowsersIcon, HouseIcon, PlusIcon, XIcon } from 'phosphor-react-native';
 import { closeAllTab, closeTab } from 'stores/updater';
 import { getHostName } from 'utils/browser';
@@ -10,7 +10,7 @@ import i18n from 'utils/i18n/i18n';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { EmptyList } from 'components/EmptyList';
-import { Button, Icon, Typography } from 'components/design-system-ui';
+import { Button, Icon, Image, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './styles/BrowserTabs';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -63,7 +63,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
           </View>
           <View style={stylesheet.tabItemBody}>
             <View style={stylesheet.tabItemBodySpaceHolder} />
-            {!!item.screenshot && <Image source={{ uri: item.screenshot }} style={stylesheet.tabItemImage} />}
+            {!!item.screenshot && <Image src={{ uri: item.screenshot }} style={stylesheet.tabItemImage} />}
           </View>
           <TouchableOpacity
             style={[stylesheet.tabItemTouchableLayer, item.id === activeTab && stylesheet.tabItemTouchableLayerActive]}

@@ -1,6 +1,7 @@
 package app.subwallet.mobile
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import com.zoontek.rnbootsplash.RNBootSplash
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -10,6 +11,7 @@ import com.swmansion.rnscreens.fragment.restoration.RNScreensFragmentFactory
 
 class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
     supportFragmentManager.fragmentFactory = RNScreensFragmentFactory()
     setTheme(R.style.AppTheme)
     RNBootSplash.init(this, R.style.BootTheme)

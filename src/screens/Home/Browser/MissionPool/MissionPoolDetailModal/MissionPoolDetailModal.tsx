@@ -5,7 +5,8 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { MissionInfo } from 'types/missionPool';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStyles from './style';
-import { ImageBackground, Linking, ScrollView, View } from 'react-native';
+import { Linking, ScrollView, View, StyleSheet } from 'react-native';
+import FastImage from '@d11/react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import MetaInfo from 'components/MetaInfo';
 import { MissionPoolType } from 'screens/Home/Browser/MissionPool/predefined';
@@ -80,7 +81,9 @@ export const MissionPoolDetailModal = ({
     <SwFullSizeModal isUseModalV2 modalVisible={modalVisible} setVisible={setVisible} modalBaseV2Ref={modalBaseV2Ref}>
       <ContainerWithSubHeader title={data.name as string} style={{ flex: 1 }} onPressBack={() => setVisible(false)}>
         <ScrollView style={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
-          <ImageBackground style={styles.backdropImgBlurView} source={{ uri: data.backdrop_image }} blurRadius={30} />
+          <View style={styles.backdropImgBlurView}>
+            <FastImage style={StyleSheet.absoluteFill} source={{ uri: data.backdrop_image }} blurRadius={30} />
+          </View>
           <LinearGradient
             locations={[0, 0.01, 0.04, 0.07]}
             colors={['#0C0C0C', 'transparent', 'rgba(12, 12, 12, 0.7)', '#0C0C0C']}

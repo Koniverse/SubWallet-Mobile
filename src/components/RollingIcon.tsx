@@ -1,6 +1,13 @@
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
 interface Props {
   icon: React.ReactNode;
@@ -11,10 +18,15 @@ export const RollingIcon = ({ icon }: Props) => {
 
   useEffect(() => {
     rotation.value = withRepeat(
-      withTiming(360, { duration: 1500, easing: Easing.linear }),
+      withTiming(rotation.value + 360, {
+        duration: 1500,
+        easing: Easing.linear
+      }),
       -1, // Infinite loop
       false, // Don't reset, continue rotating
     );
+
+    return () => cancelAnimation(rotation);
   }, [rotation]);
 
   const animatedStyle = useAnimatedStyle(() => ({

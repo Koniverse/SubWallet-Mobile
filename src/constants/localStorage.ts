@@ -2,6 +2,7 @@ export const SELECTED_MNEMONIC_TYPE = 'account.selected-mnemonic-type';
 export const SEED_PREVENT_MODAL = 'seed.prevent-modal';
 export const CONFIRM_TERM_SEED_PHRASE = 'seed-phrase.term-and-condition';
 export const EARNING_WARNING_ANNOUNCEMENT = 'announcement.earning-position';
+export const CONFIRM_COMPLIANCE_TERM = 'compliance.term-and-condition';
 
 export const TRANSFER_TRANSACTION = 'transaction.transfer';
 export const NFT_TRANSACTION = 'transaction.nft';

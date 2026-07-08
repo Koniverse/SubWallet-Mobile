@@ -56,6 +56,7 @@ const completeBackUpData = !isFirstLaunch ? storedCompleteBackUpData : true;
 const isDevMode = getDevMode();
 let server: StaticServer | null = null;
 let started = false;
+let serverReadyPromise: Promise<boolean> | null = null;
 
 export class WebRunnerHandler {
   eventEmitter?: EventEmitter;
@@ -147,6 +148,24 @@ export class WebRunnerHandler {
   }
 
   async serverReady() {
+    if (started && server) {
+      return true;
+    }
+
+    if (serverReadyPromise) {
+      return serverReadyPromise;
+    }
+
+    serverReadyPromise = this.startServer();
+
+    try {
+      return await serverReadyPromise;
+    } finally {
+      serverReadyPromise = null;
+    }
+  }
+
+  private async startServer() {
     if (started && server) {
       return true;
     }

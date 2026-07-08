@@ -1,9 +1,9 @@
 import { Images } from 'assets/index';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-import { StyleProp, View, ViewStyle, Image } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import Video from 'react-native-video';
-import { ActivityIndicator } from 'components/design-system-ui';
+import { ActivityIndicator, Image } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
@@ -153,7 +153,8 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
       {showImage ? (
         <Image
           style={ImageStyle}
-          source={{ uri: url !== '' ? url : undefined }}
+          src={{ uri: url }}
+          showLoading={false}
           onLoad={handleOnLoad}
           onError={handleImageError}
         />
@@ -171,7 +172,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
           ignoreSilentSwitch="ignore"
         />
       ) : (
-        <Image style={ImageStyle} source={Images.default} />
+        <Image style={ImageStyle} src={Images.default} />
       )}
       {loading && (
         <View

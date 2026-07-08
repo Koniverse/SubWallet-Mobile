@@ -7,6 +7,7 @@ import i18n from 'utils/i18n/i18n';
 import { ArrowCircleRightIcon, CaretDownIcon } from 'phosphor-react-native';
 import { deviceHeight } from 'constants/index';
 import Markdown from 'react-native-markdown-display';
+import { noop } from 'utils/function';
 
 interface Props {
   title: string;
@@ -17,9 +18,12 @@ interface Props {
   disabledOnPressBackDrop?: boolean;
   content: string;
   beforeContent?: string;
+  acceptButtonTitle?: string;
   externalContentStyle?: ViewStyle;
   showAcceptBtn?: boolean;
   hideWhenCloseApp?: boolean;
+  warningMessage?: string;
+  disableBackButton?: boolean;
 }
 // TODO: use this to update GeneralTerm modal
 export const TermModal = ({
@@ -31,9 +35,12 @@ export const TermModal = ({
   content,
   checkboxLabel,
   beforeContent,
+  acceptButtonTitle = i18n.buttonTitles.continue,
   externalContentStyle,
   showAcceptBtn = true,
   hideWhenCloseApp,
+  warningMessage = i18n.message.generalTermWarning,
+  disableBackButton,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const [checked, setChecked] = useState<boolean>(false);
@@ -45,7 +52,7 @@ export const TermModal = ({
   };
 
   const showAlertWarning = () => {
-    Alert.alert(i18n.title.tickTheCheckbox, i18n.message.generalTermWarning, [{ text: i18n.buttonTitles.iUnderStand }]);
+    Alert.alert(i18n.title.tickTheCheckbox, warningMessage, [{ text: i18n.buttonTitles.iUnderStand }]);
   };
 
   return (
@@ -54,18 +61,20 @@ export const TermModal = ({
       modalVisible={modalVisible}
       onBackdropPress={() => {
         setChecked(false);
-        setDisableAcceptBtn(true);
+        setDisableAcceptBtn(showAcceptBtn);
       }}
       onChangeModalVisible={() => {
         setChecked(false);
-        setDisableAcceptBtn(true);
+        setDisableAcceptBtn(showAcceptBtn);
       }}
       setVisible={setVisible}
       disabledOnPressBackDrop={disabledOnPressBackDrop}
+      onBackButtonPress={disableBackButton ? noop : undefined}
       isAllowSwipeDown={Platform.OS === 'ios' && !disabledOnPressBackDrop}
       titleTextAlign={'center'}
       hideWhenCloseApp={hideWhenCloseApp}
-      modalTitle={title}>
+      modalTitle={title}
+    >
       <View style={{ position: 'relative' }}>
         {beforeContent && (
           <Typography.Text style={{ color: theme.colorWhite, paddingBottom: theme.paddingXS }}>
@@ -89,14 +98,16 @@ export const TermModal = ({
             }
           }}
           scrollEventThrottle={Platform.OS === 'ios' ? 400 : 16}
-          contentContainerStyle={{ gap: theme.padding }}>
+          contentContainerStyle={{ gap: theme.padding }}
+        >
           <Markdown
             style={{
               body: { color: theme.colorTextLight4, fontSize: theme.fontSizeSM },
               link: { color: theme.colorPrimary },
               heading4: { color: theme.colorWhite },
               heading5: { color: theme.colorWhite },
-            }}>
+            }}
+          >
             {content}
           </Markdown>
         </ScrollView>
@@ -132,8 +143,9 @@ export const TermModal = ({
           }
           onPress={!checked ? showAlertWarning : onPressAcceptBtn}
           disabled={disableAcceptBtn}
-          showDisableStyle={!checked}>
-          {i18n.buttonTitles.continue}
+          showDisableStyle={!checked}
+        >
+          {acceptButtonTitle}
         </Button>
         <Typography.Text style={{ color: theme.colorTextLight4, textAlign: 'center', paddingTop: theme.padding }}>
           {i18n.buttonTitles.scrollInstruction}

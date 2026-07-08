@@ -3,7 +3,8 @@
 
 import { Images } from 'assets/index';
 import React, { useMemo } from 'react';
-import { ImageBackground, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import FastImage from '@d11/react-native-fast-image';
 import CreateStyle from './styles';
 
 interface Props {
@@ -17,9 +18,10 @@ const LogoWithSquircleBorder: React.FC<Props> = (props: Props) => {
   const style = useMemo(() => CreateStyle(size, innerSize), [innerSize, size]);
 
   return (
-    <ImageBackground source={Images.squircleBorder} resizeMode={'cover'} style={style.container}>
+    <View style={style.container}>
+      <FastImage source={Images.squircleBorder} resizeMode={'cover'} style={StyleSheet.absoluteFill} />
       <View style={style.inner}>{children}</View>
-    </ImageBackground>
+    </View>
   );
 };
 

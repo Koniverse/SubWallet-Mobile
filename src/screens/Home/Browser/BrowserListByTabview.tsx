@@ -5,7 +5,7 @@ import { MaterialTopTabNavigationOptions, createMaterialTopTabNavigator } from '
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FakeSearchInput } from 'screens/Home/Browser/Shared/FakeSearchInput';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Animated, View } from 'react-native';
+import { View } from 'react-native';
 import { Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
@@ -74,25 +74,10 @@ export const BrowserListByTabview = ({ route, navigation }: BrowserListByTabview
     RECOMMENDED: i18n.browser.recommended,
   };
   const title = navigationType[route.params.type];
-  const av = new Animated.Value(0);
-  av.addListener(() => {
-    return;
-  });
-
   const tabScreenOptions = (item: RoutesType) => {
     return {
       tabBarIcon: ({ focused }: TabbarType) => tabbarIcon(focused, item, theme),
     };
-  };
-
-  const screenListener = {
-    focus: () => {
-      Animated.timing(av, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    },
   };
 
   return (
@@ -109,7 +94,6 @@ export const BrowserListByTabview = ({ route, navigation }: BrowserListByTabview
           overScrollMode={'always'}
           initialRouteName="all"
           screenOptions={screenOptions}
-          screenListeners={screenListener}
           style={transparent}>
           {allTabRoutes.map(item => {
             return (
