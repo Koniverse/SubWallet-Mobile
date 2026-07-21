@@ -39,6 +39,9 @@
 -keep class androidx.biometric.** { *; }
 -dontwarn androidx.**
 
+# react-native-screens restores fragments by their runtime class names.
+-keepnames class com.swmansion.rnscreens.**
+
 # ---------------------------------------------------------------------------
 # Fresco (animated GIF / WebP support)
 # ---------------------------------------------------------------------------
