@@ -3138,7 +3138,7 @@ PODS:
   - RNQrGenerator (1.4.6):
     - React
     - ZXingObjC
-  - RNReanimated (4.3.0):
+  - RNReanimated (4.3.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3165,12 +3165,12 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/apple (= 4.3.0)
-    - RNReanimated/common (= 4.3.0)
+    - RNReanimated/apple (= 4.3.1)
+    - RNReanimated/common (= 4.3.1)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/apple (4.3.0):
+  - RNReanimated/apple (4.3.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3200,7 +3200,7 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/common (4.3.0):
+  - RNReanimated/common (4.3.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3995,7 +3995,7 @@ SPEC CHECKSUMS:
   RNLocalize: cb5b0df30f7c0cbaf2de6b48cdb12673b79e442a
   RNPermissions: 4c90ae9900d47c7c94d62f990ce83a94c541de86
   RNQrGenerator: 36f1af182d7673bc36e317aca0d293d19883d6e3
-  RNReanimated: 160175fd769387d38efec11e7e569793c3ad725b
+  RNReanimated: 6dc53ac62a5ab3cfb243c83bde19bc7008684d7c
   RNScreens: 7179cc1ba31b4e18ed29f10abf20c24a7961cf4c
   RNSVG: 963192f99dc2014b9aef2aa4f0ae621cb92fbe5e
   RNVectorIcons: 6acc19c833be864e9c70894e101a587fe491150a
