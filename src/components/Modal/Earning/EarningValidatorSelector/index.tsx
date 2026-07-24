@@ -1,13 +1,20 @@
 import { useGetPoolTargetList, useYieldPositionDetail } from 'hooks/earning';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { Button, Icon, SelectItem } from 'components/design-system-ui';
-import { Keyboard, Platform, StyleSheet } from 'react-native';
+import { Button, Icon, SelectItem, Typography } from 'components/design-system-ui';
+import { Keyboard, Platform, StyleSheet, View } from 'react-native';
 import { StakingValidatorItem } from 'components/common/StakingValidatorItem';
 import { getValidatorKey } from 'utils/transaction/stake';
 import { useSelectValidators } from 'hooks/screen/Transaction/useSelectValidators';
-import { ArrowsClockwiseIcon, CheckCircleIcon, MagnifyingGlassIcon, SortAscendingIcon, SortDescendingIcon } from 'phosphor-react-native';
+import {
+  ArrowsClockwiseIcon,
+  CheckCircleIcon,
+  MagnifyingGlassIcon,
+  SortAscendingIcon,
+  SortDescendingIcon,
+  ThumbsUpIcon,
+} from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ValidatorSelectorField } from 'components/Field/ValidatorSelector';
 import { ValidatorSelectorDetailModal } from 'components/Modal/common/ValidatorSelectorDetailModal';
@@ -36,6 +43,7 @@ import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
 import { RELAY_HANDLER_DIRECT_STAKING_CHAINS } from 'constants/chain';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { ThemeTypes } from 'styles/themes';
+import { SectionItem } from 'components/LazySectionList';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -50,6 +58,18 @@ interface SortOption {
   value: SortKey;
   desc: boolean;
 }
+
+enum ValidatorGroup {
+  RECOMMEND = 'recommend',
+  OTHERS = 'others',
+}
+
+interface ValidatorDataTypeItem extends ValidatorDataType {
+  group: ValidatorGroup;
+}
+
+const sortSection = (a: SectionItem<ValidatorDataTypeItem>, b: SectionItem<ValidatorDataTypeItem>) =>
+  b.title.localeCompare(a.title);
 
 interface Props {
   onSelectItem?: (value: string) => void;
@@ -195,6 +215,11 @@ export const EarningValidatorSelector = forwardRef(
 
     const [sortSelection, setSortSelection] = useState<SortKey>(SortKey.DEFAULT);
     const fewValidators = changeValidators.length > 1;
+    const ValidatorGroupNameMap = useMemo(() => ({
+        [ValidatorGroup.RECOMMEND]: 'recommended',
+        [ValidatorGroup.OTHERS]: 'others',
+      }), []);
+
     const applyLabel = useMemo(() => {
       const label = getValidatorLabel(chain);
 
@@ -239,8 +264,22 @@ export const EarningValidatorSelector = forwardRef(
       [nominatorValueList],
     );
 
-    const resultList = useMemo(() => {
-      return [...items].sort((a: ValidatorDataType, b: ValidatorDataType) => {
+    const recommendedAddresses = useMemo(() => defaultPoolMap[chain]?.preSelectValidators?.split(',').map(address => address.trim()).filter(Boolean) || [], [chain, defaultPoolMap]);
+
+    const resultList = useMemo((): ValidatorDataTypeItem[] => {
+      return [...items]
+        .sort((a: ValidatorDataType, b: ValidatorDataType) => {
+          const isRecommendedA = recommendedAddresses.includes(a.address);
+          const isRecommendedB = recommendedAddresses.includes(b.address);
+
+          if (isRecommendedA && !isRecommendedB) {
+            return -1;
+          }
+
+          if (!isRecommendedA && isRecommendedB) {
+            return 1;
+          }
+
         switch (sortSelection) {
           case SortKey.COMMISSION:
             return a.commission - b.commission;
@@ -261,8 +300,12 @@ export const EarningValidatorSelector = forwardRef(
           default:
             return 0;
         }
-      });
-    }, [items, sortSelection, sortValidator]);
+        })
+        .map(item => ({
+          ...item,
+          group: recommendedAddresses.includes(item.address) ? ValidatorGroup.RECOMMEND : ValidatorGroup.OTHERS,
+        }));
+    }, [items, recommendedAddresses, sortSelection, sortValidator]);
 
     const renderListEmptyComponent = useCallback(() => {
       return (
@@ -355,6 +398,36 @@ export const EarningValidatorSelector = forwardRef(
       onSelectItem && onSelectItem(selected);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSingleSelect, from, defaultValidatorAddress, autoValidator, originValidator]);
+
+    const renderSectionHeader = useCallback(
+      (item: string) => {
+        if (!recommendedAddresses.length) {
+          return <></>;
+        }
+
+        return (
+          <View style={styles.header}>
+            <Typography.Text size={'sm'} style={styles.titleStyle}>
+              {item.split('|')[1]}
+            </Typography.Text>
+            {item.includes('recommended') && (
+              <Icon phosphorIcon={ThumbsUpIcon} iconColor={theme['cyan-6']} size={'xs'} weight={'fill'} />
+            )}
+          </View>
+        );
+      },
+      [recommendedAddresses.length, styles.header, styles.titleStyle, theme],
+    );
+
+    const grouping = useMemo(
+      () => ({
+        groupBy: (item: ValidatorDataTypeItem) =>
+          `${item.group === ValidatorGroup.RECOMMEND ? '1' : '0'}|${ValidatorGroupNameMap[item.group]}`,
+        sortSection,
+        renderSectionHeader,
+      }),
+      [ValidatorGroupNameMap, renderSectionHeader],
+    );
 
     const applyBtn = useMemo(
       () => ({
@@ -479,7 +552,8 @@ export const EarningValidatorSelector = forwardRef(
             i18n.common.selectStakingValidator,
             getValidatorLabel(chain) === 'dApp' ? getValidatorLabel(chain) : getValidatorLabel(chain).toLowerCase(),
           ) as string
-        }>
+        }
+        grouping={grouping}>
         <>
           {detailItem && (
             <ValidatorSelectorDetailModal
@@ -528,6 +602,19 @@ export const EarningValidatorSelector = forwardRef(
 
 function createStyle(theme: ThemeTypes) {
   return StyleSheet.create({
+    header: {
+      paddingBottom: theme.sizeXS,
+      paddingHorizontal: theme.size,
+      backgroundColor: theme.colorBgDefault,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.sizeXXS,
+    },
+    titleStyle: {
+      color: theme.colorTextLight3,
+      textTransform: 'uppercase',
+      ...FontSemiBold,
+    },
     toastStyle: { borderRadius: theme.borderRadiusLG },
     toastTextStyle: { textAlign: 'center', ...FontMedium },
     buttonStyle: { marginTop: theme.margin },
