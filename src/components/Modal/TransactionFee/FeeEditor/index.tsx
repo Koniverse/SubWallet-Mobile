@@ -240,7 +240,7 @@ const FeeEditor = ({
               )}
             </View>
           </View>
-          {FEE_TYPES_CAN_SHOW.includes(feeType) && (
+          {isDataReady && FEE_TYPES_CAN_SHOW.includes(feeType) && (
             <View style={styles.rightArea}>
               <Number
                 size={14}
