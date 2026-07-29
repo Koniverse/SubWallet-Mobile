@@ -12,10 +12,6 @@ import {
   _getEvmChainId,
   _getMultiChainAsset,
   _getOriginChainOfAsset,
-  _isChainBitcoinCompatible,
-  _isChainCardanoCompatible,
-  _isChainEvmCompatible,
-  _isNativeToken,
   _isTokenTransferredByEvm,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
@@ -103,12 +99,8 @@ import { validateRecipientAddress } from 'utils/core/logic-validation/recipientA
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 import { FreeBalance } from '../parts/FreeBalance';
 import { isAvailChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/availBridge';
-import { _isPolygonChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/polygonBridge';
 import { getAssetDisplayName } from 'utils/chainAndAsset';
-import {
-  _isPosChainBridge,
-  _isPosChainL2Bridge,
-} from '@subwallet/extension-base/services/balance-service/transfer/xcm/posBridge';
+import { _isPosChainL2Bridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/posBridge';
 import { FeeEditor } from 'components/Modal/TransactionFee';
 import { ResponseSubscribeTransfer } from '@subwallet/extension-base/types/balance/transfer';
 import { TokenHasBalanceInfo } from '@subwallet/extension-base/services/fee-service/interfaces';
@@ -121,6 +113,7 @@ import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 import useCoreCreateGetChainSlugsByAccountProxy from 'hooks/chain/useCoreCreateGetChainSlugsByAccountProxy';
 import { TransactionWarning } from '@subwallet/extension-base/background/warnings/TransactionWarning';
+import { shouldHideMaxButton } from 'utils/transaction/maxTransfer';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -429,21 +422,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const { nativeTokenBalance, nativeTokenSlug } = useGetBalance(chainValue, fromValue);
 
   const hideMaxButton = useMemo(() => {
-    const _chainInfo = chainInfoMap[chainValue];
-
-    if (_isPolygonChainBridge(chainValue, destChainValue) || _isPosChainBridge(chainValue, destChainValue)) {
-      return true;
-    }
-
-    return (
-      !!_chainInfo &&
-      !!assetInfo &&
-      destChainValue === chainValue &&
-      _isNativeToken(assetInfo) &&
-      (_isChainEvmCompatible(_chainInfo) ||
-        _isChainCardanoCompatible(_chainInfo) ||
-        _isChainBitcoinCompatible(_chainInfo))
-    );
+    return shouldHideMaxButton(chainValue, destChainValue, assetInfo, chainInfoMap);
   }, [chainInfoMap, chainValue, assetInfo, destChainValue]);
 
   const disabledToAddressInput = useMemo(() => {
@@ -525,22 +504,35 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
 
   const _onChangeAsset = (item: TokenItemType) => {
     const chain = assetRegistry[item.slug].originChain;
+    const newHideMaxButton = shouldHideMaxButton(chain, chain, assetRegistry[item.slug], chainInfoMap);
     setAsset(item.slug);
     setValue('to', '');
     clearErrors('to');
     setValue('destChain', item.originChain);
     tokenSelectorRef?.current?.onCloseModal();
-    setForceUpdateMaxValue(undefined);
+    setForceUpdateMaxValue(newHideMaxButton && isTransferAll ? { value: null } : undefined);
     setCurrentTokenPayFee(chainValue === chain ? defaultTokenPayFee : undefined);
-    setIsTransferAll(false);
+    if (newHideMaxButton && isTransferAll) {
+      resetField('value');
+      setIsTransferAll(false);
+    }
     setSelectedTransactionFee(undefined);
   };
 
   const _onChangeDestChain = (item: ChainInfo) => {
+    const newHideMaxButton = shouldHideMaxButton(chainValue, item.slug, assetInfo, chainInfoMap);
     setValue('to', '');
     clearErrors('to');
     setValue('destChain', item.slug);
     chainSelectorRef?.current?.onCloseModal();
+    setCurrentTokenPayFee(defaultTokenPayFee);
+    setSelectedTransactionFee(undefined);
+
+    if (newHideMaxButton && isTransferAll) {
+      resetField('value');
+      setForceUpdateMaxValue({ value: null });
+      setIsTransferAll(false);
+    }
   };
 
   const onSubheaderPressBack = useCallback(() => {
@@ -1108,6 +1100,12 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     transferAmount,
     trigger,
   ]);
+
+  useEffect(() => {
+    if (isTransferAll && transferInfo?.maxTransferable && !hideMaxButton) {
+      setForceUpdateMaxValue({ value: transferInfo.maxTransferable });
+    }
+  }, [hideMaxButton, isTransferAll, transferInfo?.maxTransferable]);
 
   useEffect(() => {
     const bnTransferAmount = new BN(isInvalidAmountValue(transferAmount) ? '0' : transferAmount || '0');
