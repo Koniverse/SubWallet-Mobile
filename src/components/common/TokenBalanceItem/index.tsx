@@ -14,6 +14,7 @@ interface Props extends TokenBalanceItemType, TouchableOpacityProps {
 
 export const TokenBalanceItem = ({
   currency,
+  displayName,
   symbol,
   isTestnet,
   chainDisplayName,
@@ -36,7 +37,7 @@ export const TokenBalanceItem = ({
 
         <View style={_style.chainBalanceMetaWrapper}>
           <Text style={_style.symbolStyle} numberOfLines={1}>
-            {symbol}
+            {displayName || symbol}
           </Text>
           <Text style={_style.chainNameStyle} numberOfLines={1}>
             {chainDisplayName?.replace(' Relay Chain', '')}

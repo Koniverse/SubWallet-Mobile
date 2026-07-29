@@ -98,6 +98,7 @@ import useCreateGetChainAndExcludedTokenByAccountProxy, {
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { EmptySwapPairs } from 'screens/Transaction/Swap/EmptySwapPairs';
 import subwalletApiSdk from '@subwallet-monorepos/subwallet-services-sdk';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -151,6 +152,7 @@ function getTokenSelectorItem(
       originChain,
       slug,
       symbol: asset.symbol,
+      displayName: getAssetDisplayName(asset, asset.symbol),
       name: asset.name,
       balanceInfo,
       showBalance: true,

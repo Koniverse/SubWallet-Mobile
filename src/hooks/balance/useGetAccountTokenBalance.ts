@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { TokenBalanceItemType } from 'types/balance';
 import { AssetRegistryStore, BalanceStore, ChainStore, PriceStore } from 'stores/types';
 import { RootState } from 'stores/index';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 
 // todo: find a way to merge identical logic from useAccountBalance
 
@@ -35,6 +36,7 @@ function getDefaultBalanceItem(
   slug: string,
   symbol: string,
   logoKey: string,
+  displayName?: string,
   currency?: CurrencyJson,
 ): TokenBalanceItemType {
   return {
@@ -62,6 +64,7 @@ function getDefaultBalanceItem(
     slug,
     currency: currency || defaultCurrency,
     symbol,
+    displayName,
   };
 }
 
@@ -72,7 +75,7 @@ function getDefaultTokenBalance(
 ): TokenBalanceItemType {
   const symbol = _getAssetSymbol(chainAsset);
 
-  return getDefaultBalanceItem(tokenSlug, symbol, chainAsset.slug.toLowerCase(), currency);
+  return getDefaultBalanceItem(tokenSlug, symbol, chainAsset.slug.toLowerCase(), getAssetDisplayName(chainAsset, symbol), currency);
 }
 
 function getTokenBalanceMap(

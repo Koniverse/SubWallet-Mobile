@@ -54,6 +54,7 @@ export interface Props {
   tokenBalanceMap: Record<string, TokenBalanceItemType>;
   currentTokenInfo?: {
     symbol: string;
+    displayName?: string;
     slug: string;
   };
 }
@@ -196,7 +197,7 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
       setVisible={setVisible}
       modalBaseV2Ref={modalBaseV2Ref}
       modalVisible={modalVisible}
-      modalTitle={isAllAccount && isBitcoinChain ? 'Account Details' : i18n.header.tokenDetails}
+      modalTitle={isAllAccount && isBitcoinChain ? 'Account Details' : currentTokenInfo?.displayName || i18n.header.tokenDetails}
       isAllowSwipeDown={Platform.OS === 'ios'}
       // onChangeModalVisible={() => setSelectedTab('accountDetails')}
       onBackButtonPress={onChangeModalVisible}>

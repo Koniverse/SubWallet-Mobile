@@ -104,6 +104,7 @@ import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/c
 import { FreeBalance } from '../parts/FreeBalance';
 import { isAvailChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/availBridge';
 import { _isPolygonChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/polygonBridge';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 import {
   _isPosChainBridge,
   _isPosChainL2Bridge,
@@ -336,6 +337,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
             slug: chainAsset.slug,
             name: _getAssetName(chainAsset),
             symbol: _getAssetSymbol(chainAsset),
+            displayName: getAssetDisplayName(chainAsset, _getAssetSymbol(chainAsset)),
             originChain,
           });
         }

@@ -37,9 +37,11 @@ import { sortTokensByStandard } from 'utils/sort/token';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import useGetChainAndExcludedTokenByCurrentAccountProxy from 'hooks/chain/useGetChainAndExcludedTokenByCurrentAccountProxy';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 
 type CurrentSelectToken = {
   symbol: string;
+  displayName?: string;
   slug: string;
 };
 
@@ -72,7 +74,7 @@ export const TokenGroupsDetail = ({
       }
 
       if (assetRegistryMap[tokenGroupSlug]) {
-        return assetRegistryMap[tokenGroupSlug].symbol;
+        return getAssetDisplayName(assetRegistryMap[tokenGroupSlug], assetRegistryMap[tokenGroupSlug].symbol);
       }
     }
 
@@ -195,6 +197,7 @@ export const TokenGroupsDetail = ({
       setCurrentTokenInfo({
         slug: item.slug,
         symbol: item.symbol,
+        displayName: item.displayName,
       });
       setTokenDetailVisible(true);
     };

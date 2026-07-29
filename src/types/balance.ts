@@ -18,6 +18,7 @@ export interface TokenBalanceItemType {
   logoKey: string;
   currency?: CurrencyJson;
   symbol: string;
+  displayName?: string;
   chain?: string;
   chainDisplayName?: string;
   isTestnet: boolean;

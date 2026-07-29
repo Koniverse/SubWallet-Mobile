@@ -13,9 +13,14 @@ import { RootState } from 'stores/index';
 import { _isCustomAsset, _isNativeToken } from '@subwallet/extension-base/services/chain-service/utils';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 
 const searchFunction = (items: _ChainAsset[], searchString: string) => {
-  return items.filter(item => item?.symbol.toLowerCase().includes(searchString.toLowerCase()));
+  const query = searchString.toLowerCase();
+
+  return items.filter(item =>
+    getAssetDisplayName(item, item.symbol).toLowerCase().includes(query) || item.symbol.toLowerCase().includes(query),
+  );
 };
 
 enum FilterValue {

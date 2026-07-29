@@ -20,6 +20,7 @@ import { AccountBalanceHookType } from 'types/hook';
 import { TokenBalanceItemType } from 'types/balance';
 import { AssetRegistryStore, BalanceStore, ChainStore, PriceStore } from 'stores/types';
 import { useEffect, useMemo, useState } from 'react';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 
 const BN_0 = new BigN(0);
 const BN_10 = new BigN(10);
@@ -38,6 +39,7 @@ function getDefaultBalanceItem(
   slug: string,
   symbol: string,
   logoKey: string,
+  displayName?: string,
   currency?: CurrencyJson,
 ): TokenBalanceItemType {
   return {
@@ -65,6 +67,7 @@ function getDefaultBalanceItem(
     slug,
     currency: currency || defaultCurrency,
     symbol,
+    displayName,
   };
 }
 
@@ -84,7 +87,13 @@ function getDefaultTokenGroupBalance(
     symbol = _getAssetSymbol(assetRegistryMap[tokenGroupKey]);
   }
 
-  return getDefaultBalanceItem(tokenGroupKey, symbol, symbol.toLowerCase(), currency);
+  return getDefaultBalanceItem(
+    tokenGroupKey,
+    symbol,
+    symbol.toLowerCase(),
+    getAssetDisplayName(assetRegistryMap[tokenGroupKey], symbol),
+    currency,
+  );
 }
 
 function getDefaultTokenBalance(
@@ -94,7 +103,7 @@ function getDefaultTokenBalance(
 ): TokenBalanceItemType {
   const symbol = _getAssetSymbol(chainAsset);
 
-  return getDefaultBalanceItem(tokenSlug, symbol, symbol.toLowerCase(), currency);
+  return getDefaultBalanceItem(tokenSlug, symbol, symbol.toLowerCase(), getAssetDisplayName(chainAsset, symbol), currency);
 }
 
 function getAccountBalance(
