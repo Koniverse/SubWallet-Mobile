@@ -86,7 +86,7 @@ import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { QuoteInfoArea } from './QuoteInfoArea';
-import { AcrossErrorMsg } from '@subwallet/extension-base/services/balance-service/transfer/xcm/acrossBridge';
+import { DetectedGenOptimalProcessErrMsg } from '@subwallet/extension-base/services/swap-service/utils';
 import { ThemeTypes } from 'styles/themes';
 import { AppModalContext } from 'providers/AppModalContext';
 import { KyberSwapQuoteMetadata } from '@subwallet/extension-base/services/swap-service/handler/kyber-handler';
@@ -596,6 +596,12 @@ const Component = ({
     show('Amount too high. Lower your amount and try again', { type: 'danger' });
   }, [show]);
 
+  const notifyNotEnoughBitcoin = useCallback(() => {
+    show('Insufficient available balance to perform the swap. Increase available balance and try again', {
+      type: 'danger',
+    });
+  }, [show]);
+
   const onConfirmSelectedQuote = useCallback(async (quote: SwapQuote) => {
     setPreferredProvider(quote.provider.id);
 
@@ -1051,12 +1057,16 @@ const Component = ({
                     notifyNoQuote();
                   }
 
-                  if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW)) {
+                  if (e.message.toLowerCase().startsWith(DetectedGenOptimalProcessErrMsg.AMOUNT_TOO_LOW)) {
                     notifyTooLowAmount();
                   }
 
-                  if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)) {
+                  if (e.message.toLowerCase().startsWith(DetectedGenOptimalProcessErrMsg.AMOUNT_TOO_HIGH)) {
                     notifyTooHighAmount();
+                  }
+
+                  if (e.message.toLowerCase().includes(DetectedGenOptimalProcessErrMsg.NOT_ENOUGHT_BITCOIN)) {
+                    notifyNotEnoughBitcoin();
                   }
 
                   setHandleRequestLoading(false);
@@ -1085,6 +1095,7 @@ const Component = ({
     fromValue,
     isRecipientFieldAllowed,
     notifyNoQuote,
+    notifyNotEnoughBitcoin,
     notifyTooHighAmount,
     notifyTooLowAmount,
     preferredProvider,
@@ -1167,12 +1178,16 @@ const Component = ({
               notifyNoQuote();
             }
 
-            if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW)) {
+            if (e.message.toLowerCase().startsWith(DetectedGenOptimalProcessErrMsg.AMOUNT_TOO_LOW)) {
               notifyTooLowAmount();
             }
 
-            if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)) {
+            if (e.message.toLowerCase().startsWith(DetectedGenOptimalProcessErrMsg.AMOUNT_TOO_HIGH)) {
               notifyTooHighAmount();
+            }
+
+            if (e.message.toLowerCase().includes(DetectedGenOptimalProcessErrMsg.NOT_ENOUGHT_BITCOIN)) {
+              notifyNotEnoughBitcoin();
             }
           })
           .finally(() => {
@@ -1221,6 +1236,7 @@ const Component = ({
     currentQuoteRequest,
     hasInternalConfirmations,
     notifyNoQuote,
+    notifyNotEnoughBitcoin,
     notifyTooHighAmount,
     notifyTooLowAmount,
     quoteAliveUntil,

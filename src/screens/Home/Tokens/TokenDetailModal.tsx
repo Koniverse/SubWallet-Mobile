@@ -332,11 +332,13 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
         setVisible={value => !value && setSelectedLockedDetails(undefined)}
         modalVisible={!!selectedLockedDetails}
         modalTitle={i18n.tokenDetail.lockedBalanceDetails}
+        titleTextAlign={'center'}
         isAllowSwipeDown={Platform.OS === 'ios'}>
         <LockedBalanceDetails
           details={selectedLockedDetails}
           decimals={tokenDecimals}
           symbol={currentTokenInfo?.symbol || ''}
+          withBackground
         />
       </SwModal>
     </>
