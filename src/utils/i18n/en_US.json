@@ -345,7 +345,14 @@
   },
   "tokenDetail": {
     "transferable": "Transferable",
-    "locked": "Locked"
+    "locked": "Locked",
+    "lockedBalanceDetails": "Locked balance details",
+    "staking": "Staking",
+    "governance": "Governance",
+    "democracy": "Democracy",
+    "reserved": "Reserved",
+    "others": "Others",
+    "othersTooltip": "Other locks are the remainder after deducting the greater of the staking and governance locks from the total locked balance."
   },
   "buyTokens": {
     "buyTokensMessage": "You will be directed to the chosen supplier to complete this transaction"

@@ -29,6 +29,8 @@ export const ImageLogosMap = {
   hydradx_mainnet: require('./hydradx_main.png'),
   hydradx_testnet: require('./hydradx_main.png'),
   simple_swap: require('./simple-swap.png'),
+  optimex: require('./optimex.png'),
+  tanssi: require('./tanssi.png'),
   currency_brl: require('./CurrencyBRL.png'),
   currency_cny: require('./CurrencyCNY.png'),
   currency_hkd: require('./CurrencyHKD.png'),

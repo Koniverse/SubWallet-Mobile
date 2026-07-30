@@ -345,7 +345,14 @@
   },
   "tokenDetail": {
     "transferable": "転送可能",
-    "locked": "ロックされています"
+    "locked": "ロックされています",
+    "lockedBalanceDetails": "Locked balance details",
+    "staking": "Staking",
+    "governance": "Governance",
+    "democracy": "Democracy",
+    "reserved": "Reserved",
+    "others": "Others",
+    "othersTooltip": "Other locks are the remainder after deducting the greater of the staking and governance locks from the total locked balance."
   },
   "buyTokens": {
     "buyTokensMessage": "このトランザクションを完了するために、選択したサプライヤーに移動します"

@@ -178,6 +178,7 @@ function getAccountBalance(
         tokenGroupBalance.locked.value = tokenGroupBalance.locked.value.plus(tokenBalance.locked.value);
 
         tokenBalance.total.value = tokenBalance.free.value.plus(tokenBalance.locked.value);
+        tokenBalance.lockedDetails = balanceItem.lockedDetails;
 
         if (!isShowZeroBalance && tokenBalance.total.value.eq(BN_0)) {
           return;

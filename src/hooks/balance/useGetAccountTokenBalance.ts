@@ -123,6 +123,7 @@ function getTokenBalanceMap(
       tokenBalance.free.value = tokenBalance.free.value.plus(getBalanceValue(balanceItem.free || '0', decimals));
       tokenBalance.locked.value = tokenBalance.locked.value.plus(getBalanceValue(balanceItem.locked || '0', decimals));
       tokenBalance.total.value = tokenBalance.free.value.plus(tokenBalance.locked.value);
+      tokenBalance.lockedDetails = balanceItem.lockedDetails;
     }
 
     const priceId = _getAssetPriceId(chainAsset);

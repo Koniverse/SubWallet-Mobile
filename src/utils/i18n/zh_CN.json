@@ -345,7 +345,14 @@
   },
   "tokenDetail": {
     "transferable": "可转移",
-    "locked": "已锁"
+    "locked": "已锁",
+    "lockedBalanceDetails": "Locked balance details",
+    "staking": "Staking",
+    "governance": "Governance",
+    "democracy": "Democracy",
+    "reserved": "Reserved",
+    "others": "Others",
+    "othersTooltip": "Other locks are the remainder after deducting the greater of the staking and governance locks from the total locked balance."
   },
   "buyTokens": {
     "buyTokensMessage": "你将自动跳转到所选提供商以完成此交易"

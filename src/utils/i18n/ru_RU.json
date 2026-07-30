@@ -345,7 +345,14 @@
   },
   "tokenDetail": {
     "transferable": "Доступно",
-    "locked": "Заблокировано"
+    "locked": "Заблокировано",
+    "lockedBalanceDetails": "Locked balance details",
+    "staking": "Staking",
+    "governance": "Governance",
+    "democracy": "Democracy",
+    "reserved": "Reserved",
+    "others": "Others",
+    "othersTooltip": "Other locks are the remainder after deducting the greater of the staking and governance locks from the total locked balance."
   },
   "buyTokens": {
     "buyTokensMessage": "Вы будете направлены к выбранному поставщику для завершения этой транзакции."

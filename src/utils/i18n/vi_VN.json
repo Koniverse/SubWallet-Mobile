@@ -346,7 +346,14 @@
   },
   "tokenDetail": {
     "transferable": "Khả dụng",
-    "locked": "Khóa"
+    "locked": "Khóa",
+    "lockedBalanceDetails": "Locked balance details",
+    "staking": "Staking",
+    "governance": "Governance",
+    "democracy": "Democracy",
+    "reserved": "Reserved",
+    "others": "Others",
+    "othersTooltip": "Other locks are the remainder after deducting the greater of the staking and governance locks from the total locked balance."
   },
   "buyTokens": {
     "buyTokensMessage": "Bạn sẽ được chuyển đến trang của nhà cung cấp để hoàn thành giao dịch"

@@ -13,6 +13,14 @@ export type BalanceValueInfo = {
 
 export type PriceChangeStatus = 'increase' | 'decrease';
 
+export interface LockedBalanceDetails {
+  staking: string;
+  governance: string;
+  democracy: string;
+  reserved: string;
+  others: string;
+}
+
 export interface TokenBalanceItemType {
   slug: string;
   logoKey: string;
@@ -28,11 +36,13 @@ export interface TokenBalanceItemType {
   priceChangeStatus?: PriceChangeStatus;
   free: BalanceValueInfo;
   locked: BalanceValueInfo;
+  lockedDetails?: LockedBalanceDetails;
   total: BalanceValueInfo;
   isReady: boolean;
 }
 
 export interface BalanceItemWithAddressType extends BalanceItem {
   addressTypeLabel?: string;
+  lockedDetails?: LockedBalanceDetails;
   schema?: string;
 }

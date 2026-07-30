@@ -1,27 +1,36 @@
 diff --git a/node_modules/@subwallet/keyring/cjs/keyring.js b/node_modules/@subwallet/keyring/cjs/keyring.js
-index fd4ece4..4449315 100644
+index 7878cec9..927a4f4e 100644
 --- a/node_modules/@subwallet/keyring/cjs/keyring.js
 +++ b/node_modules/@subwallet/keyring/cjs/keyring.js
-@@ -293,7 +293,7 @@ class Keyring {
-             throw new Error('Invalid ton mnemonic specified');
+@@ -297,8 +297,6 @@ class Keyring {
+         if ([...BIP_PROTOCOLS, ...TON_PROTOCOLS].includes(type)) {
+           if (type === 'ton-native') {
+             seed = (0, _utils.mnemonicToTonSeed)(phrase, password, false);
+-          } else if (type === 'cardano') {
+-            seed = (0, _mnemonic.mnemonicToCardanoSeed)(phrase, password);
+           } else {
+             seed = (0, _utilCrypto.mnemonicToLegacySeed)(phrase, password, false, 64);
            }
+@@ -323,9 +321,7 @@ class Keyring {
          }
--        seed = [...BIP_PROTOCOLS, ...TON_PROTOCOLS].includes(type) ? type === 'ton-native' ? (0, _utils.mnemonicToTonSeed)(phrase, password, false) : type === 'cardano' ? (0, _mnemonic.mnemonicToCardanoSeed)(phrase, password) : (0, _utilCrypto.mnemonicToLegacySeed)(phrase, password, false, 64) : (0, _utilCrypto.mnemonicToMiniSecret)(phrase, password);
-+        seed = [...BIP_PROTOCOLS, ...TON_PROTOCOLS].includes(type) ? type === 'ton-native' ? (0, _utils.mnemonicToTonSeed)(phrase, password, false) : (0, _utilCrypto.mnemonicToLegacySeed)(phrase, password, false, 64) : (0, _utilCrypto.mnemonicToMiniSecret)(phrase, password);
        } else {
-         if (phrase.length > 32) {
-           throw new Error('specified phrase is not a valid mnemonic  and is invalid as a raw seed at > 32 bytes');
-@@ -303,7 +303,7 @@ class Keyring {
-     }
-     const hdPath = derivePath.substring(1);
-     const derived = [...BIP_PROTOCOLS, ...TON_PROTOCOLS].includes(type) ? isPhraseHex ? seed.length === 64 && TON_PROTOCOLS.includes(type) ? _utils.TYPE_FROM_PRIVATE[type](seed) : _utils.TYPE_FROM_SEED[type](seed) // for eth, if the private key is provided as suri, it must be derived only once
--    : BIP_PROTOCOLS.includes(type) ? type === 'cardano' ? (0, _utils.hdCardano)(seed, hdPath) : (0, _utilCrypto.hdEthereum)(seed, hdPath) : type === 'ton' ? (0, _utils.hdTon)(seed, hdPath) : _utils.TYPE_FROM_SEED[type](seed.slice(0, 32)) : (0, _utils.keyFromPath)(_utils.TYPE_FROM_SEED[type](seed), path, type);
-+    : BIP_PROTOCOLS.includes(type) ? (0, _utilCrypto.hdEthereum)(seed, hdPath) : type === 'ton' ? (0, _utils.hdTon)(seed, hdPath) : _utils.TYPE_FROM_SEED[type](seed.slice(0, 32)) : (0, _utils.keyFromPath)(_utils.TYPE_FROM_SEED[type](seed), path, type);
-     const entropy = isPhraseHex ? null : type === 'ton-native' ? (0, _utils.encodeTonMnemonic)(phrase) : (0, _utilCrypto.mnemonicToEntropy)(phrase);
-     const extraMetadata = TON_PROTOCOLS.includes(type) ? {
-       tonContractVersion: meta.tonContractVersion || _types.DEFAULT_TON_WALLET_CONTRACT_VERSION
+         if (BIP_PROTOCOLS.includes(type)) {
+-          if (type === 'cardano') {
+-            derived = (0, _utils.hdCardano)(seed, hdPath);
+-          } else if (type === 'ed25519-tw') {
++          if (type === 'ed25519-tw') {
+             // todo: check if need validate hdPath
+             const privateKey = (0, _ed25519HdKey.derivePath)(hdPath, (0, _util.u8aToHex)(seed, undefined, false)).key;
+             derived = _utils.TYPE_FROM_SEED[type](privateKey);
+@@ -567,4 +563,4 @@ class Keyring {
+     this.#pairs.changeKey(oldKey, newKey);
+   }
+ }
+-exports.Keyring = Keyring;
+\ No newline at end of file
++exports.Keyring = Keyring;
 diff --git a/node_modules/@subwallet/keyring/cjs/pair/index.js b/node_modules/@subwallet/keyring/cjs/pair/index.js
-index df82f5d..e870c66 100644
+index 826c0da7..dcf12fa9 100644
 --- a/node_modules/@subwallet/keyring/cjs/pair/index.js
 +++ b/node_modules/@subwallet/keyring/cjs/pair/index.js
 @@ -5,17 +5,14 @@ Object.defineProperty(exports, "__esModule", {
@@ -66,8 +75,8 @@ index df82f5d..e870c66 100644
 -        }
        case 'ecdsa':
        case 'ed25519':
-       case 'sr25519':
-@@ -515,116 +496,6 @@ function createPair(_ref, _ref2) {
+       case 'ed25519-tw':
+@@ -516,116 +497,6 @@ function createPair(_ref, _ref2) {
          }
        };
      },
@@ -185,7 +194,7 @@ index df82f5d..e870c66 100644
      // eslint-disable-next-line sort-keys
      changePkcs8(newPassphrase, oldPassphrase) {
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/address/decode.js b/node_modules/@subwallet/keyring/cjs/utils/address/decode.js
-index 763d489..1babc55 100644
+index 763d4896..1babc55d 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/address/decode.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/address/decode.js
 @@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", {
@@ -218,7 +227,7 @@ index 763d489..1babc55 100644
  exports.decodeAddress = decodeAddress;
 \ No newline at end of file
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/address/encode.js b/node_modules/@subwallet/keyring/cjs/utils/address/encode.js
-index c74b1ee..b83520b 100644
+index 9bc08e1d..7dac15e2 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/address/encode.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/address/encode.js
 @@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", {
@@ -251,7 +260,7 @@ index c74b1ee..b83520b 100644
      const rs = _core.Address.parseFriendly(Buffer.from(u8a));
      const testOnly = ss58Format === 0;
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/address/validate.js b/node_modules/@subwallet/keyring/cjs/utils/address/validate.js
-index cc68238..a908547 100644
+index 6da32600..206cafa8 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/address/validate.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/address/validate.js
 @@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", {
@@ -324,19 +333,22 @@ index cc68238..a908547 100644
  };
  exports.isCardanoBaseAddress = isCardanoBaseAddress;
  const getKeypairTypeByAddress = address => {
-@@ -272,9 +238,6 @@ const getKeypairTypeByAddress = address => {
+@@ -272,11 +238,8 @@ const getKeypairTypeByAddress = address => {
    if (isTonAddress(address)) {
      return 'ton-native';
    }
 -  if (isCardanoAddress(address)) {
 -    return 'cardano';
 -  }
+ 
+   // todo: cannot check address ed25519-tw or sr25519. Discuss more
    return 'sr25519';
  };
- exports.getKeypairTypeByAddress = getKeypairTypeByAddress;
+-exports.getKeypairTypeByAddress = getKeypairTypeByAddress;
 \ No newline at end of file
++exports.getKeypairTypeByAddress = getKeypairTypeByAddress;
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js b/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js
-index 8d58b3e..0cf7294 100644
+index 8d58b3ee..0cf72948 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/cardano/coseKey.js
 @@ -4,22 +4,16 @@ Object.defineProperty(exports, "__esModule", {
@@ -368,7 +380,7 @@ index 8d58b3e..0cf7294 100644
  exports.createCOSEKey = createCOSEKey;
 \ No newline at end of file
 diff --git a/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js b/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js
-index 5b550c1..53c102a 100644
+index 5b550c14..53c102a7 100644
 --- a/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js
 +++ b/node_modules/@subwallet/keyring/cjs/utils/cardano/mnemonic.js
 @@ -4,15 +4,10 @@ Object.defineProperty(exports, "__esModule", {
@@ -390,7 +402,7 @@ index 5b550c1..53c102a 100644
  exports.mnemonicToCardanoSeed = mnemonicToCardanoSeed;
 \ No newline at end of file
 diff --git a/node_modules/@subwallet/keyring/packageInfo.js b/node_modules/@subwallet/keyring/packageInfo.js
-index cb5a7a0..1812c3b 100644
+index 16423005..9c1ac6f8 100644
 --- a/node_modules/@subwallet/keyring/packageInfo.js
 +++ b/node_modules/@subwallet/keyring/packageInfo.js
 @@ -5,7 +5,7 @@
@@ -401,11 +413,12 @@ index cb5a7a0..1812c3b 100644
 -  type: 'esm',
 +  path: 'auto',
 +  type: 'cjs',
-   version: '0.1.13'
- };
+   version: '0.1.14'
+-};
 \ No newline at end of file
++};
 diff --git a/node_modules/@subwallet/keyring/pair/index.js b/node_modules/@subwallet/keyring/pair/index.js
-index c056514..504546e 100644
+index 4f233ae0..ba7cf8d7 100644
 --- a/node_modules/@subwallet/keyring/pair/index.js
 +++ b/node_modules/@subwallet/keyring/pair/index.js
 @@ -1,17 +1,14 @@
@@ -449,8 +462,8 @@ index c056514..504546e 100644
 -        }
        case 'ecdsa':
        case 'ed25519':
-       case 'sr25519':
-@@ -500,115 +481,6 @@ export function createPair({
+       case 'ed25519-tw':
+@@ -501,115 +482,6 @@ export function createPair({
          }
        };
      },
@@ -567,7 +580,7 @@ index c056514..504546e 100644
      // eslint-disable-next-line sort-keys
      changePkcs8(newPassphrase, oldPassphrase) {
 diff --git a/node_modules/@subwallet/keyring/utils/address/decode.js b/node_modules/@subwallet/keyring/utils/address/decode.js
-index f44fe83..cc03279 100644
+index f44fe832..cc032793 100644
 --- a/node_modules/@subwallet/keyring/utils/address/decode.js
 +++ b/node_modules/@subwallet/keyring/utils/address/decode.js
 @@ -1,7 +1,6 @@
@@ -599,7 +612,7 @@ index f44fe83..cc03279 100644
  };
 \ No newline at end of file
 diff --git a/node_modules/@subwallet/keyring/utils/address/encode.js b/node_modules/@subwallet/keyring/utils/address/encode.js
-index 67c8fe8..db745d4 100644
+index 1fe34524..18e74d99 100644
 --- a/node_modules/@subwallet/keyring/utils/address/encode.js
 +++ b/node_modules/@subwallet/keyring/utils/address/encode.js
 @@ -1,7 +1,6 @@
@@ -632,7 +645,7 @@ index 67c8fe8..db745d4 100644
      const rs = TonAddress.parseFriendly(Buffer.from(u8a));
      const testOnly = ss58Format === 0;
 diff --git a/node_modules/@subwallet/keyring/utils/address/validate.js b/node_modules/@subwallet/keyring/utils/address/validate.js
-index 62cf7a7..fa89d9d 100644
+index 31ef8568..80810aa9 100644
 --- a/node_modules/@subwallet/keyring/utils/address/validate.js
 +++ b/node_modules/@subwallet/keyring/utils/address/validate.js
 @@ -1,7 +1,6 @@
@@ -701,18 +714,21 @@ index 62cf7a7..fa89d9d 100644
  };
  export const getKeypairTypeByAddress = address => {
    if (isEthereumAddress(address)) {
-@@ -251,8 +217,5 @@ export const getKeypairTypeByAddress = address => {
+@@ -251,10 +217,7 @@ export const getKeypairTypeByAddress = address => {
    if (isTonAddress(address)) {
      return 'ton-native';
    }
 -  if (isCardanoAddress(address)) {
 -    return 'cardano';
 -  }
+ 
+   // todo: cannot check address ed25519-tw or sr25519. Discuss more
    return 'sr25519';
- };
+-};
 \ No newline at end of file
++};
 diff --git a/node_modules/@subwallet/keyring/utils/cardano/coseKey.d.ts b/node_modules/@subwallet/keyring/utils/cardano/coseKey.d.ts
-index 66195be..9d7875c 100644
+index 66195be5..9d7875c8 100644
 --- a/node_modules/@subwallet/keyring/utils/cardano/coseKey.d.ts
 +++ b/node_modules/@subwallet/keyring/utils/cardano/coseKey.d.ts
 @@ -1,4 +1,4 @@
@@ -722,7 +738,7 @@ index 66195be..9d7875c 100644
      address: Label;
      crv: Label;
 diff --git a/node_modules/@subwallet/keyring/utils/cardano/coseKey.js b/node_modules/@subwallet/keyring/utils/cardano/coseKey.js
-index 20b7a8d..066d0b7 100644
+index 20b7a8df..066d0b72 100644
 --- a/node_modules/@subwallet/keyring/utils/cardano/coseKey.js
 +++ b/node_modules/@subwallet/keyring/utils/cardano/coseKey.js
 @@ -1,17 +1,11 @@
@@ -749,7 +765,7 @@ index 20b7a8d..066d0b7 100644
  };
 \ No newline at end of file
 diff --git a/node_modules/@subwallet/keyring/utils/cardano/mnemonic.js b/node_modules/@subwallet/keyring/utils/cardano/mnemonic.js
-index 1932aa2..15f342a 100644
+index 1932aa2d..15f342a8 100644
 --- a/node_modules/@subwallet/keyring/utils/cardano/mnemonic.js
 +++ b/node_modules/@subwallet/keyring/utils/cardano/mnemonic.js
 @@ -1,11 +1,6 @@
