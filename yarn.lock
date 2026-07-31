@@ -8774,7 +8774,7 @@ __metadata:
     react-native-vision-camera: ^4.7.3
     react-native-walkthrough-tooltip: ^1.6.0
     react-native-webview: 13.15.0
-    react-native-worklets: ^0.8.0
+    react-native-worklets: ^0.8.3
     react-redux: ^9.2.0
     react-test-renderer: 19.1.1
     react-zlib-js: ^1.0.5
@@ -19893,9 +19893,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:^0.8.0":
-  version: 0.8.1
-  resolution: "react-native-worklets@npm:0.8.1"
+"react-native-worklets@npm:^0.8.3":
+  version: 0.8.3
+  resolution: "react-native-worklets@npm:0.8.3"
   dependencies:
     "@babel/plugin-transform-arrow-functions": ^7.27.1
     "@babel/plugin-transform-class-properties": ^7.27.1
@@ -19913,7 +19913,7 @@ __metadata:
     "@react-native/metro-config": "*"
     react: "*"
     react-native: 0.81 - 0.85
-  checksum: 6a219b95682477179147a398a9da63a2a7c81a02230b85da57992f679b2247e45500dda60c5f4e638d6d22ec11f2a132ce574ff8bb8d836cebe5000ced25cc39
+  checksum: a44e50fc0ec765612df3f6b6104444d28e94634f3642b689df2638c5c9187ddadd7069953bb9d9a68ca253422e6630db36ffcfee80eea5f71f73cc99539307fd
   languageName: node
   linkType: hard
 

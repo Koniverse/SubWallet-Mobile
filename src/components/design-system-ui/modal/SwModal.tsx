@@ -31,6 +31,7 @@ export interface SWModalProps {
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
   isAllowSwipeDown?: boolean;
+  hideHandle?: boolean;
   modalTitle?: string;
   titleTextAlign?: 'left' | 'center';
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -91,6 +92,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       modalTitle,
       onModalHide,
       isFullHeight = false,
+      hideHandle,
       titleTextAlign = 'left',
       contentContainerStyle,
       titleStyle,
@@ -212,6 +214,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
               isUseForceHidden={isUseForceHidden === undefined ? Platform.OS === 'android' : isUseForceHidden}
               onChangeModalVisible={onChangeModalVisible}
               isAllowSwipeDown={isAllowSwipeDown}
+              hideHandle={hideHandle}
               onBackButtonPress={onBackButtonPress}
               level={level}>
               <View
