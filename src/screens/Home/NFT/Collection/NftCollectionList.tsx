@@ -39,9 +39,9 @@ const NftCollectionList = () => {
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<NftCollection>) => {
-      const key = `${item.collectionName}-${item.collectionId}`;
+      const key = `${item.chain}-${item.collectionId}`;
       const onPress = () => {
-        navigation.navigate('Collection', { collectionId: key });
+        navigation.navigate('Collection', { chain: item.chain, collectionId: item.collectionId });
       };
 
       return <NftCollectionItem key={key} nftCollection={item} onPress={onPress} />;
@@ -97,7 +97,8 @@ const NftCollectionList = () => {
         beforeListItem={
           banners && banners.length ? (
             <View
-              style={{ paddingHorizontal: theme.padding, paddingTop: theme.paddingXS, paddingBottom: theme.marginXXS }}>
+              style={{ paddingHorizontal: theme.padding, paddingTop: theme.paddingXS, paddingBottom: theme.marginXXS }}
+            >
               <BannerGenerator banners={banners} onPressBanner={onPressBanner} dismissBanner={dismissBanner} />
             </View>
           ) : (

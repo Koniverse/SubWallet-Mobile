@@ -32,7 +32,7 @@ import { ThemeTypes } from 'styles/themes';
 
 const NftDetail = ({
   route: {
-    params: { collectionId: _collectionId, nftId },
+    params: { chain, collectionId, nftId },
   },
 }: NFTDetailProps) => {
   const theme = useSubWalletTheme().swThemes;
@@ -45,12 +45,15 @@ const NftDetail = ({
   const { accounts } = useSelector((state: RootState) => state.accountState);
 
   const collectionInfo = useMemo((): NftCollection => {
-    return nftCollections.find(i => _collectionId === `${i.collectionName}-${i.collectionId}`) || ({} as NftCollection);
-  }, [_collectionId, nftCollections]);
+    return nftCollections.find(i => i.chain === chain && i.collectionId === collectionId) || ({} as NftCollection);
+  }, [chain, collectionId, nftCollections]);
 
   const nftItem = useMemo(() => {
-    return nftItems.find(item => nftId === `${item.collectionId}-${item.id}`) || ({} as NftItem);
-  }, [nftId, nftItems]);
+    return (
+      nftItems.find(item => item.chain === chain && item.collectionId === collectionId && item.id === nftId) ||
+      ({} as NftItem)
+    );
+  }, [chain, collectionId, nftId, nftItems]);
 
   const goHome = useGoHome({ screen: 'NFTs', params: { screen: 'CollectionList' } });
   useHandleGoHome({
@@ -77,21 +80,22 @@ const NftDetail = ({
   }, [show]);
 
   const propDetail = useCallback(
-    (title: string, valueDict: Record<string, any>, key: number): JSX.Element => {
-      if (!valueDict.type || valueDict.type === 'string') {
-        return (
-          <View style={styles.propWrapper} key={key}>
-            <View style={styles.propDetail}>
-              <Typography.Text style={styles.propTitleStyle}>{title}</Typography.Text>
-              <Typography.Text ellipsis style={styles.propValueStyle}>
-                {valueDict.value}
-              </Typography.Text>
-            </View>
-          </View>
-        );
-      }
+    (title: string, value: unknown, key: number): JSX.Element => {
+      const displayValue =
+        typeof value === 'object' && value !== null && 'value' in value
+          ? String((value as { value: unknown }).value)
+          : String(value);
 
-      return <View key={key} />;
+      return (
+        <View style={styles.propWrapper} key={key}>
+          <View style={styles.propDetail}>
+            <Typography.Text style={styles.propTitleStyle}>{title}</Typography.Text>
+            <Typography.Text ellipsis style={styles.propValueStyle}>
+              {displayValue}
+            </Typography.Text>
+          </View>
+        </View>
+      );
     },
     [styles.propDetail, styles.propTitleStyle, styles.propValueStyle, styles.propWrapper],
   );
@@ -144,7 +148,8 @@ const NftDetail = ({
       title={nftItem.name || i18n.title.nftDetail}
       style={styles.containerHeader}
       isHideBottomSafeArea={true}
-      onPressBack={() => navigation.goBack()}>
+      onPressBack={() => navigation.goBack()}
+    >
       <>
         <ScrollView style={styles.containerDetail} showsVerticalScrollIndicator={false} nestedScrollEnabled>
           {show3DModel ? (
@@ -216,18 +221,17 @@ const NftDetail = ({
             <View style={styles.propContainer}>
               {propDetail(
                 i18n.inputLabel.nftId,
-                { value: nftItem.id },
+                nftItem.id,
                 (nftItem?.properties ? Object.keys(nftItem?.properties).length : 0) + 1,
               )}
               {propDetail(
                 i18n.inputLabel.collectionId,
-                { value: nftItem.collectionId },
+                nftItem.collectionId,
                 (nftItem?.properties ? Object.keys(nftItem?.properties).length : 0) + 2,
               )}
               {!!nftItem.properties && (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                   {Object.keys(nftItem?.properties).map((key, index) => {
-                    // @ts-ignore
                     return propDetail(key, nftItem?.properties[key], index);
                   })}
                 </View>

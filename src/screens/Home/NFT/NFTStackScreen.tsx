@@ -8,8 +8,8 @@ import withPageWrapper from 'components/pageWrapper';
 
 export type NFTStackParamList = {
   CollectionList: undefined;
-  Collection: { collectionId: string };
-  NftDetail: { collectionId: string; nftId: string };
+  Collection: { chain: string; collectionId: string };
+  NftDetail: { chain: string; collectionId: string; nftId: string };
 };
 export type NavigationProps = NativeStackScreenProps<NFTStackParamList & RootStackParamList>;
 export type NFTNavigationProps = NavigationProps['navigation'];

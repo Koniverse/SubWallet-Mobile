@@ -3,6 +3,7 @@
 
 import {
   NftCollection,
+  NftFullListRequest,
   NftJson,
   NftTransactionRequest,
   RequestSubscribeNft,
@@ -25,6 +26,10 @@ export async function subscribeNft(
 
 export async function subscribeNftCollection(callback: (data: NftCollection[]) => void): Promise<NftCollection[]> {
   return sendMessage('pri(nftCollection.getSubscription)', null, callback);
+}
+
+export async function getFullNftList(request: NftFullListRequest): Promise<boolean> {
+  return sendMessage('pri(nft.getFullList)', request);
 }
 
 export async function evmNftSubmitTransaction(request: NftTransactionRequest): Promise<SWTransactionResponse> {
