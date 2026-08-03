@@ -8,6 +8,7 @@ import { RootState } from 'stores/index';
 import { TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { _ChainAsset, _ChainStatus } from '@subwallet/chain-list/types';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import { _BALANCE_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import {
   _getAssetDecimals,
   _getAssetOriginChain,
@@ -18,6 +19,7 @@ import {
   _isAssetFungibleToken,
   _isChainEvmCompatible,
   _isChainInfoCompatibleWithAccountInfo,
+  _isNativeTokenBySlug,
   _parseAssetRefKey,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { Alert, AppState, Keyboard, ScrollView, StyleSheet, View } from 'react-native';
@@ -43,7 +45,6 @@ import {
   SwapFeeType,
   SwapProviderId,
   SwapQuote,
-  SwapRequest,
   SwapRequestResult,
   SwapRequestV2,
 } from '@subwallet/extension-base/types/swap';
@@ -71,7 +72,7 @@ import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMu
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountAddressItemType } from 'types/account';
-import { AccountChainType, AccountProxy, AccountProxyType, ProcessType } from '@subwallet/extension-base/types';
+import { AccountChainType, AccountProxy, AccountProxyType, BalanceType, ProcessType } from '@subwallet/extension-base/types';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { CHAINFLIP_SLIPPAGE } from 'types/swap';
@@ -255,7 +256,7 @@ const Component = ({
   const [quoteOptions, setQuoteOptions] = useState<SwapQuote[]>([]);
   const [currentQuote, setCurrentQuote] = useState<SwapQuote | undefined>(undefined);
   const [quoteAliveUntil, setQuoteAliveUntil] = useState<number | undefined>(undefined);
-  const [currentQuoteRequest, setCurrentQuoteRequest] = useState<SwapRequest | undefined>(undefined);
+  const [currentQuoteRequest, setCurrentQuoteRequest] = useState<SwapRequestV2 | undefined>(undefined);
   const [isFormInvalid, setIsFormInvalid] = useState<boolean>(false);
   const [currentOptimalSwapPath, setOptimalSwapPath] = useState<CommonOptimalSwapPath | undefined>(undefined);
   const [slippageModalVisible, setSlippageModalVisible] = useState<boolean>(false);
@@ -279,7 +280,26 @@ const Component = ({
   const [isScrollEnd, setIsScrollEnd] = useState<boolean>(false);
   const [isRecipientFieldManuallyVisible, setIsRecipientFieldManuallyVisible] = useState<boolean>(false);
 
-  const availableBalanceHookResult = useGetBalance(chainValue, fromValue, fromTokenSlugValue, true, ExtrinsicType.SWAP);
+  const fromAssetInfo = useMemo(() => assetRegistryMap[fromTokenSlugValue], [assetRegistryMap, fromTokenSlugValue]);
+  const toAssetInfo = useMemo(() => assetRegistryMap[toTokenSlugValue], [assetRegistryMap, toTokenSlugValue]);
+  const isBittensorStakedSwap = useMemo(
+    () =>
+      _BALANCE_CHAIN_GROUP.bittensor.includes(fromAssetInfo?.originChain) &&
+      _BALANCE_CHAIN_GROUP.bittensor.includes(toAssetInfo?.originChain),
+    [fromAssetInfo?.originChain, toAssetInfo?.originChain],
+  );
+  const balanceType = useMemo(
+    () => (isBittensorStakedSwap && _isNativeTokenBySlug(fromAssetInfo?.slug) ? BalanceType.STAKING : undefined),
+    [fromAssetInfo?.slug, isBittensorStakedSwap],
+  );
+  const availableBalanceHookResult = useGetBalance(
+    chainValue,
+    fromValue,
+    fromTokenSlugValue,
+    true,
+    ExtrinsicType.SWAP,
+    balanceType,
+  );
 
   const currentFromTokenAvailableBalance = useMemo(() => {
     if (!fromTokenSlugValue || availableBalanceHookResult.isLoading || !availableBalanceHookResult.nativeTokenSlug) {
@@ -420,14 +440,6 @@ const Component = ({
 
     return tokenSelectorItems.filter(item => destinationSlugSet.has(item.slug));
   }, [fromTokenSlugValue, tokenSelectorItems, pairMap]);
-
-  const fromAssetInfo = useMemo(() => {
-    return assetRegistryMap[fromTokenSlugValue] || undefined;
-  }, [assetRegistryMap, fromTokenSlugValue]);
-
-  const toAssetInfo = useMemo(() => {
-    return assetRegistryMap[toTokenSlugValue] || undefined;
-  }, [assetRegistryMap, toTokenSlugValue]);
 
   const destChainValue = _getAssetOriginChain(toAssetInfo);
 
@@ -636,10 +648,12 @@ const Component = ({
       return;
     }
 
-    const result = new BigN(currentFromTokenAvailableBalance.value).multipliedBy(92).dividedToIntegerBy(100).toFixed();
+    const result = isBittensorStakedSwap
+      ? currentFromTokenAvailableBalance.value
+      : new BigN(currentFromTokenAvailableBalance.value).multipliedBy(92).dividedToIntegerBy(100).toFixed();
     onChangeAmount(result);
     setSwapFromFieldRenderKey(`SwapFromField-${Date.now()}`);
-  }, [currentFromTokenAvailableBalance, onChangeAmount]);
+  }, [currentFromTokenAvailableBalance, isBittensorStakedSwap, onChangeAmount]);
 
   const onPressHaftAmountButton = useCallback(() => {
     if (!currentFromTokenAvailableBalance) {
@@ -673,8 +687,24 @@ const Component = ({
     return checkChainConnected(chainValue);
   }, [chainValue, checkChainConnected]);
 
+  const alternativeAddress = useMemo(() => {
+    const selectedAccountProxy = isAccountAll(targetAccountProxy.id)
+      ? accountProxies.find(accountProxy => accountProxy.id === targetAccountProxyIdForGetBalance)
+      : targetAccountProxy;
+
+    return selectedAccountProxy?.accounts.find(account => account.chainType === AccountChainType.SUBSTRATE)?.address;
+  }, [accountProxies, targetAccountProxy, targetAccountProxyIdForGetBalance]);
+
   const onSubmit = useCallback(
     (values: SwapFormValues) => {
+      const hasXcmStep = currentOptimalSwapPath?.steps.some(step => step.type === 'XCM');
+
+      if (targetAccountProxy.accountType === AccountProxyType.MULTISIG && hasXcmStep) {
+        show('Multisig accounts are not supported for cross-chain swaps', { type: 'danger' });
+
+        return;
+      }
+
       if (chainValue && !checkChainConnected(chainValue)) {
         Alert.alert(
           'Pay attention!',
@@ -862,6 +892,7 @@ const Component = ({
       slippage,
       swapError,
       theme.colorWarning,
+      targetAccountProxy.accountType,
     ],
   );
 
@@ -1019,6 +1050,7 @@ const Component = ({
 
             const currentRequest: SwapRequestV2 = {
               address: fromValue,
+              alternativeAddress,
               pair: {
                 slug: _parseAssetRefKey(fromTokenSlugValue, toTokenSlugValue),
                 from: fromTokenSlugValue,
@@ -1089,6 +1121,7 @@ const Component = ({
     };
   }, [
     appState,
+    alternativeAddress,
     currentSlippage.slippage,
     fromAmountValue,
     fromTokenSlugValue,
@@ -1125,12 +1158,18 @@ const Component = ({
   }, [fromTokenItems, fromTokenSlugValue, onChangeAmount, setValue]);
 
   useEffect(() => {
+    if (!fromTokenSlugValue) {
+      return;
+    }
+
     if (toTokenItems.length) {
       if (!toTokenSlugValue || !toTokenItems.some(t => t.slug === toTokenSlugValue)) {
         setValue('toTokenSlug', toTokenItems[0].slug);
       }
+    } else if (toTokenSlugValue) {
+      setValue('toTokenSlug', '');
     }
-  }, [setValue, toTokenItems, toTokenSlugValue]);
+  }, [fromTokenSlugValue, setValue, toTokenItems, toTokenSlugValue]);
 
   useEffect(() => {
     const updateFromValue = () => {
@@ -1432,11 +1471,16 @@ const Component = ({
                   address={fromValue}
                   chain={chainValue}
                   extrinsicType={ExtrinsicType.SWAP}
+                  balanceType={balanceType}
                   hidden={!canShowAvailableBalance}
                   isSubscribe={true}
-                  label={`${i18n.inputLabel.availableBalance}`}
+                  label={balanceType === BalanceType.STAKING ? 'Staked balance' : `${i18n.inputLabel.availableBalance}`}
                   tokenSlug={fromTokenSlugValue}
-                  labelTooltip={'Available balance for swap'}
+                  labelTooltip={
+                    balanceType === BalanceType.STAKING
+                      ? `Staked ${fromAssetInfo?.symbol || ''} available for swap`
+                      : 'Available balance for swap'
+                  }
                   showNetwork={false}
                 />
               </View>
