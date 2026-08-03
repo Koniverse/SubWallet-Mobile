@@ -474,6 +474,9 @@
     "senderTransferableBalance": "Số dư khả dụng của tài khoản gửi",
     "nft": "NFT",
     "estimatedFee": "Phí ước tính",
+    "crossChainFee": "Phí xuyên chuỗi",
+    "selectFromValidator": "Chọn validator nguồn",
+    "selectToValidator": "Chọn validator đích",
     "selectPool": "Chọn pool",
     "selectValidator": "Chọn validator",
     "estimatedEarnings": "Thu nhập ước tính",
@@ -1243,6 +1246,7 @@
     "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed.",
     "insufficientBalanceMessageV2": "Insufficient balance. Amount must be smaller than available balance",
     "crossChainTransferWarningMessage": "Vui lòng KHÔNG chuyển tài sản xuyên chuỗi (cross-chain) đến địa chỉ trên sàn giao dịch CEX để tránh gây mất tài sản.",
+    "transferAllWarningMessage": "Chuyển tất cả sẽ xóa toàn bộ tài sản trên mạng lưới này. Bạn có chắc chắn không?",
     "enterAstarPortalMessage": "Vui lòng chuyển hướng đến Astar portal để xem và quản lý stake của bạn trong Astar dApp staking v3",
     "reCheckInternetConnection": "Check your connection and try again"
   },

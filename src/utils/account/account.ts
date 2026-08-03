@@ -1,6 +1,12 @@
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
-import { AbstractAddressJson, AccountChainType, AccountJson, AccountSignMode } from '@subwallet/extension-base/types';
+import {
+  AbstractAddressJson,
+  AccountChainType,
+  AccountJson,
+  AccountProxy,
+  AccountSignMode,
+} from '@subwallet/extension-base/types';
 import { isAddress, isSubstrateAddress, isTonAddress } from '@subwallet/keyring';
 import { KeypairType } from '@subwallet/keyring/types';
 import { BitcoinAccountInfo } from 'types/account';
@@ -87,6 +93,10 @@ export const getSignMode = (account: AccountJson | null | undefined): AccountSig
       }
     }
   }
+};
+
+export const getSignModeByAccountProxy = (accountProxy: AccountProxy | null | undefined): AccountSignMode => {
+  return accountProxy?.accounts[0]?.signMode || AccountSignMode.UNKNOWN;
 };
 
 export const isNoAccount = (accounts: AccountJson[] | null): boolean => {

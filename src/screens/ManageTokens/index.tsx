@@ -91,26 +91,47 @@ export const CustomTokenSetting = () => {
   }, [pendingAssetMap]);
 
   const onToggleItem = (item: _ChainAsset) => {
-    setPendingAssetMap({ ...pendingAssetMap, [item.slug]: !assetSettingMap[item.slug]?.visible });
+    const visible = !assetSettingMap[item.slug]?.visible;
+
+    setPendingAssetMap({ ...pendingAssetMap, [item.slug]: visible });
     const isNativeToken = _isNativeToken(item);
     const reject = () => {
       console.warn('Toggle token request failed!');
-      // @ts-ignore
-      delete pendingassetMap[item.key];
-      setPendingAssetMap({ ...pendingAssetMap });
+      setPendingAssetMap(prevMap => {
+        const newMap = { ...prevMap };
+
+        delete newMap[item.slug];
+
+        return newMap;
+      });
     };
 
-    updateAssetSetting({
-      tokenSlug: item.slug,
-      assetSetting: {
-        visible: !assetSettingMap[item.slug]?.visible,
-      },
-      autoEnableNativeToken: !isNativeToken,
-    })
+    const doUpdateAssetSetting = () => {
+      return updateAssetSetting({
+        tokenSlug: item.slug,
+        assetSetting: {
+          visible,
+        },
+        autoEnableNativeToken: !isNativeToken,
+      });
+    };
+
+    doUpdateAssetSetting()
       .then(result => {
-        if (!result) {
-          reject();
+        if (result) {
+          return;
         }
+
+        // Retry once after 600ms — lockChainInfoMap may have been busy
+        setTimeout(() => {
+          doUpdateAssetSetting()
+            .then(retryResult => {
+              if (!retryResult) {
+                reject();
+              }
+            })
+            .catch(reject);
+        }, 600);
       })
       .catch(reject);
   };
