@@ -115,6 +115,9 @@ export const SubstrateSignArea = (props: Props) => {
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
   const isMessage = isSubstrateMessage(payload);
   const dispatch = useDispatch();
+  // Chain metadata is fetched then decoded into a type registry on the JS thread, which makes the
+  // buttons unable to react. Show it as a loading state so it does not look like the app is stuck.
+  const isPreparingPayload = loadingChain || hashLoading;
   const networkName = useMemo(
     () => chainInfo?.name || chain?.name || toShort(genesisHash),
     [chainInfo, genesisHash, chain],
@@ -429,20 +432,24 @@ export const SubstrateSignArea = (props: Props) => {
       {/*</SwModal>*/}
 
       <ConfirmationFooter>
-        <Button disabled={loading} block icon={getButtonIcon(XCircleIcon)} type={'secondary'} onPress={onCancel}>
+        <Button
+          disabled={loading || isPreparingPayload}
+          block
+          icon={getButtonIcon(XCircleIcon)}
+          type={'secondary'}
+          onPress={onCancel}>
           {i18n.common.cancel}
         </Button>
         <Button
           block
           disabled={
             showQuoteExpired ||
-            loadingChain ||
-            hashLoading ||
+            isPreparingPayload ||
             loading ||
             (isMessage ? !modeCanSignMessage.includes(signMode) : alertData?.type === 'error')
           }
           icon={getButtonIcon(approveIcon)}
-          loading={loading}
+          loading={loading || isPreparingPayload}
           onPress={onConfirm}>
           {i18n.buttonTitles.approve}
         </Button>
