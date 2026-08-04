@@ -308,7 +308,9 @@
     "importPrivateKeyMessage": "如需导入已存在的钱包，请输入私钥",
     "importQrCodeMessage1": "请确保您已授予SubWallet访问设备相机的权限",
     "importQrCodeMessage2": "点击“扫描二维码”按钮或阅读此说明以获取更多详细信息",
-    "importAccounts": "导入{0}账户"
+    "importAccounts": "导入{0}账户",
+    "importFromTrustWallet": "Import from Trust Wallet",
+    "importFromTrustWalletMessage": "To import your account from Trust Wallet, enter the 12-word seed phrase below."
   },
   "removeAccount": {
     "removeAccountTitle": "删除该账户",
@@ -916,7 +918,8 @@
     "stake": "Stake",
     "unstake": "Unstake",
     "withdraw": "Withdraw",
-    "supply": "Supply"
+    "supply": "Supply",
+    "importFromTrustWallet": "Import from Trust Wallet"
   },
   "cryptoScreen": {
     "address": "地址",
@@ -1210,7 +1213,9 @@
     "insufficientBalance": "Insufficient balance",
     "payAttention": "请注意！",
     "enterAstarPortal": "登录Astar portal",
-    "noInternetTitle": "No Internet connection"
+    "noInternetTitle": "No Internet connection",
+    "incompatibleSeedPhrase": "Incompatible seed phrase",
+    "trustSeedPhraseWarningTitle": "Solo account import"
   },
   "warningMessage": {
     "passwordTooShort": "密码过短",
@@ -1247,7 +1252,11 @@
     "crossChainTransferWarningMessage": "请勿将资产跨链转移到中心化交易所（CEX）上的地址，以防止资产丢失。",
     "transferAllWarningMessage": "转移全部资产将清空该网络上的所有资产。确定继续吗？",
     "enterAstarPortalMessage": "请导航到Astar portal以查看并管理你在Astar dApp staking v3里的质押",
-    "reCheckInternetConnection": "Check your connection and try again"
+    "reCheckInternetConnection": "Check your connection and try again",
+    "unifiedSeedPhraseInfo": "This seed phrase generates a unified account that can be used on multiple ecosystems in SubWallet including TON.",
+    "tonIncompatibleSeedPhraseWarning": "Note that you can’t import this seed phrase into TON-native wallets as this seed phrase is incompatible with TON-native wallets.",
+    "trustSeedPhraseImportInfo": "Importing the seed phrase via this option will create a solo Polkadot account that can be used on both SubWallet and Trust Wallet.",
+    "trustSeedPhraseImportWarning": "For use on other ecosystems, import this seed phrase again via \"Import from seed phrase\" option. This will create a unified account containing addresses from other ecosystems that can be used on any wallets."
   },
   "errorMessage": {
     "invalidPinCode": "PIN码无效",
@@ -1308,7 +1317,8 @@
     "connectionAlreadyExist": "连接已存在",
     "failToAddConnection": "添加连接失败",
     "unreadableQrCode": "Unreadable QR code. Please scan another one.",
-    "recipientAddressInvalid": "Recipient should be a valid {0} address"
+    "recipientAddressInvalid": "Recipient should be a valid {0} address",
+    "trustWalletSeedPhraseWordCount": "Trust Wallet seed phrase must contain 12 words"
   },
   "notificationMessage": {
     "watchOnlyNoti": "你正在使用仅可查看的账户，故无法发送资产",

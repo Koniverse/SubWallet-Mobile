@@ -309,7 +309,9 @@
     "importPrivateKeyMessage": "Để nhập tài khoản có sẵn, vui lòng nhập private key",
     "importQrCodeMessage1": "Hãy đảm bảo rằng bạn đã cấp  quyền truy cập vào máy ảnh trên thiết bị của bạn cho SubWallet",
     "importQrCodeMessage2": "Nhấp vào nút \"Quét QR\" hoặc đọc hướng dẫn này để biết thêm chi tiết",
-    "importAccounts": "Nhập {0} tài khoản"
+    "importAccounts": "Nhập {0} tài khoản",
+    "importFromTrustWallet": "Import from Trust Wallet",
+    "importFromTrustWalletMessage": "To import your account from Trust Wallet, enter the 12-word seed phrase below."
   },
   "removeAccount": {
     "removeAccountTitle": "Xóa tài khoản này",
@@ -917,7 +919,8 @@
     "stake": "Stake",
     "unstake": "Unstake",
     "withdraw": "Withdraw",
-    "supply": "Supply"
+    "supply": "Supply",
+    "importFromTrustWallet": "Import from Trust Wallet"
   },
   "cryptoScreen": {
     "address": "Địa chỉ",
@@ -1211,7 +1214,9 @@
     "insufficientBalance": "Insufficient balance",
     "payAttention": "Chú ý!",
     "enterAstarPortal": "Truy cập Astar portal",
-    "noInternetTitle": "No Internet connection"
+    "noInternetTitle": "No Internet connection",
+    "incompatibleSeedPhrase": "Incompatible seed phrase",
+    "trustSeedPhraseWarningTitle": "Solo account import"
   },
   "warningMessage": {
     "passwordTooShort": "Mật khẩu quá ngắn",
@@ -1248,7 +1253,11 @@
     "crossChainTransferWarningMessage": "Vui lòng KHÔNG chuyển tài sản xuyên chuỗi (cross-chain) đến địa chỉ trên sàn giao dịch CEX để tránh gây mất tài sản.",
     "transferAllWarningMessage": "Chuyển tất cả sẽ xóa toàn bộ tài sản trên mạng lưới này. Bạn có chắc chắn không?",
     "enterAstarPortalMessage": "Vui lòng chuyển hướng đến Astar portal để xem và quản lý stake của bạn trong Astar dApp staking v3",
-    "reCheckInternetConnection": "Check your connection and try again"
+    "reCheckInternetConnection": "Check your connection and try again",
+    "unifiedSeedPhraseInfo": "This seed phrase generates a unified account that can be used on multiple ecosystems in SubWallet including TON.",
+    "tonIncompatibleSeedPhraseWarning": "Note that you can’t import this seed phrase into TON-native wallets as this seed phrase is incompatible with TON-native wallets.",
+    "trustSeedPhraseImportInfo": "Importing the seed phrase via this option will create a solo Polkadot account that can be used on both SubWallet and Trust Wallet.",
+    "trustSeedPhraseImportWarning": "For use on other ecosystems, import this seed phrase again via \"Import from seed phrase\" option. This will create a unified account containing addresses from other ecosystems that can be used on any wallets."
   },
   "errorMessage": {
     "invalidPinCode": "Mã PIN không hợp lệ",
@@ -1309,7 +1318,8 @@
     "connectionAlreadyExist": "Kết nối đã tồn tại",
     "failToAddConnection": "Thêm kết nối thất bại",
     "unreadableQrCode": "Unreadable QR code. Please scan another one.",
-    "recipientAddressInvalid": "Recipient should be a valid {0} address"
+    "recipientAddressInvalid": "Recipient should be a valid {0} address",
+    "trustWalletSeedPhraseWordCount": "Trust Wallet seed phrase must contain 12 words"
   },
   "notificationMessage": {
     "watchOnlyNoti": "Tài khoản bạn đang sử dụng là tài khoản chỉ xem, bạn không thể gửi tài sản trên tài khoản này.",

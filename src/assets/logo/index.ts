@@ -41,6 +41,7 @@ export const ImageLogosMap = {
   uniswap: require('./rococo-asset-hub.png'),
   ordinal_rune: require('./ordinal_rune.png'),
   kyber: require('./kyber.png'),
+  trust: require('./trust.png'),
   'subnet-0': require('./bittensor/subnet-0.png'),
   'subnet-1': require('./bittensor/subnet-1.png'),
   'subnet-2': require('./bittensor/subnet-2.png'),

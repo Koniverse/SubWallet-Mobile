@@ -308,7 +308,9 @@
     "importPrivateKeyMessage": "To import an existing account, please enter private key.",
     "importQrCodeMessage1": "Please make sure that you have granted SubWallet the access to your device’s camera",
     "importQrCodeMessage2": "Click the “Scan QR” button or read this instruction for more details",
-    "importAccounts": "Import {0} accounts"
+    "importAccounts": "Import {0} accounts",
+    "importFromTrustWallet": "Import from Trust Wallet",
+    "importFromTrustWalletMessage": "To import your account from Trust Wallet, enter the 12-word seed phrase below."
   },
   "removeAccount": {
     "removeAccountTitle": "Remove this account",
@@ -916,7 +918,8 @@
     "stake": "Stake",
     "unstake": "Unstake",
     "withdraw": "Withdraw",
-    "supply": "Supply"
+    "supply": "Supply",
+    "importFromTrustWallet": "Import from Trust Wallet"
   },
   "cryptoScreen": {
     "address": "Address",
@@ -1210,7 +1213,9 @@
     "insufficientBalance": "Insufficient balance",
     "payAttention": "Pay attention!",
     "enterAstarPortal": "Enter Astar portal",
-    "noInternetTitle": "No Internet connection"
+    "noInternetTitle": "No Internet connection",
+    "incompatibleSeedPhrase": "Incompatible seed phrase",
+    "trustSeedPhraseWarningTitle": "Solo account import"
   },
   "warningMessage": {
     "passwordTooShort": "Password is too short",
@@ -1247,7 +1252,11 @@
     "crossChainTransferWarningMessage": "Cross-chain transfer to an exchange (CEX) will result in loss of funds. Make sure the receiving address is not an exchange address.",
     "transferAllWarningMessage": "Transferring all will remove all assets on this network. Are you sure?",
     "enterAstarPortalMessage": "Navigate to Astar portal to view and manage your stake in Astar dApp staking v3",
-    "reCheckInternetConnection": "Check your connection and try again"
+    "reCheckInternetConnection": "Check your connection and try again",
+    "unifiedSeedPhraseInfo": "This seed phrase generates a unified account that can be used on multiple ecosystems in SubWallet including TON.",
+    "tonIncompatibleSeedPhraseWarning": "Note that you can’t import this seed phrase into TON-native wallets as this seed phrase is incompatible with TON-native wallets.",
+    "trustSeedPhraseImportInfo": "Importing the seed phrase via this option will create a solo Polkadot account that can be used on both SubWallet and Trust Wallet.",
+    "trustSeedPhraseImportWarning": "For use on other ecosystems, import this seed phrase again via \"Import from seed phrase\" option. This will create a unified account containing addresses from other ecosystems that can be used on any wallets."
   },
   "errorMessage": {
     "invalidPinCode": "Invalid PIN Code",
@@ -1308,7 +1317,8 @@
     "connectionAlreadyExist": "Connection already exists",
     "failToAddConnection": "Fail to add connection",
     "unreadableQrCode": "Unreadable QR code. Please scan another one.",
-    "recipientAddressInvalid": "Recipient should be a valid {0} address"
+    "recipientAddressInvalid": "Recipient should be a valid {0} address",
+    "trustWalletSeedPhraseWordCount": "Trust Wallet seed phrase must contain 12 words"
   },
   "notificationMessage": {
     "watchOnlyNoti": "The account you are using is watch-only, you cannot send assets with it",
