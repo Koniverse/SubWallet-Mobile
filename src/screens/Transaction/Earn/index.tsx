@@ -117,10 +117,10 @@ const loadingStepPromiseKey = 'earning.step.loading';
 // Not enough balance to xcm;
 export const insufficientXCMMessages = ['You can only enter a maximum'];
 
-const DO_NOT_SHOW_VALIDATOR_ALERT_CASES = [
-  'TAO___native_staking___bittensor',
-  'TAO___native_staking___bittensor_devnet',
-];
+// Bittensor stakes to exactly one validator at a time, so the "choose more validators to optimize
+// your earnings" nudge never applies on any of its networks. `_STAKING_CHAIN_GROUP` does not know
+// about devnet, hence the extra entry.
+const DO_NOT_SHOW_VALIDATOR_ALERT_CHAINS = [..._STAKING_CHAIN_GROUP.bittensor, 'bittensor_devnet'];
 
 const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const {
@@ -1005,8 +1005,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     if (
       userSelectedPoolCount < maxCount &&
       label === 'Validator' &&
-      !DO_NOT_SHOW_VALIDATOR_ALERT_CASES.includes(slug) &&
-      !slug.startsWith('TAO___subnet_staking___bittensor')
+      !DO_NOT_SHOW_VALIDATOR_ALERT_CHAINS.includes(chain)
     ) {
       showValidatorMaxCountWarning(maxCount, userSelectedPoolCount, () => {
         submitData(currentStep)
