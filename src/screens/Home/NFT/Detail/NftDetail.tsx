@@ -20,6 +20,7 @@ import i18n from 'utils/i18n/i18n';
 import { NFTDetailProps } from 'screens/Home/NFT/NFTStackScreen';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { ActivityIndicator, Button, Typography } from 'components/design-system-ui';
+import { NftDescription } from 'components/common/NftDescription';
 import useFetchChainInfo from 'hooks/common/useFetchChainInfo';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import WebView from 'react-native-webview';
@@ -184,7 +185,7 @@ const NftDetail = ({
           {!!nftItem.description && (
             <View>
               <Typography.Text style={styles.attTitle}>{i18n.inputLabel.nftDetails}</Typography.Text>
-              <Typography.Text style={styles.attValue}>{nftItem?.description}</Typography.Text>
+              <NftDescription title={nftItem.name || nftItem.id} description={nftItem.description} />
             </View>
           )}
           <TouchableOpacity style={styles.resourceContainerStyle} activeOpacity={0.5} onPress={handleClickComingSoon}>

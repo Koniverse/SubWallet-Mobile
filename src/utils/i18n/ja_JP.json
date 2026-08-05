@@ -934,6 +934,20 @@
       "properties": "プロパティ",
       "resourcesOrInventory": "リソースまたはインベントリ",
       "createdBy": "によって作成された"
+    },
+    "nestedNft": {
+      "bundle": "バンドル",
+      "level": "レベル {{level}}",
+      "parent": "親",
+      "nestedIn": "ネスト先: {{name}}",
+      "goToParent": "親へ移動",
+      "childNfts": "子NFT ({{count}})",
+      "item": "個",
+      "items": "個",
+      "nftStructure": "NFT構造",
+      "nftStructureWithCount": "NFT構造 ({{count}})",
+      "nestedInParent": "{{parentId}} にネスト",
+      "noStructureDataFound": "構造データが見つかりません"
     }
   },
   "historyScreen": {

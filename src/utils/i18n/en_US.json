@@ -934,6 +934,20 @@
       "properties": "Properties",
       "resourcesOrInventory": "Resources or inventory",
       "createdBy": "Created by"
+    },
+    "nestedNft": {
+      "bundle": "Bundle",
+      "level": "Level {{level}}",
+      "parent": "Parent",
+      "nestedIn": "Nested in: {{name}}",
+      "goToParent": "Go to parent",
+      "childNfts": "Child NFTs ({{count}})",
+      "item": "item",
+      "items": "items",
+      "nftStructure": "NFT structure",
+      "nftStructureWithCount": "NFT structure ({{count}})",
+      "nestedInParent": "Nested in {{parentId}}",
+      "noStructureDataFound": "No structure data found"
     }
   },
   "historyScreen": {

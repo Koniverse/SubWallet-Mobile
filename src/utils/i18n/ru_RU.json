@@ -934,6 +934,20 @@
       "properties": "Характеристики",
       "resourcesOrInventory": "Ресурсы или инвентарь",
       "createdBy": "Сделано"
+    },
+    "nestedNft": {
+      "bundle": "Связка",
+      "level": "Уровень {{level}}",
+      "parent": "Родительский",
+      "nestedIn": "Вложен в: {{name}}",
+      "goToParent": "К родительскому",
+      "childNfts": "Дочерние NFT ({{count}})",
+      "item": "элемент",
+      "items": "элементов",
+      "nftStructure": "Структура NFT",
+      "nftStructureWithCount": "Структура NFT ({{count}})",
+      "nestedInParent": "Вложен в {{parentId}}",
+      "noStructureDataFound": "Данные о структуре не найдены"
     }
   },
   "historyScreen": {

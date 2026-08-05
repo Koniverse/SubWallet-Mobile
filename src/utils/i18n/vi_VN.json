@@ -935,6 +935,20 @@
       "properties": "Thuộc tính",
       "resourcesOrInventory": "Tùy biến NFT",
       "createdBy": "Tạo bởi"
+    },
+    "nestedNft": {
+      "bundle": "Gói",
+      "level": "Cấp {{level}}",
+      "parent": "NFT cha",
+      "nestedIn": "Nằm trong: {{name}}",
+      "goToParent": "Tới NFT cha",
+      "childNfts": "NFT con ({{count}})",
+      "item": "vật phẩm",
+      "items": "vật phẩm",
+      "nftStructure": "Cấu trúc NFT",
+      "nftStructureWithCount": "Cấu trúc NFT ({{count}})",
+      "nestedInParent": "Nằm trong {{parentId}}",
+      "noStructureDataFound": "Không tìm thấy dữ liệu cấu trúc"
     }
   },
   "historyScreen": {

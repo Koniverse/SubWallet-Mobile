@@ -934,6 +934,20 @@
       "properties": "财产",
       "resourcesOrInventory": "资源或存储",
       "createdBy": "创建由"
+    },
+    "nestedNft": {
+      "bundle": "组合",
+      "level": "第 {{level}} 层",
+      "parent": "父级",
+      "nestedIn": "嵌套于：{{name}}",
+      "goToParent": "前往父级",
+      "childNfts": "子 NFT（{{count}}）",
+      "item": "个",
+      "items": "个",
+      "nftStructure": "NFT 结构",
+      "nftStructureWithCount": "NFT 结构（{{count}}）",
+      "nestedInParent": "嵌套于 {{parentId}}",
+      "noStructureDataFound": "未找到结构数据"
     }
   },
   "historyScreen": {
