@@ -13,6 +13,7 @@ import {
   IconProps,
   InfoIcon,
   ListBulletsIcon,
+  UserSwitchIcon,
 } from 'phosphor-react-native';
 import {
   _NotificationInfo,
@@ -59,6 +60,8 @@ import { Keyboard, StyleSheet, View } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import { NOTI_MULTISIG_PENDINGTX_ID } from 'constants/localStorage';
+import { mmkvStore } from 'utils/storage';
 
 export interface NotificationInfoItem extends _NotificationInfo {
   backgroundColor: string;
@@ -76,6 +79,7 @@ export enum NotificationIconBackgroundColorMap {
   CLAIM_POLYGON_BRIDGE = 'yellow-7',
   SWAP = 'blue-8',
   EARNING = 'blue-8',
+  MULTISIG_APPROVAL = 'geekblue-9',
 }
 
 export const NotificationIconMap = {
@@ -88,6 +92,7 @@ export const NotificationIconMap = {
   CLAIM_POLYGON_BRIDGE: CoinsIcon,
   SWAP: ArrowsLeftRightIcon,
   EARNING: DatabaseIcon,
+  MULTISIG_APPROVAL: UserSwitchIcon,
 };
 
 export const Notification = ({ route: { params } }: NotificationProps) => {
@@ -119,6 +124,11 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
         label: 'Read',
         onPress: () => {},
         value: NotificationTab.READ,
+      },
+      {
+        label: i18n.multisig.tabLabel,
+        onPress: () => {},
+        value: NotificationTab.MULTISIG,
       },
     ];
   }, []);
@@ -159,6 +169,12 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
 
   const notificationItems = useMemo((): NotificationInfoItem[] => {
     const filterTabFunction = (item: NotificationInfoItem) => {
+      const isMultisigAction = item.actionType === NotificationActionType.MULTISIG_APPROVAL;
+
+      if (selectedFilterTab === NotificationTab.MULTISIG) {
+        return isMultisigAction;
+      }
+
       if (selectedFilterTab === NotificationTab.ALL) {
         return true;
       } else if (selectedFilterTab === NotificationTab.UNREAD) {
@@ -449,6 +465,17 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
 
             break;
           }
+
+          case NotificationActionType.MULTISIG_APPROVAL: {
+            // Pending multisig transactions are listed on the History screen's Multisig
+            // tab; hand the id over so History can open this exact one.
+            mmkvStore.set(NOTI_MULTISIG_PENDINGTX_ID, item.id);
+            switchReadNotificationStatus(switchStatusParams)
+              .then(() => navigation.navigate('History', {}))
+              .catch(console.error);
+
+            break;
+          }
         }
 
         if (!item.isRead) {
@@ -478,8 +505,22 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     ],
   );
 
+  // On the Multisig tab, "mark all read" should only touch multisig notifications.
+  const excludeNotificationIds = useMemo(() => {
+    if (selectedFilterTab !== NotificationTab.MULTISIG) {
+      return [];
+    }
+
+    return notifications
+      .filter(item => item.actionType !== NotificationActionType.MULTISIG_APPROVAL)
+      .map(item => item.id);
+  }, [notifications, selectedFilterTab]);
+
   const markAllRead = useCallback(() => {
-    markAllReadNotification(currentProxyId || ALL_ACCOUNT_KEY).catch(console.error);
+    markAllReadNotification({
+      proxyId: currentProxyId || ALL_ACCOUNT_KEY,
+      excludeNotificationIds,
+    }).catch(console.error);
 
     setLoading(true);
     fetchInappNotifications({
@@ -491,7 +532,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
         setTimeout(() => setLoading(false), 300);
       })
       .catch(console.error);
-  }, [currentProxyId, selectedFilterTab]);
+  }, [currentProxyId, excludeNotificationIds, selectedFilterTab]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<NotificationInfoItem>) => {

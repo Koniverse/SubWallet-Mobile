@@ -157,7 +157,7 @@ export const Unbond = ({
   const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
   const accountInfo = useGetAccountByAddress(fromValue);
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
-  const onPreCheck = usePreCheckAction(fromValue);
+  const onPreCheck = usePreCheckAction(fromValue, true, undefined, chainValue);
   const globalAppModalContext = useContext(GlobalModalContext);
   const isMythosStaking = useMemo(() => _STAKING_CHAIN_GROUP.mythos.includes(poolChain), [poolChain]);
 

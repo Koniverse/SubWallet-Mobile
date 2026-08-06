@@ -220,6 +220,17 @@ export const Confirmations = () => {
           return 'Swap confirmation';
         case ExtrinsicType.CLAIM_BRIDGE:
           return 'Claim confirmation';
+        case ExtrinsicType.ADD_SUBSTRATE_PROXY_ACCOUNT:
+          return i18n.substrateProxy.addProxyConfirmation;
+        case ExtrinsicType.REMOVE_SUBSTRATE_PROXY_ACCOUNT:
+          return i18n.substrateProxy.removeProxyConfirmation;
+        case ExtrinsicType.SUBSTRATE_PROXY_INIT_TX:
+          return i18n.substrateProxy.proxyInitConfirmation;
+        case ExtrinsicType.MULTISIG_APPROVE_TX:
+        case ExtrinsicType.MULTISIG_CANCEL_TX:
+        case ExtrinsicType.MULTISIG_EXECUTE_TX:
+        case ExtrinsicType.MULTISIG_INIT_TX:
+          return i18n.multisig.multisigTransaction;
 
         default:
           return i18n.header.transactionConfirmation;

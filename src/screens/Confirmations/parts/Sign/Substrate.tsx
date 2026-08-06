@@ -10,7 +10,15 @@ import { RootState } from 'stores/index';
 import { SigData } from 'types/signer';
 import { getSignMode } from 'utils/account';
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';
-import { CheckCircleIcon, IconProps, QrCodeIcon, SwatchesIcon, XCircleIcon } from 'phosphor-react-native';
+import {
+  ArrowCircleLeftIcon,
+  CheckCircleIcon,
+  IconProps,
+  QrCodeIcon,
+  SwatchesIcon,
+  XCircleIcon,
+} from 'phosphor-react-native';
+import { MULTISIG_ACTIONS } from 'constants/multisig';
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
@@ -42,6 +50,10 @@ interface Props {
   extrinsicType?: ExtrinsicType;
   txExpirationTime?: number;
   isInternal?: boolean;
+  /** Blocks approval until a wrapped transaction has been prepared for the chosen signer. */
+  disableApproval?: boolean;
+  /** True when the sender is a proxied or multisig account and another account signs. */
+  isWrapTransaction?: boolean;
 }
 
 interface AlertData {
@@ -65,7 +77,7 @@ const migrationFAQUrl =
 const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMode.PASSWORD];
 
 export const SubstrateSignArea = (props: Props) => {
-  const { id, request, txExpirationTime, navigation } = props;
+  const { disableApproval, extrinsicType, id, isWrapTransaction, request, txExpirationTime, navigation } = props;
   const { address } = request.payload;
   const account = useGetAccountByAddress(address);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
@@ -271,7 +283,19 @@ export const SubstrateSignArea = (props: Props) => {
     theme.padding,
   ]);
 
+  // Multisig approve/execute/cancel extrinsics and any wrapped (proxied) transaction are
+  // signed by an account other than the sender, so the buttons read differently.
+  const isMultisigOrSubstrateProxyTransaction = useMemo(() => {
+    return (!!extrinsicType && MULTISIG_ACTIONS.includes(extrinsicType)) || !!isWrapTransaction;
+  }, [extrinsicType, isWrapTransaction]);
+
+  const isRejectPendingTransaction = extrinsicType === ExtrinsicType.MULTISIG_CANCEL_TX;
+
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
+    if (extrinsicType === ExtrinsicType.MULTISIG_CANCEL_TX) {
+      return XCircleIcon;
+    }
+
     switch (signMode) {
       case AccountSignMode.QR:
         return QrCodeIcon;
@@ -281,7 +305,26 @@ export const SubstrateSignArea = (props: Props) => {
       default:
         return CheckCircleIcon;
     }
-  }, [signMode]);
+  }, [extrinsicType, signMode]);
+
+  const approveLabel = useMemo(() => {
+    switch (extrinsicType) {
+      case ExtrinsicType.MULTISIG_CANCEL_TX:
+        return i18n.multisig.reject;
+      case ExtrinsicType.MULTISIG_EXECUTE_TX:
+        return i18n.multisig.execute;
+      default:
+        return i18n.buttonTitles.approve;
+    }
+  }, [extrinsicType]);
+
+  const cancelButtonContent = useMemo(() => {
+    if (isMultisigOrSubstrateProxyTransaction) {
+      return { icon: ArrowCircleLeftIcon, label: i18n.common.back };
+    }
+
+    return { icon: XCircleIcon, label: i18n.common.cancel };
+  }, [isMultisigOrSubstrateProxyTransaction]);
 
   const onCancel = useCallback(() => {
     setLoading(true);
@@ -435,10 +478,10 @@ export const SubstrateSignArea = (props: Props) => {
         <Button
           disabled={loading || isPreparingPayload}
           block
-          icon={getButtonIcon(XCircleIcon)}
+          icon={getButtonIcon(cancelButtonContent.icon)}
           type={'secondary'}
           onPress={onCancel}>
-          {i18n.common.cancel}
+          {cancelButtonContent.label}
         </Button>
         <Button
           block
@@ -446,12 +489,14 @@ export const SubstrateSignArea = (props: Props) => {
             showQuoteExpired ||
             isPreparingPayload ||
             loading ||
+            disableApproval ||
             (isMessage ? !modeCanSignMessage.includes(signMode) : alertData?.type === 'error')
           }
           icon={getButtonIcon(approveIcon)}
           loading={loading || isPreparingPayload}
+          type={isRejectPendingTransaction ? 'danger' : 'primary'}
           onPress={onConfirm}>
-          {i18n.buttonTitles.approve}
+          {approveLabel}
         </Button>
         {signMode === AccountSignMode.QR && (
           <>

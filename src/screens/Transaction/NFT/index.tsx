@@ -144,7 +144,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
   };
   const fromValue = useWatch<SendNftFormValues>({ name: 'from', control });
 
-  const onPreCheck = usePreCheckAction(fromValue);
+  const onPreCheck = usePreCheckAction(fromValue, true, undefined, nftChain);
 
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
 

@@ -9,6 +9,7 @@ import {
   QrCodeIcon,
   ShareNetworkIcon,
   SwatchesIcon,
+  UserSwitchIcon,
   WalletIcon,
 } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
@@ -131,6 +132,12 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
         label: i18n.createAccount.deriveFromAnExistingAcc,
         disabled: disableDerive,
       },
+      {
+        key: 'multisig',
+        backgroundColor: '#2565E6',
+        icon: UserSwitchIcon,
+        label: i18n.multisig.createMultisigAccount,
+      },
     ];
   }, [disableDerive]);
 
@@ -146,6 +153,15 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
           navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
         }
       }, 2000);
+    } else if (item.key === 'multisig') {
+      createAccountRef?.current?.onCloseModal();
+      setTimeout(() => {
+        if (hasMasterPassword) {
+          navigation.navigate('NewMultisigAccount');
+        } else {
+          navigation.navigate('CreatePassword', { pathName: 'NewMultisigAccount' });
+        }
+      }, 300);
     } else {
       createAccountRef?.current?.onCloseModal();
       navigation.navigate('DeriveAccount');

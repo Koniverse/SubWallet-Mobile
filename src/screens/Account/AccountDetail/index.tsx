@@ -5,16 +5,24 @@ import { SubScreenContainer } from 'components/SubScreenContainer';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { ExportIcon, GitMergeIcon, TrashIcon, XIcon } from 'phosphor-react-native';
+import { CopySimpleIcon, ExportIcon, GitMergeIcon, TrashIcon, XIcon } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { EditAccountProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { editAccount, forgetAccount } from 'messaging/index';
 import createStyle from './styles';
 import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
 import { SwTab } from 'components/design-system-ui/tab';
-import { AccountActions, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
+import {
+  AccountActions,
+  AccountChainType,
+  AccountProxy,
+  AccountProxyType,
+  AccountSignMode,
+} from '@subwallet/extension-base/types';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -26,6 +34,9 @@ import { useToast } from 'react-native-toast-notifications';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import { AppModalContext } from 'providers/AppModalContext';
 import { AccountChainTypeLogos } from 'components/AccountProxy/AccountChainTypeLogos';
+import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
+import { findAccountByAddress } from 'utils/account/account';
+import { SubstrateProxyAccountArea } from 'screens/Account/AccountDetail/SubstrateProxyAccountArea';
 
 export type AccountDetailTab = {
   label: string;
@@ -38,6 +49,8 @@ enum AccountDetailTabType {
   ACCOUNT_ADDRESS = 'account-address',
   DERIVED_ACCOUNT = 'derived-account',
   DERIVATION_INFO = 'derivation-info',
+  MANAGE_PROXIES = 'manage-proxies',
+  MULTISIG_INFO = 'multisig-info',
 }
 
 interface Props {
@@ -52,6 +65,8 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
   const theme = useSubWalletTheme().swThemes;
   const showDerivedAccounts = !!accountProxy?.children?.length;
   const accountProxies = useSelector((state: RootState) => state.accountState.accountProxies);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
+  const pendingMultisigTxs = useSelector((state: RootState) => state.multisig.pendingMultisigTxs);
   const [deleting, setDeleting] = useState(false);
   const styles = useMemo(() => createStyle(theme), [theme]);
   const toast = useToast();
@@ -64,6 +79,43 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
       return false;
     }
   }, [accountProxies, accountProxy.parentId]);
+
+  // Proxies can only be managed by an account that holds a Substrate address. A legacy
+  // Ledger app cannot build the proxy extrinsics, so it is excluded.
+  const showManageProxiesTab = useMemo((): boolean => {
+    if (!accountProxy.chainTypes.includes(AccountChainType.SUBSTRATE)) {
+      return false;
+    }
+
+    return accountProxy.accounts[0]?.signMode !== AccountSignMode.LEGACY_LEDGER;
+  }, [accountProxy.accounts, accountProxy.chainTypes]);
+
+  const multisigAccount = useMemo(() => {
+    if (accountProxy.accountType !== AccountProxyType.MULTISIG) {
+      return undefined;
+    }
+
+    return accountProxy.accounts.find(account => account.isMultisig);
+  }, [accountProxy.accountType, accountProxy.accounts]);
+
+  const signers = multisigAccount?.signers;
+  const isMultisig = !!multisigAccount?.isMultisig;
+
+  const showMultisigInfoTab = useMemo((): boolean => {
+    if (Array.isArray(signers) && signers.every(item => typeof item === 'string')) {
+      return signers.length > 0;
+    }
+
+    return false;
+  }, [signers]);
+
+  const hasPendingMultisigTx = useMemo(() => {
+    if (!multisigAccount) {
+      return false;
+    }
+
+    return Object.values(pendingMultisigTxs).some(tx => isSameAddress(tx.multisigAddress, multisigAccount.address));
+  }, [multisigAccount, pendingMultisigTxs]);
 
   const parentDerivedAccountProxy = useMemo(() => {
     if (showDerivationInfoTab) {
@@ -115,6 +167,8 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
       return AccountDetailTabType.DERIVED_ACCOUNT;
     } else if (requestViewDerivedAccountDetails) {
       return AccountDetailTabType.DERIVATION_INFO;
+    } else if (showMultisigInfoTab) {
+      return AccountDetailTabType.MULTISIG_INFO;
     } else {
       return AccountDetailTabType.ACCOUNT_ADDRESS;
     }
@@ -150,8 +204,24 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
       });
     }
 
+    if (showMultisigInfoTab) {
+      result.push({
+        label: i18n.multisig.multisigMembers.toUpperCase(),
+        value: AccountDetailTabType.MULTISIG_INFO,
+        onPress: () => {},
+      });
+    }
+
+    if (showManageProxiesTab) {
+      result.push({
+        label: i18n.substrateProxy.manageProxies.toUpperCase(),
+        value: AccountDetailTabType.MANAGE_PROXIES,
+        onPress: () => {},
+      });
+    }
+
     return result;
-  }, [showDerivationInfoTab, showDerivedAccounts]);
+  }, [showDerivationInfoTab, showDerivedAccounts, showManageProxiesTab, showMultisigInfoTab]);
 
   const onExportAccount = useCallback(() => {
     navigation.navigate('AccountExport', { address: accountProxy.id });
@@ -208,7 +278,12 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
   }, [accountProxy.id, deriveModal, navigation]);
 
   const footerNode = useMemo(() => {
-    if (![AccountProxyType.UNIFIED, AccountProxyType.SOLO].includes(accountProxy.accountType)) {
+    // The proxy tab brings its own Add / Remove footer.
+    if (selectedTab === AccountDetailTabType.MANAGE_PROXIES) {
+      return null;
+    }
+
+    if (isMultisig || ![AccountProxyType.UNIFIED, AccountProxyType.SOLO].includes(accountProxy.accountType)) {
       return (
         <Button
           block
@@ -218,7 +293,7 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
           loading={deleting}
           disabled={deleting}
           type={'danger'}>
-          {'Delete account'}
+          {isMultisig ? i18n.multisig.remove : 'Delete account'}
         </Button>
       );
     }
@@ -275,9 +350,11 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
     accountProxy.accountActions,
     accountProxy.accountType,
     deleting,
+    isMultisig,
     onExportAccount,
     onPressDelete,
     onPressDeriveAccount,
+    selectedTab,
     styles.noPaddingHorizontal,
     theme.colorTextLight5,
     theme.colorWhite,
@@ -299,6 +376,46 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
     );
   };
 
+  const onCopySignerAddress = useCallback(
+    (signer: string) => () => {
+      Clipboard.setString(signer);
+      toast.show(i18n.common.copiedToClipboard, { type: 'success' });
+    },
+    [toast],
+  );
+
+  const renderSignerAddresses = () => {
+    if (!Array.isArray(signers)) {
+      return null;
+    }
+
+    return (
+      <ScrollView style={styles.signerList} contentContainerStyle={styles.signerListContent}>
+        {signers.map((signer: string) => {
+          const accountInWallet = findAccountByAddress(accounts, signer);
+
+          return (
+            <AccountItemWithName
+              key={signer}
+              address={signer}
+              accountName={accountInWallet?.name}
+              avatarSize={24}
+              customStyle={{ container: styles.signerItem }}
+              rightItem={
+                <Button
+                  size={'xs'}
+                  type={'ghost'}
+                  icon={<Icon phosphorIcon={CopySimpleIcon} size={'sm'} iconColor={theme.colorTextLight4} />}
+                  onPress={onCopySignerAddress(signer)}
+                />
+              }
+            />
+          );
+        })}
+      </ScrollView>
+    );
+  };
+
   useEffect(() => {
     if (accountProxy) {
       onChangeValue('accountName')(accountProxy.name);
@@ -310,10 +427,12 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
       setSelectedTab(AccountDetailTabType.DERIVED_ACCOUNT);
     } else if (requestViewDerivedAccountDetails) {
       setSelectedTab(AccountDetailTabType.DERIVATION_INFO);
+    } else if (showMultisigInfoTab) {
+      setSelectedTab(AccountDetailTabType.MULTISIG_INFO);
     } else {
       setSelectedTab(AccountDetailTabType.ACCOUNT_ADDRESS);
     }
-  }, [requestViewDerivedAccountDetails, requestViewDerivedAccounts, showDerivedAccounts]);
+  }, [requestViewDerivedAccountDetails, requestViewDerivedAccounts, showDerivedAccounts, showMultisigInfoTab]);
 
   return (
     <SubScreenContainer
@@ -364,25 +483,37 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
           {selectedTab === AccountDetailTabType.ACCOUNT_ADDRESS && <AccountAddressList accountProxy={accountProxy} />}
           {selectedTab === AccountDetailTabType.DERIVED_ACCOUNT && <DerivedAccountList accountProxy={accountProxy} />}
           {selectedTab === AccountDetailTabType.DERIVATION_INFO && renderDetailDerivedAccount()}
+          {selectedTab === AccountDetailTabType.MULTISIG_INFO && renderSignerAddresses()}
+          {selectedTab === AccountDetailTabType.MANAGE_PROXIES && (
+            <SubstrateProxyAccountArea accountProxy={accountProxy} />
+          )}
         </View>
         <DeleteModal
-          title={i18n.header.removeThisAcc}
+          title={isMultisig ? i18n.multisig.removeMultisigAccount : i18n.header.removeThisAcc}
           visible={deleteVisible}
-          message={i18n.removeAccount.removeAccountMessage}
+          message={
+            isMultisig
+              ? hasPendingMultisigTx
+                ? i18n.multisig.removeAccountWithPendingTxsWarning
+                : i18n.multisig.removeMultisigAccountWarning
+              : i18n.removeAccount.removeAccountMessage
+          }
           onCancelModal={onCancelDelete}
           onCompleteModal={onCompleteDeleteModal}
           setVisible={setVisible}
         />
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            width: '100%',
-            gap: theme.sizeXS,
-            padding: theme.padding,
-          }}>
-          {footerNode}
-        </View>
+        {!!footerNode && (
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              width: '100%',
+              gap: theme.sizeXS,
+              padding: theme.padding,
+            }}>
+            {footerNode}
+          </View>
+        )}
       </>
     </SubScreenContainer>
   );

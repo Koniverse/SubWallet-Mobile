@@ -3,7 +3,9 @@
 
 import {
   AccountExternalError,
+  AccountMultisigError,
   RequestAccountCreateExternalV2,
+  RequestAccountCreateMultisig,
   RequestAccountCreateHardwareMultiple,
   RequestAccountCreateHardwareV2,
   RequestAccountCreateWithSecretKey,
@@ -31,6 +33,11 @@ export async function createSeedV2(
 /// Suri: seed or private key for evm
 export async function createAccountSuriV2(request: RequestAccountCreateSuriV2): Promise<ResponseAccountCreateSuriV2> {
   return sendMessage('pri(accounts.create.suriV2)', request);
+}
+
+/// Multisig: derives the multisig address from a set of signatories and a threshold
+export async function createAccountMultisig(request: RequestAccountCreateMultisig): Promise<AccountMultisigError[]> {
+  return sendMessage('pri(accounts.create.multisig)', request);
 }
 
 // Private key for substrate

@@ -63,6 +63,7 @@ import {
   AppPopupData,
 } from '@subwallet/extension-base/services/mkt-campaign-service/types';
 import { AuthUrlInfo } from '@subwallet/extension-base/services/request-service/types';
+import { PendingMultisigTxMap } from '@subwallet/extension-base/services/multisig-service';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -312,4 +313,8 @@ export interface MantaPayStore {
 
 export interface NotificationStore extends BaseReduxStore {
   unreadNotificationCountMap: Record<string, number>;
+}
+
+export interface MultisigStore extends BaseReduxStore {
+  pendingMultisigTxs: PendingMultisigTxMap;
 }

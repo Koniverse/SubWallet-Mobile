@@ -22,7 +22,8 @@ export type RootStackParamList = {
       | 'MigratePassword'
       | 'ConnectParitySigner'
       | 'ConnectKeystone'
-      | 'AttachReadOnly';
+      | 'AttachReadOnly'
+      | 'NewMultisigAccount';
     state?: string[];
     // Params forwarded to `pathName` once the master password has been created.
     screenParams?: RootStackParamList['ImportSecretPhrase'];
@@ -95,6 +96,7 @@ export type RootStackParamList = {
   ConnectParitySigner: undefined;
   ConnectKeystone: undefined;
   AttachReadOnly: undefined;
+  NewMultisigAccount: undefined;
   ImportQrCode: undefined;
   TransactionAction: NavigatorScreenParams<TransactionActionStackParamList>;
   ManageAddressBook: undefined;

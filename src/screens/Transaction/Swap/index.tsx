@@ -248,7 +248,7 @@ const Component = ({
       chainAsset,
     )} on ${chainName} is not supported for swapping. Select another token and try again`;
   }, [assetRegistryMap, chainInfoMap, fromTokenSlugValue]);
-  const onPreCheck = usePreCheckAction(fromValue, undefined, preCheckMessage);
+  const onPreCheck = usePreCheckAction(fromValue, undefined, preCheckMessage, chainValue);
   const oneSign = useOneSignProcess(fromValue);
   const getReformatAddress = useCoreCreateReformatAddress();
   const accountSelectorRef = useRef<ModalRef | null>(null);
@@ -700,7 +700,7 @@ const Component = ({
       const hasXcmStep = currentOptimalSwapPath?.steps.some(step => step.type === 'XCM');
 
       if (targetAccountProxy.accountType === AccountProxyType.MULTISIG && hasXcmStep) {
-        show('Multisig accounts are not supported for cross-chain swaps', { type: 'danger' });
+        show(i18n.multisig.swapNotSupported, { type: 'danger' });
 
         return;
       }

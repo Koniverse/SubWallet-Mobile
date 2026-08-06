@@ -3,6 +3,7 @@ import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import React, { ComponentType, JSX, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { LinkingOptions, NavigationContainer, StackActions, useNavigationContainerRef } from '@react-navigation/native';
 import AttachReadOnly from 'screens/Account/AttachReadOnly';
+import { NewMultisigAccount } from 'screens/Account/NewMultisigAccount';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
 import ConnectParitySigner from 'screens/Account/ConnectQrSigner/ConnectParitySigner';
 import ImportQrCode from 'screens/Account/ImportQrCode';
@@ -724,6 +725,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ConnectParitySigner" component={ConnectParitySigner} />
                 <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
                 <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} options={{ gestureEnabled: false }} />
+                <Stack.Screen
+                  name="NewMultisigAccount"
+                  component={NewMultisigAccount}
+                  options={{ gestureEnabled: false }}
+                />
                 <Stack.Screen name="ImportQrCode" component={ImportQrCode} />
                 <Stack.Screen name="DeriveAccount" component={DeriveAccount} />
               </Stack.Group>

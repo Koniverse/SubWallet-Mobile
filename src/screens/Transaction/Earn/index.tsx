@@ -186,7 +186,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const currentStep = processState.currentStep;
   const firstStep = currentStep === 0;
   const submitStepType = processState.steps?.[!currentStep ? currentStep + 1 : currentStep]?.type;
-  const preCheckAction = usePreCheckAction(currentFrom);
+  const preCheckAction = usePreCheckAction(currentFrom, true, undefined, chain);
   const { compound } = useYieldPositionDetail(slug);
   const specificList = useGetYieldPositionForSpecificAccount(currentFrom);
   const { nativeTokenBalance } = useGetBalance(chain, currentFrom);

@@ -12,6 +12,8 @@ import { useToast } from 'react-native-toast-notifications';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { getDevMode } from 'utils/storage';
 import { AccountJson, AccountSignMode } from '@subwallet/extension-base/types';
+import { getSignableAccountInfos } from 'messaging/transaction/multisig';
+import i18n from 'utils/i18n/i18n';
 
 //todo: i18n
 //todo: solve error
@@ -19,6 +21,7 @@ const usePreCheckAction = (
   address?: string,
   blockAllAccount = true,
   message?: string,
+  chain?: string,
 ): ((onPress: VoidFunction, action: ExtrinsicType) => VoidFunction) => {
   const { show, hideAll } = useToast();
 
@@ -37,6 +40,8 @@ const usePreCheckAction = (
         return 'Normal account';
       case AccountSignMode.QR:
         return 'QR signer account';
+      case AccountSignMode.MULTISIG:
+        return i18n.multisig.multisigAccount;
       case AccountSignMode.READ_ONLY:
         return 'Watch-only account';
       case AccountSignMode.UNKNOWN:
@@ -47,7 +52,7 @@ const usePreCheckAction = (
 
   return useCallback(
     (onPress: VoidFunction, action: ExtrinsicType) => {
-      return () => {
+      return async () => {
         if (!account) {
           hideAll();
           show('Account not exists');
@@ -56,6 +61,7 @@ const usePreCheckAction = (
           let block = false;
           let accountTitle = getAccountTypeTitle(account);
           let defaultMessage = 'The account you are using is {{accountTitle}}, you cannot use this feature with it';
+          let messageOverride: string | undefined;
           const isEthereumAccount = isEthereumAddress(account.address);
 
           switch (mode) {
@@ -81,6 +87,25 @@ const usePreCheckAction = (
             if (isEthereumAccount && !isDevMode) {
               accountTitle = 'EVM QR signer account';
               block = true;
+            }
+          }
+
+          // A multisig account can only act when at least one of its signatories is
+          // available in this wallet and allowed to sign this extrinsic type.
+          if (account.isMultisig && chain) {
+            try {
+              const { signableProxies } = await getSignableAccountInfos({
+                multisigProxyId: account.address,
+                extrinsicType: action,
+                chain,
+              });
+
+              if (!signableProxies.length) {
+                block = true;
+                messageOverride = i18n.multisig.noMultisigSignatories;
+              }
+            } catch (e) {
+              console.error(e);
             }
           }
 
@@ -121,12 +146,14 @@ const usePreCheckAction = (
             onPress();
           } else {
             hideAll();
-            show((message || defaultMessage).replace('{{accountTitle}}', accountTitle), { type: 'normal' });
+            show((messageOverride || message || defaultMessage).replace('{{accountTitle}}', accountTitle), {
+              type: messageOverride ? 'danger' : 'normal',
+            });
           }
         }
       };
     },
-    [account, blockAllAccount, getAccountTypeTitle, hideAll, isDevMode, message, show],
+    [account, blockAllAccount, chain, getAccountTypeTitle, hideAll, isDevMode, message, show],
   );
 };
 

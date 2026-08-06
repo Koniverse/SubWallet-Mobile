@@ -71,6 +71,10 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
         return ExtrinsicType.CLAIM_BRIDGE;
       case 'change-earning-validator':
         return ExtrinsicType.CHANGE_EARNING_VALIDATOR;
+      case 'add-substrate-proxy':
+        return ExtrinsicType.ADD_SUBSTRATE_PROXY_ACCOUNT;
+      case 'remove-substrate-proxy':
+        return ExtrinsicType.REMOVE_SUBSTRATE_PROXY_ACCOUNT;
       case 'send-fund':
       default:
         return ExtrinsicType.TRANSFER_BALANCE;

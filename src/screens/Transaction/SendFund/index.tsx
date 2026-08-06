@@ -61,6 +61,7 @@ import { AccountSelectField } from 'components/Field/AccountSelect';
 import i18n from 'utils/i18n/i18n';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { InputAddress } from 'components/Input/InputAddress';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { NetworkField } from 'components/Field/Network';
 import { Button, Divider, Icon, PageIcon, Typography } from 'components/design-system-ui';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
@@ -241,6 +242,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     fromValue,
     true,
     'The account you are using is {{accountTitle}}, you cannot send assets with it',
+    chainValue,
   );
   const [loading, setLoading] = useState(false);
   const [isTransferAll, setIsTransferAll] = useState(false);
@@ -436,9 +438,26 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     return targetAccount?.accountName || '';
   }, [accountAddressItems, fromValue]);
 
+  const selectedAccount = useGetAccountByAddress(fromValue);
+  const isMultisigAccount = !!selectedAccount?.isMultisig;
+
+  // A multisig account does not pay the network fee itself (the signatory does), so the
+  // spendable amount shown to the user is the balance before fee deduction.
+  const actualMaxTransferable = useMemo(
+    () => (isMultisigAccount ? transferInfo?.maxTransferableWithoutFee : transferInfo?.maxTransferable),
+    [isMultisigAccount, transferInfo?.maxTransferable, transferInfo?.maxTransferableWithoutFee],
+  );
+
+  // Multisig accounts cannot sign XCM, so only the origin chain is offered.
   const destChainItems = useMemo<ChainItemType[]>(() => {
-    return getTokenAvailableDestinations(assetValue, xcmRefMap, chainInfoMap);
-  }, [chainInfoMap, assetValue, xcmRefMap]);
+    const destinations = getTokenAvailableDestinations(assetValue, xcmRefMap, chainInfoMap);
+
+    if (!isMultisigAccount) {
+      return destinations;
+    }
+
+    return destinations.filter(item => item.slug === chainValue);
+  }, [assetValue, chainInfoMap, chainValue, isMultisigAccount, xcmRefMap]);
 
   const currentChainAsset = useMemo(() => {
     return assetValue ? assetRegistry[assetValue] : undefined;
@@ -572,7 +591,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const amountRules = useMemo(
     () => ({
       validate: (amount: string): Promise<ValidateResult> => {
-        const maxTransfer = (isShowAlphaTokenSection ? bondedValue : transferInfo?.maxTransferable) || '0';
+        const maxTransfer = (isShowAlphaTokenSection ? bondedValue : actualMaxTransferable) || '0';
 
         if (isInvalidAmountValue(amount)) {
           scrollToBottom();
@@ -603,7 +622,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
         return Promise.resolve(undefined);
       },
     }),
-    [bondedValue, decimals, isShowAlphaTokenSection, transferInfo?.maxTransferable],
+    [actualMaxTransferable, bondedValue, decimals, isShowAlphaTokenSection],
   );
 
   const _onChangeFrom = (item: AccountAddressItemType) => {
@@ -817,11 +836,11 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const handleWarning = useCallback(
     (warnings: TransactionWarning[]) => {
       if (warnings.some(w => w.warningType === BasicTxWarningCode.NOT_ENOUGH_EXISTENTIAL_DEPOSIT)) {
-        setForceUpdateMaxValue({ value: transferInfo?.maxTransferable || '0' });
+        setForceUpdateMaxValue({ value: actualMaxTransferable || '0' });
         setIsTransferAll(true);
       }
     },
-    [transferInfo?.maxTransferable],
+    [actualMaxTransferable],
   );
 
   const { onError, onSuccess } = useHandleSubmitMultiTransaction(
@@ -905,7 +924,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   );
 
   const onSetMaxTransferable = useCallback(() => {
-    const maxTransfer = (isShowAlphaTokenSection ? bondedValue : transferInfo?.maxTransferable) || '0';
+    const maxTransfer = (isShowAlphaTokenSection ? bondedValue : actualMaxTransferable) || '0';
 
     setFocus('value');
     setForceUpdateMaxValue({ value: maxTransfer });
@@ -914,7 +933,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     if (!bnMaxTransfer.isZero()) {
       setIsTransferAll(true);
     }
-  }, [bondedValue, isShowAlphaTokenSection, setFocus, transferInfo?.maxTransferable]);
+  }, [actualMaxTransferable, bondedValue, isShowAlphaTokenSection, setFocus]);
 
   const onSetTokenPayFee = useCallback(
     (slug: string) => {
@@ -1313,19 +1332,19 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   ]);
 
   useEffect(() => {
-    if (isTransferAll && transferInfo?.maxTransferable && !hideMaxButton && !isAlphaTokenTransfer) {
-      setForceUpdateMaxValue({ value: transferInfo.maxTransferable });
+    if (isTransferAll && actualMaxTransferable && !hideMaxButton && !isAlphaTokenTransfer) {
+      setForceUpdateMaxValue({ value: actualMaxTransferable });
     }
-  }, [hideMaxButton, isAlphaTokenTransfer, isTransferAll, transferInfo?.maxTransferable]);
+  }, [actualMaxTransferable, hideMaxButton, isAlphaTokenTransfer, isTransferAll]);
 
   useEffect(() => {
     const bnTransferAmount = new BN(isInvalidAmountValue(transferAmount) ? '0' : transferAmount || '0');
-    const bnMaxTransfer = new BN(transferInfo?.maxTransferable || '0');
+    const bnMaxTransfer = new BN(actualMaxTransferable || '0');
 
     if (bnTransferAmount.gt(BN_ZERO) && bnTransferAmount.eq(bnMaxTransfer)) {
       setIsTransferAll(true);
     }
-  }, [transferAmount, transferInfo?.maxTransferable]);
+  }, [actualMaxTransferable, transferAmount]);
 
   //TODO re-check and remove this useEffect
   useEffect(() => {
