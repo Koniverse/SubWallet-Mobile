@@ -157,6 +157,7 @@ export const AccountsScreen = ({
     const result: AccountProxyItem[] = [];
     const masterAccounts: AccountProxyItem[] = [];
     const qrSignerAccounts: AccountProxyItem[] = [];
+    const multisigAccounts: AccountProxyItem[] = [];
     const watchOnlyAccounts: AccountProxyItem[] = [];
     const ledgerAccounts: AccountProxyItem[] = [];
     const injectedAccounts: AccountProxyItem[] = [];
@@ -173,6 +174,8 @@ export const AccountsScreen = ({
         masterAccounts.push({ ...ap, group: AccountGroupType.MASTER_ACCOUNT });
       } else if (ap.accountType === AccountProxyType.QR) {
         qrSignerAccounts.push({ ...ap, group: AccountGroupType.QR });
+      } else if (ap.accountType === AccountProxyType.MULTISIG) {
+        multisigAccounts.push({ ...ap, group: AccountGroupType.MULTISIG });
       } else if (ap.accountType === AccountProxyType.READ_ONLY) {
         watchOnlyAccounts.push({ ...ap, group: AccountGroupType.READ_ONLY });
       } else if (ap.accountType === AccountProxyType.LEDGER) {
@@ -192,6 +195,10 @@ export const AccountsScreen = ({
       result.push(...qrSignerAccounts);
     }
 
+    if (multisigAccounts.length) {
+      result.push(...multisigAccounts);
+    }
+
     if (watchOnlyAccounts.length) {
       result.push(...watchOnlyAccounts);
     }
@@ -201,7 +208,7 @@ export const AccountsScreen = ({
     }
 
     if (injectedAccounts.length) {
-      result.push(...ledgerAccounts);
+      result.push(...injectedAccounts);
     }
 
     if (unknownAccounts.length) {

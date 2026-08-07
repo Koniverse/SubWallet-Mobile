@@ -122,9 +122,13 @@ export const SubstrateProxyAccountArea = ({ accountProxy }: Props) => {
     [sortedProxyAccounts],
   );
 
+  // `turnOnChain` is async; querying before the chain is active makes the backend blow
+  // up on `getSubstrateApi(chain).isReady` with an undefined api.
+  const isChainConnected = !!networkSelected && !!checkChainConnected(networkSelected);
+
   const fetchProxyAccounts = useCallback(
     async (showLoading: boolean) => {
-      if (!addressFormated || !networkSelected) {
+      if (!addressFormated || !networkSelected || !isChainConnected) {
         return;
       }
 
@@ -172,7 +176,7 @@ export const SubstrateProxyAccountArea = ({ accountProxy }: Props) => {
         }
       }
     },
-    [addressFormated, networkSelected],
+    [addressFormated, isChainConnected, networkSelected],
   );
 
   const onSelectSubstrateProxyAccount = useCallback(
@@ -287,7 +291,7 @@ export const SubstrateProxyAccountArea = ({ accountProxy }: Props) => {
   }, [fetchProxyAccounts]);
 
   useEffect(() => {
-    if (!addressFormated || !networkSelected) {
+    if (!addressFormated || !networkSelected || !isChainConnected) {
       return;
     }
 
@@ -296,7 +300,7 @@ export const SubstrateProxyAccountArea = ({ accountProxy }: Props) => {
     }, REFRESH_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, [addressFormated, fetchProxyAccounts, networkSelected]);
+  }, [addressFormated, fetchProxyAccounts, isChainConnected, networkSelected]);
 
   const renderFooter = () => {
     if (!sortedProxyAccounts.length) {
@@ -366,7 +370,7 @@ export const SubstrateProxyAccountArea = ({ accountProxy }: Props) => {
         />
       </View>
 
-      {loading ? (
+      {loading || !isChainConnected ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size={32} />
         </View>

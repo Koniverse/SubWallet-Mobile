@@ -1,16 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import { TreeStructureIcon, XCircleIcon } from 'phosphor-react-native';
+import { TreeStructureIcon } from 'phosphor-react-native';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { validateRecipientAddress } from '@subwallet/extension-base/core/logic-validation/recipientAddress';
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import { SubstrateProxyType } from '@subwallet/extension-base/types';
-import { Button, Icon, Number as NumberDisplay, Typography } from 'components/design-system-ui';
+import { Button, Icon, Number, Typography } from 'components/design-system-ui';
 import { NetworkField } from 'components/Field/Network';
 import { FormItem } from 'components/common/FormItem';
 import { InputAddress } from 'components/Input/InputAddress';
@@ -33,6 +31,7 @@ import { ThemeTypes } from 'styles/themes';
 import { ChainInfo } from 'types/index';
 import { ModalRef } from 'types/modalRef';
 import { findAccountByAddress } from 'utils/account/account';
+import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 import i18n from 'utils/i18n/i18n';
 import { mmkvStore } from 'utils/storage';
 import { CURRENT_CHAIN_SUBSTRATE_PROXY } from 'constants/localStorage';
@@ -49,7 +48,6 @@ export const AddSubstrateProxyAccount = ({
 }: AddSubstrateProxyProps) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const navigation = useNavigation();
 
   const { accounts } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap, ledgerGenericAllowNetworks } = useSelector((state: RootState) => state.chainStore);
@@ -120,16 +118,15 @@ export const AddSubstrateProxyAccount = ({
         actionType: ActionType.MANAGE_SUBSTRATE_PROXY_ACCOUNT,
         autoFormatValue: false,
         allowLedgerGenerics: ledgerGenericAllowNetworks,
-      })
-        .then(() => undefined)
-        .catch((err: unknown) => {
-          // The shared validator speaks in transfer terms; relabel for the proxy flow.
-          const msg = (err instanceof Error ? err.message : String(err ?? 'Unknown error'))
-            .replace(/recipient/gi, m => (m[0] === m[0].toUpperCase() ? 'Proxy' : 'proxy'))
-            .replace(/sender/gi, m => (m[0] === m[0].toUpperCase() ? 'Proxied' : 'proxied'));
+      }).then(result => {
+        if (!result) {
+          return undefined;
+        }
 
-          return msg;
-        });
+        return String(result)
+          .replace(/recipient/gi, m => (m[0] === m[0].toUpperCase() ? 'Proxy' : 'proxy'))
+          .replace(/sender/gi, m => (m[0] === m[0].toUpperCase() ? 'Proxied' : 'proxied'));
+      });
     },
     [accounts, chainInfoMap, chainValue, fromValue, ledgerGenericAllowNetworks],
   );
@@ -218,6 +215,7 @@ export const AddSubstrateProxyAccount = ({
               />
 
               <FormItem
+                style={{ marginBottom: theme.sizeXS }}
                 control={control}
                 name={'substrateProxyAddress'}
                 rules={{
@@ -256,40 +254,29 @@ export const AddSubstrateProxyAccount = ({
                 <Typography.Text style={styles.errorText}>{i18n.substrateProxy.proxyAlreadyExists}</Typography.Text>
               )}
 
-              <GeneralFreeBalance address={fromValue} chain={chainValue} onBalanceReady={setIsBalanceReady} />
+              <GeneralFreeBalance
+                address={fromValue}
+                chain={chainValue}
+                onBalanceReady={setIsBalanceReady}
+                style={{ marginBottom: theme.marginXXS }}
+              />
 
-              <View style={styles.depositRow}>
-                <NumberDisplay
-                  value={substrateProxyAccountGroup.substrateProxyDeposit}
-                  decimal={nativeToken?.decimals || 0}
-                  prefix={`${i18n.substrateProxy.proxyDeposit}: `}
-                  suffix={nativeToken?.symbol}
-                  size={theme.fontSize}
-                  intColor={theme.colorTextLight4}
-                  decimalColor={theme.colorTextLight4}
-                  unitColor={theme.colorTextLight4}
-                />
-              </View>
+              <Number
+                value={substrateProxyAccountGroup.substrateProxyDeposit}
+                decimal={nativeToken?.decimals || 0}
+                prefix={`${i18n.substrateProxy.proxyDeposit}: `}
+                suffix={nativeToken?.symbol}
+                size={14}
+                textStyle={FontMedium}
+                intColor={theme['gray-5']}
+                decimalColor={theme['gray-5']}
+                unitColor={theme['gray-5']}
+              />
             </ScrollView>
 
             <View style={styles.footer}>
               <Button
-                disabled={loading}
-                style={styles.footerButtonLeft}
-                type={'secondary'}
-                onPress={() => navigation.goBack()}
-                icon={
-                  <Icon
-                    phosphorIcon={XCircleIcon}
-                    weight={'fill'}
-                    size={'lg'}
-                    iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
-                  />
-                }>
-                {i18n.buttonTitles.cancel}
-              </Button>
-              <Button
-                style={styles.footerButtonRight}
+                style={styles.footerButton}
                 disabled={isDisabled}
                 loading={loading}
                 icon={
@@ -323,9 +310,6 @@ function createStyles(theme: ThemeTypes) {
       paddingHorizontal: theme.padding,
       paddingTop: theme.padding,
     },
-    depositRow: {
-      marginTop: theme.marginXS,
-    },
     errorText: {
       ...FontMedium,
       color: theme.colorError,
@@ -338,13 +322,8 @@ function createStyles(theme: ThemeTypes) {
       flexDirection: 'row',
       ...MarginBottomForSubmitButton,
     },
-    footerButtonLeft: {
+    footerButton: {
       flex: 1,
-      marginRight: 4,
-    },
-    footerButtonRight: {
-      flex: 1,
-      marginLeft: 4,
     },
   });
 }

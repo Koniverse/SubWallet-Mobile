@@ -4,6 +4,8 @@
 import { RequestGetSubstrateProxyAccountGroup, SubstrateProxyAccountGroup } from '@subwallet/extension-base/types';
 import { getSubstrateProxyAccountGroup } from 'messaging/transaction/substrateProxy';
 import { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 const DEFAULT_PROXY_ACCOUNTS: SubstrateProxyAccountGroup = {
   substrateProxyAccounts: [],
@@ -14,11 +16,14 @@ const DEFAULT_PROXY_ACCOUNTS: SubstrateProxyAccountGroup = {
 export function useGetSubstrateProxyAccountGroupByAddress(address: string, chain: string): SubstrateProxyAccountGroup {
   const [substrateProxyAccountGroup, setSubstrateProxyAccountGroup] =
     useState<SubstrateProxyAccountGroup>(DEFAULT_PROXY_ACCOUNTS);
+  // Querying an inactive chain makes the backend throw on `getSubstrateApi(chain).isReady`,
+  // and the fetch has to re-run once the chain does come online.
+  const isChainActive = useSelector((state: RootState) => !!state.chainStore.chainStateMap[chain]?.active);
 
   const fetchSubstrateProxyAccountData = useCallback(
     async ({ isSync }: { isSync: boolean }) => {
       try {
-        if (!address) {
+        if (!address || !isChainActive) {
           if (isSync) {
             setSubstrateProxyAccountGroup(DEFAULT_PROXY_ACCOUNTS);
           }
@@ -44,7 +49,7 @@ export function useGetSubstrateProxyAccountGroupByAddress(address: string, chain
         }
       }
     },
-    [address, chain],
+    [address, chain, isChainActive],
   );
 
   useEffect(() => {

@@ -94,7 +94,6 @@ export const SubstrateProxyTypeSelector = ({ chain, disabled, label, onSelectIte
             label={label}
             text={selectedLabel}
             placeholder={i18n.substrateProxy.selectProxyType}
-            outerStyle={styles.field}
           />
         </View>
       )}
@@ -104,9 +103,6 @@ export const SubstrateProxyTypeSelector = ({ chain, disabled, label, onSelectIte
 
 function createStyles(theme: ThemeTypes) {
   return StyleSheet.create({
-    field: {
-      marginBottom: 0,
-    },
     item: {
       flexDirection: 'row',
       alignItems: 'center',

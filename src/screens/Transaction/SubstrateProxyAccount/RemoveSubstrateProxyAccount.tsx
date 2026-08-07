@@ -52,13 +52,20 @@ export const RemoveSubstrateProxyAccount = ({
 
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
 
+  // Route params are restored from persisted navigation state and can come back
+  // incomplete, so never index into them directly.
+  const selectedProxyAccounts = useMemo(
+    () => selectedSubstrateProxyAccounts || [],
+    [selectedSubstrateProxyAccounts],
+  );
+
   // `removeProxies` is cheaper than removing one by one, so tell the backend when the
   // selection covers every proxy the account currently has.
   const isRemoveAll = useMemo(() => {
-    const total = substrateProxyAccountGroup.substrateProxyAccounts.length;
+    const total = substrateProxyAccountGroup?.substrateProxyAccounts?.length ?? 0;
 
-    return total > 0 && selectedSubstrateProxyAccounts.length === total;
-  }, [selectedSubstrateProxyAccounts.length, substrateProxyAccountGroup.substrateProxyAccounts.length]);
+    return total > 0 && selectedProxyAccounts.length === total;
+  }, [selectedProxyAccounts, substrateProxyAccountGroup?.substrateProxyAccounts?.length]);
 
   // The proxied account itself is shown on top as context, not as a removable entry.
   const substrateProxiedAccount = useMemo<SubstrateProxyAccountItemExtended | null>(() => {
@@ -82,16 +89,16 @@ export const RemoveSubstrateProxyAccount = ({
       handleRemoveSubstrateProxyAccount({
         chain,
         address: from,
-        selectedSubstrateProxyAccounts: selectedSubstrateProxyAccounts as SubstrateProxyAccountItem[],
+        selectedSubstrateProxyAccounts: selectedProxyAccounts as SubstrateProxyAccountItem[],
         isRemoveAll,
       })
         .then(onSuccess)
         .catch(onError)
         .finally(() => setLoading(false));
     }, 300);
-  }, [chain, from, isRemoveAll, onError, onSuccess, selectedSubstrateProxyAccounts]);
+  }, [chain, from, isRemoveAll, onError, onSuccess, selectedProxyAccounts]);
 
-  const proxyCount = selectedSubstrateProxyAccounts.length;
+  const proxyCount = selectedProxyAccounts.length;
 
   if (!proxyCount) {
     return null;
@@ -171,7 +178,7 @@ export const RemoveSubstrateProxyAccount = ({
             </View>
 
             <SubstrateProxyAccountListModal
-              substrateProxyAccounts={selectedSubstrateProxyAccounts as SubstrateProxyAccountItem[]}
+              substrateProxyAccounts={selectedProxyAccounts as SubstrateProxyAccountItem[]}
               modalVisible={listModalVisible}
               setModalVisible={setListModalVisible}
             />
