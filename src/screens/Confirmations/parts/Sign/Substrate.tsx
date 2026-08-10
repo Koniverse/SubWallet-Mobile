@@ -2,7 +2,7 @@ import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFoote
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { RequestSign } from '@subwallet/extension-base/background/types';
+import { RequestSign, SubstratePayloadErrorType } from '@subwallet/extension-base/background/types';
 import { approveSignPasswordV2, approveSignSignature, cancelSignRequest } from 'messaging/index';
 import { useDispatch, useSelector } from 'react-redux';
 import { DisplayPayloadModal, SubstrateQr } from 'screens/Confirmations/parts/Qr/DisplayPayload';
@@ -119,13 +119,13 @@ export const SubstrateSignArea = (props: Props) => {
   const { chain, loadingChain } = useMetadata(genesisHash, requireSpecVersion);
   const chainInfo = useGetChainInfoByGenesisHash(genesisHash);
   const theme = useSubWalletTheme().swThemes;
-  const { addExtraData, hashLoading, isMissingData, payload } = useParseSubstrateRequestPayload(
+  const { addExtraData, hashLoading, isMissingData, payload, payloadError } = useParseSubstrateRequestPayload(
     chain,
     request,
     isLedger,
   );
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
-  const isMessage = isSubstrateMessage(payload);
+  const isMessage = !payloadError && isSubstrateMessage(payload);
   const dispatch = useDispatch();
   // Chain metadata is fetched then decoded into a type registry on the JS thread, which makes the
   // buttons unable to react. Show it as a loading state so it does not look like the app is stuck.
@@ -161,6 +161,17 @@ export const SubstrateSignArea = (props: Props) => {
   //   (!chain || !chain.hasMetadata || isMetadataOutdated);
 
   const alertData = useMemo((): AlertData | undefined => {
+    if (payloadError) {
+      return {
+        type: 'error',
+        title: 'Error!',
+        description:
+          payloadError.type === SubstratePayloadErrorType.RawDataInExtrinsic
+            ? i18n.confirmation.dappSentRawDataInExtrinsicRequest
+            : i18n.confirmation.unableToDecodeSigningPayload,
+      };
+    }
+
     const _requireMetadata =
       signMode === AccountSignMode.GENERIC_LEDGER || (signMode === AccountSignMode.LEGACY_LEDGER && isRuntimeUpdated);
 
@@ -178,11 +189,13 @@ export const SubstrateSignArea = (props: Props) => {
                   lineHeight: theme.fontSize * theme.lineHeight,
                   color: theme.colorTextDescription,
                   ...FontMedium,
-                }}>
+                }}
+              >
                 <Text>{`${networkName} network's metadata is out of date, which may cause the transaction to fail. Update metadata using `}</Text>
                 <Text
                   style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
-                  onPress={() => Linking.openURL(metadataFAQUrl)}>
+                  onPress={() => Linking.openURL(metadataFAQUrl)}
+                >
                   {i18n.attachAccount.readThisInstructionForMoreDetailsP2}
                 </Text>
                 <Text>{' or approve transaction at your own risk'}</Text>
@@ -215,7 +228,8 @@ export const SubstrateSignArea = (props: Props) => {
                       lineHeight: theme.fontSize * theme.lineHeight,
                       color: theme.colorTextDescription,
                       ...FontMedium,
-                    }}>
+                    }}
+                  >
                     <Text>
                       {
                         'To sign this transaction, open “Polkadot” app on Ledger, hit Refresh and Approve again. For a better experience, re-attach your Polkadot new account using '
@@ -223,7 +237,8 @@ export const SubstrateSignArea = (props: Props) => {
                     </Text>
                     <Text
                       style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
-                      onPress={() => Linking.openURL(genericFAQUrl)}>
+                      onPress={() => Linking.openURL(genericFAQUrl)}
+                    >
                       {'this guide'}
                     </Text>
                   </Text>
@@ -241,11 +256,13 @@ export const SubstrateSignArea = (props: Props) => {
                       lineHeight: theme.fontSize * theme.lineHeight,
                       color: theme.colorTextDescription,
                       ...FontMedium,
-                    }}>
+                    }}
+                  >
                     <Text>{`To sign this transaction, open “Polkadot Migration” app on Ledger, hit Refresh and Approve again. For a better experience, move your assets on ${networkName} network to the Polkadot new account using `}</Text>
                     <Text
                       style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
-                      onPress={() => Linking.openURL(migrationFAQUrl)}>
+                      onPress={() => Linking.openURL(migrationFAQUrl)}
+                    >
                       {'this guide'}
                     </Text>
                   </Text>
@@ -275,6 +292,7 @@ export const SubstrateSignArea = (props: Props) => {
     isRuntimeUpdated,
     loadingChain,
     networkName,
+    payloadError,
     signMode,
     theme.colorLink,
     theme.colorTextDescription,
@@ -371,6 +389,10 @@ export const SubstrateSignArea = (props: Props) => {
   const { onPress: onConfirmPassword } = useUnlockModal(navigation, setLoading, false, true);
 
   const onConfirm = useCallback(() => {
+    if (payloadError) {
+      return;
+    }
+
     if (txExpirationTime) {
       const currentTime = +Date.now();
 
@@ -392,7 +414,17 @@ export const SubstrateSignArea = (props: Props) => {
           setLoading(false);
         });
     }
-  }, [hideAll, onApprovePassword, onCancel, onConfirmPassword, onConfirmQr, show, signMode, txExpirationTime]);
+  }, [
+    hideAll,
+    onApprovePassword,
+    onCancel,
+    onConfirmPassword,
+    onConfirmQr,
+    payloadError,
+    show,
+    signMode,
+    txExpirationTime,
+  ]);
 
   const onSuccess = useCallback(
     (sig: SigData) => {
@@ -480,7 +512,8 @@ export const SubstrateSignArea = (props: Props) => {
           block
           icon={getButtonIcon(cancelButtonContent.icon)}
           type={'secondary'}
-          onPress={onCancel}>
+          onPress={onCancel}
+        >
           {cancelButtonContent.label}
         </Button>
         <Button
@@ -495,7 +528,8 @@ export const SubstrateSignArea = (props: Props) => {
           icon={getButtonIcon(approveIcon)}
           loading={loading || isPreparingPayload}
           type={isRejectPendingTransaction ? 'danger' : 'primary'}
-          onPress={onConfirm}>
+          onPress={onConfirm}
+        >
           {approveLabel}
         </Button>
         {signMode === AccountSignMode.QR && (

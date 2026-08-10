@@ -1150,7 +1150,9 @@
     "siteNotConnected": "このサイトに接続されていません",
     "siteNotConnectedMessage": "SubWallet はこのサイトに接続されていません。接続するには、ウェブサイトの「ウォレットを接続する」ボタンを押してください",
     "siteBlocked": "このサイトはブロックされています",
-    "siteBlockedMessage": "このサイトは以前にブロックされています。ブロックを解除してアクセスを許可か？"
+    "siteBlockedMessage": "このサイトは以前にブロックされています。ブロックを解除してアクセスを許可か？",
+    "unableToDecodeSigningPayload": "この署名ペイロードをデコードできません。リクエストを拒否し、dApp またはネットワークの型定義を更新してから再試行してください。",
+    "dappSentRawDataInExtrinsicRequest": "この dApp はトランザクション署名リクエストを通じて生のメッセージを送信しました。署名は作成できません。このリクエストを拒否し、dApp に連絡してください。"
   },
   "signingAction": {
     "basic": "基本",

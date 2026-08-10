@@ -1150,7 +1150,9 @@
     "siteNotConnected": "Not connected to this site",
     "siteNotConnectedMessage": "SubWallet is not connected to this site. Please find and press in the website the \"Connect Wallet\" button to connect",
     "siteBlocked": "This site has been blocked.",
-    "siteBlockedMessage": "This site has previously been blocked. Do you wish to unblock and grant access to it?"
+    "siteBlockedMessage": "This site has previously been blocked. Do you wish to unblock and grant access to it?",
+    "unableToDecodeSigningPayload": "Unable to decode this signing payload. Reject this request and try again after the dApp or network type definitions are updated.",
+    "dappSentRawDataInExtrinsicRequest": "This dApp sent a raw message through a transaction-signing request. No signature can be created. Reject this request and contact the dApp."
   },
   "signingAction": {
     "basic": "Basic",

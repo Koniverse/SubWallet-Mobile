@@ -1150,7 +1150,9 @@
     "siteNotConnected": "未连接到该网站",
     "siteNotConnectedMessage": "SubWallet未连接到该网站。请在网站上搜索并点击“连接钱包”按钮以进行连接。",
     "siteBlocked": "该网站已被封锁",
-    "siteBlockedMessage": "该网站此前已被封锁。 确认是否解除封锁并授予访问权限？"
+    "siteBlockedMessage": "该网站此前已被封锁。 确认是否解除封锁并授予访问权限？",
+    "unableToDecodeSigningPayload": "无法解码此签名载荷。请拒绝该请求，并在 dApp 或网络类型定义更新后重试。",
+    "dappSentRawDataInExtrinsicRequest": "该 dApp 通过交易签名请求发送了原始消息。无法创建签名。请拒绝此请求并联系该 dApp。"
   },
   "signingAction": {
     "basic": "基础",

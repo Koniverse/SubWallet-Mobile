@@ -1,5 +1,5 @@
 import { SignerPayloadJSON } from '@polkadot/types/types';
-import { SigningRequest } from '@subwallet/extension-base/background/types';
+import { SigningRequest, SubstratePayloadErrorType } from '@subwallet/extension-base/background/types';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
 import useParseSubstrateRequestPayload from 'hooks/transaction/confirmation/useParseSubstrateRequestPayload';
@@ -50,8 +50,8 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
   const { chain } = useMetadata(genesisHash);
   const chainInfo = useGetChainInfoByGenesisHash(genesisHash);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chainInfo?.slug || '');
-  const { payload } = useParseSubstrateRequestPayload(chain, request.request);
-  const isMessage = useMemo(() => isSubstrateMessage(payload), [payload]);
+  const { payload, payloadError } = useParseSubstrateRequestPayload(chain, request.request);
+  const isMessage = useMemo(() => !payloadError && isSubstrateMessage(payload), [payload, payloadError]);
 
   const isMultisigAccount = !!account?.isMultisig;
   // A multisig account has no key of its own, so it cannot sign a raw message.
@@ -121,7 +121,13 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
         )}
 
         <BaseDetailModal title={isMessage ? i18n.confirmation.messageDetail : i18n.confirmation.transactionDetail}>
-          {isMessage ? (
+          {payloadError ? (
+            <Text style={styles.description}>
+              {payloadError.type === SubstratePayloadErrorType.RawDataInExtrinsic
+                ? i18n.confirmation.dappSentRawDataInExtrinsicRequest
+                : i18n.confirmation.unableToDecodeSigningPayload}
+            </Text>
+          ) : isMessage ? (
             <SubstrateMessageDetail bytes={payload as string} />
           ) : (
             <SubstrateTransactionDetail

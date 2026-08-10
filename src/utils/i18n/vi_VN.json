@@ -1151,7 +1151,9 @@
     "siteNotConnected": "Không kết nối với trang web này",
     "siteNotConnectedMessage": "SubWallet không kết nối với trang này. Hãy tìm và nhấn nút \"Kết nối ví\" trên trang để kết nối",
     "siteBlocked": "Trang web này đã bị chặn",
-    "siteBlockedMessage": "Trang web này đã bị chặn trước đó. Bạn có muốn bỏ chặn và cấp quyền truy cập vào trang web này không?"
+    "siteBlockedMessage": "Trang web này đã bị chặn trước đó. Bạn có muốn bỏ chặn và cấp quyền truy cập vào trang web này không?",
+    "unableToDecodeSigningPayload": "Không thể giải mã payload ký này. Hãy từ chối yêu cầu này và thử lại sau khi dApp hoặc định nghĩa kiểu dữ liệu của mạng được cập nhật.",
+    "dappSentRawDataInExtrinsicRequest": "dApp này đã gửi một thông điệp thô qua yêu cầu ký giao dịch. Không thể tạo chữ ký. Hãy từ chối yêu cầu này và liên hệ với dApp."
   },
   "signingAction": {
     "basic": "Basic",

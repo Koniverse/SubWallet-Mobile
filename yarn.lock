@@ -6568,9 +6568,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subwallet/extension-base@npm:1.3.83-0":
-  version: 1.3.83-0
-  resolution: "@subwallet/extension-base@npm:1.3.83-0"
+"@subwallet/extension-base@npm:1.3.86-0":
+  version: 1.3.86-0
+  resolution: "@subwallet/extension-base@npm:1.3.86-0"
   dependencies:
     "@acala-network/api": ^5.0.2
     "@apollo/client": ^3.7.14
@@ -6609,11 +6609,11 @@ __metadata:
     "@sora-substrate/type-definitions": ^1.17.7
     "@substrate/connect": ^0.8.9
     "@subwallet-monorepos/subwallet-services-sdk": 0.1.17-beta.2
-    "@subwallet/chain-list": 0.2.128
-    "@subwallet/extension-base": ^1.3.83-0
-    "@subwallet/extension-chains": ^1.3.83-0
-    "@subwallet/extension-dapp": ^1.3.83-0
-    "@subwallet/extension-inject": ^1.3.83-0
+    "@subwallet/chain-list": 0.2.129
+    "@subwallet/extension-base": ^1.3.86-0
+    "@subwallet/extension-chains": ^1.3.86-0
+    "@subwallet/extension-dapp": ^1.3.86-0
+    "@subwallet/extension-inject": ^1.3.86-0
     "@subwallet/keyring": ^0.1.14
     "@subwallet/ui-keyring": ^0.1.14
     "@ton/core": ^0.56.3
@@ -6659,45 +6659,45 @@ __metadata:
     web3-eth: 1.10.4
     web3-eth-contract: 1.10.4
     web3-utils: 1.10.4
-  checksum: 40c1526a95f1007964a8dcbd7a36fa4bdbfa95838f4f78d154cc397d29fcbefd01033457b0a4033cef4689341597af2ddf487dd311c0c2e91a33556941c7f7c3
+  checksum: 198fe6e6011abb9b6e5fb7f4c1245c624eac3a355f704af51870b89ac4678341666c71c8e33c549ab340e22c5ce4ae83860b476496dc7202234044c2db8f1679
   languageName: node
   linkType: hard
 
-"@subwallet/extension-chains@npm:1.3.83-0, @subwallet/extension-chains@npm:^1.3.83-0":
-  version: 1.3.83-0
-  resolution: "@subwallet/extension-chains@npm:1.3.83-0"
+"@subwallet/extension-chains@npm:1.3.86-0, @subwallet/extension-chains@npm:^1.3.86-0":
+  version: 1.3.86-0
+  resolution: "@subwallet/extension-chains@npm:1.3.86-0"
   dependencies:
     "@babel/runtime": ^7.28.4
     "@polkadot/networks": ^13.5.3
     "@polkadot/util": ^13.5.3
     "@polkadot/util-crypto": ^13.5.3
-    "@subwallet/extension-inject": ^1.3.83-0
+    "@subwallet/extension-inject": ^1.3.86-0
   peerDependencies:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
-  checksum: 0c72f0259f15f1dad8b02a5701afe9e570cf6095bcd0eabc44a37f8a619f813f3b040082e422ad421770c71bb43c18a976502efcba1a9291dd6390dd42c004e5
+  checksum: 7da9039bd4b829632ae69df43e0768975e8461159da4f94b236103c9fa44cf9bf7bc0f55b37b2f29bee692ec2ba6c8078e8615a8b1b504b26c711d217312f12c
   languageName: node
   linkType: hard
 
-"@subwallet/extension-dapp@npm:1.3.83-0, @subwallet/extension-dapp@npm:^1.3.83-0":
-  version: 1.3.83-0
-  resolution: "@subwallet/extension-dapp@npm:1.3.83-0"
+"@subwallet/extension-dapp@npm:1.3.86-0, @subwallet/extension-dapp@npm:^1.3.86-0":
+  version: 1.3.86-0
+  resolution: "@subwallet/extension-dapp@npm:1.3.86-0"
   dependencies:
     "@babel/runtime": ^7.28.4
     "@polkadot/util": ^13.5.3
     "@polkadot/util-crypto": ^13.5.3
-    "@subwallet/extension-inject": ^1.3.83-0
+    "@subwallet/extension-inject": ^1.3.86-0
   peerDependencies:
     "@polkadot/api": "*"
     "@polkadot/util": "*"
     "@polkadot/util-crypto": "*"
-  checksum: 154ab72e66b03a00473d9758d1d42c4f8bb9780f7ba24a6b23862ea598256901b69f3cd4b58373324af75bfee1183f2d2807825d3591c5e6c8848584b097f08e
+  checksum: b3991ac711b2f3cef73039c8684c134340b4deb084ea53e91b16750d805b030fce73462fca76471ccd45f863ecbe64f79afa150baffc1c8a996722aa5ee61be4
   languageName: node
   linkType: hard
 
-"@subwallet/extension-inject@npm:1.3.83-0, @subwallet/extension-inject@npm:^1.3.83-0":
-  version: 1.3.83-0
-  resolution: "@subwallet/extension-inject@npm:1.3.83-0"
+"@subwallet/extension-inject@npm:1.3.86-0, @subwallet/extension-inject@npm:^1.3.86-0":
+  version: 1.3.86-0
+  resolution: "@subwallet/extension-inject@npm:1.3.86-0"
   dependencies:
     "@babel/runtime": ^7.28.4
     "@polkadot/rpc-provider": ^16.4.2
@@ -6709,7 +6709,7 @@ __metadata:
     web3-core: ^1.10.4
   peerDependencies:
     "@polkadot/api": "*"
-  checksum: bf5da1fabc0cb646593cdd59d8da9c058ab099937264cffbfc0d9818d6ed17c97a60bf05dae65b5fdb3e7ce94913b851c80e06f5d8aa833fe7a5681ec2eed9be
+  checksum: 60c8052904545a1912f3bafffd7973ec34ad4a26fc631c5dbd46332495181da76ec24b92e0ab3e64bf845f98d77a84136a74cbc43f08ba906c5a7d503f559c9c
   languageName: node
   linkType: hard
 
@@ -8662,10 +8662,10 @@ __metadata:
     "@shopify/flash-list": ^2.2.0
     "@subwallet-monorepos/subwallet-services-sdk": 0.1.17-beta.2
     "@subwallet/chain-list": 0.2.129
-    "@subwallet/extension-base": 1.3.83-0
-    "@subwallet/extension-chains": 1.3.83-0
-    "@subwallet/extension-dapp": 1.3.83-0
-    "@subwallet/extension-inject": 1.3.83-0
+    "@subwallet/extension-base": 1.3.86-0
+    "@subwallet/extension-chains": 1.3.86-0
+    "@subwallet/extension-dapp": 1.3.86-0
+    "@subwallet/extension-inject": 1.3.86-0
     "@subwallet/keyring": ^0.1.14
     "@subwallet/ui-keyring": ^0.1.14
     "@tsconfig/react-native": ^3.0.0
