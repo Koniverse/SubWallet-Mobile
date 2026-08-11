@@ -23,12 +23,15 @@ const StakeTransactionConfirmation = ({ transaction }: Props) => {
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Account address={data.selectedPool.address} label={i18n.inputLabel.pool} networkPrefix={42} />
         <MetaInfo.Number decimals={decimals} label={i18n.inputLabel.amount} suffix={symbol} value={data.amount} />
-        <MetaInfo.Number
-          decimals={decimals}
-          label={i18n.inputLabel.estimatedFee}
-          suffix={symbol}
-          value={transaction.estimateFee?.value || 0}
-        />
+        {/* Once wrapped, the fee that gets paid belongs to the wrapping extrinsic. */}
+        {!transaction.wrappingStatus && (
+          <MetaInfo.Number
+            decimals={decimals}
+            label={i18n.inputLabel.estimatedFee}
+            suffix={symbol}
+            value={transaction.estimateFee?.value || 0}
+          />
+        )}
       </MetaInfo>
 
       <AlertBox

@@ -35,12 +35,15 @@ const SendNftTransactionConfirmation = ({ transaction }: Props) => {
             {data.nftItemName || data.nftItem.name || `${data.nftItem.collectionId}_${data.nftItem.id}`}
           </MetaInfo.Default>
         )}
-        <MetaInfo.Number
-          decimals={decimals}
-          label={i18n.inputLabel.estimateFee}
-          suffix={symbol}
-          value={transaction.estimateFee?.value || 0}
-        />
+        {/* Once wrapped, the fee that gets paid belongs to the wrapping extrinsic. */}
+        {!transaction.wrappingStatus && (
+          <MetaInfo.Number
+            decimals={decimals}
+            label={i18n.inputLabel.estimateFee}
+            suffix={symbol}
+            value={transaction.estimateFee?.value || 0}
+          />
+        )}
       </MetaInfo>
     </ConfirmationContent>
   );

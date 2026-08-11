@@ -27,6 +27,10 @@ const SLIPPAGE_TOLERANCE: Record<string, number> = {
   option_4: 0.03,
 };
 
+// Only unsigned decimals are accepted. On RN a single onChangeText covers both typing and paste,
+// which is what the extension splits across its onKeyPress and onPaste filters.
+const SLIPPAGE_INPUT_PATTERN = /^\d*\.?\d*$/;
+
 interface FormValues {
   slippage: string;
 }
@@ -60,7 +64,7 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
         };
 
         onApplySlippage?.(slippageObject);
-      } else if (slippageValueForm) {
+      } else if (slippageValueForm && !new BigN(slippageValueForm).isNaN()) {
         const slippageObject = {
           slippage: new BigN(slippageValueForm).div(100),
           isCustomType: false,
@@ -170,7 +174,7 @@ export const SlippageModal = ({ modalVisible, setModalVisible, slippageValue, on
                   style={{ marginRight: 16 }}
                   onChangeText={text => {
                     const _text = text.replace(/,/g, '.');
-                    if (Number(_text) > 100) {
+                    if (!SLIPPAGE_INPUT_PATTERN.test(_text) || Number(_text) > 100) {
                       return;
                     }
                     setSelectedSlippage(undefined);

@@ -77,7 +77,8 @@ const migrationFAQUrl =
 const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMode.PASSWORD];
 
 export const SubstrateSignArea = (props: Props) => {
-  const { disableApproval, extrinsicType, id, isWrapTransaction, request, txExpirationTime, navigation } = props;
+  const { disableApproval, extrinsicType, id, isInternal, isWrapTransaction, request, txExpirationTime, navigation } =
+    props;
   const { address } = request.payload;
   const account = useGetAccountByAddress(address);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
@@ -203,6 +204,35 @@ export const SubstrateSignArea = (props: Props) => {
             ),
           };
         }
+
+        // Not a Ledger account, so signing still works — but the details decoded from stale
+        // metadata may not match what is actually being signed. Warn without blocking.
+        if (!isInternal) {
+          return {
+            type: 'warning',
+            title: 'Pay attention!',
+            description: (
+              <Text
+                style={{
+                  paddingHorizontal: theme.padding,
+                  fontSize: theme.fontSize,
+                  lineHeight: theme.fontSize * theme.lineHeight,
+                  color: theme.colorTextDescription,
+                  ...FontMedium,
+                }}
+              >
+                <Text>{`${networkName} network's metadata is out of date, which may cause the transaction to fail. Update metadata using `}</Text>
+                <Text
+                  style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
+                  onPress={() => Linking.openURL(metadataFAQUrl)}
+                >
+                  {i18n.attachAccount.readThisInstructionForMoreDetailsP2}
+                </Text>
+                <Text>{' or approve transaction at your own risk'}</Text>
+              </Text>
+            ),
+          };
+        }
       } else {
         if (isRuntimeUpdated) {
           if (_requireMetadata && isMissingData && !addExtraData) {
@@ -286,6 +316,7 @@ export const SubstrateSignArea = (props: Props) => {
   }, [
     addExtraData,
     chain,
+    isInternal,
     isMessage,
     isMetadataOutdated,
     isMissingData,

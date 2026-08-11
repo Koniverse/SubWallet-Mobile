@@ -56,8 +56,10 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
   const isMultisigAccount = !!account?.isMultisig;
   // A multisig account has no key of its own, so it cannot sign a raw message.
   const isMultisigMessageSigning = isMultisigAccount && isMessage;
-  // A multisig transaction has to be wrapped by a signatory before it can be approved.
-  const isMultisigWrappedTransactionSigning = isMultisigAccount && !isMessage;
+  // A multisig transaction has to be wrapped by a signatory before it can be approved. An
+  // undecodable payload must never be wrapped: prepareMultisigSignRequest rewrites the queued
+  // request in place, so there would be no way back to the original.
+  const isMultisigWrappedTransactionSigning = isMultisigAccount && !isMessage && !payloadError;
 
   const disableApproval = useMemo(() => {
     if (isMultisigMessageSigning) {
@@ -106,7 +108,7 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
             : i18n.confirmation.requestWithAccount}
         </Text>
 
-        {isMultisigAccount && !isMessage ? (
+        {isMultisigAccount && !isMessage && !payloadError ? (
           <MultisigSignerSelector
             requestId={request.id}
             targetAddress={address}

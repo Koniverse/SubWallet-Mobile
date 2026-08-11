@@ -498,6 +498,7 @@ const Component = ({
         return validateRecipientAddress({
           srcChain: chain,
           destChainInfo,
+          assetInfo: toAssetInfo,
           fromAddress: from,
           toAddress: _recipientAddress,
           account,
@@ -507,7 +508,7 @@ const Component = ({
         });
       },
     }),
-    [accounts, assetRegistryMap, chainInfoMap, isRecipientFieldAllowed, ledgerGenericAllowNetworks],
+    [accounts, assetRegistryMap, chainInfoMap, isRecipientFieldAllowed, ledgerGenericAllowNetworks, toAssetInfo],
   );
 
   const estimatedFeeValue = useMemo(() => {
@@ -1210,6 +1211,15 @@ const Component = ({
             }
           })
           .catch(e => {
+            // The refresh failed while the quote on screen has already expired: drop it so the
+            // outdated rate is not left on screen with the Swap button enabled.
+            if (sync && quoteAliveUntil && quoteAliveUntil <= Date.now()) {
+              setQuoteAliveUntil(undefined);
+              setQuoteOptions([]);
+              setCurrentQuote(undefined);
+              setHandleRequestLoading(false);
+            }
+
             if (
               e.message.toLowerCase().startsWith('failed to fetch swap quote') ||
               e.message.toLowerCase().startsWith('swap pair is not found')

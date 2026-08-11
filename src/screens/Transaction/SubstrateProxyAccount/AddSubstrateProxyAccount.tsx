@@ -14,7 +14,9 @@ import { FormItem } from 'components/common/FormItem';
 import { InputAddress } from 'components/Input/InputAddress';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
+import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
+import useCreateGetChainAndExcludedTokenByAccountProxy from 'hooks/chain/useCreateGetChainAndExcludedTokenByAccountProxy';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { useGetSubstrateProxyAccountGroupByAddress } from 'hooks/substrateProxyAccount';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransaction';
@@ -43,7 +45,7 @@ interface AddSubstrateProxyFormValues extends TransactionFormValues {
 
 export const AddSubstrateProxyAccount = ({
   route: {
-    params: { chain, from },
+    params: { chain, from, accountProxyId },
   },
 }: AddSubstrateProxyProps) => {
   const theme = useSubWalletTheme().swThemes;
@@ -97,12 +99,25 @@ export const AddSubstrateProxyAccount = ({
   const onPreCheck = usePreCheckAction(fromValue, true, undefined, chainValue);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
 
-  // Only chains whose Substrate runtime exposes the proxy pallet can be selected.
+  // The route param can come back missing after navigation state restoration, so fall back to
+  // the proxy owning the "from" address.
+  const accountProxy = useGetAccountProxyById(
+    accountProxyId || findAccountByAddress(accounts, fromValue)?.proxyId,
+  );
+  const getChainAndExcludedTokenByAccountProxy = useCreateGetChainAndExcludedTokenByAccountProxy();
+
+  const allowedChains = useMemo<string[] | null>(
+    () => (accountProxy ? getChainAndExcludedTokenByAccountProxy(accountProxy).allowedChains : null),
+    [accountProxy, getChainAndExcludedTokenByAccountProxy],
+  );
+
+  // Only chains whose Substrate runtime exposes the proxy pallet and that this account can
+  // actually sign on can be selected.
   const chainItems = useMemo<ChainInfo[]>(() => {
     return Object.values(chainInfoMap)
-      .filter((c: _ChainInfo) => c.substrateInfo?.supportProxy)
+      .filter((c: _ChainInfo) => c.substrateInfo?.supportProxy && (!allowedChains || allowedChains.includes(c.slug)))
       .map((c: _ChainInfo) => ({ name: c.name, slug: c.slug }));
-  }, [chainInfoMap]);
+  }, [allowedChains, chainInfoMap]);
 
   const validateSubstrateProxyAddress = useCallback(
     (_proxyAddress: string): Promise<string | undefined> => {

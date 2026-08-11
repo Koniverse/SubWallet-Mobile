@@ -196,18 +196,21 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
           />
         )}
 
-        <MetaInfo.Default label={i18n.inputLabel.estimatedFee} labelAlign={'top'}>
-          <View style={stylesheet.valueWrapper}>
-            <SwNumber
-              size={14}
-              decimal={feeInfo ? feeInfo.decimals : nativeTokenDecimals}
-              suffix={feeInfo ? feeInfo.symbol : nativeTokenSymbol}
-              value={feeInfo ? feeInfo.value : 0}
-              unitColor={theme.colorTextLight3}
-            />
-            {renderConvertedValue(convertedFeeValueToUSD)}
-          </View>
-        </MetaInfo.Default>
+        {/* Once wrapped, the fee that gets paid belongs to the wrapping extrinsic and is shown there instead. */}
+        {!transaction.wrappingStatus && (
+          <MetaInfo.Default label={i18n.inputLabel.estimatedFee} labelAlign={'top'}>
+            <View style={stylesheet.valueWrapper}>
+              <SwNumber
+                size={14}
+                decimal={feeInfo ? feeInfo.decimals : nativeTokenDecimals}
+                suffix={feeInfo ? feeInfo.symbol : nativeTokenSymbol}
+                value={feeInfo ? feeInfo.value : 0}
+                unitColor={theme.colorTextLight3}
+              />
+              {renderConvertedValue(convertedFeeValueToUSD)}
+            </View>
+          </MetaInfo.Default>
+        )}
 
         {isShowCrossChainFee && (
           <MetaInfo.Default label={i18n.inputLabel.crossChainFee} labelAlign={'top'}>

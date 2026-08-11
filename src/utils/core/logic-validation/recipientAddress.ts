@@ -30,10 +30,19 @@ export function _isValidBitcoinAddressFormat(validateRecipientParams: ValidateRe
   return '';
 }
 
+// This is a fork of extension-base's validateRecipientAddress, NOT dead code — do not replace it
+// with an import of the shared one. The shared version calls isCardanoAddress(), and every Cardano
+// helper in @subwallet/keyring is a `throw new Error('Not implemented')` stub in the React Native
+// build, so importing it makes every recipient validation throw. Keep the condition list in sync
+// with extension-base by hand, minus Cardano.
 function getConditions(validateRecipientParams: ValidateRecipientParams): ValidationCondition[] {
   const { account, actionType, autoFormatValue, destChainInfo, srcChain, toAddress } = validateRecipientParams;
   const conditions: ValidationCondition[] = [];
-  const isSendAction = [ActionType.SEND_FUND, ActionType.SEND_NFT].includes(actionType);
+  const isSendAction = [
+    ActionType.SEND_FUND,
+    ActionType.SEND_NFT,
+    ActionType.MANAGE_SUBSTRATE_PROXY_ACCOUNT,
+  ].includes(actionType);
 
   conditions.push(ValidationCondition.IS_NOT_NULL);
   conditions.push(ValidationCondition.IS_ADDRESS);

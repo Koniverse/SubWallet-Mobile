@@ -1473,6 +1473,7 @@
     "unableToSignTransaction": "Unable to sign transaction",
     "unstableNetwork": "Unstable network connection",
     "unstableNetworkDescription": "Re-enable the network or change RPC on the extension and try again",
+    "unableToPrepareTransaction": "Không thể chuẩn bị giao dịch này. Vui lòng hủy và thử lại từ dApp",
     "unsupportedNetwork": "Unsupported network",
     "unsupportedNetworkDescription": "This network is not yet supported for signing multisig transactions via SubWallet",
     "pendingMultisigApprovals": "Pending multisig approvals",

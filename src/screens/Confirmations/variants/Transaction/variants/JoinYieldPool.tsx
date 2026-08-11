@@ -77,12 +77,15 @@ const JoinYieldPoolConfirmation: React.FC<Props> = (props: Props) => {
           />
         )}
 
-        <MetaInfo.Number
-          decimals={feeTokenDecimals}
-          label={i18n.inputLabel.estimatedFee}
-          suffix={feeTokenSymbol}
-          value={transaction.estimateFee?.value || 0}
-        />
+        {/* Once wrapped, the fee that gets paid belongs to the wrapping extrinsic. */}
+        {!transaction.wrappingStatus && (
+          <MetaInfo.Number
+            decimals={feeTokenDecimals}
+            label={i18n.inputLabel.estimatedFee}
+            suffix={feeTokenSymbol}
+            value={transaction.estimateFee?.value || 0}
+          />
+        )}
       </MetaInfo>
     </ConfirmationContent>
   );

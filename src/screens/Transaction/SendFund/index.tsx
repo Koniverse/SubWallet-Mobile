@@ -198,7 +198,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
 
   const {
     title,
-    form: { setValue, resetField, clearErrors, getValues, control, handleSubmit, trigger, setFocus },
+    form: { setValue, resetField, clearErrors, setError, getValues, control, handleSubmit, trigger, setFocus },
     onChangeFromValue: setFrom,
     onChangeAssetValue: setAsset,
     onChangeChainValue: setChain,
@@ -564,28 +564,33 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     return false;
   }, [chainValue, destChainValue]);
 
+  const validateRecipient = useCallback(
+    async (
+      _recipientAddress: string,
+      { chain, destChain, from }: TransactionFormValues,
+    ): Promise<ValidateResult> => {
+      const destChainInfo = chainInfoMap[destChain];
+      const account = findAccountByAddress(accounts, _recipientAddress);
+      return validateRecipientAddress({
+        srcChain: chain,
+        destChainInfo,
+        assetInfo: destAssetInfo,
+        fromAddress: from,
+        toAddress: _recipientAddress,
+        account,
+        actionType: ActionType.SEND_FUND,
+        autoFormatValue: false,
+        allowLedgerGenerics: ledgerGenericAllowNetworks,
+      });
+    },
+    [accounts, chainInfoMap, destAssetInfo, ledgerGenericAllowNetworks],
+  );
+
   const recipientAddressRules = useMemo(
     () => ({
-      validate: async (
-        _recipientAddress: string,
-        { chain, destChain, from }: TransactionFormValues,
-      ): Promise<ValidateResult> => {
-        const destChainInfo = chainInfoMap[destChain];
-        const account = findAccountByAddress(accounts, _recipientAddress);
-        return validateRecipientAddress({
-          srcChain: chain,
-          destChainInfo,
-          assetInfo: destAssetInfo,
-          fromAddress: from,
-          toAddress: _recipientAddress,
-          account,
-          actionType: ActionType.SEND_FUND,
-          autoFormatValue: false,
-          allowLedgerGenerics: ledgerGenericAllowNetworks,
-        });
-      },
+      validate: validateRecipient,
     }),
-    [accounts, chainInfoMap, destAssetInfo, ledgerGenericAllowNetworks],
+    [validateRecipient],
   );
 
   const amountRules = useMemo(
@@ -1087,8 +1092,24 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   ]);
 
   const onPressSubmit = useCallback(
-    (values: TransferFormValues) => {
+    async (values: TransferFormValues) => {
       Keyboard.dismiss();
+
+      // The recipient field only exists on step 1, and react-hook-form skips validation for
+      // unmounted fields — so handleSubmit would never re-check `to`. Anything that rewrote it
+      // after step 1 (a late domain resolution, for instance) has to be caught here.
+      const recipientError = await validateRecipient(values.to, values);
+
+      if (recipientError) {
+        setViewStep(1);
+        setError('to', {
+          type: 'validate',
+          message: typeof recipientError === 'string' ? recipientError : i18n.errorMessage.invalidAddress,
+        });
+
+        return;
+      }
+
       setTimeout(() => {
         if (currentConfirmations && currentConfirmations.length) {
           globalAppModalContext.setGlobalModal({
@@ -1106,7 +1127,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
         }
       }, 100);
     },
-    [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons],
+    [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons, setError, validateRecipient],
   );
 
   const isNextButtonDisable = (() => {
@@ -1454,9 +1475,16 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     };
   }, [chainValue, fromValue, nativeTokenSlug, nativeTokenBalance]);
 
+  // A multisig account does not pay the network fee itself — the signatory does — so editing it here
+  // would be discarded.
   const isShowFeeEditor = useMemo(
-    () => FEE_SHOW_TYPES.includes(transferInfo?.feeType) && !!toValue && !!transferAmount && !!nativeTokenSlug,
-    [nativeTokenSlug, toValue, transferAmount, transferInfo?.feeType],
+    () =>
+      FEE_SHOW_TYPES.includes(transferInfo?.feeType) &&
+      !!toValue &&
+      !!transferAmount &&
+      !!nativeTokenSlug &&
+      !isMultisigAccount,
+    [isMultisigAccount, nativeTokenSlug, toValue, transferAmount, transferInfo?.feeType],
   );
 
   const scrollToBottom = () => {
@@ -1718,7 +1746,8 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                         {FEE_SHOW_TYPES.includes(transferInfo?.feeType) &&
                           !!toValue &&
                           !!transferAmount &&
-                          !!nativeTokenSlug && (
+                          !!nativeTokenSlug &&
+                          !isMultisigAccount && (
                             <FeeEditor
                               chainValue={chainValue}
                               crossChainFee={crossChainFee}

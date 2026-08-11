@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { CaretDownIcon, InfoIcon } from 'phosphor-react-native';
@@ -151,21 +151,39 @@ export const MultisigSignerSelector = ({
   const callData = preparedInfo?.callData || initialCallData || null;
   const isDisabled = isSignerItemsLoading || isPreparing || !!displayMultisigErrorType;
 
+  // prepareMultisigSignRequest reads the queued payload and then overwrites it with the wrapped
+  // one, so preparing twice wraps an already-wrapped call. Remember the call data of the original
+  // request to detect that, and never re-prepare for a signatory that is already prepared.
+  const originalCallDataRef = useRef<string | null>(initialCallData || null);
+
   const onSelectSigner = useCallback(
     (selected: WrappedTransactionSigner) => {
+      setSelectorModalVisible(false);
+
+      // Already prepared for this exact signatory — re-preparing would only wrap it again.
+      // A failed attempt is still allowed to be retried.
+      if (signerSelected?.address === selected.address && preparedInfo && !wrapError) {
+        return;
+      }
+
       setSignerSelected(selected);
       setIsPreparing(true);
       setWrapError(null);
       setMultisigUiErrorType(null);
       setPreparedInfo(null);
-      setSelectorModalVisible(false);
 
       prepareMultisigSignRequest({ id: requestId, signer: selected.address })
         .then((response: PrepareMultisigSignResponse) => {
           setPreparedInfo(response);
 
+          if (!originalCallDataRef.current) {
+            originalCallDataRef.current = response.callData || null;
+          }
+
           if (response.errors.length > 0) {
             setWrapError(response.errors[0].message || null);
+          } else if (originalCallDataRef.current && response.callData !== originalCallDataRef.current) {
+            setWrapError(i18n.multisig.unableToPrepareTransaction);
           }
         })
         .catch((e: Error) => {
@@ -174,7 +192,7 @@ export const MultisigSignerSelector = ({
         })
         .finally(() => setIsPreparing(false));
     },
-    [requestId],
+    [preparedInfo, requestId, signerSelected?.address, wrapError],
   );
 
   useEffect(() => {
