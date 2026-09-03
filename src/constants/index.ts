@@ -1,7 +1,6 @@
 import { Dimensions, Platform } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { getBrand } from 'react-native-device-info';
-import env from 'react-native-config';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { KeypairType } from '@subwallet/keyring/types';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
@@ -70,7 +69,7 @@ export const DEVICE: DeviceInfo = {
   height: deviceHeight,
 };
 export const ALL_KEY = 'all';
-export const isDevMode = !!env.DEBUG;
+export { isDevModeAvailable } from './devMode';
 export const regex: RegexType = {
   httpProtocol: /^http:\/\//,
 };

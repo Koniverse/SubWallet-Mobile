@@ -69,6 +69,7 @@ yarn-error.log
 .env.development
 .env.production
 .env
+.env.devmode
 app-center-private.pem
 # testing
 /coverage
@@ -80,3 +81,6 @@ app-center-private.pem
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Local build artifacts
+build-output/

@@ -12,6 +12,7 @@
     "ios": "react-native run-ios",
     "android:production": "cd android && export ENVFILE=.env.production && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
     "android:staging": "cd android && export ENVFILE=.env.development && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
+    "android:devmode": "cd android && export ENVFILE=.env.devmode && ./gradlew assembleRelease",
     "ios:production": "scripts/build-ios.sh",
     "ios:staging": "scripts/build-ios.sh staging",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
