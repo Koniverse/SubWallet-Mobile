@@ -52,6 +52,18 @@
 -dontwarn com.facebook.fresco.**
 
 # ---------------------------------------------------------------------------
+# react-native-config
+# ---------------------------------------------------------------------------
+# RNCConfigModuleImpl resolves the app's BuildConfig purely by reflection
+# (Class.forName(packageName + ".BuildConfig"), then getDeclaredFields()), so R8
+# sees nothing referencing the class and deletes it outright. Class.forName then
+# throws, the module hands JS an empty config, and every env value reads back
+# undefined in release builds -- the buy-token endpoints and keys, BUNDLE_ENV and
+# the DEV_MODE flag alike. Keep the class and its fields so the env file survives
+# minification.
+-keep class app.subwallet.mobile.BuildConfig { *; }
+
+# ---------------------------------------------------------------------------
 # JavaScript Interface (WebView bridge)
 # ---------------------------------------------------------------------------
 -keepclassmembers class * {
