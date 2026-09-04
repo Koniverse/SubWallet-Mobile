@@ -18,6 +18,7 @@ import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { BuyTokenInfo } from '@subwallet/extension-base/types';
 import { ActionBtn } from 'screens/Home/Tokens/TokenGroupsUpperBlock';
 import useGetChainAndExcludedTokenByCurrentAccountProxy from 'hooks/chain/useGetChainAndExcludedTokenByCurrentAccountProxy';
+import { PriceChartArea } from 'screens/Home/Tokens/PriceChartArea';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
@@ -30,6 +31,8 @@ interface Props {
   onOpenSwap?: () => void;
   isSwapSupported?: boolean;
   isSupportSendFund?: boolean;
+  priceId?: string;
+  isChartSupported?: boolean;
 }
 
 export const TokenGroupsDetailUpperBlock = ({
@@ -43,6 +46,8 @@ export const TokenGroupsDetailUpperBlock = ({
   tokenGroupMap,
   isSwapSupported,
   isSupportSendFund,
+  priceId,
+  isChartSupported,
 }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
@@ -141,7 +146,7 @@ export const TokenGroupsDetailUpperBlock = ({
         </View>
       </View>
 
-      <BalancesVisibility value={balanceValue} symbol={currencyData.symbol} subFloatNumber />
+      <PriceChartArea isChartSupported={isChartSupported} priceId={priceId} />
 
       <View style={[_style.actionButtonWrapper]} pointerEvents="box-none">
         {actionBtnList.map(({ label, icon, onPress, disabled }, index) => (
@@ -155,6 +160,13 @@ export const TokenGroupsDetailUpperBlock = ({
           />
         ))}
       </View>
+
+      <View style={_style.yourBalanceArea}>
+        <Typography.Text ellipsis style={_style.yourBalanceLabel}>
+          {i18n.common.yourBalance}
+        </Typography.Text>
+        <BalancesVisibility value={balanceValue} symbol={currencyData.symbol} size={20} />
+      </View>
     </View>
   );
 };
@@ -162,13 +174,13 @@ export const TokenGroupsDetailUpperBlock = ({
 function createStyleSheet(theme: ThemeTypes) {
   return StyleSheet.create({
     actionButtonWrapper: {
-      paddingTop: 16,
+      paddingTop: 24,
+      paddingBottom: 24,
       flexDirection: 'row',
       width: '100%',
       justifyContent: 'center',
     },
     containerStyle: {
-      height: 214,
       alignItems: 'center',
       paddingBottom: 2,
       marginLeft: -8,
@@ -188,5 +200,19 @@ function createStyleSheet(theme: ThemeTypes) {
       justifyContent: 'center',
     },
     actionBtn: { paddingHorizontal: theme.paddingSM - 1 },
+    yourBalanceArea: {
+      alignSelf: 'stretch',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: theme.padding,
+    },
+    yourBalanceLabel: {
+      flexShrink: 1,
+      color: theme.colorTextLight1,
+      fontSize: theme.fontSizeHeading4,
+      lineHeight: theme.fontSizeHeading4 * theme.lineHeightHeading4,
+      ...FontSemiBold,
+    },
   });
 }

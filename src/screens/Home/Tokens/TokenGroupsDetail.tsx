@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { LayoutChangeEvent, View } from 'react-native';
 import { CryptoNavigationProps, TokenGroupsDetailProps } from 'routes/home';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { TokenBalanceItemType } from 'types/balance';
@@ -23,6 +23,11 @@ import { SelectAccAndTokenModal } from 'components/Modal/SelectAccAndTokenModal'
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { AccountChainType, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
+import {
+  _getAssetPriceId,
+  _getMultiChainAssetPriceId,
+} from '@subwallet/extension-base/services/chain-service/utils';
+import { canShowChart } from 'messaging/index';
 import { useMMKVBoolean } from 'react-native-mmkv';
 import { IS_SHOW_TON_CONTRACT_VERSION_WARNING } from 'constants/localStorage';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
@@ -57,6 +62,14 @@ export const TokenGroupsDetail = ({
   const [currentTokenInfo, setCurrentTokenInfo] = useState<CurrentSelectToken | undefined>(undefined);
   const [tokenDetailVisible, setTokenDetailVisible] = useState<boolean>(false);
   const assetRegistryMap = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
+  const [isChartSupported, setIsChartSupported] = useState(false);
+  // The header grows and shrinks with the price chart, so measure it instead of
+  // hard-coding the offset the sticky header hands over at.
+  const [headerHeight, setHeaderHeight] = useState<number | undefined>(undefined);
+
+  const onHeaderLayout = useCallback((event: LayoutChangeEvent) => {
+    setHeaderHeight(event.nativeEvent.layout.height);
+  }, []);
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
   const { banners, dismissBanner, onPressBanner } = useGetBannerByScreen('token_detail', tokenGroupSlug);
   const { accountProxies, currentAccountProxy, isAllAccount } = useSelector((state: RootState) => state.accountState);
@@ -315,27 +328,77 @@ export const TokenGroupsDetail = ({
     });
   }, [currentAccountProxy, navigation, showNoti, tokenGroupSlug]);
 
+  const priceId = useMemo<string | undefined>(() => {
+    if (!tokenGroupSlug) {
+      return undefined;
+    }
+
+    if (assetRegistryMap[tokenGroupSlug]) {
+      return _getAssetPriceId(assetRegistryMap[tokenGroupSlug]);
+    }
+
+    if (multiChainAssetMap[tokenGroupSlug]) {
+      return _getMultiChainAssetPriceId(multiChainAssetMap[tokenGroupSlug]);
+    }
+
+    return undefined;
+  }, [assetRegistryMap, multiChainAssetMap, tokenGroupSlug]);
+
+  // Not every token CoinGecko prices has chart data, so ask before rendering one.
+  useEffect(() => {
+    let sync = true;
+
+    if (!priceId) {
+      setIsChartSupported(false);
+
+      return;
+    }
+
+    canShowChart(priceId)
+      .then(result => {
+        if (sync) {
+          setIsChartSupported(result);
+        }
+      })
+      .catch(() => {
+        if (sync) {
+          setIsChartSupported(false);
+        }
+      });
+
+    return () => {
+      sync = false;
+    };
+  }, [priceId]);
+
   const listHeaderNode = useMemo(() => {
     return (
-      <TokenGroupsDetailUpperBlock
-        onOpenReceive={onOpenReceive}
-        onOpenSendFund={_onOpenSendFund}
-        onOpenSwap={_onOpenSwap}
-        balanceValue={tokenBalanceValue}
-        onClickBack={onClickBack}
-        groupSymbol={groupSymbol}
-        tokenGroupSlug={tokenGroupSlug}
-        tokenGroupMap={tokenGroupMap}
-        isSwapSupported={isSwapSupported}
-        isSupportSendFund={isSupportSendFund}
-      />
+      <View onLayout={onHeaderLayout}>
+        <TokenGroupsDetailUpperBlock
+          onOpenReceive={onOpenReceive}
+          onOpenSendFund={_onOpenSendFund}
+          onOpenSwap={_onOpenSwap}
+          balanceValue={tokenBalanceValue}
+          onClickBack={onClickBack}
+          groupSymbol={groupSymbol}
+          tokenGroupSlug={tokenGroupSlug}
+          tokenGroupMap={tokenGroupMap}
+          isSwapSupported={isSwapSupported}
+          isSupportSendFund={isSupportSendFund}
+          priceId={priceId}
+          isChartSupported={isChartSupported}
+        />
+      </View>
     );
   }, [
+    onHeaderLayout,
     onOpenReceive,
     _onOpenSendFund,
     _onOpenSwap,
     tokenBalanceValue,
     onClickBack,
+    priceId,
+    isChartSupported,
     groupSymbol,
     tokenGroupSlug,
     tokenGroupMap,
@@ -368,6 +431,7 @@ export const TokenGroupsDetail = ({
           loading={isLoadingData}
           items={tokenBalanceItems}
           layoutHeader={listHeaderNode}
+          headerHeight={headerHeight}
           renderItem={renderItem}
           banners={banners}
           dismissBanner={dismissBanner}

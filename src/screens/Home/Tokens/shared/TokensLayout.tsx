@@ -47,6 +47,13 @@ interface Props {
   onPressBanner?: (id: string) => (url?: string | undefined) => void;
   dismissBanner?: (ids: string[]) => void;
   beforeListNode?: React.ReactNode;
+  /**
+   * Height of layoutHeader. The scroll thresholds that hand over to the sticky header
+   * are derived from it, so a screen with a taller header (the token detail one, which
+   * carries the price chart) must report its real height or the handover fires while
+   * the header is still on screen.
+   */
+  headerHeight?: number;
 }
 
 const flatListContentContainerStyle: StyleProp<any> = {
@@ -64,6 +71,8 @@ const PAGE_SIZE = 15;
 const ITEM_HEIGHT = tokenItem;
 const ITEM_SEPARATOR = tokenItemMarginBottom;
 const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
+const DEFAULT_HEADER_HEIGHT = 214;
+
 export const TokensLayout = ({
   layoutHeader,
   stickyBackground,
@@ -77,6 +86,7 @@ export const TokensLayout = ({
   dismissBanner,
   onPressBanner,
   beforeListNode,
+  headerHeight = DEFAULT_HEADER_HEIGHT,
 }: Props) => {
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -94,31 +104,31 @@ export const TokensLayout = ({
   }, [tokenBalanceItems, pageNumber]);
 
   const headerStyles = useAnimatedStyle(() => {
-    const translateY = interpolate(yOffset.value, [0, 200], [0, -10], Extrapolate.CLAMP);
-    const opacity = interpolate(yOffset.value, [0, 200], [1, 0], Extrapolate.CLAMP);
+    const translateY = interpolate(yOffset.value, [0, headerHeight - 14], [0, -10], Extrapolate.CLAMP);
+    const opacity = interpolate(yOffset.value, [0, headerHeight - 14], [1, 0], Extrapolate.CLAMP);
     return {
       opacity,
       // @ts-ignore
       transform: [{ translateY }],
     };
-  }, []);
+  }, [headerHeight]);
   const stickyHeaderStyles = useAnimatedStyle(() => {
-    const opacity = interpolate(yOffset.value, [210, 218], [1, 0], Extrapolate.CLAMP);
-    const translateY = interpolate(yOffset.value, [210, 218], [0, -40], Extrapolate.CLAMP);
+    const opacity = interpolate(yOffset.value, [headerHeight - 4, headerHeight + 4], [1, 0], Extrapolate.CLAMP);
+    const translateY = interpolate(yOffset.value, [headerHeight - 4, headerHeight + 4], [0, -40], Extrapolate.CLAMP);
     return {
       opacity,
       // @ts-ignore
       transform: [{ translateY }],
     };
-  }, []);
+  }, [headerHeight]);
   const stickyHeaderInvisibleStyles = useAnimatedStyle(() => {
-    const opacity = interpolate(yOffset.value, [218, 220], [0, 1], Extrapolate.CLAMP);
-    const zIndex = interpolate(yOffset.value, [218, 220], [0, 100], Extrapolate.CLAMP);
+    const opacity = interpolate(yOffset.value, [headerHeight + 4, headerHeight + 6], [0, 1], Extrapolate.CLAMP);
+    const zIndex = interpolate(yOffset.value, [headerHeight + 4, headerHeight + 6], [0, 100], Extrapolate.CLAMP);
     return {
       opacity,
       zIndex,
     };
-  }, []);
+  }, [headerHeight]);
 
   const onScrollHandler = useAnimatedScrollHandler(
     {
@@ -149,13 +159,15 @@ export const TokensLayout = ({
     return <RefreshControl tintColor={ColorMap.light} refreshing={isRefreshing} onRefresh={onRefreshTokenList} />;
   }, [isRefreshing, onRefreshTokenList]);
 
-  const renderHeaderComponent = () => {
-    return (
-      <Animated.View style={headerStyles}>
-        <>{layoutHeader}</>
-      </Animated.View>
-    );
-  };
+  // Pass the header as an element, not as a function. ListHeaderComponent treats a
+  // function as a component type, and this one was rebuilt on every render, so React
+  // saw a new type each time and remounted the whole header subtree -- which resets
+  // any state it holds, such as the price chart's selected timeframe and its points.
+  const headerComponent = (
+    <Animated.View style={headerStyles}>
+      <>{layoutHeader}</>
+    </Animated.View>
+  );
 
   const customRenderItem = (data: ListRenderItemInfo<TokenBalanceItemType>) => {
     if (data.item?.slug === null) {
@@ -272,7 +284,7 @@ export const TokensLayout = ({
           onScroll={onScrollHandler}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps={'handled'}
-          ListHeaderComponent={renderHeaderComponent}
+          ListHeaderComponent={headerComponent}
           contentContainerStyle={listContainerStyle}
           data={transformTokenListData}
           renderItem={customRenderItem}

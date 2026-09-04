@@ -215,7 +215,8 @@
     "ratingAlertTitle": "Rate our app!",
     "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday.",
     "enterPassword": "Enter password",
-    "enterPasswordToMigrate": "Enter your master password to migrate account"
+    "enterPasswordToMigrate": "Enter your master password to migrate account",
+    "yourBalance": "Số dư của bạn"
   },
   "title": {
     "exportAccount": "Xuất tài khoản  ",
