@@ -2,7 +2,7 @@ import { NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTy
 import { FlatListScreen } from 'components/FlatListScreen';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RefreshControl, StyleProp, Text, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import NftItem from './NftItem';
@@ -13,7 +13,7 @@ import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { deleteCustomAssets, reloadCron, restartCronServices } from 'messaging/index';
+import { deleteCustomAssets, getFullNftList, reloadCron, restartCronServices } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
 import { ImageIcon, TrashIcon } from 'phosphor-react-native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
@@ -52,7 +52,7 @@ const filteredNftItem = (items: _NftItem[], searchString: string) => {
 
 const NftItemList = ({
   route: {
-    params: { collectionId },
+    params: { chain, collectionId },
   },
 }: NFTCollectionProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -60,22 +60,49 @@ const NftItemList = ({
 
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoadingData, setLoadingData] = useState(true);
+  const fetchedCollectionRef = useRef('');
 
   useEffect(() => {
     setTimeout(() => setLoadingData(false), 100);
   }, []);
 
   const collection = useMemo(() => {
-    return nftCollections.find(i => collectionId === `${i.collectionName}-${i.collectionId}`);
-  }, [collectionId, nftCollections]);
+    return nftCollections.find(i => i.chain === chain && i.collectionId === collectionId);
+  }, [chain, collectionId, nftCollections]);
 
   const originAssetInfo = useGetChainAssetInfo(collection?.originAsset);
 
   const _nftItems = useMemo(() => {
-    return nftItems.filter(item => item.collectionId === (collection?.collectionId || '__'));
-  }, [collection?.collectionId, nftItems]);
+    return nftItems.filter(item => item.chain === chain && item.collectionId === collectionId);
+  }, [chain, collectionId, nftItems]);
+
+  const ownerAddresses = useMemo(() => {
+    return [...new Set(_nftItems.map(item => item.owner).filter(Boolean))];
+  }, [_nftItems]);
+
+  const tokenIds = useMemo(() => {
+    return _nftItems.map(item => item.id);
+  }, [_nftItems]);
+
+  useEffect(() => {
+    const chainInfo = chainInfoMap[chain];
+    const requestKey = `${chain}-${collectionId}-${[...ownerAddresses].sort().join('-')}`;
+
+    if (!chainInfo || !ownerAddresses.length || fetchedCollectionRef.current === requestKey) {
+      return;
+    }
+
+    fetchedCollectionRef.current = requestKey;
+    // `tokenIds` is not optional for every handler: the Unique one resolves the bundle tree of each
+    // token individually and bails out with a warning when the list is missing.
+    getFullNftList({ collectionId, tokenIds, owners: ownerAddresses, chainInfo }).catch(error => {
+      fetchedCollectionRef.current = '';
+      console.error(error);
+    });
+  }, [chain, chainInfoMap, collectionId, ownerAddresses, tokenIds]);
 
   const [isRefresh, refresh] = useRefresh();
 
@@ -90,25 +117,35 @@ const NftItemList = ({
           return;
         }
 
-        // @ts-ignore
+        // A token that carries children is the root of a bundle tree and gets the nested layout;
+        // everything else keeps the plain detail screen.
+        if ((item.nestingTokens?.length ?? 0) > 0) {
+          navigation.navigate('Home', {
+            screen: 'Main',
+            params: {
+              screen: 'NFTs',
+              params: {
+                screen: 'NftBundleDetail',
+                params: { chain, collectionId, nftId: item.id, rootTokenId: item.id },
+              },
+            },
+          });
+
+          return;
+        }
+
         navigation.navigate('Home', {
-          // @ts-ignore
           screen: 'Main',
           params: {
-            // @ts-ignore
             screen: 'NFTs',
-            params: {
-              // @ts-ignore
-              screen: 'NftDetail',
-              params: { collectionId, nftId: key },
-            },
+            params: { screen: 'NftDetail', params: { chain, collectionId, nftId: item.id } },
           },
         });
       };
 
       return <NftItem key={key} nftItem={item} collectionImage={collection?.image} onPress={onPress} />;
     },
-    [collection?.image, collectionId, isDeleting, navigation],
+    [chain, collection?.image, collectionId, isDeleting, navigation],
   );
 
   const handeDelete = () => {
@@ -172,9 +209,7 @@ const NftItemList = ({
     <View style={NftItemListStyle}>
       <FlatListScreen
         headerContent={headerContent}
-        onPressBack={() =>
-          navigation.goBack()
-        }
+        onPressBack={() => navigation.goBack()}
         isHideBottomSafeArea={true}
         isShowMainHeader
         autoFocus={false}

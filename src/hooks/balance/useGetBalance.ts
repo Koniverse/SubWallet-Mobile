@@ -1,10 +1,18 @@
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { AmountData, AmountDataWithId, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { BalanceType } from '@subwallet/extension-base/types';
 import { _getChainNativeTokenSlug } from '@subwallet/extension-base/services/chain-service/utils';
 import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { cancelSubscription, getFreeBalance, subscribeFreeBalance, updateAssetSetting } from 'messaging/index';
+import {
+  cancelSubscription,
+  getAvailableBalanceByType,
+  getFreeBalance,
+  subscribeAvailableBalanceByType,
+  subscribeFreeBalance,
+  updateAssetSetting,
+} from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -16,6 +24,7 @@ const useGetBalance = (
   tokenSlug = '',
   isSubscribe = false,
   extrinsicType?: ExtrinsicType,
+  balanceType?: BalanceType,
 ) => {
   const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
   const { assetSettingMap, assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
@@ -114,23 +123,27 @@ const useGetBalance = (
           const onNativeError = onCreateHandleError(setNativeTokenBalance);
           const onTokenError = onCreateHandleError(setTokenBalance);
 
+          const getBalance = balanceType ? getAvailableBalanceByType : getFreeBalance;
+          const subscribeBalance = balanceType ? subscribeAvailableBalanceByType : subscribeFreeBalance;
+          const request = { address, networkKey: chain, extrinsicType, balanceType };
+
           if (isSubscribe) {
             promiseList.push(
-              subscribeFreeBalance({ address, networkKey: chain, extrinsicType }, onNativeBalanceSubscribe)
+              subscribeBalance(request, onNativeBalanceSubscribe)
                 .then(onNativeBalanceSubscribe)
                 .catch(onNativeError),
             );
           } else {
             promiseList.push(
-              getFreeBalance({ address, networkKey: chain, extrinsicType }).then(onNativeBalance).catch(onNativeError),
+              getBalance(request).then(onNativeBalance).catch(onNativeError),
             );
           }
 
           if (tokenSlug && tokenSlug !== nativeTokenSlug) {
             if (isSubscribe) {
               promiseList.push(
-                subscribeFreeBalance(
-                  { address, networkKey: chain, token: tokenSlug, extrinsicType },
+                subscribeBalance(
+                  { ...request, token: tokenSlug },
                   onTokenBalanceSubscribe,
                 )
                   .then(onTokenBalanceSubscribe)
@@ -138,7 +151,7 @@ const useGetBalance = (
               );
             } else {
               promiseList.push(
-                getFreeBalance({ address, networkKey: chain, token: tokenSlug, extrinsicType })
+                getBalance({ ...request, token: tokenSlug })
                   .then(onTokenBalance)
                   .catch(onTokenError),
               );
@@ -197,6 +210,7 @@ const useGetBalance = (
     isSubscribe,
     isFocused,
     extrinsicType,
+    balanceType,
   ]);
 
   return { refreshBalance, tokenBalance, nativeTokenBalance, nativeTokenSlug, isLoading, error, chainInfo };

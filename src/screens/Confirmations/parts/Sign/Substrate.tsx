@@ -2,7 +2,7 @@ import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFoote
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { RequestSign } from '@subwallet/extension-base/background/types';
+import { RequestSign, SubstratePayloadErrorType } from '@subwallet/extension-base/background/types';
 import { approveSignPasswordV2, approveSignSignature, cancelSignRequest } from 'messaging/index';
 import { useDispatch, useSelector } from 'react-redux';
 import { DisplayPayloadModal, SubstrateQr } from 'screens/Confirmations/parts/Qr/DisplayPayload';
@@ -10,7 +10,15 @@ import { RootState } from 'stores/index';
 import { SigData } from 'types/signer';
 import { getSignMode } from 'utils/account';
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';
-import { CheckCircleIcon, IconProps, QrCodeIcon, SwatchesIcon, XCircleIcon } from 'phosphor-react-native';
+import {
+  ArrowCircleLeftIcon,
+  CheckCircleIcon,
+  IconProps,
+  QrCodeIcon,
+  SwatchesIcon,
+  XCircleIcon,
+} from 'phosphor-react-native';
+import { MULTISIG_ACTIONS } from 'constants/multisig';
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
@@ -42,6 +50,10 @@ interface Props {
   extrinsicType?: ExtrinsicType;
   txExpirationTime?: number;
   isInternal?: boolean;
+  /** Blocks approval until a wrapped transaction has been prepared for the chosen signer. */
+  disableApproval?: boolean;
+  /** True when the sender is a proxied or multisig account and another account signs. */
+  isWrapTransaction?: boolean;
 }
 
 interface AlertData {
@@ -65,7 +77,8 @@ const migrationFAQUrl =
 const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMode.PASSWORD];
 
 export const SubstrateSignArea = (props: Props) => {
-  const { id, request, txExpirationTime, navigation } = props;
+  const { disableApproval, extrinsicType, id, isInternal, isWrapTransaction, request, txExpirationTime, navigation } =
+    props;
   const { address } = request.payload;
   const account = useGetAccountByAddress(address);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
@@ -107,14 +120,17 @@ export const SubstrateSignArea = (props: Props) => {
   const { chain, loadingChain } = useMetadata(genesisHash, requireSpecVersion);
   const chainInfo = useGetChainInfoByGenesisHash(genesisHash);
   const theme = useSubWalletTheme().swThemes;
-  const { addExtraData, hashLoading, isMissingData, payload } = useParseSubstrateRequestPayload(
+  const { addExtraData, hashLoading, isMissingData, payload, payloadError } = useParseSubstrateRequestPayload(
     chain,
     request,
     isLedger,
   );
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
-  const isMessage = isSubstrateMessage(payload);
+  const isMessage = !payloadError && isSubstrateMessage(payload);
   const dispatch = useDispatch();
+  // Chain metadata is fetched then decoded into a type registry on the JS thread, which makes the
+  // buttons unable to react. Show it as a loading state so it does not look like the app is stuck.
+  const isPreparingPayload = loadingChain || hashLoading;
   const networkName = useMemo(
     () => chainInfo?.name || chain?.name || toShort(genesisHash),
     [chainInfo, genesisHash, chain],
@@ -146,6 +162,17 @@ export const SubstrateSignArea = (props: Props) => {
   //   (!chain || !chain.hasMetadata || isMetadataOutdated);
 
   const alertData = useMemo((): AlertData | undefined => {
+    if (payloadError) {
+      return {
+        type: 'error',
+        title: 'Error!',
+        description:
+          payloadError.type === SubstratePayloadErrorType.RawDataInExtrinsic
+            ? i18n.confirmation.dappSentRawDataInExtrinsicRequest
+            : i18n.confirmation.unableToDecodeSigningPayload,
+      };
+    }
+
     const _requireMetadata =
       signMode === AccountSignMode.GENERIC_LEDGER || (signMode === AccountSignMode.LEGACY_LEDGER && isRuntimeUpdated);
 
@@ -163,11 +190,42 @@ export const SubstrateSignArea = (props: Props) => {
                   lineHeight: theme.fontSize * theme.lineHeight,
                   color: theme.colorTextDescription,
                   ...FontMedium,
-                }}>
+                }}
+              >
                 <Text>{`${networkName} network's metadata is out of date, which may cause the transaction to fail. Update metadata using `}</Text>
                 <Text
                   style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
-                  onPress={() => Linking.openURL(metadataFAQUrl)}>
+                  onPress={() => Linking.openURL(metadataFAQUrl)}
+                >
+                  {i18n.attachAccount.readThisInstructionForMoreDetailsP2}
+                </Text>
+                <Text>{' or approve transaction at your own risk'}</Text>
+              </Text>
+            ),
+          };
+        }
+
+        // Not a Ledger account, so signing still works — but the details decoded from stale
+        // metadata may not match what is actually being signed. Warn without blocking.
+        if (!isInternal) {
+          return {
+            type: 'warning',
+            title: 'Pay attention!',
+            description: (
+              <Text
+                style={{
+                  paddingHorizontal: theme.padding,
+                  fontSize: theme.fontSize,
+                  lineHeight: theme.fontSize * theme.lineHeight,
+                  color: theme.colorTextDescription,
+                  ...FontMedium,
+                }}
+              >
+                <Text>{`${networkName} network's metadata is out of date, which may cause the transaction to fail. Update metadata using `}</Text>
+                <Text
+                  style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
+                  onPress={() => Linking.openURL(metadataFAQUrl)}
+                >
                   {i18n.attachAccount.readThisInstructionForMoreDetailsP2}
                 </Text>
                 <Text>{' or approve transaction at your own risk'}</Text>
@@ -200,7 +258,8 @@ export const SubstrateSignArea = (props: Props) => {
                       lineHeight: theme.fontSize * theme.lineHeight,
                       color: theme.colorTextDescription,
                       ...FontMedium,
-                    }}>
+                    }}
+                  >
                     <Text>
                       {
                         'To sign this transaction, open “Polkadot” app on Ledger, hit Refresh and Approve again. For a better experience, re-attach your Polkadot new account using '
@@ -208,7 +267,8 @@ export const SubstrateSignArea = (props: Props) => {
                     </Text>
                     <Text
                       style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
-                      onPress={() => Linking.openURL(genericFAQUrl)}>
+                      onPress={() => Linking.openURL(genericFAQUrl)}
+                    >
                       {'this guide'}
                     </Text>
                   </Text>
@@ -226,11 +286,13 @@ export const SubstrateSignArea = (props: Props) => {
                       lineHeight: theme.fontSize * theme.lineHeight,
                       color: theme.colorTextDescription,
                       ...FontMedium,
-                    }}>
+                    }}
+                  >
                     <Text>{`To sign this transaction, open “Polkadot Migration” app on Ledger, hit Refresh and Approve again. For a better experience, move your assets on ${networkName} network to the Polkadot new account using `}</Text>
                     <Text
                       style={{ color: theme.colorLink, textDecorationLine: 'underline' }}
-                      onPress={() => Linking.openURL(migrationFAQUrl)}>
+                      onPress={() => Linking.openURL(migrationFAQUrl)}
+                    >
                       {'this guide'}
                     </Text>
                   </Text>
@@ -254,12 +316,14 @@ export const SubstrateSignArea = (props: Props) => {
   }, [
     addExtraData,
     chain,
+    isInternal,
     isMessage,
     isMetadataOutdated,
     isMissingData,
     isRuntimeUpdated,
     loadingChain,
     networkName,
+    payloadError,
     signMode,
     theme.colorLink,
     theme.colorTextDescription,
@@ -268,7 +332,19 @@ export const SubstrateSignArea = (props: Props) => {
     theme.padding,
   ]);
 
+  // Multisig approve/execute/cancel extrinsics and any wrapped (proxied) transaction are
+  // signed by an account other than the sender, so the buttons read differently.
+  const isMultisigOrSubstrateProxyTransaction = useMemo(() => {
+    return (!!extrinsicType && MULTISIG_ACTIONS.includes(extrinsicType)) || !!isWrapTransaction;
+  }, [extrinsicType, isWrapTransaction]);
+
+  const isRejectPendingTransaction = extrinsicType === ExtrinsicType.MULTISIG_CANCEL_TX;
+
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
+    if (extrinsicType === ExtrinsicType.MULTISIG_CANCEL_TX) {
+      return XCircleIcon;
+    }
+
     switch (signMode) {
       case AccountSignMode.QR:
         return QrCodeIcon;
@@ -278,7 +354,26 @@ export const SubstrateSignArea = (props: Props) => {
       default:
         return CheckCircleIcon;
     }
-  }, [signMode]);
+  }, [extrinsicType, signMode]);
+
+  const approveLabel = useMemo(() => {
+    switch (extrinsicType) {
+      case ExtrinsicType.MULTISIG_CANCEL_TX:
+        return i18n.multisig.reject;
+      case ExtrinsicType.MULTISIG_EXECUTE_TX:
+        return i18n.multisig.execute;
+      default:
+        return i18n.buttonTitles.approve;
+    }
+  }, [extrinsicType]);
+
+  const cancelButtonContent = useMemo(() => {
+    if (isMultisigOrSubstrateProxyTransaction) {
+      return { icon: ArrowCircleLeftIcon, label: i18n.common.back };
+    }
+
+    return { icon: XCircleIcon, label: i18n.common.cancel };
+  }, [isMultisigOrSubstrateProxyTransaction]);
 
   const onCancel = useCallback(() => {
     setLoading(true);
@@ -325,6 +420,10 @@ export const SubstrateSignArea = (props: Props) => {
   const { onPress: onConfirmPassword } = useUnlockModal(navigation, setLoading, false, true);
 
   const onConfirm = useCallback(() => {
+    if (payloadError) {
+      return;
+    }
+
     if (txExpirationTime) {
       const currentTime = +Date.now();
 
@@ -346,7 +445,17 @@ export const SubstrateSignArea = (props: Props) => {
           setLoading(false);
         });
     }
-  }, [hideAll, onApprovePassword, onCancel, onConfirmPassword, onConfirmQr, show, signMode, txExpirationTime]);
+  }, [
+    hideAll,
+    onApprovePassword,
+    onCancel,
+    onConfirmPassword,
+    onConfirmQr,
+    payloadError,
+    show,
+    signMode,
+    txExpirationTime,
+  ]);
 
   const onSuccess = useCallback(
     (sig: SigData) => {
@@ -429,22 +538,30 @@ export const SubstrateSignArea = (props: Props) => {
       {/*</SwModal>*/}
 
       <ConfirmationFooter>
-        <Button disabled={loading} block icon={getButtonIcon(XCircleIcon)} type={'secondary'} onPress={onCancel}>
-          {i18n.common.cancel}
+        <Button
+          disabled={loading || isPreparingPayload}
+          block
+          icon={getButtonIcon(cancelButtonContent.icon)}
+          type={'secondary'}
+          onPress={onCancel}
+        >
+          {cancelButtonContent.label}
         </Button>
         <Button
           block
           disabled={
             showQuoteExpired ||
-            loadingChain ||
-            hashLoading ||
+            isPreparingPayload ||
             loading ||
+            disableApproval ||
             (isMessage ? !modeCanSignMessage.includes(signMode) : alertData?.type === 'error')
           }
           icon={getButtonIcon(approveIcon)}
-          loading={loading}
-          onPress={onConfirm}>
-          {i18n.buttonTitles.approve}
+          loading={loading || isPreparingPayload}
+          type={isRejectPendingTransaction ? 'danger' : 'primary'}
+          onPress={onConfirm}
+        >
+          {approveLabel}
         </Button>
         {signMode === AccountSignMode.QR && (
           <>

@@ -312,7 +312,7 @@ export const ChangeBittensorValidator = ({
       setIsShowAmountChange(false);
     }
   }, [confirmModal.confirmModalState.visible]);
-  const onPreCheck = usePreCheckAction(from);
+  const onPreCheck = usePreCheckAction(from, true, undefined, chain);
 
   const onChangeNominator = useCallback(
     (nominatorValue: string) => {

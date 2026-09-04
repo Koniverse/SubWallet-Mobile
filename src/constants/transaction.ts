@@ -4,8 +4,10 @@
 import { ExtrinsicType, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { ConfirmationType } from 'stores/base/RequestState';
 import {
+  AddSubstrateProxyAccountParams,
   CancelUnStakeParams,
   ClaimRewardParams,
+  RemoveSubstrateProxyAccountParams,
   EarnParams,
   ExtraExtrinsicType,
   ExtrinsicTypeMobile,
@@ -63,6 +65,13 @@ export const TRANSACTION_TITLE_MAP = (): Record<ExtrinsicTypeMobile, string> => 
   [ExtrinsicType.SWAP]: 'Swap',
   [ExtrinsicType.CLAIM_BRIDGE]: 'Claim tokens',
   [ExtrinsicType.CHANGE_EARNING_VALIDATOR]: 'Change validator',
+  [ExtrinsicType.MULTISIG_APPROVE_TX]: i18n.multisig.multisigTransaction,
+  [ExtrinsicType.MULTISIG_CANCEL_TX]: i18n.multisig.multisigTransaction,
+  [ExtrinsicType.MULTISIG_EXECUTE_TX]: i18n.multisig.multisigTransaction,
+  [ExtrinsicType.MULTISIG_INIT_TX]: i18n.multisig.multisigTransaction,
+  [ExtrinsicType.ADD_SUBSTRATE_PROXY_ACCOUNT]: i18n.substrateProxy.addProxy,
+  [ExtrinsicType.REMOVE_SUBSTRATE_PROXY_ACCOUNT]: i18n.substrateProxy.removeProxy,
+  [ExtrinsicType.SUBSTRATE_PROXY_INIT_TX]: i18n.substrateProxy.proxyInit,
 });
 
 export const ALL_STAKING_ACTIONS: ExtrinsicType[] = [
@@ -155,4 +164,16 @@ export const DEFAULT_SWAP_PARAMS: SwapParams = {
   fromAmount: '',
   fromTokenSlug: '',
   toTokenSlug: '',
+};
+
+export const DEFAULT_ADD_SUBSTRATE_PROXY_ACCOUNT_PARAMS: AddSubstrateProxyAccountParams = {
+  ...DEFAULT_TRANSACTION_PARAMS,
+  substrateProxyAddress: '',
+  substrateProxyType: 'Any',
+};
+
+export const DEFAULT_REMOVE_SUBSTRATE_PROXY_ACCOUNT_PARAMS: RemoveSubstrateProxyAccountParams = {
+  ...DEFAULT_TRANSACTION_PARAMS,
+  selectedSubstrateProxyAccounts: [],
+  isRemoveAll: false,
 };

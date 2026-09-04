@@ -10,6 +10,9 @@ export interface ComponentStyle {
   subTitle: TextStyle;
   description: TextStyle;
   highLight: TextStyle;
+  signerList: ViewStyle;
+  signerListContent: ViewStyle;
+  signerItem: ViewStyle;
 }
 
 export default (theme: ThemeTypes) => {
@@ -53,5 +56,17 @@ export default (theme: ThemeTypes) => {
       textDecorationLine: 'underline',
     },
     noPaddingHorizontal: { paddingHorizontal: 0 },
+    signerList: {
+      width: '100%',
+      flex: 1,
+    },
+    signerListContent: {
+      gap: theme.sizeXS,
+      paddingBottom: theme.padding,
+    },
+    signerItem: {
+      backgroundColor: theme.colorBgSecondary,
+      borderRadius: theme.borderRadiusLG,
+    },
   });
 };

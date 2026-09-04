@@ -6,3 +6,4 @@ export { default as usePreviewYieldPoolInfoByGroup } from './usePreviewYieldPool
 export { default as useYieldPositionDetail } from './useYieldPositionDetail';
 export { default as useYieldRewardTotal } from './useYieldRewardTotal';
 export { default as useCreateGetSubnetStakingTokenName } from './useCreateGetSubnetStakingTokenName';
+export { default as useGetSubnetPoolPositionDetailByNetuid } from './useGetSubnetPoolPositionDetailByNetuid';

@@ -19,3 +19,6 @@ export const IMPORT_TOKEN = 'import.token';
 export const CLAIM_AVAIL_BRIDGE_TRANSACTION = 'transaction.claim-avail-bridge';
 
 export const IS_SHOW_TON_CONTRACT_VERSION_WARNING = 'account.is-show-ton-contract-version-warning';
+
+export const CURRENT_CHAIN_SUBSTRATE_PROXY = 'substrateProxy.current-chain-management';
+export const NOTI_MULTISIG_PENDINGTX_ID = 'notification.multisig-pending-tx-id';

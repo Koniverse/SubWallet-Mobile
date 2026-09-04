@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { _AssetRef, _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
+import { _AssetRef, _AssetType, _ChainInfo, _ChainStatus } from '@subwallet/chain-list/types';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import {
   _getAssetDecimals,
@@ -12,18 +12,23 @@ import {
   _getEvmChainId,
   _getMultiChainAsset,
   _getOriginChainOfAsset,
-  _isChainBitcoinCompatible,
-  _isChainCardanoCompatible,
-  _isChainEvmCompatible,
+  _getTokenMinAmount,
+  _isChainCompatibleLedgerEvm,
   _isNativeToken,
   _isTokenTransferredByEvm,
 } from '@subwallet/extension-base/services/chain-service/utils';
+import { _BALANCE_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
-import { _reformatAddressWithChain, addLazy, removeLazy } from '@subwallet/extension-base/utils';
+import {
+  _reformatAddressWithChain,
+  addLazy,
+  isSubstrateEcdsaLedgerAssetSupported,
+  removeLazy,
+} from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
 import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { BN, BN_ZERO } from '@polkadot/util';
-import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { isAddress } from '@polkadot/util-crypto';
 import { SendFundProps } from 'routes/transaction/transactionAction';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -38,7 +43,7 @@ import {
   saveRecentAccount,
   subscribeMaxTransfer,
 } from 'messaging/index';
-import { findAccountByAddress } from 'utils/index';
+import { findAccountByAddress, getSignModeByAccountProxy } from 'utils/index';
 import { formatBalance } from 'utils/number';
 import { TokenItemType, TokenSelector, TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { isAccountAll } from 'utils/accountAll';
@@ -56,6 +61,7 @@ import { AccountSelectField } from 'components/Field/AccountSelect';
 import i18n from 'utils/i18n/i18n';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { InputAddress } from 'components/Input/InputAddress';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { NetworkField } from 'components/Field/Network';
 import { Button, Divider, Icon, PageIcon, Typography } from 'components/design-system-ui';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
@@ -90,8 +96,10 @@ import useFetchChainAssetInfo from 'hooks/screen/useFetchChainAssetInfo';
 import useGetConfirmationByScreen from 'hooks/static-content/useGetConfirmationByScreen';
 import { GlobalModalContext } from 'providers/GlobalModalContext';
 import {
+  AccountChainType,
   AccountProxy,
   AccountProxyType,
+  AccountSignMode,
   BasicTxWarningCode,
   FeeChainType,
   TransactionFee,
@@ -103,11 +111,8 @@ import { validateRecipientAddress } from 'utils/core/logic-validation/recipientA
 import { TON_CHAINS } from '@subwallet/extension-base/services/earning-service/constants';
 import { FreeBalance } from '../parts/FreeBalance';
 import { isAvailChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/availBridge';
-import { _isPolygonChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/polygonBridge';
-import {
-  _isPosChainBridge,
-  _isPosChainL2Bridge,
-} from '@subwallet/extension-base/services/balance-service/transfer/xcm/posBridge';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
+import { _isPosChainL2Bridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/posBridge';
 import { FeeEditor } from 'components/Modal/TransactionFee';
 import { ResponseSubscribeTransfer } from '@subwallet/extension-base/types/balance/transfer';
 import { TokenHasBalanceInfo } from '@subwallet/extension-base/services/fee-service/interfaces';
@@ -118,13 +123,21 @@ import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash'
 import { _isAcrossChainBridge } from '@subwallet/extension-base/services/balance-service/transfer/xcm/acrossBridge';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
-import useCoreCreateGetChainSlugsByAccountProxy from 'hooks/chain/useCoreCreateGetChainSlugsByAccountProxy';
+import useCreateGetChainAndExcludedTokenByAccountProxy from 'hooks/chain/useCreateGetChainAndExcludedTokenByAccountProxy';
 import { TransactionWarning } from '@subwallet/extension-base/background/warnings/TransactionWarning';
+import { shouldHideMaxButton } from 'utils/transaction/maxTransfer';
+import useDebouncedValue from 'hooks/common/useDebouncedValue';
+import { useGetSubnetPoolPositionDetailByNetuid } from 'hooks/earning';
+import { AlphaTokenBalance, AlphaTokenTransferSection } from 'screens/Transaction/parts/AlphaTokenTransferSection';
+import { NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { SubnetYieldPositionInfo } from '@subwallet/extension-base/types';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
   destChain: string;
   value: string;
+  fromValidator?: string;
+  toValidator?: string;
 }
 
 interface Props {
@@ -158,10 +171,12 @@ function getTokenAvailableDestinations(
     if (xcmRef.srcAsset === tokenSlug) {
       const destinationChain = chainInfoMap[xcmRef.destChain];
 
-      result.push({
-        name: destinationChain.name,
-        slug: destinationChain.slug,
-      });
+      if (destinationChain?.chainStatus === _ChainStatus.ACTIVE) {
+        result.push({
+          name: destinationChain.name,
+          slug: destinationChain.slug,
+        });
+      }
     }
   });
 
@@ -183,7 +198,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
 
   const {
     title,
-    form: { setValue, resetField, clearErrors, getValues, control, handleSubmit, trigger, setFocus },
+    form: { setValue, resetField, clearErrors, setError, getValues, control, handleSubmit, trigger, setFocus },
     onChangeFromValue: setFrom,
     onChangeAssetValue: setAsset,
     onChangeChainValue: setChain,
@@ -205,10 +220,14 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     to: toValue,
     destChain: destChainValue,
     value: transferAmount,
+    fromValidator,
+    toValidator,
   } = {
     ...useWatch<TransferFormValues>({ control }),
     ...getValues(),
   };
+  // Only query fee info when the user stops typing, like the extension does
+  const debouncedTransferAmount = useDebouncedValue(transferAmount, 600);
   const scrollViewRef = useRef<ScrollView>(null);
   const { chainInfoMap, ledgerGenericAllowNetworks, priorityTokens, chainStateMap } = useSelector(
     (root: RootState) => root.chainStore,
@@ -223,6 +242,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     fromValue,
     true,
     'The account you are using is {{accountTitle}}, you cannot send assets with it',
+    chainValue,
   );
   const [loading, setLoading] = useState(false);
   const [isTransferAll, setIsTransferAll] = useState(false);
@@ -233,7 +253,9 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const [transferInfo, setTransferInfo] = useState<ResponseSubscribeTransfer | undefined>();
   const [isFetchingInfo, setIsFetchingInfo] = useState(false);
   const [isFetchingListFeeToken, setIsFetchingListFeeToken] = useState(false);
+  const [isFetchingPoolTargets, setIsFetchingPoolTargets] = useState(false);
   const estimatedNativeFee = useMemo((): string => transferInfo?.feeOptions.estimatedFee || '0', [transferInfo]);
+  const crossChainFee = useMemo((): string => transferInfo?.feeOptions?.crossChainFee || '0', [transferInfo]);
   const { confirmModal } = useContext(AppModalContext);
   const globalAppModalContext = useContext(GlobalModalContext);
   const assetInfo = useFetchChainAssetInfo(assetValue);
@@ -245,7 +267,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const checkIsPolkadotUnifiedChain = useIsPolkadotUnifiedChain();
   const isShowAddressFormatInfoBox = checkIsPolkadotUnifiedChain(chainValue);
   const getAccountTokenBalance = useGetAccountTokenBalance();
-  const getChainSlugsByAccountProxy = useCoreCreateGetChainSlugsByAccountProxy();
+  const getChainAndExcludedTokenByAccountProxy = useCreateGetChainAndExcludedTokenByAccountProxy();
 
   const currentConfirmations = useMemo(() => {
     if (chainValue && destChainValue) {
@@ -263,6 +285,9 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     if (!chainInfo) {
       return [];
     }
+
+    const isIgnoreSubstrateEcdsaLedger = !assetInfo || !isSubstrateEcdsaLedgerAssetSupported(assetInfo, chainInfo);
+    const isIgnoreEvmLedger = !_isChainCompatibleLedgerEvm(chainInfo);
 
     const result: AccountAddressItemType[] = [];
 
@@ -292,6 +317,18 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
           return;
         }
 
+        const signMode = getSignModeByAccountProxy(ap);
+
+        if (signMode === AccountSignMode.ECDSA_SUBSTRATE_LEDGER && isIgnoreSubstrateEcdsaLedger) {
+          return;
+        }
+
+        if (signMode === AccountSignMode.GENERIC_LEDGER) {
+          if (ap.chainTypes.includes(AccountChainType.ETHEREUM) && isIgnoreEvmLedger) {
+            return;
+          }
+        }
+
         updateResult(ap);
       });
     } else {
@@ -299,7 +336,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     }
 
     return result;
-  }, [accountProxies, chainInfoMap, chainValue, currentAccountProxy, getReformatAddress]);
+  }, [accountProxies, assetInfo, chainInfoMap, chainValue, currentAccountProxy, getReformatAddress]);
 
   const targetAccountProxyIdForGetBalance = useMemo(() => {
     if (!currentAccountProxy) {
@@ -321,7 +358,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     }
 
     const items = (() => {
-      const allowedChains = getChainSlugsByAccountProxy(currentAccountProxy);
+      const { allowedChains, excludedTokens } = getChainAndExcludedTokenByAccountProxy(currentAccountProxy);
       const result: TokenSelectorItemType[] = [];
 
       Object.values(assetRegistry).forEach(chainAsset => {
@@ -331,11 +368,16 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
           return;
         }
 
+        if (excludedTokens.includes(chainAsset.slug)) {
+          return;
+        }
+
         if (!sendFundSlug || chainAsset.slug === sendFundSlug || _getMultiChainAsset(chainAsset) === sendFundSlug) {
           result.push({
             slug: chainAsset.slug,
             name: _getAssetName(chainAsset),
             symbol: _getAssetSymbol(chainAsset),
+            displayName: getAssetDisplayName(chainAsset, _getAssetSymbol(chainAsset)),
             originChain,
           });
         }
@@ -380,7 +422,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     chainStateMap,
     currentAccountProxy,
     getAccountTokenBalance,
-    getChainSlugsByAccountProxy,
+    getChainAndExcludedTokenByAccountProxy,
     priorityTokens,
     sendFundSlug,
     targetAccountProxyIdForGetBalance,
@@ -396,13 +438,45 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     return targetAccount?.accountName || '';
   }, [accountAddressItems, fromValue]);
 
+  const selectedAccount = useGetAccountByAddress(fromValue);
+  const isMultisigAccount = !!selectedAccount?.isMultisig;
+
+  // A multisig account does not pay the network fee itself (the signatory does), so the
+  // spendable amount shown to the user is the balance before fee deduction.
+  const actualMaxTransferable = useMemo(
+    () => (isMultisigAccount ? transferInfo?.maxTransferableWithoutFee : transferInfo?.maxTransferable),
+    [isMultisigAccount, transferInfo?.maxTransferable, transferInfo?.maxTransferableWithoutFee],
+  );
+
+  // Multisig accounts cannot sign XCM, so only the origin chain is offered.
   const destChainItems = useMemo<ChainItemType[]>(() => {
-    return getTokenAvailableDestinations(assetValue, xcmRefMap, chainInfoMap);
-  }, [chainInfoMap, assetValue, xcmRefMap]);
+    const destinations = getTokenAvailableDestinations(assetValue, xcmRefMap, chainInfoMap);
+
+    if (!isMultisigAccount) {
+      return destinations;
+    }
+
+    return destinations.filter(item => item.slug === chainValue);
+  }, [assetValue, chainInfoMap, chainValue, isMultisigAccount, xcmRefMap]);
 
   const currentChainAsset = useMemo(() => {
     return assetValue ? assetRegistry[assetValue] : undefined;
   }, [assetValue, assetRegistry]);
+
+  // `destAssetInfo` is the asset sent to the recipient address. For regular transactions,
+  // the received asset is the same as the sent asset. For XCM transactions,
+  // need to check the `xcmRefMap` channel to get the correct destination asset.
+  const destAssetInfo = useMemo(() => {
+    if (chainValue === destChainValue) {
+      return assetInfo;
+    }
+
+    const destChainXCMAsset = Object.values(xcmRefMap).find(
+      xcm => xcm.destChain === destChainValue && xcm.srcChain === chainValue && xcm.path === 'XCM',
+    );
+
+    return destChainXCMAsset ? assetRegistry[destChainXCMAsset.destAsset] : assetInfo;
+  }, [assetInfo, assetRegistry, chainValue, destChainValue, xcmRefMap]);
 
   const decimals = useMemo(() => {
     return currentChainAsset ? _getAssetDecimals(currentChainAsset) : 0;
@@ -424,24 +498,62 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     }
   }, [chainValue, currentChainAsset, destChainValue]);
 
-  const { nativeTokenBalance, nativeTokenSlug } = useGetBalance(chainValue, fromValue);
+  const {
+    nativeTokenBalance,
+    nativeTokenSlug,
+    isLoading: isNativeBalanceLoading,
+    error: nativeBalanceError,
+  } = useGetBalance(chainValue, fromValue);
 
-  const hideMaxButton = useMemo(() => {
-    const _chainInfo = chainInfoMap[chainValue];
+  const isAlphaTokenTransfer = useMemo(() => {
+    return (
+      _BALANCE_CHAIN_GROUP.bittensor.includes(chainValue) &&
+      !!assetInfo &&
+      !_isNativeToken(assetInfo) &&
+      !!assetInfo?.metadata?.netuid
+    );
+  }, [assetInfo, chainValue]);
 
-    if (_isPolygonChainBridge(chainValue, destChainValue) || _isPosChainBridge(chainValue, destChainValue)) {
-      return true;
+  const netuid = useMemo((): number | undefined => {
+    if (!isAlphaTokenTransfer) {
+      return undefined;
     }
 
-    return (
-      !!_chainInfo &&
-      !!assetInfo &&
-      destChainValue === chainValue &&
-      _isNativeToken(assetInfo) &&
-      (_isChainEvmCompatible(_chainInfo) ||
-        _isChainCardanoCompatible(_chainInfo) ||
-        _isChainBitcoinCompatible(_chainInfo))
-    );
+    return assetInfo?.metadata?.netuid as number | undefined;
+  }, [assetInfo, isAlphaTokenTransfer]);
+
+  const poolPositionDetail = useGetSubnetPoolPositionDetailByNetuid(netuid, fromValue);
+
+  const activePosition = useMemo((): SubnetYieldPositionInfo | undefined => {
+    const positions = poolPositionDetail?.positions;
+
+    if (!positions || !positions.length) {
+      return undefined;
+    }
+
+    return positions.find(p => p.nominations?.length > 0) ?? positions[0];
+  }, [poolPositionDetail?.positions]);
+
+  const alphaNominators = useMemo((): NominationInfo[] => {
+    if (fromValue && activePosition?.nominations?.length) {
+      return activePosition.nominations.filter(n => new BigN(n.activeStake || '0').gt(0));
+    }
+
+    return [];
+  }, [activePosition, fromValue]);
+
+  const bondedValue = useMemo((): string => {
+    return activePosition?.nominations.find(item => item.validatorAddress === fromValidator)?.activeStake || '0';
+  }, [activePosition, fromValidator]);
+
+  const isShowAlphaTokenSection = !!(
+    isAlphaTokenTransfer &&
+    poolPositionDetail?.poolInfo &&
+    poolPositionDetail?.positions?.length
+  );
+
+  const hideMaxButton = useMemo(() => {
+    return shouldHideMaxButton(chainValue, destChainValue, assetInfo, chainInfoMap);
   }, [chainInfoMap, chainValue, assetInfo, destChainValue]);
 
   const disabledToAddressInput = useMemo(() => {
@@ -452,33 +564,39 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     return false;
   }, [chainValue, destChainValue]);
 
+  const validateRecipient = useCallback(
+    async (
+      _recipientAddress: string,
+      { chain, destChain, from }: TransactionFormValues,
+    ): Promise<ValidateResult> => {
+      const destChainInfo = chainInfoMap[destChain];
+      const account = findAccountByAddress(accounts, _recipientAddress);
+      return validateRecipientAddress({
+        srcChain: chain,
+        destChainInfo,
+        assetInfo: destAssetInfo,
+        fromAddress: from,
+        toAddress: _recipientAddress,
+        account,
+        actionType: ActionType.SEND_FUND,
+        autoFormatValue: false,
+        allowLedgerGenerics: ledgerGenericAllowNetworks,
+      });
+    },
+    [accounts, chainInfoMap, destAssetInfo, ledgerGenericAllowNetworks],
+  );
+
   const recipientAddressRules = useMemo(
     () => ({
-      validate: async (
-        _recipientAddress: string,
-        { chain, destChain, from }: TransactionFormValues,
-      ): Promise<ValidateResult> => {
-        const destChainInfo = chainInfoMap[destChain];
-        const account = findAccountByAddress(accounts, _recipientAddress);
-        return validateRecipientAddress({
-          srcChain: chain,
-          destChainInfo,
-          fromAddress: from,
-          toAddress: _recipientAddress,
-          account,
-          actionType: ActionType.SEND_FUND,
-          autoFormatValue: false,
-          allowLedgerGenerics: ledgerGenericAllowNetworks,
-        });
-      },
+      validate: validateRecipient,
     }),
-    [accounts, chainInfoMap, ledgerGenericAllowNetworks],
+    [validateRecipient],
   );
 
   const amountRules = useMemo(
     () => ({
       validate: (amount: string): Promise<ValidateResult> => {
-        const maxTransfer = transferInfo?.maxTransferable || '0';
+        const maxTransfer = (isShowAlphaTokenSection ? bondedValue : actualMaxTransferable) || '0';
 
         if (isInvalidAmountValue(amount)) {
           scrollToBottom();
@@ -509,7 +627,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
         return Promise.resolve(undefined);
       },
     }),
-    [decimals, transferInfo?.maxTransferable],
+    [actualMaxTransferable, bondedValue, decimals, isShowAlphaTokenSection],
   );
 
   const _onChangeFrom = (item: AccountAddressItemType) => {
@@ -519,26 +637,44 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     setForceUpdateMaxValue(undefined);
     setSelectedTransactionFee(undefined);
     setIsTransferAll(false);
+    setValue('fromValidator', '');
+    setValue('toValidator', '');
   };
 
   const _onChangeAsset = (item: TokenItemType) => {
     const chain = assetRegistry[item.slug].originChain;
+    const newHideMaxButton = shouldHideMaxButton(chain, chain, assetRegistry[item.slug], chainInfoMap);
     setAsset(item.slug);
     setValue('to', '');
     clearErrors('to');
     setValue('destChain', item.originChain);
     tokenSelectorRef?.current?.onCloseModal();
-    setForceUpdateMaxValue(undefined);
+    setForceUpdateMaxValue(newHideMaxButton && isTransferAll ? { value: null } : undefined);
     setCurrentTokenPayFee(chainValue === chain ? defaultTokenPayFee : undefined);
-    setIsTransferAll(false);
+    if (newHideMaxButton && isTransferAll) {
+      resetField('value');
+      setIsTransferAll(false);
+    }
     setSelectedTransactionFee(undefined);
+    setTransferInfo(undefined);
+    setValue('fromValidator', '');
+    setValue('toValidator', '');
   };
 
   const _onChangeDestChain = (item: ChainInfo) => {
+    const newHideMaxButton = shouldHideMaxButton(chainValue, item.slug, assetInfo, chainInfoMap);
     setValue('to', '');
     clearErrors('to');
     setValue('destChain', item.slug);
     chainSelectorRef?.current?.onCloseModal();
+    setCurrentTokenPayFee(defaultTokenPayFee);
+    setSelectedTransactionFee(undefined);
+
+    if (newHideMaxButton && isTransferAll) {
+      resetField('value');
+      setForceUpdateMaxValue({ value: null });
+      setIsTransferAll(false);
+    }
   };
 
   const onSubheaderPressBack = useCallback(() => {
@@ -572,28 +708,17 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
         return true;
       }
 
-      const isLedger = !!account.isHardware;
-      const isEthereum = isEthereumAddress(account.address);
       const chainAsset = assetRegistry[asset];
 
       if (chain === destChain) {
-        if (isLedger) {
-          if (isEthereum) {
-            if (!_isTokenTransferredByEvm(chainAsset)) {
-              setLoading(false);
-              hideAll();
-              show('Ledger does not support transfer for this token', { type: 'warning' });
+        if (account.signMode === AccountSignMode.GENERIC_LEDGER && account.chainType === AccountChainType.ETHEREUM) {
+          if (!_isTokenTransferredByEvm(chainAsset)) {
+            setLoading(false);
+            hideAll();
+            show('Ledger does not support transfer for this token', { type: 'warning' });
 
-              return true;
-            }
+            return true;
           }
-        }
-      } else {
-        if (isLedger) {
-          setLoading(false);
-          hideAll();
-          show('This feature is not available for Ledger account', { type: 'warning' });
-          return true;
         }
       }
 
@@ -604,7 +729,16 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
 
   const handleBasicSubmit = useCallback(
     (values: TransferFormValues): Promise<SWTransactionResponse> => {
-      const { asset, chain, destChain, from: _from, to, value } = values;
+      const {
+        asset,
+        chain,
+        destChain,
+        from: _from,
+        fromValidator: _fromValidator,
+        to,
+        toValidator: _toValidator,
+        value,
+      } = values;
 
       let sendPromise: Promise<SWTransactionResponse>;
       const from = _from;
@@ -622,6 +756,17 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
           feeOption: selectedTransactionFee?.feeOption,
           feeCustom: selectedTransactionFee?.feeCustom,
           tokenPayFeeSlug: currentTokenPayFee,
+          maxTransferableWithoutFee: transferInfo?.maxTransferableWithoutFee,
+          maxTransferable: transferInfo?.maxTransferable,
+          ...(!!netuid && !!_fromValidator && !!_toValidator
+            ? {
+                metadata: {
+                  netuid,
+                  fromValidator: _fromValidator,
+                  toValidator: _toValidator,
+                },
+              }
+            : {}),
         });
       } else {
         // Make cross chain transfer
@@ -646,8 +791,11 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
       currentTokenPayFee,
       isTransferAll,
       isTransferBounceable,
+      netuid,
       selectedTransactionFee?.feeCustom,
       selectedTransactionFee?.feeOption,
+      transferInfo?.maxTransferable,
+      transferInfo?.maxTransferableWithoutFee,
     ],
   );
 
@@ -693,11 +841,11 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   const handleWarning = useCallback(
     (warnings: TransactionWarning[]) => {
       if (warnings.some(w => w.warningType === BasicTxWarningCode.NOT_ENOUGH_EXISTENTIAL_DEPOSIT)) {
-        setForceUpdateMaxValue({ value: transferInfo?.maxTransferable || '0' });
+        setForceUpdateMaxValue({ value: actualMaxTransferable || '0' });
         setIsTransferAll(true);
       }
     },
-    [transferInfo?.maxTransferable],
+    [actualMaxTransferable],
   );
 
   const { onError, onSuccess } = useHandleSubmitMultiTransaction(
@@ -781,14 +929,16 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   );
 
   const onSetMaxTransferable = useCallback(() => {
+    const maxTransfer = (isShowAlphaTokenSection ? bondedValue : actualMaxTransferable) || '0';
+
     setFocus('value');
-    setForceUpdateMaxValue({ value: transferInfo?.maxTransferable || '0' });
-    const bnMaxTransfer = new BN(transferInfo?.maxTransferable || '0');
+    setForceUpdateMaxValue({ value: maxTransfer });
+    const bnMaxTransfer = new BN(maxTransfer);
 
     if (!bnMaxTransfer.isZero()) {
       setIsTransferAll(true);
     }
-  }, [setFocus, transferInfo?.maxTransferable]);
+  }, [actualMaxTransferable, bondedValue, isShowAlphaTokenSection, setFocus]);
 
   const onSetTokenPayFee = useCallback(
     (slug: string) => {
@@ -797,39 +947,92 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     [setCurrentTokenPayFee],
   );
 
+  const onChangeFromValidator = useCallback(
+    (value: string) => {
+      setValue('fromValidator', value);
+      resetField('value');
+      setForceUpdateMaxValue({ value: null });
+      setIsTransferAll(false);
+    },
+    [resetField, setValue],
+  );
+
+  const onChangeToValidator = useCallback(
+    (value: string) => {
+      setValue('toValidator', value);
+    },
+    [setValue],
+  );
+
   const onSubmit = useCallback(
     async (values: TransferFormValues) => {
       Keyboard.dismiss();
 
-      if (chainValue !== destChainValue) {
-        const originChainInfo = chainInfoMap[chainValue];
-        const destChainInfo = chainInfoMap[destChainValue];
-        const assetSlug = values.asset;
-        const isMythosFromHydrationToMythos = _isMythosFromHydrationToMythos(originChainInfo, destChainInfo, assetSlug);
+      let checkTransferAll = false;
 
-        if (_isXcmTransferUnstable(originChainInfo, destChainInfo, assetSlug)) {
-          confirmModal.setConfirmModal({
-            visible: true,
-            title: isMythosFromHydrationToMythos ? 'High fee alert!' : 'Pay attention!', // TODO: i18n
-            message: _getXcmUnstableWarning(originChainInfo, destChainInfo, assetSlug),
-            completeBtnTitle: 'Continue',
-            customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
-            onCompleteModal: () => {
-              doSubmit(values);
-              confirmModal.hideConfirmModal();
-            },
-            onCancelModal: () => {
-              setLoading(false);
-              confirmModal.hideConfirmModal();
-            },
-          });
-          return;
+      const _doSubmit = () => {
+        if (chainValue !== destChainValue) {
+          const originChainInfo = chainInfoMap[chainValue];
+          const destChainInfo = chainInfoMap[destChainValue];
+          const assetSlug = values.asset;
+          const isMythosFromHydrationToMythos = _isMythosFromHydrationToMythos(
+            originChainInfo,
+            destChainInfo,
+            assetSlug,
+          );
+
+          if (_isXcmTransferUnstable(originChainInfo, destChainInfo, assetSlug)) {
+            confirmModal.setConfirmModal({
+              visible: true,
+              title: isMythosFromHydrationToMythos ? 'High fee alert!' : 'Pay attention!', // TODO: i18n
+              message: _getXcmUnstableWarning(originChainInfo, destChainInfo, assetSlug),
+              completeBtnTitle: 'Continue',
+              customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
+              onCompleteModal: () => {
+                doSubmit(values);
+                confirmModal.hideConfirmModal();
+              },
+              onCancelModal: () => {
+                setLoading(false);
+                confirmModal.hideConfirmModal();
+              },
+            });
+
+            return;
+          }
         }
-      }
 
-      doSubmit(values);
+        if (assetInfo && _isNativeToken(assetInfo)) {
+          const bnMinAmount = new BN(_getTokenMinAmount(assetInfo));
+
+          if (bnMinAmount.gt(BN_ZERO) && isTransferAll && values.chain === values.destChain && !checkTransferAll) {
+            confirmModal.setConfirmModal({
+              visible: true,
+              title: i18n.warningTitle.payAttention,
+              message: i18n.warningMessage.transferAllWarningMessage,
+              completeBtnTitle: i18n.buttonTitles.transfer,
+              customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
+              onCompleteModal: () => {
+                checkTransferAll = true;
+                confirmModal.hideConfirmModal();
+                _doSubmit();
+              },
+              onCancelModal: () => {
+                setLoading(false);
+                confirmModal.hideConfirmModal();
+              },
+            });
+
+            return;
+          }
+        }
+
+        doSubmit(values);
+      };
+
+      _doSubmit();
     },
-    [doSubmit, chainValue, destChainValue, chainInfoMap, confirmModal, theme.colorWarning],
+    [chainValue, destChainValue, assetInfo, isTransferAll, chainInfoMap, confirmModal, theme.colorWarning, doSubmit],
   );
 
   const onPressNextStep = useCallback(async () => {
@@ -889,8 +1092,24 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
   ]);
 
   const onPressSubmit = useCallback(
-    (values: TransferFormValues) => {
+    async (values: TransferFormValues) => {
       Keyboard.dismiss();
+
+      // The recipient field only exists on step 1, and react-hook-form skips validation for
+      // unmounted fields — so handleSubmit would never re-check `to`. Anything that rewrote it
+      // after step 1 (a late domain resolution, for instance) has to be caught here.
+      const recipientError = await validateRecipient(values.to, values);
+
+      if (recipientError) {
+        setViewStep(1);
+        setError('to', {
+          type: 'validate',
+          message: typeof recipientError === 'string' ? recipientError : i18n.errorMessage.invalidAddress,
+        });
+
+        return;
+      }
+
       setTimeout(() => {
         if (currentConfirmations && currentConfirmations.length) {
           globalAppModalContext.setGlobalModal({
@@ -908,14 +1127,27 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
         }
       }, 100);
     },
-    [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons],
+    [currentConfirmations, globalAppModalContext, onSubmit, renderConfirmationButtons, setError, validateRecipient],
   );
 
   const isNextButtonDisable = (() => {
-    return !isBalanceReady || loading || (isTransferAll ? isFetchingInfo : false);
+    return (
+      !isBalanceReady ||
+      loading ||
+      (isTransferAll ? isFetchingInfo : false) ||
+      (isShowAlphaTokenSection && (!fromValidator || !toValidator || isFetchingPoolTargets))
+    );
   })();
 
-  const isDataReady = !isFetchingInfo && !isFetchingListFeeToken && !!transferInfo?.feeOptions;
+  // The fee info in state still belongs to the previous amount until the debounced value catches up
+  const isFeeInfoOutdated = transferAmount !== debouncedTransferAmount;
+  const isLoadingFeeInfo = isFetchingInfo || isFeeInfoOutdated;
+
+  const isDataReady =
+    !isLoadingFeeInfo &&
+    !isFetchingListFeeToken &&
+    !!transferInfo?.feeOptions &&
+    (!isAlphaTokenTransfer || !isFetchingPoolTargets);
 
   const isSubmitButtonDisable = (() => {
     return (
@@ -1059,19 +1291,28 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
       }
     };
 
-    if (fromValue && assetValue) {
+    if (fromValue && assetValue && (!isAlphaTokenTransfer || !!(fromValidator && toValidator))) {
       subscribeMaxTransfer(
         {
           address: fromValue,
           to: toValue,
           chain: assetRegistry[assetValue].originChain,
           token: assetValue,
-          value: transferAmount,
+          value: debouncedTransferAmount,
           destChain: destChainValue,
           feeOption: selectedTransactionFee?.feeOption,
           feeCustom: selectedTransactionFee?.feeCustom,
           tokenPayFeeSlug: currentTokenPayFee,
           transferAll: isTransferAll,
+          ...(!!netuid && !!fromValidator && !!toValidator
+            ? {
+                metadata: {
+                  netuid,
+                  fromValidator,
+                  toValidator,
+                },
+              }
+            : {}),
         },
         callback,
       )
@@ -1095,26 +1336,36 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     assetRegistry,
     assetValue,
     currentTokenPayFee,
+    debouncedTransferAmount,
     destChainValue,
+    fromValidator,
     fromValue,
     getValues,
+    isAlphaTokenTransfer,
     isTransferAll,
     nativeTokenSlug,
+    netuid,
     selectedTransactionFee?.feeCustom,
     selectedTransactionFee?.feeOption,
+    toValidator,
     toValue,
-    transferAmount,
     trigger,
   ]);
 
   useEffect(() => {
+    if (isTransferAll && actualMaxTransferable && !hideMaxButton && !isAlphaTokenTransfer) {
+      setForceUpdateMaxValue({ value: actualMaxTransferable });
+    }
+  }, [actualMaxTransferable, hideMaxButton, isAlphaTokenTransfer, isTransferAll]);
+
+  useEffect(() => {
     const bnTransferAmount = new BN(isInvalidAmountValue(transferAmount) ? '0' : transferAmount || '0');
-    const bnMaxTransfer = new BN(transferInfo?.maxTransferable || '0');
+    const bnMaxTransfer = new BN(actualMaxTransferable || '0');
 
     if (bnTransferAmount.gt(BN_ZERO) && bnTransferAmount.eq(bnMaxTransfer)) {
       setIsTransferAll(true);
     }
-  }, [transferAmount, transferInfo?.maxTransferable]);
+  }, [actualMaxTransferable, transferAmount]);
 
   //TODO re-check and remove this useEffect
   useEffect(() => {
@@ -1139,7 +1390,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
 
   useEffect(() => {
     getOptimalTransferProcess({
-      amount: transferAmount,
+      amount: debouncedTransferAmount,
       address: fromValue,
       originChain: chainValue,
       tokenSlug: assetValue,
@@ -1157,7 +1408,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
       .catch(e => {
         console.log('error', e);
       });
-  }, [assetValue, chainValue, destChainValue, fromValue, transferAmount]);
+  }, [assetValue, chainValue, debouncedTransferAmount, destChainValue, fromValue]);
 
   useEffect(() => {
     if (disabledToAddressInput) {
@@ -1165,6 +1416,23 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
       // TODO: update this useEffect when update autocomplete
     }
   }, [disabledToAddressInput, fromValue, setValue]);
+
+  // Select the first validator that has stake by default for alpha token transfer
+  useEffect(() => {
+    if (!isShowAlphaTokenSection) {
+      return;
+    }
+
+    if (!fromValidator || !alphaNominators.some(n => n.validatorAddress === fromValidator)) {
+      setValue('fromValidator', alphaNominators[0]?.validatorAddress || '');
+    }
+  }, [alphaNominators, fromValidator, isShowAlphaTokenSection, setValue]);
+
+  useEffect(() => {
+    if (isShowAlphaTokenSection) {
+      setIsBalanceReady(!isNativeBalanceLoading && !nativeBalanceError);
+    }
+  }, [isNativeBalanceLoading, isShowAlphaTokenSection, nativeBalanceError]);
 
   useEffect(() => {
     let cancel = false;
@@ -1207,9 +1475,16 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     };
   }, [chainValue, fromValue, nativeTokenSlug, nativeTokenBalance]);
 
+  // A multisig account does not pay the network fee itself — the signatory does — so editing it here
+  // would be discarded.
   const isShowFeeEditor = useMemo(
-    () => FEE_SHOW_TYPES.includes(transferInfo?.feeType) && !!toValue && !!transferAmount && !!nativeTokenSlug,
-    [nativeTokenSlug, toValue, transferAmount, transferInfo?.feeType],
+    () =>
+      FEE_SHOW_TYPES.includes(transferInfo?.feeType) &&
+      !!toValue &&
+      !!transferAmount &&
+      !!nativeTokenSlug &&
+      !isMultisigAccount,
+    [isMultisigAccount, nativeTokenSlug, toValue, transferAmount, transferInfo?.feeType],
   );
 
   const scrollToBottom = () => {
@@ -1366,6 +1641,21 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                     )}
                     name="to"
                   />
+
+                  {isShowAlphaTokenSection && poolPositionDetail?.poolInfo && (
+                    <AlphaTokenTransferSection
+                      chainValue={chainValue}
+                      fromValue={fromValue}
+                      poolInfo={poolPositionDetail.poolInfo}
+                      nominators={alphaNominators}
+                      fromValidator={fromValidator}
+                      toValidator={toValidator}
+                      onChangeFromValidator={onChangeFromValidator}
+                      onChangeToValidator={onChangeToValidator}
+                      setTargetLoading={setIsFetchingPoolTargets}
+                      disabled={loading}
+                    />
+                  )}
                 </>
               )}
 
@@ -1375,15 +1665,26 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                 </View>
               ) : (
                 <View style={stylesheet.balanceWrapper}>
-                  <FreeBalance
-                    address={fromValue}
-                    chain={chainValue}
-                    tokenSlug={assetValue}
-                    extrinsicType={extrinsicType}
-                    label={`${i18n.inputLabel.availableBalance}`}
-                    style={stylesheet.balance}
-                    onBalanceReady={setIsBalanceReady}
-                  />
+                  {isShowAlphaTokenSection ? (
+                    <AlphaTokenBalance
+                      bondedValue={bondedValue}
+                      decimals={decimals}
+                      symbol={currentChainAsset?.symbol || ''}
+                      nativeTokenBalance={nativeTokenBalance}
+                      isLoading={isNativeBalanceLoading}
+                      error={nativeBalanceError}
+                    />
+                  ) : (
+                    <FreeBalance
+                      address={fromValue}
+                      chain={chainValue}
+                      tokenSlug={assetValue}
+                      extrinsicType={extrinsicType}
+                      label={`${i18n.inputLabel.availableBalance}`}
+                      style={stylesheet.balance}
+                      onBalanceReady={setIsBalanceReady}
+                    />
+                  )}
 
                   {chainValue !== destChainValue && (
                     <AlertBox
@@ -1411,15 +1712,28 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                   <View style={stylesheet.footerBalanceWrapper}>
                     <Divider />
                     <View style={{ flexDirection: 'row', paddingBottom: isShowFeeEditor ? 0 : theme.padding }}>
-                      <FreeBalance
-                        address={fromValue}
-                        chain={chainValue}
-                        tokenSlug={assetValue}
-                        extrinsicType={extrinsicType}
-                        label={`${i18n.inputLabel.availableBalance}`}
-                        style={stylesheet.balanceStep2}
-                        onBalanceReady={setIsBalanceReady}
-                      />
+                      {isShowAlphaTokenSection ? (
+                        <View style={stylesheet.balanceStep2}>
+                          <AlphaTokenBalance
+                            bondedValue={bondedValue}
+                            decimals={decimals}
+                            symbol={currentChainAsset?.symbol || ''}
+                            nativeTokenBalance={nativeTokenBalance}
+                            isLoading={isNativeBalanceLoading}
+                            error={nativeBalanceError}
+                          />
+                        </View>
+                      ) : (
+                        <FreeBalance
+                          address={fromValue}
+                          chain={chainValue}
+                          tokenSlug={assetValue}
+                          extrinsicType={extrinsicType}
+                          label={`${i18n.inputLabel.availableBalance}`}
+                          style={stylesheet.balanceStep2}
+                          onBalanceReady={setIsBalanceReady}
+                        />
+                      )}
 
                       {viewStep === 2 && !hideMaxButton && (
                         <TouchableOpacity onPress={onSetMaxTransferable} style={stylesheet.max}>
@@ -1432,16 +1746,18 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                         {FEE_SHOW_TYPES.includes(transferInfo?.feeType) &&
                           !!toValue &&
                           !!transferAmount &&
-                          !!nativeTokenSlug && (
+                          !!nativeTokenSlug &&
+                          !isMultisigAccount && (
                             <FeeEditor
                               chainValue={chainValue}
+                              crossChainFee={crossChainFee}
                               currentTokenPayFee={currentTokenPayFee}
                               destChainValue={destChainValue}
                               estimateFee={estimatedNativeFee}
                               feeOptionsInfo={transferInfo?.feeOptions}
                               feePercentageSpecialCase={transferInfo?.feePercentageSpecialCase}
                               feeType={transferInfo?.feeType}
-                              isLoadingFee={isFetchingInfo}
+                              isLoadingFee={isLoadingFeeInfo}
                               isLoadingToken={isFetchingListFeeToken}
                               listTokensCanPayFee={listTokensCanPayFee}
                               nativeTokenSlug={nativeTokenSlug}
@@ -1458,10 +1774,10 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                   <Button
                     disabled={isSubmitButtonDisable}
                     loading={loading}
-                    type={undefined}
+                    type={isTransferAll ? 'warning' : undefined}
                     onPress={checkAction(handleSubmit(onPressSubmit), extrinsicType)}
                     icon={getButtonIcon(PaperPlaneTiltIcon)}>
-                    {i18n.buttonTitles.transfer}
+                    {isTransferAll ? i18n.buttonTitles.transferAll : i18n.buttonTitles.transfer}
                   </Button>
                 </>
               )}

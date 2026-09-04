@@ -93,6 +93,7 @@ export const AccountSelector = ({
     const result: AccountAddressItemExtraType[] = [];
     const masterAccounts: AccountAddressItemExtraType[] = [];
     const qrSignerAccounts: AccountAddressItemExtraType[] = [];
+    const multisigAccounts: AccountAddressItemExtraType[] = [];
     const watchOnlyAccounts: AccountAddressItemExtraType[] = [];
     const ledgerAccounts: AccountAddressItemExtraType[] = [];
     const injectedAccounts: AccountAddressItemExtraType[] = [];
@@ -109,6 +110,8 @@ export const AccountSelector = ({
         masterAccounts.push({ ...ap, group: AccountGroupType.MASTER_ACCOUNT });
       } else if (ap.accountProxyType === AccountProxyType.QR) {
         qrSignerAccounts.push({ ...ap, group: AccountGroupType.QR });
+      } else if (ap.accountProxyType === AccountProxyType.MULTISIG) {
+        multisigAccounts.push({ ...ap, group: AccountGroupType.MULTISIG });
       } else if (ap.accountProxyType === AccountProxyType.READ_ONLY) {
         watchOnlyAccounts.push({ ...ap, group: AccountGroupType.READ_ONLY });
       } else if (ap.accountProxyType === AccountProxyType.LEDGER) {
@@ -122,6 +125,10 @@ export const AccountSelector = ({
 
     if (masterAccounts.length) {
       result.push(...masterAccounts);
+    }
+
+    if (multisigAccounts.length) {
+      result.push(...multisigAccounts);
     }
 
     if (qrSignerAccounts.length) {

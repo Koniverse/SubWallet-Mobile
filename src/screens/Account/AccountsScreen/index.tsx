@@ -33,6 +33,7 @@ export enum AccountGroupType {
   ALL_ACCOUNT = 'all',
   MASTER_ACCOUNT = 'master_account',
   QR = 'qr',
+  MULTISIG = 'multisig',
   LEDGER = 'ledger',
   READ_ONLY = 'readonly',
   INJECTED = 'injected',
@@ -43,6 +44,7 @@ export const AccountGroupLabel: Record<AccountGroupType, string> = {
   [AccountGroupType.ALL_ACCOUNT]: 'All account',
   [AccountGroupType.MASTER_ACCOUNT]: 'Master account',
   [AccountGroupType.QR]: 'QR signer account',
+  [AccountGroupType.MULTISIG]: i18n.multisig.multisigAccount,
   [AccountProxyType.LEDGER]: 'Ledger account',
   [AccountProxyType.READ_ONLY]: 'Watch-only account',
   [AccountProxyType.INJECTED]: 'Injected account',
@@ -155,6 +157,7 @@ export const AccountsScreen = ({
     const result: AccountProxyItem[] = [];
     const masterAccounts: AccountProxyItem[] = [];
     const qrSignerAccounts: AccountProxyItem[] = [];
+    const multisigAccounts: AccountProxyItem[] = [];
     const watchOnlyAccounts: AccountProxyItem[] = [];
     const ledgerAccounts: AccountProxyItem[] = [];
     const injectedAccounts: AccountProxyItem[] = [];
@@ -171,6 +174,8 @@ export const AccountsScreen = ({
         masterAccounts.push({ ...ap, group: AccountGroupType.MASTER_ACCOUNT });
       } else if (ap.accountType === AccountProxyType.QR) {
         qrSignerAccounts.push({ ...ap, group: AccountGroupType.QR });
+      } else if (ap.accountType === AccountProxyType.MULTISIG) {
+        multisigAccounts.push({ ...ap, group: AccountGroupType.MULTISIG });
       } else if (ap.accountType === AccountProxyType.READ_ONLY) {
         watchOnlyAccounts.push({ ...ap, group: AccountGroupType.READ_ONLY });
       } else if (ap.accountType === AccountProxyType.LEDGER) {
@@ -190,6 +195,10 @@ export const AccountsScreen = ({
       result.push(...qrSignerAccounts);
     }
 
+    if (multisigAccounts.length) {
+      result.push(...multisigAccounts);
+    }
+
     if (watchOnlyAccounts.length) {
       result.push(...watchOnlyAccounts);
     }
@@ -199,7 +208,7 @@ export const AccountsScreen = ({
     }
 
     if (injectedAccounts.length) {
-      result.push(...ledgerAccounts);
+      result.push(...injectedAccounts);
     }
 
     if (unknownAccounts.length) {

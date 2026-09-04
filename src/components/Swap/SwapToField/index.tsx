@@ -14,6 +14,7 @@ import { FontSemiBold } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { OptionType } from 'components/common/FilterModal';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 
 interface Props {
   tokenSelectorItems: TokenItemType[];
@@ -145,7 +146,7 @@ export const SwapToField = ({
                 style={{ marginBottom: 0, marginLeft: 4 }}
                 logoKey={assetValue}
                 subLogoKey={chainValue}
-                value={toAsset?.symbol}
+                value={getAssetDisplayName(toAsset, toAsset?.symbol)}
                 subValue={chainName}
                 showIcon
               />

@@ -25,7 +25,7 @@ function checkValidateForm(isValidated: Record<string, boolean>) {
 
 const CreateMasterPassword = ({
   route: {
-    params: { pathName, state },
+    params: { pathName, state, screenParams },
   },
 }: CreatePasswordProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -60,6 +60,11 @@ const CreateMasterPassword = ({
         routes: [{ name: 'Home' }, { name: pathName, params: { keyTypes: state as KeypairType[] } }],
       });
     } else if (pathName === 'MigratePassword') {
+    } else if (pathName === 'ImportSecretPhrase') {
+      navigation.reset({
+        index: 1,
+        routes: [{ name: 'Home' }, { name: pathName, params: screenParams }],
+      });
     } else {
       navigation.reset({
         index: 1,

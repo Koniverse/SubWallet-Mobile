@@ -1,10 +1,10 @@
 import { Dimensions, Platform } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { getBrand } from 'react-native-device-info';
-import env from 'react-native-config';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
 import { KeypairType } from '@subwallet/keyring/types';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { MnemonicType } from '@subwallet/extension-base/types';
 
 type DeviceInfo = {
   isIos: boolean;
@@ -49,6 +49,8 @@ export const SUBSTRATE_ACCOUNT_TYPE: KeypairType = 'sr25519';
 export const EVM_ACCOUNT_TYPE: KeypairType = 'ethereum';
 export const TON_ACCOUNT_TYPE: KeypairType = 'ton';
 export const DEFAULT_ACCOUNT_TYPES: KeypairType[] = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
+export const DEFAULT_MNEMONIC_TYPE: MnemonicType = 'general';
+export const TRUST_WALLET_MNEMONIC_TYPE: MnemonicType = 'trust-wallet';
 const window = Dimensions.get('window');
 export const deviceWidth = window.width;
 export const deviceHeight = window.height;
@@ -67,7 +69,7 @@ export const DEVICE: DeviceInfo = {
   height: deviceHeight,
 };
 export const ALL_KEY = 'all';
-export const isDevMode = !!env.DEBUG;
+export { isDevModeAvailable } from './devMode';
 export const regex: RegexType = {
   httpProtocol: /^http:\/\//,
 };

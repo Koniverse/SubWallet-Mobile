@@ -8,6 +8,7 @@ import { RootState } from 'stores/index';
 import { TokenSelectorItemType } from 'components/Modal/common/TokenSelector';
 import { _ChainAsset, _ChainStatus } from '@subwallet/chain-list/types';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import { _BALANCE_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import {
   _getAssetDecimals,
   _getAssetOriginChain,
@@ -18,6 +19,7 @@ import {
   _isAssetFungibleToken,
   _isChainEvmCompatible,
   _isChainInfoCompatibleWithAccountInfo,
+  _isNativeTokenBySlug,
   _parseAssetRefKey,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { Alert, AppState, Keyboard, ScrollView, StyleSheet, View } from 'react-native';
@@ -43,7 +45,6 @@ import {
   SwapFeeType,
   SwapProviderId,
   SwapQuote,
-  SwapRequest,
   SwapRequestResult,
   SwapRequestV2,
 } from '@subwallet/extension-base/types/swap';
@@ -71,7 +72,7 @@ import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMu
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountAddressItemType } from 'types/account';
-import { AccountChainType, AccountProxy, AccountProxyType, ProcessType } from '@subwallet/extension-base/types';
+import { AccountChainType, AccountProxy, AccountProxyType, BalanceType, ProcessType } from '@subwallet/extension-base/types';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { CHAINFLIP_SLIPPAGE } from 'types/swap';
@@ -86,7 +87,7 @@ import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { QuoteInfoArea } from './QuoteInfoArea';
-import { AcrossErrorMsg } from '@subwallet/extension-base/services/balance-service/transfer/xcm/acrossBridge';
+import { DetectedGenOptimalProcessErrMsg } from '@subwallet/extension-base/services/swap-service/utils';
 import { ThemeTypes } from 'styles/themes';
 import { AppModalContext } from 'providers/AppModalContext';
 import { KyberSwapQuoteMetadata } from '@subwallet/extension-base/services/swap-service/handler/kyber-handler';
@@ -98,6 +99,7 @@ import useCreateGetChainAndExcludedTokenByAccountProxy, {
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { EmptySwapPairs } from 'screens/Transaction/Swap/EmptySwapPairs';
 import subwalletApiSdk from '@subwallet-monorepos/subwallet-services-sdk';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 
 interface SwapFormValues extends TransactionFormValues {
   fromAmount: string;
@@ -151,6 +153,7 @@ function getTokenSelectorItem(
       originChain,
       slug,
       symbol: asset.symbol,
+      displayName: getAssetDisplayName(asset, asset.symbol),
       name: asset.name,
       balanceInfo,
       showBalance: true,
@@ -245,7 +248,7 @@ const Component = ({
       chainAsset,
     )} on ${chainName} is not supported for swapping. Select another token and try again`;
   }, [assetRegistryMap, chainInfoMap, fromTokenSlugValue]);
-  const onPreCheck = usePreCheckAction(fromValue, undefined, preCheckMessage);
+  const onPreCheck = usePreCheckAction(fromValue, undefined, preCheckMessage, chainValue);
   const oneSign = useOneSignProcess(fromValue);
   const getReformatAddress = useCoreCreateReformatAddress();
   const accountSelectorRef = useRef<ModalRef | null>(null);
@@ -253,7 +256,7 @@ const Component = ({
   const [quoteOptions, setQuoteOptions] = useState<SwapQuote[]>([]);
   const [currentQuote, setCurrentQuote] = useState<SwapQuote | undefined>(undefined);
   const [quoteAliveUntil, setQuoteAliveUntil] = useState<number | undefined>(undefined);
-  const [currentQuoteRequest, setCurrentQuoteRequest] = useState<SwapRequest | undefined>(undefined);
+  const [currentQuoteRequest, setCurrentQuoteRequest] = useState<SwapRequestV2 | undefined>(undefined);
   const [isFormInvalid, setIsFormInvalid] = useState<boolean>(false);
   const [currentOptimalSwapPath, setOptimalSwapPath] = useState<CommonOptimalSwapPath | undefined>(undefined);
   const [slippageModalVisible, setSlippageModalVisible] = useState<boolean>(false);
@@ -277,7 +280,26 @@ const Component = ({
   const [isScrollEnd, setIsScrollEnd] = useState<boolean>(false);
   const [isRecipientFieldManuallyVisible, setIsRecipientFieldManuallyVisible] = useState<boolean>(false);
 
-  const availableBalanceHookResult = useGetBalance(chainValue, fromValue, fromTokenSlugValue, true, ExtrinsicType.SWAP);
+  const fromAssetInfo = useMemo(() => assetRegistryMap[fromTokenSlugValue], [assetRegistryMap, fromTokenSlugValue]);
+  const toAssetInfo = useMemo(() => assetRegistryMap[toTokenSlugValue], [assetRegistryMap, toTokenSlugValue]);
+  const isBittensorStakedSwap = useMemo(
+    () =>
+      _BALANCE_CHAIN_GROUP.bittensor.includes(fromAssetInfo?.originChain) &&
+      _BALANCE_CHAIN_GROUP.bittensor.includes(toAssetInfo?.originChain),
+    [fromAssetInfo?.originChain, toAssetInfo?.originChain],
+  );
+  const balanceType = useMemo(
+    () => (isBittensorStakedSwap && _isNativeTokenBySlug(fromAssetInfo?.slug) ? BalanceType.STAKING : undefined),
+    [fromAssetInfo?.slug, isBittensorStakedSwap],
+  );
+  const availableBalanceHookResult = useGetBalance(
+    chainValue,
+    fromValue,
+    fromTokenSlugValue,
+    true,
+    ExtrinsicType.SWAP,
+    balanceType,
+  );
 
   const currentFromTokenAvailableBalance = useMemo(() => {
     if (!fromTokenSlugValue || availableBalanceHookResult.isLoading || !availableBalanceHookResult.nativeTokenSlug) {
@@ -419,14 +441,6 @@ const Component = ({
     return tokenSelectorItems.filter(item => destinationSlugSet.has(item.slug));
   }, [fromTokenSlugValue, tokenSelectorItems, pairMap]);
 
-  const fromAssetInfo = useMemo(() => {
-    return assetRegistryMap[fromTokenSlugValue] || undefined;
-  }, [assetRegistryMap, fromTokenSlugValue]);
-
-  const toAssetInfo = useMemo(() => {
-    return assetRegistryMap[toTokenSlugValue] || undefined;
-  }, [assetRegistryMap, toTokenSlugValue]);
-
   const destChainValue = _getAssetOriginChain(toAssetInfo);
 
   const isSwitchable = useMemo(() => {
@@ -484,6 +498,7 @@ const Component = ({
         return validateRecipientAddress({
           srcChain: chain,
           destChainInfo,
+          assetInfo: toAssetInfo,
           fromAddress: from,
           toAddress: _recipientAddress,
           account,
@@ -493,7 +508,7 @@ const Component = ({
         });
       },
     }),
-    [accounts, assetRegistryMap, chainInfoMap, isRecipientFieldAllowed, ledgerGenericAllowNetworks],
+    [accounts, assetRegistryMap, chainInfoMap, isRecipientFieldAllowed, ledgerGenericAllowNetworks, toAssetInfo],
   );
 
   const estimatedFeeValue = useMemo(() => {
@@ -594,6 +609,12 @@ const Component = ({
     show('Amount too high. Lower your amount and try again', { type: 'danger' });
   }, [show]);
 
+  const notifyNotEnoughBitcoin = useCallback(() => {
+    show('Insufficient available balance to perform the swap. Increase available balance and try again', {
+      type: 'danger',
+    });
+  }, [show]);
+
   const onConfirmSelectedQuote = useCallback(async (quote: SwapQuote) => {
     setPreferredProvider(quote.provider.id);
 
@@ -628,10 +649,12 @@ const Component = ({
       return;
     }
 
-    const result = new BigN(currentFromTokenAvailableBalance.value).multipliedBy(92).dividedToIntegerBy(100).toFixed();
+    const result = isBittensorStakedSwap
+      ? currentFromTokenAvailableBalance.value
+      : new BigN(currentFromTokenAvailableBalance.value).multipliedBy(92).dividedToIntegerBy(100).toFixed();
     onChangeAmount(result);
     setSwapFromFieldRenderKey(`SwapFromField-${Date.now()}`);
-  }, [currentFromTokenAvailableBalance, onChangeAmount]);
+  }, [currentFromTokenAvailableBalance, isBittensorStakedSwap, onChangeAmount]);
 
   const onPressHaftAmountButton = useCallback(() => {
     if (!currentFromTokenAvailableBalance) {
@@ -665,8 +688,24 @@ const Component = ({
     return checkChainConnected(chainValue);
   }, [chainValue, checkChainConnected]);
 
+  const alternativeAddress = useMemo(() => {
+    const selectedAccountProxy = isAccountAll(targetAccountProxy.id)
+      ? accountProxies.find(accountProxy => accountProxy.id === targetAccountProxyIdForGetBalance)
+      : targetAccountProxy;
+
+    return selectedAccountProxy?.accounts.find(account => account.chainType === AccountChainType.SUBSTRATE)?.address;
+  }, [accountProxies, targetAccountProxy, targetAccountProxyIdForGetBalance]);
+
   const onSubmit = useCallback(
     (values: SwapFormValues) => {
+      const hasXcmStep = currentOptimalSwapPath?.steps.some(step => step.type === 'XCM');
+
+      if (targetAccountProxy.accountType === AccountProxyType.MULTISIG && hasXcmStep) {
+        show(i18n.multisig.swapNotSupported, { type: 'danger' });
+
+        return;
+      }
+
       if (chainValue && !checkChainConnected(chainValue)) {
         Alert.alert(
           'Pay attention!',
@@ -854,6 +893,7 @@ const Component = ({
       slippage,
       swapError,
       theme.colorWarning,
+      targetAccountProxy.accountType,
     ],
   );
 
@@ -1011,6 +1051,7 @@ const Component = ({
 
             const currentRequest: SwapRequestV2 = {
               address: fromValue,
+              alternativeAddress,
               pair: {
                 slug: _parseAssetRefKey(fromTokenSlugValue, toTokenSlugValue),
                 from: fromTokenSlugValue,
@@ -1049,12 +1090,16 @@ const Component = ({
                     notifyNoQuote();
                   }
 
-                  if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW)) {
+                  if (e.message.toLowerCase().startsWith(DetectedGenOptimalProcessErrMsg.AMOUNT_TOO_LOW)) {
                     notifyTooLowAmount();
                   }
 
-                  if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)) {
+                  if (e.message.toLowerCase().startsWith(DetectedGenOptimalProcessErrMsg.AMOUNT_TOO_HIGH)) {
                     notifyTooHighAmount();
+                  }
+
+                  if (e.message.toLowerCase().includes(DetectedGenOptimalProcessErrMsg.NOT_ENOUGHT_BITCOIN)) {
+                    notifyNotEnoughBitcoin();
                   }
 
                   setHandleRequestLoading(false);
@@ -1077,12 +1122,14 @@ const Component = ({
     };
   }, [
     appState,
+    alternativeAddress,
     currentSlippage.slippage,
     fromAmountValue,
     fromTokenSlugValue,
     fromValue,
     isRecipientFieldAllowed,
     notifyNoQuote,
+    notifyNotEnoughBitcoin,
     notifyTooHighAmount,
     notifyTooLowAmount,
     preferredProvider,
@@ -1112,12 +1159,18 @@ const Component = ({
   }, [fromTokenItems, fromTokenSlugValue, onChangeAmount, setValue]);
 
   useEffect(() => {
+    if (!fromTokenSlugValue) {
+      return;
+    }
+
     if (toTokenItems.length) {
       if (!toTokenSlugValue || !toTokenItems.some(t => t.slug === toTokenSlugValue)) {
         setValue('toTokenSlug', toTokenItems[0].slug);
       }
+    } else if (toTokenSlugValue) {
+      setValue('toTokenSlug', '');
     }
-  }, [setValue, toTokenItems, toTokenSlugValue]);
+  }, [fromTokenSlugValue, setValue, toTokenItems, toTokenSlugValue]);
 
   useEffect(() => {
     const updateFromValue = () => {
@@ -1158,6 +1211,15 @@ const Component = ({
             }
           })
           .catch(e => {
+            // The refresh failed while the quote on screen has already expired: drop it so the
+            // outdated rate is not left on screen with the Swap button enabled.
+            if (sync && quoteAliveUntil && quoteAliveUntil <= Date.now()) {
+              setQuoteAliveUntil(undefined);
+              setQuoteOptions([]);
+              setCurrentQuote(undefined);
+              setHandleRequestLoading(false);
+            }
+
             if (
               e.message.toLowerCase().startsWith('failed to fetch swap quote') ||
               e.message.toLowerCase().startsWith('swap pair is not found')
@@ -1165,12 +1227,16 @@ const Component = ({
               notifyNoQuote();
             }
 
-            if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_LOW)) {
+            if (e.message.toLowerCase().startsWith(DetectedGenOptimalProcessErrMsg.AMOUNT_TOO_LOW)) {
               notifyTooLowAmount();
             }
 
-            if (e.message.toLowerCase().startsWith(AcrossErrorMsg.AMOUNT_TOO_HIGH)) {
+            if (e.message.toLowerCase().startsWith(DetectedGenOptimalProcessErrMsg.AMOUNT_TOO_HIGH)) {
               notifyTooHighAmount();
+            }
+
+            if (e.message.toLowerCase().includes(DetectedGenOptimalProcessErrMsg.NOT_ENOUGHT_BITCOIN)) {
+              notifyNotEnoughBitcoin();
             }
           })
           .finally(() => {
@@ -1219,6 +1285,7 @@ const Component = ({
     currentQuoteRequest,
     hasInternalConfirmations,
     notifyNoQuote,
+    notifyNotEnoughBitcoin,
     notifyTooHighAmount,
     notifyTooLowAmount,
     quoteAliveUntil,
@@ -1414,11 +1481,16 @@ const Component = ({
                   address={fromValue}
                   chain={chainValue}
                   extrinsicType={ExtrinsicType.SWAP}
+                  balanceType={balanceType}
                   hidden={!canShowAvailableBalance}
                   isSubscribe={true}
-                  label={`${i18n.inputLabel.availableBalance}`}
+                  label={balanceType === BalanceType.STAKING ? 'Staked balance' : `${i18n.inputLabel.availableBalance}`}
                   tokenSlug={fromTokenSlugValue}
-                  labelTooltip={'Available balance for swap'}
+                  labelTooltip={
+                    balanceType === BalanceType.STAKING
+                      ? `Staked ${fromAssetInfo?.symbol || ''} available for swap`
+                      : 'Available balance for swap'
+                  }
                   showNetwork={false}
                 />
               </View>

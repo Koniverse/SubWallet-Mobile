@@ -21,6 +21,7 @@ import { SortableTokenItem, sortTokensByBalanceInSelector } from 'utils/sort/tok
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 import { useToast } from 'react-native-toast-notifications';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 
 type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
 
@@ -171,6 +172,7 @@ export default function useBuyToken(currentAccountProxy: AccountProxy | null, cu
         name: assetRegistry[info.slug]?.name || info.symbol,
         slug: info.slug,
         symbol: info.symbol,
+        displayName: getAssetDisplayName(assetRegistry[info.slug], info.symbol),
         originChain: info.network,
         balanceInfo,
         isTestnet: !!balanceInfo?.isTestnet,

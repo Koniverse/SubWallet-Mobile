@@ -1,10 +1,12 @@
 import { NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import React, { useMemo } from 'react';
-import { StyleProp, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import ImagePreview from 'components/ImagePreview';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold } from 'styles/sharedStyles';
+import { FontBold, FontSemiBold } from 'styles/sharedStyles';
 import { deviceWidth } from 'constants/index';
+import i18n from 'utils/i18n/i18n';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   nftItem: _NftItem;
@@ -47,8 +49,25 @@ const NameStyle: StyleProp<any> = {
   color: ColorMap.light,
 };
 
+const BundleLabelStyle: StyleProp<ViewStyle> = {
+  position: 'absolute',
+  top: 8,
+  right: 8,
+  zIndex: 10,
+  paddingHorizontal: 8,
+  paddingVertical: 2,
+  borderRadius: 12,
+};
+
+const BundleLabelTextStyle: StyleProp<TextStyle> = {
+  ...FontBold,
+  fontSize: 10,
+  lineHeight: 16,
+};
+
 const NftItem = ({ nftItem, onPress, collectionImage }: Props) => {
-  const { name: _name, image, id } = nftItem;
+  const theme = useSubWalletTheme().swThemes;
+  const { name: _name, image, id, isBundle } = nftItem;
 
   const name = useMemo((): string => {
     return _name ? _name : `#${id}`;
@@ -57,6 +76,13 @@ const NftItem = ({ nftItem, onPress, collectionImage }: Props) => {
   return (
     <TouchableOpacity style={WrapperStyle} onPress={onPress} activeOpacity={0.8}>
       <View style={ContainerStyle}>
+        {!!isBundle && (
+          <View style={[BundleLabelStyle, { backgroundColor: theme.colorSecondary }]}>
+            <Text style={[BundleLabelTextStyle, { color: theme.colorBgDefault }]}>
+              {i18n.nftScreen.nestedNft.bundle}
+            </Text>
+          </View>
+        )}
         <ImagePreview
           mainUrl={image}
           backupUrl={collectionImage}

@@ -53,11 +53,21 @@ export const StakingTypeNameMap = (): Record<string, string> => ({
 
 export const TxTypeNameMap = (): Record<string, string> => ({
   ...StakingTypeNameMap(),
+  // `getDisplayData` falls back to `default`; without it an unmapped extrinsic type
+  // renders as the literal string "undefined".
+  default: i18n.historyScreen.title.transaction,
   transaction: i18n.historyScreen.title.transaction,
   submitting: i18n.common.submitting,
   processing: i18n.common.processing,
   send: i18n.common.send,
   receive: i18n.cryptoScreen.receive,
+  [ExtrinsicType.ADD_SUBSTRATE_PROXY_ACCOUNT]: i18n.historyScreen.extrinsicType.addSubstrateProxy,
+  [ExtrinsicType.REMOVE_SUBSTRATE_PROXY_ACCOUNT]: i18n.historyScreen.extrinsicType.removeSubstrateProxy,
+  [ExtrinsicType.SUBSTRATE_PROXY_INIT_TX]: i18n.historyScreen.extrinsicType.substrateProxyInit,
+  [ExtrinsicType.MULTISIG_INIT_TX]: i18n.historyScreen.extrinsicType.multisigTransaction,
+  [ExtrinsicType.MULTISIG_APPROVE_TX]: i18n.historyScreen.extrinsicType.multisigTransaction,
+  [ExtrinsicType.MULTISIG_EXECUTE_TX]: i18n.historyScreen.extrinsicType.multisigTransaction,
+  [ExtrinsicType.MULTISIG_CANCEL_TX]: i18n.historyScreen.extrinsicType.multisigTransaction,
 });
 
 export const TxTypeTitleMap: Record<string, string> = {
@@ -74,6 +84,13 @@ export const TxTypeTitleMap: Record<string, string> = {
   [ExtrinsicType.STAKING_CLAIM_REWARD]: i18n.historyScreen.extrinsicType.claimReward,
   [ExtrinsicType.STAKING_CANCEL_UNSTAKE]: i18n.historyScreen.extrinsicType.cancelUnstake,
   [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.extrinsicType.evmExecute,
+  [ExtrinsicType.ADD_SUBSTRATE_PROXY_ACCOUNT]: i18n.historyScreen.extrinsicType.addSubstrateProxy,
+  [ExtrinsicType.REMOVE_SUBSTRATE_PROXY_ACCOUNT]: i18n.historyScreen.extrinsicType.removeSubstrateProxy,
+  [ExtrinsicType.SUBSTRATE_PROXY_INIT_TX]: i18n.historyScreen.extrinsicType.substrateProxyInit,
+  [ExtrinsicType.MULTISIG_INIT_TX]: i18n.historyScreen.extrinsicType.multisigTransaction,
+  [ExtrinsicType.MULTISIG_APPROVE_TX]: i18n.historyScreen.extrinsicType.multisigTransaction,
+  [ExtrinsicType.MULTISIG_EXECUTE_TX]: i18n.historyScreen.extrinsicType.multisigTransaction,
+  [ExtrinsicType.MULTISIG_CANCEL_TX]: i18n.historyScreen.extrinsicType.multisigTransaction,
 };
 
 export const HistoryStatusMap = (): Record<string, StatusType> => ({

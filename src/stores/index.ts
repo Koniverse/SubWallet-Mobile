@@ -39,6 +39,7 @@ import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
 import SwapReducer from './feature/Swap';
 import NotificationReducer from './feature/Notification';
+import MultisigReducer from './feature/Multisig';
 import LogoMap from 'stores/base/LogoMap';
 import { getDevMode, mmkvReduxStore } from 'utils/storage';
 import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
@@ -84,6 +85,8 @@ const rootReducer = combineReducers({
   // mission pool
   missionPool: MissionPoolReducer,
   mantaPay: MantaPayReducer,
+  // Multisig account
+  multisig: MultisigReducer,
 
   // Common
   chainStore: persistReducer(

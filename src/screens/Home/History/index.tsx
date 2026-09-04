@@ -13,6 +13,8 @@ import {
   RocketIcon,
   SpinnerIcon,
   PencilIcon,
+  TreeStructureIcon,
+  UserSwitchIcon,
 } from 'phosphor-react-native';
 import {
   ExtrinsicStatus,
@@ -21,7 +23,7 @@ import {
   TransactionDirection,
   TransactionHistoryItem,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { isTypeStaking, isTypeTransfer } from 'utils/transaction/detectType';
+import { isTypeManageSubstrateProxy, isTypeMultisig, isTypeStaking, isTypeTransfer } from 'utils/transaction/detectType';
 import { TransactionHistoryDisplayData, TransactionHistoryDisplayItem } from 'types/history';
 import { customFormatDate, formatHistoryDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
@@ -55,6 +57,14 @@ import { isAddress } from '@subwallet/keyring';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import { YIELD_EXTRINSIC_TYPES } from '@subwallet/extension-base/koni/api/yield/helper/utils';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import { PendingMultisigTx } from '@subwallet/extension-base/services/multisig-service';
+import { isSameAddress } from '@subwallet/extension-base/utils';
+import { MultisigHistoryItem } from 'components/History/MultisigHistoryItem';
+import { SwTab } from 'components/design-system-ui/tab';
+import { MultisigHistoryInfoModal } from 'screens/Home/History/Detail/MultisigHistoryInfoModal';
+import { ScrollView } from 'react-native';
+import { NOTI_MULTISIG_PENDINGTX_ID } from 'constants/localStorage';
+import { mmkvStore } from 'utils/storage';
 
 type Props = {};
 
@@ -69,6 +79,8 @@ IconMap = {
   processing: SpinnerIcon,
   swap: ArrowsLeftRightIcon,
   nominate: PencilIcon,
+  substrateProxy: TreeStructureIcon,
+  multisig: UserSwitchIcon,
   default: ClockCounterClockwiseIcon,
 };
 
@@ -107,6 +119,14 @@ function getIcon(item: TransactionHistoryItem): React.ElementType<IconProps> {
 
   if (isTypeStaking(item.type)) {
     return IconMap.staking;
+  }
+
+  if (isTypeManageSubstrateProxy(item.type)) {
+    return IconMap.substrateProxy;
+  }
+
+  if (isTypeMultisig(item.type)) {
+    return IconMap.multisig;
   }
 
   return IconMap.default;
@@ -295,6 +315,11 @@ const PROCESSING_STATUSES: ExtrinsicStatus[] = [
 
 const gradientBackground = ['rgba(76, 234, 172, 0.10)', 'rgba(76, 234, 172, 0.00)'];
 
+enum HistoryTabType {
+  HISTORY = 'history',
+  MULTISIG = 'multisig',
+}
+
 function History({
   route: {
     params: { address: propAddress, chain, transactionId },
@@ -323,6 +348,10 @@ function History({
   }, [accounts]);
   const accountSelectorRef = useRef<ModalRef | null>(null);
   const chainSelectorRef = useRef<ModalRef | null>(null);
+  const { pendingMultisigTxs } = useSelector((root: RootState) => root.multisig);
+  const [selectedTab, setSelectedTab] = useState<string>(HistoryTabType.HISTORY);
+  const [selectedMultisigItem, setSelectedMultisigItem] = useState<PendingMultisigTx | null>(null);
+  const [multisigDetailVisible, setMultisigDetailVisible] = useState<boolean>(false);
   const FILTER_OPTIONS = [
     { label: i18n.filterOptions.sendToken, value: FilterValue.SEND },
     { label: i18n.filterOptions.receiveToken, value: FilterValue.RECEIVED },
@@ -372,6 +401,13 @@ function History({
       [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.title.evmTransaction,
       [ExtrinsicType.SWAP]: 'Swap transaction',
       [ExtrinsicType.CLAIM_BRIDGE]: 'Claim token transaction',
+      [ExtrinsicType.ADD_SUBSTRATE_PROXY_ACCOUNT]: i18n.historyScreen.title.addSubstrateProxyTransaction,
+      [ExtrinsicType.REMOVE_SUBSTRATE_PROXY_ACCOUNT]: i18n.historyScreen.title.removeSubstrateProxyTransaction,
+      [ExtrinsicType.SUBSTRATE_PROXY_INIT_TX]: i18n.historyScreen.title.substrateProxyInitTransaction,
+      [ExtrinsicType.MULTISIG_INIT_TX]: i18n.historyScreen.title.multisigTransaction,
+      [ExtrinsicType.MULTISIG_APPROVE_TX]: i18n.historyScreen.title.multisigTransaction,
+      [ExtrinsicType.MULTISIG_EXECUTE_TX]: i18n.historyScreen.title.multisigTransaction,
+      [ExtrinsicType.MULTISIG_CANCEL_TX]: i18n.historyScreen.title.multisigTransaction,
     }),
     [],
   );
@@ -383,7 +419,18 @@ function History({
     rawHistoryList.forEach((item: TransactionHistoryItem) => {
       // Format display name for account by address
       const fromName = accountMap[quickFormatAddressToCompare(item.from) || ''];
-      const toName = accountMap[quickFormatAddressToCompare(item.to) || ''];
+      let toName = accountMap[quickFormatAddressToCompare(item.to) || ''];
+
+      // A proxy management extrinsic has no recipient; the proxied account is the
+      // subject, so name the row after it rather than leaving it blank.
+      if (
+        (item.type === ExtrinsicType.ADD_SUBSTRATE_PROXY_ACCOUNT ||
+          item.type === ExtrinsicType.REMOVE_SUBSTRATE_PROXY_ACCOUNT) &&
+        item.substrateProxyAddresses?.length
+      ) {
+        toName = accountMap[quickFormatAddressToCompare(item.address) || ''];
+      }
+
       const key = getHistoryItemKey(item);
       const displayTime = item.blockTime || item.time;
 
@@ -564,6 +611,101 @@ function History({
     [setSelectedChain],
   );
 
+  // Pending multisig transactions live in their own store, keyed by call hash rather
+  // than by account, so they are filtered here against the same chain/account pickers
+  // that drive the history list.
+  const multisigList = useMemo<PendingMultisigTx[]>(() => {
+    let list = Object.values(pendingMultisigTxs);
+
+    if (selectedChain) {
+      list = list.filter(tx => tx.chain === selectedChain);
+    }
+
+    if (selectedAddress) {
+      list = list.filter(
+        tx => isSameAddress(tx.multisigAddress, selectedAddress) || isSameAddress(tx.currentSigner, selectedAddress),
+      );
+    } else {
+      // All-account mode: keep anything this wallet can act on.
+      const ownAddresses = accounts.map(({ address }) => address);
+
+      list = list.filter(tx =>
+        ownAddresses.some(
+          address => isSameAddress(tx.multisigAddress, address) || isSameAddress(tx.currentSigner, address),
+        ),
+      );
+    }
+
+    return list.sort((a, b) => {
+      const timeA = a.timestamp || 0;
+      const timeB = b.timestamp || 0;
+
+      // Still-processing entries carry no timestamp; keep them at the top.
+      if (timeA === 0 && timeB !== 0) {
+        return -1;
+      }
+
+      if (timeB === 0 && timeA !== 0) {
+        return 1;
+      }
+
+      return timeB - timeA;
+    });
+  }, [accounts, pendingMultisigTxs, selectedAddress, selectedChain]);
+
+  const historyTabs = useMemo(
+    () => [
+      { label: i18n.header.history, value: HistoryTabType.HISTORY, onPress: () => {} },
+      { label: i18n.multisig.tabLabel, value: HistoryTabType.MULTISIG, onPress: () => {} },
+    ],
+    [],
+  );
+
+  const onOpenMultisigInfo = useCallback((item: PendingMultisigTx) => {
+    return () => {
+      setSelectedMultisigItem(item);
+      setMultisigDetailVisible(true);
+    };
+  }, []);
+
+  const onCloseMultisigDetail = useCallback(() => {
+    setMultisigDetailVisible(false);
+    setSelectedMultisigItem(null);
+  }, []);
+
+  // A multisig notification hands over its own id; the pending tx key is the middle
+  // segment of it (`<prefix>___<txKey>___<suffix>`).
+  useEffect(() => {
+    const notificationId = mmkvStore.getString(NOTI_MULTISIG_PENDINGTX_ID);
+
+    if (!notificationId) {
+      return;
+    }
+
+    const parts = notificationId.split('___');
+    const multisigKey = parts.slice(1, -1).join('___');
+    const item = multisigList.find(tx => tx.id === multisigKey);
+
+    if (!item) {
+      return;
+    }
+
+    setSelectedTab(HistoryTabType.MULTISIG);
+    setSelectedMultisigItem(item);
+    setMultisigDetailVisible(true);
+    mmkvStore.remove(NOTI_MULTISIG_PENDINGTX_ID);
+  }, [multisigList]);
+
+  const multisigEmptyList = useCallback(() => {
+    return (
+      <EmptyList
+        icon={ListBulletsIcon}
+        title={i18n.emptyScreen.historyEmptyTitle}
+        message={i18n.emptyScreen.historyEmptyMessage}
+      />
+    );
+  }, []);
+
   useEffect(() => {
     if (detailModalVisible) {
       setSelectedItem(selected => {
@@ -703,23 +845,45 @@ function History({
             )}
           </View>
 
-          <LazySectionList
-            listStyle={{
-              paddingLeft: theme.padding,
-              paddingRight: theme.padding,
-              paddingTop: theme.paddingXS,
-              paddingBottom: theme.paddingXS,
-            }}
-            items={historyItems}
-            renderItem={renderItem}
-            renderListEmptyComponent={emptyList}
-            filterFunction={filterFunction}
-            selectedFilters={selectedFilters}
-            sortSectionFunction={grouping.sortSection}
-            groupBy={grouping.groupBy}
-            renderSectionHeader={grouping.renderSectionHeader}
-            stickyHeader={false}
-          />
+          <View style={{ paddingHorizontal: theme.padding, paddingBottom: theme.paddingXS }}>
+            <SwTab tabs={historyTabs} selectedValue={selectedTab} onSelectType={setSelectedTab} />
+          </View>
+
+          {selectedTab === HistoryTabType.MULTISIG ? (
+            multisigList.length ? (
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{
+                  paddingHorizontal: theme.padding,
+                  paddingTop: theme.paddingXS,
+                  paddingBottom: theme.paddingXS,
+                }}>
+                {multisigList.map(item => (
+                  <MultisigHistoryItem key={item.id} item={item} onPress={onOpenMultisigInfo(item)} />
+                ))}
+              </ScrollView>
+            ) : (
+              multisigEmptyList()
+            )
+          ) : (
+            <LazySectionList
+              listStyle={{
+                paddingLeft: theme.padding,
+                paddingRight: theme.padding,
+                paddingTop: theme.paddingXS,
+                paddingBottom: theme.paddingXS,
+              }}
+              items={historyItems}
+              renderItem={renderItem}
+              renderListEmptyComponent={emptyList}
+              filterFunction={filterFunction}
+              selectedFilters={selectedFilters}
+              sortSectionFunction={grouping.sortSection}
+              groupBy={grouping.groupBy}
+              renderSectionHeader={grouping.renderSectionHeader}
+              stickyHeader={false}
+            />
+          )}
         </View>
       </ContainerWithSubHeader>
 
@@ -729,6 +893,16 @@ function History({
         modalVisible={detailModalVisible}
         setDetailModalVisible={setDetailModalVisible}
       />
+
+      {!!selectedMultisigItem && (
+        <MultisigHistoryInfoModal
+          data={selectedMultisigItem}
+          historyList={historyItems}
+          modalVisible={multisigDetailVisible}
+          setModalVisible={setMultisigDetailVisible}
+          onCancel={onCloseMultisigDetail}
+        />
+      )}
 
       <FilterModal
         filterModalRef={filterModalRef}

@@ -37,17 +37,17 @@ import { useWatch } from 'react-hook-form';
 import { FormItem } from 'components/common/FormItem';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
-import { reformatAddress } from '@subwallet/extension-base/utils';
+import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
 import { ActionType } from '@subwallet/extension-base/core/types';
 import { findAccountByAddress } from 'utils/index';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
 
-// const DEFAULT_ITEM: NftItem = {
-//   collectionId: 'unknown',
-//   chain: 'unknown',
-//   owner: 'unknown',
-//   id: 'unknown',
-// };
+const DEFAULT_ITEM: NftItem = {
+  collectionId: 'unknown',
+  chain: 'unknown',
+  owner: 'unknown',
+  id: 'unknown',
+};
 
 const DEFAULT_COLLECTION: NftCollection = {
   collectionId: 'unknown',
@@ -112,9 +112,20 @@ const SendNFT: React.FC<SendNFTProps> = ({
     [accounts, chainInfoMap, ledgerGenericAllowNetworks],
   );
 
-  const nftItem = useMemo(() => {
-    return nftItems.find(item => itemId === item.id) || ({} as NftItem);
-  }, [itemId, nftItems]);
+  // NFT ids are scoped to their collection, so the item can only be resolved by the full
+  // owner + chain + collection + id tuple — matching on the id alone picks up an NFT the
+  // user never selected and transfers that one instead.
+  const nftItem = useMemo((): NftItem => {
+    return (
+      nftItems.find(
+        item =>
+          isSameAddress(item.owner, defaultFromValue) &&
+          nftChain === item.chain &&
+          item.collectionId === collectionId &&
+          item.id === itemId,
+      ) || DEFAULT_ITEM
+    );
+  }, [collectionId, defaultFromValue, itemId, nftChain, nftItems]);
 
   const collectionInfo = useMemo(
     (): NftCollection =>
@@ -144,7 +155,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
   };
   const fromValue = useWatch<SendNftFormValues>({ name: 'from', control });
 
-  const onPreCheck = usePreCheckAction(fromValue);
+  const onPreCheck = usePreCheckAction(fromValue, true, undefined, nftChain);
 
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
 
@@ -153,8 +164,8 @@ const SendNFT: React.FC<SendNFTProps> = ({
   }, [navigation]);
 
   const disableSubmit = useMemo(
-    () => !isAddress(recipientAddressValue) || !isNetConnected || loading,
-    [isNetConnected, loading, recipientAddressValue],
+    () => !isAddress(recipientAddressValue) || !isNetConnected || loading || nftItem === DEFAULT_ITEM,
+    [isNetConnected, loading, nftItem, recipientAddressValue],
   );
 
   const onSubmitForm = useCallback(

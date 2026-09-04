@@ -18,6 +18,7 @@ export type TokenItemType = {
   name: string;
   slug: string;
   symbol: string;
+  displayName?: string;
   originChain: string;
 };
 
@@ -26,6 +27,7 @@ export type TokenSelectorItemType = {
   slug: string;
   symbol: string;
   originChain: string;
+  displayName: string;
   balanceInfo?: {
     isReady: boolean;
     isNotSupport: boolean;
@@ -116,7 +118,8 @@ export const TokenSelector = ({
       const lowerCaseSearchString = searchString.toLowerCase();
 
       const filteredList = (_items as TokenSelectorItemType[]).filter(
-        ({ symbol, originChain }) =>
+        ({ displayName, symbol, originChain }) =>
+          displayName?.toLowerCase().includes(lowerCaseSearchString) ||
           symbol.toLowerCase().includes(lowerCaseSearchString) ||
           chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
       );

@@ -18,7 +18,6 @@ import {
 import { listenMessage, restartAllHandlers } from 'messaging/base';
 import { Message } from '@subwallet/extension-base/types';
 import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
-import { getVersion } from 'react-native-device-info';
 import { copyAndroidWebBundle } from 'providers/WebRunnerProvider/androidWebBundle';
 import { WEBVIEW_ANDROID_SYSTEM_MIN_VERSION } from 'constants/index';
 export interface WebRunnerGlobalState {
@@ -88,18 +87,24 @@ export class WebRunnerHandler {
   private async prepareAndroidBundle() {
     const BUNDLE_PATH = isDevMode ? 'DevModeWeb.bundle' : 'Web.bundle';
     const ANDROID_BUNDLE_PATH = `${RNFS.DocumentDirectoryPath}/${BUNDLE_PATH}/site`;
-    const appVersion = getVersion();
-
     try {
-      const exists = await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`);
-      const lastAppCopyVersion = mmkvStore.getString('last-app-copy-version');
+      // Decide by comparing the shipped index.html with the copy on disk, not by
+      // app version. index.html names the content-hashed runner chunk, so it changes
+      // exactly when the bundle changes. Keying this on the version instead meant
+      // that installing over an existing app kept serving the previously copied
+      // runner, because versionName and versionCode stay put across builds -- an
+      // updated web-runner simply never reached the WebView.
+      const assetIndex = await RNFS.readFileAssets(`${BUNDLE_PATH}/site/index.html`, 'utf8');
 
-      if (exists && appVersion === lastAppCopyVersion) {
-        return;
+      if (await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`)) {
+        const copiedIndex = await RNFS.readFile(`${ANDROID_BUNDLE_PATH}/index.html`, 'utf8');
+
+        if (assetIndex === copiedIndex) {
+          return;
+        }
       }
 
       await copyAndroidWebBundle(BUNDLE_PATH);
-      mmkvStore.set('last-app-copy-version', appVersion);
       started = false;
     } catch (e) {
       console.warn('Failed to prepare Android WebRunner bundle', e);
