@@ -25,16 +25,29 @@ interface ComponentProps {
 // buckets history and the live subscription already covers the latest point.
 const HISTORY_REFETCH_INTERVAL = 30000;
 
+const EMPTY_POINTS: PriceChartPoint[] = [];
+
+interface PriceSeries {
+  timeframe: PriceChartTimeframe;
+  points: PriceChartPoint[];
+}
+
 const Component = ({ priceId }: ComponentProps) => {
   const [selectedTimeframe, setSelectedTimeframe] = useState<PriceChartTimeframe>('1D');
   const currency = useSelector((state: RootState) => state.price.currency);
-  const [rawPricePoints, setRawPricePoints] = useState<PriceChartPoint[]>([]);
+  const priceMap = useSelector((state: RootState) => state.price.priceMap);
+  const price24hMap = useSelector((state: RootState) => state.price.price24hMap);
+  // The series remembers which timeframe it was loaded for. Without that the
+  // previous timeframe's points stay on screen under the newly selected tab
+  // until the request returns, which here is long enough to read as a wrong chart.
+  const [priceSeries, setPriceSeries] = useState<PriceSeries | null>(null);
   const [hoverPricePointIndex, setHoverPricePointIndex] = useState<number | null>(null);
   const [livePrice, setLivePrice] = useState<CurrentTokenPrice | null>(null);
   const lastFetchPriceHistoryTimeRef = useRef<Record<string, number>>({});
   const prevCurrencyRef = useRef(currency);
   const priceHistoryCacheRef = useRef<Record<string, PriceChartPoint[]>>({});
 
+  const rawPricePoints = priceSeries?.timeframe === selectedTimeframe ? priceSeries.points : EMPTY_POINTS;
   const interval = timeframeIntervals[selectedTimeframe];
 
   const mergedRawPricePoints = useMemo<PriceChartPoint[]>(() => {
@@ -62,7 +75,7 @@ const Component = ({ priceId }: ComponentProps) => {
   useEffect(() => {
     priceHistoryCacheRef.current = {};
     lastFetchPriceHistoryTimeRef.current = {};
-    setRawPricePoints([]);
+    setPriceSeries(null);
   }, [priceId]);
 
   useEffect(() => {
@@ -75,9 +88,15 @@ const Component = ({ priceId }: ComponentProps) => {
       const shouldRefetch = nowTs - lastFetched >= HISTORY_REFETCH_INTERVAL;
 
       if (cache && !shouldRefetch) {
-        setRawPricePoints(cache);
+        setPriceSeries({ timeframe: selectedTimeframe, points: cache });
 
         return;
+      }
+
+      if (cache) {
+        // Show what we already have while the refresh is in flight, so a revisit
+        // never drops back to an empty chart.
+        setPriceSeries({ timeframe: selectedTimeframe, points: cache });
       }
 
       if (!shouldRefetch) {
@@ -86,11 +105,19 @@ const Component = ({ priceId }: ComponentProps) => {
 
       lastFetchPriceHistoryTimeRef.current[selectedTimeframe] = nowTs;
 
-      const { history } = await getHistoryTokenPrice(priceId, selectedTimeframe);
+      try {
+        const { history } = await getHistoryTokenPrice(priceId, selectedTimeframe);
 
-      if (sync) {
-        priceHistoryCacheRef.current[selectedTimeframe] = history;
-        setRawPricePoints(history);
+        if (sync) {
+          priceHistoryCacheRef.current[selectedTimeframe] = history;
+          setPriceSeries({ timeframe: selectedTimeframe, points: history });
+        }
+      } catch (e) {
+        // The timestamp is stamped before the request to collapse duplicates, so a
+        // failure has to release it or the tab stays empty for the whole window.
+        delete lastFetchPriceHistoryTimeRef.current[selectedTimeframe];
+
+        throw e;
       }
     };
 
@@ -112,7 +139,7 @@ const Component = ({ priceId }: ComponentProps) => {
         .then(({ history }) => {
           if (sync) {
             priceHistoryCacheRef.current[selectedTimeframe] = history;
-            setRawPricePoints(history);
+            setPriceSeries({ timeframe: selectedTimeframe, points: history });
           }
         })
         .catch(console.error);
@@ -148,12 +175,24 @@ const Component = ({ priceId }: ComponentProps) => {
     };
   }, [priceId]);
 
+  // Both are already in the store, so the header can be right from the first frame
+  // instead of sitting at $0 for as long as the history request takes. The opening
+  // price is only known for 24h; the other timeframes say so rather than guess.
+  const fallbackValue = livePrice?.value ?? priceMap[priceId];
+  const fallbackFirst = selectedTimeframe === '1D' ? price24hMap[priceId] : undefined;
+
   return (
     <>
-      <PriceInfoContainer hoverPricePointIndex={hoverPricePointIndex} pricePoints={mergedRawPricePoints} />
+      <PriceInfoContainer
+        fallbackFirst={fallbackFirst}
+        fallbackValue={fallbackValue}
+        hoverPricePointIndex={hoverPricePointIndex}
+        pricePoints={mergedRawPricePoints}
+      />
 
       <PriceChart
         hoverPricePointIndex={hoverPricePointIndex}
+        isLoading={!mergedRawPricePoints.length}
         pricePoints={mergedRawPricePoints}
         setHoverPricePointIndex={setHoverPricePointIndex}
         timeframe={selectedTimeframe}

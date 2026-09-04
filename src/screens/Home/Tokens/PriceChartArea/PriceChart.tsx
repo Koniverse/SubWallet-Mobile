@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, PanResponder, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
 import { PriceChartPoint, PriceChartTimeframe } from '@subwallet/extension-base/background/KoniTypes';
-import { Typography } from 'components/design-system-ui';
+import { ActivityIndicator, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { customFormatDate } from 'utils/customFormatDate';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -22,13 +22,15 @@ interface Props {
   timeframe: PriceChartTimeframe;
   hoverPricePointIndex: number | null;
   setHoverPricePointIndex: (index: number | null) => void;
+  /** History for the selected timeframe is still on its way. */
+  isLoading?: boolean;
 }
 
 const TOOLTIP_HEIGHT = 18;
 const TOOLTIP_EDGE_SPACE = 8;
 const TOOLTIP_WIDTH = 132;
 
-export const PriceChart = ({ hoverPricePointIndex, pricePoints, setHoverPricePointIndex, timeframe }: Props) => {
+export const PriceChart = ({ hoverPricePointIndex, isLoading, pricePoints, setHoverPricePointIndex, timeframe }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyles(theme);
   const [width, setWidth] = useState(0);
@@ -151,6 +153,12 @@ export const PriceChart = ({ hoverPricePointIndex, pricePoints, setHoverPricePoi
         </View>
       )}
 
+      {isLoading && chartPoints.length === 0 && (
+        <View pointerEvents={'none'} style={styles.loading}>
+          <ActivityIndicator indicatorColor={theme.colorTextLight4} size={24} />
+        </View>
+      )}
+
       {width > 0 && chartPoints.length > 0 && (
         <Svg height={CHART_HEIGHT} width={width}>
           {!!hoveredPoint && (
@@ -208,6 +216,11 @@ function createStyles(theme: ThemeTypes) {
     container: {
       height: CHART_HEIGHT,
       justifyContent: 'flex-end',
+    },
+    loading: {
+      ...StyleSheet.absoluteFillObject,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     tooltip: {
       position: 'absolute',

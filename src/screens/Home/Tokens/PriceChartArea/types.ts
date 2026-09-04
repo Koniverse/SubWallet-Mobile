@@ -11,4 +11,6 @@ export type PriceInfoUIProps = {
   change: SwNumberProps['value'];
   percent: SwNumberProps['value'];
   isPriceDown?: boolean;
+  /** The current price is known but the opening one is not, so the move is unknown. */
+  isChangeUnknown?: boolean;
 };

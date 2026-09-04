@@ -10,7 +10,7 @@ import { PriceInfoUIProps } from './types';
 
 const PRICE_FONT_SIZE = 38;
 
-export const PriceInfoUI = ({ change, isPriceDown, percent, value }: PriceInfoUIProps) => {
+export const PriceInfoUI = ({ change, isChangeUnknown, isPriceDown, percent, value }: PriceInfoUIProps) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyles(theme, !!isPriceDown);
   const currencyData = useSelector((state: RootState) => state.price.currencyData);
@@ -31,29 +31,39 @@ export const PriceInfoUI = ({ change, isPriceDown, percent, value }: PriceInfoUI
         />
       </View>
 
+      {/* The row keeps its shape while the move is unknown, so nothing shifts once
+          the history arrives and the real numbers replace the placeholders. */}
       <View style={styles.changeContainer}>
-        <NumberDisplay
-          decimal={0}
-          decimalOpacity={1}
-          intOpacity={1}
-          prefix={`${isPriceDown ? '-' : '+'} ${(currencyData.isPrefix && currencyData.symbol) || ''}`}
-          size={theme.fontSize}
-          suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
-          textStyle={{ color: theme.colorTextLight1 }}
-          value={change}
-        />
-
-        <View style={styles.percentTag}>
+        {isChangeUnknown ? (
+          <Typography.Text style={styles.changePlaceholder}>{'--'}</Typography.Text>
+        ) : (
           <NumberDisplay
             decimal={0}
             decimalOpacity={1}
             intOpacity={1}
-            prefix={isPriceDown ? '-' : '+'}
-            size={theme.fontSizeXS}
-            suffix={'%'}
-            textStyle={styles.percentText}
-            value={percent}
+            prefix={`${isPriceDown ? '-' : '+'} ${(currencyData.isPrefix && currencyData.symbol) || ''}`}
+            size={theme.fontSize}
+            suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+            textStyle={{ color: theme.colorTextLight1 }}
+            value={change}
           />
+        )}
+
+        <View style={styles.percentTag}>
+          {isChangeUnknown ? (
+            <Typography.Text style={styles.percentPlaceholder}>{'--'}</Typography.Text>
+          ) : (
+            <NumberDisplay
+              decimal={0}
+              decimalOpacity={1}
+              intOpacity={1}
+              prefix={isPriceDown ? '-' : '+'}
+              size={theme.fontSizeXS}
+              suffix={'%'}
+              textStyle={styles.percentText}
+              value={percent}
+            />
+          )}
         </View>
       </View>
     </View>
@@ -106,6 +116,18 @@ function createStyles(theme: ThemeTypes, isPriceDown: boolean) {
     },
     percentText: {
       color: isPriceDown ? theme.colorTextLight1 : theme['green-1'],
+      ...FontSemiBold,
+    },
+    changePlaceholder: {
+      color: theme.colorTextLight4,
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      ...FontSemiBold,
+    },
+    percentPlaceholder: {
+      color: isPriceDown ? theme.colorTextLight1 : theme['green-1'],
+      fontSize: theme.fontSizeXS,
+      lineHeight: theme.fontSizeXS * theme.lineHeight,
       ...FontSemiBold,
     },
   });
