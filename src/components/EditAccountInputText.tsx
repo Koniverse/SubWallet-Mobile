@@ -23,7 +23,9 @@ const inputWrapper: StyleProp<any> = {
   backgroundColor: '#1A1A1A',
   width: '100%',
   borderRadius: 8,
-  paddingLeft: 16,
+  // 12 is theme.sizeSM, the inset every other field (InputText, Field/Base) uses.
+  // At 16 this component sat 4px right of the fields stacked next to it.
+  paddingLeft: 12,
   paddingRight: 12,
   paddingTop: 8,
   paddingBottom: 2,
@@ -45,6 +47,9 @@ const contentWrapper: StyleProp<ViewStyle> = {
 };
 const inputStyle: StyleProp<any> = {
   fontSize: 14,
+  // Android falls back to the theme's default EditText padding on any edge left
+  // unset, which pushed the text right of the label sitting above it.
+  paddingHorizontal: 0,
   paddingTop: 5,
   paddingBottom: 5,
   ...FontMedium,

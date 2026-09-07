@@ -284,7 +284,6 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
           icon: PlusIcon,
           onPress: () => {
             navigation.navigate('ImportNetwork');
-            setToggleItem(false);
           },
         }}
         defaultSearchString={defaultSearchString}

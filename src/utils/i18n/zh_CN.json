@@ -355,7 +355,7 @@
     "democracy": "Democracy",
     "reserved": "Reserved",
     "others": "Others",
-    "othersTooltip": "Other locks are the remainder after deducting the greater of the staking and governance locks from the total locked balance."
+    "othersTooltip": "Balances locked due to unique on-chain actions on the network"
   },
   "buyTokens": {
     "buyTokensMessage": "你将自动跳转到所选提供商以完成此交易"

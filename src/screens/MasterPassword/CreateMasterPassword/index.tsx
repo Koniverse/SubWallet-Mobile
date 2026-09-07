@@ -74,38 +74,56 @@ const CreateMasterPassword = ({
   };
 
   const onSubmit = () => {
-    if (checkValidateForm(formState.isValidated)) {
-      const password = formState.data.password;
-
-      if (password) {
-
-        setIsBusy(true);
-        keyringChangeMasterPassword({
-          createNew: true,
-          newPassword: password,
-        })
-          .then(res => {
-            if (!res.status) {
-              setErrors(res.errors);
-            } else {
-              onComplete();
-              // TODO: complete
-              if (isUseBiometric) {
-                createKeychainPassword(password);
-              }
-            }
-          })
-          .catch(e => {
-            setErrors([e.message]);
-          })
-          .finally(() => {
-            setIsBusy(false);
-          });
-      }
+    if (isBusy) {
+      return;
     }
+
+    if (!checkValidateForm(formState.isValidated)) {
+      // An untouched field has never been validated, so it carries no error to show.
+      // Without this the button looks live but pressing it does nothing at all, which
+      // reads as a frozen screen. Fill in the reason so the fields go red instead.
+      const emptyFields = Object.keys(formConfig).filter(field => !formState.data[field]);
+
+      emptyFields.forEach(field => onUpdateErrors(field)([i18n.warningMessage.requireMessage]));
+
+      if (emptyFields.length) {
+        focus(emptyFields[0])();
+      }
+
+      return;
+    }
+
+    const password = formState.data.password;
+
+    if (!password) {
+      return;
+    }
+
+    setIsBusy(true);
+    keyringChangeMasterPassword({
+      createNew: true,
+      newPassword: password,
+    })
+      .then(res => {
+        if (!res.status) {
+          setErrors(res.errors);
+        } else {
+          onComplete();
+
+          if (isUseBiometric) {
+            createKeychainPassword(password);
+          }
+        }
+      })
+      .catch(e => {
+        setErrors([e.message]);
+      })
+      .finally(() => {
+        setIsBusy(false);
+      });
   };
 
-  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
+  const { focus, formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
 
