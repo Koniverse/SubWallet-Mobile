@@ -23,7 +23,6 @@ import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { handleAddSubstrateProxyAccount } from 'messaging/transaction/substrateProxy';
 import { AddSubstrateProxyProps } from 'routes/transaction/transactionAction';
-import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 import { SubstrateProxyTypeSelector } from 'screens/Transaction/parts/SubstrateProxyTypeSelector';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
@@ -55,7 +54,6 @@ export const AddSubstrateProxyAccount = ({
   const { chainInfoMap, ledgerGenericAllowNetworks } = useSelector((state: RootState) => state.chainStore);
 
   const [loading, setLoading] = useState(false);
-  const [isBalanceReady, setIsBalanceReady] = useState(true);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const chainSelectorRef = useRef<ModalRef | null>(null);
 
@@ -202,7 +200,7 @@ export const AddSubstrateProxyAccount = ({
   }, [chainValue]);
 
   const isDisabled =
-    loading || !isBalanceReady || !substrateProxyAddressValue || !isValid || isDuplicatedProxy || !!errors.substrateProxyAddress;
+    loading || !substrateProxyAddressValue || !isValid || isDuplicatedProxy || !!errors.substrateProxyAddress;
 
   return (
     <>
@@ -268,13 +266,6 @@ export const AddSubstrateProxyAccount = ({
               {isDuplicatedProxy && (
                 <Typography.Text style={styles.errorText}>{i18n.substrateProxy.proxyAlreadyExists}</Typography.Text>
               )}
-
-              <GeneralFreeBalance
-                address={fromValue}
-                chain={chainValue}
-                onBalanceReady={setIsBalanceReady}
-                style={{ marginBottom: theme.marginXXS }}
-              />
 
               <Number
                 value={substrateProxyAccountGroup.substrateProxyDeposit}

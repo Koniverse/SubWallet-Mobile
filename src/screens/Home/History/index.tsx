@@ -57,8 +57,11 @@ import { isAddress } from '@subwallet/keyring';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import { YIELD_EXTRINSIC_TYPES } from '@subwallet/extension-base/koni/api/yield/helper/utils';
 import { delayActionAfterDismissKeyboard } from 'utils/common/keyboard';
+import { ALL_NETWORK_KEY } from '@subwallet/extension-base/constants';
 import { PendingMultisigTx } from '@subwallet/extension-base/services/multisig-service';
-import { isSameAddress } from '@subwallet/extension-base/utils';
+import { isAccountAll, isSameAddress } from '@subwallet/extension-base/utils';
+import { AccountChainType } from '@subwallet/extension-base/types';
+import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
 import { MultisigHistoryItem } from 'components/History/MultisigHistoryItem';
 import { SwTab } from 'components/design-system-ui/tab';
 import { MultisigHistoryInfoModal } from 'screens/Home/History/Detail/MultisigHistoryInfoModal';
@@ -328,7 +331,9 @@ function History({
   const theme = useSubWalletTheme().swThemes;
   const { selectedAddress, selectedChain, setSelectedAddress, setSelectedChain, chainItems, accountAddressItems } =
     useHistorySelection(chain, propAddress);
-  const { accounts, currentAccountProxy, isAllAccount } = useSelector((root: RootState) => root.accountState);
+  const { accountProxies, accounts, currentAccountProxy, isAllAccount } = useSelector(
+    (root: RootState) => root.accountState,
+  );
   const [rawHistoryList, setRawHistoryList] = useState<TransactionHistoryItem[]>([]);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
@@ -614,26 +619,117 @@ function History({
   // Pending multisig transactions live in their own store, keyed by call hash rather
   // than by account, so they are filtered here against the same chain/account pickers
   // that drive the history list.
+  // The Multisig tab keeps its own chain selection: it defaults to every network and
+  // only offers chains that actually support multisig, matching the extension.
+  const [multisigSelectedChain, setMultisigSelectedChain] = useState<string>(ALL_NETWORK_KEY);
+  const [multisigSelectedAddress, setMultisigSelectedAddress] = useState<string>('');
+  const getReformatAddress = useCoreCreateReformatAddress();
+
+  // Built from the multisig chain pick, not the history one: with "All networks" there is
+  // no chain to reformat against, so the raw address is shown instead.
+  const multisigAccountAddressItems = useMemo<AccountAddressItemType[]>(() => {
+    if (!currentAccountProxy) {
+      return [];
+    }
+
+    const isAllChain = multisigSelectedChain === ALL_NETWORK_KEY;
+    const selectedChainInfo = isAllChain ? undefined : chainInfoMap[multisigSelectedChain];
+
+    if (!isAllChain && !selectedChainInfo) {
+      return [];
+    }
+
+    const result = new Map<string, AccountAddressItemType>();
+
+    const pushAccountItems = (proxyId: string) => {
+      const accountProxy = accountProxies.find(item => item.id === proxyId);
+
+      if (!accountProxy || isAccountAll(accountProxy.id)) {
+        return;
+      }
+
+      accountProxy.accounts.forEach(account => {
+        if (account.chainType !== AccountChainType.SUBSTRATE) {
+          return;
+        }
+
+        const displayAddress = selectedChainInfo ? getReformatAddress(account, selectedChainInfo) : account.address;
+
+        if (!displayAddress) {
+          return;
+        }
+
+        result.set(account.address, {
+          accountName: accountProxy.name,
+          accountProxyId: accountProxy.id,
+          accountProxyType: accountProxy.accountType,
+          accountType: account.type,
+          address: account.address,
+          displayAddress,
+        });
+      });
+    };
+
+    if (isAllAccount) {
+      accountProxies.forEach(proxy => pushAccountItems(proxy.id));
+    } else {
+      pushAccountItems(currentAccountProxy.id);
+    }
+
+    return Array.from(result.values());
+  }, [
+    accountProxies,
+    chainInfoMap,
+    currentAccountProxy,
+    getReformatAddress,
+    isAllAccount,
+    multisigSelectedChain,
+  ]);
+
+  const onSelectMultisigAccount = useCallback((item: AccountAddressItemType) => {
+    setMultisigSelectedAddress(item.address);
+  }, []);
+
+  const isMultisigTab = selectedTab === HistoryTabType.MULTISIG;
+
+  const multisigChainItems = useMemo<ChainItemType[]>(() => {
+    const supported = chainItems.filter(item => chainInfoMap[item.slug]?.substrateInfo?.supportMultisig);
+
+    return [{ name: i18n.inputLabel.allNetworks, slug: ALL_NETWORK_KEY }, ...supported];
+  }, [chainInfoMap, chainItems]);
+
+  const onSelectMultisigChain = useCallback((item: ChainItemType) => {
+    setMultisigSelectedChain(item.slug);
+    // Addresses are chain-formatted, so a pick made under another network no longer applies.
+    setMultisigSelectedAddress('');
+  }, []);
+
   const multisigList = useMemo<PendingMultisigTx[]>(() => {
     let list = Object.values(pendingMultisigTxs);
 
-    if (selectedChain) {
-      list = list.filter(tx => tx.chain === selectedChain);
+    if (multisigSelectedChain && multisigSelectedChain !== ALL_NETWORK_KEY) {
+      list = list.filter(tx => tx.chain === multisigSelectedChain);
     }
 
-    if (selectedAddress) {
+    if (multisigSelectedAddress) {
       list = list.filter(
-        tx => isSameAddress(tx.multisigAddress, selectedAddress) || isSameAddress(tx.currentSigner, selectedAddress),
+        tx =>
+          isSameAddress(tx.multisigAddress, multisigSelectedAddress) ||
+          isSameAddress(tx.currentSigner, multisigSelectedAddress),
       );
-    } else {
-      // All-account mode: keep anything this wallet can act on.
-      const ownAddresses = accounts.map(({ address }) => address);
+    } else if (!isAllAccount && currentAccountProxy) {
+      // No account picked: narrow to the proxy in use. In all-account mode nothing is dropped.
+      const ownAddresses = (accountProxies.find(item => item.id === currentAccountProxy.id)?.accounts || []).map(
+        ({ address }) => address,
+      );
 
-      list = list.filter(tx =>
-        ownAddresses.some(
-          address => isSameAddress(tx.multisigAddress, address) || isSameAddress(tx.currentSigner, address),
-        ),
-      );
+      if (ownAddresses.length) {
+        list = list.filter(tx =>
+          ownAddresses.some(
+            address => isSameAddress(tx.multisigAddress, address) || isSameAddress(tx.currentSigner, address),
+          ),
+        );
+      }
     }
 
     return list.sort((a, b) => {
@@ -651,7 +747,7 @@ function History({
 
       return timeB - timeA;
     });
-  }, [accounts, pendingMultisigTxs, selectedAddress, selectedChain]);
+  }, [accountProxies, currentAccountProxy, isAllAccount, multisigSelectedAddress, multisigSelectedChain, pendingMultisigTxs]);
 
   const historyTabs = useMemo(
     () => [
@@ -810,6 +906,10 @@ function History({
             }}
           />
 
+          <View style={{ paddingHorizontal: theme.padding, paddingTop: theme.paddingXS }}>
+            <SwTab tabs={historyTabs} selectedValue={selectedTab} onSelectType={setSelectedTab} />
+          </View>
+
           <View
             style={{
               position: 'relative',
@@ -822,31 +922,52 @@ function History({
               flexDirection: 'row',
             }}>
             <View style={{ flex: 1 }}>
-              <HistoryChainSelector
-                items={chainItems}
-                value={selectedChain}
-                onSelectItem={onSelectChain}
-                disabled={chainSelectorDisabled}
-                selectorRef={chainSelectorRef}
-                loading={loading}
-              />
+              {isMultisigTab ? (
+                <HistoryChainSelector
+                  items={multisigChainItems}
+                  value={multisigSelectedChain}
+                  onSelectItem={onSelectMultisigChain}
+                  disabled={loading}
+                  selectorRef={chainSelectorRef}
+                  loading={loading}
+                />
+              ) : (
+                <HistoryChainSelector
+                  items={chainItems}
+                  value={selectedChain}
+                  onSelectItem={onSelectChain}
+                  disabled={chainSelectorDisabled}
+                  selectorRef={chainSelectorRef}
+                  loading={loading}
+                />
+              )}
             </View>
 
-            {isShowAccounttSelector && (
-              <View style={{ flex: 1 }}>
-                <HistoryAccountSelector
-                  items={accountAddressItems}
-                  value={selectedAddress}
-                  onSelectItem={onSelectAccount}
-                  disabled={loading}
-                  selectorRef={accountSelectorRef}
-                />
-              </View>
-            )}
-          </View>
-
-          <View style={{ paddingHorizontal: theme.padding, paddingBottom: theme.paddingXS }}>
-            <SwTab tabs={historyTabs} selectedValue={selectedTab} onSelectType={setSelectedTab} />
+            {isMultisigTab
+              ? multisigAccountAddressItems.length > 1 && (
+                  <View style={{ flex: 1 }}>
+                    <HistoryAccountSelector
+                      items={multisigAccountAddressItems}
+                      value={multisigSelectedAddress}
+                      onSelectItem={onSelectMultisigAccount}
+                      disabled={loading}
+                      selectorRef={accountSelectorRef}
+                      autoSelectFirstItem={false}
+                      placeholder={i18n.placeholder.selectAccount}
+                    />
+                  </View>
+                )
+              : isShowAccounttSelector && (
+                  <View style={{ flex: 1 }}>
+                    <HistoryAccountSelector
+                      items={accountAddressItems}
+                      value={selectedAddress}
+                      onSelectItem={onSelectAccount}
+                      disabled={loading}
+                      selectorRef={accountSelectorRef}
+                    />
+                  </View>
+                )}
           </View>
 
           {selectedTab === HistoryTabType.MULTISIG ? (

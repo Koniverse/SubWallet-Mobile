@@ -15,9 +15,21 @@ interface Props {
   disabled?: boolean;
   selectorRef?: React.RefObject<ModalRef | null>;
   onSelectItem?: (item: AccountAddressItemType) => void;
+  // The Multisig tab starts with no account picked, so it opts out of the auto-pick
+  // and shows a placeholder instead.
+  autoSelectFirstItem?: boolean;
+  placeholder?: string;
 }
 
-export const HistoryAccountSelector = ({ items, value, onSelectItem, disabled, selectorRef }: Props) => {
+export const HistoryAccountSelector = ({
+  items,
+  value,
+  onSelectItem,
+  disabled,
+  selectorRef,
+  autoSelectFirstItem = true,
+  placeholder,
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   const renderSelected = useCallback(() => {
@@ -39,13 +51,11 @@ export const HistoryAccountSelector = ({ items, value, onSelectItem, disabled, s
             backgroundColor: theme.colorBgSecondary,
           },
         ]}>
-        <AccountProxyAvatar value={value} size={20} />
+        {!!value && <AccountProxyAvatar value={value} size={20} />}
         <View style={{ flex: 1 }}>
-          {!!value && (
-            <Typography.Text ellipsis style={{ color: theme.colorTextLight2 }}>
-              {accountName}
-            </Typography.Text>
-          )}
+          <Typography.Text ellipsis style={{ color: value ? theme.colorTextLight2 : theme.colorTextLight4 }}>
+            {value ? accountName : placeholder || ''}
+          </Typography.Text>
         </View>
 
         <View>
@@ -53,7 +63,7 @@ export const HistoryAccountSelector = ({ items, value, onSelectItem, disabled, s
         </View>
       </View>
     );
-  }, [items, theme, value]);
+  }, [items, placeholder, theme, value]);
 
   const selectedValueMap = useMemo(() => {
     return value ? { [value]: true } : {};
@@ -62,7 +72,7 @@ export const HistoryAccountSelector = ({ items, value, onSelectItem, disabled, s
   return (
     <AccountSelector
       items={items}
-      autoSelectFirstItem
+      autoSelectFirstItem={autoSelectFirstItem}
       selectedValueMap={selectedValueMap}
       onSelectItem={onSelectItem}
       renderSelected={renderSelected}

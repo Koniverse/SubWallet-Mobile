@@ -121,7 +121,7 @@ export const RemoveSubstrateProxyAccount = ({
                 address={from}
                 chain={chain}
                 tokenSlug={nativeTokenSlug}
-                label={`${i18n.substrateProxy.availableBalance}:`}
+                label={`${i18n.substrateProxy.availableBalance}`}
                 onBalanceReady={setIsBalanceReady}
               />
 

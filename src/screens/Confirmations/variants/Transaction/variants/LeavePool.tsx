@@ -17,7 +17,7 @@ const LeavePoolTransactionConfirmation = ({ transaction }: Props) => {
     <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
 
-      <MetaInfo style={{ marginTop: 12 }} hasBackgroundWrapper>
+      <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Number
           decimals={decimals}
           label={i18n.inputLabel.unstakeAmount}

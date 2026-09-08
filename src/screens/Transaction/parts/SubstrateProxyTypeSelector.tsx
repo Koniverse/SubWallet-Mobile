@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { CheckCircleIcon } from 'phosphor-react-native';
+import { CaretDownIcon, CheckCircleIcon } from 'phosphor-react-native';
 import { SubstrateProxyType } from '@subwallet/extension-base/types';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { Icon, Typography } from 'components/design-system-ui';
-import { TextField } from 'components/Field/Text';
+import { FieldBase } from 'components/Field/Base';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import { FontMedium } from 'styles/sharedStyles';
@@ -89,13 +89,17 @@ export const SubstrateProxyTypeSelector = ({ chain, disabled, label, onSelectIte
       disabled={disabled}
       renderCustomItem={renderItem}
       renderSelected={() => (
-        <View>
-          <TextField
-            label={label}
-            text={selectedLabel}
-            placeholder={i18n.substrateProxy.selectProxyType}
-          />
-        </View>
+        <FieldBase label={label}>
+          <View style={styles.blockContent}>
+            <Typography.Text ellipsis style={selectedLabel ? styles.value : styles.placeholder}>
+              {selectedLabel || i18n.substrateProxy.selectProxyType}
+            </Typography.Text>
+
+            <View style={styles.caretWrapper}>
+              <CaretDownIcon size={20} color={theme.colorTextLight3} weight={'bold'} />
+            </View>
+          </View>
+        </FieldBase>
       )}
     />
   );
@@ -115,6 +119,26 @@ function createStyles(theme: ThemeTypes) {
     itemLabel: {
       ...FontMedium,
       color: theme.colorTextLight1,
+    },
+    blockContent: { flexDirection: 'row', height: 48, alignItems: 'center' },
+    value: {
+      ...FontMedium,
+      color: theme.colorTextLight2,
+      flex: 1,
+      paddingHorizontal: theme.paddingSM,
+    },
+    placeholder: {
+      ...FontMedium,
+      color: theme.colorTextLight4,
+      flex: 1,
+      paddingHorizontal: theme.paddingSM,
+    },
+    caretWrapper: {
+      height: 40,
+      width: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: theme.sizeXXS,
     },
   });
 }

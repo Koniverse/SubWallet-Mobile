@@ -207,8 +207,13 @@ export const HistoryMultisigLayout = ({ data }: Props) => {
         onBackButtonPress={onCloseCallDataModal}
         modalTitle={i18n.multisig.transactionDetails}
         titleTextAlign={'center'}
-        isUseForceHidden={true}>
-        <ScrollView style={styles.callDataDetail} showsVerticalScrollIndicator={false}>
+        isUseForceHidden={true}
+        isAllowSwipeDown={false}>
+        <ScrollView
+          style={styles.callDataDetail}
+          contentContainerStyle={styles.callDataDetailContent}
+          nestedScrollEnabled
+          showsVerticalScrollIndicator={false}>
           <Typography.Text style={styles.callDataDetailText}>
             {JSON.stringify(data.decodedCallData || '', null, 2)}
           </Typography.Text>
@@ -232,10 +237,8 @@ function createStyles(theme: ThemeTypes) {
       ...FontSemiBold,
       color: theme.colorTextLight1,
     },
+    // The "Signatories" heading sits outside the box; only the list is on a background.
     signatoriesContainer: {
-      backgroundColor: theme.colorBgSecondary,
-      borderRadius: theme.borderRadiusLG,
-      padding: theme.paddingSM,
       gap: theme.sizeXS,
     },
     signatoriesLabelRow: {
@@ -253,7 +256,10 @@ function createStyles(theme: ThemeTypes) {
       fontSize: theme.fontSizeSM,
     },
     signatoryList: {
-      gap: theme.sizeXS,
+      backgroundColor: theme.colorBgSecondary,
+      borderRadius: theme.borderRadiusLG,
+      padding: theme.paddingSM,
+      gap: theme.size,
     },
     signatoryItem: {
       flexDirection: 'row',
@@ -291,8 +297,13 @@ function createStyles(theme: ThemeTypes) {
       maxHeight: 264,
       borderRadius: theme.borderRadiusLG,
       backgroundColor: theme.colorBgSecondary,
-      padding: theme.paddingSM,
       marginVertical: theme.margin,
+    },
+    // Padding belongs on the content, not on the ScrollView itself: as outer style
+    // it shrinks the viewport without extending the scrollable range, so the last
+    // line sits under the bottom inset and cannot be scrolled to.
+    callDataDetailContent: {
+      padding: theme.paddingSM,
     },
     callDataDetailText: {
       color: theme.colorTextTertiary,

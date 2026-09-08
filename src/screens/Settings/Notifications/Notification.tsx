@@ -167,6 +167,11 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     openNotificationSetting();
   }, [notificationSetup, openNotificationSetting]);
 
+  // The store has no query for the Multisig tab: getIsTabRead() returns undefined for it,
+  // so its `item.isRead === undefined` test never matches and the tab comes back empty.
+  // Ask for the full list instead and let filterTabFunction below pick the multisig ones.
+  const fetchTab = selectedFilterTab === NotificationTab.MULTISIG ? NotificationTab.ALL : selectedFilterTab;
+
   const notificationItems = useMemo((): NotificationInfoItem[] => {
     const filterTabFunction = (item: NotificationInfoItem) => {
       const isMultisigAction = item.actionType === NotificationActionType.MULTISIG_APPROVAL;
@@ -525,14 +530,14 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     setLoading(true);
     fetchInappNotifications({
       proxyId: currentProxyId,
-      notificationTab: selectedFilterTab,
+      notificationTab: fetchTab,
     } as GetNotificationParams)
       .then(rs => {
         setNotifications(rs);
         setTimeout(() => setLoading(false), 300);
       })
       .catch(console.error);
-  }, [currentProxyId, excludeNotificationIds, selectedFilterTab]);
+  }, [currentProxyId, excludeNotificationIds, fetchTab]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<NotificationInfoItem>) => {
@@ -589,14 +594,14 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     setLoading(true);
     fetchInappNotifications({
       proxyId: currentProxyId,
-      notificationTab: selectedFilterTab,
+      notificationTab: fetchTab,
     } as GetNotificationParams)
       .then(rs => {
         setNotifications(rs);
         setTimeout(() => setLoading(false), 300);
       })
       .catch(console.error);
-  }, [currentProxyId, isAllAccount, isTrigger, selectedFilterTab]);
+  }, [currentProxyId, isAllAccount, isTrigger, fetchTab]);
 
   useEffect(() => {
     const timer = setInterval(() => {

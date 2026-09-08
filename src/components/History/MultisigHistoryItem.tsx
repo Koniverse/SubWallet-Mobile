@@ -97,7 +97,7 @@ export const MultisigHistoryItem = ({ item, onPress }: Props) => {
     <TouchableOpacity activeOpacity={1} style={styles.container} onPress={onPress}>
       <View style={styles.header}>
         <View style={styles.iconWrapper}>
-          <Icon phosphorIcon={txIcon} size={'md'} iconColor={theme.colorTextLight1} />
+          <Icon phosphorIcon={txIcon} size={'md'} iconColor={theme.colorSuccess} />
           <View style={styles.chainLogo}>
             <Logo network={item.chain} size={16} shape={'circle'} />
           </View>
@@ -170,7 +170,7 @@ function createStyles(theme: ThemeTypes) {
       borderRadius: 20,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: theme.colorBgInput,
+      backgroundColor: 'rgba(74, 201, 155, 0.1)',
     },
     chainLogo: {
       position: 'absolute',
@@ -193,21 +193,32 @@ function createStyles(theme: ThemeTypes) {
       flexShrink: 1,
     },
     statusText: {
-      ...FontMedium,
+      ...FontSemiBold,
       fontSize: theme.fontSizeSM,
+      paddingVertical: 2,
+      paddingHorizontal: theme.sizeXS,
+      borderRadius: theme.borderRadiusLG,
+      overflow: 'hidden',
     },
     statusApproved: {
       color: theme.colorSuccess,
+      backgroundColor: theme['cyan-2'],
     },
     statusWaiting: {
-      color: theme.colorWarning,
+      color: theme.colorWarningText,
+      backgroundColor: theme['colorWarning-2'],
     },
     meta: {
       ...FontMedium,
       color: theme.colorTextTertiary,
     },
     progressSection: {
-      gap: theme.sizeXXS,
+      backgroundColor: theme.colorTextDark1,
+      borderRadius: theme.borderRadiusLG,
+      paddingTop: theme.paddingXS,
+      paddingBottom: theme.paddingSM,
+      paddingHorizontal: theme.paddingXS,
+      gap: theme.sizeXS,
     },
     labelRow: {
       flexDirection: 'row',
@@ -215,18 +226,18 @@ function createStyles(theme: ThemeTypes) {
     },
     count: {
       ...FontSemiBold,
-      color: theme.colorTextLight1,
+      color: theme.colorWarningText,
     },
     barTrack: {
-      height: 4,
-      borderRadius: 2,
+      height: 8,
+      borderRadius: theme.borderRadiusSM,
       backgroundColor: theme.colorBgInput,
       overflow: 'hidden',
     },
     barFill: {
-      height: 4,
-      borderRadius: 2,
-      backgroundColor: theme.colorSuccess,
+      height: 8,
+      borderRadius: theme.borderRadiusSM,
+      backgroundColor: theme.colorPrimary,
     },
     divider: {
       height: 1,

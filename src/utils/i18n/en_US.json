@@ -488,6 +488,7 @@
     "status": "Status",
     "totalBonded": "Total stake",
     "totalMembers": "Total members",
+    "allNetworks": "All networks",
     "availableBalance": "Available balance",
     "maxValidators": "Max validators",
     "totalNominators": "Total nominators",

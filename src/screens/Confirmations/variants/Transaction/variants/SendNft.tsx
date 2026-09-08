@@ -6,11 +6,9 @@ import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import i18n from 'utils/i18n/i18n';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 type Props = BaseTransactionConfirmationProps;
 const SendNftTransactionConfirmation = ({ transaction }: Props) => {
-  const theme = useSubWalletTheme().swThemes;
   const data = transaction.data as ExtrinsicDataTypeMap[ExtrinsicType.SEND_NFT];
   const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
   const networkPrefix = useGetChainPrefixBySlug(transaction.chain);
@@ -29,7 +27,7 @@ const SendNftTransactionConfirmation = ({ transaction }: Props) => {
         <MetaInfo.Chain chain={transaction.chain} label={i18n.inputLabel.network} />
       </MetaInfo>
 
-      <MetaInfo hasBackgroundWrapper style={{ marginTop: theme.sizeSM }}>
+      <MetaInfo hasBackgroundWrapper>
         {(data.nftItemName || data.nftItem) && (
           <MetaInfo.Default label={i18n.inputLabel.nft}>
             {data.nftItemName || data.nftItem.name || `${data.nftItem.collectionId}_${data.nftItem.id}`}

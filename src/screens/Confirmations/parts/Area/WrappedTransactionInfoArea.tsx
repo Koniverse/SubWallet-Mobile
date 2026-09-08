@@ -285,8 +285,13 @@ const WrappedTransactionInfoArea = ({ setDisable, transaction }: Props) => {
         onBackButtonPress={onCloseCallDataModal}
         modalTitle={i18n.multisig.transactionDetails}
         titleTextAlign={'center'}
-        isUseForceHidden={false}>
-        <ScrollView style={styles.callDataDetail} showsVerticalScrollIndicator={false}>
+        isUseForceHidden={false}
+        isAllowSwipeDown={false}>
+        <ScrollView
+          style={styles.callDataDetail}
+          contentContainerStyle={styles.callDataDetailContent}
+          nestedScrollEnabled
+          showsVerticalScrollIndicator={false}>
           <Typography.Text style={styles.callDataDetailText}>
             {JSON.stringify(wrapTransactionData?.decodedCallData || '', null, 2)}
           </Typography.Text>
@@ -369,8 +374,13 @@ function createStyles(theme: ThemeTypes) {
       maxHeight: 264,
       borderRadius: theme.borderRadiusLG,
       backgroundColor: theme.colorBgSecondary,
-      padding: theme.paddingSM,
       marginVertical: theme.margin,
+    },
+    // Padding belongs on the content, not on the ScrollView itself: as outer style
+    // it shrinks the viewport without extending the scrollable range, so the last
+    // line sits under the bottom inset and cannot be scrolled to.
+    callDataDetailContent: {
+      padding: theme.paddingSM,
     },
     callDataDetailText: {
       color: theme.colorTextTertiary,
