@@ -4,6 +4,7 @@
 import { ExtrinsicDataTypeMap, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { ConfirmationContent } from 'components/common/Confirmation';
 import MetaInfo from 'components/MetaInfo';
+import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import React, { useMemo } from 'react';
@@ -146,25 +147,40 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
 
   return (
     <ConfirmationContent isFullHeight isTransaction transaction={transaction}>
-      <MetaInfo hasBackgroundWrapper valueColorScheme={'gray'}>
-        <MetaInfo.Account address={data.from} label={i18n.inputLabel.sendFrom} networkPrefix={senderPrefix} />
+      {transaction.wrappingStatus ? (
+        // Wrapped in a multisig or proxy: the signer is the wrapper, so the top block
+        // names the wrapped account and the recipient moves next to the amount below.
+        <CommonTransactionInfo address={data.from} network={transaction.chain} />
+      ) : (
+        <MetaInfo hasBackgroundWrapper valueColorScheme={'gray'}>
+          <MetaInfo.Account address={data.from} label={i18n.inputLabel.sendFrom} networkPrefix={senderPrefix} />
 
-        {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && chainInfo && (
-          <MetaInfo.Chain chain={chainInfo.slug} label={i18n.inputLabel.senderNetwork} />
-        )}
+          {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && chainInfo && (
+            <MetaInfo.Chain chain={chainInfo.slug} label={i18n.inputLabel.senderNetwork} />
+          )}
 
-        <MetaInfo.Account address={data.to} label={i18n.inputLabel.sendTo} networkPrefix={receiverPrefix} />
+          <MetaInfo.Account address={data.to} label={i18n.inputLabel.sendTo} networkPrefix={receiverPrefix} />
 
-        {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && chainInfo && (
-          <MetaInfo.Chain chain={xcmData.destinationNetworkKey} label={i18n.inputLabel.destinationNetwork} />
-        )}
+          {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && chainInfo && (
+            <MetaInfo.Chain chain={xcmData.destinationNetworkKey} label={i18n.inputLabel.destinationNetwork} />
+          )}
 
-        {transaction.extrinsicType !== ExtrinsicType.TRANSFER_XCM && chainInfo && (
-          <MetaInfo.Chain chain={chainInfo.slug} label={i18n.inputLabel.network} />
-        )}
-      </MetaInfo>
+          {transaction.extrinsicType !== ExtrinsicType.TRANSFER_XCM && chainInfo && (
+            <MetaInfo.Chain chain={chainInfo.slug} label={i18n.inputLabel.network} />
+          )}
+        </MetaInfo>
+      )}
 
       <MetaInfo hasBackgroundWrapper>
+        {!!transaction.wrappingStatus && (
+          <MetaInfo.Account
+            address={data.to}
+            label={i18n.inputLabel.recipient}
+            networkPrefix={receiverPrefix}
+            onlyShowName
+          />
+        )}
+
         {isAcrossBridge && xcmData.metadata ? (
           <>
             <MetaInfo.Default label={'Quote'}>

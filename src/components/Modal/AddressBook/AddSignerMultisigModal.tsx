@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { MagnifyingGlassIcon, PlusCircleIcon } from 'phosphor-react-native';
+import { MagnifyingGlassIcon, PlusCircleIcon, XCircleIcon } from 'phosphor-react-native';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { AccountProxyType, AccountSignMode } from '@subwallet/extension-base/types';
@@ -167,11 +167,11 @@ export const AddSignerMultisigModal = ({ modalVisible, onConfirm, selectedSigner
           isSelected={isChecked || isDisabled}
           showUnselectIcon
           onPress={onClickItem(item)}
-          customStyle={{ container: isDisabled ? styles.disabledItem : undefined }}
+          customStyle={{ container: isDisabled ? styles.disabledItemSpaced : styles.item }}
         />
       );
     },
-    [checkedSigners, disabledAddressList, onClickItem, styles.disabledItem, theme.sizeLG],
+    [checkedSigners, disabledAddressList, onClickItem, styles.disabledItemSpaced, styles.item, theme.sizeLG],
   );
 
   const groupBy = useCallback((item: SignerItem) => ACCOUNT_TYPE_GROUP_LABEL[item.accountType], []);
@@ -214,6 +214,7 @@ export const AddSignerMultisigModal = ({ modalVisible, onConfirm, selectedSigner
       <View style={styles.container}>
         <FlatListScreen
           autoFocus={false}
+          searchMarginBottom={theme.sizeXS}
           items={items}
           style={FlatListScreenPaddingTop}
           title={i18n.multisig.selectAccount}
@@ -226,6 +227,14 @@ export const AddSignerMultisigModal = ({ modalVisible, onConfirm, selectedSigner
           afterListItem={
             <View style={styles.footer}>
               <Button
+                style={styles.footerButton}
+                type={'secondary'}
+                icon={<Icon phosphorIcon={XCircleIcon} weight={'fill'} size={'lg'} iconColor={theme.colorWhite} />}
+                onPress={onClose}>
+                {i18n.buttonTitles.cancel}
+              </Button>
+              <Button
+                style={styles.footerButton}
                 disabled={!checkedSigners.length}
                 icon={
                   <Icon
@@ -252,7 +261,15 @@ function createStyles(theme: ThemeTypes) {
       flex: 1,
       width: '100%',
     },
-    disabledItem: {
+    // The extension spaces every neighbour pair - row/row, header/row, row/header -
+    // by sizeXS; the section header already carries the gap below itself.
+    item: {
+      marginBottom: theme.sizeXS,
+      marginHorizontal: theme.padding,
+    },
+    disabledItemSpaced: {
+      marginBottom: theme.sizeXS,
+      marginHorizontal: theme.padding,
       opacity: 0.4,
     },
     sectionHeaderContainer: {
@@ -266,9 +283,14 @@ function createStyles(theme: ThemeTypes) {
       textTransform: 'uppercase',
     },
     footer: {
+      flexDirection: 'row',
+      gap: 4,
       paddingHorizontal: theme.padding,
       paddingTop: theme.padding,
       ...MarginBottomForSubmitButton,
+    },
+    footerButton: {
+      flex: 1,
     },
   });
 }

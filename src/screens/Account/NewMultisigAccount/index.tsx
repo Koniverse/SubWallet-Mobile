@@ -230,6 +230,7 @@ export const NewMultisigAccount = () => {
               <InputText
                 value={signerAddress}
                 onChangeText={onChangeSignerAddress}
+                containerStyle={styles.addressInputContainer}
                 placeholder={i18n.multisig.enterAddress}
                 errorMessages={signerAddressError ? [signerAddressError] : undefined}
                 extraTextInputStyle={styles.addressTextInput}
@@ -359,6 +360,13 @@ function createStyles(theme: ThemeTypes) {
       flexDirection: 'row',
       alignItems: 'flex-start',
       gap: theme.sizeXS,
+      // The row owns the gap below it, the same marginSM the labels use, so the
+      // next section title sits evenly between the two - as on the extension.
+      marginBottom: theme.marginSM,
+    },
+    // InputText ships its own 8px bottom margin, which would stack on top of the row's.
+    addressInputContainer: {
+      marginBottom: 0,
     },
     signerInputWrapper: {
       flex: 1,
@@ -414,7 +422,9 @@ function createStyles(theme: ThemeTypes) {
     },
     signerList: {
       gap: theme.sizeXS,
-      marginBottom: theme.margin,
+      // Same as the label's own marginBottom, so the section title sits evenly
+      // between the list above it and the input below - as it does on the extension.
+      marginBottom: theme.marginSM,
     },
     thresholdHint: {
       ...FontMedium,

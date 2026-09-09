@@ -84,7 +84,7 @@ import { _ChainState } from '@subwallet/extension-base/services/chain-service/ty
 import { TokenBalanceItemType } from 'types/balance';
 import { useGetAccountTokenBalance, useGetBalance } from 'hooks/balance';
 import { RootNavigationProps } from 'routes/index';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { QuoteInfoArea } from './QuoteInfoArea';
 import { DetectedGenOptimalProcessErrMsg } from '@subwallet/extension-base/services/swap-service/utils';
@@ -273,6 +273,7 @@ const Component = ({
   const [swapError, setSwapError] = useState<SwapError | undefined>(undefined);
   const [feeOptions, setFeeOptions] = useState<string[] | undefined>([]);
   const [currentFeeOption, setCurrentFeeOption] = useState<string | undefined>(undefined);
+  const isFocused = useIsFocused();
   const [requestUserInteractToContinue, setRequestUserInteractToContinue] = useState<boolean>(false);
   const continueRefreshQuoteRef = useRef<boolean>(false);
   const scrollRef = useRef<ScrollView>(null);
@@ -574,8 +575,14 @@ const Component = ({
   );
 
   const onIdle = useCallback(() => {
+    // This screen stays mounted under whatever gets pushed on top of it and the warning
+    // renders in a portal, so an unguarded idle timer pops it over unrelated screens.
+    if (!isFocused) {
+      return;
+    }
+
     !hasInternalConfirmations && !!confirmTerm && showQuoteArea && setRequestUserInteractToContinue(true);
-  }, [confirmTerm, hasInternalConfirmations, showQuoteArea]);
+  }, [confirmTerm, hasInternalConfirmations, isFocused, showQuoteArea]);
 
   const onSelectToToken = useCallback(
     (tokenSlug: string) => {
