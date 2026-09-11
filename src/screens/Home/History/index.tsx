@@ -792,6 +792,25 @@ function History({
     mmkvStore.remove(NOTI_MULTISIG_PENDINGTX_ID);
   }, [multisigList]);
 
+  // The extension groups the multisig list by date the same way as the transaction list
+  // (History/index.tsx groupBy), with entries that have no timestamp under one label.
+  const multisigSections = useMemo(() => {
+    const sections: { title: string; data: PendingMultisigTx[] }[] = [];
+
+    multisigList.forEach(item => {
+      const title = item.timestamp ? formatHistoryDate(item.timestamp, language, 'list') : 'Pending Multisig';
+      const lastSection = sections[sections.length - 1];
+
+      if (lastSection && lastSection.title === title) {
+        lastSection.data.push(item);
+      } else {
+        sections.push({ title, data: [item] });
+      }
+    });
+
+    return sections;
+  }, [language, multisigList]);
+
   const multisigEmptyList = useCallback(() => {
     return (
       <EmptyList
@@ -887,8 +906,10 @@ function History({
         onPressBack={() => navigation.goBack()}
         title={i18n.header.history}
         titleTextAlign={'center'}
-        showRightBtn={true}
-        rightIcon={FadersHorizontalIcon}
+        // The extension drops the filter icon on the Multisig tab; its filters only apply
+        // to the transaction list.
+        showRightBtn={!isMultisigTab}
+        rightIcon={isMultisigTab ? undefined : FadersHorizontalIcon}
         onPressRightIcon={() => {
           Keyboard.dismiss();
           delayActionAfterDismissKeyboard(() => openFilterModal());
@@ -906,21 +927,22 @@ function History({
             }}
           />
 
-          <View style={{ paddingHorizontal: theme.padding, paddingTop: theme.paddingXS }}>
-            <SwTab tabs={historyTabs} selectedValue={selectedTab} onSelectType={setSelectedTab} />
-          </View>
-
+          {/* Tabs and selectors share one surface, the way the extension's
+              __page-tool-area holds history-line-1 and history-line-2 together. */}
           <View
             style={{
               position: 'relative',
               backgroundColor: theme.colorBgDefault,
               borderBottomLeftRadius: 16,
               borderBottomRightRadius: 16,
-              padding: theme.padding,
-              gap: theme.sizeSM,
+              paddingHorizontal: theme.padding,
+              paddingTop: theme.paddingXS,
+              paddingBottom: theme.padding,
               zIndex: 10,
-              flexDirection: 'row',
             }}>
+            <SwTab tabs={historyTabs} selectedValue={selectedTab} onSelectType={setSelectedTab} />
+
+            <View style={{ flexDirection: 'row', gap: theme.sizeSM }}>
             <View style={{ flex: 1 }}>
               {isMultisigTab ? (
                 <HistoryChainSelector
@@ -968,6 +990,7 @@ function History({
                     />
                   </View>
                 )}
+            </View>
           </View>
 
           {selectedTab === HistoryTabType.MULTISIG ? (
@@ -979,8 +1002,13 @@ function History({
                   paddingTop: theme.paddingXS,
                   paddingBottom: theme.paddingXS,
                 }}>
-                {multisigList.map(item => (
-                  <MultisigHistoryItem key={item.id} item={item} onPress={onOpenMultisigInfo(item)} />
+                {multisigSections.map(section => (
+                  <View key={section.title}>
+                    {renderSectionHeader(section.title)}
+                    {section.data.map(item => (
+                      <MultisigHistoryItem key={item.id} item={item} onPress={onOpenMultisigInfo(item)} />
+                    ))}
+                  </View>
                 ))}
               </ScrollView>
             ) : (

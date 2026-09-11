@@ -86,6 +86,7 @@ export const ALL_STAKING_ACTIONS: ExtrinsicType[] = [
   ExtrinsicType.STAKING_CLAIM_REWARD,
   ExtrinsicType.STAKING_COMPOUNDING,
   ExtrinsicType.STAKING_CANCEL_COMPOUNDING,
+  ExtrinsicType.CHANGE_EARNING_VALIDATOR,
 ];
 
 export const NEED_SIGN_CONFIRMATION: ConfirmationType[] = [

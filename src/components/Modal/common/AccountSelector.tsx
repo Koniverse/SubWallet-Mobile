@@ -32,6 +32,8 @@ interface Props {
   onCloseModal?: VoidFunction;
   autoSelectFirstItem?: boolean;
   isShowBitcoinAttr?: boolean;
+  // Account proxy types a screen wants kept out of its picker, e.g. multisig on Swap.
+  hiddenAccountProxyTypes?: AccountProxyType[];
 }
 
 export interface AccountAddressItemExtraType extends AccountAddressItemType {
@@ -49,6 +51,10 @@ function isAccountAddressItem(item: ListItem): item is AccountAddressItemType {
   return 'address' in item && 'accountProxyId' in item && 'accountName' in item && !('groupLabel' in item);
 }
 
+// Module-level so the default keeps a stable identity across renders and does not
+// invalidate the sortedItems memo on every render.
+const EMPTY_HIDDEN_ACCOUNT_PROXY_TYPES: AccountProxyType[] = [];
+
 export const AccountSelector = ({
   items,
   selectedValueMap,
@@ -64,6 +70,7 @@ export const AccountSelector = ({
   onCloseModal,
   autoSelectFirstItem,
   isShowBitcoinAttr,
+  hiddenAccountProxyTypes = EMPTY_HIDDEN_ACCOUNT_PROXY_TYPES,
 }: Props) => {
   // NOTE:
   // displayAddress is only for visual representation.
@@ -72,21 +79,25 @@ export const AccountSelector = ({
   const styles = createStyle(theme);
 
   const sortedItems = useMemo<AccountAddressItemType[]>(() => {
-    return [...items].sort((a, b) => {
-      const _isABitcoin = isBitcoinAddress(a.address);
-      const _isBBitcoin = isBitcoinAddress(b.address);
-      const _isSameProxyId = a.accountProxyId === b.accountProxyId;
+    // Mirrors the extension's Modal/Selector/AccountSelector.tsx:104: filter here rather
+    // than in the caller's items memo, so the caller keeps counting the full list.
+    return [...items]
+      .filter(i => !hiddenAccountProxyTypes.includes(i.accountProxyType))
+      .sort((a, b) => {
+        const _isABitcoin = isBitcoinAddress(a.address);
+        const _isBBitcoin = isBitcoinAddress(b.address);
+        const _isSameProxyId = a.accountProxyId === b.accountProxyId;
 
-      if (_isABitcoin && _isBBitcoin && _isSameProxyId) {
-        const aDetails = getBitcoinAccountDetails(a.accountType);
-        const bDetails = getBitcoinAccountDetails(b.accountType);
+        if (_isABitcoin && _isBBitcoin && _isSameProxyId) {
+          const aDetails = getBitcoinAccountDetails(a.accountType);
+          const bDetails = getBitcoinAccountDetails(b.accountType);
 
-        return aDetails.order - bDetails.order;
-      }
+          return aDetails.order - bDetails.order;
+        }
 
-      return 0;
-    });
-  }, [items]);
+        return 0;
+      });
+  }, [hiddenAccountProxyTypes, items]);
 
   const listItems = useMemo<AccountAddressItemExtraType[]>(() => {
     let accountAll: AccountAddressItemExtraType | undefined;
@@ -246,7 +257,8 @@ export const AccountSelector = ({
       onCloseModal={onCloseModal}
       grouping={grouping}
       isShowBitcoinAttr={isShowBitcoinAttr}
-      isShowInput={isShowInput}>
+      isShowInput={isShowInput}
+    >
       {children}
     </FullSizeSelectModal>
   );

@@ -2,6 +2,7 @@ import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { _getAssetDecimals, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import {
+  AccountProxyType,
   EarningStatus,
   NominationPoolInfo,
   OptimalYieldPathParams,
@@ -12,6 +13,8 @@ import {
   YieldStepType,
 } from '@subwallet/extension-base/types';
 import { OptimalYieldPath } from '@subwallet/extension-base/types/yield/actions/join/step';
+import { isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
+import { getExtrinsicTypeByPoolInfo } from 'utils/earning';
 import {
   SubmitJoinNativeStaking,
   SubmitJoinNominationPool,
@@ -193,6 +196,19 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo?.type || '';
   const poolChain = poolInfo?.chain || '';
+  // The pre-check must see the extrinsic this pool actually submits (MINT_VDOT, MINT_QDOT,
+  // STAKING_BOND, ...), not a blanket JOIN_YIELD_POOL - otherwise an account that cannot
+  // sign liquid staking still passes. Same memo as the extension's Earn.tsx:480.
+  const exType = useMemo(
+    () => getExtrinsicTypeByPoolInfo({ chain, type: poolType, slug }),
+    [chain, poolType, slug],
+  );
+  const hiddenAccountProxyTypes = useMemo(
+    // The extension hides multisig senders for liquid pools only (Earn.tsx:1240) - not for
+    // lending, and not for native/nomination staking, which a multisig can sign.
+    () => (poolInfo && isLiquidPool(poolInfo) ? [AccountProxyType.MULTISIG] : []),
+    [poolInfo],
+  );
 
   const styles = useMemo(() => createStyle(theme), [theme]);
 
@@ -1517,6 +1533,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                   )}
                   <AccountSelector
                     items={accountAddressItems}
+                    hiddenAccountProxyTypes={hiddenAccountProxyTypes}
                     selectedValueMap={{ [currentFrom]: true }}
                     accountSelectorRef={accountSelectorRef}
                     disabled={submitLoading || !isAllAccount}
@@ -1649,7 +1666,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                         iconColor={isDisabledButton ? theme.colorTextLight5 : theme.colorWhite}
                       />
                     }
-                    onPress={preCheckAction(onPressSubmit, ExtrinsicType.JOIN_YIELD_POOL)}>
+                    onPress={preCheckAction(onPressSubmit, exType)}>
                     {i18n.buttonTitles.stake}
                   </Button>
                 </View>

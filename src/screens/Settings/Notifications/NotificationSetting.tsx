@@ -24,6 +24,7 @@ const CAN_NOT_CHANGE_SETTING: Array<keyof NotificationSetup['showNotice']> = [
   'earningWithdraw',
   'availBridgeClaim',
   'polygonBridgeClaim',
+  'pendingMultisigApprovals',
 ];
 
 export const NotificationSetting = () => {
@@ -50,6 +51,10 @@ export const NotificationSetting = () => {
       {
         label: 'Claim POLYGON bridge',
         value: 'polygonBridgeClaim',
+      },
+      {
+        label: 'Pending multisig approvals',
+        value: 'pendingMultisigApprovals',
       },
     ];
   }, []);

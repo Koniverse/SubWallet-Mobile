@@ -257,8 +257,12 @@ const getSettingsContent = (props: DrawerContentComponentProps) => {
   return <Settings {...props} />;
 };
 
+// Created once, outside the component: rebuilding the navigator on every render makes
+// React see a new component type and remount the whole drawer, which throws away the
+// nested TransactionAction state and drops back to its initial route.
+const Drawer = createDrawerNavigator<WrapperParamList>();
+
 const DrawerScreen = () => {
-  const Drawer = createDrawerNavigator<WrapperParamList>();
   return (
     <Drawer.Navigator
       initialRouteName={'TransactionAction'}

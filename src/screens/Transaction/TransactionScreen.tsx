@@ -15,9 +15,11 @@ import { ChangeEarningValidator } from 'screens/Transaction/ChangeEarningValidat
 import { AddSubstrateProxyAccount } from 'screens/Transaction/SubstrateProxyAccount/AddSubstrateProxyAccount';
 import { RemoveSubstrateProxyAccount } from 'screens/Transaction/SubstrateProxyAccount/RemoveSubstrateProxyAccount';
 
-const TransactionScreen = () => {
-  const TransactionActionStack = createNativeStackNavigator<TransactionActionStackParamList>();
+// Created once, outside the component, so a re-render cannot remount the stack and
+// reset it to its initial route.
+const TransactionActionStack = createNativeStackNavigator<TransactionActionStackParamList>();
 
+const TransactionScreen = () => {
   return (
     <TransactionActionStack.Navigator
       screenOptions={{ headerShown: false, animation: 'slide_from_right', gestureEnabled: false }}>

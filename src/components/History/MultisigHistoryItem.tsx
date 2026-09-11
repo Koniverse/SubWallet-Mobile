@@ -256,8 +256,9 @@ function createStyles(theme: ThemeTypes) {
       flexShrink: 1,
     },
     multisigAccountName: {
-      ...FontSemiBold,
-      color: theme.colorTextLight1,
+      // The extension does not style this value beyond its size: it inherits the
+      // __status-row colour (colorTextLight4) and weight, same as the label opposite it.
+      color: theme.colorTextLight4,
       flexShrink: 1,
     },
   });

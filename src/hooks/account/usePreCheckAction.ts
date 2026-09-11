@@ -55,7 +55,8 @@ const usePreCheckAction = (
       return async () => {
         if (!account) {
           hideAll();
-          show('Account not exists');
+          // Same 1.5s the extension gives this short notice.
+          show('Account not exists', { duration: 1500 });
         } else {
           const mode = getSignMode(account);
           let block = false;
@@ -80,7 +81,7 @@ const usePreCheckAction = (
           }
 
           if (ALL_STAKING_ACTIONS.includes(action)) {
-            defaultMessage = 'You are using a {{accountTitle}}. Staking is not supported with this account type';
+            defaultMessage = 'You are using a {{accountTitle}}. Earning is not supported with this account type';
           }
 
           if (mode === AccountSignMode.QR) {
@@ -106,6 +107,22 @@ const usePreCheckAction = (
               }
             } catch (e) {
               console.error(e);
+            }
+          }
+
+          // The extension funnels every unsupported action through this one check
+          // (hooks/account/usePreCheckAction.ts:89): an account may only run an extrinsic
+          // type its sign mode can actually sign. For a multisig account this is what
+          // blocks swap, cross-chain transfer, claim bridge and liquid staking, while
+          // leaving same-chain transfer, staking, governance, proxy and NFT send alone.
+          // Kept additive: mobile's own switch above still over-blocks Ledger on purpose.
+          if (!account.transactionActions.includes(action)) {
+            block = true;
+
+            // ALL_ACCOUNT carries no transaction actions of its own, so screens that opt
+            // out of blocking it must keep working - same escape as the extension.
+            if (mode === AccountSignMode.ALL_ACCOUNT && !blockAllAccount) {
+              block = false;
             }
           }
 
@@ -148,6 +165,9 @@ const usePreCheckAction = (
             hideAll();
             show((messageOverride || message || defaultMessage).replace('{{accountTitle}}', accountTitle), {
               type: messageOverride ? 'danger' : 'normal',
+              // The extension keeps a blocked-action notice up for 8s; the provider default
+              // (4s) is too short to read a two-line explanation.
+              duration: 8000,
             });
           }
         }

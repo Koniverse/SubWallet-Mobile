@@ -132,6 +132,8 @@ export const TokenGroupsDetail = ({
   const isSwapSupported = useMemo(() => {
     const isSupportAccount = (currentAcc: AccountProxy) => {
       const isReadOnlyAccount = currentAcc.accountType === AccountProxyType.READ_ONLY;
+      // A multisig account has no SWAP action, so the extension greys the button out too.
+      const isMultisigAccount = currentAcc.accountType === AccountProxyType.MULTISIG;
       const isLedgerAccount = currentAcc.accountType === AccountProxyType.LEDGER;
       const isSoloAccount = currentAcc.accountType === AccountProxyType.SOLO;
       const validEcosystem = [AccountChainType.ETHEREUM, AccountChainType.SUBSTRATE, AccountChainType.BITCOIN].includes(
@@ -139,7 +141,7 @@ export const TokenGroupsDetail = ({
       );
       const invalidSoloAccount = isSoloAccount && !validEcosystem;
 
-      return !invalidSoloAccount && !isLedgerAccount && !isReadOnlyAccount;
+      return !invalidSoloAccount && !isLedgerAccount && !isReadOnlyAccount && !isMultisigAccount;
     };
 
     const isSupportAllAccount = (_accountProxies: AccountProxy[]) => {

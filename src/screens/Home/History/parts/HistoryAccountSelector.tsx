@@ -53,7 +53,7 @@ export const HistoryAccountSelector = ({
         ]}>
         {!!value && <AccountProxyAvatar value={value} size={20} />}
         <View style={{ flex: 1 }}>
-          <Typography.Text ellipsis style={{ color: value ? theme.colorTextLight2 : theme.colorTextLight4 }}>
+          <Typography.Text ellipsis style={{ color: theme.colorTextLight2 }}>
             {value ? accountName : placeholder || ''}
           </Typography.Text>
         </View>

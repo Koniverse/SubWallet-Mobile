@@ -29,7 +29,7 @@ import {
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   fetchInappNotifications,
   getIsClaimNotificationStatus,
@@ -134,13 +134,13 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
   }, []);
   const [selectedFilterTab, setSelectedFilterTab] = useState<NotificationTab>(NotificationTab.ALL);
   const [viewDetailItem, setViewDetailItem] = useState<NotificationInfoItem | undefined>(undefined);
+  // The confirm modal is global, so a pending popup must not land on the next screen.
+  const activeChainModalTimerRef = useRef<NodeJS.Timeout>();
   const [notifications, setNotifications] = useState<_NotificationInfo[]>([]);
   const [currentProxyId] = useState<string | undefined>(currentAccountProxy?.id);
   const [loadingNotification, setLoadingNotification] = useState<boolean>(false);
   const [isTrigger, setTrigger] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  // use this to trigger get date when click read/unread
-  const [currentTimestampMs, setCurrentTimestampMs] = useState(Date.now());
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const styles = createStyleSheet(theme);
 
@@ -232,7 +232,9 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
       const networkName = chainInfo?.name || chainSlug;
       const actionText = action === NotificationActionType.WITHDRAW ? 'withdrawing' : 'claiming';
       const content = `${networkName} network is currently disabled. Enable the network and then re-click the notification to start ${actionText} your funds`;
-      setTimeout(() => {
+
+      clearTimeout(activeChainModalTimerRef.current);
+      activeChainModalTimerRef.current = setTimeout(() => {
         confirmModal.setConfirmModal({
           visible: true,
           completeBtnTitle: i18n.buttonTitles.enable,
@@ -282,8 +284,9 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     (item: NotificationInfoItem) => {
       return () => {
         Keyboard.dismiss();
-        setViewDetailItem(item);
         const slug = (item.metadata as WithdrawClaimNotificationMetadata).stakingSlug;
+        // Read the clock here instead of keeping it in state: a ticking state value
+        // re-rendered the whole screen (and rebuilt renderItem) once a second.
         const totalWithdrawable = getTotalWidrawable(
           slug,
           poolInfoMap,
@@ -291,7 +294,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
           currentAccountProxy,
           isAllAccount,
           chainsByAccountType,
-          currentTimestampMs,
+          Date.now(),
         );
         const switchStatusParams: RequestSwitchStatusParams = {
           id: item.id,
@@ -498,7 +501,6 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
       chainStateMap,
       chainsByAccountType,
       currentAccountProxy,
-      currentTimestampMs,
       earningRewards,
       isAllAccount,
       isTrigger,
@@ -604,13 +606,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
   }, [currentProxyId, isAllAccount, isTrigger, fetchTab]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTimestampMs(Date.now());
-    }, 1000);
-
-    return () => {
-      clearInterval(timer);
-    };
+    return () => clearTimeout(activeChainModalTimerRef.current);
   }, []);
 
   useEffect(() => {
@@ -655,9 +651,8 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
             size={'xs'}
             disabled={!enableNotification}
             onPress={markAllRead}
-            externalTextStyle={styles.markAllReadTextStyle}>
-            {'Mark all as read'}
-          </Button>
+            style={styles.markAllReadBtnStyle}
+          />
         )}
       </View>
     );
@@ -667,7 +662,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     markAllRead,
     selectedFilterTab,
     styles.beforeListWrapperStyle,
-    styles.markAllReadTextStyle,
+    styles.markAllReadBtnStyle,
     styles.tabContainerStyle,
     styles.tabItemStyle,
     styles.tabSelectedStyle,
@@ -746,6 +741,6 @@ function createStyleSheet(theme: ThemeTypes) {
       ...FontSemiBold,
     },
     tabTextSelectedStyle: { color: theme.colorWhite },
-    markAllReadTextStyle: { color: theme.colorWhite },
+    markAllReadBtnStyle: { marginRight: theme.margin },
   });
 }

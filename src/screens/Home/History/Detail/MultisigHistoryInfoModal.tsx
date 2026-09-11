@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { ArrowCircleUpRightIcon } from 'phosphor-react-native';
+import { ArrowCircleUpRightIcon, XCircleIcon } from 'phosphor-react-native';
 import { ExtrinsicStatus, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { MultisigTxType, PendingMultisigTx } from '@subwallet/extension-base/services/multisig-service';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
@@ -13,13 +13,14 @@ import {
   ExecutePendingTxRequest,
 } from '@subwallet/extension-base/types/multisig';
 import { reformatAddress } from '@subwallet/extension-base/utils';
-import { Button, Icon, SwModal } from 'components/design-system-ui';
+import { Button, Icon, PageIcon, SwModal } from 'components/design-system-ui';
 import { MULTISIG_TX_TITLE_MAP } from 'constants/multisig';
 import { useGetBalance } from 'hooks/balance';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
+import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { approvePendingTx, cancelPendingTx, executePendingTx } from 'messaging/transaction/multisig';
 import { AppModalContext } from 'providers/AppModalContext';
@@ -52,7 +53,7 @@ export const MultisigHistoryInfoModal = ({
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { confirmModal } = React.useContext(AppModalContext);
 
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { chainInfoMap, chainStatusMap } = useSelector((state: RootState) => state.chainStore);
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
 
   const [loading, setLoading] = useState(false);
@@ -190,6 +191,11 @@ export const MultisigHistoryInfoModal = ({
           title: i18n.multisig.unableToSign,
           message: i18n.multisig.selectedSignatoryIsMultisigWarning,
           completeBtnTitle: i18n.multisig.goToPolkadotJs,
+          cancelBtnTitle: i18n.multisig.dismiss,
+          // The extension raises this as an ERROR alert (AlertModal -> XCircle in colorError);
+          // without an icon here ConfirmModal falls back to the warning "plugs" icon, which
+          // reads as a connectivity problem rather than "this signatory cannot sign".
+          customIcon: <PageIcon icon={XCircleIcon} color={theme.colorError} />,
           onCancelModal: () => {
             confirmModal.hideConfirmModal();
             onCancel();
@@ -206,7 +212,7 @@ export const MultisigHistoryInfoModal = ({
 
       action();
     },
-    [confirmModal, onCancel, signerAccountProxy?.accountType],
+    [confirmModal, onCancel, signerAccountProxy?.accountType, theme.colorError],
   );
 
   const _onReject = useCallback(() => {
@@ -322,6 +328,22 @@ export const MultisigHistoryInfoModal = ({
       turnOnChain(data.chain);
     }
   }, [checkChainConnected, data?.chain, turnOnChain]);
+
+  // `error` disables every action button, but on its own it never reaches the user, so the
+  // buttons just sit dead. The extension (MultisigHistoryInfoModal.tsx:340-354) raises it
+  // through onError once the chain is actually connected - before that the message would
+  // only describe the reconnect that is already in progress.
+  useEffect(() => {
+    if (!error || !data?.chain) {
+      return;
+    }
+
+    if (chainStatusMap[data.chain]?.connectionStatus !== _ChainConnectionStatus.CONNECTED) {
+      return;
+    }
+
+    onError(new Error(error));
+  }, [chainStatusMap, data?.chain, error, onError]);
 
   return (
     <SwModal

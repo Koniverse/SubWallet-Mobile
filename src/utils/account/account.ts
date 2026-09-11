@@ -84,6 +84,27 @@ export const getSignModeByAccountProxy = (accountProxy: AccountProxy | null | un
   return accountProxy?.accounts[0]?.signMode || AccountSignMode.UNKNOWN;
 };
 
+export const getTransactionActionsByAccountProxy = (
+  accountProxy: AccountProxy,
+  accountProxies: AccountProxy[] = [],
+): string[] => {
+  const transactionActionsSet = new Set<string>();
+
+  if (isAccountAll(accountProxy.id)) {
+    accountProxies.forEach(proxy => {
+      proxy.accounts?.forEach(({ transactionActions }) => {
+        transactionActions?.forEach(action => transactionActionsSet.add(action));
+      });
+    });
+  } else {
+    accountProxy.accounts.forEach(({ transactionActions }) => {
+      transactionActions?.forEach(action => transactionActionsSet.add(action));
+    });
+  }
+
+  return Array.from(transactionActionsSet);
+};
+
 export const isNoAccount = (accounts: AccountJson[] | null): boolean => {
   return accounts ? !accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY).length : false;
 };

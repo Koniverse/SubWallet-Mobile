@@ -174,6 +174,8 @@ export interface FeeItem {
 
 type SortableTokenSelectorItemType = TokenSelectorItemType & SortableTokenItem;
 
+const HIDDEN_SWAP_ACCOUNT_PROXY_TYPES = [AccountProxyType.MULTISIG];
+
 const Component = ({
   allowedChainAndExcludedTokenForTargetAccountProxy,
   defaultSlug,
@@ -1430,6 +1432,11 @@ const Component = ({
               {!isNotShowAccountSelector && (
                 <AccountSelector
                   items={accountAddressItems}
+                  // A multisig account has no SWAP action, so the extension keeps it out
+                  // of this picker entirely (Swap/index.tsx:1331). Filtering happens in
+                  // the selector, not in accountAddressItems, so isNotShowAccountSelector
+                  // and the auto-select effect still see the full list.
+                  hiddenAccountProxyTypes={HIDDEN_SWAP_ACCOUNT_PROXY_TYPES}
                   selectedValueMap={{ [fromValue]: true }}
                   accountSelectorRef={accountSelectorRef}
                   disabled={false}

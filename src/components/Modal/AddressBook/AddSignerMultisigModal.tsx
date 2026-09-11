@@ -1,12 +1,26 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { MagnifyingGlassIcon, PlusCircleIcon, XCircleIcon } from 'phosphor-react-native';
+import {
+  EyeIcon,
+  GitCommitIcon,
+  MagnifyingGlassIcon,
+  NeedleIcon,
+  PlusCircleIcon,
+  QrCodeIcon,
+  QuestionIcon,
+  StrategyIcon,
+  SwatchesIcon,
+  UserSwitchIcon,
+  XCircleIcon,
+} from 'phosphor-react-native';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { AccountProxyType, AccountSignMode } from '@subwallet/extension-base/types';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import { isSubstrateAddress } from '@subwallet/keyring';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import { PhosphorIcon } from 'utils/campaign';
 import { Button, Icon, SwFullSizeModal, Typography } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { EmptyList } from 'components/EmptyList';
@@ -39,6 +53,20 @@ const ACCOUNT_TYPE_GROUP_LABEL: Record<AccountProxyType, string> = {
   [AccountProxyType.INJECTED]: 'Injected account',
   [AccountProxyType.MULTISIG]: i18n.multisig.multisigAccount,
   [AccountProxyType.UNKNOWN]: 'Unknown account',
+};
+
+type AccountTypeBadge = { icon: PhosphorIcon; color?: string };
+
+const ACCOUNT_TYPE_BADGE: Record<AccountProxyType, AccountTypeBadge | undefined> = {
+  [AccountProxyType.ALL_ACCOUNT]: undefined,
+  [AccountProxyType.UNIFIED]: { icon: StrategyIcon, color: 'colorSuccess' },
+  [AccountProxyType.SOLO]: { icon: GitCommitIcon, color: 'blue-9' },
+  [AccountProxyType.QR]: { icon: QrCodeIcon },
+  [AccountProxyType.READ_ONLY]: { icon: EyeIcon },
+  [AccountProxyType.LEDGER]: { icon: SwatchesIcon },
+  [AccountProxyType.INJECTED]: { icon: NeedleIcon },
+  [AccountProxyType.MULTISIG]: { icon: UserSwitchIcon, color: 'geekblue-9' },
+  [AccountProxyType.UNKNOWN]: { icon: QuestionIcon },
 };
 
 interface Props {
@@ -158,6 +186,8 @@ export const AddSignerMultisigModal = ({ modalVisible, onConfirm, selectedSigner
       const isChecked = checkedSigners.some(s => s.address === item.address);
       const isDisabled = disabledAddressList.includes(item.address);
 
+      const badge = ACCOUNT_TYPE_BADGE[item.accountType];
+
       return (
         <AccountItemWithName
           address={item.formatedAddress}
@@ -168,10 +198,36 @@ export const AddSignerMultisigModal = ({ modalVisible, onConfirm, selectedSigner
           showUnselectIcon
           onPress={onClickItem(item)}
           customStyle={{ container: isDisabled ? styles.disabledItemSpaced : styles.item }}
+          // The extension overlays the account-type badge on the avatar here; passing a
+          // custom leftItem keeps it anchored to the avatar instead of the row padding.
+          leftItem={
+            <View style={styles.avatarWrapper}>
+              <AccountProxyAvatar value={item.proxyId || item.formatedAddress} size={theme.sizeLG} />
+              {!!badge && (
+                <View style={styles.avatarBadge}>
+                  <Icon
+                    phosphorIcon={badge.icon}
+                    customSize={10}
+                    weight={'fill'}
+                    iconColor={badge.color ? theme[badge.color as keyof ThemeTypes] as string : theme.colorWhite}
+                  />
+                </View>
+              )}
+            </View>
+          }
         />
       );
     },
-    [checkedSigners, disabledAddressList, onClickItem, styles.disabledItemSpaced, styles.item, theme.sizeLG],
+    [
+      checkedSigners,
+      disabledAddressList,
+      onClickItem,
+      styles.avatarBadge,
+      styles.avatarWrapper,
+      styles.disabledItemSpaced,
+      styles.item,
+      theme,
+    ],
   );
 
   const groupBy = useCallback((item: SignerItem) => ACCOUNT_TYPE_GROUP_LABEL[item.accountType], []);
@@ -266,6 +322,20 @@ function createStyles(theme: ThemeTypes) {
     item: {
       marginBottom: theme.sizeXS,
       marginHorizontal: theme.padding,
+    },
+    avatarWrapper: {
+      position: 'relative',
+    },
+    avatarBadge: {
+      position: 'absolute',
+      right: -2,
+      bottom: -2,
+      width: 16,
+      height: 16,
+      borderRadius: 8,
+      backgroundColor: 'rgba(0, 0, 0, 0.65)',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     disabledItemSpaced: {
       marginBottom: theme.sizeXS,

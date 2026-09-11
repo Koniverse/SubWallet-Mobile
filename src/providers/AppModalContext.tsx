@@ -132,15 +132,21 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
     setConfirmModal(prevState => ({ ...prevState, visible: false }));
     setTimeout(
       () =>
-        setConfirmModal(prevState => ({
-          ...prevState,
-          title: '',
-          message: '',
-          completeBtnTitle: '',
-          messageIcon: undefined,
-          onCancelModal: undefined,
-          onCompleteModal: undefined,
-        })),
+        setConfirmModal(prevState =>
+          // Someone may have reopened the modal inside these 300ms; wiping it then
+          // leaves a blank sheet with no buttons and the tap looks like it did nothing.
+          prevState.visible
+            ? prevState
+            : {
+                ...prevState,
+                title: '',
+                message: '',
+                completeBtnTitle: '',
+                messageIcon: undefined,
+                onCancelModal: undefined,
+                onCompleteModal: undefined,
+              },
+        ),
       300,
     );
   }, []);
