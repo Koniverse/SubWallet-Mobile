@@ -1833,5 +1833,8 @@
   "bg.EARNING.services.service.earning.nativeStaking.dtao.unstakeAmountTooLow": "Amount too low. You need to unstake at least {{amount}} {{symbol}}",
   "bg.EARNING.services.service.earning.nativeStaking.dtao.fromValidatorSameAsTo": "From validator is the same with to validator",
   "bg.EARNING.services.service.earning.nativeStaking.dtao.moveAmountTooLow": "Amount too low. You need to move at least {{formattedMinUnstake}} {{subnetSymbol}}",
-  "bg.EARNING.services.service.earning.nativeStaking.dtao.remainingStakeBelowMinimumWarning": "Your remaining stake on the initial validator will fall below minimum active stake and cannot be unstaked if you proceed with the chosen amount. Hit \"Move all\" to move all {{maxAmount}} {{subnetSymbol}} to the new validator, or \"Cancel\" and lower the amount, then try again"
+  "bg.EARNING.services.service.earning.nativeStaking.dtao.remainingStakeBelowMinimumWarning": "Your remaining stake on the initial validator will fall below minimum active stake and cannot be unstaked if you proceed with the chosen amount. Hit \"Move all\" to move all {{maxAmount}} {{subnetSymbol}} to the new validator, or \"Cancel\" and lower the amount, then try again",
+  "bg.ACCOUNT.services.keyring.handler.Multisig.multisigAddressExists": "The generated multisig address already exists under the account named \"{{name}}\". Remove the account first, then try again",
+  "bg.TRANSACTION.core.validation.transfer.tokenCannotBeBridgedToNetwork": "{{symbol}} on {{originChainName}} can't be transferred to {{destinationChainName}} network. Please use another token or change the destination network",
+  "bg.TRANSACTION_SERVICE.services.service.transaction.existingMultisigPendingTransaction": "You’ve a pending multisig transaction with the same information. Complete the transaction first, then try again"
 }

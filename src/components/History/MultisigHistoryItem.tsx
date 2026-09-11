@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
   ArrowsLeftRightIcon,
@@ -25,7 +25,10 @@ import { toShort } from 'utils/index';
 
 interface Props {
   item: PendingMultisigTx;
-  onPress?: () => void;
+  // Takes the item so the parent can pass one stable callback to every row instead of a
+  // fresh closure per row per render, which is what lets React.memo below skip re-renders
+  // while the list scrolls.
+  onPressItem?: (item: PendingMultisigTx) => void;
 }
 
 const stakeTypes = [
@@ -40,9 +43,10 @@ const govTypes = [MultisigTxType.GOV_VOTE, MultisigTxType.GOV_REMOVE_VOTE, Multi
 
 const substrateProxyTypes = [MultisigTxType.ADD_PROXY, MultisigTxType.REMOVE_PROXY];
 
-export const MultisigHistoryItem = ({ item, onPress }: Props) => {
+const Component = ({ item, onPressItem }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const onPress = useCallback(() => onPressItem?.(item), [item, onPressItem]);
 
   const txIcon = useMemo((): React.ElementType<IconProps> => {
     const method = item.decodedCallData?.method || '';
@@ -148,6 +152,8 @@ export const MultisigHistoryItem = ({ item, onPress }: Props) => {
     </TouchableOpacity>
   );
 };
+
+export const MultisigHistoryItem = memo(Component);
 
 function createStyles(theme: ThemeTypes) {
   return StyleSheet.create({

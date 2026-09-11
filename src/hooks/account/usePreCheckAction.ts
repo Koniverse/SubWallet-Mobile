@@ -22,6 +22,9 @@ const usePreCheckAction = (
   blockAllAccount = true,
   message?: string,
   chain?: string,
+  // Severity for a blocked action; the extension's `type` option. Overrides of
+  // `messageOverride` stay danger regardless.
+  type?: 'normal' | 'danger' | 'warning',
 ): ((onPress: VoidFunction, action: ExtrinsicType) => VoidFunction) => {
   const { show, hideAll } = useToast();
 
@@ -164,7 +167,7 @@ const usePreCheckAction = (
           } else {
             hideAll();
             show((messageOverride || message || defaultMessage).replace('{{accountTitle}}', accountTitle), {
-              type: messageOverride ? 'danger' : 'normal',
+              type: messageOverride ? 'danger' : type || 'normal',
               // The extension keeps a blocked-action notice up for 8s; the provider default
               // (4s) is too short to read a two-line explanation.
               duration: 8000,
@@ -173,7 +176,7 @@ const usePreCheckAction = (
         }
       };
     },
-    [account, blockAllAccount, chain, getAccountTypeTitle, hideAll, isDevMode, message, show],
+    [account, blockAllAccount, chain, getAccountTypeTitle, hideAll, isDevMode, message, show, type],
   );
 };
 

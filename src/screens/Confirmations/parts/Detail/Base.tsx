@@ -40,6 +40,7 @@ const BaseDetailModal: React.FC<Props> = (props: Props) => {
         setVisible={setOpen}
         modalVisible={open}
         modalTitle={title}
+        titleTextAlign={'center'}
         onChangeModalVisible={onClose}
         modalStyle={{ maxHeight: 600 }}
         isUseForceHidden={false}

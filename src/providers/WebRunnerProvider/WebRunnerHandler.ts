@@ -88,20 +88,35 @@ export class WebRunnerHandler {
     const BUNDLE_PATH = isDevMode ? 'DevModeWeb.bundle' : 'Web.bundle';
     const ANDROID_BUNDLE_PATH = `${RNFS.DocumentDirectoryPath}/${BUNDLE_PATH}/site`;
     try {
-      // Decide by comparing the shipped index.html with the copy on disk, not by
-      // app version. index.html names the content-hashed runner chunk, so it changes
-      // exactly when the bundle changes. Keying this on the version instead meant
+      // Decide by comparing the shipped files with the copy on disk, not by app
+      // version. index.html names the content-hashed runner chunk, so it changes
+      // exactly when the runner changes. Keying this on the version instead meant
       // that installing over an existing app kept serving the previously copied
       // runner, because versionName and versionCode stay put across builds -- an
       // updated web-runner simply never reached the WebView.
-      const assetIndex = await RNFS.readFileAssets(`${BUNDLE_PATH}/site/index.html`, 'utf8');
+      // The locale JSON is fetched by the runner at runtime and is not hashed into
+      // index.html, so a locale-only update (a background error string patched in
+      // place) needs its own comparison or it never reaches the WebView either.
+      const FRESHNESS_FILES = ['index.html', 'locales/en/translation.json'];
+      let isUpToDate = true;
 
-      if (await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`)) {
-        const copiedIndex = await RNFS.readFile(`${ANDROID_BUNDLE_PATH}/index.html`, 'utf8');
-
-        if (assetIndex === copiedIndex) {
-          return;
+      for (const file of FRESHNESS_FILES) {
+        if (!(await RNFS.exists(`${ANDROID_BUNDLE_PATH}/${file}`))) {
+          isUpToDate = false;
+          break;
         }
+
+        const shipped = await RNFS.readFileAssets(`${BUNDLE_PATH}/site/${file}`, 'utf8');
+        const copied = await RNFS.readFile(`${ANDROID_BUNDLE_PATH}/${file}`, 'utf8');
+
+        if (shipped !== copied) {
+          isUpToDate = false;
+          break;
+        }
+      }
+
+      if (isUpToDate) {
+        return;
       }
 
       await copyAndroidWebBundle(BUNDLE_PATH);

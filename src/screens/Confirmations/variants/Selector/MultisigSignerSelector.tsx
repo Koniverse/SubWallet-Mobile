@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { CaretDownIcon, InfoIcon } from 'phosphor-react-native';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
 import { PrepareMultisigSignResponse } from '@subwallet/extension-base/types/multisig';
 import { ActivityIndicator, Icon, Typography } from 'components/design-system-ui';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
@@ -14,7 +15,7 @@ import { useGetWrappedTransactionSigners } from 'hooks/transaction/useGetWrapped
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { prepareMultisigSignRequest } from 'messaging/transaction/multisig';
 import { RootState } from 'stores/index';
-import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { DisabledStyle, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { WrappedTransactionSigner } from 'types/wrappedTransaction';
 import i18n from 'utils/i18n/i18n';
@@ -37,6 +38,15 @@ enum MultisigSignerUiErrorType {
   NO_SIGNATORIES = 'NO_SIGNATORIES',
 }
 
+// The signer lookup awaits `substrateApi.isReady` in the background, which never settles while
+// the RPC cannot be reached. The connection watcher normally gives up first; this is the safety
+// net for a chain that sits in CONNECTING for good.
+const SIGNER_LOOKUP_TIMEOUT = 30_000;
+// How long an active chain may report a broken connection before the lookup is treated as
+// stalled. Covers the UI status map lagging behind the state map and the provider's own
+// reconnect after a brief drop.
+const BROKEN_CONNECTION_GRACE = 3_000;
+
 /**
  * Signatory picker shown when a dApp asks a multisig account to sign. Choosing a
  * signatory prepares the wrapped extrinsic on the backend, which is what unlocks the
@@ -57,26 +67,72 @@ export const MultisigSignerSelector = ({
 
   const [signerSelected, setSignerSelected] = useState<WrappedTransactionSigner | null>(null);
   const [signerItems, setSignerItems] = useState<WrappedTransactionSigner[] | null>(null);
-  const [isSignerItemsLoading, setIsSignerItemsLoading] = useState(false);
+  // Starts as loading, like react-query's isLoading in the extension. Starting at false made
+  // the very first render look like "loaded, no signatories": the effect below latched
+  // NO_SIGNATORIES before the lookup had even started, so the alert showed next to the
+  // spinner and the picker stayed disabled even after signatories arrived.
+  const [isSignerItemsLoading, setIsSignerItemsLoading] = useState(() => !!chainSlug && !!targetAddress);
   const [isPreparing, setIsPreparing] = useState(false);
   const [wrapError, setWrapError] = useState<string | null>(null);
   const [multisigUiErrorType, setMultisigUiErrorType] = useState<MultisigSignerUiErrorType | null>(null);
   const [preparedInfo, setPreparedInfo] = useState<PrepareMultisigSignResponse | null>(null);
   const [selectorModalVisible, setSelectorModalVisible] = useState(false);
+  // Set when the lookup has given up waiting (RPC down / timed out) rather than answered; a
+  // stalled lookup must not read as "no signatories". The pending call is still allowed to
+  // deliver: if the chain recovers and it resolves, the result is taken and the error cleared.
+  const [isLookupFailed, setIsLookupFailed] = useState(false);
+  const [lookupRetryKey, setLookupRetryKey] = useState(0);
+  // Identifies the in-flight lookup; bumping it makes a late result from a superseded
+  // attempt a no-op.
+  const lookupIdRef = useRef(0);
+  const lookupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const brokenConnectionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Retry only after the connection actually cycled. A lookup that timed out while the chain
+  // already reported CONNECTED would otherwise re-run itself every SIGNER_LOOKUP_TIMEOUT.
+  const canRetryLookupRef = useRef(false);
+  const connectionStatusRef = useRef<_ChainConnectionStatus | undefined>(undefined);
 
   const getWrappedTransactionSigners = useGetWrappedTransactionSigners();
   const signerAccount = useGetAccountByAddress(signerSelected?.address || '');
-  const { chainInfoMap, chainStateMap } = useSelector((root: RootState) => root.chainStore);
+  const { chainInfoMap, chainStateMap, chainStatusMap } = useSelector((root: RootState) => root.chainStore);
   const chainInfo = chainInfoMap[chainSlug];
+  const isChainActive = !!(chainSlug && chainStateMap[chainSlug]?.active);
+  const connectionStatus = chainSlug ? chainStatusMap[chainSlug]?.connectionStatus : undefined;
+
+  connectionStatusRef.current = connectionStatus;
+
+  const clearLookupTimer = useCallback(() => {
+    if (lookupTimerRef.current) {
+      clearTimeout(lookupTimerRef.current);
+      lookupTimerRef.current = null;
+    }
+  }, []);
+
+  // Stop waiting on the current lookup without discarding it.
+  const giveUpWaiting = useCallback(() => {
+    clearLookupTimer();
+    canRetryLookupRef.current = connectionStatusRef.current !== _ChainConnectionStatus.CONNECTED;
+    setIsSignerItemsLoading(false);
+    setIsLookupFailed(true);
+    setMultisigUiErrorType(MultisigSignerUiErrorType.UNSTABLE_NETWORK);
+  }, [clearLookupTimer]);
 
   useEffect(() => {
-    let sync = true;
-
     if (!chainSlug || !targetAddress) {
       return;
     }
 
+    const lookupId = ++lookupIdRef.current;
+    const isCurrent = () => lookupIdRef.current === lookupId;
+
     setIsSignerItemsLoading(true);
+    setIsLookupFailed(false);
+
+    lookupTimerRef.current = setTimeout(() => {
+      if (isCurrent()) {
+        giveUpWaiting();
+      }
+    }, SIGNER_LOOKUP_TIMEOUT);
 
     getWrappedTransactionSigners({
       chainSlug,
@@ -84,21 +140,81 @@ export const MultisigSignerSelector = ({
       targetAddress,
     })
       .then(result => {
-        if (sync) {
-          setSignerItems(result);
+        if (!isCurrent()) {
+          return;
         }
+
+        setSignerItems(result);
+        // A late answer after we stopped waiting means the chain is back after all.
+        setIsLookupFailed(false);
+        setMultisigUiErrorType(prev => (prev === MultisigSignerUiErrorType.UNSTABLE_NETWORK ? null : prev));
       })
       .catch(console.error)
       .finally(() => {
-        if (sync) {
+        if (isCurrent()) {
+          clearLookupTimer();
           setIsSignerItemsLoading(false);
         }
       });
 
     return () => {
-      sync = false;
+      lookupIdRef.current += 1;
+      clearLookupTimer();
     };
-  }, [chainSlug, getWrappedTransactionSigners, requestId, targetAddress]);
+  }, [
+    chainSlug,
+    clearLookupTimer,
+    getWrappedTransactionSigners,
+    giveUpWaiting,
+    lookupRetryKey,
+    requestId,
+    targetAddress,
+  ]);
+
+  // An active chain reporting DISCONNECTED/UNSTABLE will not answer the lookup; say so instead
+  // of spinning. Two things keep this from firing on a healthy chain: inactive chains are
+  // skipped (their status is DISCONNECTED until the enable that SignConfirmation kicks off has
+  // connected them), and the status has to stay broken for a grace period, because the UI's
+  // status map lags the state map and the provider reconnects on its own after a drop.
+  useEffect(() => {
+    const isBroken =
+      connectionStatus === _ChainConnectionStatus.DISCONNECTED || connectionStatus === _ChainConnectionStatus.UNSTABLE;
+
+    if (!isSignerItemsLoading || !isChainActive || !isBroken) {
+      return;
+    }
+
+    brokenConnectionTimerRef.current = setTimeout(giveUpWaiting, BROKEN_CONNECTION_GRACE);
+
+    return () => {
+      if (brokenConnectionTimerRef.current) {
+        clearTimeout(brokenConnectionTimerRef.current);
+        brokenConnectionTimerRef.current = null;
+      }
+    };
+  }, [connectionStatus, giveUpWaiting, isChainActive, isSignerItemsLoading]);
+
+  // Once the chain is back, run the lookup again and drop the network error it produced.
+  useEffect(() => {
+    if (!isLookupFailed) {
+      return;
+    }
+
+    if (connectionStatus !== _ChainConnectionStatus.CONNECTED) {
+      canRetryLookupRef.current = true;
+
+      return;
+    }
+
+    if (!canRetryLookupRef.current) {
+      return;
+    }
+
+    canRetryLookupRef.current = false;
+    setIsLookupFailed(false);
+    setMultisigUiErrorType(prev => (prev === MultisigSignerUiErrorType.UNSTABLE_NETWORK ? null : prev));
+    setLookupRetryKey(key => key + 1);
+  }, [connectionStatus, isLookupFailed]);
 
   // Only true signatories can initiate; proxy delegates are not offered here.
   const filteredSignerItems = useMemo<WrappedTransactionSigner[]>(
@@ -106,8 +222,7 @@ export const MultisigSignerSelector = ({
     [signerItems],
   );
 
-  const noSignerAvailable = !isSignerItemsLoading && !filteredSignerItems.length;
-  const isChainActive = !!(chainSlug && chainStateMap[chainSlug]?.active);
+  const noSignerAvailable = !isSignerItemsLoading && !isLookupFailed && !filteredSignerItems.length;
 
   const displayMultisigErrorType = useMemo(() => {
     if (noSignerAvailable && isChainActive && chainInfo?.substrateInfo?.supportMultisig) {
@@ -213,13 +328,15 @@ export const MultisigSignerSelector = ({
         <TouchableOpacity
           activeOpacity={1}
           disabled={isDisabled}
-          style={styles.placeholderContainer}
+          style={[styles.placeholderContainer, isDisabled && DisabledStyle]}
           onPress={() => setSelectorModalVisible(true)}>
           <View style={styles.placeholderLeft}>
             <AccountProxyAvatar size={24} value={''} />
             <Typography.Text style={styles.placeholderText}>{i18n.multisig.selectAccountToSign}</Typography.Text>
           </View>
-          {isDisabled ? (
+          {/* Spin only while something is in flight; a blocked picker (unsupported network,
+              no signatories) keeps the caret like the extension instead of looking stuck. */}
+          {isSignerItemsLoading || isPreparing ? (
             <ActivityIndicator size={20} />
           ) : (
             <Icon phosphorIcon={CaretDownIcon} size={'sm'} iconColor={theme.colorTextLight4} />
@@ -237,7 +354,9 @@ export const MultisigSignerSelector = ({
               <Typography.Text ellipsis style={styles.signerName}>
                 {signerAccount.name}
               </Typography.Text>
-              <Icon phosphorIcon={CaretDownIcon} customSize={18} iconColor={theme.colorTextLight4} />
+              <View style={isDisabled && DisabledStyle}>
+                <Icon phosphorIcon={CaretDownIcon} customSize={18} iconColor={theme.colorTextLight4} />
+              </View>
             </TouchableOpacity>
           </MetaInfo.Default>
 
@@ -284,7 +403,7 @@ export const MultisigSignerSelector = ({
 
       {!!mappedMultisigError && (
         <View style={styles.alertWrapper}>
-          <AlertBox type={'warning'} title={mappedMultisigError.title} description={mappedMultisigError.description} />
+          <AlertBox type={'error'} title={mappedMultisigError.title} description={mappedMultisigError.description} />
         </View>
       )}
 

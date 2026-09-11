@@ -11,7 +11,6 @@ import { ThemeTypes } from 'styles/themes';
 import { TransactionHistoryDisplayItem } from 'types/history';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
-import { FontSemiBold } from 'styles/sharedStyles';
 import { isTypeMultisig } from 'utils/transaction/detectType';
 
 interface Props {
@@ -57,10 +56,12 @@ const HistoryDetailCallData: React.FC<Props> = ({ data }: Props) => {
   return (
     <>
       <MetaInfo.Default label={i18n.multisig.callData}>
-        <TouchableOpacity activeOpacity={1} style={styles.inlineValue} onPress={onOpenCallDataModal}>
-          <Typography.Text style={styles.valueText}>{toShort(callData, 6, 6)}</Typography.Text>
-          <Icon phosphorIcon={InfoIcon} customSize={18} iconColor={theme.colorTextLight4} />
-        </TouchableOpacity>
+        {valueStyle => (
+          <TouchableOpacity activeOpacity={1} style={styles.inlineValue} onPress={onOpenCallDataModal}>
+            <Typography.Text style={valueStyle}>{toShort(callData, 6, 6)}</Typography.Text>
+            <Icon phosphorIcon={InfoIcon} customSize={18} iconColor={theme.colorTextLight4} />
+          </TouchableOpacity>
+        )}
       </MetaInfo.Default>
 
       <SwModal
@@ -92,10 +93,6 @@ function createStyles(theme: ThemeTypes) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.sizeXXS,
-    },
-    valueText: {
-      ...FontSemiBold,
-      color: theme.colorTextLight1,
     },
     callDataDetail: {
       width: '100%',

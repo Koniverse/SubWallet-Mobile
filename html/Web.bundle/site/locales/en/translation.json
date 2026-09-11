@@ -1842,5 +1842,8 @@
   "bg.ACCOUNT.services.keyring.handler.Multisig.multipleSignersRequired": "Only support for multiple signers multisig account creation",
   "bg.ACCOUNT.services.keyring.handler.Multisig.invalidThreshold": "Invalid threshold",
   "bg.ACCOUNT.services.keyring.handler.Multisig.mustBeSubstrateAddress": "Address must be a substrate address",
-  "bg.ACCOUNT.services.keyring.handler.Multisig.duplicateAddressFound": "Duplicate address found"
+  "bg.ACCOUNT.services.keyring.handler.Multisig.duplicateAddressFound": "Duplicate address found",
+  "bg.ACCOUNT.services.keyring.handler.Multisig.multisigAddressExists": "The generated multisig address already exists under the account named \"{{name}}\". Remove the account first, then try again",
+  "bg.TRANSACTION.core.validation.transfer.tokenCannotBeBridgedToNetwork": "{{symbol}} on {{originChainName}} can't be transferred to {{destinationChainName}} network. Please use another token or change the destination network",
+  "bg.TRANSACTION_SERVICE.services.service.transaction.existingMultisigPendingTransaction": "You’ve a pending multisig transaction with the same information. Complete the transaction first, then try again"
 }

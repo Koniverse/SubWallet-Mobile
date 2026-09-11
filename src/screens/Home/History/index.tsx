@@ -1,5 +1,5 @@
 import { HistoryDetailModal } from './Detail';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ApertureIcon,
   ArrowDownLeftIcon,
@@ -23,7 +23,12 @@ import {
   TransactionDirection,
   TransactionHistoryItem,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { isTypeManageSubstrateProxy, isTypeMultisig, isTypeStaking, isTypeTransfer } from 'utils/transaction/detectType';
+import {
+  isTypeManageSubstrateProxy,
+  isTypeMultisig,
+  isTypeStaking,
+  isTypeTransfer,
+} from 'utils/transaction/detectType';
 import { TransactionHistoryDisplayData, TransactionHistoryDisplayItem } from 'types/history';
 import { customFormatDate, formatHistoryDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
@@ -65,9 +70,12 @@ import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddr
 import { MultisigHistoryItem } from 'components/History/MultisigHistoryItem';
 import { SwTab } from 'components/design-system-ui/tab';
 import { MultisigHistoryInfoModal } from 'screens/Home/History/Detail/MultisigHistoryInfoModal';
-import { ScrollView } from 'react-native';
 import { NOTI_MULTISIG_PENDINGTX_ID } from 'constants/localStorage';
 import { mmkvStore } from 'utils/storage';
+import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
+import { AppModalContext } from 'providers/AppModalContext';
+import useChainChecker from 'hooks/chain/useChainChecker';
+import { useToast } from 'react-native-toast-notifications';
 
 type Props = {};
 
@@ -341,7 +349,10 @@ function History({
   const language = useSelector((state: RootState) => state.settings.language) as LanguageType;
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
-  const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
+  const { chainInfoMap, chainStateMap, chainStatusMap } = useSelector((root: RootState) => root.chainStore);
+  const { confirmModal } = useContext(AppModalContext);
+  const { turnOnChain } = useChainChecker();
+  const toast = useToast();
   const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
     useFilterModal();
   const accountMap = useMemo(() => {
@@ -677,14 +688,7 @@ function History({
     }
 
     return Array.from(result.values());
-  }, [
-    accountProxies,
-    chainInfoMap,
-    currentAccountProxy,
-    getReformatAddress,
-    isAllAccount,
-    multisigSelectedChain,
-  ]);
+  }, [accountProxies, chainInfoMap, currentAccountProxy, getReformatAddress, isAllAccount, multisigSelectedChain]);
 
   const onSelectMultisigAccount = useCallback((item: AccountAddressItemType) => {
     setMultisigSelectedAddress(item.address);
@@ -703,6 +707,64 @@ function History({
     // Addresses are chain-formatted, so a pick made under another network no longer applies.
     setMultisigSelectedAddress('');
   }, []);
+
+  // The extension runs useChainChecker on the Multisig tab whenever a specific network is
+  // picked (History/index.tsx:998): a disabled network gets a "turn it on" prompt, a
+  // connected-but-dropped one gets an error. Mobile's idiom for the prompt is the
+  // enable-network confirm modal that the transaction screens already use.
+  const promptedMultisigChainRef = useRef<string>('');
+
+  useEffect(() => {
+    if (!isMultisigTab || multisigSelectedChain === ALL_NETWORK_KEY) {
+      promptedMultisigChainRef.current = '';
+
+      return;
+    }
+
+    // One prompt per selection: chain state keeps updating while the network connects,
+    // and re-raising the modal after the user dismissed it would be a nag.
+    if (promptedMultisigChainRef.current === multisigSelectedChain) {
+      return;
+    }
+
+    const chainState = chainStateMap[multisigSelectedChain];
+    const chainInfo = chainInfoMap[multisigSelectedChain];
+
+    if (!chainState) {
+      return;
+    }
+
+    promptedMultisigChainRef.current = multisigSelectedChain;
+
+    if (!chainState.active) {
+      confirmModal.setConfirmModal({
+        visible: true,
+        title: i18n.common.enableChain,
+        message: i18n.common.enableChainMessage,
+        completeBtnTitle: i18n.buttonTitles.enable,
+        messageIcon: multisigSelectedChain,
+        onCancelModal: () => confirmModal.hideConfirmModal(),
+        onCompleteModal: () => {
+          turnOnChain(multisigSelectedChain);
+          confirmModal.hideConfirmModal();
+        },
+      });
+    } else if (chainStatusMap[multisigSelectedChain]?.connectionStatus === _ChainConnectionStatus.DISCONNECTED) {
+      toast.hideAll();
+      toast.show(`${chainInfo?.name || multisigSelectedChain} ${i18n.errorMessage.networkDisconected}`, {
+        type: 'danger',
+      });
+    }
+  }, [
+    chainInfoMap,
+    chainStateMap,
+    chainStatusMap,
+    confirmModal,
+    isMultisigTab,
+    multisigSelectedChain,
+    toast,
+    turnOnChain,
+  ]);
 
   const multisigList = useMemo<PendingMultisigTx[]>(() => {
     let list = Object.values(pendingMultisigTxs);
@@ -747,7 +809,14 @@ function History({
 
       return timeB - timeA;
     });
-  }, [accountProxies, currentAccountProxy, isAllAccount, multisigSelectedAddress, multisigSelectedChain, pendingMultisigTxs]);
+  }, [
+    accountProxies,
+    currentAccountProxy,
+    isAllAccount,
+    multisigSelectedAddress,
+    multisigSelectedChain,
+    pendingMultisigTxs,
+  ]);
 
   const historyTabs = useMemo(
     () => [
@@ -758,10 +827,8 @@ function History({
   );
 
   const onOpenMultisigInfo = useCallback((item: PendingMultisigTx) => {
-    return () => {
-      setSelectedMultisigItem(item);
-      setMultisigDetailVisible(true);
-    };
+    setSelectedMultisigItem(item);
+    setMultisigDetailVisible(true);
   }, []);
 
   const onCloseMultisigDetail = useCallback(() => {
@@ -794,22 +861,20 @@ function History({
 
   // The extension groups the multisig list by date the same way as the transaction list
   // (History/index.tsx groupBy), with entries that have no timestamp under one label.
-  const multisigSections = useMemo(() => {
-    const sections: { title: string; data: PendingMultisigTx[] }[] = [];
+  // multisigList is already ordered (timestamp-less first, then newest first) and
+  // LazySectionList keeps sections in first-appearance order, so no section sort is needed.
+  const multisigGroupBy = useCallback(
+    (item: PendingMultisigTx) =>
+      item.timestamp ? formatHistoryDate(item.timestamp, language, 'list') : 'Pending Multisig',
+    [language],
+  );
 
-    multisigList.forEach(item => {
-      const title = item.timestamp ? formatHistoryDate(item.timestamp, language, 'list') : 'Pending Multisig';
-      const lastSection = sections[sections.length - 1];
-
-      if (lastSection && lastSection.title === title) {
-        lastSection.data.push(item);
-      } else {
-        sections.push({ title, data: [item] });
-      }
-    });
-
-    return sections;
-  }, [language, multisigList]);
+  const renderMultisigItem = useCallback(
+    ({ item }: ListRenderItemInfo<PendingMultisigTx>) => (
+      <MultisigHistoryItem item={item} onPressItem={onOpenMultisigInfo} />
+    ),
+    [onOpenMultisigInfo],
+  );
 
   const multisigEmptyList = useCallback(() => {
     return (
@@ -943,77 +1008,75 @@ function History({
             <SwTab tabs={historyTabs} selectedValue={selectedTab} onSelectType={setSelectedTab} />
 
             <View style={{ flexDirection: 'row', gap: theme.sizeSM }}>
-            <View style={{ flex: 1 }}>
-              {isMultisigTab ? (
-                <HistoryChainSelector
-                  items={multisigChainItems}
-                  value={multisigSelectedChain}
-                  onSelectItem={onSelectMultisigChain}
-                  disabled={loading}
-                  selectorRef={chainSelectorRef}
-                  loading={loading}
-                />
-              ) : (
-                <HistoryChainSelector
-                  items={chainItems}
-                  value={selectedChain}
-                  onSelectItem={onSelectChain}
-                  disabled={chainSelectorDisabled}
-                  selectorRef={chainSelectorRef}
-                  loading={loading}
-                />
-              )}
-            </View>
-
-            {isMultisigTab
-              ? multisigAccountAddressItems.length > 1 && (
-                  <View style={{ flex: 1 }}>
-                    <HistoryAccountSelector
-                      items={multisigAccountAddressItems}
-                      value={multisigSelectedAddress}
-                      onSelectItem={onSelectMultisigAccount}
-                      disabled={loading}
-                      selectorRef={accountSelectorRef}
-                      autoSelectFirstItem={false}
-                      placeholder={i18n.placeholder.selectAccount}
-                    />
-                  </View>
-                )
-              : isShowAccounttSelector && (
-                  <View style={{ flex: 1 }}>
-                    <HistoryAccountSelector
-                      items={accountAddressItems}
-                      value={selectedAddress}
-                      onSelectItem={onSelectAccount}
-                      disabled={loading}
-                      selectorRef={accountSelectorRef}
-                    />
-                  </View>
+              <View style={{ flex: 1 }}>
+                {isMultisigTab ? (
+                  <HistoryChainSelector
+                    items={multisigChainItems}
+                    value={multisigSelectedChain}
+                    onSelectItem={onSelectMultisigChain}
+                    disabled={loading}
+                    selectorRef={chainSelectorRef}
+                    loading={loading}
+                  />
+                ) : (
+                  <HistoryChainSelector
+                    items={chainItems}
+                    value={selectedChain}
+                    onSelectItem={onSelectChain}
+                    disabled={chainSelectorDisabled}
+                    selectorRef={chainSelectorRef}
+                    loading={loading}
+                  />
                 )}
+              </View>
+
+              {isMultisigTab
+                ? multisigAccountAddressItems.length > 1 && (
+                    <View style={{ flex: 1 }}>
+                      <HistoryAccountSelector
+                        items={multisigAccountAddressItems}
+                        value={multisigSelectedAddress}
+                        onSelectItem={onSelectMultisigAccount}
+                        disabled={loading}
+                        selectorRef={accountSelectorRef}
+                        autoSelectFirstItem={false}
+                        placeholder={i18n.placeholder.selectAccount}
+                      />
+                    </View>
+                  )
+                : isShowAccounttSelector && (
+                    <View style={{ flex: 1 }}>
+                      <HistoryAccountSelector
+                        items={accountAddressItems}
+                        value={selectedAddress}
+                        onSelectItem={onSelectAccount}
+                        disabled={loading}
+                        selectorRef={accountSelectorRef}
+                      />
+                    </View>
+                  )}
             </View>
           </View>
 
           {selectedTab === HistoryTabType.MULTISIG ? (
-            multisigList.length ? (
-              <ScrollView
-                style={{ flex: 1 }}
-                contentContainerStyle={{
-                  paddingHorizontal: theme.padding,
-                  paddingTop: theme.paddingXS,
-                  paddingBottom: theme.paddingXS,
-                }}>
-                {multisigSections.map(section => (
-                  <View key={section.title}>
-                    {renderSectionHeader(section.title)}
-                    {section.data.map(item => (
-                      <MultisigHistoryItem key={item.id} item={item} onPress={onOpenMultisigInfo(item)} />
-                    ))}
-                  </View>
-                ))}
-              </ScrollView>
-            ) : (
-              multisigEmptyList()
-            )
+            // Virtualized and paged like the transaction tab. A plain ScrollView mounted every
+            // pending row at once (each with an identicon, a chain logo and two account
+            // lookups) and re-rendered all of them on every store update, which made the
+            // list stutter as soon as there were more than a handful of records.
+            <LazySectionList
+              listStyle={{
+                paddingLeft: theme.padding,
+                paddingRight: theme.padding,
+                paddingTop: theme.paddingXS,
+                paddingBottom: theme.paddingXS,
+              }}
+              items={multisigList}
+              renderItem={renderMultisigItem}
+              renderListEmptyComponent={multisigEmptyList}
+              groupBy={multisigGroupBy}
+              renderSectionHeader={renderSectionHeader}
+              stickyHeader={false}
+            />
           ) : (
             <LazySectionList
               listStyle={{

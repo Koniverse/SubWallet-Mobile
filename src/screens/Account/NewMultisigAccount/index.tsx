@@ -230,7 +230,7 @@ export const NewMultisigAccount = () => {
               <InputText
                 value={signerAddress}
                 onChangeText={onChangeSignerAddress}
-                containerStyle={styles.addressInputContainer}
+                containerStyle={signerAddressError ? styles.addressInputContainerWithError : styles.addressInputContainer}
                 placeholder={i18n.multisig.enterAddress}
                 errorMessages={signerAddressError ? [signerAddressError] : undefined}
                 extraTextInputStyle={styles.addressTextInput}
@@ -367,6 +367,11 @@ function createStyles(theme: ThemeTypes) {
     // InputText ships its own 8px bottom margin, which would stack on top of the row's.
     addressInputContainer: {
       marginBottom: 0,
+    },
+    // ...but while an error is showing, that margin is the only gap between the field
+    // and its error box, so put it back for that state.
+    addressInputContainerWithError: {
+      marginBottom: theme.marginXS,
     },
     signerInputWrapper: {
       flex: 1,

@@ -463,7 +463,11 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
             tabs={accountDetailTabs}
             onSelectType={_onSelectType}
             selectedValue={selectedTab}
-            containerStyle={{ backgroundColor: 'transparent', width: '100%', marginBottom: theme.marginSM }}
+            // Up to four uppercase labels: let the row scroll rather than clip the last one.
+            // width:'100%' must not be set here - it would pin the scroll content to the
+            // viewport width and stop it scrolling at all.
+            scrollable
+            containerStyle={{ backgroundColor: 'transparent', marginBottom: theme.marginSM }}
             itemStyle={{
               backgroundColor: 'transparent',
               flex: undefined,
@@ -472,8 +476,9 @@ const Component = ({ accountProxy, requestViewDerivedAccounts, requestViewDerive
             }}
             selectedStyle={{ backgroundColor: 'transparent' }}
             textStyle={{
-              fontSize: theme.fontSizeSM,
-              lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+              // Extension's .filter-tabs-container .__tab-item-label: 11px / 20px line height.
+              fontSize: 11,
+              lineHeight: 20,
               color: theme.colorTextTertiary,
               ...FontSemiBold,
             }}

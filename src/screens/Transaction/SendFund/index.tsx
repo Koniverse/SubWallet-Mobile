@@ -238,11 +238,20 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     (state: RootState) => state.accountState,
   );
   const { getCurrentConfirmation, renderConfirmationButtons } = useGetConfirmationByScreen('send-fund');
+  // Mirrors the extension (SendFund.tsx:174-201): a multisig sender on a cross-chain route
+  // gets its own error, every other blocked case keeps the generic account-type notice.
+  const selectedAccount = useGetAccountByAddress(fromValue);
+  const isMultisigAccount = !!selectedAccount?.isMultisig;
+  const isUnsupportedMultisigCrossChain =
+    isMultisigAccount && !!chainValue && !!destChainValue && chainValue !== destChainValue;
   const checkAction = usePreCheckAction(
     fromValue,
     true,
-    'The account you are using is {{accountTitle}}, you cannot send assets with it',
+    isUnsupportedMultisigCrossChain
+      ? i18n.multisig.crossChainNotSupported
+      : 'The account you are using is {{accountTitle}}, you cannot send assets with it',
     chainValue,
+    isUnsupportedMultisigCrossChain ? 'danger' : 'normal',
   );
   const [loading, setLoading] = useState(false);
   const [isTransferAll, setIsTransferAll] = useState(false);
@@ -438,9 +447,6 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     return targetAccount?.accountName || '';
   }, [accountAddressItems, fromValue]);
 
-  const selectedAccount = useGetAccountByAddress(fromValue);
-  const isMultisigAccount = !!selectedAccount?.isMultisig;
-
   // A multisig account does not pay the network fee itself (the signatory does), so the
   // spendable amount shown to the user is the balance before fee deduction.
   const actualMaxTransferable = useMemo(
@@ -448,16 +454,12 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     [isMultisigAccount, transferInfo?.maxTransferable, transferInfo?.maxTransferableWithoutFee],
   );
 
-  // Multisig accounts cannot sign XCM, so only the origin chain is offered.
+  // Kept identical to the extension: the destination list is not narrowed for a multisig
+  // sender. Picking a cross-chain destination clears the sender instead (see
+  // _onChangeDestChain), and submitting with one re-selected is refused by the pre-check.
   const destChainItems = useMemo<ChainItemType[]>(() => {
-    const destinations = getTokenAvailableDestinations(assetValue, xcmRefMap, chainInfoMap);
-
-    if (!isMultisigAccount) {
-      return destinations;
-    }
-
-    return destinations.filter(item => item.slug === chainValue);
-  }, [assetValue, chainInfoMap, chainValue, isMultisigAccount, xcmRefMap]);
+    return getTokenAvailableDestinations(assetValue, xcmRefMap, chainInfoMap);
+  }, [assetValue, chainInfoMap, xcmRefMap]);
 
   const currentChainAsset = useMemo(() => {
     return assetValue ? assetRegistry[assetValue] : undefined;
@@ -666,6 +668,12 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
     setValue('to', '');
     clearErrors('to');
     setValue('destChain', item.slug);
+
+    // Extension SendFund.tsx:563-566: a multisig cannot sign XCM, so a cross-chain pick
+    // drops the current sender and makes the user choose again.
+    if (chainValue !== item.slug && isMultisigAccount) {
+      setFrom('');
+    }
     chainSelectorRef?.current?.onCloseModal();
     setCurrentTokenPayFee(defaultTokenPayFee);
     setSelectedTransactionFee(undefined);

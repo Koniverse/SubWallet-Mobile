@@ -70,6 +70,17 @@ export const TxTypeNameMap = (): Record<string, string> => ({
   [ExtrinsicType.MULTISIG_CANCEL_TX]: i18n.historyScreen.extrinsicType.multisigTransaction,
 });
 
+// The detail sheet names a multisig action by what the signatory did ("Sign transaction")
+// while the list keeps the broader "Multisig transaction"; the extension keeps two maps
+// for this (constants/history.ts vs Popup/Home/History/index.tsx).
+export const TxTypeDetailNameMap = (): Record<string, string> => ({
+  ...TxTypeNameMap(),
+  [ExtrinsicType.MULTISIG_INIT_TX]: i18n.multisig.signTransaction,
+  [ExtrinsicType.MULTISIG_APPROVE_TX]: i18n.multisig.signTransaction,
+  [ExtrinsicType.MULTISIG_EXECUTE_TX]: i18n.multisig.signTransaction,
+  [ExtrinsicType.MULTISIG_CANCEL_TX]: i18n.multisig.signTransaction,
+});
+
 export const TxTypeTitleMap: Record<string, string> = {
   ...StakingTypeNameMap(),
   transaction: i18n.historyScreen.title.transaction,

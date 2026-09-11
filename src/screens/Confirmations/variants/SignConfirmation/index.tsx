@@ -135,6 +135,7 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
             <SubstrateTransactionDetail
               address={address}
               accountName={account?.name}
+              chain={chain}
               payload={payload as ExtrinsicPayload}
               request={request.request.payload as SignerPayloadJSON}
             />

@@ -22,9 +22,13 @@ export interface TransferInfoItem extends Omit<InfoItemBase, 'label'> {
   recipientLabel?: string;
   originChain?: ChainInfo;
   destinationChain?: ChainInfo;
+  // Same-chain transfers already show the chain as a "Network" row; only render it inside
+  // the sender/recipient columns when the caller insists (mirrors the extension).
+  alwaysShowChain?: boolean;
 }
 
 const TransferItem: React.FC<TransferInfoItem> = ({
+  alwaysShowChain,
   destinationChain,
   originChain,
   recipientAddress,
@@ -57,9 +61,31 @@ const TransferItem: React.FC<TransferInfoItem> = ({
     };
   }, [_style.subValue, theme, valueColorSchema, valueGeneralStyle]);
 
+  // Extension's `__sender` / `__recipient` modifier (TransferItem.tsx): when exactly one side
+  // has a name, that block is two lines tall while the other is one, so anything rendered
+  // below the two columns drifts out of line. Pad the account blocks to the two-line height.
+  const accountBlockMinHeight = useMemo(() => {
+    const onlyOneSideNamed =
+      (!!senderName && recipientName === undefined) || (!!recipientName && senderName === undefined);
+
+    if (!onlyOneSideNamed) {
+      return undefined;
+    }
+
+    return theme.lineHeight * theme.fontSize + theme.lineHeightSM * theme.fontSizeSM;
+  }, [recipientName, senderName, theme.fontSize, theme.fontSizeSM, theme.lineHeight, theme.lineHeightSM]);
+
+  const isSameChain = !!originChain && !!destinationChain && originChain.slug === destinationChain.slug;
+  const showOriginChain = !!originChain && (!isSameChain || alwaysShowChain);
+  const showDestinationChain = !!destinationChain && (!isSameChain || alwaysShowChain);
+
   const genAccountBlock = (address: string, name?: string) => {
     return (
-      <View style={[_style.valueWrapper, { gap: theme.sizeXS, alignItems: 'flex-start' }]}>
+      <View
+        style={[
+          _style.valueWrapper,
+          { gap: theme.sizeXS, alignItems: 'flex-start', minHeight: accountBlockMinHeight },
+        ]}>
         <AccountProxyAvatar value={address} size={24} />
         <View style={{ flexShrink: 1 }}>
           {!!name && (
@@ -89,9 +115,15 @@ const TransferItem: React.FC<TransferInfoItem> = ({
       <>
         <AccountItem address={senderAddress} label={senderLabel || i18n.common.sender} name={senderName} />
 
-        {!!originChain && <ChainItem chain={originChain.slug} label={i18n.common.originChain} />}
+        {isSameChain ? (
+          <ChainItem chain={originChain.slug} label={i18n.common.network} />
+        ) : (
+          <>
+            {!!originChain && <ChainItem chain={originChain.slug} label={i18n.common.originChain} />}
 
-        {!!destinationChain && <ChainItem chain={destinationChain.slug} label={i18n.common.destinationChain} />}
+            {!!destinationChain && <ChainItem chain={destinationChain.slug} label={i18n.common.destinationChain} />}
+          </>
+        )}
       </>
     );
   }
@@ -101,12 +133,12 @@ const TransferItem: React.FC<TransferInfoItem> = ({
       <View style={[_style.col, _style['col.grow'], { gap: theme.sizeXS }]}>
         {renderColContent(senderLabel || i18n.common.sender, { ..._style.label, ...labelGeneralStyle })}
         {genAccountBlock(senderAddress, senderName)}
-        {!!originChain && genChainBlock(originChain)}
+        {showOriginChain && genChainBlock(originChain)}
       </View>
       <View style={[_style.col, _style['col.grow'], { gap: theme.sizeXS }]}>
         {renderColContent(recipientLabel || i18n.common.recipient, { ..._style.label, ...labelGeneralStyle })}
         {genAccountBlock(recipientAddress, recipientName)}
-        {!!destinationChain && genChainBlock(destinationChain)}
+        {showDestinationChain && genChainBlock(destinationChain)}
       </View>
     </View>
   );

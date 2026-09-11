@@ -14,6 +14,7 @@ import {
 } from '@subwallet/extension-base/types/multisig';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import { Button, Icon, PageIcon, SwModal } from 'components/design-system-ui';
+import { deviceHeight } from 'constants/index';
 import { MULTISIG_TX_TITLE_MAP } from 'constants/multisig';
 import { useGetBalance } from 'hooks/balance';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
@@ -381,9 +382,13 @@ export const MultisigHistoryInfoModal = ({
 
 function createStyles(theme: ThemeTypes) {
   return StyleSheet.create({
+    // The extension lets this sheet grow to the window height minus 56px (SwModal content
+    // `maxHeight: 600 - 56`) and scrolls the body inside. A fixed 420 left a much larger gap
+    // above the sheet on a phone; 60% of the window for the body plus title and footer lands
+    // at about the same proportion, and matches the other detail sheets in the app.
     body: {
       width: '100%',
-      maxHeight: 420,
+      maxHeight: deviceHeight * 0.6,
     },
     footer: {
       width: '100%',

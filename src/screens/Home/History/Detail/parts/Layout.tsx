@@ -12,10 +12,9 @@ import MetaInfo from 'components/MetaInfo';
 import { Icon, Typography } from 'components/design-system-ui';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
-import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { HistoryStatusMap, TxTypeNameMap } from '../../shared';
+import { HistoryStatusMap, TxTypeDetailNameMap } from '../../shared';
 import { TransactionHistoryDisplayItem } from 'types/history';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
@@ -36,7 +35,7 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
   const { data } = props;
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const txtTypeNameMap = TxTypeNameMap();
+  const txtTypeNameMap = TxTypeDetailNameMap();
   const historyStatusMap = HistoryStatusMap();
   const language = useSelector((state: RootState) => state.settings.language) as LanguageType;
   const networkPrefix = useGetChainPrefixBySlug(data.chain);
@@ -88,14 +87,16 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
       )}
 
       <MetaInfo.Default label={i18n.historyScreen.label.extrinsicHash}>
-        {extrinsicHash === '...' ? (
-          extrinsicHash
-        ) : (
-          <TouchableOpacity activeOpacity={1} style={styles.inlineValue} onPress={onCopyExtrinsicHash}>
-            <Typography.Text style={styles.valueText}>{extrinsicHash}</Typography.Text>
-            <Icon phosphorIcon={CopyIcon} customSize={18} iconColor={theme.colorTextLight4} />
-          </TouchableOpacity>
-        )}
+        {valueStyle =>
+          extrinsicHash === '...' ? (
+            <Typography.Text style={valueStyle}>{extrinsicHash}</Typography.Text>
+          ) : (
+            <TouchableOpacity activeOpacity={1} style={styles.inlineValue} onPress={onCopyExtrinsicHash}>
+              <Typography.Text style={valueStyle}>{extrinsicHash}</Typography.Text>
+              <Icon phosphorIcon={CopyIcon} customSize={18} iconColor={theme.colorTextLight4} />
+            </TouchableOpacity>
+          )
+        }
       </MetaInfo.Default>
 
       <HistoryDetailCallData data={data} />
@@ -122,10 +123,6 @@ function createStyles(theme: ThemeTypes) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.sizeXXS,
-    },
-    valueText: {
-      ...FontSemiBold,
-      color: theme.colorTextLight1,
     },
   });
 }

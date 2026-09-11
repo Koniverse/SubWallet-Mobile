@@ -4,6 +4,7 @@ import { FontSemiBold } from 'styles/sharedStyles';
 
 export interface StakingTabStyle {
   container: ViewStyle;
+  scrollContainer: ViewStyle;
   item: ViewStyle;
   selectedItem: ViewStyle;
   itemText: TextStyle;
@@ -18,6 +19,9 @@ export default (theme: ThemeTypes) =>
       padding: theme.paddingXXS,
       marginBottom: theme.margin,
     },
+    // The scroll view itself must not stretch to fill the parent column; the row inside
+    // it carries the visual container styles.
+    scrollContainer: { flexGrow: 0, alignSelf: 'stretch' },
     item: { flex: 1, alignItems: 'center', height: 32, justifyContent: 'center', borderRadius: 8 },
     selectedItem: { backgroundColor: '#252525' },
     itemText: {

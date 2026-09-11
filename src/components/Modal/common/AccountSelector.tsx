@@ -257,8 +257,7 @@ export const AccountSelector = ({
       onCloseModal={onCloseModal}
       grouping={grouping}
       isShowBitcoinAttr={isShowBitcoinAttr}
-      isShowInput={isShowInput}
-    >
+      isShowInput={isShowInput}>
       {children}
     </FullSizeSelectModal>
   );

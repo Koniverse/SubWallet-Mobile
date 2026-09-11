@@ -10,10 +10,13 @@ import { deviceWidth } from 'constants/index';
 import Typography from 'components/design-system-ui/typography';
 
 interface Props {
-  title: string;
+  title?: string;
   description: React.ReactNode | string;
   iconColor: string;
   titleColor?: string;
+  // Title-less alerts sometimes carry their tone in the text itself (the extension colours
+  // a wrapped-transaction error's description with the warning colour).
+  descriptionColor?: string;
   wrapperStyle?: ViewStyle;
   icon: PhosphorIcon;
 }
@@ -43,7 +46,7 @@ const tagStyles: StyleProp<any> = {
 };
 
 const AlertBoxBase: React.FC<Props> = (props: Props) => {
-  const { description, title, iconColor, icon, titleColor, wrapperStyle } = props;
+  const { description, descriptionColor, title, iconColor, icon, titleColor, wrapperStyle } = props;
 
   const getTitleClassesStyle = useCallback((): StyleProp<any> => {
     return {
@@ -63,6 +66,14 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
     };
   }, [titleColor]);
 
+  const descriptionClassesStyles = useMemo((): StyleProp<any> => {
+    if (!descriptionColor) {
+      return classesStyles;
+    }
+
+    return { ...classesStyles, description: { ...classesStyles.description, color: descriptionColor } };
+  }, [descriptionColor]);
+
   const theme = useSubWalletTheme().swThemes;
 
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -80,25 +91,29 @@ const AlertBoxBase: React.FC<Props> = (props: Props) => {
         />
       </View>
       <View style={styles.content}>
-        <RenderHtml
-          contentWidth={deviceWidth}
-          systemFonts={['PlusJakartaSans-Medium']}
-          classesStyles={getTitleClassesStyle()}
-          tagsStyles={tagStyles}
-          source={{ html: `<span style="color: white" class="title">${title}</span>` }}
-          defaultTextProps={{ allowFontScaling: false }}
-        />
+        {!!title && (
+          <RenderHtml
+            contentWidth={deviceWidth}
+            systemFonts={['PlusJakartaSans-Medium']}
+            classesStyles={getTitleClassesStyle()}
+            tagsStyles={tagStyles}
+            source={{ html: `<span style="color: white" class="title">${title}</span>` }}
+            defaultTextProps={{ allowFontScaling: false }}
+          />
+        )}
         {typeof description === 'string' ? (
           <RenderHtml
             contentWidth={100}
             systemFonts={['PlusJakartaSans-Medium']}
-            classesStyles={classesStyles}
+            classesStyles={descriptionClassesStyles}
             defaultTextProps={{ allowFontScaling: false }}
             tagsStyles={tagStyles}
             source={{ html: `<span class="description">${description}</span>` }}
           />
         ) : (
-          <Typography.Text style={styles.description}>{description}</Typography.Text>
+          <Typography.Text style={[styles.description, !!descriptionColor && { color: descriptionColor }]}>
+            {description}
+          </Typography.Text>
         )}
       </View>
     </View>

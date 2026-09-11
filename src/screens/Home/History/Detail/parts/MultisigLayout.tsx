@@ -120,29 +120,31 @@ export const HistoryMultisigLayout = ({ data }: Props) => {
         />
 
         <MetaInfo.Default label={i18n.multisig.extrinsicHash}>
-          <TouchableOpacity activeOpacity={1} style={styles.inlineValue} onPress={onCopyExtrinsicHash}>
-            <Typography.Text style={styles.valueText}>{toShort(extrinsicHash || '', 5, 5)}</Typography.Text>
-            <Icon phosphorIcon={CopyIcon} customSize={18} iconColor={theme.colorTextLight4} />
-          </TouchableOpacity>
+          {valueStyle => (
+            <TouchableOpacity activeOpacity={1} style={styles.inlineValue} onPress={onCopyExtrinsicHash}>
+              <Typography.Text style={valueStyle}>{toShort(extrinsicHash || '', 5, 5)}</Typography.Text>
+              <Icon phosphorIcon={CopyIcon} customSize={18} iconColor={theme.colorTextLight4} />
+            </TouchableOpacity>
+          )}
         </MetaInfo.Default>
 
         {!!data.callData && (
           <MetaInfo.Default label={i18n.multisig.callData}>
-            <TouchableOpacity
-              activeOpacity={1}
-              style={styles.inlineValue}
-              onPress={() => setCallDataModalVisible(true)}>
-              <Typography.Text style={styles.valueText}>{toShort(callData || '', 5, 5)}</Typography.Text>
-              <Icon phosphorIcon={InfoIcon} customSize={18} iconColor={theme.colorTextLight4} />
-            </TouchableOpacity>
+            {valueStyle => (
+              <TouchableOpacity
+                activeOpacity={1}
+                style={styles.inlineValue}
+                onPress={() => setCallDataModalVisible(true)}>
+                <Typography.Text style={valueStyle}>{toShort(callData || '', 5, 5)}</Typography.Text>
+                <Icon phosphorIcon={InfoIcon} customSize={18} iconColor={theme.colorTextLight4} />
+              </TouchableOpacity>
+            )}
           </MetaInfo.Default>
         )}
 
         {!!data.timestamp && (
           <MetaInfo.Default label={i18n.multisig.submittedTime}>
-            <Typography.Text style={styles.valueText}>
-              {formatHistoryDate(data.timestamp, language, 'detail')}
-            </Typography.Text>
+            {formatHistoryDate(data.timestamp, language, 'detail')}
           </MetaInfo.Default>
         )}
 
@@ -232,10 +234,6 @@ function createStyles(theme: ThemeTypes) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.sizeXXS,
-    },
-    valueText: {
-      ...FontSemiBold,
-      color: theme.colorTextLight1,
     },
     // The "Signatories" heading sits outside the box; only the list is on a background.
     signatoriesContainer: {

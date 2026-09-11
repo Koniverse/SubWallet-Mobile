@@ -272,7 +272,7 @@ const WrappedTransactionInfoArea = ({ setDisable, transaction }: Props) => {
 
           {!!transactionError && (
             <View style={styles.errorContainer}>
-              <AlertBox type={'warning'} title={i18n.warningTitle.warning} description={transactionError} />
+              <AlertBox type={'warning'} description={transactionError} descriptionColor={theme.colorWarning} />
             </View>
           )}
         </>
