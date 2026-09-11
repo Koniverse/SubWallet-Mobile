@@ -18,7 +18,7 @@ export const CommonTransactionInfo = ({ address, network, onlyReturnInnerContent
     <>
       <MetaInfo.Account
         address={account?.address || address}
-        label={i18n.inputLabel.accountName}
+        label={account?.isMultisig ? i18n.multisig.multisigLabel : i18n.inputLabel.accountName}
         name={account?.name}
         networkPrefix={networkPrefix}
       />

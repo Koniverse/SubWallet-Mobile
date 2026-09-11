@@ -135,7 +135,7 @@ export const ChangeValidator = ({
     },
   );
 
-  const onPreCheck = usePreCheckAction(from);
+  const onPreCheck = usePreCheckAction(from, true, undefined, chain);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
 
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);

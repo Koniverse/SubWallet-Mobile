@@ -87,6 +87,10 @@ const Component: React.FC<Props> = (props: Props) => {
     return false;
   }, [poolInfo.chain, poolInfo.type]);
 
+  const isDisabledStake = isChainUnsupported || !poolInfo.metadata.availableMethod.join;
+  const isDisabledUnstake =
+    !poolInfo.metadata.availableMethod.defaultUnstake && !poolInfo.metadata.availableMethod.fastUnstake;
+
   useEffect(() => {
     loadingRef.current = isLoading;
   }, [isLoading]);
@@ -244,8 +248,9 @@ const Component: React.FC<Props> = (props: Props) => {
       onPressRightIcon={onEarnMore}
       showRightBtn={true}
       isHideBottomSafeArea
-      disableRightButton={isChainUnsupported}
-      rightIcon={PlusIcon}>
+      disableRightButton={isDisabledStake}
+      rightIcon={PlusIcon}
+    >
       <ScrollView contentContainerStyle={styles.wrapper} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Typography.Text style={styles.activeTitle}>Active stake</Typography.Text>
@@ -285,24 +290,27 @@ const Component: React.FC<Props> = (props: Props) => {
           <View style={styles.buttonContainer}>
             <Button
               block={true}
+              disabled={isDisabledUnstake}
               type="secondary"
               icon={<Icon phosphorIcon={MinusCircleIcon} weight="fill" />}
-              onPress={onLeavePool}>
+              onPress={onLeavePool}
+            >
               {poolInfo?.type === YieldPoolType.LENDING ? i18n.buttonTitles.withdraw : i18n.buttonTitles.unstake}
             </Button>
             <Button
-              disabled={isChainUnsupported}
+              disabled={isDisabledStake}
               block={true}
               type="secondary"
               externalTextStyle={{ flexShrink: 1 }}
               icon={
                 <Icon
                   phosphorIcon={PlusCircleIcon}
-                  iconColor={isChainUnsupported ? theme.colorTextLight5 : theme.colorWhite}
+                  iconColor={isDisabledStake ? theme.colorTextLight5 : theme.colorWhite}
                   weight="fill"
                 />
               }
-              onPress={onEarnMore}>
+              onPress={onEarnMore}
+            >
               {poolInfo?.type === YieldPoolType.LENDING ? 'Supply more' : i18n.buttonTitles.stakeMore}
             </Button>
           </View>

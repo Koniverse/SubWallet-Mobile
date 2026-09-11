@@ -18,7 +18,6 @@ import {
 import { listenMessage, restartAllHandlers } from 'messaging/base';
 import { Message } from '@subwallet/extension-base/types';
 import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
-import { getVersion } from 'react-native-device-info';
 import { copyAndroidWebBundle } from 'providers/WebRunnerProvider/androidWebBundle';
 import { WEBVIEW_ANDROID_SYSTEM_MIN_VERSION } from 'constants/index';
 export interface WebRunnerGlobalState {
@@ -88,18 +87,39 @@ export class WebRunnerHandler {
   private async prepareAndroidBundle() {
     const BUNDLE_PATH = isDevMode ? 'DevModeWeb.bundle' : 'Web.bundle';
     const ANDROID_BUNDLE_PATH = `${RNFS.DocumentDirectoryPath}/${BUNDLE_PATH}/site`;
-    const appVersion = getVersion();
-
     try {
-      const exists = await RNFS.exists(`${ANDROID_BUNDLE_PATH}/index.html`);
-      const lastAppCopyVersion = mmkvStore.getString('last-app-copy-version');
+      // Decide by comparing the shipped files with the copy on disk, not by app
+      // version. index.html names the content-hashed runner chunk, so it changes
+      // exactly when the runner changes. Keying this on the version instead meant
+      // that installing over an existing app kept serving the previously copied
+      // runner, because versionName and versionCode stay put across builds -- an
+      // updated web-runner simply never reached the WebView.
+      // The locale JSON is fetched by the runner at runtime and is not hashed into
+      // index.html, so a locale-only update (a background error string patched in
+      // place) needs its own comparison or it never reaches the WebView either.
+      const FRESHNESS_FILES = ['index.html', 'locales/en/translation.json'];
+      let isUpToDate = true;
 
-      if (exists && appVersion === lastAppCopyVersion) {
+      for (const file of FRESHNESS_FILES) {
+        if (!(await RNFS.exists(`${ANDROID_BUNDLE_PATH}/${file}`))) {
+          isUpToDate = false;
+          break;
+        }
+
+        const shipped = await RNFS.readFileAssets(`${BUNDLE_PATH}/site/${file}`, 'utf8');
+        const copied = await RNFS.readFile(`${ANDROID_BUNDLE_PATH}/${file}`, 'utf8');
+
+        if (shipped !== copied) {
+          isUpToDate = false;
+          break;
+        }
+      }
+
+      if (isUpToDate) {
         return;
       }
 
       await copyAndroidWebBundle(BUNDLE_PATH);
-      mmkvStore.set('last-app-copy-version', appVersion);
       started = false;
     } catch (e) {
       console.warn('Failed to prepare Android WebRunner bundle', e);

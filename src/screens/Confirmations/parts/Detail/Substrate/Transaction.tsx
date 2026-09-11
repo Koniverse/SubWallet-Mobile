@@ -3,7 +3,6 @@ import { AnyJson, SignerPayloadJSON } from '@polkadot/types/types';
 import { BN, bnToBn, formatNumber } from '@polkadot/util';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainInfoByGenesisHash from 'hooks/chain/useGetChainInfoByGenesisHash';
-import useMetadata from 'hooks/transaction/confirmation/useMetadata';
 import React, { useMemo, useRef } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
@@ -21,6 +20,11 @@ interface Props {
   request: SignerPayloadJSON;
   address: string;
   accountName?: string;
+  // Resolved by the confirmation screen's own useMetadata. This modal mounts its content on
+  // open, so resolving metadata here again meant shipping the raw metadata hex over the
+  // WebView bridge and rebuilding the type registry on the JS thread while the sheet was
+  // animating in - which is what made "View details" stutter.
+  chain: Chain | null;
 }
 
 const displayDecodeVersion = (message: string, chain: Chain, specVersion: BN): string => {
@@ -96,12 +100,12 @@ const SubstrateTransactionDetail: React.FC<Props> = (props: Props) => {
   const {
     address,
     accountName,
+    chain,
     payload: { era, nonce, tip },
     request: { blockNumber, genesisHash, method, specVersion: hexSpec },
   } = props;
   // const theme = useSubWalletTheme().swThemes;
 
-  const { chain } = useMetadata(genesisHash);
   const chainInfo = useGetChainInfoByGenesisHash(genesisHash);
   const specVersion = useRef(bnToBn(hexSpec)).current;
   const decoded = useMemo(

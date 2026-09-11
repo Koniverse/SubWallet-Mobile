@@ -108,6 +108,7 @@ export const PositionList = ({ setStep, loading }: Props) => {
           currency: currencyData,
         };
       })
+      .filter((item) => !!item.asset)
       .sort((firstItem, secondItem) => {
         const getValue = (item: ExtraYieldPositionInfo): number => {
           return new BigNumber(item.totalStake)

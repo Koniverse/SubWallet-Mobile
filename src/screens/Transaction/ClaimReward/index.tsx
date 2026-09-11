@@ -184,7 +184,7 @@ const ClaimReward = ({
         });
     }, 300);
   }, [fromValue, bondReward, slug, reward?.unclaimedReward, onSuccess, onError]);
-  const onPreCheck = usePreCheckAction(fromValue);
+  const onPreCheck = usePreCheckAction(fromValue, true, undefined, chainValue);
 
   useEffect(() => {
     setChain(poolInfo?.chain);

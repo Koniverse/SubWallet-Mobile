@@ -10,6 +10,7 @@ interface Props extends TouchableOpacityProps {
   defaultItemKey?: string;
   showSeparator?: boolean;
   iconSize?: number;
+  hideLogo?: boolean;
 }
 
 export const NetworkSelectItem = ({
@@ -20,6 +21,7 @@ export const NetworkSelectItem = ({
   defaultItemKey,
   showSeparator,
   iconSize,
+  hideLogo,
 }: Props) => {
   return (
     <TouchableOpacity style={{ marginBottom: 8 }} onPress={onSelectNetwork}>
@@ -30,6 +32,7 @@ export const NetworkSelectItem = ({
         defaultItemKey={defaultItemKey}
         showSeparator={showSeparator}
         iconSize={iconSize}
+        hideLogo={hideLogo}
       />
     </TouchableOpacity>
   );

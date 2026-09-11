@@ -1,11 +1,22 @@
 import React, { useMemo } from 'react';
-import { CirclesThreePlusIcon, EyeIcon, GitCommitIcon, NeedleIcon, QrCodeIcon, QuestionIcon, StrategyIcon, SwatchesIcon } from 'phosphor-react-native';
+import {
+  CirclesThreePlusIcon,
+  EyeIcon,
+  GitCommitIcon,
+  NeedleIcon,
+  QrCodeIcon,
+  QuestionIcon,
+  StrategyIcon,
+  SwatchesIcon,
+  UserSwitchIcon,
+} from 'phosphor-react-native';
 import { AccountProxyType } from '@subwallet/extension-base/types';
 import { Icon, Tag } from 'components/design-system-ui';
 import { SWIconProps } from 'components/design-system-ui/icon';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ViewStyle } from 'react-native';
 import { TagPropsType } from 'components/design-system-ui/tag/PropsType';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   type: AccountProxyType;
@@ -56,6 +67,11 @@ export const AccountProxyTypeTag = ({ type, style }: Props) => {
       result.icon.phosphorIcon = QrCodeIcon;
       result.bgColor = 'rgba(217, 217, 217, 0.1)';
       result.color = 'gray';
+    } else if (type === AccountProxyType.MULTISIG) {
+      result.label = i18n.multisig.multisigAccount;
+      result.icon.phosphorIcon = UserSwitchIcon;
+      result.icon.iconColor = theme['geekblue-7'];
+      result.color = 'blue';
     } else if (type === AccountProxyType.LEDGER) {
       result.label = 'Ledger account';
       result.color = 'gray';

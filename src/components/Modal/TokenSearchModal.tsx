@@ -27,7 +27,9 @@ interface Props {
 
 const searchFunction = (items: TokenBalanceItemType[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
-  return items.filter(({ symbol }) => symbol.toLowerCase().includes(lowerCaseSearchString));
+  return items.filter(({ displayName, symbol }) =>
+    displayName?.toLowerCase().includes(lowerCaseSearchString) || symbol.toLowerCase().includes(lowerCaseSearchString),
+  );
 };
 
 function getTokenBalances(

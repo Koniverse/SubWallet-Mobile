@@ -4,6 +4,7 @@
 import {
   RequestAccountNameValidate,
   RequestBounceableValidate,
+  RequestMnemonicValidateV2,
   ResponseAccountNameValidate,
   ResponseCheckPublicAndSecretKey,
   ResponseMnemonicValidateV2,
@@ -18,8 +19,8 @@ export async function checkPublicAndPrivateKey(
   return sendMessage('pri(accounts.validate.substrate.publicAndPrivateKey)', { publicKey, secretKey });
 }
 
-export async function validateSeedV2(mnemonic: string): Promise<ResponseMnemonicValidateV2> {
-  return sendMessage('pri(accounts.validate.seed)', { mnemonic });
+export async function validateSeedV2(request: RequestMnemonicValidateV2): Promise<ResponseMnemonicValidateV2> {
+  return sendMessage('pri(accounts.validate.seed)', request);
 }
 
 export async function validateMetamaskPrivateKeyV2(privateKey: string): Promise<ResponsePrivateKeyValidateV2> {

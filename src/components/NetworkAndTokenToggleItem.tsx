@@ -13,6 +13,8 @@ interface Props {
   isEnabled: boolean;
   onValueChange: () => void;
   isDisableSwitching?: boolean;
+  /** A toggle is in flight and the backend has not confirmed it yet. */
+  isLoading?: boolean;
   connectionStatus?: _ChainConnectionStatus;
   onPressEditBtn?: () => void;
   showEditButton?: boolean;
@@ -71,6 +73,7 @@ export const NetworkAndTokenToggleItem = ({
   isEnabled,
   onValueChange,
   isDisableSwitching,
+  isLoading,
   connectionStatus,
   onPressEditBtn,
   showEditButton,
@@ -86,7 +89,11 @@ export const NetworkAndTokenToggleItem = ({
             isShowSubIcon
             subIcon={
               <BackgroundIcon
-                {...NetworkStatusIconMap[connectionStatus || _ChainConnectionStatus.DISCONNECTED]}
+                {...NetworkStatusIconMap[
+                  // While a toggle is in flight the backend has usually not reported a
+                  // status yet, and an absent status renders exactly like a failed one.
+                  isLoading ? _ChainConnectionStatus.CONNECTING : connectionStatus || _ChainConnectionStatus.DISCONNECTED
+                ]}
                 size={'xs'}
                 shape={'circle'}
               />

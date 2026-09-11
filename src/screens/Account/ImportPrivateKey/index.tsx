@@ -80,7 +80,7 @@ export const ImportPrivateKey = () => {
     createAccountSuriV2({
       name: formState.data.accountName.trim(),
       suri: formState.data.privateKey.trim(),
-      type: typeRef.current as KeypairType,
+      types: [typeRef.current as KeypairType],
       isAllowed: true,
     })
       .then(() => {

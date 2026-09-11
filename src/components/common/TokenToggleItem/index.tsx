@@ -7,6 +7,7 @@ import { _ChainAsset } from '@subwallet/chain-list/types';
 import { Button, Icon, Logo as SWLogo, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TokenToggleItemStyles from './style';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 
 interface Props {
   item: _ChainAsset;
@@ -32,7 +33,7 @@ export const TokenToggleItem = ({ item, onPress, isEnabled, onValueChange, isDis
             isShowSubLogo
           />
           <Typography.Text ellipsis style={_style.itemTextStyle}>
-            {item.symbol || ''}
+            {getAssetDisplayName(item, item.symbol)}
           </Typography.Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>

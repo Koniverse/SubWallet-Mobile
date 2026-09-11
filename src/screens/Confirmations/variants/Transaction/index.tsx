@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ConfirmationDefinitions,
   ConfirmationDefinitionsBitcoin,
@@ -13,7 +13,8 @@ import { SigningRequest } from '@subwallet/extension-base/background/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
-import { BitcoinSignArea, EvmSignArea, SubstrateSignArea, TonSignArea } from '../../parts';
+import { BitcoinSignArea, EvmSignArea, SubstrateSignArea, TonSignArea, WrappedTransactionInfoArea } from '../../parts';
+import { ConfirmationExtraContentContext } from 'components/common/Confirmation';
 import {
   JoinPoolTransactionConfirmation,
   SendNftTransactionConfirmation,
@@ -33,6 +34,9 @@ import {
   ClaimBridgeTransactionConfirmation,
   SwapProcessConfirmation,
   EarnProcessConfirmation,
+  AddSubstrateProxyAccountTransactionConfirmation,
+  RemoveSubstrateProxyAccountTransactionConfirmation,
+  PendingMultisigConfirmation,
 } from './variants';
 import { SwapBaseTxData, SwapTxData } from '@subwallet/extension-base/types/swap';
 import { ProcessType } from '@subwallet/extension-base/types';
@@ -113,6 +117,14 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
       return TokenApproveConfirmation;
     case ExtrinsicType.SWAP:
       return SwapTransactionConfirmation;
+    case ExtrinsicType.ADD_SUBSTRATE_PROXY_ACCOUNT:
+      return AddSubstrateProxyAccountTransactionConfirmation;
+    case ExtrinsicType.REMOVE_SUBSTRATE_PROXY_ACCOUNT:
+      return RemoveSubstrateProxyAccountTransactionConfirmation;
+    case ExtrinsicType.MULTISIG_APPROVE_TX:
+    case ExtrinsicType.MULTISIG_EXECUTE_TX:
+    case ExtrinsicType.MULTISIG_CANCEL_TX:
+      return PendingMultisigConfirmation;
     default:
       return BaseTransactionConfirmation;
   }
@@ -129,6 +141,9 @@ export const TransactionConfirmation = (props: Props) => {
 
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
   const _transaction = useMemo(() => transactionRequest[id], [transactionRequest, id]);
+  // A wrapped transaction (proxied / multisig sender) cannot be approved until a signer
+  // has been picked and the wrapped extrinsic has been built.
+  const [isDisabledSubstrateApprove, setIsDisabledSubstrateApprove] = useState(!!_transaction.wrappingStatus);
   const renderContent = useCallback(
     (transaction: SWTransactionResult): React.ReactNode => {
       const { extrinsicType, process } = transaction;
@@ -162,14 +177,29 @@ export const TransactionConfirmation = (props: Props) => {
     return undefined;
   }, [_transaction.data, _transaction.extrinsicType, _transaction.process]);
 
+  // Rendered through the context so it lands *inside* the variant's ConfirmationContent,
+  // right below the transaction details, the way the extension lays it out. As a plain
+  // sibling it would be pushed to the bottom of the screen, above the sign buttons.
+  const wrappedTransactionArea = useMemo(() => {
+    if (!_transaction.wrappingStatus) {
+      return null;
+    }
+
+    return <WrappedTransactionInfoArea setDisable={setIsDisabledSubstrateApprove} transaction={_transaction} />;
+  }, [_transaction]);
+
   return (
     <>
-      {renderContent(_transaction)}
+      <ConfirmationExtraContentContext.Provider value={wrappedTransactionArea}>
+        {renderContent(_transaction)}
+      </ConfirmationExtraContentContext.Provider>
       {type === 'signingRequest' && (
         <SubstrateSignArea
+          disableApproval={isDisabledSubstrateApprove}
           extrinsicType={_transaction.extrinsicType}
           id={item.id}
           isInternal={item.isInternal}
+          isWrapTransaction={!!_transaction.wrappingStatus}
           request={(item as SigningRequest).request}
           navigation={navigation}
           txExpirationTime={txExpirationTime}

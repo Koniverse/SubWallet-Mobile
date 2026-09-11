@@ -168,6 +168,10 @@ const Component = (
   );
 
   useEffect(() => {
+    // Domain resolution is a slow on-chain query. Without this flag a late answer would
+    // overwrite whatever the user typed in the meantime — including after this input is gone.
+    let sync = true;
+
     if (chain && value && CHAINS_SUPPORTED_DOMAIN.includes(chain)) {
       if (isAzeroDomain(value)) {
         resolveDomainToAddress({
@@ -175,7 +179,7 @@ const Component = (
           domain: value,
         })
           .then(result => {
-            if (result) {
+            if (result && sync) {
               setDomainName(value);
               onChangeInputText(result);
               if (inputRef.current) {
@@ -194,7 +198,7 @@ const Component = (
           address: value,
         })
           .then(result => {
-            if (result) {
+            if (result && sync) {
               setDomainName(result);
             }
           })
@@ -203,6 +207,10 @@ const Component = (
     } else {
       setDomainName(undefined);
     }
+
+    return () => {
+      sync = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chain, onChangeInputText, value]);
 

@@ -53,7 +53,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVis
 
   const onPressLibraryBtn = async () => {
     dispatch(updatePreventLock(true));
-    const result = await launchImageLibrary({ mediaType: 'photo' });
+    const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.7, maxWidth: 1024, maxHeight: 1024 });
 
     RNQRGenerator.detect({
       uri: result.assets && result.assets[0]?.uri,

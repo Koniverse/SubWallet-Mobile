@@ -325,6 +325,15 @@ export const Home = ({ navigation }: Props) => {
     return undefined;
   }, [isAcknowledgedUnifiedAccountMigration, isUnifiedAccountMigrationInProgress]);
 
+  // Identifies which migration prompt has already been routed to, so a dismissed one is not
+  // re-opened. Both flags behind `activePriorityPath` are persisted through the web-runner, so they
+  // stay stale in redux for a round trip after the user acts on the screen.
+  const openedPriorityKey = useMemo(
+    () => (activePriorityPath ? Object.keys(activePriorityPath).join() : undefined),
+    [activePriorityPath],
+  );
+  const routedPriorityKeyRef = useRef<string | undefined>(undefined);
+
   const processIds = useMemo(() => {
     const aliveProcesses = Object.values(aliveProcessMap).filter(p => ![StepStatus.QUEUED].includes(p.status));
 
@@ -368,14 +377,36 @@ export const Home = ({ navigation }: Props) => {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     const isNeedShowNoticeModal = Platform.OS === 'ios' && parseFloat(Platform.Version) < 16.4;
     getValueLocalStorageWS(UPGRADE_DUPLICATE_ACCOUNT_NAME)
       .then(value => {
+        // Importing an account flips `isEmptyAccounts`/`needMigrate` and resets the stack, which
+        // re-runs this effect and remounts Home. Without this the pending call of a superseded run
+        // still navigates, opening MigrateAccount a second time.
+        if (cancelled) {
+          return;
+        }
+
         if (value === 'true') {
           setDuplicateModalVisible(true);
         } else {
           if (!!activePriorityPath && !isEmptyAccounts && !needMigrate && !isLocked) {
-            navigation.navigate('MigrateAccount', activePriorityPath);
+            // Covers the screen already sitting in the stack, which happens when Home remounts on
+            // the stack reset that ends an import while MigrateAccount is open.
+            const isAlreadyOpen = navigation.getState().routes.some(route => route.name === 'MigrateAccount');
+            // Covers the window after a dismiss, where the screen has been popped but the persisted
+            // flag has not made it back into redux yet.
+            const isAlreadyRouted = routedPriorityKeyRef.current === openedPriorityKey;
+
+            // Marked even when the navigation is skipped: the user is looking at this prompt right
+            // now, so leaving the screen must not bring them straight back to it.
+            routedPriorityKeyRef.current = openedPriorityKey;
+
+            if (!isAlreadyOpen && !isAlreadyRouted) {
+              navigation.navigate('MigrateAccount', activePriorityPath);
+            }
+
             return;
           }
 
@@ -393,8 +424,13 @@ export const Home = ({ navigation }: Props) => {
         }
       })
       .catch(noop);
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     activePriorityPath,
+    openedPriorityKey,
     dispatch,
     isEmptyAccounts,
     isLocked,

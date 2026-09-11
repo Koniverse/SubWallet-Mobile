@@ -52,7 +52,7 @@ const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
   }, [visible]);
 
   const onPressLibraryBtn = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo' });
+    const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.7, maxWidth: 1024, maxHeight: 1024 });
     RNQRGenerator.detect({
       uri: result.assets && result.assets[0]?.uri,
     })

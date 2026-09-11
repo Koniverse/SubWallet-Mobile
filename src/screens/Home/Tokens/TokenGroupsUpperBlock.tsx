@@ -18,6 +18,7 @@ import { RootNavigationProps } from 'routes/index';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 import { VoidFunction } from 'types/index.ts';
+import { AccountChainType, AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 
 interface Props {
   totalValue: SwNumberProps['value'];
@@ -68,6 +69,9 @@ export const TokenGroupsUpperBlock = ({
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const buyTokenInfos = useSelector((state: RootState) => state.buyService.tokens);
   const { currencyData } = useSelector((state: RootState) => state.price);
+  const { accountProxies, currentAccountProxy, isAllAccount } = useSelector(
+    (state: RootState) => state.accountState,
+  );
   const allowedChains = useGetChainSlugsByCurrentAccountProxy();
   const { isShowBuyToken } = useShowBuyToken();
   const _toggleBalances = () => {
@@ -78,6 +82,35 @@ export const TokenGroupsUpperBlock = ({
   const isSupportBuyTokens = useMemo(() => {
     return Object.values(buyTokenInfos).some(item => allowedChains.includes(item.network));
   }, [allowedChains, buyTokenInfos]);
+
+  // Mirrors the extension's isSwapSupported: ledger, watch-only and multisig accounts
+  // have no SWAP action, so the button is greyed out rather than left tappable.
+  const isSupportSwap = useMemo(() => {
+    const isSupportAccount = (currentAcc: AccountProxy) => {
+      const isReadOnlyAccount = currentAcc.accountType === AccountProxyType.READ_ONLY;
+      const isMultisigAccount = currentAcc.accountType === AccountProxyType.MULTISIG;
+      const isLedgerAccount = currentAcc.accountType === AccountProxyType.LEDGER;
+      const isSoloAccount = currentAcc.accountType === AccountProxyType.SOLO;
+      const validEcosystem = [AccountChainType.ETHEREUM, AccountChainType.SUBSTRATE, AccountChainType.BITCOIN].includes(
+        currentAcc.chainTypes[0],
+      );
+      const invalidSoloAccount = isSoloAccount && !validEcosystem;
+
+      return !invalidSoloAccount && !isLedgerAccount && !isReadOnlyAccount && !isMultisigAccount;
+    };
+
+    if (!currentAccountProxy || currentAccountProxy.chainTypes.length <= 0) {
+      return false;
+    }
+
+    if (isAllAccount) {
+      return accountProxies
+        .filter(account => account.accountType !== AccountProxyType.ALL_ACCOUNT)
+        .some(account => isSupportAccount(account));
+    }
+
+    return isSupportAccount(currentAccountProxy);
+  }, [accountProxies, currentAccountProxy, isAllAccount]);
 
   return (
     <View style={containerStyle} pointerEvents="box-none">
@@ -162,6 +195,7 @@ export const TokenGroupsUpperBlock = ({
         />
         {isShowBuyToken && (
           <ActionButton
+            disabled={!isSupportSwap}
             label={i18n.cryptoScreen.swap}
             icon={ButtonIcon.Swap}
             onPress={onOpenSwap}

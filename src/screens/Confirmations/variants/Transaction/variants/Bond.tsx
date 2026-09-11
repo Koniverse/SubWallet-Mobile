@@ -37,12 +37,15 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
         />
 
         <MetaInfo.Number decimals={decimals} label={i18n.inputLabel.amount} suffix={symbol} value={data.amount} />
-        <MetaInfo.Number
-          decimals={decimals}
-          label={i18n.inputLabel.estimatedFee}
-          suffix={symbol}
-          value={transaction.estimateFee?.value || 0}
-        />
+        {/* Once wrapped, the fee that gets paid belongs to the wrapping extrinsic. */}
+        {!transaction.wrappingStatus && (
+          <MetaInfo.Number
+            decimals={decimals}
+            label={i18n.inputLabel.estimatedFee}
+            suffix={symbol}
+            value={transaction.estimateFee?.value || 0}
+          />
+        )}
       </MetaInfo>
 
       {!!stakingFee && (

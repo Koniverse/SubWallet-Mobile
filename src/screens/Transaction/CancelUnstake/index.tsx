@@ -138,7 +138,7 @@ export const CancelUnstake = ({
   }, [accountProxies, allPositionInfos, chainInfoMap, poolChain, poolType]);
 
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
-  const onPreCheck = usePreCheckAction(fromValue);
+  const onPreCheck = usePreCheckAction(fromValue, true, undefined, chainValue);
 
   const onSubmit = useCallback(() => {
     if (!positionInfo) {

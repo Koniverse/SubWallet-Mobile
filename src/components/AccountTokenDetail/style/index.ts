@@ -53,6 +53,14 @@ export default (theme: ThemeTypes) => {
       flexShrink: 0,
     },
     explorerBtn: { marginBottom: -4, marginTop: theme.marginXXS },
+    lockedDetailsLabel: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: theme.paddingXXS,
+    },
+    lockedDetailsLabelText: {
+      color: theme['gray-5'],
+    },
     accountInfoWrapper: {
       flexDirection: 'row',
       alignItems: 'center',

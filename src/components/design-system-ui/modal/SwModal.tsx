@@ -31,6 +31,7 @@ export interface SWModalProps {
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
   isAllowSwipeDown?: boolean;
+  hideHandle?: boolean;
   modalTitle?: string;
   titleTextAlign?: 'left' | 'center';
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -91,6 +92,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       modalTitle,
       onModalHide,
       isFullHeight = false,
+      hideHandle,
       titleTextAlign = 'left',
       contentContainerStyle,
       titleStyle,
@@ -212,6 +214,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
               isUseForceHidden={isUseForceHidden === undefined ? Platform.OS === 'android' : isUseForceHidden}
               onChangeModalVisible={onChangeModalVisible}
               isAllowSwipeDown={isAllowSwipeDown}
+              hideHandle={hideHandle}
               onBackButtonPress={onBackButtonPress}
               level={level}>
               <View
@@ -239,7 +242,10 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
           <ModalBase
             isVisible={modalVisible}
             onModalHide={onModalHide || noop} // Auto trigger when close modal
-            swipeDirection={onChangeModalVisible ? 'down' : undefined}
+            // Swipe-to-dismiss installs a PanResponder that claims the touch on start,
+            // so any ScrollView inside the modal never receives the gesture. Modals with
+            // scrollable content opt out with isAllowSwipeDown={false}.
+            swipeDirection={onChangeModalVisible && isAllowSwipeDown !== false ? 'down' : undefined}
             style={{ margin: 0 }}
             backdropColor={'#1A1A1A'}
             backdropOpacity={0.8}

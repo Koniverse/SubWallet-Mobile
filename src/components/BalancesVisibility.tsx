@@ -13,15 +13,23 @@ type Props = {
   symbol?: string;
   startWithSymbol?: boolean;
   subFloatNumber?: boolean;
+  /** Font size of the balance. Defaults to the large display size. */
+  size?: number;
 };
 
-const wrapperStyle: StyleProp<any> = {
-  height: 42,
-};
-
-export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subFloatNumber = false }: Props) => {
+export const BalancesVisibility = ({
+  value,
+  symbol,
+  startWithSymbol = true,
+  subFloatNumber = false,
+  size = 38,
+}: Props) => {
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const theme = useSubWalletTheme().swThemes;
+  const wrapperStyle: StyleProp<any> = { height: size + 4 };
+  // The currency symbol rides above the digits, so scale it with them rather than
+  // pinning it to the sizes that only suit the large display.
+  const unitFontSize = Math.round((size * theme.fontSizeXL) / 38);
 
   return (
     <View style={wrapperStyle}>
@@ -30,16 +38,16 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subF
           value={value}
           decimal={0}
           prefix={startWithSymbol ? symbol : undefined}
-          size={38}
+          size={size}
           subFloatUnit={true}
-          subFloatUnitFontSize={theme.fontSizeXL}
+          subFloatUnitFontSize={unitFontSize}
           subFloatUnitStyle={{
-            lineHeight: theme.fontSizeXL,
-            height: 40,
+            lineHeight: unitFontSize,
+            height: size + 2,
             paddingRight: theme.paddingXXS,
             ...FontSemiBold,
           }}
-          textStyle={{ ...FontSemiBold, lineHeight: 38 }}
+          textStyle={{ ...FontSemiBold, lineHeight: size }}
           subFloatNumber={subFloatNumber}
           decimalOpacity={0.45}
         />
@@ -47,8 +55,8 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subF
         <Text
           style={{
             ...FontSemiBold,
-            fontSize: 38,
-            lineHeight: 38,
+            fontSize: size,
+            lineHeight: size,
             color: theme.colorTextLight1,
           }}>
           ******

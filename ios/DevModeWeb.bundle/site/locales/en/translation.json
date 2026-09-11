@@ -1533,5 +1533,8 @@
   "Sign PSBT request": "",
   "Submitted time": "",
   "Block time": "",
-  "{{symbol}} on {{chainName}} is not supported for swapping. Select another token and try again": ""
+  "{{symbol}} on {{chainName}} is not supported for swapping. Select another token and try again": "",
+  "bg.ACCOUNT.services.keyring.handler.Multisig.multisigAddressExists": "The generated multisig address already exists under the account named \"{{name}}\". Remove the account first, then try again",
+  "bg.TRANSACTION.core.validation.transfer.tokenCannotBeBridgedToNetwork": "{{symbol}} on {{originChainName}} can't be transferred to {{destinationChainName}} network. Please use another token or change the destination network",
+  "bg.TRANSACTION_SERVICE.services.service.transaction.existingMultisigPendingTransaction": "You’ve a pending multisig transaction with the same information. Complete the transaction first, then try again"
 }

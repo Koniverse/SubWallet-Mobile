@@ -3,7 +3,7 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
-import { enableChain } from 'messaging/index';
+import { enableChainWithPriorityAssets } from 'messaging/index';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { useToast } from 'react-native-toast-notifications';
@@ -38,7 +38,7 @@ export default function useChainChecker(isShowToast = true) {
   const turnOnChain = useCallback(
     (chain: string) => {
       connectingChain.current = chain;
-      enableChain(chain, false)
+      enableChainWithPriorityAssets(chain)
         .then(() => {
           isShowToast && show(i18n.common.connecting, { type: 'warning' });
         })

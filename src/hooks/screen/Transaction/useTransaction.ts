@@ -13,6 +13,7 @@ import { FieldPath, useForm, useWatch } from 'react-hook-form';
 import { FieldPathValue } from 'react-hook-form/dist/types/path';
 import i18n from 'utils/i18n/i18n';
 import { AccountProxy } from '@subwallet/extension-base/types';
+import { useIsFocused } from '@react-navigation/native';
 
 export interface TransactionFormValues extends FieldValues {
   from: string;
@@ -38,6 +39,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
   formOptions: UseFormProps<T, TContext> = {},
 ) => {
   const isShowEnableNetworkPopupRef = useRef<boolean>(false);
+  const enableChainPopupTimerRef = useRef<NodeJS.Timeout>();
+  const isFocused = useIsFocused();
   const { currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const { turnOnChain, checkChainConnected } = useChainChecker();
@@ -71,6 +74,10 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
         return ExtrinsicType.CLAIM_BRIDGE;
       case 'change-earning-validator':
         return ExtrinsicType.CHANGE_EARNING_VALIDATOR;
+      case 'add-substrate-proxy':
+        return ExtrinsicType.ADD_SUBSTRATE_PROXY_ACCOUNT;
+      case 'remove-substrate-proxy':
+        return ExtrinsicType.REMOVE_SUBSTRATE_PROXY_ACCOUNT;
       case 'send-fund':
       default:
         return ExtrinsicType.TRANSFER_BALANCE;
@@ -145,7 +152,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
       }
       const isConnected = checkChainConnected(chain);
       if (!isConnected) {
-        setTimeout(() => {
+        clearTimeout(enableChainPopupTimerRef.current);
+        enableChainPopupTimerRef.current = setTimeout(() => {
           confirmModal.setConfirmModal({
             visible: true,
             completeBtnTitle: i18n.buttonTitles.enable,
@@ -201,12 +209,25 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     [setValue],
   );
 
+  // The confirm modal is rendered by a global provider and transaction screens stay
+  // mounted under whatever gets pushed on top of them, so an unguarded popup lands on
+  // an unrelated screen (e.g. over Notifications) and enables the wrong network.
   useEffect(() => {
+    if (!isFocused) {
+      clearTimeout(enableChainPopupTimerRef.current);
+
+      return;
+    }
+
     chainValue &&
       !isShowEnableNetworkPopupRef.current &&
       !confirmModal.confirmModalState.visible &&
       showPopupEnableChain(chainValue);
-  }, [chainValue, confirmModal.confirmModalState.visible, showPopupEnableChain]);
+  }, [chainValue, confirmModal.confirmModalState.visible, isFocused, showPopupEnableChain]);
+
+  useEffect(() => {
+    return () => clearTimeout(enableChainPopupTimerRef.current);
+  }, []);
 
   return {
     title,

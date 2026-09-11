@@ -19,6 +19,7 @@ export interface SWModalProps {
   wrapperStyle?: StyleProp<ViewStyle>;
   isFullHeight?: boolean;
   isAllowSwipeDown?: boolean;
+  hideHandle?: boolean;
   level?: number;
   onChangeModalVisible?: () => void;
   isUseForceHidden?: boolean;
@@ -43,6 +44,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       children,
       wrapperStyle,
       isFullHeight = false,
+      hideHandle = false,
       level = 1,
       onChangeModalVisible,
       isUseForceHidden,
@@ -181,7 +183,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
                     rSWModalStyle,
                     ROUNDED_TOP_STYLE,
                   ]}>
-                  {!isFullHeight && <View style={_styles.line} />}
+                  {!isFullHeight && !hideHandle && <View style={_styles.line} />}
                   {children}
                 </Animated.View>
               }

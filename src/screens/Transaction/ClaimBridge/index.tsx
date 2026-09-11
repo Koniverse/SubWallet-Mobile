@@ -113,7 +113,7 @@ const Component = ({
     [chainInfoMap, chainValue],
   );
 
-  const onPreCheck = usePreCheckAction(fromValue);
+  const onPreCheck = usePreCheckAction(fromValue, true, undefined, chainValue);
 
   const { onError, onSuccess } = useHandleSubmitTransaction(
     onDone,

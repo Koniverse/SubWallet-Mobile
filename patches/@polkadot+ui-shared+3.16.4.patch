@@ -20,7 +20,7 @@ index b7f439d..766c0e0 100644
      cx: C,
      cy: C,
 -    fill: '#eee',
-+    fill: 'trasparent',
++    fill: 'transparent',
      r: C
  };
  let zeroHash = new Uint8Array();

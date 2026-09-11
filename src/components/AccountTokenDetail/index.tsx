@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Button, Icon, Number, Typography } from 'components/design-system-ui';
-import { Linking, View } from 'react-native';
+import { Linking, TouchableOpacity, View } from 'react-native';
 import { toShort } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './style';
@@ -11,11 +11,11 @@ import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import MetaInfo from 'components/MetaInfo';
-import { ArrowSquareOutIcon } from 'phosphor-react-native';
+import { ArrowSquareOutIcon, CaretRightIcon } from 'phosphor-react-native';
 import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
 import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
 import { reformatAddress } from '@subwallet/extension-base/utils';
-import { BalanceItemWithAddressType } from 'types/balance';
+import { BalanceItemWithAddressType, LockedBalanceDetails } from 'types/balance';
 import { InfoItemBase } from 'components/MetaInfo/types';
 import { _BalanceMetadata, BitcoinBalanceMetadata } from '@subwallet/extension-base/background/KoniTypes';
 import { _isChainBitcoinCompatible } from '@subwallet/extension-base/services/chain-service/utils';
@@ -23,6 +23,7 @@ import { _isChainBitcoinCompatible } from '@subwallet/extension-base/services/ch
 interface Props {
   item: BalanceItemWithAddressType;
   chainInfoMap: Record<string, _ChainInfo>;
+  onPressLockedDetails?: (details: LockedBalanceDetails) => void;
 }
 
 interface BalanceDisplayItem {
@@ -31,8 +32,8 @@ interface BalanceDisplayItem {
   key: string;
 }
 
-export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
-  const { address, addressTypeLabel, free, locked, metadata, schema: _schema, tokenSlug } = item;
+export const AccountTokenDetail = ({ item, chainInfoMap, onPressLockedDetails }: Props) => {
+  const { address, addressTypeLabel, free, locked, lockedDetails, metadata, schema: _schema, tokenSlug } = item;
   const schema = _schema as InfoItemBase['valueColorSchema'];
   const theme = useSubWalletTheme().swThemes;
   const _style = createStylesheet(theme);
@@ -77,6 +78,9 @@ export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
     [decimals, symbol, theme],
   );
   const isBitcoinChain = !!chainInfo && _isChainBitcoinCompatible(chainInfo);
+  const canViewLockedDetails = useMemo(() => {
+    return !!lockedDetails && Object.values(lockedDetails).some(value => new BigN(value || 0).gt(0));
+  }, [lockedDetails]);
   const balanceItems = useMemo<BalanceDisplayItem[]>(() => {
     if (isBitcoinChain && isBitcoinMetadata(metadata)) {
       return [
@@ -176,7 +180,30 @@ export const AccountTokenDetail = ({ item, chainInfoMap }: Props) => {
         )}
 
         <MetaInfo style={{ paddingLeft: theme.paddingXL }} labelColorScheme={'gray'} spaceSize={'none'}>
-          {balanceItems.map(renderBalanceItem)}
+          {balanceItems.map(balanceItem => {
+            if (balanceItem.key !== 'locked' || !canViewLockedDetails || !lockedDetails || !onPressLockedDetails) {
+              return renderBalanceItem(balanceItem);
+            }
+
+            return (
+              <MetaInfo.Number
+                decimals={decimals}
+                key={balanceItem.key}
+                label={
+                  <TouchableOpacity
+                    style={_style.lockedDetailsLabel}
+                    onPress={() => onPressLockedDetails(lockedDetails)}>
+                    <Typography.Text style={_style.lockedDetailsLabelText}>{balanceItem.label}</Typography.Text>
+                    <Icon phosphorIcon={CaretRightIcon} size={'xxs'} iconColor={theme['gray-5']} />
+                  </TouchableOpacity>
+                }
+                suffix={symbol}
+                value={balanceItem.value}
+                valueColorSchema={'gray'}
+                unitColor={theme['gray-5']}
+              />
+            );
+          })}
 
           {!!link && (
             <Button

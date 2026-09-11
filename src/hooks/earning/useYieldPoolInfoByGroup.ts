@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { YieldPoolInfo } from '@subwallet/extension-base/types';
+import { SUNSETTED_YIELD_POOL_SLUGS } from '@subwallet/extension-base/services/earning-service/constants';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -16,7 +17,11 @@ const useYieldPoolInfoByGroup = (group: string): YieldPoolInfo[] => {
 
     for (const pool of Object.values(poolInfoMap)) {
       const chain = pool.chain;
-      if (chainsByAccountType.includes(chain) && group === pool.group) {
+      if (
+        chainsByAccountType.includes(chain) &&
+        group === pool.group &&
+        !SUNSETTED_YIELD_POOL_SLUGS.includes(pool.slug)
+      ) {
         result.push(pool);
       }
     }

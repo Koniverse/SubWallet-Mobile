@@ -13,7 +13,7 @@ import { isSameAddress, reformatAddress, uniqueStringArray } from '@subwallet/ex
 import { WALLET_CONNECT_SUPPORT_NAMESPACES } from '@subwallet/extension-base/services/wallet-connect-service/constants';
 import { ProposalTypes } from '@walletconnect/types';
 import { chainsToWalletConnectChainInfos } from 'utils/walletConnect';
-import { AccountChainType, AccountJson } from '@subwallet/extension-base/types';
+import { AccountChainType, AccountJson, AccountSignMode } from '@subwallet/extension-base/types';
 
 interface SelectAccount {
   availableAccounts: AccountJson[];
@@ -30,7 +30,13 @@ const useSelectWalletConnectAccount = (params: ProposalTypes.Struct) => {
   const { accounts } = useSelector((state: RootState) => state.accountState);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
-  const noAllAccount = useMemo(() => accounts.filter(({ address }) => !isAccountAll(address)), [accounts]);
+  // Multisig accounts cannot sign dApp requests directly, so keep them out of the
+  // WalletConnect account picker.
+  const noAllAccount = useMemo(
+    () =>
+      accounts.filter(({ address, signMode }) => !isAccountAll(address) && signMode !== AccountSignMode.MULTISIG),
+    [accounts],
+  );
 
   const accountTypeMap = useMemo(() => {
     const availableNamespaces: Record<string, string[]> = {};

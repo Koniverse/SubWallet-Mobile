@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef } from 'react';
+import { Image, StyleSheet } from 'react-native';
 import {
   DeviceTabletCameraIcon,
   EyeIcon,
@@ -8,6 +9,7 @@ import {
   QrCodeIcon,
   ShareNetworkIcon,
   SwatchesIcon,
+  UserSwitchIcon,
   WalletIcon,
 } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
@@ -21,6 +23,13 @@ import { ModalRef } from 'types/modalRef';
 import useSetSelectedMnemonicType from 'hooks/account/useSetSelectedMnemonicType';
 import { mmkvStore } from 'utils/storage';
 import { AccountActions } from '@subwallet/extension-base/types';
+import { ImageLogosMap } from 'assets/logo';
+import { TRUST_WALLET_MNEMONIC_TYPE } from 'constants/index';
+
+// Matches the size of the BackgroundIcon rendered for the other import options.
+const styles = StyleSheet.create({
+  trustLogo: { width: 24, height: 24, borderRadius: 999 },
+});
 
 interface Props {
   createAccountRef: React.RefObject<ModalRef | null>;
@@ -57,6 +66,12 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
       backgroundColor: '#2565E6',
       icon: QrCodeIcon,
       label: i18n.importAccount.importByQRCode,
+    },
+    {
+      key: 'trustWallet',
+      backgroundColor: '#FFFFFF',
+      leftItemIcon: <Image source={ImageLogosMap.trust} style={styles.trustLogo} />,
+      label: i18n.importAccount.importFromTrustWallet,
     },
   ];
 
@@ -117,6 +132,12 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
         label: i18n.createAccount.deriveFromAnExistingAcc,
         disabled: disableDerive,
       },
+      {
+        key: 'multisig',
+        backgroundColor: '#2565E6',
+        icon: UserSwitchIcon,
+        label: i18n.multisig.createMultisigAccount,
+      },
     ];
   }, [disableDerive]);
 
@@ -132,6 +153,15 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
           navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
         }
       }, 2000);
+    } else if (item.key === 'multisig') {
+      createAccountRef?.current?.onCloseModal();
+      setTimeout(() => {
+        if (hasMasterPassword) {
+          navigation.navigate('NewMultisigAccount');
+        } else {
+          navigation.navigate('CreatePassword', { pathName: 'NewMultisigAccount' });
+        }
+      }, 300);
     } else {
       createAccountRef?.current?.onCloseModal();
       navigation.navigate('DeriveAccount');
@@ -140,6 +170,8 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
 
   const importAccountActionFunc = (item: ActionItemType) => {
     let pathName: keyof RootStackParamList;
+    // Trust Wallet reuses the seed phrase screen, only the mnemonic type differs.
+    let screenParams: RootStackParamList['ImportSecretPhrase'];
     importAccountRef && importAccountRef.current?.onCloseModal();
     if (item.key === 'secretPhrase') {
       pathName = 'ImportSecretPhrase';
@@ -147,6 +179,9 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
       pathName = 'RestoreJson';
     } else if (item.key === 'privateKey') {
       pathName = 'ImportPrivateKey';
+    } else if (item.key === 'trustWallet') {
+      pathName = 'ImportSecretPhrase';
+      screenParams = { mnemonicType: TRUST_WALLET_MNEMONIC_TYPE };
     } else {
       pathName = 'ImportQrCode';
     }
@@ -154,10 +189,10 @@ export const AccountCreationArea = ({ createAccountRef, importAccountRef, attach
     setTimeout(() => {
       if (hasMasterPassword) {
         // @ts-ignore
-        navigation.navigate(pathName);
+        navigation.navigate(pathName, screenParams);
       } else {
         // @ts-ignore
-        navigation.navigate('CreatePassword', { pathName: pathName });
+        navigation.navigate('CreatePassword', { pathName: pathName, screenParams });
       }
     }, 300);
   };
