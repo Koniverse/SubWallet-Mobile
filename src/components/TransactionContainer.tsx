@@ -26,10 +26,8 @@ export const TransactionContainer = ({ children, statusBarStyle }: Props) => {
         },
         styles.container,
       ]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={0}
-        style={{ flex: 1 }}>
+      {/* See ContainerWithSubHeader for why this is 'padding' on Android as well. */}
+      <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={0} style={{ flex: 1 }}>
         {children}
       </KeyboardAvoidingView>
     </SafeAreaView>

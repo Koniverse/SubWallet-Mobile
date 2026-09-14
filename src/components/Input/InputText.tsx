@@ -72,6 +72,9 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
             ref={ref}
             autoCorrect={false}
             autoCapitalize={'none'}
+            // Fixed-height single-line field: keep a long placeholder from wrapping on
+            // Android (see design-system-ui/input).
+            numberOfLines={1}
             placeholder={placeholder}
             autoFocus={autoFocus}
             style={[styles.textInput, extraTextInputStyle]}

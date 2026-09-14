@@ -1527,7 +1527,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                         <TokenSelectField
                           logoKey={currentChainAsset?.slug || ''}
                           subLogoKey={currentChainAsset?.originChain || ''}
-                          value={currentChainAsset?.symbol || ''}
+                          value={getAssetDisplayName(currentChainAsset, currentChainAsset?.symbol)}
                           outerStyle={{ marginBottom: 0 }}
                           showIcon
                         />
@@ -1569,7 +1569,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                           disabled={true}
                           logoKey={currentChainAsset?.slug || ''}
                           subLogoKey={currentChainAsset?.originChain || ''}
-                          value={currentChainAsset?.symbol || ''}
+                          value={getAssetDisplayName(currentChainAsset, currentChainAsset?.symbol)}
                           outerStyle={{ marginBottom: 0 }}
                           showIcon
                         />
@@ -1781,7 +1781,10 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                   </View>
                   <Button
                     disabled={isSubmitButtonDisable}
-                    loading={loading}
+                    // A multisig sender has no fee row (the signatory pays), so while the
+                    // background is still pricing the transfer nothing on screen moves and the
+                    // disabled button reads as broken. Spin it for the wait instead.
+                    loading={loading || (isMultisigAccount && (isFetchingInfo || isFetchingListFeeToken))}
                     type={isTransferAll ? 'warning' : undefined}
                     onPress={checkAction(handleSubmit(onPressSubmit), extrinsicType)}
                     icon={getButtonIcon(PaperPlaneTiltIcon)}>

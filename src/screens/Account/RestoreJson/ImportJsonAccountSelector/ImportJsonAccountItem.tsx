@@ -14,6 +14,7 @@ import {
   QuestionIcon,
   StrategyIcon,
   SwatchesIcon,
+  UserSwitchIcon,
   WarningIcon,
 } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -88,6 +89,15 @@ export const ImportJsonAccountItem = (props: Props) => {
       return {
         value: QuestionIcon,
         iconColor: theme.colorWhite,
+        weight: 'fill',
+      };
+    }
+
+    // Same badge as SelectAccountItem so a multisig looks the same here as in the account list.
+    if (accountProxy.accountType === AccountProxyType.MULTISIG) {
+      return {
+        value: UserSwitchIcon,
+        iconColor: theme['geekblue-9'],
         weight: 'fill',
       };
     }

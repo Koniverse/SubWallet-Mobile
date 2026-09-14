@@ -225,12 +225,14 @@ export const NewMultisigAccount = () => {
         <ScrollView style={styles.scrollView} keyboardShouldPersistTaps={'handled'}>
           <Typography.Text style={styles.sectionLabel}>{i18n.multisig.addSignatory}</Typography.Text>
 
-          <View style={styles.signerInputRow}>
+          <View style={signerAddressError ? styles.signerInputRowWithError : styles.signerInputRow}>
             <View style={styles.signerInputWrapper}>
               <InputText
                 value={signerAddress}
                 onChangeText={onChangeSignerAddress}
-                containerStyle={signerAddressError ? styles.addressInputContainerWithError : styles.addressInputContainer}
+                containerStyle={
+                  signerAddressError ? styles.addressInputContainerWithError : styles.addressInputContainer
+                }
                 placeholder={i18n.multisig.enterAddress}
                 errorMessages={signerAddressError ? [signerAddressError] : undefined}
                 extraTextInputStyle={styles.addressTextInput}
@@ -372,6 +374,15 @@ function createStyles(theme: ThemeTypes) {
     // and its error box, so put it back for that state.
     addressInputContainerWithError: {
       marginBottom: theme.marginXS,
+    },
+    // The error box (InputText's Warning) already carries the same 8px below it, so the
+    // row must not add its own gap on top or the box sits 8px from the field and 20px
+    // from the next section. 8/8 is what every other InputText error in the app gets.
+    signerInputRowWithError: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: theme.sizeXS,
+      marginBottom: 0,
     },
     signerInputWrapper: {
       flex: 1,

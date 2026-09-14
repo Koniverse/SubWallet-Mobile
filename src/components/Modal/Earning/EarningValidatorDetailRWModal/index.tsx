@@ -6,7 +6,7 @@ import { NominationPoolInfo, YieldPoolInfo, YieldPoolType } from '@subwallet/ext
 import { ValidatorInfo, YieldPoolTarget } from '@subwallet/extension-base/types/yield/info/chain/target';
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Alert, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { PlusCircleIcon } from 'phosphor-react-native';
 import { toShort } from 'utils/index';
 import { balanceFormatter, formatNumber } from 'utils/number';
@@ -14,6 +14,8 @@ import { calculateReward } from '@subwallet/extension-base/services/earning-serv
 import { FontSemiBold } from 'styles/sharedStyles';
 import { earlyValidateJoin } from 'messaging/index';
 import { deviceHeight } from 'constants/index';
+import useAlertModal from 'hooks/modal/useAlertModal';
+import { NotificationType } from '@subwallet/extension-base/background/KoniTypes';
 
 interface Props {
   onCancel?: () => void;
@@ -38,6 +40,7 @@ export const EarningValidatorDetailRWModal = ({
 }: Props) => {
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
+  const { openAlert } = useAlertModal();
   const {
     address: validatorAddress,
     commission,
@@ -168,11 +171,7 @@ export const EarningValidatorDetailRWModal = ({
     };
 
     const onError = (message: string) => {
-      Alert.alert('Pay attention!', message, [
-        {
-          text: 'I undestand',
-        },
-      ]);
+      openAlert({ title: 'Pay attention!', type: NotificationType.ERROR, content: message });
     };
 
     earlyValidateJoin({ slug: poolInfo.slug, address: validatorAddress || '' })
@@ -202,7 +201,7 @@ export const EarningValidatorDetailRWModal = ({
           setLoading(false);
         }
       });
-  }, [bypassEarlyValidate, onStakeMore, poolInfo, setModalVisible, validatorAddress]);
+  }, [bypassEarlyValidate, onStakeMore, openAlert, poolInfo, setModalVisible, validatorAddress]);
 
   const _onCancel = useCallback(() => {
     setModalVisible(false);

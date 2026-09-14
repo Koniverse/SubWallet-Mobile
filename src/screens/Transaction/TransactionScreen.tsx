@@ -24,7 +24,10 @@ const TransactionScreen = () => {
     <TransactionActionStack.Navigator
       screenOptions={{ headerShown: false, animation: 'slide_from_right', gestureEnabled: false }}>
       <TransactionActionStack.Screen name="SendNFT" component={SendNFT} />
-      <TransactionActionStack.Screen name="SendFund" component={SendFund} />
+      {/* The alpha-token (Bittensor subnet) validator selectors are driven by the earning
+          store's yield positions, so it has to be started here like the extension's
+          SendFund wrapper does; otherwise they only show up after Earning was opened. */}
+      <TransactionActionStack.Screen name="SendFund" component={withPageWrapper(SendFund, ['earning'])} />
       <TransactionActionStack.Screen name="Withdraw" component={Withdraw} />
       <TransactionActionStack.Screen name="Unbond" component={Unbond} />
       <TransactionActionStack.Screen name="ClaimReward" component={ClaimReward} />

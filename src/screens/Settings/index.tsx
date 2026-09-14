@@ -22,7 +22,6 @@ import {
   XIcon,
 } from 'phosphor-react-native';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { WIKI_URL } from 'constants/index';
@@ -46,12 +45,15 @@ const settingTitleStyle: StyleProp<any> = {
   paddingBottom: 8,
 };
 
+// Mirrors the extension's `.__version`: 16px above, nothing below - the screen's bottom
+// safe-area inset is the only thing under it. The old 16px bottom padding stacked on top of
+// that inset, which reads as a stray band of empty space above the navigation bar.
 const versionAppStyle: StyleProp<any> = {
   textAlign: 'center',
-  color: ColorMap.light,
+  // token.colorTextLight3 on the extension
+  color: 'rgba(255, 255, 255, 0.65)',
   ...FontMedium,
   ...sharedStyles.mainText,
-  paddingBottom: 16,
   paddingTop: 16,
 };
 
@@ -312,11 +314,13 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
             icon={<Icon phosphorIcon={LockIcon} size={'lg'} weight={'fill'} iconColor={theme.colorWhite} />}>
             {i18n.settings.lock}
           </Button>
+
+          {/* Part of the scroll content, right after Lock, as on the extension - not pinned
+              to the bottom edge where it floated away from the list on tall screens. */}
+          <Text onPress={onPressVersionNumber} style={versionAppStyle}>
+            {`SubWallet v${appVersion} (${buildNumber}) b-${bundleVersion}`}
+          </Text>
         </ScrollView>
-        <Text
-          onPress={onPressVersionNumber}
-          style={versionAppStyle}>{`SubWallet v${appVersion} (${buildNumber}) b-${bundleVersion}`}
-        </Text>
       </View>
     </SubScreenContainer>
   );

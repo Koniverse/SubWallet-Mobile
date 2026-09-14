@@ -57,7 +57,6 @@ import { InfoIcon, PencilSimpleLineIcon, PlusCircleIcon, WarningIcon } from 'pho
 import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import {
-  Alert,
   findNodeHandle,
   Keyboard,
   Linking,
@@ -86,6 +85,8 @@ import { useCreateGetSubnetStakingTokenName, useYieldPositionDetail } from 'hook
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
+import useAlertModal from 'hooks/modal/useAlertModal';
+import { NotificationType } from '@subwallet/extension-base/background/KoniTypes';
 import { STAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
 import { useGetBalance } from 'hooks/balance';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
@@ -304,6 +305,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [checkValidAccountLoading, setCheckValidAccountLoading] = useState<boolean>(redirectFromPreviewRef.current);
   const globalAppModalContext = useContext(GlobalModalContext);
   const { confirmModal } = useContext(AppModalContext);
+  const { closeAlert, openAlert } = useAlertModal();
 
   const inputAsset = useMemo(
     () => chainAsset[poolInfo?.metadata?.inputAsset],
@@ -482,11 +484,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         let message = balanceDisplayInfo.message.replaceAll('{{minJoinPool}}', minJoinPool);
         message = message.replaceAll('{{symbol}}', symbol);
         message = message.replaceAll('{{chain}}', _chain);
-        Alert.alert(balanceDisplayInfo.title, message, [
-          {
-            text: 'I understand',
-          },
-        ]);
+        openAlert({ title: balanceDisplayInfo.title, type: NotificationType.ERROR, content: message });
 
         dispatchProcessState({
           type: EarningActionType.STEP_ERROR_ROLLBACK,
@@ -495,11 +493,11 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
         return;
       } else if (insufficientXCMMessages.some(v => error.message.includes(v))) {
-        Alert.alert(i18n.warningTitle.insufficientBalance, error.message, [
-          {
-            text: 'I understand',
-          },
-        ]);
+        openAlert({
+          title: i18n.warningTitle.insufficientBalance,
+          type: NotificationType.ERROR,
+          content: error.message,
+        });
 
         dispatchProcessState({
           type: EarningActionType.STEP_ERROR_ROLLBACK,
@@ -517,7 +515,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         payload: error,
       });
     },
-    [currentAmount, handleDataForInsufficientAlert, hideAll, nativeTokenBalance.value, show],
+    [currentAmount, handleDataForInsufficientAlert, hideAll, nativeTokenBalance.value, openAlert, show],
   );
 
   const onSuccess = useCallback(
@@ -760,11 +758,19 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     ],
   );
 
-  const renderMetaInfo = useCallback(() => {
+  // Opening a modal updates context state, so this must not run while rendering (the old Alert.alert did).
+  useEffect(() => {
     if (!poolInfo && !isShowNoPoolInfoPopupRef.current) {
       isShowNoPoolInfoPopupRef.current = true;
-      Alert.alert('Unable to get earning data', 'Please, go back and try again later');
+      openAlert({
+        title: 'Unable to get earning data',
+        type: NotificationType.ERROR,
+        content: 'Please, go back and try again later',
+      });
     }
+  }, [openAlert, poolInfo]);
+
+  const renderMetaInfo = useCallback(() => {
     const value = currentAmount ? parseFloat(currentAmount) / 10 ** assetDecimals : 0;
     const assetSymbol = inputAsset ? inputAsset.symbol : '';
 
@@ -858,36 +864,40 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const showValidatorMaxCountWarning = useCallback(
     (maxCount: number, userSelectedPoolCount: number, callback: VoidFunction) => {
-      return Alert.alert(
-        'Pay attention!',
-        `You are recommended to choose ${maxCount} validators to optimize your earnings. Do you wish to continue with ${userSelectedPoolCount} validator${
+      openAlert({
+        title: 'Pay attention!',
+        type: NotificationType.WARNING,
+        content: `You are recommended to choose ${maxCount} validators to optimize your earnings. Do you wish to continue with ${userSelectedPoolCount} validator${
           userSelectedPoolCount === 1 ? '' : 's'
         }?`,
-        [
-          {
-            text: 'Go back',
-            onPress: () => {
-              setSubmitLoading(false);
-            },
-            style: 'default',
+        cancelButton: {
+          text: 'Go back',
+          onPress: () => {
+            closeAlert();
+            setSubmitLoading(false);
           },
-          {
-            text: 'Continue',
-            style: 'default',
-            isPreferred: false,
-            onPress: callback,
+        },
+        okButton: {
+          text: 'Continue',
+          onPress: () => {
+            closeAlert();
+            callback();
           },
-        ],
-      );
+        },
+      });
     },
-    [],
+    [closeAlert, openAlert],
   );
 
   const netuid = useMemo(() => poolInfo.metadata.subnetData?.netuid, [poolInfo.metadata.subnetData]);
 
   const onSubmit = useCallback(() => {
     if (!poolInfo) {
-      Alert.alert('Unable to get earning data', 'Please, go back and try again later');
+      openAlert({
+        title: 'Unable to get earning data',
+        type: NotificationType.ERROR,
+        content: 'Please, go back and try again later',
+      });
     }
 
     setSubmitLoading(true);
@@ -1040,6 +1050,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       });
   }, [
     chain,
+    openAlert,
     currentStep,
     getValues,
     maxSlippage?.slippage,
@@ -1143,31 +1154,31 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         navigation.goBack();
       }
     } else {
-      Alert.alert(
-        'Cancel earning process?',
-        'Going back will cancel the current earning process. Do you wish to cancel?',
-        [
-          {
-            text: 'Cancel earning',
-            onPress: () => {
-              if (redirectFromPreviewRef.current) {
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
-                });
-                return;
-              }
+      openAlert({
+        title: 'Cancel earning process?',
+        type: NotificationType.WARNING,
+        content: 'Going back will cancel the current earning process. Do you wish to cancel?',
+        okButton: {
+          text: 'Cancel earning',
+          type: 'warning',
+          onPress: () => {
+            closeAlert();
 
-              navigation.goBack();
-            },
+            if (redirectFromPreviewRef.current) {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+              });
+              return;
+            }
+
+            navigation.goBack();
           },
-          {
-            text: 'Not now',
-          },
-        ],
-      );
+        },
+        cancelButton: { text: 'Not now' },
+      });
     }
-  }, [slug, firstStep, navigation]);
+  }, [slug, firstStep, navigation, openAlert, closeAlert]);
 
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
@@ -1366,18 +1377,19 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         if (isUnstakeAll) {
           if (poolType === YieldPoolType.NOMINATION_POOL) {
             isReadyToShowAlertRef.current &&
-              Alert.alert(
-                'Pay attention',
-                "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
-                [
-                  {
-                    text: 'I understand',
-                    onPress: () => {
-                      isReadyToShowAlertRef.current = true;
-                    },
+              openAlert({
+                title: 'Pay attention',
+                type: NotificationType.WARNING,
+                content:
+                  "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
+                okButton: {
+                  text: 'I understand',
+                  onPress: () => {
+                    closeAlert();
+                    isReadyToShowAlertRef.current = true;
                   },
-                ],
-              );
+                },
+              });
 
             isReadyToShowAlertRef.current = false;
 
@@ -1385,18 +1397,19 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           } else if (poolType === YieldPoolType.NATIVE_STAKING) {
             if (_STAKING_CHAIN_GROUP.para.includes(chain)) {
               isReadyToShowAlertRef.current &&
-                Alert.alert(
-                  'Pay attention',
-                  "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
-                  [
-                    {
-                      text: 'I understand',
-                      onPress: () => {
-                        isReadyToShowAlertRef.current = true;
-                      },
+                openAlert({
+                  title: 'Pay attention',
+                  type: NotificationType.WARNING,
+                  content:
+                    "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
+                  okButton: {
+                    text: 'I understand',
+                    onPress: () => {
+                      closeAlert();
+                      isReadyToShowAlertRef.current = true;
                     },
-                  ],
-                );
+                  },
+                });
               isReadyToShowAlertRef.current = false;
             }
 
@@ -1438,26 +1451,35 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         };
 
         isReadyToShowAlertRef.current &&
-          Alert.alert('Pay attention', content, [
-            {
+          openAlert({
+            title: 'Pay attention',
+            type: NotificationType.WARNING,
+            content,
+            okButton: {
               text:
                 poolType === YieldPoolType.NATIVE_STAKING
                   ? 'Change validators'
                   : poolType === YieldPoolType.NOMINATION_POOL
                   ? 'Use nomination pool'
                   : '',
-              onPress: onPressContinue,
+              onPress: () => {
+                closeAlert();
+                onPressContinue();
+              },
             },
-            {
+            cancelButton: {
               text:
                 poolType === YieldPoolType.NATIVE_STAKING
                   ? 'Keep current validators'
                   : poolType === YieldPoolType.NOMINATION_POOL
                   ? 'Explore Earning options'
                   : '',
-              onPress: onPressCancel,
+              onPress: () => {
+                closeAlert();
+                onPressCancel();
+              },
             },
-          ]);
+          });
         isReadyToShowAlertRef.current = false;
       }
     }
@@ -1473,6 +1495,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     isShowAlert,
     isAllAccount,
     isFocused,
+    openAlert,
+    closeAlert,
   ]);
 
   const validatorDefaultValue = (() => {

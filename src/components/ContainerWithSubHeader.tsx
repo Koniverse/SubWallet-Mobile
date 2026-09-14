@@ -44,8 +44,16 @@ export const ContainerWithSubHeader = ({
 
   return (
     <SafeAreaView edges={edges} style={{ flex: 1, backgroundColor: subHeaderProps.backgroundColor || '#0C0C0C' }}>
+      {/* 'padding' on Android too. 'height' keeps its own accumulated state
+          (_initialFrameHeight, state.bottom + frame) and re-derives the view height from
+          every keyboardDidShow/Hide it receives; on top of the window resize the OS may or
+          may not do under edge-to-edge (adjustResize + enableEdgeToEdge), that made the
+          footer bounce between the bottom of the screen and mid-screen and sometimes stay
+          shrunk after the keyboard closed (MIUI fires several show/hide events). 'padding'
+          only adds the part of the keyboard that still overlaps the current frame, so it is
+          a no-op when the window already resized and exact when it did not. */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={'padding'}
         keyboardVerticalOffset={Platform.select({ ios: 0, android: androidKeyboardVerticalOffset })}
         style={[getContainerStyle(subHeaderProps.backgroundColor), style]}>
         {isShowMainHeader && (
