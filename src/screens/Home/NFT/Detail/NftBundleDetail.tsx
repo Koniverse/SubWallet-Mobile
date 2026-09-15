@@ -221,7 +221,12 @@ const NftBundleDetail = ({
             </View>
             {isNested && !!nftItem.parent && (
               <View style={styles.imageFooterLine2}>
-                <Button block type={'secondary'} size={'xs'} onPress={goToNft(nftItem.parent.id)}>
+                <Button
+                  block
+                  type={'secondary'}
+                  size={'sm'}
+                  style={styles.goToParentButton}
+                  onPress={goToNft(nftItem.parent.id)}>
                   {i18n.nftScreen.nestedNft.goToParent}
                 </Button>
               </View>
@@ -408,6 +413,10 @@ function createStyle(theme: ThemeTypes) {
     imageFooterLine2: {
       paddingTop: theme.paddingSM,
       paddingHorizontal: theme.padding,
+      paddingBottom: theme.paddingXXS,
+    },
+    goToParentButton: {
+      backgroundColor: theme.colorBgInput,
     },
     propContainer: {
       marginTop: theme.marginLG,

@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { AmountData, NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { YieldPoolInfo } from '@subwallet/extension-base/types';
 import { NominationSelector } from 'components/Modal/common/NominationSelector';
 import { EarningValidatorSelector } from 'components/Modal/Earning/EarningValidatorSelector';
-import { ActivityIndicator, Number, Typography } from 'components/design-system-ui';
 import { fetchPoolTarget } from 'messaging/index';
 import { store } from 'stores/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
+import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay';
 
 interface Props {
   chainValue: string;
@@ -32,8 +32,11 @@ interface AlphaTokenBalanceProps {
   isLoading?: boolean;
   error?: string | null;
   label?: string;
+  style?: StyleProp<ViewStyle>;
 }
 
+// Same row as the regular FreeBalance ("<native> and <token>") so the label, wrapping and
+// spacing match the other tokens; the alpha balance just comes from the staking position.
 export const AlphaTokenBalance = ({
   bondedValue,
   decimals,
@@ -41,51 +44,25 @@ export const AlphaTokenBalance = ({
   isLoading,
   label,
   nativeTokenBalance,
+  style,
   symbol,
 }: AlphaTokenBalanceProps) => {
-  const theme = useSubWalletTheme().swThemes;
-  const stylesheet = createStylesheet(theme);
-
-  if (error) {
-    return (
-      <View style={stylesheet.balanceWrapper}>
-        <Typography.Text style={stylesheet.errorText}>{error}</Typography.Text>
-      </View>
-    );
-  }
+  const tokenBalance = useMemo<AmountData>(
+    () => ({ value: bondedValue, decimals, symbol }),
+    [bondedValue, decimals, symbol],
+  );
 
   return (
-    <View style={stylesheet.balanceWrapper}>
-      <Typography.Text style={stylesheet.balanceLabel}>{`${
-        label || i18n.inputLabel.availableBalance
-      }:`}</Typography.Text>
-
-      {isLoading ? (
-        <ActivityIndicator size={14} indicatorColor={theme.colorTextTertiary} />
-      ) : (
-        <View style={stylesheet.balanceValueWrapper}>
-          <Number
-            size={14}
-            decimal={nativeTokenBalance.decimals || 0}
-            suffix={nativeTokenBalance.symbol}
-            value={nativeTokenBalance.value}
-            intColor={theme.colorTextTertiary}
-            decimalColor={theme.colorTextTertiary}
-            unitColor={theme.colorTextTertiary}
-          />
-          <Typography.Text style={stylesheet.balanceLabel}>{i18n.common.and}</Typography.Text>
-          <Number
-            size={14}
-            decimal={decimals}
-            suffix={symbol}
-            value={bondedValue}
-            intColor={theme.colorTextTertiary}
-            decimalColor={theme.colorTextTertiary}
-            unitColor={theme.colorTextTertiary}
-          />
-        </View>
-      )}
-    </View>
+    <FreeBalanceDisplay
+      error={error || null}
+      isLoading={!!isLoading}
+      label={label || i18n.inputLabel.availableBalance}
+      nativeTokenBalance={nativeTokenBalance}
+      nativeTokenSlug={'native'}
+      style={style}
+      tokenBalance={tokenBalance}
+      tokenSlug={'alpha'}
+    />
   );
 };
 
@@ -167,26 +144,6 @@ function createStylesheet(theme: ThemeTypes) {
   return StyleSheet.create({
     container: {
       marginBottom: theme.marginXXS,
-    },
-    balanceWrapper: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-      gap: theme.sizeXXS,
-      marginBottom: theme.marginSM,
-    },
-    balanceValueWrapper: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-    },
-    balanceLabel: {
-      color: theme.colorTextTertiary,
-    },
-    errorText: {
-      color: theme.colorError,
     },
   });
 }

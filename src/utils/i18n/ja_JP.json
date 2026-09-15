@@ -361,6 +361,7 @@
     "buyTokensMessage": "このトランザクションを完了するために、選択したサプライヤーに移動します"
   },
   "sendToken": {
+    "transferringFungibleToken": "あなたは代替可能なトークンの転送を実行しています",
     "sendTokenMessage": "次の詳細でトークンを転送",
     "senderAvailableBalance": "送信可能残高"
   },

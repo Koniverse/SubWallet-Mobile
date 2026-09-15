@@ -1514,6 +1514,9 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
               style={stylesheet.scrollView}
               contentContainerStyle={stylesheet.scrollViewContentContainer}
               keyboardShouldPersistTaps={'handled'}>
+              {viewStep === 1 && (
+                <Typography.Text style={stylesheet.brief}>{i18n.sendToken.transferringFungibleToken}</Typography.Text>
+              )}
               {viewStep === 1 ? (
                 <View style={stylesheet.row}>
                   <View style={stylesheet.rowItem}>
@@ -1681,6 +1684,8 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                       nativeTokenBalance={nativeTokenBalance}
                       isLoading={isNativeBalanceLoading}
                       error={nativeBalanceError}
+                      label={i18n.sendToken.senderAvailableBalance}
+                      style={stylesheet.balance}
                     />
                   ) : (
                     <FreeBalance
@@ -1688,7 +1693,7 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                       chain={chainValue}
                       tokenSlug={assetValue}
                       extrinsicType={extrinsicType}
-                      label={`${i18n.inputLabel.availableBalance}`}
+                      label={i18n.sendToken.senderAvailableBalance}
                       style={stylesheet.balance}
                       onBalanceReady={setIsBalanceReady}
                     />
@@ -1721,16 +1726,15 @@ const Component = ({ sendFundSlug, scanRecipient }: Props) => {
                     <Divider />
                     <View style={{ flexDirection: 'row', paddingBottom: isShowFeeEditor ? 0 : theme.padding }}>
                       {isShowAlphaTokenSection ? (
-                        <View style={stylesheet.balanceStep2}>
-                          <AlphaTokenBalance
-                            bondedValue={bondedValue}
-                            decimals={decimals}
-                            symbol={currentChainAsset?.symbol || ''}
-                            nativeTokenBalance={nativeTokenBalance}
-                            isLoading={isNativeBalanceLoading}
-                            error={nativeBalanceError}
-                          />
-                        </View>
+                        <AlphaTokenBalance
+                          bondedValue={bondedValue}
+                          decimals={decimals}
+                          symbol={currentChainAsset?.symbol || ''}
+                          nativeTokenBalance={nativeTokenBalance}
+                          isLoading={isNativeBalanceLoading}
+                          error={nativeBalanceError}
+                          style={stylesheet.balanceStep2}
+                        />
                       ) : (
                         <FreeBalance
                           address={fromValue}

@@ -362,6 +362,7 @@
     "buyTokensMessage": "Bạn sẽ được chuyển đến trang của nhà cung cấp để hoàn thành giao dịch"
   },
   "sendToken": {
+    "transferringFungibleToken": "Bạn đang thực hiện chuyển fungible token",
     "sendTokenMessage": "Chuyển token với các thông tin sau",
     "senderAvailableBalance": "Số dư khả dụng của tài khoản gửi"
   },

@@ -81,7 +81,7 @@ const JoinYieldPoolConfirmation: React.FC<Props> = (props: Props) => {
         {!transaction.wrappingStatus && (
           <MetaInfo.Number
             decimals={feeTokenDecimals}
-            label={i18n.inputLabel.estimatedFee}
+            label={i18n.inputLabel.networkFee}
             suffix={feeTokenSymbol}
             value={transaction.estimateFee?.value || 0}
           />

@@ -361,6 +361,7 @@
     "buyTokensMessage": "You will be directed to the chosen supplier to complete this transaction"
   },
   "sendToken": {
+    "transferringFungibleToken": "You are performing a transfer of a fungible token",
     "sendTokenMessage": "Transfer token with the following details",
     "senderAvailableBalance": "Sender available balance"
   },
@@ -942,7 +943,7 @@
       "level": "Level {{level}}",
       "parent": "Parent",
       "nestedIn": "Nested in: {{name}}",
-      "goToParent": "Go to parent",
+      "goToParent": "Go to Parent",
       "childNfts": "Child NFTs ({{count}})",
       "item": "item",
       "items": "items",

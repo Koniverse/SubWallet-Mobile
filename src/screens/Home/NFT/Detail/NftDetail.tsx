@@ -7,14 +7,13 @@ import ImagePreview from 'components/ImagePreview';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
-import { SlidersHorizontalIcon } from 'phosphor-react-native';
 import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
-import { ContainerHorizontalPadding, FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium } from 'styles/sharedStyles';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import { NFTDetailProps } from 'screens/Home/NFT/NFTStackScreen';
@@ -75,10 +74,6 @@ const NftDetail = ({
     },
     [toast],
   );
-
-  const handleClickComingSoon = useCallback(() => {
-    show(i18n.notificationMessage.comingSoon);
-  }, [show]);
 
   const propDetail = useCallback(
     (title: string, value: unknown, key: number): JSX.Element => {
@@ -185,15 +180,9 @@ const NftDetail = ({
           {!!nftItem.description && (
             <View>
               <Typography.Text style={styles.attTitle}>{i18n.inputLabel.nftDetails}</Typography.Text>
-              <NftDescription title={nftItem.name || nftItem.id} description={nftItem.description} />
+              <NftDescription title={nftItem.name || nftItem.id} description={nftItem.description} layout={'card'} />
             </View>
           )}
-          <TouchableOpacity style={styles.resourceContainerStyle} activeOpacity={0.5} onPress={handleClickComingSoon}>
-            <View style={styles.resourceIconContainerStyle}>
-              <SlidersHorizontalIcon size={20} color={theme.colorSuccess} />
-            </View>
-            <Text style={styles.resourceTitleStyle}>{i18n.nftScreen.nftDetail.resourcesOrInventory}</Text>
-          </TouchableOpacity>
           <TextField
             text={collectionInfo.collectionName || collectionInfo.collectionId}
             label={i18n.inputLabel.nftCollectionName}
@@ -290,12 +279,14 @@ function createStyle(theme: ThemeTypes) {
       lineHeight: theme.fontSize * theme.lineHeight,
       color: theme.colorTextLight1,
     },
+    // Extension `nft_item_detail__section_title`: 16px, heading colour, body weight
     attTitle: {
-      fontSize: theme.fontSize,
-      lineHeight: theme.fontSize * theme.lineHeight,
+      fontSize: theme.fontSizeLG,
+      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
       marginTop: theme.marginSM,
-      color: theme.colorTextLight1,
-      ...FontSemiBold,
+      marginBottom: theme.marginXS,
+      color: theme.colorTextHeading,
+      ...FontMedium,
     },
     attValue: {
       fontSize: theme.fontSize,
@@ -311,27 +302,6 @@ function createStyle(theme: ThemeTypes) {
     imageStyle: {
       width: '100%',
       aspectRatio: 1,
-    },
-    resourceContainerStyle: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginTop: theme.marginXS,
-      marginBottom: theme.margin,
-    },
-    resourceIconContainerStyle: {
-      width: 40,
-      height: 40,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    resourceTitleStyle: {
-      fontSize: theme.fontSize,
-      lineHeight: theme.fontSize * theme.lineHeight,
-      marginLeft: 4,
-      color: theme.colorTextLight1,
-      ...FontSemiBold,
     },
     loadingIconWrapperStyle: {
       position: 'absolute',

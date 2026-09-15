@@ -361,6 +361,7 @@
     "buyTokensMessage": "你将自动跳转到所选提供商以完成此交易"
   },
   "sendToken": {
+    "transferringFungibleToken": "你正在执行可替代通证的转移",
     "sendTokenMessage": "使用以下详细信息来转移通证",
     "senderAvailableBalance": "发送者可用的余额"
   },

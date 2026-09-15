@@ -64,7 +64,7 @@ const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
         {!transaction.wrappingStatus && (
           <MetaInfo.Number
             decimals={decimals}
-            label={i18n.inputLabel.estimatedFee}
+            label={i18n.inputLabel.networkFee}
             suffix={symbol}
             value={transaction.estimateFee?.value || 0}
           />

@@ -171,7 +171,8 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
         </MetaInfo>
       )}
 
-      <MetaInfo hasBackgroundWrapper>
+      {/* Extension: gray labels, light values, "Network fee" */}
+      <MetaInfo hasBackgroundWrapper labelColorScheme={'gray'} valueColorScheme={'light'}>
         {!!transaction.wrappingStatus && (
           <MetaInfo.Account
             address={data.to}
@@ -214,14 +215,13 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
 
         {/* Once wrapped, the fee that gets paid belongs to the wrapping extrinsic and is shown there instead. */}
         {!transaction.wrappingStatus && (
-          <MetaInfo.Default label={i18n.inputLabel.estimatedFee} labelAlign={'top'}>
+          <MetaInfo.Default label={i18n.inputLabel.networkFee} labelAlign={'top'}>
             <View style={stylesheet.valueWrapper}>
               <SwNumber
                 size={14}
                 decimal={feeInfo ? feeInfo.decimals : nativeTokenDecimals}
                 suffix={feeInfo ? feeInfo.symbol : nativeTokenSymbol}
                 value={feeInfo ? feeInfo.value : 0}
-                unitColor={theme.colorTextLight3}
               />
               {renderConvertedValue(convertedFeeValueToUSD)}
             </View>
@@ -236,7 +236,6 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
                 decimal={_getAssetDecimals(tokenInfo)}
                 suffix={_getAssetSymbol(tokenInfo)}
                 value={crossChainFeeInfo?.value || 0}
-                unitColor={theme.colorTextLight3}
               />
               {renderConvertedValue(convertedCrossChainFeeValueToUSD)}
             </View>

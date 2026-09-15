@@ -57,7 +57,7 @@ const TokenApproveConfirmation: React.FC<Props> = (props: Props) => {
 
         <MetaInfo.Account address={txParams.spenderAddress} label={'Spender contract'} />
 
-        <MetaInfo.Default label={i18n.inputLabel.estimatedFee} labelAlign={'top'}>
+        <MetaInfo.Default label={i18n.inputLabel.networkFee} labelAlign={'top'}>
           <View style={stylesheet.valueWrapper}>
             <SwNumber
               size={14}

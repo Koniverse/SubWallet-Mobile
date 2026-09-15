@@ -1,6 +1,6 @@
 import { ThemeTypes } from 'styles/themes';
 import { StyleSheet } from 'react-native';
-import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { FontMedium, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
 export default (theme: ThemeTypes) =>
   StyleSheet.create({
@@ -42,6 +42,14 @@ export default (theme: ThemeTypes) =>
     scrollViewContentContainer: {
       paddingHorizontal: theme.padding,
     },
+    brief: {
+      ...FontMedium,
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      color: theme.colorTextLight4,
+      textAlign: 'center',
+      marginBottom: theme.marginMD,
+    },
     paperPlaneIconWrapper: {
       justifyContent: 'center',
     },
@@ -57,9 +65,11 @@ export default (theme: ThemeTypes) =>
     balanceWrapper: {
       gap: theme.size,
     },
+    // Extension `.free-balance-block`: right-aligned "Sender available balance" under the form
     balance: {
       marginBottom: 0,
       flex: 1,
+      justifyContent: 'flex-end',
     },
     balanceStep2: {
       paddingTop: 16,
