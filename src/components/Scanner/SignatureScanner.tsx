@@ -19,6 +19,7 @@ interface Props {
 
 const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
   const [error, setError] = useState<string>('');
+  const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const insets = useSafeAreaInsets();
 
   const onHideModal = () => setVisible(false);
@@ -53,11 +54,16 @@ const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
 
   const onPressLibraryBtn = async () => {
     const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.7, maxWidth: 1024, maxHeight: 1024 });
-    RNQRGenerator.detect({
-      uri: result.assets && result.assets[0]?.uri,
-    })
+    const uri = result.didCancel ? undefined : result.assets?.[0]?.uri;
+
+    if (!uri) {
+      return;
+    }
+
+    setIsLibraryLoading(true);
+    RNQRGenerator.detect({ uri })
       .then(response => {
-        const signature = `0x${response.values[0]}`;
+        const signature = `0x${response.values?.[0]}`;
         if (isHex(signature)) {
           setError('');
           onSuccess({
@@ -69,7 +75,8 @@ const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
           setError(message);
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => setIsLibraryLoading(false));
   };
 
   return (
@@ -85,6 +92,7 @@ const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
         onPressLibraryBtn={onPressLibraryBtn}
         onSuccess={handleRead}
         error={error}
+        isLibraryLoading={isLibraryLoading}
       />
     </ModalBase>
   );

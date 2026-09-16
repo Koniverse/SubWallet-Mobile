@@ -1063,7 +1063,13 @@ function History({
             // pending row at once (each with an identicon, a chain logo and two account
             // lookups) and re-rendered all of them on every store update, which made the
             // list stutter as soon as there were more than a handful of records.
+            //
+            // The two lists need distinct keys: without them React reuses one LazySectionList
+            // instance across the tab switch, and its `sections` state (filled from an effect)
+            // still holds the previous tab's rows for a render while `renderItem` already
+            // belongs to the other tab - HistoryItem then crashes on a PendingMultisigTx.
             <LazySectionList
+              key={HistoryTabType.MULTISIG}
               listStyle={{
                 paddingLeft: theme.padding,
                 paddingRight: theme.padding,
@@ -1079,6 +1085,7 @@ function History({
             />
           ) : (
             <LazySectionList
+              key={HistoryTabType.HISTORY}
               listStyle={{
                 paddingLeft: theme.padding,
                 paddingRight: theme.padding,

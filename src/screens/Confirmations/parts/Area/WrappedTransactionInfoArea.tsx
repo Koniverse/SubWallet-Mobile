@@ -17,7 +17,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { initMultisigTx } from 'messaging/transaction/multisig';
 import { handleSubstrateProxyWrappedTxRequest } from 'messaging/transaction/substrateProxy';
 import { ThemeTypes } from 'styles/themes';
-import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { FontMedium } from 'styles/sharedStyles';
 import { WrappedTransactionSigner } from 'types/wrappedTransaction';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
@@ -213,18 +213,22 @@ const WrappedTransactionInfoArea = ({ setDisable, transaction }: Props) => {
       ) : (
         <>
           <MetaInfo hasBackgroundWrapper spaceSize={'xs'}>
+            {/* Name and call data inherit MetaInfo's value colour (gray) like the extension's
+                `.__value`, rather than the white heading style. */}
             <MetaInfo.Default label={i18n.multisig.signWith}>
-              <TouchableOpacity
-                activeOpacity={1}
-                disabled={isSelectorDisable}
-                style={styles.signerValue}
-                onPress={onOpenSelectSignerModal}>
-                <AccountProxyAvatar size={24} value={signerAccount.proxyId} />
-                <Typography.Text ellipsis style={styles.signerName}>
-                  {signerAccount.name}
-                </Typography.Text>
-                <Icon phosphorIcon={CaretDownIcon} customSize={18} iconColor={theme.colorTextLight4} />
-              </TouchableOpacity>
+              {valueStyle => (
+                <TouchableOpacity
+                  activeOpacity={1}
+                  disabled={isSelectorDisable}
+                  style={styles.signerValue}
+                  onPress={onOpenSelectSignerModal}>
+                  <AccountProxyAvatar size={24} value={signerAccount.proxyId} />
+                  <Typography.Text ellipsis style={[valueStyle, styles.signerName]}>
+                    {signerAccount.name}
+                  </Typography.Text>
+                  <Icon phosphorIcon={CaretDownIcon} customSize={18} iconColor={theme.colorTextLight4} />
+                </TouchableOpacity>
+              )}
             </MetaInfo.Default>
 
             {isWrapTransactionLoading && (
@@ -253,15 +257,15 @@ const WrappedTransactionInfoArea = ({ setDisable, transaction }: Props) => {
 
                 {wrapTransactionData.callData != null && (
                   <MetaInfo.Default label={i18n.multisig.callData}>
-                    <TouchableOpacity
-                      activeOpacity={1}
-                      style={styles.callDataValue}
-                      onPress={() => setCallDataModalVisible(true)}>
-                      <Typography.Text style={styles.callDataText}>
-                        {toShort(wrapTransactionData.callData, 5, 5)}
-                      </Typography.Text>
-                      <Icon phosphorIcon={InfoIcon} customSize={18} iconColor={theme.colorTextLight4} />
-                    </TouchableOpacity>
+                    {valueStyle => (
+                      <TouchableOpacity
+                        activeOpacity={1}
+                        style={styles.callDataValue}
+                        onPress={() => setCallDataModalVisible(true)}>
+                        <Typography.Text style={valueStyle}>{toShort(wrapTransactionData.callData, 5, 5)}</Typography.Text>
+                        <Icon phosphorIcon={InfoIcon} customSize={18} iconColor={theme.colorTextLight4} />
+                      </TouchableOpacity>
+                    )}
                   </MetaInfo.Default>
                 )}
               </>
@@ -342,8 +346,6 @@ function createStyles(theme: ThemeTypes) {
       gap: theme.sizeXS,
     },
     signerName: {
-      ...FontSemiBold,
-      color: theme.colorTextLight1,
       maxWidth: 110,
     },
     loadingContainer: {
@@ -354,10 +356,6 @@ function createStyles(theme: ThemeTypes) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.sizeXXS,
-    },
-    callDataText: {
-      ...FontSemiBold,
-      color: theme.colorTextLight1,
     },
     description: {
       ...FontMedium,

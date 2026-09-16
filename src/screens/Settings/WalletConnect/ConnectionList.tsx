@@ -173,6 +173,7 @@ export const ConnectionList = ({
         onChangeAddress={onScanAddress}
         error={error}
         isShowError={true}
+        libraryErrorMessage={i18n.errorMessage.unreadableQrCode}
       />
     </>
   );

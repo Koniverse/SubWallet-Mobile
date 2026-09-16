@@ -15,7 +15,7 @@ import { useGetWrappedTransactionSigners } from 'hooks/transaction/useGetWrapped
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { prepareMultisigSignRequest } from 'messaging/transaction/multisig';
 import { RootState } from 'stores/index';
-import { DisabledStyle, FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { DisabledStyle, FontMedium } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { WrappedTransactionSigner } from 'types/wrappedTransaction';
 import i18n from 'utils/i18n/i18n';
@@ -251,6 +251,9 @@ export const MultisigSignerSelector = ({
   );
 
   const mappedMultisigError = displayMultisigErrorType ? multisigErrorMap[displayMultisigErrorType] : null;
+  // Nothing can be picked on a chain without multisig support, so only the alert is shown
+  // (the extension keeps a disabled placeholder here; dropped on mobile on purpose).
+  const isChainUnsupported = displayMultisigErrorType === MultisigSignerUiErrorType.UNSUPPORTED_CHAIN;
 
   const disableApproval = useMemo(() => {
     return (
@@ -324,7 +327,7 @@ export const MultisigSignerSelector = ({
 
   return (
     <View style={styles.container}>
-      {!signerAccount ? (
+      {isChainUnsupported ? null : !signerAccount ? (
         <TouchableOpacity
           activeOpacity={1}
           disabled={isDisabled}
@@ -344,20 +347,24 @@ export const MultisigSignerSelector = ({
         </TouchableOpacity>
       ) : (
         <MetaInfo hasBackgroundWrapper spaceSize={'xs'}>
+          {/* Name and call data inherit MetaInfo's value colour (gray) like the extension's
+              `.__value`, rather than the white heading style. */}
           <MetaInfo.Default label={i18n.multisig.signWith}>
-            <TouchableOpacity
-              activeOpacity={1}
-              disabled={isDisabled}
-              style={styles.signerValue}
-              onPress={() => setSelectorModalVisible(true)}>
-              <AccountProxyAvatar size={24} value={signerAccount.proxyId} />
-              <Typography.Text ellipsis style={styles.signerName}>
-                {signerAccount.name}
-              </Typography.Text>
-              <View style={isDisabled && DisabledStyle}>
-                <Icon phosphorIcon={CaretDownIcon} customSize={18} iconColor={theme.colorTextLight4} />
-              </View>
-            </TouchableOpacity>
+            {valueStyle => (
+              <TouchableOpacity
+                activeOpacity={1}
+                disabled={isDisabled}
+                style={styles.signerValue}
+                onPress={() => setSelectorModalVisible(true)}>
+                <AccountProxyAvatar size={24} value={signerAccount.proxyId} />
+                <Typography.Text ellipsis style={[valueStyle, styles.signerName]}>
+                  {signerAccount.name}
+                </Typography.Text>
+                <View style={isDisabled && DisabledStyle}>
+                  <Icon phosphorIcon={CaretDownIcon} customSize={18} iconColor={theme.colorTextLight4} />
+                </View>
+              </TouchableOpacity>
+            )}
           </MetaInfo.Default>
 
           {isPreparing && (
@@ -386,14 +393,16 @@ export const MultisigSignerSelector = ({
 
               {!!callData && (
                 <MetaInfo.Default label={i18n.multisig.callData}>
-                  {onOpenCallDataDetail ? (
-                    <TouchableOpacity activeOpacity={1} style={styles.signerValue} onPress={onOpenCallDataDetail}>
-                      <Typography.Text style={styles.signerName}>{toShort(callData, 5, 5)}</Typography.Text>
-                      <Icon phosphorIcon={InfoIcon} customSize={18} iconColor={theme.colorTextLight4} />
-                    </TouchableOpacity>
-                  ) : (
-                    <Typography.Text style={styles.signerName}>{toShort(callData, 5, 5)}</Typography.Text>
-                  )}
+                  {valueStyle =>
+                    onOpenCallDataDetail ? (
+                      <TouchableOpacity activeOpacity={1} style={styles.signerValue} onPress={onOpenCallDataDetail}>
+                        <Typography.Text style={valueStyle}>{toShort(callData, 5, 5)}</Typography.Text>
+                        <Icon phosphorIcon={InfoIcon} customSize={18} iconColor={theme.colorTextLight4} />
+                      </TouchableOpacity>
+                    ) : (
+                      <Typography.Text style={valueStyle}>{toShort(callData, 5, 5)}</Typography.Text>
+                    )
+                  }
                 </MetaInfo.Default>
               )}
             </>
@@ -458,8 +467,6 @@ function createStyles(theme: ThemeTypes) {
       gap: theme.sizeXS,
     },
     signerName: {
-      ...FontSemiBold,
-      color: theme.colorTextLight1,
       maxWidth: 110,
     },
     loadingContainer: {

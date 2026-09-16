@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, Switch, View, ViewStyle } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold } from 'styles/sharedStyles';
+import { DisabledStyle, FontSemiBold } from 'styles/sharedStyles';
 import { BackgroundIcon, Button, Icon, Logo } from 'components/design-system-ui';
 import { CircleNotchIcon, IconProps, PencilSimpleLineIcon, WifiHighIcon, WifiSlashIcon } from 'phosphor-react-native';
 import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
@@ -105,9 +105,10 @@ export const NetworkAndTokenToggleItem = ({
           </Text>
         </View>
 
-        <View>
+        {/* Blocked switches are dimmed like the extension (opacity 0.4) and made untouchable,
+            not `disabled`: Android swaps in a gray thumb for a disabled Switch. */}
+        <View pointerEvents={isDisableSwitching ? 'none' : 'auto'} style={isDisableSwitching && DisabledStyle}>
           <Switch
-            disabled={isDisableSwitching}
             ios_backgroundColor={ColorMap.switchInactiveButtonColor}
             value={isEnabled}
             onValueChange={onValueChange}

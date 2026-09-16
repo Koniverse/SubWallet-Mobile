@@ -23,7 +23,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { Switch, TouchableOpacity, View } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold } from 'styles/sharedStyles';
+import { DisabledStyle, FontSemiBold } from 'styles/sharedStyles';
 
 let chainKeys: Array<string> | undefined;
 
@@ -246,7 +246,15 @@ export const NetworksSetting = ({ route: { params } }: NetworksSettingProps) => 
         <View style={disableAllItemContentStyle}>
           <Text style={disableAllItemTitleStyle}>{i18n.settings.turnOffAllNetworks}</Text>
         </View>
-        <Switch ios_backgroundColor={ColorMap.switchInactiveButtonColor} style={disableAllSwitchStyle} value={!hasActiveChains} />
+        {/* Like the extension: once every network is off the switch stays checked and is only
+            dimmed. Not `disabled` on the Switch itself - Android swaps in a gray thumb for that. */}
+        <View style={(isDisablingAll || !hasActiveChains) && DisabledStyle}>
+          <Switch
+            ios_backgroundColor={ColorMap.switchInactiveButtonColor}
+            style={disableAllSwitchStyle}
+            value={!hasActiveChains}
+          />
+        </View>
       </View>
     </TouchableOpacity>
   );

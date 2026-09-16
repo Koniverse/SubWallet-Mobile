@@ -1842,5 +1842,8 @@
   "bg.ACCOUNT.services.keyring.handler.Multisig.multipleSignersRequired": "",
   "bg.ACCOUNT.services.keyring.handler.Multisig.invalidThreshold": "",
   "bg.ACCOUNT.services.keyring.handler.Multisig.mustBeSubstrateAddress": "",
-  "bg.ACCOUNT.services.keyring.handler.Multisig.duplicateAddressFound": ""
+  "bg.ACCOUNT.services.keyring.handler.Multisig.duplicateAddressFound": "",
+  "bg.TRANSACTION.core.validation.transfer.tokenCannotBeBridgedToNetwork": "",
+  "bg.ACCOUNT.services.keyring.handler.Multisig.multisigAddressExists": "",
+  "bg.TRANSACTION_SERVICE.services.service.transaction.existingMultisigPendingTransaction": ""
 }

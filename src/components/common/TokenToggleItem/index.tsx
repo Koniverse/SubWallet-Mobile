@@ -8,6 +8,7 @@ import { Button, Icon, Logo as SWLogo, Typography } from 'components/design-syst
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TokenToggleItemStyles from './style';
 import { getAssetDisplayName } from 'utils/chainAndAsset';
+import { DisabledStyle } from 'styles/sharedStyles';
 
 interface Props {
   item: _ChainAsset;
@@ -37,9 +38,10 @@ export const TokenToggleItem = ({ item, onPress, isEnabled, onValueChange, isDis
           </Typography.Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <View>
+          {/* Blocked switches are dimmed like the extension (opacity 0.4) and made untouchable,
+              not `disabled`: Android swaps in a gray thumb for a disabled Switch. */}
+          <View pointerEvents={isDisableSwitching ? 'none' : 'auto'} style={isDisableSwitching && DisabledStyle}>
             <Switch
-              disabled={isDisableSwitching}
               ios_backgroundColor={ColorMap.switchInactiveButtonColor}
               value={isEnabled}
               onValueChange={onValueChange}

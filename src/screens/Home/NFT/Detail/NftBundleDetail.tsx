@@ -2,12 +2,11 @@ import { useNavigation } from '@react-navigation/native';
 import { NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import { reformatAddress } from '@subwallet/extension-base/utils';
-import { AddressField } from 'components/Field/Address';
-import { NetworkField } from 'components/Field/Network';
-import { TextField } from 'components/Field/Text';
 import ImagePreview from 'components/ImagePreview';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, Typography } from 'components/design-system-ui';
+import { AccountProxyAvatar } from 'components/design-system-ui/avatar/account-proxy-avatar';
+import MetaInfo from 'components/MetaInfo';
 import { NftDescription } from 'components/common/NftDescription';
 import useFetchChainInfo from 'hooks/common/useFetchChainInfo';
 import { useGetUniqueNftDetail, useGetUniqueNftParent } from 'hooks/nft';
@@ -16,8 +15,8 @@ import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CaretRight, PaperPlaneTilt, TreeStructure } from 'phosphor-react-native';
-import React, { JSX, useCallback, useMemo } from 'react';
+import { CaretRight, Info, PaperPlaneTilt, TreeStructure } from 'phosphor-react-native';
+import React, { useCallback, useMemo } from 'react';
 import { Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -27,7 +26,14 @@ import { ContainerHorizontalPadding, FontMedium, FontSemiBold } from 'styles/sha
 import { ThemeTypes } from 'styles/themes';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
+import { toShort } from 'utils/index';
 import { findNftDeep } from 'utils/nft';
+
+// Unique's API wraps some attribute values as `{ value }`; everything else is shown as is.
+const getPropertyValue = (value: unknown): string =>
+  typeof value === 'object' && value !== null && 'value' in value
+    ? String((value as { value: unknown }).value)
+    : String(value);
 
 const NftBundleDetail = ({
   route: {
@@ -93,27 +99,6 @@ const NftBundleDetail = ({
     [toast],
   );
 
-  const propDetail = useCallback(
-    (title: string, value: unknown, key: number): JSX.Element => {
-      const displayValue =
-        typeof value === 'object' && value !== null && 'value' in value
-          ? String((value as { value: unknown }).value)
-          : String(value);
-
-      return (
-        <View style={styles.propWrapper} key={key}>
-          <View style={styles.propDetail}>
-            <Typography.Text style={styles.propTitleStyle}>{title}</Typography.Text>
-            <Typography.Text ellipsis style={styles.propValueStyle}>
-              {displayValue}
-            </Typography.Text>
-          </View>
-        </View>
-      );
-    },
-    [styles.propDetail, styles.propTitleStyle, styles.propValueStyle, styles.propWrapper],
-  );
-
   const onPressSend = useCallback(() => {
     if (nftItem && nftItem.owner) {
       const ownerAddress = reformatAddress(nftItem.owner, 42);
@@ -170,8 +155,6 @@ const NftBundleDetail = ({
 
     return i18n.nftScreen.nestedNft.nestedIn.replace('{{name}}', parentNft?.name || parentNft?.id || '');
   }, [isNested, parentNft]);
-
-  const propsStartIndex = nftItem.properties ? Object.keys(nftItem.properties).length : 0;
 
   return (
     <ContainerWithSubHeader
@@ -233,44 +216,56 @@ const NftBundleDetail = ({
             )}
           </View>
 
-          {!!nftItem.description && (
-            <View>
-              <Typography.Text style={styles.attTitle}>{i18n.inputLabel.nftDetails}</Typography.Text>
-              <NftDescription title={nftItem.name || nftItem.id} description={nftItem.description} />
-            </View>
-          )}
+          {/* Same card as the extension's bundle detail: description, collection, owner, network,
+              ids and the token's properties as rows of one MetaInfo block. */}
+          <Typography.Text style={styles.attTitle}>{i18n.inputLabel.nftDetails}</Typography.Text>
+          <MetaInfo hasBackgroundWrapper>
+            {!!nftItem.description && (
+              <MetaInfo.Default label={i18n.inputLabel.description} valueAlign={'left'}>
+                <NftDescription layout={'inline'} title={nftItem.name || nftItem.id} description={nftItem.description} />
+              </MetaInfo.Default>
+            )}
 
-          <TextField
-            text={collectionInfo.collectionName || collectionInfo.collectionId}
-            label={i18n.inputLabel.nftCollectionName}
-            showRightIcon={!!nftItem.externalUrl}
-            onPressRightIcon={handleClickInfoIcon(nftItem.externalUrl)}
-          />
-          {!!nftItem.owner && (
-            <AddressField
-              name={ownerAccountInfo?.name}
-              address={nftItem.owner}
-              networkPrefix={_getChainSubstrateAddressPrefix(originChainInfo)}
-              label={i18n.inputLabel.ownedBy}
-              onPressRightIcon={handleClickInfoIcon(ownerUrl)}
-            />
-          )}
-          <NetworkField networkKey={nftItem.chain || collectionInfo.chain || ''} label={i18n.inputLabel.network} />
+            <MetaInfo.Default label={i18n.inputLabel.nftCollectionName}>
+              {collectionInfo.collectionName || collectionInfo.collectionId}
+            </MetaInfo.Default>
 
-          <View>
-            <Typography.Text style={styles.attTitle}>{i18n.nftScreen.nftDetail.properties}</Typography.Text>
-            <View style={styles.propContainer}>
-              {propDetail(i18n.inputLabel.nftId, nftItem.id, propsStartIndex + 1)}
-              {propDetail(i18n.inputLabel.collectionId, nftItem.collectionId, propsStartIndex + 2)}
-              {!!nftItem.properties && (
-                <View style={styles.propList}>
-                  {Object.keys(nftItem.properties).map((key, index) => {
-                    return propDetail(key, nftItem.properties?.[key], index);
-                  })}
-                </View>
-              )}
-            </View>
-          </View>
+            {!!nftItem.owner && (
+              <MetaInfo.Default label={i18n.inputLabel.ownedBy}>
+                {valueStyle => (
+                  <View style={styles.ownerValue}>
+                    <AccountProxyAvatar size={24} value={ownerAccountInfo?.proxyId || nftItem.owner || ''} />
+                    <View style={styles.ownerText}>
+                      {!!ownerAccountInfo?.name && (
+                        <Typography.Text ellipsis style={valueStyle}>
+                          {ownerAccountInfo.name}
+                        </Typography.Text>
+                      )}
+                      <Typography.Text ellipsis style={ownerAccountInfo?.name ? styles.ownerAddress : valueStyle}>
+                        {toShort(reformatAddress(nftItem.owner || '', _getChainSubstrateAddressPrefix(originChainInfo)))}
+                      </Typography.Text>
+                    </View>
+                    {!!ownerUrl && (
+                      <TouchableOpacity activeOpacity={0.5} onPress={handleClickInfoIcon(ownerUrl)}>
+                        <Icon phosphorIcon={Info} customSize={20} weight={'light'} iconColor={theme.colorTextLight4} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
+              </MetaInfo.Default>
+            )}
+
+            <MetaInfo.Chain chain={nftItem.chain || collectionInfo.chain || ''} label={i18n.inputLabel.network} />
+            <MetaInfo.Default label={i18n.inputLabel.nftId}>{nftItem.id}</MetaInfo.Default>
+            <MetaInfo.Default label={i18n.inputLabel.collectionId}>{nftItem.collectionId}</MetaInfo.Default>
+
+            {!!nftItem.properties &&
+              Object.entries(nftItem.properties).map(([attName, attValueRaw]) => (
+                <MetaInfo.Default key={attName} label={attName}>
+                  {getPropertyValue(attValueRaw)}
+                </MetaInfo.Default>
+              ))}
+          </MetaInfo>
 
           {!!nftItem.nestingTokens?.length && (
             <View>
@@ -315,8 +310,11 @@ const NftBundleDetail = ({
         </ScrollView>
 
         <View style={styles.footer}>
+          {/* Two block buttons share the row; the outer padding is dropped so the longer label
+              still fits on a ~360dp screen (the inner content padding stays). */}
           <Button
             block
+            style={styles.footerButton}
             type={'secondary'}
             onPress={onShowNftStructure}
             icon={<Icon phosphorIcon={TreeStructure} size={'md'} weight={'fill'} iconColor={theme.colorWhite} />}
@@ -326,6 +324,7 @@ const NftBundleDetail = ({
           {/* Only the root of a bundle is transferable: a nested token moves with its parent. */}
           <Button
             block
+            style={styles.footerButton}
             disabled={isNested}
             onPress={onPressSend}
             icon={
@@ -418,48 +417,29 @@ function createStyle(theme: ThemeTypes) {
     goToParentButton: {
       backgroundColor: theme.colorBgInput,
     },
-    propContainer: {
-      marginTop: theme.marginLG,
-      display: 'flex',
-      flexWrap: 'wrap',
+    ownerValue: {
       flexDirection: 'row',
-      marginHorizontal: -theme.marginXS,
-      marginBottom: -theme.margin,
+      alignItems: 'center',
+      gap: theme.sizeXS,
+      maxWidth: '100%',
     },
-    propList: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
+    ownerText: {
+      flexShrink: 1,
+      alignItems: 'flex-end',
     },
-    propDetail: {
-      paddingTop: theme.paddingXXS,
-      paddingBottom: theme.paddingXS + 2,
-      paddingHorizontal: theme.padding,
-      backgroundColor: theme.colorBgSecondary,
-      borderRadius: theme.borderRadius,
-    },
-    propWrapper: {
-      paddingHorizontal: theme.paddingXS,
-      marginBottom: theme.margin,
-    },
-    propTitleStyle: {
-      color: theme.colorTextTertiary,
+    ownerAddress: {
       fontSize: theme.fontSizeSM,
       lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+      color: theme.colorTextLight4,
       ...FontMedium,
-    },
-    propValueStyle: {
-      ...FontMedium,
-      fontSize: theme.fontSize,
-      lineHeight: theme.fontSize * theme.lineHeight,
-      color: theme.colorTextLight1,
     },
     attTitle: {
-      fontSize: theme.fontSize,
-      lineHeight: theme.fontSize * theme.lineHeight,
-      marginTop: theme.marginSM,
+      fontSize: theme.fontSizeLG,
+      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+      marginTop: theme.margin,
       marginBottom: theme.marginXS,
-      color: theme.colorTextLight1,
-      ...FontSemiBold,
+      color: theme.colorTextHeading,
+      ...FontMedium,
     },
     childItem: {
       flexDirection: 'row',
@@ -500,6 +480,9 @@ function createStyle(theme: ThemeTypes) {
       gap: theme.sizeXS,
       marginTop: theme.margin,
       marginBottom: theme.margin,
+    },
+    footerButton: {
+      paddingHorizontal: 0,
     },
   });
 }

@@ -54,12 +54,13 @@ export const ToggleItem = ({
         </View>
       </View>
 
-      <View>
+      {/* Untouchable rather than `disabled`: Android swaps in a gray thumb for a disabled
+          Switch, while the extension only dims it (the wrapper above applies the opacity). */}
+      <View pointerEvents={disabled ? 'none' : 'auto'}>
         <Switch
           ios_backgroundColor={ColorMap.switchInactiveButtonColor}
           value={isEnabled}
           onValueChange={onValueChange}
-          disabled={disabled}
         />
       </View>
     </View>

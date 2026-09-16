@@ -13,7 +13,8 @@ interface Props {
   /** Shown as the modal heading so the user knows which token the text belongs to. */
   title: string;
   description: string;
-  layout?: 'row' | 'card';
+  /** `inline`: value only (text + info icon), for a MetaInfo row that supplies its own label. */
+  layout?: 'row' | 'card' | 'inline';
 }
 
 /**
@@ -54,14 +55,17 @@ export const NftDescription = ({ title, description, layout = 'row' }: Props) =>
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
-          style={styles.row}
+          style={layout === 'inline' ? styles.inline : styles.row}
           activeOpacity={isExpandable ? 0.5 : 1}
           onPress={isExpandable ? onShow : undefined}
         >
           <Typography.Text ellipsis style={styles.text}>
             {description}
           </Typography.Text>
-          {isExpandable && <Icon phosphorIcon={Info} size={'sm'} weight={'light'} iconColor={theme.colorTextLight3} />}
+          {/* The extension's bundle detail always shows the icon on this row. */}
+          {(isExpandable || layout === 'inline') && (
+            <Icon phosphorIcon={Info} size={'sm'} weight={'light'} iconColor={theme.colorTextLight3} />
+          )}
         </TouchableOpacity>
       )}
 
@@ -108,6 +112,12 @@ function createStyle(theme: ThemeTypes) {
       marginBottom: theme.marginXS,
       backgroundColor: theme.colorBgSecondary,
       borderRadius: theme.borderRadiusLG,
+    },
+    inline: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.sizeXS,
+      maxWidth: '100%',
     },
     card: {
       padding: theme.paddingSM,

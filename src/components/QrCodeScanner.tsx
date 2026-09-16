@@ -34,9 +34,11 @@ interface Props {
   onPressLibraryBtn?: () => Promise<void>;
   onPressCancel: () => void;
   onSuccess: (value: string) => void;
+  // Decoding a picked photo takes a moment; spin the upload button meanwhile.
+  isLibraryLoading?: boolean;
 }
 
-export const QrCodeScanner = ({ error, onPressLibraryBtn, onPressCancel, onSuccess }: Props) => {
+export const QrCodeScanner = ({ error, isLibraryLoading, onPressLibraryBtn, onPressCancel, onSuccess }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const device = useCameraDevice('back');
   const [isActive, setIsActive] = useState(true);
@@ -107,6 +109,8 @@ export const QrCodeScanner = ({ error, onPressLibraryBtn, onPressCancel, onSucce
             <Button
               icon={<Icon phosphorIcon={ImageSquareIcon} weight="fill" />}
               type="secondary"
+              loading={isLibraryLoading}
+              disabled={isLibraryLoading}
               onPress={onPressLibraryBtn}>
               {i18n.buttonTitles.uploadFromPhotos}
             </Button>

@@ -4,14 +4,20 @@ import AccountItemWithName from 'components/common/Account/Item/AccountItemWithN
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
 import useParseSubstrateRequestPayload from 'hooks/transaction/confirmation/useParseSubstrateRequestPayload';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Text } from 'react-native';
 
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';
 import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
 
-import { BaseDetailModal, SubstrateMessageDetail, SubstrateTransactionDetail, SubstrateSignArea } from '../../parts';
+import {
+  BaseDetailModal,
+  BaseDetailModalRef,
+  SubstrateMessageDetail,
+  SubstrateTransactionDetail,
+  SubstrateSignArea,
+} from '../../parts';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
@@ -38,6 +44,8 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const { chainInfoMap, chainStateMap } = useSelector((root: RootState) => root.chainStore);
   const [disableMultisigApproval, setDisableMultisigApproval] = useState(true);
+  const detailModalRef = useRef<BaseDetailModalRef>(null);
+  const onOpenDetail = useCallback(() => detailModalRef.current?.open(), []);
   const genesisHash = useMemo(() => {
     const _payload = request.request.payload;
 
@@ -117,12 +125,15 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
             symbol={symbol}
             initialCallData={initialCallData}
             onDisableApprovalChange={setDisableMultisigApproval}
+            onOpenCallDataDetail={onOpenDetail}
           />
         ) : (
           <AccountItemWithName accountName={account?.name} address={address} avatarSize={24} isSelected={true} />
         )}
 
-        <BaseDetailModal title={isMessage ? i18n.confirmation.messageDetail : i18n.confirmation.transactionDetail}>
+        <BaseDetailModal
+          ref={detailModalRef}
+          title={isMessage ? i18n.confirmation.messageDetail : i18n.confirmation.transactionDetail}>
           {payloadError ? (
             <Text style={styles.description}>
               {payloadError.type === SubstratePayloadErrorType.RawDataInExtrinsic

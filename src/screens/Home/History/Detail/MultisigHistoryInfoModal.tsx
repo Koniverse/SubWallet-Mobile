@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { ArrowCircleUpRightIcon, XCircleIcon } from 'phosphor-react-native';
-import { ExtrinsicStatus, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { ArrowCircleUpRightIcon } from 'phosphor-react-native';
+import { ExtrinsicStatus, ExtrinsicType, NotificationType } from '@subwallet/extension-base/background/KoniTypes';
 import { MultisigTxType, PendingMultisigTx } from '@subwallet/extension-base/services/multisig-service';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
@@ -13,18 +13,18 @@ import {
   ExecutePendingTxRequest,
 } from '@subwallet/extension-base/types/multisig';
 import { reformatAddress } from '@subwallet/extension-base/utils';
-import { Button, Icon, PageIcon, SwModal } from 'components/design-system-ui';
+import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { deviceHeight } from 'constants/index';
 import { MULTISIG_TX_TITLE_MAP } from 'constants/multisig';
 import { useGetBalance } from 'hooks/balance';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import useGetAccountProxyById from 'hooks/account/useGetAccountProxyById';
+import useAlertModal from 'hooks/modal/useAlertModal';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { approvePendingTx, cancelPendingTx, executePendingTx } from 'messaging/transaction/multisig';
-import { AppModalContext } from 'providers/AppModalContext';
 import HistoryMultisigLayout from 'screens/Home/History/Detail/parts/MultisigLayout';
 import { RootState } from 'stores/index';
 import { ThemeTypes } from 'styles/themes';
@@ -52,7 +52,7 @@ export const MultisigHistoryInfoModal = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { confirmModal } = React.useContext(AppModalContext);
+  const { closeAlert, openAlert } = useAlertModal();
 
   const { chainInfoMap, chainStatusMap } = useSelector((state: RootState) => state.chainStore);
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
@@ -187,24 +187,24 @@ export const MultisigHistoryInfoModal = ({
   const validateSignerAndExecute = useCallback(
     (action: () => void) => () => {
       if (signerAccountProxy?.accountType === AccountProxyType.MULTISIG) {
-        confirmModal.setConfirmModal({
-          visible: true,
+        openAlert({
+          type: NotificationType.ERROR,
           title: i18n.multisig.unableToSign,
-          message: i18n.multisig.selectedSignatoryIsMultisigWarning,
-          completeBtnTitle: i18n.multisig.goToPolkadotJs,
-          cancelBtnTitle: i18n.multisig.dismiss,
-          // The extension raises this as an ERROR alert (AlertModal -> XCircle in colorError);
-          // without an icon here ConfirmModal falls back to the warning "plugs" icon, which
-          // reads as a connectivity problem rather than "this signatory cannot sign".
-          customIcon: <PageIcon icon={XCircleIcon} color={theme.colorError} />,
-          onCancelModal: () => {
-            confirmModal.hideConfirmModal();
-            onCancel();
+          content: i18n.multisig.selectedSignatoryIsMultisigWarning,
+          okButton: {
+            text: i18n.multisig.goToPolkadotJs,
+            onPress: () => {
+              Linking.openURL(POLKADOT_JS_APPS_URL).catch(console.error);
+              closeAlert();
+              onCancel();
+            },
           },
-          onCompleteModal: () => {
-            Linking.openURL(POLKADOT_JS_APPS_URL).catch(console.error);
-            confirmModal.hideConfirmModal();
-            onCancel();
+          cancelButton: {
+            text: i18n.multisig.dismiss,
+            onPress: () => {
+              closeAlert();
+              onCancel();
+            },
           },
         });
 
@@ -213,7 +213,7 @@ export const MultisigHistoryInfoModal = ({
 
       action();
     },
-    [confirmModal, onCancel, signerAccountProxy?.accountType, theme.colorError],
+    [closeAlert, onCancel, openAlert, signerAccountProxy?.accountType],
   );
 
   const _onReject = useCallback(() => {
@@ -347,10 +347,16 @@ export const MultisigHistoryInfoModal = ({
   }, [chainStatusMap, data?.chain, error, onError]);
 
   return (
+    // Portal sheet, not the native Modal: toasts (pre-check / submit errors) and the
+    // level-5 alert modal ("Unable to sign") live in the portal host and would otherwise be
+    // drawn behind a native Modal - the extension shows both on top of this sheet.
     <SwModal
+      isUseModalV2
       modalVisible={modalVisible}
       setVisible={setModalVisible}
       onChangeModalVisible={onCancel}
+      onBackButtonPress={onCancel}
+      isAllowSwipeDown={Platform.OS === 'ios'}
       modalTitle={MULTISIG_TX_TITLE_MAP()[data?.multisigTxType || MultisigTxType.UNKNOWN]}
       titleTextAlign={'center'}
       isUseForceHidden={true}>
