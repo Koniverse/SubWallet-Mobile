@@ -54,29 +54,39 @@ const RewardInfoPart: React.FC<Props> = (props: Props) => {
 
   const isDAppStaking = useMemo(() => _STAKING_CHAIN_GROUP.astar.includes(compound.chain), [compound.chain]);
   const isMythosStaking = useMemo(() => _STAKING_CHAIN_GROUP.mythos.includes(compound.chain), [compound.chain]);
+  // Only the netuid 0 position accrues a claimable root basket, the subnet ones don't
+  const isBittensorRootStaking = useMemo(
+    () => type === YieldPoolType.NATIVE_STAKING && _STAKING_CHAIN_GROUP.bittensor.includes(compound.chain),
+    [compound.chain, type],
+  );
 
   const canClaim = useMemo((): boolean => {
     switch (type) {
       case YieldPoolType.LENDING:
       case YieldPoolType.LIQUID_STAKING:
-        return false;
       case YieldPoolType.SUBNET_STAKING:
+        return false;
       case YieldPoolType.NATIVE_STAKING:
-        return isDAppStaking || isMythosStaking;
+        return isDAppStaking || isMythosStaking || isBittensorRootStaking;
       case YieldPoolType.NOMINATION_POOL:
         return true;
       default:
         return false;
     }
-  }, [isDAppStaking, isMythosStaking, type]);
+  }, [isBittensorRootStaking, isDAppStaking, isMythosStaking, type]);
+
+  const showRewardValue = useMemo(
+    () => type === YieldPoolType.NOMINATION_POOL || isMythosStaking || isBittensorRootStaking,
+    [isBittensorRootStaking, isMythosStaking, type],
+  );
 
   const title = useMemo(() => {
-    if (type === YieldPoolType.NOMINATION_POOL) {
+    if (type === YieldPoolType.NOMINATION_POOL || isBittensorRootStaking) {
       return i18n.inputLabel.unclaimedRewards;
     } else {
       return 'Rewards';
     }
-  }, [type]);
+  }, [isBittensorRootStaking, type]);
 
   // const toggleDetail = useCallback(() => {
   //   setShowDetail(old => !old);
@@ -134,10 +144,10 @@ const RewardInfoPart: React.FC<Props> = (props: Props) => {
       />
 
       {(type === YieldPoolType.NOMINATION_POOL ||
-        (type === YieldPoolType.NATIVE_STAKING && (isDAppStaking || isMythosStaking))) && (
+        (type === YieldPoolType.NATIVE_STAKING && (isDAppStaking || isMythosStaking || isBittensorRootStaking))) && (
         <>
           <View style={styles.withdrawButtonContainer}>
-            {type === YieldPoolType.NOMINATION_POOL || isMythosStaking ? (
+            {showRewardValue ? (
               <>
                 {isShowBalance ? (
                   total ? (

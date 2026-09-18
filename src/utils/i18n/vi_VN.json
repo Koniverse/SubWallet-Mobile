@@ -1125,6 +1125,13 @@
   },
   "confirmation": {
     "signatureRequest": "Yêu cầu chữ ký",
+    "keyDerivationRequest": "Yêu cầu tạo khóa dẫn xuất",
+    "vrfRequestWithAccount": "{0} đang yêu cầu một khóa dẫn xuất từ tài khoản sau",
+    "permanentKeyWarningTitle": "Khóa dẫn xuất vĩnh viễn",
+    "permanentKeyWarning": "Khóa này được dẫn xuất từ tài khoản của bạn và là vĩnh viễn — không thể thay đổi hay thu hồi về sau. Khóa là duy nhất với {0}; không trang nào khác dẫn xuất được khóa giống vậy.",
+    "derivationDetails": "Chi tiết khóa dẫn xuất",
+    "boundTo": "Gắn với",
+    "context": "Context",
     "approveRequest": "Phê duyệt yêu cầu",
     "requestWithAccount": "Bạn đang phê duyệt một yêu cầu với tài khoản",
     "messageDetail": "Thông tin chi tiết",

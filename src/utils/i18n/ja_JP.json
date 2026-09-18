@@ -1124,6 +1124,13 @@
   },
   "confirmation": {
     "signatureRequest": "署名依頼",
+    "keyDerivationRequest": "鍵導出リクエスト",
+    "vrfRequestWithAccount": "{0} が以下のアカウントから導出鍵を要求しています",
+    "permanentKeyWarningTitle": "永続的な派生鍵",
+    "permanentKeyWarning": "この鍵はあなたのアカウントから導出され、永続的です。後から変更したり取り消したりすることはできません。この鍵は {0} に固有で、他のサイトが同じ鍵を導出することはできません。",
+    "derivationDetails": "導出の詳細",
+    "boundTo": "バインド先",
+    "context": "Context",
     "approveRequest": "リクエストを承認",
     "requestWithAccount": "あなたはアカウントでリクエストを承認しています",
     "messageDetail": "メッセージの詳細",

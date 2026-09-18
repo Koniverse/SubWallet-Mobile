@@ -1845,5 +1845,6 @@
   "bg.ACCOUNT.services.keyring.handler.Multisig.duplicateAddressFound": "",
   "bg.TRANSACTION.core.validation.transfer.tokenCannotBeBridgedToNetwork": "",
   "bg.ACCOUNT.services.keyring.handler.Multisig.multisigAddressExists": "",
-  "bg.TRANSACTION_SERVICE.services.service.transaction.existingMultisigPendingTransaction": ""
+  "bg.TRANSACTION_SERVICE.services.service.transaction.existingMultisigPendingTransaction": "",
+  "bg.EARNING.services.service.earning.nativeStaking.tao.rewardBelowClaimThreshold": "No rewards to claim. You need at least {{threshold}} {{symbol}} pending on a validator before you can claim"
 }

@@ -29,6 +29,7 @@ import {
   NotSupportConfirmation,
   TransactionConfirmation,
   SignConfirmation,
+  VrfSignConfirmation,
   NetworkConnectionErrorConfirmation,
   EvmSignatureWithProcess,
 } from './variants';
@@ -236,6 +237,10 @@ export const Confirmations = () => {
           return i18n.header.transactionConfirmation;
       }
     } else {
+      if (confirmation.type === 'signingRequest' && (confirmation.item as SigningRequest).request.isVrf) {
+        return i18n.confirmation.keyDerivationRequest;
+      }
+
       return titleMap[confirmation.type] || '';
     }
   }, [confirmation, titleMap, transactionRequest]);
@@ -249,6 +254,7 @@ export const Confirmations = () => {
       let account: AccountJson | undefined;
       let canSign = true;
       let isMessage = false;
+      let isVrf = false;
 
       if (confirmation.type === 'signingRequest') {
         const request = confirmation.item as SigningRequest;
@@ -276,6 +282,7 @@ export const Confirmations = () => {
           canSign = true;
         }
         isMessage = _isMessage;
+        isVrf = request.request.isVrf === true;
       } else if (
         ['evmSignatureRequest', 'evmSendTransactionRequest', 'evmWatchTransactionRequest'].includes(confirmation.type)
       ) {
@@ -321,6 +328,8 @@ export const Confirmations = () => {
         signMode === AccountSignMode.LEGACY_LEDGER ||
         signMode === AccountSignMode.UNKNOWN ||
         (signMode === AccountSignMode.QR && isEvm && !isDevMode) ||
+        // a VRF key is derived from the sr25519 secret, which only a password account holds
+        (isVrf && signMode !== AccountSignMode.PASSWORD) ||
         !canSign;
 
       if (notSupport) {
@@ -400,8 +409,17 @@ export const Confirmations = () => {
         return <AuthorizeConfirmation request={confirmation.item as AuthorizeRequest} navigation={navigation} />;
       case 'metadataRequest':
         return <MetadataConfirmation request={confirmation.item as MetadataRequest} />;
-      case 'signingRequest':
-        return <SignConfirmation request={confirmation.item as SigningRequest} navigation={navigation} />;
+      case 'signingRequest': {
+        const request = confirmation.item as SigningRequest;
+
+        // a VRF request derives a permanent key for the site rather than signing a message, so it
+        // must never fall through to the ordinary message-signature screen
+        return request.request.isVrf ? (
+          <VrfSignConfirmation request={request} navigation={navigation} />
+        ) : (
+          <SignConfirmation request={request} navigation={navigation} />
+        );
+      }
       case 'connectWCRequest':
         return (
           <ConnectWalletConnectConfirmation

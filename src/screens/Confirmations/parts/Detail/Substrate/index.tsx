@@ -3,3 +3,4 @@
 
 export { default as SubstrateMessageDetail } from './Message';
 export { default as SubstrateTransactionDetail } from './Transaction';
+export { default as VrfDetail } from './Vrf';

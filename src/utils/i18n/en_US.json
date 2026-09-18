@@ -1125,6 +1125,13 @@
   },
   "confirmation": {
     "signatureRequest": "Signature request",
+    "keyDerivationRequest": "Key derivation request",
+    "vrfRequestWithAccount": "{0} is requesting a derived key from the following account",
+    "permanentKeyWarningTitle": "Permanent derived key",
+    "permanentKeyWarning": "This key is derived from your account and is permanent — it cannot be changed or revoked later. It is unique to {0}; no other site can derive the same key.",
+    "derivationDetails": "Derivation details",
+    "boundTo": "Bound to",
+    "context": "Context",
     "approveRequest": "Approve request",
     "requestWithAccount": "You are approving a request with account",
     "messageDetail": "Message details",

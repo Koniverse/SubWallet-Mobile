@@ -1124,6 +1124,13 @@
   },
   "confirmation": {
     "signatureRequest": "签名请求",
+    "keyDerivationRequest": "密钥派生请求",
+    "vrfRequestWithAccount": "{0} 正在请求从以下账户派生密钥",
+    "permanentKeyWarningTitle": "永久派生密钥",
+    "permanentKeyWarning": "此密钥由您的账户派生，且是永久的——之后无法更改或撤销。该密钥为 {0} 独有，其他网站无法派生出相同的密钥。",
+    "derivationDetails": "派生详情",
+    "boundTo": "绑定至",
+    "context": "Context",
     "approveRequest": "批准请求",
     "requestWithAccount": "你正在批准请求通过账户",
     "messageDetail": "消息内容",

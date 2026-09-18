@@ -1845,5 +1845,6 @@
   "bg.ACCOUNT.services.keyring.handler.Multisig.duplicateAddressFound": "Duplicate address found",
   "bg.ACCOUNT.services.keyring.handler.Multisig.multisigAddressExists": "The generated multisig address already exists under the account named \"{{name}}\". Remove the account first, then try again",
   "bg.TRANSACTION.core.validation.transfer.tokenCannotBeBridgedToNetwork": "{{symbol}} on {{originChainName}} can't be transferred to {{destinationChainName}} network. Please use another token or change the destination network",
-  "bg.TRANSACTION_SERVICE.services.service.transaction.existingMultisigPendingTransaction": "You’ve a pending multisig transaction with the same information. Complete the transaction first, then try again"
+  "bg.TRANSACTION_SERVICE.services.service.transaction.existingMultisigPendingTransaction": "You’ve a pending multisig transaction with the same information. Complete the transaction first, then try again",
+  "bg.EARNING.services.service.earning.nativeStaking.tao.rewardBelowClaimThreshold": "No rewards to claim. You need at least {{threshold}} {{symbol}} pending on a validator before you can claim"
 }
