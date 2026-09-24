@@ -5,6 +5,7 @@ import { QrCodeScanner } from 'components/QrCodeScanner';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { View } from 'react-native';
+import { AutoLockState } from 'utils/autoLock';
 import i18n from 'utils/i18n/i18n';
 
 export interface AddressScannerProps {
@@ -57,11 +58,18 @@ export const AddressScanner = ({
     let uri: string | undefined;
 
     try {
+      // The gallery sends the app to the background, which would otherwise trip the auto-lock
+      // (always / biometric / elapsed timeout) and drop the unlock screen under this modal.
+      // Every other system picker in the app guards the same way - see InputFile.
+      AutoLockState.isPreventAutoLock = true;
+
       const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.7, maxWidth: 1024, maxHeight: 1024 });
 
       uri = result.didCancel ? undefined : result.assets?.[0]?.uri;
     } catch (err) {
       console.log(err);
+    } finally {
+      AutoLockState.isPreventAutoLock = false;
     }
 
     if (!uri) {

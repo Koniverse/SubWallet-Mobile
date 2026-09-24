@@ -6,6 +6,7 @@ import ModalBase from 'components/design-system-ui/modal/ModalBase';
 import { Portal } from '@gorhom/portal';
 import ModalBaseV2, { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { deviceHeight } from 'constants/index';
+import useAppLock from 'hooks/useAppLock';
 import { noop } from 'utils/function';
 
 interface Props {
@@ -47,9 +48,13 @@ const SwFullSizeModal = ({
   level,
   hideWhenCloseApp = true,
 }: Props) => {
+  const { isLocked } = useAppLock();
+
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (modalVisible) {
+      // While the app is locked this modal is force-hidden; swallowing back here would leave the
+      // unlock screen with a dead back button.
+      if (modalVisible && !isLocked) {
         DeviceEventEmitter.emit('closeModal');
         return true;
       } else {
@@ -57,7 +62,7 @@ const SwFullSizeModal = ({
       }
     });
     return () => backHandler.remove();
-  }, [modalVisible]);
+  }, [isLocked, modalVisible]);
 
   useEffect(() => {
     const unsubscribe = AppState.addEventListener('change', state => {

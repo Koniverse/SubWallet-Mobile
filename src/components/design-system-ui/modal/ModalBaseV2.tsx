@@ -5,6 +5,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import { scheduleOnRN } from 'react-native-worklets';
 import ModalStyles from './styleV2';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import useAppLock from 'hooks/useAppLock';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -58,6 +59,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
     const theme = useSubWalletTheme().swThemes;
     const _styles = ModalStyles(theme, level);
     const { numberOfConfirmations } = useConfirmationsInfo();
+    const { isLocked } = useAppLock();
     const [isForcedHidden, setForcedHidden] = useState<boolean>(false);
     const [isActive, setIsActive] = useState(false);
 
@@ -70,13 +72,18 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       };
     }, []);
 
+    // Hide while the app is locked, like ModalBase (V1) does: on Android the unlock screen is a
+    // route inside the navigator, so it renders *under* the portal host this modal lives in.
+    // Without this the sheet (or just its backdrop) sits on top of the unlock screen and the app
+    // looks frozen - and staying purely on the FORCE_HIDDEN_EVENT the login screen emits leaves
+    // every V2 modal hidden for good whenever the app is unlocked by some other path.
     useEffect(() => {
-      if (isUseForceHidden && !!numberOfConfirmations) {
+      if (isUseForceHidden && (isLocked || !!numberOfConfirmations)) {
         setForcedHidden(true);
       } else {
         setForcedHidden(false);
       }
-    }, [isUseForceHidden, numberOfConfirmations]);
+    }, [isLocked, isUseForceHidden, numberOfConfirmations]);
 
     useEffect(() => {
       if (!isForcedHidden && isVisible) {

@@ -9,6 +9,7 @@ import { updatePreventLock } from 'stores/MobileSettings';
 import { useDispatch } from 'react-redux';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { AutoLockState } from 'utils/autoLock';
 import { getDevMode } from 'utils/storage';
 import { QrCodeScanner } from 'components/QrCodeScanner';
 
@@ -57,10 +58,17 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVis
   // QR code is reported on the scanner instead of surfacing the decoder's raw error.
   const onPressLibraryBtn = async () => {
     dispatch(updatePreventLock(true));
+    // The gallery sends the app to the background, which would otherwise trip the auto-lock
+    // (always / biometric / elapsed timeout) and drop the unlock screen under this modal.
+    // Every other system picker in the app guards the same way - see InputFile.
+    AutoLockState.isPreventAutoLock = true;
     setError('');
 
     try {
       const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.7, maxWidth: 1024, maxHeight: 1024 });
+
+      AutoLockState.isPreventAutoLock = false;
+
       const asset = result.didCancel ? undefined : result.assets?.[0];
 
       if (!asset?.uri) {
@@ -88,6 +96,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVis
       console.log(e);
       visibleRef.current && setError(i18n.warningMessage.invalidQRCode);
     } finally {
+      AutoLockState.isPreventAutoLock = false;
       setIsLibraryLoading(false);
       dispatch(updatePreventLock(false));
     }

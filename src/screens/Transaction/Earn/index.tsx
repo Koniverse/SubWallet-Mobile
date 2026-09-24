@@ -298,6 +298,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [submitString, setSubmitString] = useState<string | undefined>();
   const [connectionError, setConnectionError] = useState<string>();
   const [submitLoading, setSubmitLoading] = useState(false);
+  // Kept apart from submitLoading: the fee is refetched on every amount change, and sharing the
+  // submit flag made the button spin - and the inputs go disabled - on every keystroke.
+  const [feeLoading, setFeeLoading] = useState(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isShowAlert, setIsShowAlert] = useState<boolean>(false);
@@ -573,7 +576,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     assetDecimals,
     poolInfo.metadata.subnetData?.netuid || 0,
     ExtrinsicType.STAKING_BOND,
-    setSubmitLoading,
+    setFeeLoading,
   );
 
   const onChangeTarget = useCallback(
@@ -653,14 +656,17 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
         {!isDisabledSubnetContent && earningRate > 0 && (
           <>
+            {/* The rate is refetched while typing; the pending state shows here rather than on the
+                submit button, which used to flash a spinner on every character. */}
             <MetaInfo.Number
               decimals={assetDecimals}
               label={'Expected alpha amount'}
+              loading={feeLoading}
               suffix={poolInfo.metadata?.subnetData?.subnetSymbol || ''}
               value={BigN(currentAmount).multipliedBy(1 / earningRate)}
             />
 
-            <MetaInfo.Default label={'Conversion rate'}>
+            <MetaInfo.Default label={'Conversion rate'} loading={feeLoading}>
               <View style={styles.conversionRateStyle}>
                 <Typography.Text style={{ color: theme['gray-5'] }}>{`1 ${inputAsset.symbol} = `}</Typography.Text>
                 <Number
@@ -714,6 +720,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     assetDecimals,
     currentAmount,
     earningRate,
+    feeLoading,
     inputAsset.symbol,
     isDisabledSubnetContent,
     isSlippageAcceptable,
@@ -741,6 +748,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       !isBalanceReady ||
       !!errors.value ||
       submitLoading ||
+      // The staking fee is part of the payload: hold submission until the refetch lands, but
+      // without spinning the button on every character (see feeLoading).
+      feeLoading ||
       targetLoading ||
       !isSlippageAcceptable ||
       (mustChooseTarget && !poolTarget),
@@ -751,6 +761,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       isBalanceReady,
       errors.value,
       submitLoading,
+      feeLoading,
       targetLoading,
       isSlippageAcceptable,
       mustChooseTarget,

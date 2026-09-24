@@ -9,6 +9,7 @@ import ModalBase from 'components/Modal/Base/ModalBase';
 import { QrCodeScanner } from 'components/QrCodeScanner';
 import { launchImageLibrary } from 'react-native-image-picker';
 import RNQRGenerator from 'rn-qr-generator';
+import { AutoLockState } from 'utils/autoLock';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
@@ -53,7 +54,15 @@ const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
   }, [visible]);
 
   const onPressLibraryBtn = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.7, maxWidth: 1024, maxHeight: 1024 });
+    // The gallery sends the app to the background, which would otherwise trip the auto-lock
+    // (always / biometric / elapsed timeout) and drop the unlock screen under this modal.
+    // Every other system picker in the app guards the same way - see InputFile.
+    AutoLockState.isPreventAutoLock = true;
+
+    const result = await launchImageLibrary({ mediaType: 'photo', quality: 0.7, maxWidth: 1024, maxHeight: 1024 })
+      .finally(() => {
+        AutoLockState.isPreventAutoLock = false;
+      });
     const uri = result.didCancel ? undefined : result.assets?.[0]?.uri;
 
     if (!uri) {

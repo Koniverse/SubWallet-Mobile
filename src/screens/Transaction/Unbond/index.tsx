@@ -265,16 +265,19 @@ export const Unbond = ({
         spaceSize={'sm'}
         valueColorScheme={'gray'}
         style={{ marginTop: theme.sizeSM }}>
+        {/* The rate is refetched while typing; the pending state shows here rather than on the
+            submit button, which used to flash a spinner on every character. */}
         <MetaInfo.Number
           decimals={decimals}
           label={'Expected TAO to receive'}
+          loading={taoSubmitLoading}
           suffix={bondedAsset?.symbol || ''}
           value={BigNumber(currentValue).multipliedBy(earningRate)}
           unitColor={theme['gray-5']}
           decimalColor={theme['gray-5']}
           intColor={theme['gray-5']}
         />
-        <MetaInfo.Default label={'Conversion rate'}>
+        <MetaInfo.Default label={'Conversion rate'} loading={taoSubmitLoading}>
           <View style={{ flexDirection: 'row' }}>
             <Typography.Text style={{ color: '#A6A6A6' }}>{`1 ${bondedAsset?.symbol || ''} = `}</Typography.Text>
             <Number
@@ -292,7 +295,15 @@ export const Unbond = ({
         </MetaInfo.Default>
       </MetaInfo>
     );
-  }, [decimals, bondedAsset?.symbol, currentValue, earningRate, theme, poolInfo.metadata?.subnetData?.subnetSymbol]);
+  }, [
+    decimals,
+    bondedAsset?.symbol,
+    currentValue,
+    earningRate,
+    taoSubmitLoading,
+    theme,
+    poolInfo.metadata?.subnetData?.subnetSymbol,
+  ]);
 
   // For subnet staking
 
@@ -779,7 +790,9 @@ export const Unbond = ({
             <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
               <Button
                 disabled={isDisableSubmitBtn}
-                loading={loading || taoSubmitLoading}
+                /* taoSubmitLoading is the fee refetch (already part of isDisableSubmitBtn); spinning
+                   the button on it made every character typed flash a loader. */
+                loading={loading}
                 icon={
                   <Icon
                     phosphorIcon={MinusCircleIcon}
