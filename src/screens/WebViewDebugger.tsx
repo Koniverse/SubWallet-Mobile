@@ -20,7 +20,7 @@ import {
   updatePopupHistoryData,
 } from 'stores/base/StaticContent';
 import { useDispatch } from 'react-redux';
-import { IS_SHOW_TON_CONTRACT_VERSION_WARNING } from 'constants/localStorage';
+import { DEV_WEB_RUNNER_URL, IS_SHOW_TON_CONTRACT_VERSION_WARNING } from 'constants/localStorage';
 import { isDevModeAvailable } from 'constants/devMode';
 
 const BUNDLE_ENV = env.BUNDLE_ENV;
@@ -60,7 +60,7 @@ export const WebViewDebugger = () => {
         url = url.slice(0, -1);
       }
 
-      mmkvStore.set('__development_web_runner_url__', url);
+      mmkvStore.set(DEV_WEB_RUNNER_URL, url);
 
       setNotification("OK, Let's restart app!");
     }
@@ -68,7 +68,7 @@ export const WebViewDebugger = () => {
 
   const useDefaultWebRunner = () => {
     setInput('');
-    mmkvStore.remove('__development_web_runner_url__');
+    mmkvStore.remove(DEV_WEB_RUNNER_URL);
 
     setNotification("OK, Let's restart app!");
   };

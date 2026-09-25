@@ -24,6 +24,7 @@ import useAppLock from 'hooks/useAppLock';
 import useCryptoReady from 'hooks/init/useCryptoReady';
 import useSetupI18n from 'hooks/init/useSetupI18n';
 import { LoadingScreen } from 'screens/LoadingScreen';
+import { StartupRecovery } from 'screens/StartupRecovery';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
 import { deviceHeight, deviceWidth, TOAST_DURATION } from 'constants/index';
@@ -97,6 +98,11 @@ const imageBackgroundStyle: StyleProp<any> = {
 };
 
 const APP_BACKGROUND_RELOAD_TIMEOUT = 20 * 60 * 1000;
+
+// How long the app may stay not-ready before StartupRecovery replaces the spinner. Generous on
+// purpose: a first launch on a slow Android device still has to copy the web bundle out of assets
+// and restore storage, and the panel offers a restart - premature is worse than late.
+const APP_STARTUP_STUCK_TIMEOUT = 45 * 1000;
 
 let lockWhenActive = false;
 let lastAppInactiveAt: number | undefined;
@@ -190,7 +196,9 @@ export const App = () => {
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
   const { isUpdateComplete, setUpdateComplete, isReady: isWebRunnerReady } = useContext(WebRunnerContext);
   const hasHiddenSplash = useRef(false);
+  const hasBeenAppReady = useRef(false);
   const [initDone, setInitDone] = useState(false);
+  const [isStartupStuck, setStartupStuck] = useState(false);
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -263,6 +271,37 @@ export const App = () => {
     }
   }, [initDone, isAppReady]);
 
+  // A web runner that never becomes ready keeps isAppReady false forever, and with it the native
+  // splash up and the whole navigator - Settings and the Web View Debugger with it - unmounted.
+  // Offer a way out instead of an endless spinner, and hide the splash so it can be seen at all.
+  useEffect(() => {
+    if (isAppReady) {
+      hasBeenAppReady.current = true;
+      setStartupStuck(false);
+
+      return;
+    }
+
+    // Only the first start, never a session that already worked: the runner also reports not-ready
+    // while it reloads after a resume, and offering a reset there would be alarming for nothing -
+    // whoever got that far can reach the Web View Debugger, or just kill the app, on their own.
+    if (hasBeenAppReady.current) {
+      return;
+    }
+
+    const timeout = setTimeout(() => setStartupStuck(true), APP_STARTUP_STUCK_TIMEOUT);
+
+    return () => clearTimeout(timeout);
+  }, [isAppReady]);
+
+  useEffect(() => {
+    if (isStartupStuck && !hasHiddenSplash.current) {
+      hasHiddenSplash.current = true;
+
+      BootSplash.hide({ fade: true }).catch(() => {});
+    }
+  }, [isStartupStuck]);
+
   const onPressUpdateWebView = () => {
     Linking.canOpenURL('market://details?id=com.google.android.webview').then(() =>
       Linking.openURL('market://details?id=com.google.android.webview'),
@@ -309,9 +348,7 @@ export const App = () => {
           </View>
         )}
         {!isAppReady && (
-          <View style={styles.layerScreenStyle}>
-            <LoadingScreen />
-          </View>
+          <View style={styles.layerScreenStyle}>{isStartupStuck ? <StartupRecovery /> : <LoadingScreen />}</View>
         )}
         {needUpdateChrome && (
           <View style={{ width: deviceWidth, height: deviceHeight, justifyContent: 'flex-end' }}>

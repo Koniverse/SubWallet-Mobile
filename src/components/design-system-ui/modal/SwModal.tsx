@@ -19,7 +19,7 @@ import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 import Button from '../button';
 import { Icon } from 'components/design-system-ui';
 import { CaretLeftIcon, GearIcon } from 'phosphor-react-native';
-import useAppLock from 'hooks/useAppLock';
+import useIsLockScreenShown from 'hooks/useIsLockScreenShown';
 import { noop } from 'utils/function';
 
 export interface SWModalProps {
@@ -115,7 +115,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
     ref,
   ) => {
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible();
-    const { isLocked } = useAppLock();
+    const isLockScreenShown = useIsLockScreenShown();
     const theme = useSubWalletTheme().swThemes;
     const [contentHeight, setContentHeight] = useState<number>(0);
     const [childrenHeight, setChildrenHeight] = useState<number>(contentHeight);
@@ -135,9 +135,9 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
 
     useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-        // While the app is locked this modal is force-hidden; swallowing back here would leave the
-        // unlock screen with a dead back button.
-        if (modalVisible && !isLocked) {
+        // While the unlock screen is up this modal is force-hidden; swallowing back here would
+        // leave that screen with a dead back button.
+        if (modalVisible && !isLockScreenShown) {
           if (onBackButtonPress) {
             onBackButtonPress();
           } else {
@@ -150,7 +150,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
         }
       });
       return () => backHandler.remove();
-    }, [isLocked, modalVisible, onBackButtonPress]);
+    }, [isLockScreenShown, modalVisible, onBackButtonPress]);
 
     useEffect(() => {
       if (isKeyboardVisible) {

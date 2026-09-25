@@ -10,6 +10,7 @@ import { WEB_SERVER_PORT } from './constant';
 import { getJsInjectContent, safeJSONParse } from 'providers/WebRunnerProvider/utils';
 import { WebRunnerGlobalState, WebRunnerHandler } from 'providers/WebRunnerProvider/WebRunnerHandler';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
+import { DEV_WEB_RUNNER_URL } from 'constants/localStorage';
 
 const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
 const isFirstLaunch = mmkvStore.getAllKeys().length === 0;
@@ -17,6 +18,7 @@ const storedCompleteBackUpData = mmkvStore.getBoolean('backup-data-for-android')
 
 const completeBackUpData = !isFirstLaunch ? storedCompleteBackUpData : true;
 
+// Set by the first load failure; getBaseUri() then stops honouring the custom runner URL.
 let needFallBack = false;
 
 const webRunnerHandler = new WebRunnerHandler();
@@ -30,7 +32,7 @@ const now = new Date().getTime();
 
 const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${now}`;
 
-const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
+const devWebRunnerURL = mmkvStore.getString(DEV_WEB_RUNNER_URL);
 
 const getBaseUri = () => {
   const osWebRunnerURL =
@@ -38,10 +40,38 @@ const getBaseUri = () => {
       ? 'file:///android_asset/FallbackWeb.bundle'
       : `http://localhost:${WEB_SERVER_PORT}`;
 
-  return !devWebRunnerURL || devWebRunnerURL === '' ? osWebRunnerURL : devWebRunnerURL;
+  // needFallBack drops the custom URL, which is what makes the fallback below mean anything: that
+  // URL is only reachable through the Web View Debugger screen, and once the runner is down the
+  // screen is gone with the rest of the navigator (App gates it on isWebRunnerReady), so a URL
+  // that stopped answering used to hang every launch with no way out. The key is deliberately
+  // left in storage - a local server that was merely restarting is honoured again on the next
+  // launch, and a dead one simply falls back again.
+  if (needFallBack || !devWebRunnerURL || devWebRunnerURL === '') {
+    return osWebRunnerURL;
+  }
+
+  return devWebRunnerURL;
 };
 
 let BASE_URI = getBaseUri();
+
+// Both kinds of load failure land here. A WebView that cannot reach the origin at all reports
+// onError (connection refused, bad host); only a server that answers with 4xx/5xx reports
+// onHttpError - and a dead custom URL is the first kind, which used to be logged and nothing else.
+const onRunnerLoadFailure = (label: string, event: unknown) => {
+  console.debug(`### WebRunner ${label}`, event);
+
+  if (needFallBack) {
+    return;
+  }
+
+  needFallBack = true;
+  BASE_URI = getBaseUri();
+
+  webRunnerHandler.sleep();
+  webRunnerHandler.active();
+  webRunnerHandler.reload();
+};
 
 const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlAction): WebRunnerGlobalState => {
   const { type } = action;
@@ -167,19 +197,8 @@ export const WebRunner = React.memo(
             webviewDebuggingEnabled
             onLoadStart={onLoadStart}
             onLoadProgress={onLoadProgress}
-            onError={e => console.debug('### WebRunner error', e.nativeEvent)}
-            onHttpError={e => {
-              const old = needFallBack;
-              needFallBack = true;
-              if (!old) {
-                BASE_URI = getBaseUri();
-
-                webRunnerHandler.sleep();
-                webRunnerHandler.active();
-                webRunnerHandler.reload();
-              }
-              console.debug('### WebRunner HttpError', e);
-            }}
+            onError={e => onRunnerLoadFailure('error', e.nativeEvent)}
+            onHttpError={e => onRunnerLoadFailure('HttpError', e.nativeEvent)}
             javaScriptEnabled={true}
             allowFileAccess={true}
             allowUniversalAccessFromFileURLs={true}

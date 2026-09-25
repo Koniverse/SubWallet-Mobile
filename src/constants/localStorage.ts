@@ -20,5 +20,10 @@ export const CLAIM_AVAIL_BRIDGE_TRANSACTION = 'transaction.claim-avail-bridge';
 
 export const IS_SHOW_TON_CONTRACT_VERSION_WARNING = 'account.is-show-ton-contract-version-warning';
 
+// Custom web-runner origin, stored by the Web View Debugger screen. It is read on every launch
+// in every build, so the startup recovery panel has to be able to clear it: keep both sides on
+// this constant.
+export const DEV_WEB_RUNNER_URL = '__development_web_runner_url__';
+
 export const CURRENT_CHAIN_SUBSTRATE_PROXY = 'substrateProxy.current-chain-management';
 export const NOTI_MULTISIG_PENDINGTX_ID = 'notification.multisig-pending-tx-id';
