@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Icon, Number, SwModal, Typography } from 'components/design-system-ui';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { BalanceItemWithAddressType, TokenBalanceItemType } from 'types/balance';
+import { Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { BalanceItemWithAddressType, LockedBalanceDetails as LockedBalanceDetailsType, TokenBalanceItemType } from 'types/balance';
 import BigN from 'bignumber.js';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -16,10 +16,11 @@ import { APIItemState } from '@subwallet/extension-base/background/KoniTypes';
 import { isAccountAll } from 'utils/accountAll';
 import { deviceHeight } from 'constants/index';
 import { EmptyList } from 'components/EmptyList';
-import { ArrowCircleLeftIcon, CoinsIcon } from 'phosphor-react-native';
+import { ArrowCircleLeftIcon, CaretDownIcon, CaretUpIcon, CoinsIcon } from 'phosphor-react-native';
 import { _isChainBitcoinCompatible } from '@subwallet/extension-base/services/chain-service/utils';
 import { getKeypairTypeByAddress, isBitcoinAddress } from '@subwallet/keyring';
 import { getBitcoinAccountDetails, getBitcoinKeypairAttributes } from 'utils/account/account';
+import { hasLockedBalanceDetails, LockedBalanceDetails } from './LockedBalanceDetails';
 
 export type ItemType = {
   symbol: string;
@@ -54,6 +55,7 @@ export interface Props {
   tokenBalanceMap: Record<string, TokenBalanceItemType>;
   currentTokenInfo?: {
     symbol: string;
+    displayName?: string;
     slug: string;
   };
 }
@@ -64,6 +66,7 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const { accounts, isAllAccount, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const { balanceMap } = useSelector((state: RootState) => state.balance);
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   const balanceInfo = useMemo(
@@ -104,6 +107,8 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
   }, [currentTokenInfo, tokenBalanceMap]);
   const onChangeModalVisible = () => modalBaseV2Ref?.current?.close();
   const [selectedTab, setSelectedTab] = useState<'tokenDetails' | 'accountDetails'>('tokenDetails');
+  const [isLockedDetailsVisible, setIsLockedDetailsVisible] = useState(false);
+  const [selectedLockedDetails, setSelectedLockedDetails] = useState<LockedBalanceDetailsType>();
 
   useEffect(() => {
     if (isBitcoinChain) {
@@ -184,6 +189,30 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
       });
   }, [accounts, balanceMap, currentAccountProxy, currentTokenInfo?.slug, isAllAccount, isBitcoinChain]);
 
+  const lockedDetails = useMemo(() => {
+    if (!isAllAccount) {
+      return balanceInfo?.lockedDetails;
+    }
+
+    return accountItems.reduce<LockedBalanceDetailsType | undefined>((result, item) => {
+      if (!item.lockedDetails) {
+        return result;
+      }
+
+      const next = result || { staking: '0', governance: '0', democracy: '0', reserved: '0', others: '0' };
+
+      Object.keys(next).forEach(key => {
+        const detailKey = key as keyof LockedBalanceDetailsType;
+        next[detailKey] = new BigN(next[detailKey]).plus(item.lockedDetails?.[detailKey] || 0).toString();
+      });
+
+      return next;
+    }, undefined);
+  }, [accountItems, balanceInfo?.lockedDetails, isAllAccount]);
+
+  const tokenDecimals = currentTokenInfo?.slug ? assetRegistry[currentTokenInfo.slug]?.decimals || 0 : 0;
+  const canViewLockedDetails = hasLockedBalanceDetails(lockedDetails);
+
   // const filteredItems = useMemo(() => {
   //   return accountItems.filter(item => {
   //     return new BigN(item.free).plus(item.locked).gt(0);
@@ -191,82 +220,128 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
   // }, [accountItems]);
 
   return (
-    <SwModal
-      isUseModalV2
-      setVisible={setVisible}
-      modalBaseV2Ref={modalBaseV2Ref}
-      modalVisible={modalVisible}
-      modalTitle={isAllAccount && isBitcoinChain ? 'Account Details' : i18n.header.tokenDetails}
-      isAllowSwipeDown={Platform.OS === 'ios'}
-      // onChangeModalVisible={() => setSelectedTab('accountDetails')}
-      onBackButtonPress={onChangeModalVisible}>
-      <>
-        {isAllAccount && !isBitcoinChain && (
-          <SwTab tabs={tokenDetailTabs} onSelectType={_onSelectType} selectedValue={selectedTab} />
-        )}
-        {selectedTab === 'tokenDetails' && (
-          <View style={_style.blockContainer}>
-            {items.map(item => (
-              <View key={item.key} style={_style.row}>
-                <Typography.Text style={{ ...FontSemiBold, color: theme.colorTextLight1 }}>
-                  {item.label}
-                </Typography.Text>
+    <>
+      <SwModal
+        isUseModalV2
+        setVisible={setVisible}
+        modalBaseV2Ref={modalBaseV2Ref}
+        modalVisible={modalVisible}
+        modalTitle={
+          isAllAccount && isBitcoinChain ? 'Account Details' : currentTokenInfo?.displayName || i18n.header.tokenDetails
+        }
+        isAllowSwipeDown={Platform.OS === 'ios'}
+        // onChangeModalVisible={() => setSelectedTab('accountDetails')}
+        onBackButtonPress={onChangeModalVisible}>
+        <>
+          {isAllAccount && !isBitcoinChain && (
+            <SwTab tabs={tokenDetailTabs} onSelectType={_onSelectType} selectedValue={selectedTab} />
+          )}
+          {selectedTab === 'tokenDetails' && (
+            <View style={_style.blockContainer}>
+              {items.map(item => {
+                const isLockedItem = item.key === 'locked';
 
-                <Number
-                  style={_style.value}
-                  textStyle={{ ...FontMedium }}
-                  decimal={0}
-                  decimalOpacity={0.45}
-                  intOpacity={0.85}
-                  size={14}
-                  suffix={item.symbol}
-                  unitOpacity={0.85}
-                  value={item.value}
-                />
-              </View>
-            ))}
-          </View>
-        )}
-        {selectedTab === 'accountDetails' && (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={{ maxHeight: deviceHeight * 0.6 }}
-            contentContainerStyle={{ gap: theme.paddingSM }}>
-            {accountItems && accountItems.length ? (
-              accountItems.map(item => (
-                <AccountTokenDetail key={item.address} item={item} chainInfoMap={chainInfoMap} />
-              ))
-            ) : (
-              <View style={{ paddingTop: theme.padding }}>
-                <EmptyList
-                  icon={CoinsIcon}
-                  title={
-                    i18n.formatString(
-                      i18n.emptyScreen.tokenDetailModalEmptyTitle,
-                      currentTokenInfo?.symbol || '',
-                    ) as string
-                  }
-                  iconButton={ArrowCircleLeftIcon}
-                  message={i18n.emptyScreen.tokenDetailModalEmptyMessage}
-                />
-                <View style={{ alignItems: 'center' }}>
-                  <Button
-                    icon={<Icon phosphorIcon={ArrowCircleLeftIcon} weight={'fill'} />}
-                    size={'xs'}
-                    onPress={() => {
-                      setSelectedTab('tokenDetails');
-                      setVisible(false);
-                    }}
-                    shape={'round'}>
-                    {i18n.common.backToHome}
-                  </Button>
+                return (
+                  <React.Fragment key={item.key}>
+                    <View style={_style.row}>
+                      <Typography.Text style={{ ...FontSemiBold, color: theme.colorTextLight1 }}>
+                        {item.label}
+                      </Typography.Text>
+
+                      <Number
+                        style={_style.value}
+                        textStyle={{ ...FontMedium }}
+                        decimal={0}
+                        decimalOpacity={0.45}
+                        intOpacity={0.85}
+                        size={14}
+                        suffix={item.symbol}
+                        unitOpacity={0.85}
+                        value={item.value}
+                      />
+
+                      {isLockedItem && canViewLockedDetails && (
+                        <TouchableOpacity
+                          style={_style.lockedDetailsButton}
+                          onPress={() => setIsLockedDetailsVisible(value => !value)}>
+                          <Icon
+                            phosphorIcon={isLockedDetailsVisible ? CaretUpIcon : CaretDownIcon}
+                            size={'xs'}
+                            iconColor={theme['gray-5']}
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+
+                    {isLockedItem && isLockedDetailsVisible && (
+                      <LockedBalanceDetails details={lockedDetails} decimals={tokenDecimals} symbol={item.symbol} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </View>
+          )}
+          {selectedTab === 'accountDetails' && (
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              style={{ maxHeight: deviceHeight * 0.6 }}
+              contentContainerStyle={{ gap: theme.paddingSM }}>
+              {accountItems && accountItems.length ? (
+                accountItems.map(item => (
+                  <AccountTokenDetail
+                    key={item.address}
+                    item={item}
+                    chainInfoMap={chainInfoMap}
+                    onPressLockedDetails={setSelectedLockedDetails}
+                  />
+                ))
+              ) : (
+                <View style={{ paddingTop: theme.padding }}>
+                  <EmptyList
+                    icon={CoinsIcon}
+                    title={
+                      i18n.formatString(
+                        i18n.emptyScreen.tokenDetailModalEmptyTitle,
+                        currentTokenInfo?.symbol || '',
+                      ) as string
+                    }
+                    iconButton={ArrowCircleLeftIcon}
+                    message={i18n.emptyScreen.tokenDetailModalEmptyMessage}
+                  />
+                  <View style={{ alignItems: 'center' }}>
+                    <Button
+                      icon={<Icon phosphorIcon={ArrowCircleLeftIcon} weight={'fill'} />}
+                      size={'xs'}
+                      onPress={() => {
+                        setSelectedTab('tokenDetails');
+                        setVisible(false);
+                      }}
+                      shape={'round'}>
+                      {i18n.common.backToHome}
+                    </Button>
+                  </View>
                 </View>
-              </View>
-            )}
-          </ScrollView>
-        )}
-      </>
-    </SwModal>
+              )}
+            </ScrollView>
+          )}
+        </>
+      </SwModal>
+      <SwModal
+        isUseModalV2
+        level={2}
+        setVisible={value => !value && setSelectedLockedDetails(undefined)}
+        modalVisible={!!selectedLockedDetails}
+        modalTitle={i18n.tokenDetail.lockedBalanceDetails}
+        titleTextAlign={'center'}
+        isAllowSwipeDown={Platform.OS === 'ios'}>
+        <LockedBalanceDetails
+          details={selectedLockedDetails}
+          decimals={tokenDecimals}
+          symbol={currentTokenInfo?.symbol || ''}
+          withBackground
+        />
+      </SwModal>
+    </>
   );
 };
 
@@ -288,6 +363,10 @@ function createStyleSheet(theme: ThemeTypes) {
     value: {
       flex: 1,
       justifyContent: 'flex-end',
+    },
+    lockedDetailsButton: {
+      marginLeft: theme.marginXXS,
+      paddingLeft: theme.paddingXXS,
     },
   });
 }

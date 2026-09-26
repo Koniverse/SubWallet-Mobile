@@ -7,6 +7,7 @@ import { VoidFunction } from 'types/index';
 import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
 import { noop } from 'utils/function';
+import { ButtonPropsType } from 'components/design-system-ui/button/PropsType';
 
 interface Props {
   message: string | React.ReactNode;
@@ -17,6 +18,7 @@ interface Props {
   onCompleteModal?: VoidFunction;
   onCancelModal?: VoidFunction;
   completeBtnTitle?: string;
+  completeBtnType?: ButtonPropsType['type'];
   cancelBtnTitle?: string;
   disabledOnPressBackDrop?: boolean;
   isAllowSwipeDown?: boolean;
@@ -32,6 +34,7 @@ const ConfirmModal: React.FC<Props> = ({
   messageIcon,
   customIcon,
   completeBtnTitle,
+  completeBtnType,
   cancelBtnTitle,
   isAllowSwipeDown,
   disabledOnPressBackDrop,
@@ -65,7 +68,7 @@ const ConfirmModal: React.FC<Props> = ({
               externalTextStyle={{ flexShrink: 1 }}
               style={{ flex: 1 }}
               icon={<Icon phosphorIcon={CheckCircleIcon} size={'lg'} weight={'fill'} />}
-              type="primary"
+              type={completeBtnType || 'primary'}
               onPress={onCompleteModal}>
               {completeBtnTitle || i18n.common.connect}
             </Button>
@@ -76,8 +79,8 @@ const ConfirmModal: React.FC<Props> = ({
       isAllowSwipeDown={isAllowSwipeDown}
       onBackButtonPress={onCancelModal}
       onChangeModalVisible={onCancelModal}>
-      <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
-        <View style={{ paddingBottom: 20 }}>
+      <View style={styles.contentStyle}>
+        <View style={styles.iconWrapperStyle}>
           {messageIcon ? (
             <Logo network={messageIcon} size={100} />
           ) : customIcon ? (

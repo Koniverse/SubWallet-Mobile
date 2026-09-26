@@ -37,12 +37,17 @@ function getSubHeaderWrapperStyle(backgroundColor: string = '#0C0C0C'): StylePro
 }
 
 const getHeaderTitleContainer = (textAlign?: string, showLeftBtn?: boolean, showRightBtn?: boolean): StyleProp<any> => {
+  // The buttons are absolutely positioned over the header, so the title reserves
+  // room on both sides to stay centred and clear of them. Reserving it when there
+  // is no button on either side only cost the title 64px and truncated it.
+  const reserveForButtons = !!showLeftBtn || !!showRightBtn;
+
   return {
     flexDirection: 'row',
     flex: 1,
     justifyContent: textAlign === 'left' ? 'flex-start' : 'center',
-    paddingLeft: !!showLeftBtn || textAlign === 'center' ? 32 : 0,
-    paddingRight: !!showRightBtn || textAlign === 'center' ? 32 : 0,
+    paddingLeft: reserveForButtons ? 32 : 0,
+    paddingRight: reserveForButtons ? 32 : 0,
   };
 };
 

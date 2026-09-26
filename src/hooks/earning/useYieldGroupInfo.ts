@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
+import { SUNSETTED_YIELD_POOL_SLUGS } from '@subwallet/extension-base/services/earning-service/constants';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { useMemo } from 'react';
@@ -10,22 +11,57 @@ import { RootState } from 'stores/index';
 import { BalanceValueInfo } from 'types/balance';
 import { YieldGroupInfo } from 'types/earning';
 import { BN_ZERO } from '@subwallet/extension-base/utils';
-import { YieldPoolType } from '@subwallet/extension-base/types';
+import { AccountProxyType, YieldPoolType } from '@subwallet/extension-base/types';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import { getTransactionActionsByAccountProxy } from 'utils/account/account';
+import { getExtrinsicTypeByPoolInfo } from 'utils/earning';
 
 const useYieldGroupInfo = (): YieldGroupInfo[] => {
   const poolInfoMap = useSelector((state: RootState) => state.earning.poolInfoMap);
   const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const chainsByAccountType = useGetChainSlugsByCurrentAccountProxy();
+  const { accountProxies, currentAccountProxy } = useSelector((state: RootState) => state.accountState);
   const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, true);
+
+  // A multisig account cannot sign every earning extrinsic (liquid staking and lending
+  // are not in its action list), so pools it could never enter must not be offered.
+  const extrinsicTypeSupported = useMemo(() => {
+    if (!currentAccountProxy) {
+      return null;
+    }
+
+    return getTransactionActionsByAccountProxy(currentAccountProxy, accountProxies);
+  }, [accountProxies, currentAccountProxy]);
+
+  const hasWatchOnlyAccount = useMemo(() => {
+    if (!currentAccountProxy) {
+      return false;
+    }
+
+    if (isAccountAll(currentAccountProxy.id)) {
+      return accountProxies.some(item => item.accountType === AccountProxyType.READ_ONLY);
+    }
+
+    return currentAccountProxy.accountType === AccountProxyType.READ_ONLY;
+  }, [accountProxies, currentAccountProxy]);
 
   return useMemo(() => {
     const result: Record<string, YieldGroupInfo> = {};
 
     for (const pool of Object.values(poolInfoMap)) {
+      if (SUNSETTED_YIELD_POOL_SLUGS.includes(pool.slug)) {
+        continue;
+      }
+
       const chain = pool.chain;
+      const extrinsicType = getExtrinsicTypeByPoolInfo(pool);
+
+      if (!hasWatchOnlyAccount && extrinsicTypeSupported && !extrinsicTypeSupported.includes(extrinsicType)) {
+        continue;
+      }
 
       if (chainsByAccountType.includes(chain)) {
         const group = pool.group;
@@ -123,7 +159,16 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
     }
 
     return Object.values(result);
-  }, [assetRegistry, chainInfoMap, chainsByAccountType, multiChainAssetMap, poolInfoMap, tokenBalanceMap]);
+  }, [
+    assetRegistry,
+    chainInfoMap,
+    chainsByAccountType,
+    extrinsicTypeSupported,
+    hasWatchOnlyAccount,
+    multiChainAssetMap,
+    poolInfoMap,
+    tokenBalanceMap,
+  ]);
 };
 
 export default useYieldGroupInfo;

@@ -1,6 +1,12 @@
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
-import { AbstractAddressJson, AccountChainType, AccountJson, AccountSignMode } from '@subwallet/extension-base/types';
+import {
+  AbstractAddressJson,
+  AccountChainType,
+  AccountJson,
+  AccountProxy,
+  AccountSignMode,
+} from '@subwallet/extension-base/types';
 import { isAddress, isSubstrateAddress, isTonAddress } from '@subwallet/keyring';
 import { KeypairType } from '@subwallet/keyring/types';
 import { BitcoinAccountInfo } from 'types/account';
@@ -63,30 +69,40 @@ export const accountCanSign = (signMode: AccountSignMode): boolean => {
   return MODE_CAN_SIGN.includes(signMode);
 };
 
+// extension-base already computes this per account and knows about the modes that cannot be
+// derived from the raw flags (MULTISIG, INJECTED, ECDSA_SUBSTRATE_LEDGER), so re-deriving it here
+// only loses information — a multisig account used to come back as QR.
 export const getSignMode = (account: AccountJson | null | undefined): AccountSignMode => {
   if (!account) {
     return AccountSignMode.UNKNOWN;
   } else {
-    if (account.address === ALL_ACCOUNT_KEY) {
-      return AccountSignMode.ALL_ACCOUNT;
-    } else {
-      if (account.isExternal) {
-        if (account.isHardware) {
-          if (account.isGeneric) {
-            return AccountSignMode.GENERIC_LEDGER;
-          } else {
-            return AccountSignMode.LEGACY_LEDGER;
-          }
-        } else if (account.isReadOnly) {
-          return AccountSignMode.READ_ONLY;
-        } else {
-          return AccountSignMode.QR;
-        }
-      } else {
-        return AccountSignMode.PASSWORD;
-      }
-    }
+    return account.signMode;
   }
+};
+
+export const getSignModeByAccountProxy = (accountProxy: AccountProxy | null | undefined): AccountSignMode => {
+  return accountProxy?.accounts[0]?.signMode || AccountSignMode.UNKNOWN;
+};
+
+export const getTransactionActionsByAccountProxy = (
+  accountProxy: AccountProxy,
+  accountProxies: AccountProxy[] = [],
+): string[] => {
+  const transactionActionsSet = new Set<string>();
+
+  if (isAccountAll(accountProxy.id)) {
+    accountProxies.forEach(proxy => {
+      proxy.accounts?.forEach(({ transactionActions }) => {
+        transactionActions?.forEach(action => transactionActionsSet.add(action));
+      });
+    });
+  } else {
+    accountProxy.accounts.forEach(({ transactionActions }) => {
+      transactionActions?.forEach(action => transactionActionsSet.add(action));
+    });
+  }
+
+  return Array.from(transactionActionsSet);
 };
 
 export const isNoAccount = (accounts: AccountJson[] | null): boolean => {

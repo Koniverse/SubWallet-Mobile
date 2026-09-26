@@ -2,8 +2,9 @@ import useChainChecker from 'hooks/chain/useChainChecker';
 import { VoidFunction } from 'types/index';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { AppModalContext } from 'providers/AppModalContext';
-import { Alert } from 'react-native';
 import i18n from 'utils/i18n/i18n';
+import useAlertModal from 'hooks/modal/useAlertModal';
+import { NotificationType } from '@subwallet/extension-base/background/KoniTypes';
 
 export const useHandleChainConnection = (
   chainSlug?: string,
@@ -12,6 +13,7 @@ export const useHandleChainConnection = (
   altChainData?: { chain: string; name: string },
 ) => {
   const { confirmModal } = useContext(AppModalContext);
+  const { openAlert } = useAlertModal();
   const { checkChainConnected, turnOnChain } = useChainChecker(false);
   const [isLoading, setLoading] = useState<boolean>(false);
   const loadingRef = useRef(isLoading);
@@ -78,25 +80,20 @@ export const useHandleChainConnection = (
         setLoading(false);
         if (altChainData && altChainData.chain) {
           if (!checkChainConnected(chainSlug) || !checkChainConnected(altChainData.chain)) {
-            Alert.alert(
-              'Connection lost',
-              `${chainName} network or ${altChainData.name} network has lost connection. Re-enable the network and try again`,
-              [
-                {
-                  text: 'I understand',
-                  style: 'destructive',
-                },
-              ],
-            );
+            openAlert({
+              title: 'Connection lost',
+              type: NotificationType.ERROR,
+              content: `${chainName} network or ${altChainData.name} network has lost connection. Re-enable the network and try again`,
+            });
           }
         } else {
           if (!checkChainConnected(chainSlug)) {
-            Alert.alert('Error', 'Failed to get data. Please try again later', [
-              {
-                text: 'Continue',
-                style: 'destructive',
-              },
-            ]);
+            openAlert({
+              title: 'Error',
+              type: NotificationType.ERROR,
+              content: 'Failed to get data. Please try again later',
+              okButton: { text: i18n.buttonTitles.continue },
+            });
           }
         }
       }, 3000);
@@ -106,7 +103,7 @@ export const useHandleChainConnection = (
       clearInterval(timer);
       clearTimeout(timeout);
     };
-  }, [altChainData, chainName, chainSlug, checkChainConnected, onConnectSuccess]);
+  }, [altChainData, chainName, chainSlug, checkChainConnected, onConnectSuccess, openAlert]);
 
   return {
     checkChainConnected,

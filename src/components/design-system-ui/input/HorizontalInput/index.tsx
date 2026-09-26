@@ -48,6 +48,8 @@ const HorizontalInput = (
         <TextInput
           ref={ref}
           placeholderTextColor={theme.colorTextLight4}
+          // See design-system-ui/input: keeps a long placeholder on one line on Android.
+          numberOfLines={textInputProps.multiline ? textInputProps.numberOfLines : 1}
           {...textInputProps}
           style={[stylesheet.textInput, inputStyle]}
           editable={!disabled && !readonly}

@@ -12,15 +12,22 @@ import withPageWrapper from 'components/pageWrapper';
 import Swap from 'screens/Transaction/Swap';
 import { ClaimBridge } from 'screens/Transaction/ClaimBridge';
 import { ChangeEarningValidator } from 'screens/Transaction/ChangeEarningValidator';
+import { AddSubstrateProxyAccount } from 'screens/Transaction/SubstrateProxyAccount/AddSubstrateProxyAccount';
+import { RemoveSubstrateProxyAccount } from 'screens/Transaction/SubstrateProxyAccount/RemoveSubstrateProxyAccount';
+
+// Created once, outside the component, so a re-render cannot remount the stack and
+// reset it to its initial route.
+const TransactionActionStack = createNativeStackNavigator<TransactionActionStackParamList>();
 
 const TransactionScreen = () => {
-  const TransactionActionStack = createNativeStackNavigator<TransactionActionStackParamList>();
-
   return (
     <TransactionActionStack.Navigator
       screenOptions={{ headerShown: false, animation: 'slide_from_right', gestureEnabled: false }}>
       <TransactionActionStack.Screen name="SendNFT" component={SendNFT} />
-      <TransactionActionStack.Screen name="SendFund" component={SendFund} />
+      {/* The alpha-token (Bittensor subnet) validator selectors are driven by the earning
+          store's yield positions, so it has to be started here like the extension's
+          SendFund wrapper does; otherwise they only show up after Earning was opened. */}
+      <TransactionActionStack.Screen name="SendFund" component={withPageWrapper(SendFund, ['earning'])} />
       <TransactionActionStack.Screen name="Withdraw" component={Withdraw} />
       <TransactionActionStack.Screen name="Unbond" component={Unbond} />
       <TransactionActionStack.Screen name="ClaimReward" component={ClaimReward} />
@@ -37,6 +44,14 @@ const TransactionScreen = () => {
       <TransactionActionStack.Screen
         name="ChangeEarningValidator"
         component={withPageWrapper(ChangeEarningValidator, ['chainStore', 'assetRegistry', 'balance'])}
+      />
+      <TransactionActionStack.Screen
+        name="AddSubstrateProxy"
+        component={withPageWrapper(AddSubstrateProxyAccount, ['chainStore', 'assetRegistry', 'balance'])}
+      />
+      <TransactionActionStack.Screen
+        name="RemoveSubstrateProxy"
+        component={withPageWrapper(RemoveSubstrateProxyAccount, ['chainStore', 'assetRegistry', 'balance'])}
       />
     </TransactionActionStack.Navigator>
   );

@@ -151,12 +151,13 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
       priceId,
     } = formState.data;
     const newProviderKey = _generateCustomProviderKey(0);
+    const parsedProvider = provider.replace(/ /g, '');
     const params: _NetworkUpsertParams = {
       mode: 'insert',
       chainEditInfo: {
         slug: '',
         currentProvider: newProviderKey,
-        providers: { [newProviderKey]: provider },
+        providers: { [newProviderKey]: parsedProvider },
         blockExplorer,
         crowdloanUrl,
         symbol,
@@ -261,7 +262,7 @@ export const ImportNetwork = ({ route: { params: routeParams } }: ImportNetworkP
           });
       } else {
         setProviderValidation({ status: '' });
-        setIsShowConnectionStatus(false);
+        setIsShowConnectionStatus(false); 
         onUpdateErrors('provider')([i18n.errorMessage.invalidProviderUrl]);
       }
     },

@@ -2,6 +2,7 @@ import { mobileBackup, mobileRestore } from '../messaging';
 import { createMMKV } from 'react-native-mmkv';
 import { Storage } from 'redux-persist';
 import { addLazy } from '@subwallet/extension-base/utils/lazy';
+import { isDevModeAvailable } from 'constants/devMode';
 
 const storage = createMMKV();
 
@@ -207,6 +208,14 @@ export const devMode = (isDevMode: boolean) => {
   mmkvStore.set('DEV_MODE', isDevMode);
 };
 export const getDevMode = () => {
+  // Dev Mode serves the web runner out of DevModeWeb.bundle, which ordinary release
+  // builds do not ship. Ignore a stored flag such a build cannot honour, otherwise
+  // anyone who turned Dev Mode on before updating is left with a runner that never
+  // starts, on a screen that no longer offers a way to turn it back off.
+  if (!isDevModeAvailable) {
+    return false;
+  }
+
   return mmkvStore.getBoolean('DEV_MODE') ?? false;
 };
 export const getStaticContentByDevMode = () => {

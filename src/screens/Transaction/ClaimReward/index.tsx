@@ -83,10 +83,13 @@ const filterAccount = (
     const isAstarNetwork = _STAKING_CHAIN_GROUP.astar.includes(_poolChain);
     const isMythosNetwork = _STAKING_CHAIN_GROUP.mythos.includes(_poolChain);
     const isAmplitudeNetwork = _STAKING_CHAIN_GROUP.amplitude.includes(_poolChain);
+    // Root claims only exist for the netuid 0 position
+    const isBittensorRootNetwork =
+      poolType === YieldPoolType.NATIVE_STAKING && _STAKING_CHAIN_GROUP.bittensor.includes(_poolChain);
     const bnUnclaimedReward = new BigN(reward?.unclaimedReward || '0');
 
     return (
-      ((poolType === YieldPoolType.NOMINATION_POOL || isAmplitudeNetwork || isMythosNetwork) &&
+      ((poolType === YieldPoolType.NOMINATION_POOL || isAmplitudeNetwork || isMythosNetwork || isBittensorRootNetwork) &&
         bnUnclaimedReward.gt(BN_ZERO)) ||
       isAstarNetwork
     );
@@ -142,7 +145,11 @@ const ClaimReward = ({
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chainValue);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
-  const isMythosStaking = useMemo(() => _STAKING_CHAIN_GROUP.mythos.includes(poolChain), [poolChain]);
+  // Bittensor re-stakes the claimed TAO on root itself, so the opt-in checkbox is meaningless there
+  const isHideCheckBox = useMemo(
+    () => _STAKING_CHAIN_GROUP.mythos.includes(poolChain) || _STAKING_CHAIN_GROUP.bittensor.includes(poolChain),
+    [poolChain],
+  );
   const handleDataForInsufficientAlert = useCallback(
     (estimateFee: AmountData) => {
       return {
@@ -184,7 +191,7 @@ const ClaimReward = ({
         });
     }, 300);
   }, [fromValue, bondReward, slug, reward?.unclaimedReward, onSuccess, onError]);
-  const onPreCheck = usePreCheckAction(fromValue);
+  const onPreCheck = usePreCheckAction(fromValue, true, undefined, chainValue);
 
   useEffect(() => {
     setChain(poolInfo?.chain);
@@ -274,7 +281,7 @@ const ClaimReward = ({
                 )}
               </MetaInfo>
 
-              {!isMythosStaking && (
+              {!isHideCheckBox && (
                 <InputCheckBox
                   checked={!!bondReward}
                   label={i18n.inputLabel.bondRewardAfterClaim}

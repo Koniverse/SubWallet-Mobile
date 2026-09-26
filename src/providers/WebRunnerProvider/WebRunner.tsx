@@ -8,8 +8,10 @@ import { WebRunnerState } from 'providers/contexts';
 import { backupStorageData, mmkvStore } from 'utils/storage';
 import { WEB_SERVER_PORT } from './constant';
 import { getJsInjectContent, safeJSONParse } from 'providers/WebRunnerProvider/utils';
-import { WebRunnerGlobalState, WebRunnerHandler } from 'providers/WebRunnerProvider/WebRunnerHandler';
+import { WebRunnerGlobalState } from 'providers/WebRunnerProvider/WebRunnerHandler';
+import { webRunnerHandler } from 'providers/WebRunnerProvider/instance';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
+import { DEV_WEB_RUNNER_URL } from 'constants/localStorage';
 
 const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
 const isFirstLaunch = mmkvStore.getAllKeys().length === 0;
@@ -17,20 +19,20 @@ const storedCompleteBackUpData = mmkvStore.getBoolean('backup-data-for-android')
 
 const completeBackUpData = !isFirstLaunch ? storedCompleteBackUpData : true;
 
+// Set by the first load failure; getBaseUri() then stops honouring the custom runner URL.
 let needFallBack = false;
-
-const webRunnerHandler = new WebRunnerHandler();
 
 interface WebRunnerControlAction {
   type: string;
   payload?: Partial<WebRunnerGlobalState>;
 }
 
-const now = new Date().getTime();
+// Recomputed per activation: a recovery that re-navigates to a byte-identical URL can be served
+// from cache, and would not even count as a change if the uri had not been cleared in between.
+const getUriParams = () =>
+  '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${Date.now()}`;
 
-const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${now}`;
-
-const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
+const devWebRunnerURL = mmkvStore.getString(DEV_WEB_RUNNER_URL);
 
 const getBaseUri = () => {
   const osWebRunnerURL =
@@ -38,10 +40,36 @@ const getBaseUri = () => {
       ? 'file:///android_asset/FallbackWeb.bundle'
       : `http://localhost:${WEB_SERVER_PORT}`;
 
-  return !devWebRunnerURL || devWebRunnerURL === '' ? osWebRunnerURL : devWebRunnerURL;
+  // needFallBack drops the custom URL, which is what makes the fallback below mean anything: that
+  // URL is only reachable through the Web View Debugger screen, and once the runner is down the
+  // screen is gone with the rest of the navigator (App gates it on isWebRunnerReady), so a URL
+  // that stopped answering used to hang every launch with no way out. The key is deliberately
+  // left in storage - a local server that was merely restarting is honoured again on the next
+  // launch, and a dead one simply falls back again.
+  if (needFallBack || !devWebRunnerURL || devWebRunnerURL === '') {
+    return osWebRunnerURL;
+  }
+
+  return devWebRunnerURL;
 };
 
 let BASE_URI = getBaseUri();
+
+// Every way the runner page can die lands here. onError means the origin could not be reached at
+// all (connection refused, bad host), onHttpError means a server answered with 4xx/5xx, and the
+// two process-death callbacks mean the page itself was killed by the OS while the URL was fine -
+// so only the first two may drop a custom dev URL. The repair itself is the handler's, which
+// probes the port and rebuilds the server before remounting.
+const onRunnerLoadFailure = (label: string, event: unknown, downgradeUri = true) => {
+  console.debug(`### WebRunner ${label}`, event);
+
+  if (downgradeUri && !needFallBack) {
+    needFallBack = true;
+    BASE_URI = getBaseUri();
+  }
+
+  webRunnerHandler.onLoadFailure(label);
+};
 
 const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlAction): WebRunnerGlobalState => {
   const { type } = action;
@@ -55,7 +83,7 @@ const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlA
       state.eventEmitter.emit('reloading');
       return { ...state };
     case 'active':
-      const targetURI = `${BASE_URI}/index.html${URI_PARAMS}`;
+      const targetURI = `${BASE_URI}/index.html${getUriParams()}`;
       return { ...state, uri: targetURI };
     case 'sleep':
       state.uri = undefined;
@@ -167,19 +195,10 @@ export const WebRunner = React.memo(
             webviewDebuggingEnabled
             onLoadStart={onLoadStart}
             onLoadProgress={onLoadProgress}
-            onError={e => console.debug('### WebRunner error', e.nativeEvent)}
-            onHttpError={e => {
-              const old = needFallBack;
-              needFallBack = true;
-              if (!old) {
-                BASE_URI = getBaseUri();
-
-                webRunnerHandler.sleep();
-                webRunnerHandler.active();
-                webRunnerHandler.reload();
-              }
-              console.debug('### WebRunner HttpError', e);
-            }}
+            onError={e => onRunnerLoadFailure('error', e.nativeEvent)}
+            onHttpError={e => onRunnerLoadFailure('HttpError', e.nativeEvent)}
+            onContentProcessDidTerminate={e => onRunnerLoadFailure('contentProcessDidTerminate', e.nativeEvent, false)}
+            onRenderProcessGone={e => onRunnerLoadFailure('renderProcessGone', e.nativeEvent, false)}
             javaScriptEnabled={true}
             allowFileAccess={true}
             allowUniversalAccessFromFileURLs={true}

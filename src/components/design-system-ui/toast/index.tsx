@@ -68,6 +68,11 @@ function createStyle(theme: ThemeTypes) {
       alignItems: 'center',
       marginHorizontal: 24,
       marginTop: theme.marginXS,
+      // With renderToast the library skips its own 90%-wide toastContainer, and the outer
+      // container is alignItems:'center', so this view sizes to its content: a long message
+      // grows past the screen edge instead of wrapping. Re-apply the cap the library
+      // would otherwise have provided.
+      maxWidth: '90%',
     },
     touchable: {
       alignItems: 'center',

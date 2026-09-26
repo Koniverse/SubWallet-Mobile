@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { NominationInfo, YieldPositionInfo } from '@subwallet/extension-base/types';
+import { NominationInfo, SubstrateProxyAccountItem, YieldPositionInfo } from '@subwallet/extension-base/types';
 
 export type TransactionActionStackParamList = {
   SendFund: { slug?: string; recipient?: string };
@@ -27,6 +27,14 @@ export type TransactionActionStackParamList = {
     readOnly?: boolean;
     addresses?: string[];
   };
+  AddSubstrateProxy: { chain: string; from: string; accountProxyId?: string };
+  RemoveSubstrateProxy: {
+    chain: string;
+    from: string;
+    selectedSubstrateProxyAccounts: SubstrateProxyAccountItem[];
+    isRemoveAll?: boolean;
+    accountProxyId?: string;
+  };
 };
 
 export type NavigationProps = NativeStackScreenProps<TransactionActionStackParamList>;
@@ -46,3 +54,5 @@ export type ChangeEarningValidatorProps = NativeStackScreenProps<
   TransactionActionStackParamList,
   'ChangeEarningValidator'
 >;
+export type AddSubstrateProxyProps = NativeStackScreenProps<TransactionActionStackParamList, 'AddSubstrateProxy'>;
+export type RemoveSubstrateProxyProps = NativeStackScreenProps<TransactionActionStackParamList, 'RemoveSubstrateProxy'>;

@@ -20,12 +20,13 @@ export function TokenSelectItemCustom<T>({
   showBalance = true,
 }: Props<T>) {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const { symbol, originChain, slug, name, balanceInfo } = item as TokenSelectorItemType;
+  const { displayName, symbol, originChain, slug, name, balanceInfo } = item as TokenSelectorItemType;
   return (
     <TokenSelectItem
       key={`${symbol}-${originChain}`}
       name={name}
       symbol={symbol}
+      displayName={displayName}
       chain={`${chainInfoMap[originChain]?.name || ''}`}
       logoKey={slug.toLowerCase()}
       subLogoKey={originChain}

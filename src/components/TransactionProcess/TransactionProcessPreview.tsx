@@ -16,7 +16,8 @@ export const TransactionProcessPreview = ({ chains }: Props) => {
       {isMode1 ? (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
           {chains.map((item, index) => (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+            // A chain can repeat within one process, so the value alone is not unique.
+            <View key={`${item}-${index}`} style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
               <Logo size={16} network={item.toLowerCase()} shape={'circle'} />
 
               {index !== chains.length - 1 && <Icon customSize={12} phosphorIcon={ArrowRightIcon} />}

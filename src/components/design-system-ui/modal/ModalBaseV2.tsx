@@ -5,6 +5,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import { scheduleOnRN } from 'react-native-worklets';
 import ModalStyles from './styleV2';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import useIsLockScreenShown from 'hooks/useIsLockScreenShown';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -19,6 +20,7 @@ export interface SWModalProps {
   wrapperStyle?: StyleProp<ViewStyle>;
   isFullHeight?: boolean;
   isAllowSwipeDown?: boolean;
+  hideHandle?: boolean;
   level?: number;
   onChangeModalVisible?: () => void;
   isUseForceHidden?: boolean;
@@ -43,6 +45,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       children,
       wrapperStyle,
       isFullHeight = false,
+      hideHandle = false,
       level = 1,
       onChangeModalVisible,
       isUseForceHidden,
@@ -56,6 +59,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
     const theme = useSubWalletTheme().swThemes;
     const _styles = ModalStyles(theme, level);
     const { numberOfConfirmations } = useConfirmationsInfo();
+    const isLockScreenShown = useIsLockScreenShown();
     const [isForcedHidden, setForcedHidden] = useState<boolean>(false);
     const [isActive, setIsActive] = useState(false);
 
@@ -68,13 +72,19 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       };
     }, []);
 
+    // Hide while the unlock screen is up: on Android it is a route inside the navigator, so it
+    // renders *under* the portal host this modal lives in. Without this the sheet (or just its
+    // backdrop) sits on top of the unlock screen and the app looks frozen - and staying purely on
+    // the FORCE_HIDDEN_EVENT the login screen emits leaves every V2 modal hidden for good whenever
+    // the app is unlocked by some other path. It has to be useIsLockScreenShown and not plain
+    // `isLocked`, which is still true all through onboarding, when no unlock screen exists.
     useEffect(() => {
-      if (isUseForceHidden && !!numberOfConfirmations) {
+      if (isUseForceHidden && (isLockScreenShown || !!numberOfConfirmations)) {
         setForcedHidden(true);
       } else {
         setForcedHidden(false);
       }
-    }, [isUseForceHidden, numberOfConfirmations]);
+    }, [isLockScreenShown, isUseForceHidden, numberOfConfirmations]);
 
     useEffect(() => {
       if (!isForcedHidden && isVisible) {
@@ -181,7 +191,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
                     rSWModalStyle,
                     ROUNDED_TOP_STYLE,
                   ]}>
-                  {!isFullHeight && <View style={_styles.line} />}
+                  {!isFullHeight && !hideHandle && <View style={_styles.line} />}
                   {children}
                 </Animated.View>
               }

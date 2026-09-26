@@ -51,6 +51,7 @@ import {
   subscribeConfirmationRequestsTon,
   subscribeLedgerGenericAllowNetworks,
   subscribeUnreadNotificationCount,
+  subscribePendingMultisigTxs,
   subscribePriorityTokens,
   subscribeAliveProcess,
   getOldChainPrefixData,
@@ -558,6 +559,14 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeUnreadNotificationCount,
           name: 'subscribeUnreadNotificationCount',
           relatedStores: ['notification'],
+          isStartImmediately: true,
+        });
+
+        // Multisig account
+        _DataContext.addHandler({
+          ...subscribePendingMultisigTxs,
+          name: 'subscribePendingMultisigTxs',
+          relatedStores: ['multisig'],
           isStartImmediately: true,
         });
 

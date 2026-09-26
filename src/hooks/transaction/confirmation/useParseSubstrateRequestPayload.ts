@@ -1,4 +1,4 @@
-import { RequestSign } from '@subwallet/extension-base/background/types';
+import { RequestSign, SubstratePayloadErrorType } from '@subwallet/extension-base/background/types';
 import { useEffect, useMemo, useState } from 'react';
 import { TypeRegistry } from '@polkadot/types';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
@@ -12,8 +12,14 @@ import { HexString } from '@polkadot/util/types';
 
 const registry = new TypeRegistry();
 
+interface PayloadError {
+  message?: string;
+  type: SubstratePayloadErrorType;
+}
+
 interface Result {
   payload: ExtrinsicPayload | string;
+  payloadError: PayloadError | null;
   hashLoading: boolean;
   isMissingData: boolean;
   addExtraData: boolean;
@@ -55,28 +61,55 @@ const useParseSubstrateRequestPayload = (chain: Chain | null, request?: RequestS
   const [metadataHash, setMetadataHash] = useState<string>(''); // Have value only when missingData is true
   const [hashLoading, setHashLoading] = useState(true);
 
-  const payload = useMemo<ExtrinsicPayload | string>(() => {
+  const { payload, payloadError } = useMemo<Pick<Result, 'payload' | 'payloadError'>>(() => {
     if (!request) {
-      return '';
+      return {
+        payload: '',
+        payloadError: null,
+      };
+    } else if (request.isRawDataInExtrinsic) {
+      return {
+        payload: '',
+        payloadError: { type: SubstratePayloadErrorType.RawDataInExtrinsic },
+      };
     } else {
       const _payload = request.payload;
 
       if (isRawPayload(_payload)) {
-        return _payload.data;
-      } else {
-        const _registry = chain?.registry || registry;
-
-        _registry.setSignedExtensions(_payload.signedExtensions, chain?.definition.userExtensions); // Important
-
-        const __payload: SignerPayloadJSON = {
-          ..._payload,
+        return {
+          payload: _payload.data,
+          payloadError: null,
         };
+      } else {
+        try {
+          const _registry = chain?.registry || registry;
 
-        if (metadataHash) {
-          __payload.mode = 1;
-          __payload.metadataHash = metadataHash as HexString;
+          _registry.setSignedExtensions(_payload.signedExtensions, chain?.definition.userExtensions); // Important
+
+          const __payload: SignerPayloadJSON = {
+            ..._payload,
+          };
+
+          if (metadataHash) {
+            __payload.mode = 1;
+            __payload.metadataHash = metadataHash as HexString;
+          }
+
+          return {
+            payload: _registry.createType('ExtrinsicPayload', __payload, { version: __payload.version }),
+            payloadError: null,
+          };
+        } catch (error) {
+          console.error('Error parsing substrate request payload', error);
+
+          return {
+            payload: '',
+            payloadError: {
+              message: error instanceof Error ? error.message : String(error),
+              type: SubstratePayloadErrorType.Decode,
+            },
+          };
         }
-        return _registry.createType('ExtrinsicPayload', __payload, { version: __payload.version });
       }
     }
   }, [chain, metadataHash, request]);
@@ -113,10 +146,11 @@ const useParseSubstrateRequestPayload = (chain: Chain | null, request?: RequestS
     () => ({
       hashLoading,
       payload,
+      payloadError,
       isMissingData: isMissingData,
       addExtraData,
     }),
-    [addExtraData, hashLoading, isMissingData, payload],
+    [addExtraData, hashLoading, isMissingData, payload, payloadError],
   );
 };
 

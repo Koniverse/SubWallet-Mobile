@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
+import { SUNSETTED_YIELD_POOL_SLUGS } from '@subwallet/extension-base/services/earning-service/constants';
 import { YieldPoolInfo } from '@subwallet/extension-base/types';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -26,6 +27,10 @@ const usePreviewYieldGroupInfo = (poolInfoMap: Record<string, YieldPoolInfo>): Y
     const result: Record<string, YieldGroupInfo> = {};
 
     for (const pool of Object.values(poolInfoMap)) {
+      if (SUNSETTED_YIELD_POOL_SLUGS.includes(pool.slug)) {
+        continue;
+      }
+
       const chain = pool.chain;
 
       const group = pool.group;

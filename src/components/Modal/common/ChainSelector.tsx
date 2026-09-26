@@ -1,4 +1,5 @@
 import React, { JSX, useCallback } from 'react';
+import { ListRenderItemInfo } from '@shopify/flash-list';
 import i18n from 'utils/i18n/i18n';
 import { ChainInfo } from 'types/index';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
@@ -15,6 +16,7 @@ interface Props {
   chainSelectorRef?: React.RefObject<ModalRef | null>;
   extraData?: string;
   keyExtractor?: (item: ChainInfo, index: number) => string;
+  renderCustomItem?: ({ item }: ListRenderItemInfo<ChainInfo>) => JSX.Element;
 }
 
 export const ChainSelector = ({
@@ -27,6 +29,7 @@ export const ChainSelector = ({
   acceptDefaultValue,
   chainSelectorRef,
   extraData,
+  renderCustomItem,
 }: Props) => {
   const searchFunc = useCallback((_items: ChainInfo[], searchString: string) => {
     const lowerCaseSearchString = searchString.toLowerCase();
@@ -51,6 +54,7 @@ export const ChainSelector = ({
       onBackButtonPress={() => chainSelectorRef?.current?.onCloseModal()}
       title={i18n.header.selectNetwork}
       extraData={extraData}
+      renderCustomItem={renderCustomItem}
       keyExtractor={item => item.slug}
     />
   );

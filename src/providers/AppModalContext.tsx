@@ -13,6 +13,7 @@ import SelectAddressFormatModal from 'components/Modal/SelectAddressFormatModal'
 import { TransactionProcessStepItemType } from 'types/component';
 import { AccountTokenAddress } from 'types/account';
 import { AccountTokenAddressModal } from 'components/Modal/AccountTokenAddressModal';
+import { ButtonPropsType } from 'components/design-system-ui/button/PropsType';
 
 interface AppModalContextProviderProps {
   children?: React.ReactElement;
@@ -25,6 +26,7 @@ export type ConfirmModalInfo = {
   messageIcon?: string;
   customIcon?: React.ReactNode;
   completeBtnTitle?: string;
+  completeBtnType?: ButtonPropsType['type'];
   cancelBtnTitle?: string;
   onCancelModal?: () => void | undefined;
   onCompleteModal?: () => void | undefined;
@@ -132,15 +134,21 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
     setConfirmModal(prevState => ({ ...prevState, visible: false }));
     setTimeout(
       () =>
-        setConfirmModal(prevState => ({
-          ...prevState,
-          title: '',
-          message: '',
-          completeBtnTitle: '',
-          messageIcon: undefined,
-          onCancelModal: undefined,
-          onCompleteModal: undefined,
-        })),
+        setConfirmModal(prevState =>
+          // Someone may have reopened the modal inside these 300ms; wiping it then
+          // leaves a blank sheet with no buttons and the tap looks like it did nothing.
+          prevState.visible
+            ? prevState
+            : {
+                ...prevState,
+                title: '',
+                message: '',
+                completeBtnTitle: '',
+                messageIcon: undefined,
+                onCancelModal: undefined,
+                onCompleteModal: undefined,
+              },
+        ),
       300,
     );
   }, []);
@@ -278,6 +286,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         onCancelModal={confirmModal.onCancelModal}
         onCompleteModal={confirmModal.onCompleteModal}
         completeBtnTitle={confirmModal.completeBtnTitle}
+        completeBtnType={confirmModal.completeBtnType}
         cancelBtnTitle={confirmModal.cancelBtnTitle}
         isAllowSwipeDown={confirmModal.isAllowSwipeDown}
         disabledOnPressBackDrop={confirmModal.disabledOnPressBackDrop}

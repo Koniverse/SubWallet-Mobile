@@ -1,12 +1,13 @@
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { useCallback, useContext, useMemo } from 'react';
 import { useToast } from 'react-native-toast-notifications';
-import { Alert } from 'react-native';
 import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 import { AppModalContext } from 'providers/AppModalContext';
 import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
+import useAlertModal from 'hooks/modal/useAlertModal';
+import { NotificationType } from '@subwallet/extension-base/background/KoniTypes';
 
 export const insufficientMessages = ['残高不足', 'Недостаточный баланс', 'Insufficient balance'];
 
@@ -20,6 +21,7 @@ const useHandleSubmitTransaction = (
   const navigation = useNavigation<RootNavigationProps>();
   const { show, hideAll } = useToast();
   const { confirmModal } = useContext(AppModalContext);
+  const { openAlert } = useAlertModal();
 
   const onSuccess = useCallback(
     (rs: SWTransactionResponse) => {
@@ -55,19 +57,15 @@ const useHandleSubmitTransaction = (
             estimateFee
           ) {
             const _data = handleDataForInsufficientAlert(estimateFee);
-            Alert.alert(
-              i18n.warningTitle.insufficientBalance,
-              i18n.formatString(
+            openAlert({
+              title: i18n.warningTitle.insufficientBalance,
+              type: NotificationType.ERROR,
+              content: i18n.formatString(
                 "You don't have enough {0} ({1}) to pay gas fee. Top up your transferable balance and try again",
                 _data.symbol,
                 _data.chainName,
               ) as string,
-              [
-                {
-                  text: 'I understand',
-                },
-              ],
-            );
+            });
           } else {
             hideAll();
             show(errors[0]?.message || warnings[0]?.message, { type: 'danger' });
@@ -87,6 +85,7 @@ const useHandleSubmitTransaction = (
       hideAll,
       navigation,
       onDone,
+      openAlert,
       setIgnoreWarnings,
       setTransactionDone,
       show,

@@ -1,4 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
+import { ListRenderItemInfo } from '@shopify/flash-list';
+import { ALL_NETWORK_KEY } from '@subwallet/extension-base/constants';
+import { NetworkSelectItem } from 'components/NetworkSelectItem';
 import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { View } from 'react-native';
@@ -29,6 +32,10 @@ export const HistoryChainSelector = ({ items, value, onSelectItem, disabled, sel
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   const chainName = useMemo(() => {
+    if (value === ALL_NETWORK_KEY) {
+      return i18n.inputLabel.allNetworks;
+    }
+
     return chainInfoMap[value] ? _getChainName(chainInfoMap[value]) : i18n.placeholder.selectChain;
   }, [chainInfoMap, value]);
 
@@ -48,7 +55,7 @@ export const HistoryChainSelector = ({ items, value, onSelectItem, disabled, sel
             backgroundColor: theme.colorBgSecondary,
           },
         ]}>
-        {value && <View>{getNetworkLogo(value, 20)}</View>}
+        {!!value && value !== ALL_NETWORK_KEY && <View>{getNetworkLogo(value, 20)}</View>}
         <View style={{ flex: 1 }}>
           {loading && (
             <Typography.Text ellipsis style={{ color: theme.colorTextLight4 }}>
@@ -70,6 +77,24 @@ export const HistoryChainSelector = ({ items, value, onSelectItem, disabled, sel
     );
   }, [chainName, loading, theme, value]);
 
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<ChainItemType>) => (
+      <NetworkSelectItem
+        itemName={item.slug === ALL_NETWORK_KEY ? i18n.inputLabel.allNetworks : item.name}
+        itemKey={item.slug}
+        hideLogo={item.slug === ALL_NETWORK_KEY}
+        isSelected={item.slug === value}
+        showSeparator={false}
+        iconSize={28}
+        onSelectNetwork={() => {
+          onSelectItem?.(item);
+          selectorRef?.current?.onCloseModal();
+        }}
+      />
+    ),
+    [onSelectItem, selectorRef, value],
+  );
+
   const selectedValueMap = useMemo(() => {
     return value ? { [value]: true } : {};
   }, [value]);
@@ -81,6 +106,7 @@ export const HistoryChainSelector = ({ items, value, onSelectItem, disabled, sel
       onSelectItem={onSelectItem}
       disabled={disabled}
       renderSelected={renderSelected}
+      renderCustomItem={renderItem}
       chainSelectorRef={selectorRef}
     />
   );

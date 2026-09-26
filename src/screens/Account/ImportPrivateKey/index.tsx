@@ -65,6 +65,8 @@ export const ImportPrivateKey = () => {
   );
 
   const timeOutRef = useRef<NodeJS.Timeout>();
+  // Separate timer so typing a name cannot cancel a pending private-key check.
+  const nameTimeOutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const styles = useMemo(() => createStyle(theme), [theme]);
 
@@ -74,13 +76,25 @@ export const ImportPrivateKey = () => {
 
   const [validating, setValidating] = useState(false);
 
-  const _onImport = () => {
+  const _onImport = async () => {
     Keyboard.dismiss();
     setIsBusy(true);
+
+    // Re-check the name at submit (the extension's form validator does the same) instead of
+    // spinning the button on every keystroke.
+    const nameErrors = await validatorFunc(formState.data.accountName);
+
+    if (nameErrors.length) {
+      onUpdateErrors('accountName')(nameErrors);
+      setIsBusy(false);
+
+      return;
+    }
+
     createAccountSuriV2({
       name: formState.data.accountName.trim(),
       suri: formState.data.privateKey.trim(),
-      type: typeRef.current as KeypairType,
+      types: [typeRef.current as KeypairType],
       isAllowed: true,
     })
       .then(() => {
@@ -102,27 +116,20 @@ export const ImportPrivateKey = () => {
   useEffect(() => {
     let amount = true;
 
-    if (timeOutRef.current) {
-      clearTimeout(timeOutRef.current);
+    if (nameTimeOutRef.current) {
+      clearTimeout(nameTimeOutRef.current);
     }
-    if (amount) {
-      if (formState.data.accountName) {
-        setValidating(true);
-        timeOutRef.current = setTimeout(() => {
-          validatorFunc(formState.data.accountName)
-            .then(res => {
+    // Inline name check only updates the error text; the private-key check below owns `validating`.
+    if (amount && formState.data.accountName) {
+      nameTimeOutRef.current = setTimeout(() => {
+        validatorFunc(formState.data.accountName)
+          .then(res => {
+            if (amount) {
               onUpdateErrors('accountName')(res);
-            })
-            .catch((error: Error) => console.log('error validate name', error.message))
-            .finally(() => {
-              if (amount) {
-                setValidating(false);
-              }
-            });
-        }, 500);
-      } else {
-        setValidating(false);
-      }
+            }
+          })
+          .catch((error: Error) => console.log('error validate name', error.message));
+      }, 500);
     }
 
     return () => {

@@ -6,8 +6,9 @@ import { ViewStyle } from 'react-native';
 
 interface Props {
   type?: 'info' | 'warning' | 'error';
-  title: string;
+  title?: string;
   description: React.ReactNode;
+  descriptionColor?: string;
   wrapperStyle?: ViewStyle;
 }
 
@@ -17,7 +18,7 @@ interface ColorText {
 }
 
 const AlertBox: React.FC<Props> = (props: Props) => {
-  const { description, type = 'info', title, wrapperStyle } = props;
+  const { description, descriptionColor, type = 'info', title, wrapperStyle } = props;
 
   const theme = useSubWalletTheme().swThemes;
 
@@ -48,6 +49,7 @@ const AlertBox: React.FC<Props> = (props: Props) => {
       titleColor={colors.titleColor}
       title={title}
       description={description}
+      descriptionColor={descriptionColor}
       icon={InfoIcon}
       wrapperStyle={wrapperStyle}
     />

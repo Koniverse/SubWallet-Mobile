@@ -65,7 +65,7 @@ const DefaultWithdrawTransactionConfirmation: React.FC<Props> = (props: Props) =
           />
         )}
 
-        {estimateFee && (
+        {estimateFee && !transaction.wrappingStatus && (
           <MetaInfo.Number
             decimals={estimateFee.decimals}
             label={'Estimated fee'}

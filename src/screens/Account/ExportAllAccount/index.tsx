@@ -68,6 +68,10 @@ const filterOptions = [
     label: 'Watch-only account',
     value: AccountSignMode.READ_ONLY,
   },
+  {
+    label: 'Multisig account',
+    value: AccountProxyType.MULTISIG,
+  },
 ];
 
 export const ExportAllAccount = () => {
@@ -134,6 +138,11 @@ export const ExportAllAccount = () => {
             break;
           case AccountProxyType.READ_ONLY:
             if (accountType === AccountProxyType.READ_ONLY) {
+              return true;
+            }
+            break;
+          case AccountProxyType.MULTISIG:
+            if (accountType === AccountProxyType.MULTISIG) {
               return true;
             }
             break;

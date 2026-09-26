@@ -3,12 +3,13 @@
 
 import {
   GetNotificationParams,
+  MarkAllReadParams,
   RequestIsClaimedPolygonBridge,
   RequestSwitchStatusParams,
 } from '@subwallet/extension-base/types/notification';
 import { sendMessage } from '..';
 
-export async function markAllReadNotification(request: string) {
+export async function markAllReadNotification(request: MarkAllReadParams) {
   return sendMessage('pri(inappNotification.markAllReadNotification)', request);
 }
 

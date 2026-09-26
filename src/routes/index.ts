@@ -6,7 +6,7 @@ import { SigningActionStackParamList } from 'routes/signing';
 import { TransactionActionStackParamList } from 'routes/transaction/transactionAction';
 import { WrapperParamList } from 'routes/wrapper';
 import { AccountAuthType } from '@subwallet/extension-base/background/types';
-import { ProcessType } from '@subwallet/extension-base/types';
+import { MnemonicType, ProcessType } from '@subwallet/extension-base/types';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -22,8 +22,11 @@ export type RootStackParamList = {
       | 'MigratePassword'
       | 'ConnectParitySigner'
       | 'ConnectKeystone'
-      | 'AttachReadOnly';
+      | 'AttachReadOnly'
+      | 'NewMultisigAccount';
     state?: string[];
+    // Params forwarded to `pathName` once the master password has been created.
+    screenParams?: RootStackParamList['ImportSecretPhrase'];
   };
   UnlockModal: { isUpdateBiometric?: boolean; isConfirmation?: boolean };
   ChangePassword: undefined;
@@ -50,7 +53,7 @@ export type RootStackParamList = {
   AccountSettings: undefined;
   NotificationSetting: undefined;
   NetworkSelect: undefined;
-  ImportSecretPhrase: undefined;
+  ImportSecretPhrase: { mnemonicType?: MnemonicType } | undefined;
   ImportPrivateKey: undefined;
   NetworksSetting: { chainName?: string };
   NetworkSettingDetail: { chainSlug: string };
@@ -93,6 +96,7 @@ export type RootStackParamList = {
   ConnectParitySigner: undefined;
   ConnectKeystone: undefined;
   AttachReadOnly: undefined;
+  NewMultisigAccount: undefined;
   ImportQrCode: undefined;
   TransactionAction: NavigatorScreenParams<TransactionActionStackParamList>;
   ManageAddressBook: undefined;

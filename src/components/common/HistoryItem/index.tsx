@@ -8,7 +8,7 @@ import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
 import { HideBalanceItem } from 'components/HideBalanceItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CaretRightIcon } from 'phosphor-react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { HistoryStatusMap } from 'screens/Home/History/shared';
 import { ThemeTypes } from 'styles/themes';
@@ -19,6 +19,8 @@ import {
   ClaimPolygonBridgeNotificationMetadata,
   NotificationActionType,
 } from '@subwallet/extension-base/services/inapp-notification-service/interfaces';
+import { isTypeManageSubstrateProxy } from 'utils/transaction/detectType';
+import { MULTISIG_ACTIONS } from 'constants/multisig';
 
 interface Props {
   item: TransactionHistoryDisplayItem;
@@ -64,6 +66,11 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
     }
   }
 
+  // These transaction types carry no meaningful value, so keep the space but hide the amount.
+  const isHiddenValue = useMemo(() => {
+    return isTypeManageSubstrateProxy(item.type) || MULTISIG_ACTIONS.includes(item.type);
+  }, [item.type]);
+
   return (
     <>
       <TouchableOpacity style={[_style.item, style]} onPress={onPress}>
@@ -92,14 +99,16 @@ export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
           <View style={{ alignItems: 'flex-end' }}>
             {isShowBalance && (
               <>
-                <Number
-                  decimal={item?.amount?.decimals || 0}
-                  intOpacity={1}
-                  decimalOpacity={0.45}
-                  suffix={symbol}
-                  value={amountValue || '0'}
-                  textStyle={_style.upperText}
-                />
+                <View style={isHiddenValue ? { opacity: 0 } : undefined}>
+                  <Number
+                    decimal={item?.amount?.decimals || 0}
+                    intOpacity={1}
+                    decimalOpacity={0.45}
+                    suffix={symbol}
+                    value={amountValue || '0'}
+                    textStyle={_style.upperText}
+                  />
+                </View>
                 {isAbleToShowFee(item) ? (
                   <Number
                     decimal={item?.fee?.decimals || 0}

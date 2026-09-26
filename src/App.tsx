@@ -24,6 +24,7 @@ import useAppLock from 'hooks/useAppLock';
 import useCryptoReady from 'hooks/init/useCryptoReady';
 import useSetupI18n from 'hooks/init/useSetupI18n';
 import { LoadingScreen } from 'screens/LoadingScreen';
+import { StartupRecovery } from 'screens/StartupRecovery';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
 import { deviceHeight, deviceWidth, TOAST_DURATION } from 'constants/index';
@@ -55,6 +56,9 @@ import { ImageLogosMap } from 'assets/logo';
 import { GlobalInstructionModalContextProvider } from 'providers/GlobalInstructionModalContext';
 import { useGetShowReviewPopupScreen } from 'hooks/static-content/useGetShowReviewPopupScreen';
 import { NEED_UPDATE_CHROME } from 'providers/WebRunnerProvider/constant.ts';
+// The module, never the webRunnerHandler singleton: constructing it here would register its own
+// AppState listener ahead of the one below, so its blind reload() would run before this restart.
+import { isRunnerStartupInFlight, stopStaticServerForRestart } from 'providers/WebRunnerProvider/WebRunnerHandler';
 
 const logoTextStyle: StyleProp<any> = {
   fontSize: 38,
@@ -98,6 +102,14 @@ const imageBackgroundStyle: StyleProp<any> = {
 
 const APP_BACKGROUND_RELOAD_TIMEOUT = 20 * 60 * 1000;
 
+// How long the app may stay not-ready before StartupRecovery replaces the spinner. Generous on
+// purpose: a first launch on a slow Android device still has to copy the web bundle out of assets
+// and restore storage, and the panel offers a restart - premature is worse than late.
+const APP_STARTUP_STUCK_TIMEOUT = 45 * 1000;
+// And when the deadline passes while the runner is still being worked on, ask again this much
+// later instead of accusing it of being stuck.
+const APP_STARTUP_STUCK_RECHECK = 15 * 1000;
+
 let lockWhenActive = false;
 let lastAppInactiveAt: number | undefined;
 let isRestartingAfterLongBackground = false;
@@ -112,7 +124,20 @@ AppState.addEventListener('change', (state: string) => {
 
     if (inactiveDuration > APP_BACKGROUND_RELOAD_TIMEOUT && !isRestartingAfterLongBackground) {
       isRestartingAfterLongBackground = true;
-      RNRestart.Restart();
+      // Never hand a live static server to the next JS context. On iOS RNRestart.Restart() only
+      // reloads the bundle inside the same process, so the server this context started stays
+      // registered natively: the new context's start() then fails with 'Another Server instance
+      // is active' on a port this context's teardown is about to close, and the app is stuck on
+      // the spinner until the process is killed. On Android Restart() exits the process, so this
+      // is a no-op there.
+      stopStaticServerForRestart()
+        .catch(() => undefined)
+        .finally(() => RNRestart.Restart());
+      // If the restart never lands, do not lose long-background recovery for the rest of this run.
+      setTimeout(() => {
+        isRestartingAfterLongBackground = false;
+      }, 15000);
+
       return;
     }
 
@@ -190,7 +215,9 @@ export const App = () => {
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
   const { isUpdateComplete, setUpdateComplete, isReady: isWebRunnerReady } = useContext(WebRunnerContext);
   const hasHiddenSplash = useRef(false);
+  const hasBeenAppReady = useRef(false);
   const [initDone, setInitDone] = useState(false);
+  const [isStartupStuck, setStartupStuck] = useState(false);
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -263,6 +290,55 @@ export const App = () => {
     }
   }, [initDone, isAppReady]);
 
+  // A web runner that never becomes ready keeps isAppReady false forever, and with it the native
+  // splash up and the whole navigator - Settings and the Web View Debugger with it - unmounted.
+  // Offer a way out instead of an endless spinner, and hide the splash so it can be seen at all.
+  useEffect(() => {
+    if (isAppReady) {
+      hasBeenAppReady.current = true;
+      setStartupStuck(false);
+
+      return;
+    }
+
+    // Only the first start, never a session that already worked: the runner also reports not-ready
+    // while it reloads after a resume, and offering a reset there would be alarming for nothing -
+    // whoever got that far can reach the Web View Debugger, or just kill the app, on their own.
+    if (hasBeenAppReady.current) {
+      return;
+    }
+
+    // Time without progress, not time since launch: the server start retries can legitimately
+    // run past the deadline on a slow first launch, and polling the handler is enough here - the
+    // panel is a last resort, so being a re-check late costs nothing, while showing it over a
+    // runner that is visibly still starting would just look like a failure that is not one.
+    let timeout: NodeJS.Timeout;
+
+    const armStuckTimeout = (delay: number) => {
+      timeout = setTimeout(() => {
+        if (isRunnerStartupInFlight()) {
+          armStuckTimeout(APP_STARTUP_STUCK_RECHECK);
+
+          return;
+        }
+
+        setStartupStuck(true);
+      }, delay);
+    };
+
+    armStuckTimeout(APP_STARTUP_STUCK_TIMEOUT);
+
+    return () => clearTimeout(timeout);
+  }, [isAppReady]);
+
+  useEffect(() => {
+    if (isStartupStuck && !hasHiddenSplash.current) {
+      hasHiddenSplash.current = true;
+
+      BootSplash.hide({ fade: true }).catch(() => {});
+    }
+  }, [isStartupStuck]);
+
   const onPressUpdateWebView = () => {
     Linking.canOpenURL('market://details?id=com.google.android.webview').then(() =>
       Linking.openURL('market://details?id=com.google.android.webview'),
@@ -309,9 +385,7 @@ export const App = () => {
           </View>
         )}
         {!isAppReady && (
-          <View style={styles.layerScreenStyle}>
-            <LoadingScreen />
-          </View>
+          <View style={styles.layerScreenStyle}>{isStartupStuck ? <StartupRecovery /> : <LoadingScreen />}</View>
         )}
         {needUpdateChrome && (
           <View style={{ width: deviceWidth, height: deviceHeight, justifyContent: 'flex-end' }}>

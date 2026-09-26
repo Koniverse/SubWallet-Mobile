@@ -10,6 +10,7 @@ import { TnCSeedPhraseModal } from 'screens/Account/CreateAccount/TnCSeedPhraseM
 import { Linking } from 'react-native';
 import { SELECTED_MNEMONIC_TYPE } from 'constants/localStorage';
 import { MnemonicType } from '@subwallet/extension-base/types';
+import { BitcoinKeypairTypes, EthereumKeypairTypes, KeypairType } from '@subwallet/keyring/types';
 import { SecretPhraseArea } from 'screens/Account/CreateAccount/SecretPhraseArea';
 import { VerifySecretPhrase } from 'screens/Account/CreateAccount/VerifySecretPhrase';
 
@@ -61,11 +62,19 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
 
   const _onSubmit = useCallback(
     (accountName: string) => {
+      // Must mirror the web-runner's `mnemonicCreateV2`, which previews addresses for exactly these
+      // types. Cardano is intentionally left out: mobile does not support it and the web-runner
+      // filters it out of `accountsCreateSuriV2` anyway.
+      const types: KeypairType[] =
+        selectedMnemonicType === 'ton'
+          ? ['ton-native']
+          : ['sr25519', ...EthereumKeypairTypes, 'ton', ...BitcoinKeypairTypes];
+
       setIsLoading(true);
       createAccountSuriV2({
         name: accountName,
         suri: seedPhrase,
-        type: selectedMnemonicType === 'ton' ? 'ton-native' : undefined,
+        types,
         isAllowed: true,
       })
         .then(() => {

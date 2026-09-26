@@ -11,7 +11,7 @@ import {
   ConfirmationResult,
   ExtrinsicType,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { approveSignSignature, completeConfirmation } from 'messaging/confirmation';
+import { completeConfirmation } from 'messaging/confirmation';
 import { removeTransactionPersist } from 'utils/transaction';
 import { useToast } from 'react-native-toast-notifications';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
@@ -22,8 +22,6 @@ import ConfirmationFooter from '../../../../components/common/Confirmation/Confi
 import { Button } from 'components/design-system-ui';
 import { getButtonIcon } from 'utils/button';
 import i18n from 'utils/i18n/i18n';
-import SignatureScanner from 'components/Scanner/SignatureScanner';
-import { SigData } from 'types/signer';
 
 interface Props {
   id: string;
@@ -49,8 +47,6 @@ const handleCancel = async (type: SubmitApiType, id: string) => {
   } as ConfirmationResult<string>);
 };
 
-const handleSignature = async (id: string, { signature }: SigData) => await approveSignSignature(id, signature);
-
 const SubmitApiArea: React.FC<Props> = (props: Props) => {
   const { extrinsicType, id, navigation, payload, txExpirationTime, type } = props;
   const {
@@ -61,7 +57,6 @@ const SubmitApiArea: React.FC<Props> = (props: Props) => {
   const [showQuoteExpired, setShowQuoteExpired] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const { show, hideAll } = useToast();
-  const [isScanning, setIsScanning] = useState(false);
 
   const approveIcon = useMemo((): PhosphorIcon => {
     switch (signMode) {
@@ -88,27 +83,6 @@ const SubmitApiArea: React.FC<Props> = (props: Props) => {
     }, 1000);
   }, [id, type]);
 
-  const onApproveSignature = useCallback(
-    (signature: SigData) => {
-      setLoading(true);
-
-      setTimeout(() => {
-        handleSignature(id, signature)
-          .catch(e => {
-            console.log(e);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      }, 300);
-    },
-    [id],
-  );
-
-  const onConfirmQr = useCallback(() => {
-    setIsScanning(true);
-  }, []);
-
   const { onPress: onConfirmPassword } = useUnlockModal(navigation, setLoading);
 
   const onConfirm = useCallback(() => {
@@ -124,28 +98,14 @@ const SubmitApiArea: React.FC<Props> = (props: Props) => {
       }
     }
 
-    switch (signMode) {
-      case AccountSignMode.QR:
-        onConfirmQr();
-        break;
-      default:
-        setLoading(true);
-        Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
-        onConfirmPassword(onApprovePassword)()?.catch(() => {
-          setLoading(false);
-        });
-    }
-  }, [
-    extrinsicType,
-    txExpirationTime,
-    signMode,
-    hideAll,
-    show,
-    onCancel,
-    onConfirmQr,
-    onConfirmPassword,
-    onApprovePassword,
-  ]);
+    // Every sign mode resolves this request the same way: submitApiRequest carries no payload to
+    // sign, the consumer only reads isApproved.
+    setLoading(true);
+    Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
+    onConfirmPassword(onApprovePassword)()?.catch(() => {
+      setLoading(false);
+    });
+  }, [extrinsicType, txExpirationTime, hideAll, show, onCancel, onConfirmPassword, onApprovePassword]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -172,9 +132,6 @@ const SubmitApiArea: React.FC<Props> = (props: Props) => {
       <Button block disabled={showQuoteExpired} icon={getButtonIcon(approveIcon)} loading={loading} onPress={onConfirm}>
         {i18n.buttonTitles.approve}
       </Button>
-      {signMode === AccountSignMode.QR && (
-        <SignatureScanner visible={isScanning} onSuccess={onApproveSignature} setVisible={setIsScanning} />
-      )}
     </ConfirmationFooter>
   );
 };

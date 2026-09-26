@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useId } from 'react';
 import { AppState, BackHandler, DeviceEventEmitter, Platform, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ModalProps } from 'react-native-modal/dist/modal';
@@ -6,6 +6,7 @@ import ModalBase from 'components/design-system-ui/modal/ModalBase';
 import { Portal } from '@gorhom/portal';
 import ModalBaseV2, { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { deviceHeight } from 'constants/index';
+import useIsLockScreenShown from 'hooks/useIsLockScreenShown';
 import { noop } from 'utils/function';
 
 interface Props {
@@ -47,9 +48,14 @@ const SwFullSizeModal = ({
   level,
   hideWhenCloseApp = true,
 }: Props) => {
+  const portalKey = useId();
+  const isLockScreenShown = useIsLockScreenShown();
+
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (modalVisible) {
+      // While the unlock screen is up this modal is force-hidden; swallowing back here would
+      // leave that screen with a dead back button.
+      if (modalVisible && !isLockScreenShown) {
         DeviceEventEmitter.emit('closeModal');
         return true;
       } else {
@@ -57,7 +63,7 @@ const SwFullSizeModal = ({
       }
     });
     return () => backHandler.remove();
-  }, [modalVisible]);
+  }, [isLockScreenShown, modalVisible]);
 
   useEffect(() => {
     const unsubscribe = AppState.addEventListener('change', state => {
@@ -75,7 +81,9 @@ const SwFullSizeModal = ({
     <>
       {isUseModalV2 ? (
         <Portal hostName="SimpleModalHost">
+          {/* Keyed for the same reason as in SwModal: the host keys its portals by array position. */}
           <ModalBaseV2
+            key={portalKey}
             onChangeModalVisible={onChangeModalVisible}
             level={level}
             ref={modalBaseV2Ref}

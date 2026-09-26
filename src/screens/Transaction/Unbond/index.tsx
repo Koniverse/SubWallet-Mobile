@@ -38,6 +38,7 @@ import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useWatch } from 'react-hook-form';
+import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { FormItem } from 'components/common/FormItem';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
@@ -60,6 +61,7 @@ import { getEarningTimeText } from 'utils/earning';
 import { SlippageType } from '@subwallet/extension-base/types/swap';
 import MetaInfo from 'components/MetaInfo';
 import BigNumber from 'bignumber.js';
+import { formatBalance } from 'utils/number';
 import { useTaoStakingFee } from 'hooks/earning/useTaoStakingFee';
 
 interface UnstakeFormValues extends TransactionFormValues {
@@ -157,7 +159,7 @@ export const Unbond = ({
   const { compound: positionInfo } = useYieldPositionDetail(slug, fromValue);
   const accountInfo = useGetAccountByAddress(fromValue);
   const [isBalanceReady, setIsBalanceReady] = useState<boolean>(true);
-  const onPreCheck = usePreCheckAction(fromValue);
+  const onPreCheck = usePreCheckAction(fromValue, true, undefined, chainValue);
   const globalAppModalContext = useContext(GlobalModalContext);
   const isMythosStaking = useMemo(() => _STAKING_CHAIN_GROUP.mythos.includes(poolChain), [poolChain]);
 
@@ -196,7 +198,7 @@ export const Unbond = ({
 
   const bondedAsset = useGetChainAssetInfo(bondedSlug || poolInfo.metadata.inputAsset);
   const decimals = bondedAsset?.decimals || 0;
-  const symbol = (positionInfo as SubnetYieldPositionInfo).subnetData?.subnetSymbol || bondedAsset?.symbol || '';
+  const symbol = (positionInfo as SubnetYieldPositionInfo)?.subnetData?.subnetSymbol || bondedAsset?.symbol || '';
   const altAsset = useGetChainAssetInfo((poolInfo?.metadata as SpecialYieldPoolMetadata)?.altInputAssets);
   const altSymbol = altAsset?.symbol || '';
 
@@ -263,16 +265,19 @@ export const Unbond = ({
         spaceSize={'sm'}
         valueColorScheme={'gray'}
         style={{ marginTop: theme.sizeSM }}>
+        {/* The rate is refetched while typing; the pending state shows here rather than on the
+            submit button, which used to flash a spinner on every character. */}
         <MetaInfo.Number
           decimals={decimals}
           label={'Expected TAO to receive'}
+          loading={taoSubmitLoading}
           suffix={bondedAsset?.symbol || ''}
           value={BigNumber(currentValue).multipliedBy(earningRate)}
           unitColor={theme['gray-5']}
           decimalColor={theme['gray-5']}
           intColor={theme['gray-5']}
         />
-        <MetaInfo.Default label={'Conversion rate'}>
+        <MetaInfo.Default label={'Conversion rate'} loading={taoSubmitLoading}>
           <View style={{ flexDirection: 'row' }}>
             <Typography.Text style={{ color: '#A6A6A6' }}>{`1 ${bondedAsset?.symbol || ''} = `}</Typography.Text>
             <Number
@@ -290,7 +295,15 @@ export const Unbond = ({
         </MetaInfo.Default>
       </MetaInfo>
     );
-  }, [decimals, bondedAsset?.symbol, currentValue, earningRate, theme, poolInfo.metadata?.subnetData?.subnetSymbol]);
+  }, [
+    decimals,
+    bondedAsset?.symbol,
+    currentValue,
+    earningRate,
+    taoSubmitLoading,
+    theme,
+    poolInfo.metadata?.subnetData?.subnetSymbol,
+  ]);
 
   // For subnet staking
 
@@ -340,6 +353,29 @@ export const Unbond = ({
     poolInfo?.metadata.inputAsset,
     poolInfo?.statistic?.assetEarning,
   ]);
+
+  const amountRules = useMemo(
+    () => ({
+      validate: (amount: string): Promise<ValidateResult> => {
+        if (!amount) {
+          return Promise.resolve(undefined);
+        }
+
+        if (new BigN(amount).lte(BN_ZERO)) {
+          return Promise.resolve(i18n.errorMessage.amountMustBeGreaterThanZero);
+        }
+
+        if (new BigN(amount).gt(new BigN(bondedValue))) {
+          const maxString = formatBalance(bondedValue, decimals);
+
+          return Promise.resolve(i18n.formatString(i18n.errorMessage.amountMustBeEqualOrLessThan, maxString) as string);
+        }
+
+        return Promise.resolve(undefined);
+      },
+    }),
+    [bondedValue, decimals],
+  );
 
   const unBondedTime = useMemo((): string => {
     if (
@@ -659,6 +695,7 @@ export const Unbond = ({
               {!isMythosStaking && (
                 <FormItem
                   control={control}
+                  rules={amountRules}
                   render={({ field: { onChange, value, ref } }) => (
                     <InputAmount
                       ref={ref}
@@ -753,7 +790,9 @@ export const Unbond = ({
             <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
               <Button
                 disabled={isDisableSubmitBtn}
-                loading={loading || taoSubmitLoading}
+                /* taoSubmitLoading is the fee refetch (already part of isDisableSubmitBtn); spinning
+                   the button on it made every character typed flash a loader. */
+                loading={loading}
                 icon={
                   <Icon
                     phosphorIcon={MinusCircleIcon}

@@ -177,7 +177,7 @@ export const Withdraw = ({
     return undefined;
   }, [fromValue, yieldPosition]);
 
-  const onPreCheck = usePreCheckAction(fromValue);
+  const onPreCheck = usePreCheckAction(fromValue, true, undefined, chainValue);
 
   const onSubmit = useCallback(() => {
     setLoading(true);

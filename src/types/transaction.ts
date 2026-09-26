@@ -1,4 +1,5 @@
 import { ExtrinsicType, StakingType } from '@subwallet/extension-base/background/KoniTypes';
+import { SubstrateProxyAccountItem, SubstrateProxyType } from '@subwallet/extension-base/types';
 import { Dispatch, SetStateAction } from 'react';
 
 export interface TransactionFormBaseProps {
@@ -86,4 +87,14 @@ export interface SwapParams extends TransactionFormBaseProps {
   fromTokenSlug: string;
   toTokenSlug: string;
   recipient?: string;
+}
+
+export interface AddSubstrateProxyAccountParams extends TransactionFormBaseProps {
+  substrateProxyAddress: string;
+  substrateProxyType: SubstrateProxyType;
+}
+
+export interface RemoveSubstrateProxyAccountParams extends TransactionFormBaseProps {
+  selectedSubstrateProxyAccounts: SubstrateProxyAccountItem[];
+  isRemoveAll?: boolean;
 }

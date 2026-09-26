@@ -4,7 +4,7 @@ import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/ex
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
 import { NEED_SIGN_CONFIRMATION } from 'constants/transaction';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useId, useMemo, useState } from 'react';
 import { RootStackParamList } from 'routes/index';
 import { ConfirmationType } from 'stores/base/RequestState';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
@@ -29,6 +29,7 @@ import {
   NotSupportConfirmation,
   TransactionConfirmation,
   SignConfirmation,
+  VrfSignConfirmation,
   NetworkConnectionErrorConfirmation,
   EvmSignatureWithProcess,
 } from './variants';
@@ -74,6 +75,7 @@ const subWalletModalSeparator: StyleProp<any> = {
 };
 
 export const Confirmations = () => {
+  const portalKey = useId();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { confirmationQueue, numberOfConfirmations } = useConfirmationsInfo();
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
@@ -220,11 +222,26 @@ export const Confirmations = () => {
           return 'Swap confirmation';
         case ExtrinsicType.CLAIM_BRIDGE:
           return 'Claim confirmation';
+        case ExtrinsicType.ADD_SUBSTRATE_PROXY_ACCOUNT:
+          return i18n.substrateProxy.addProxyConfirmation;
+        case ExtrinsicType.REMOVE_SUBSTRATE_PROXY_ACCOUNT:
+          return i18n.substrateProxy.removeProxyConfirmation;
+        case ExtrinsicType.SUBSTRATE_PROXY_INIT_TX:
+          return i18n.substrateProxy.proxyInitConfirmation;
+        case ExtrinsicType.MULTISIG_APPROVE_TX:
+        case ExtrinsicType.MULTISIG_CANCEL_TX:
+        case ExtrinsicType.MULTISIG_EXECUTE_TX:
+        case ExtrinsicType.MULTISIG_INIT_TX:
+          return i18n.multisig.multisigTransaction;
 
         default:
           return i18n.header.transactionConfirmation;
       }
     } else {
+      if (confirmation.type === 'signingRequest' && (confirmation.item as SigningRequest).request.isVrf) {
+        return i18n.confirmation.keyDerivationRequest;
+      }
+
       return titleMap[confirmation.type] || '';
     }
   }, [confirmation, titleMap, transactionRequest]);
@@ -238,6 +255,7 @@ export const Confirmations = () => {
       let account: AccountJson | undefined;
       let canSign = true;
       let isMessage = false;
+      let isVrf = false;
 
       if (confirmation.type === 'signingRequest') {
         const request = confirmation.item as SigningRequest;
@@ -265,6 +283,7 @@ export const Confirmations = () => {
           canSign = true;
         }
         isMessage = _isMessage;
+        isVrf = request.request.isVrf === true;
       } else if (
         ['evmSignatureRequest', 'evmSendTransactionRequest', 'evmWatchTransactionRequest'].includes(confirmation.type)
       ) {
@@ -310,6 +329,8 @@ export const Confirmations = () => {
         signMode === AccountSignMode.LEGACY_LEDGER ||
         signMode === AccountSignMode.UNKNOWN ||
         (signMode === AccountSignMode.QR && isEvm && !isDevMode) ||
+        // a VRF key is derived from the sr25519 secret, which only a password account holds
+        (isVrf && signMode !== AccountSignMode.PASSWORD) ||
         !canSign;
 
       if (notSupport) {
@@ -389,8 +410,17 @@ export const Confirmations = () => {
         return <AuthorizeConfirmation request={confirmation.item as AuthorizeRequest} navigation={navigation} />;
       case 'metadataRequest':
         return <MetadataConfirmation request={confirmation.item as MetadataRequest} />;
-      case 'signingRequest':
-        return <SignConfirmation request={confirmation.item as SigningRequest} navigation={navigation} />;
+      case 'signingRequest': {
+        const request = confirmation.item as SigningRequest;
+
+        // a VRF request derives a permanent key for the site rather than signing a message, so it
+        // must never fall through to the ordinary message-signature screen
+        return request.request.isVrf ? (
+          <VrfSignConfirmation request={request} navigation={navigation} />
+        ) : (
+          <SignConfirmation request={request} navigation={navigation} />
+        );
+      }
       case 'connectWCRequest':
         return (
           <ConnectWalletConnectConfirmation
@@ -454,7 +484,16 @@ export const Confirmations = () => {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-      {Platform.OS === 'android' ? <Portal>{renderMainContent()}</Portal> : renderMainContent()}
+      {/* The keyed Fragment is what SwModal's `key` does for the sheets: PortalHost keys its
+        portals by array position, so anything teleported has to carry its own key or it gets
+        handed to a neighbour's instance when another portal unmounts. */}
+      {Platform.OS === 'android' ? (
+        <Portal>
+          <React.Fragment key={portalKey}>{renderMainContent()}</React.Fragment>
+        </Portal>
+      ) : (
+        renderMainContent()
+      )}
     </KeyboardAvoidingView>
   );
 };

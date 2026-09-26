@@ -6,6 +6,7 @@ export { default as EvmTransactionConfirmation } from './EvmTransactionConfirmat
 export { default as MetadataConfirmation } from './MetadataConfirmation';
 export { default as NotSupportConfirmation } from './NotSupportConfirmation';
 export { default as SignConfirmation } from './SignConfirmation';
+export { default as VrfSignConfirmation } from './VrfSignConfirmation';
 export * from './Error';
 export * from './Transaction';
 export * from './Message';

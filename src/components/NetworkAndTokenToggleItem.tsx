@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, Switch, View, ViewStyle } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold } from 'styles/sharedStyles';
+import { DisabledStyle, FontSemiBold } from 'styles/sharedStyles';
 import { BackgroundIcon, Button, Icon, Logo } from 'components/design-system-ui';
 import { CircleNotchIcon, IconProps, PencilSimpleLineIcon, WifiHighIcon, WifiSlashIcon } from 'phosphor-react-native';
 import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
@@ -13,6 +13,8 @@ interface Props {
   isEnabled: boolean;
   onValueChange: () => void;
   isDisableSwitching?: boolean;
+  /** A toggle is in flight and the backend has not confirmed it yet. */
+  isLoading?: boolean;
   connectionStatus?: _ChainConnectionStatus;
   onPressEditBtn?: () => void;
   showEditButton?: boolean;
@@ -71,6 +73,7 @@ export const NetworkAndTokenToggleItem = ({
   isEnabled,
   onValueChange,
   isDisableSwitching,
+  isLoading,
   connectionStatus,
   onPressEditBtn,
   showEditButton,
@@ -86,7 +89,11 @@ export const NetworkAndTokenToggleItem = ({
             isShowSubIcon
             subIcon={
               <BackgroundIcon
-                {...NetworkStatusIconMap[connectionStatus || _ChainConnectionStatus.DISCONNECTED]}
+                {...NetworkStatusIconMap[
+                  // While a toggle is in flight the backend has usually not reported a
+                  // status yet, and an absent status renders exactly like a failed one.
+                  isLoading ? _ChainConnectionStatus.CONNECTING : connectionStatus || _ChainConnectionStatus.DISCONNECTED
+                ]}
                 size={'xs'}
                 shape={'circle'}
               />
@@ -98,9 +105,10 @@ export const NetworkAndTokenToggleItem = ({
           </Text>
         </View>
 
-        <View>
+        {/* Blocked switches are dimmed like the extension (opacity 0.4) and made untouchable,
+            not `disabled`: Android swaps in a gray thumb for a disabled Switch. */}
+        <View pointerEvents={isDisableSwitching ? 'none' : 'auto'} style={isDisableSwitching && DisabledStyle}>
           <Switch
-            disabled={isDisableSwitching}
             ios_backgroundColor={ColorMap.switchInactiveButtonColor}
             value={isEnabled}
             onValueChange={onValueChange}

@@ -23,7 +23,7 @@ const AlertBoxInstant: React.FC<Props> = ({ type }: Props) => {
           <Typography.Text>
             <Typography.Text>
               {
-                'This network has 2 address formats, a Legacy format and a New format that starts with 1. SubWallet automatically transforms Legacy formats into New one without affecting your transfer.'
+                'This network has 2 address formats. SubWallet automatically transforms Legacy formats into New format without affecting your transfer. '
               }
             </Typography.Text>
             <Typography.Text onPress={() => Linking.openURL(FAQ_URL)} style={styles.highlightText}>

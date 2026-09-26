@@ -1,5 +1,5 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
+import { AccountProxyType, YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { EmptyList } from 'components/EmptyList';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -112,6 +112,10 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const { tokenBalanceMap } = useAccountBalance(tokenGroupMap, undefined, true);
   const yieldPositions = useGroupYieldPosition();
 
+  const currentAccountProxy = useSelector((state: RootState) => state.accountState.currentAccountProxy);
+  // Liquid staking is not available to multisig accounts.
+  const isMultisigAccount = currentAccountProxy?.accountType === AccountProxyType.MULTISIG;
+
   const positionSlugs = useMemo(() => {
     return yieldPositions.map(p => p.slug);
   }, [yieldPositions]);
@@ -167,6 +171,10 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     const result: YieldPoolInfo[] = [];
 
     pools.forEach(poolInfo => {
+      if (isMultisigAccount && poolInfo.type === YieldPoolType.LIQUID_STAKING) {
+        return;
+      }
+
       if (poolInfo.chain === 'parallel' && poolInfo.type === YieldPoolType.LIQUID_STAKING) {
         return;
       }
@@ -229,7 +237,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
     });
 
     return result;
-  }, [chainAsset, pools, positionSlugs, tokenBalanceMap]);
+  }, [chainAsset, isMultisigAccount, pools, positionSlugs, tokenBalanceMap]);
 
   const onPressItem = useCallback(
     (chainSlug: string, poolInfo: YieldPoolInfo) => {

@@ -171,12 +171,15 @@ const ChangeValidatorTransactionConfirmation = (props: Props) => {
               value={data.amount}
             />
           )}
-          <MetaInfo.Number
-            decimals={decimals}
-            label={'Estimated fee'}
-            suffix={symbol}
-            value={transaction.estimateFee?.value || 0}
-          />
+          {/* Once wrapped, the fee that gets paid belongs to the wrapping extrinsic. */}
+          {!transaction.wrappingStatus && (
+            <MetaInfo.Number
+              decimals={decimals}
+              label={'Estimated fee'}
+              suffix={symbol}
+              value={transaction.estimateFee?.value || 0}
+            />
+          )}
           {compound && !isBittensorChain && (
             <ValidatorGroupModal
               accounts={newValidatorAccounts}

@@ -16,7 +16,7 @@ import { parseNominations } from 'utils/transaction';
 import { reformatAddress } from '@subwallet/extension-base/utils';
 import MetaInfo from 'components/MetaInfo';
 import { Platform, ScrollView, StatusBar, Switch, TouchableOpacity, View } from 'react-native';
-import { Button, Icon, Logo, Number, PageIcon, Typography } from 'components/design-system-ui';
+import { ActivityIndicator, Button, Icon, Logo, Number, PageIcon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
 import { useTaoStakingFee } from 'hooks/earning/useTaoStakingFee';
@@ -71,6 +71,9 @@ export const ChangeBittensorValidator = ({
   const { confirmModal } = useContext(AppModalContext);
   const [isShowAmountChange, setIsShowAmountChange] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  // Kept apart from submitLoading: the fee is refetched on every amount change, and sharing the
+  // submit flag made the button spin - and the amount input go disabled - on every keystroke.
+  const [feeLoading, setFeeLoading] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const { accounts } = useSelector((state: RootState) => state.accountState);
@@ -233,7 +236,7 @@ export const ChangeBittensorValidator = ({
     decimals,
     poolInfo.metadata.subnetData?.netuid || 0,
     ExtrinsicType.STAKING_UNBOND,
-    setSubmitLoading,
+    setFeeLoading,
   );
 
   const onPressSubmit = () => {
@@ -312,7 +315,7 @@ export const ChangeBittensorValidator = ({
       setIsShowAmountChange(false);
     }
   }, [confirmModal.confirmModalState.visible]);
-  const onPreCheck = usePreCheckAction(from);
+  const onPreCheck = usePreCheckAction(from, true, undefined, chain);
 
   const onChangeNominator = useCallback(
     (nominatorValue: string) => {
@@ -438,15 +441,21 @@ export const ChangeBittensorValidator = ({
                     <Typography.Text style={{ color: theme.colorTextTertiary }}>
                       {'Minimum active stake'}
                     </Typography.Text>
-                    <Number
-                      decimal={decimals}
-                      value={
-                        earningRate > 0
-                          ? BigN(poolInfo.statistic?.earningThreshold.join || 0).div(earningRate)
-                          : BigN(poolInfo.statistic?.earningThreshold.join || 0)
-                      }
-                      suffix={earningRate > 0 ? symbol : bondedAsset?.symbol}
-                    />
+                    {/* The rate is refetched while typing; show it here rather than on the submit
+                        button, which used to flash a spinner on every character. */}
+                    {feeLoading ? (
+                      <ActivityIndicator size={20} />
+                    ) : (
+                      <Number
+                        decimal={decimals}
+                        value={
+                          earningRate > 0
+                            ? BigN(poolInfo.statistic?.earningThreshold.join || 0).div(earningRate)
+                            : BigN(poolInfo.statistic?.earningThreshold.join || 0)
+                        }
+                        suffix={earningRate > 0 ? symbol : bondedAsset?.symbol}
+                      />
+                    )}
                   </View>
                 </>
               )}
@@ -458,12 +467,14 @@ export const ChangeBittensorValidator = ({
                 <Icon
                   phosphorIcon={CheckCircleIcon}
                   weight={'fill'}
-                  iconColor={isDisabled || submitLoading ? theme.colorTextTertiary : theme.colorWhite}
+                  iconColor={isDisabled || submitLoading || feeLoading ? theme.colorTextTertiary : theme.colorWhite}
                 />
               }
               loading={submitLoading}
               onPress={onPreCheck(onPressSubmit, ExtrinsicType.CHANGE_EARNING_VALIDATOR)}
-              disabled={isDisabled || submitLoading}>
+              /* The staking fee goes into the payload, so hold submission until it is up to date -
+                 disabled only, without the spinner that used to flash on every character. */
+              disabled={isDisabled || submitLoading || feeLoading}>
               {'Update validator'}
             </Button>
           </View>

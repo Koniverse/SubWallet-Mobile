@@ -7,7 +7,7 @@ import { EarningStatusUi } from 'constants/stakingStatusUi';
 import useYieldRewardTotal from 'hooks/earning/useYieldRewardTotal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, Linking, TouchableOpacity, View } from 'react-native';
+import { Linking, TouchableOpacity, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
@@ -21,6 +21,8 @@ import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning
 import { HideBalanceItem } from 'components/HideBalanceItem';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import useCoreCreateReformatAddress from 'hooks/common/useCoreCreateReformatAddress';
+import useAlertModal from 'hooks/modal/useAlertModal';
+import { NotificationType } from '@subwallet/extension-base/background/KoniTypes';
 
 type Props = {
   compound: YieldPositionInfo;
@@ -38,6 +40,7 @@ const RewardInfoPart: React.FC<Props> = (props: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
+  const { openAlert } = useAlertModal();
 
   const styles = useMemo(() => createStyles(theme), [theme]);
   const total = useYieldRewardTotal(slug);
@@ -51,29 +54,39 @@ const RewardInfoPart: React.FC<Props> = (props: Props) => {
 
   const isDAppStaking = useMemo(() => _STAKING_CHAIN_GROUP.astar.includes(compound.chain), [compound.chain]);
   const isMythosStaking = useMemo(() => _STAKING_CHAIN_GROUP.mythos.includes(compound.chain), [compound.chain]);
+  // Only the netuid 0 position accrues a claimable root basket, the subnet ones don't
+  const isBittensorRootStaking = useMemo(
+    () => type === YieldPoolType.NATIVE_STAKING && _STAKING_CHAIN_GROUP.bittensor.includes(compound.chain),
+    [compound.chain, type],
+  );
 
   const canClaim = useMemo((): boolean => {
     switch (type) {
       case YieldPoolType.LENDING:
       case YieldPoolType.LIQUID_STAKING:
-        return false;
       case YieldPoolType.SUBNET_STAKING:
+        return false;
       case YieldPoolType.NATIVE_STAKING:
-        return isDAppStaking || isMythosStaking;
+        return isDAppStaking || isMythosStaking || isBittensorRootStaking;
       case YieldPoolType.NOMINATION_POOL:
         return true;
       default:
         return false;
     }
-  }, [isDAppStaking, isMythosStaking, type]);
+  }, [isBittensorRootStaking, isDAppStaking, isMythosStaking, type]);
+
+  const showRewardValue = useMemo(
+    () => type === YieldPoolType.NOMINATION_POOL || isMythosStaking || isBittensorRootStaking,
+    [isBittensorRootStaking, isMythosStaking, type],
+  );
 
   const title = useMemo(() => {
-    if (type === YieldPoolType.NOMINATION_POOL) {
+    if (type === YieldPoolType.NOMINATION_POOL || isBittensorRootStaking) {
       return i18n.inputLabel.unclaimedRewards;
     } else {
       return 'Rewards';
     }
-  }, [type]);
+  }, [isBittensorRootStaking, type]);
 
   // const toggleDetail = useCallback(() => {
   //   setShowDetail(old => !old);
@@ -94,11 +107,13 @@ const RewardInfoPart: React.FC<Props> = (props: Props) => {
         },
       });
     } else {
-      Alert.alert('Rewards unavailable', "You don't have any rewards to claim at the moment. Try again later.", [
-        { text: 'I understand' },
-      ]);
+      openAlert({
+        title: 'Rewards unavailable',
+        type: NotificationType.ERROR,
+        content: "You don't have any rewards to claim at the moment. Try again later.",
+      });
     }
-  }, [isDAppStaking, navigation, slug, total, transactionChainValue, transactionFromValue, type]);
+  }, [isDAppStaking, navigation, openAlert, slug, total, transactionChainValue, transactionFromValue, type]);
 
   const onPressViewExplore = useCallback(() => {
     if (currentAccountProxy && currentAccountProxy.accounts.length > 0) {
@@ -129,10 +144,10 @@ const RewardInfoPart: React.FC<Props> = (props: Props) => {
       />
 
       {(type === YieldPoolType.NOMINATION_POOL ||
-        (type === YieldPoolType.NATIVE_STAKING && (isDAppStaking || isMythosStaking))) && (
+        (type === YieldPoolType.NATIVE_STAKING && (isDAppStaking || isMythosStaking || isBittensorRootStaking))) && (
         <>
           <View style={styles.withdrawButtonContainer}>
-            {type === YieldPoolType.NOMINATION_POOL || isMythosStaking ? (
+            {showRewardValue ? (
               <>
                 {isShowBalance ? (
                   total ? (

@@ -11,13 +11,19 @@ import { createAccountSuriV2, validateSeedV2 } from 'messaging/index';
 import { FileArrowDownIcon, WarningIcon, XIcon } from 'phosphor-react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { RootNavigationProps } from 'routes/index';
+import { ImportSecretPhraseProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
 import { AccountProxyType, ResponseMnemonicValidateV2 } from '@subwallet/extension-base/types';
 import { AppModalContext } from 'providers/AppModalContext';
 import { AccountNameModal } from 'components/Modal/AccountNameModal';
 import { useToast } from 'react-native-toast-notifications';
+import { DEFAULT_MNEMONIC_TYPE, TRUST_WALLET_MNEMONIC_TYPE } from 'constants/index';
+
+// Trust Wallet only ever generates 12-word seed phrases. The extension enforces this through its
+// phrase number selector, which mobile does not have, so the free-form textarea is guarded instead.
+const TRUST_WALLET_PHRASE_NUMBER = 12;
+
 const secretPhraseFormConfig: FormControlConfig = {
   seed: {
     name: '',
@@ -26,7 +32,7 @@ const secretPhraseFormConfig: FormControlConfig = {
   },
 };
 
-export const ImportSecretPhrase = () => {
+export const ImportSecretPhrase = ({ route: { params } }: ImportSecretPhraseProps) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
@@ -39,24 +45,19 @@ export const ImportSecretPhrase = () => {
   const [seedValidationResponse, setSeedValidationResponse] = useState<undefined | ResponseMnemonicValidateV2>();
   const [accountCreating, setAccountCreating] = useState(false);
   const [validating, setValidating] = useState(false);
+  const isTrustWallet = params?.mnemonicType === TRUST_WALLET_MNEMONIC_TYPE;
+  const mnemonicType = isTrustWallet ? TRUST_WALLET_MNEMONIC_TYPE : DEFAULT_MNEMONIC_TYPE;
   useHandlerHardwareBackPress(accountCreating);
 
   const onSubmit = () => {
-    if (seedValidationResponse && seedValidationResponse.mnemonicTypes === 'general') {
+    if (seedValidationResponse && seedValidationResponse.mnemonicTypes === DEFAULT_MNEMONIC_TYPE) {
       confirmModal.setConfirmModal({
         visible: true,
-        title: 'Incompatible seed phrase',
+        title: i18n.warningTitle.incompatibleSeedPhrase,
         message: (
           <>
-            <Typography.Text>
-              {
-                'This seed phrase generates a unified account that can be used on multiple ecosystems in SubWallet including TON. \n'
-              }
-            </Typography.Text>
-            <Typography.Text>
-              Note that you can’t import this seed phrase into TON-native wallets as this seed phrase is incompatible
-              with TON-native wallets.
-            </Typography.Text>
+            <Typography.Text>{`${i18n.warningMessage.unifiedSeedPhraseInfo}\n`}</Typography.Text>
+            <Typography.Text>{i18n.warningMessage.tonIncompatibleSeedPhraseWarning}</Typography.Text>
           </>
         ),
         onCancelModal: () => {
@@ -68,7 +69,28 @@ export const ImportSecretPhrase = () => {
           setAccountNameModalVisible(true);
         },
         customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
-        completeBtnTitle: 'Import',
+        completeBtnTitle: i18n.buttonTitles.import,
+      });
+    } else if (seedValidationResponse && seedValidationResponse.mnemonicTypes === TRUST_WALLET_MNEMONIC_TYPE) {
+      confirmModal.setConfirmModal({
+        visible: true,
+        title: i18n.warningTitle.trustSeedPhraseWarningTitle,
+        message: (
+          <>
+            <Typography.Text>{`${i18n.warningMessage.trustSeedPhraseImportInfo}\n`}</Typography.Text>
+            <Typography.Text>{i18n.warningMessage.trustSeedPhraseImportWarning}</Typography.Text>
+          </>
+        ),
+        onCancelModal: () => {
+          confirmModal.hideConfirmModal();
+          setAccountCreating(false);
+        },
+        onCompleteModal: () => {
+          confirmModal.hideConfirmModal();
+          setAccountNameModalVisible(true);
+        },
+        customIcon: <PageIcon icon={WarningIcon} color={theme.colorWarning} />,
+        completeBtnTitle: i18n.buttonTitles.import,
       });
     } else {
       setAccountNameModalVisible(true);
@@ -94,7 +116,19 @@ export const ImportSecretPhrase = () => {
         onUpdateErrors('seed')([]);
 
         timeOutRef.current = setTimeout(() => {
-          validateSeedV2(trimSeed)
+          // The background accepts any valid BIP39 length for `trust-wallet`, so without this an
+          // ed25519-tw account with no Trust Wallet counterpart could be created.
+          if (isTrustWallet && trimSeed.split(/\s+/).length !== TRUST_WALLET_PHRASE_NUMBER) {
+            if (amount) {
+              setSeedValidationResponse(undefined);
+              onUpdateErrors('seed')([i18n.errorMessage.trustWalletSeedPhraseWordCount]);
+              setValidating(false);
+            }
+
+            return;
+          }
+
+          validateSeedV2({ mnemonic: trimSeed, mnemonicType })
             .then(response => {
               if (amount) {
                 setSeedValidationResponse(response);
@@ -118,7 +152,7 @@ export const ImportSecretPhrase = () => {
     return () => {
       amount = false;
     };
-  }, [onUpdateErrors, formState.data.seed]);
+  }, [onUpdateErrors, formState.data.seed, mnemonicType, isTrustWallet]);
 
   const _onImportSeed = (accountName: string): void => {
     if (!seedValidationResponse) {
@@ -129,7 +163,7 @@ export const ImportSecretPhrase = () => {
     createAccountSuriV2({
       name: accountName,
       suri: seedValidationResponse.mnemonic,
-      type: seedValidationResponse.mnemonicTypes === 'ton' ? 'ton-native' : undefined,
+      types: seedValidationResponse.pairTypes,
       isAllowed: true,
     })
       .then(() => {
@@ -168,14 +202,18 @@ export const ImportSecretPhrase = () => {
   return (
     <ContainerWithSubHeader
       onPressBack={onPressBack}
-      title={i18n.header.importFromSeedPhrase}
+      title={isTrustWallet ? i18n.header.importFromTrustWallet : i18n.header.importFromSeedPhrase}
       disabled={accountCreating}
       onPressRightIcon={goHome}
       rightIcon={XIcon}
       disableRightButton={accountCreating}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>
-          <Typography.Text style={styles.title}>{i18n.importAccount.importFromSeedPhraseMessage}</Typography.Text>
+          <Typography.Text style={styles.title}>
+            {isTrustWallet
+              ? i18n.importAccount.importFromTrustWalletMessage
+              : i18n.importAccount.importFromSeedPhraseMessage}
+          </Typography.Text>
           <Textarea
             ref={formState.refs.seed}
             style={styles.textArea}
@@ -207,7 +245,7 @@ export const ImportSecretPhrase = () => {
             setModalVisible={setAccountNameModalVisible}
             accountType={
               seedValidationResponse
-                ? seedValidationResponse.mnemonicTypes === 'general'
+                ? seedValidationResponse.mnemonicTypes === DEFAULT_MNEMONIC_TYPE
                   ? AccountProxyType.UNIFIED
                   : AccountProxyType.SOLO
                 : undefined

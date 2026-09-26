@@ -11,16 +11,14 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { BN_TEN, BN_ZERO } from 'utils/chainBalances';
 import BigN from 'bignumber.js';
-import { _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
-import { View } from 'react-native';
-import { Number, Typography } from 'components/design-system-ui';
+import { Typography } from 'components/design-system-ui';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SwapTransactionBlock } from 'components/Swap/SwapTransactionBlock';
 import { SwapRoute } from 'components/Swap/SwapRoute';
 import { getDevMode } from 'utils/storage';
 import { getTokenPairFromStep } from '@subwallet/extension-base/services/swap-service/utils';
-import { FontSemiBold } from 'styles/sharedStyles';
+import QuoteRateDisplay from 'components/Swap/QuoteRateDisplay';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -60,28 +58,6 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
 
     return totalBalance;
   }, [assetRegistryMap, data.quote.feeInfo.feeComponent, priceMap]);
-
-  const renderRateConfirmInfo = () => {
-    return (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Number
-          textStyle={{ ...FontSemiBold }}
-          size={14}
-          decimal={0}
-          suffix={_getAssetSymbol(fromAssetInfo)}
-          value={1}
-        />
-        <Typography.Text style={{ color: theme.colorWhite, ...FontSemiBold }}>{' ~ '}</Typography.Text>
-        <Number
-          textStyle={{ ...FontSemiBold }}
-          size={14}
-          decimal={0}
-          suffix={_getAssetSymbol(toAssetInfo)}
-          value={data.quote.rate}
-        />
-      </View>
-    );
-  };
 
   const isSwapXCM = useMemo(() => {
     return data.process.steps.some(item => item.type === CommonStepType.XCM);
@@ -124,21 +100,31 @@ const SwapTransactionConfirmation: React.FC<Props> = (props: Props) => {
         toAmount={data.quote.toAmount}
         toAssetSlug={originSwapPair?.to}
       />
-      <MetaInfo labelColorScheme={'gray'} style={{ paddingHorizontal: theme.paddingXS }}>
+      <MetaInfo style={{ paddingHorizontal: theme.paddingXS }}>
         <MetaInfo.Account
           address={recipientAddress}
           label={'Recipient'}
           networkPrefix={networkPrefix}
           name={account?.name}
         />
+        {/* Extension renders both values with the MetaInfo gray value scheme, 14px, weight 500 */}
         <MetaInfo.Default label={'Quote rate'} valueColorSchema={'gray'}>
-          {renderRateConfirmInfo()}
+          {valueStyle => (
+            <QuoteRateDisplay
+              fromAssetInfo={fromAssetInfo}
+              rateValue={data.quote.rate}
+              size={14}
+              textStyle={valueStyle}
+              toAssetInfo={toAssetInfo}
+            />
+          )}
         </MetaInfo.Default>
         <MetaInfo.Number
-          valueColorSchema={'light'}
+          valueColorSchema={'gray'}
           decimals={0}
           label={'Estimated transaction fee'}
-          prefix={currencyData?.symbol}
+          prefix={(currencyData.isPrefix && currencyData.symbol) || ''}
+          suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
           value={estimatedFeeValue}
         />
         <MetaInfo.Default label={'Swap route'} />

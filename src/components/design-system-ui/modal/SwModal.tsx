@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, useState } from 'react';
+import React, { useEffect, useId, useImperativeHandle, useState } from 'react';
 import {
   AppState,
   BackHandler,
@@ -19,6 +19,7 @@ import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 import Button from '../button';
 import { Icon } from 'components/design-system-ui';
 import { CaretLeftIcon, GearIcon } from 'phosphor-react-native';
+import useIsLockScreenShown from 'hooks/useIsLockScreenShown';
 import { noop } from 'utils/function';
 
 export interface SWModalProps {
@@ -31,6 +32,7 @@ export interface SWModalProps {
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
   isAllowSwipeDown?: boolean;
+  hideHandle?: boolean;
   modalTitle?: string;
   titleTextAlign?: 'left' | 'center';
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -91,6 +93,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       modalTitle,
       onModalHide,
       isFullHeight = false,
+      hideHandle,
       titleTextAlign = 'left',
       contentContainerStyle,
       titleStyle,
@@ -111,7 +114,16 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
     },
     ref,
   ) => {
+    // The key for this modal's teleported element. PortalHost renders its portals as a plain
+    // array - `state.map(item => item.node)` - and its reducer splices that array, so a portal
+    // that unmounts shifts every later one down an index. Every V2 modal teleports the same
+    // ModalBaseV2 type, so with no key React does not remount on that shift: it reuses the
+    // neighbour's instance and swaps these props into it, animation state and all. An open sheet
+    // then inherits a translateY of 0, sits off screen and slides itself in a second time - issue
+    // 2057 #72, the Account name popup "displayed twice" while an account was being created.
+    const portalKey = useId();
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible();
+    const isLockScreenShown = useIsLockScreenShown();
     const theme = useSubWalletTheme().swThemes;
     const [contentHeight, setContentHeight] = useState<number>(0);
     const [childrenHeight, setChildrenHeight] = useState<number>(contentHeight);
@@ -131,7 +143,9 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
 
     useEffect(() => {
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-        if (modalVisible) {
+        // While the unlock screen is up this modal is force-hidden; swallowing back here would
+        // leave that screen with a dead back button.
+        if (modalVisible && !isLockScreenShown) {
           if (onBackButtonPress) {
             onBackButtonPress();
           } else {
@@ -144,7 +158,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
         }
       });
       return () => backHandler.remove();
-    }, [modalVisible, onBackButtonPress]);
+    }, [isLockScreenShown, modalVisible, onBackButtonPress]);
 
     useEffect(() => {
       if (isKeyboardVisible) {
@@ -204,6 +218,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
         {isUseModalV2 ? (
           <Portal hostName="SimpleModalHost">
             <ModalBaseV2
+              key={portalKey}
               isVisible={modalVisible}
               setVisible={setVisible}
               height={childrenHeight}
@@ -212,6 +227,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
               isUseForceHidden={isUseForceHidden === undefined ? Platform.OS === 'android' : isUseForceHidden}
               onChangeModalVisible={onChangeModalVisible}
               isAllowSwipeDown={isAllowSwipeDown}
+              hideHandle={hideHandle}
               onBackButtonPress={onBackButtonPress}
               level={level}>
               <View
@@ -239,7 +255,10 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
           <ModalBase
             isVisible={modalVisible}
             onModalHide={onModalHide || noop} // Auto trigger when close modal
-            swipeDirection={onChangeModalVisible ? 'down' : undefined}
+            // Swipe-to-dismiss installs a PanResponder that claims the touch on start,
+            // so any ScrollView inside the modal never receives the gesture. Modals with
+            // scrollable content opt out with isAllowSwipeDown={false}.
+            swipeDirection={onChangeModalVisible && isAllowSwipeDown !== false ? 'down' : undefined}
             style={{ margin: 0 }}
             backdropColor={'#1A1A1A'}
             backdropOpacity={0.8}

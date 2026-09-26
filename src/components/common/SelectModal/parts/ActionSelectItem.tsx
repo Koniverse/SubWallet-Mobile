@@ -9,12 +9,13 @@ interface Props<T> {
 }
 
 export function ActionSelectItem<T>({ item, selectedValueMap, onSelectItem }: Props<T>) {
-  const { label, backgroundColor, icon, key } = item as ActionItemType;
+  const { label, backgroundColor, icon, leftItemIcon, key } = item as ActionItemType;
   return (
     <SelectItem
       label={label}
       backgroundColor={backgroundColor}
       icon={icon}
+      leftItemIcon={leftItemIcon}
       onPress={() => {
         onSelectItem && onSelectItem(item);
       }}

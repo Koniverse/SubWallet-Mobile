@@ -20,7 +20,8 @@ import {
   updatePopupHistoryData,
 } from 'stores/base/StaticContent';
 import { useDispatch } from 'react-redux';
-import { IS_SHOW_TON_CONTRACT_VERSION_WARNING } from 'constants/localStorage';
+import { DEV_WEB_RUNNER_URL, IS_SHOW_TON_CONTRACT_VERSION_WARNING } from 'constants/localStorage';
+import { isDevModeAvailable } from 'constants/devMode';
 
 const BUNDLE_ENV = env.BUNDLE_ENV;
 export const WebViewDebugger = () => {
@@ -59,7 +60,7 @@ export const WebViewDebugger = () => {
         url = url.slice(0, -1);
       }
 
-      mmkvStore.set('__development_web_runner_url__', url);
+      mmkvStore.set(DEV_WEB_RUNNER_URL, url);
 
       setNotification("OK, Let's restart app!");
     }
@@ -67,7 +68,7 @@ export const WebViewDebugger = () => {
 
   const useDefaultWebRunner = () => {
     setInput('');
-    mmkvStore.remove('__development_web_runner_url__');
+    mmkvStore.remove(DEV_WEB_RUNNER_URL);
 
     setNotification("OK, Let's restart app!");
   };
@@ -92,6 +93,12 @@ export const WebViewDebugger = () => {
   }, []);
 
   const onValueChange = (isOn: boolean) => {
+    // The switch is already disabled in builds without DevModeWeb.bundle; guard the
+    // handler too so the flag can never be persisted where it would break the runner.
+    if (!isDevModeAvailable) {
+      return;
+    }
+
     setDevModeStatus(prevState => !prevState);
     devMode(isOn);
     setNotification("OK, Let's restart app!");
@@ -132,6 +139,8 @@ export const WebViewDebugger = () => {
             label={i18n.common.devMode}
             onValueChange={onValueChange}
             backgroundIcon={BugIcon}
+            disabled={!isDevModeAvailable}
+            description={isDevModeAvailable ? undefined : 'Not available in this build'}
           />
           <Button
             style={{ marginBottom: 5 }}
