@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useId } from 'react';
 import { AppState, BackHandler, DeviceEventEmitter, Platform, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ModalProps } from 'react-native-modal/dist/modal';
@@ -48,6 +48,7 @@ const SwFullSizeModal = ({
   level,
   hideWhenCloseApp = true,
 }: Props) => {
+  const portalKey = useId();
   const isLockScreenShown = useIsLockScreenShown();
 
   useEffect(() => {
@@ -80,7 +81,9 @@ const SwFullSizeModal = ({
     <>
       {isUseModalV2 ? (
         <Portal hostName="SimpleModalHost">
+          {/* Keyed for the same reason as in SwModal: the host keys its portals by array position. */}
           <ModalBaseV2
+            key={portalKey}
             onChangeModalVisible={onChangeModalVisible}
             level={level}
             ref={modalBaseV2Ref}

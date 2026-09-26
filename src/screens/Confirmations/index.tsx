@@ -4,7 +4,7 @@ import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/ex
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
 import { NEED_SIGN_CONFIRMATION } from 'constants/transaction';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useId, useMemo, useState } from 'react';
 import { RootStackParamList } from 'routes/index';
 import { ConfirmationType } from 'stores/base/RequestState';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
@@ -75,6 +75,7 @@ const subWalletModalSeparator: StyleProp<any> = {
 };
 
 export const Confirmations = () => {
+  const portalKey = useId();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { confirmationQueue, numberOfConfirmations } = useConfirmationsInfo();
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
@@ -483,7 +484,16 @@ export const Confirmations = () => {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-      {Platform.OS === 'android' ? <Portal>{renderMainContent()}</Portal> : renderMainContent()}
+      {/* The keyed Fragment is what SwModal's `key` does for the sheets: PortalHost keys its
+        portals by array position, so anything teleported has to carry its own key or it gets
+        handed to a neighbour's instance when another portal unmounts. */}
+      {Platform.OS === 'android' ? (
+        <Portal>
+          <React.Fragment key={portalKey}>{renderMainContent()}</React.Fragment>
+        </Portal>
+      ) : (
+        renderMainContent()
+      )}
     </KeyboardAvoidingView>
   );
 };

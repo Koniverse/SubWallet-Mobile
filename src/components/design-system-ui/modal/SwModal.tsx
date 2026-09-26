@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, useState } from 'react';
+import React, { useEffect, useId, useImperativeHandle, useState } from 'react';
 import {
   AppState,
   BackHandler,
@@ -114,6 +114,14 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
     },
     ref,
   ) => {
+    // The key for this modal's teleported element. PortalHost renders its portals as a plain
+    // array - `state.map(item => item.node)` - and its reducer splices that array, so a portal
+    // that unmounts shifts every later one down an index. Every V2 modal teleports the same
+    // ModalBaseV2 type, so with no key React does not remount on that shift: it reuses the
+    // neighbour's instance and swaps these props into it, animation state and all. An open sheet
+    // then inherits a translateY of 0, sits off screen and slides itself in a second time - issue
+    // 2057 #72, the Account name popup "displayed twice" while an account was being created.
+    const portalKey = useId();
     const { isKeyboardVisible, keyboardHeight } = useKeyboardVisible();
     const isLockScreenShown = useIsLockScreenShown();
     const theme = useSubWalletTheme().swThemes;
@@ -210,6 +218,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
         {isUseModalV2 ? (
           <Portal hostName="SimpleModalHost">
             <ModalBaseV2
+              key={portalKey}
               isVisible={modalVisible}
               setVisible={setVisible}
               height={childrenHeight}
