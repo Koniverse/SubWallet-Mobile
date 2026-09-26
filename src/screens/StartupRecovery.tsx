@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import RNRestart from 'react-native-restart-newarch';
 import { ActivityIndicator, Button, Typography } from 'components/design-system-ui';
@@ -20,12 +20,26 @@ import { devMode, mmkvStore } from 'utils/storage';
  */
 export function StartupRecovery() {
   const [isResetting, setResetting] = useState(false);
+  const restartTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+
+  useEffect(() => () => restartTimeout.current && clearTimeout(restartTimeout.current), []);
 
   const onPressReset = useCallback(() => {
     setResetting(true);
     mmkvStore.remove(DEV_WEB_RUNNER_URL);
     devMode(false);
-    RNRestart.Restart();
+
+    // Repair in place first. RNRestart is only a JS-context reload on iOS, inside the same
+    // process - which is exactly what leaves a stale native static server behind, so pressing a
+    // button that does only that can fail for the very reason the app is stuck. Imported lazily
+    // so the handler's AppState listener is not registered ahead of App.tsx's own.
+    import('../providers/WebRunnerProvider/instance')
+      .then(({ webRunnerHandler }) => webRunnerHandler.recoverRunner('startup-recovery'))
+      .catch(e => console.warn('### Startup recovery failed', e))
+      .finally(() => {
+        // This screen unmounts as soon as the app becomes ready, cancelling the restart with it.
+        restartTimeout.current = setTimeout(() => RNRestart.Restart(), 10000);
+      });
   }, []);
 
   return (

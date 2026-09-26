@@ -8,7 +8,9 @@ import MetaInfo from 'components/MetaInfo';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useEffect } from 'react';
-import { Alert, Text } from 'react-native';
+import { Text } from 'react-native';
+import { NotificationType } from '@subwallet/extension-base/background/KoniTypes';
+import { useBuildAlertModalInfo } from 'hooks/modal/useAlertModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
@@ -19,7 +21,10 @@ import BigN from 'bignumber.js';
 type Props = BaseTransactionConfirmationProps;
 
 const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
-  const { transaction } = props;
+  // openAlert/closeAlert come down as props, not from useAlertModal: on Android the confirmation
+  // content is teleported through a <Portal> (screens/Confirmations/index.tsx) and renders above
+  // AppModalContextProvider, where useContext(AppModalContext) only ever returns the default {}.
+  const { closeAlert, openAlert, transaction } = props;
   const data = transaction.data as RequestStakeClaimReward;
 
   const theme = useSubWalletTheme().swThemes;
@@ -28,24 +33,33 @@ const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const poolInfo = poolInfoMap[data.slug];
 
   const { decimals, symbol } = useGetNativeTokenBasicInfo(poolInfo?.chain);
+  const buildAlertModalInfo = useBuildAlertModalInfo();
 
   useEffect(() => {
     const isRewardLteFee = new BigN(data.unclaimedReward || 0).lte(transaction.estimateFee?.value || 0);
     const isRewardLtFee = new BigN(data.unclaimedReward || 0).lt(transaction.estimateFee?.value || 0);
+
     if (isRewardLteFee) {
-      Alert.alert(
-        'Pay attention!',
-        `The rewards you are about to claim are ${
-          isRewardLtFee ? 'smaller than' : 'equal to'
-        } the transaction fee. This means that you won’t receive any rewards after claiming. Do you wish to continue?`,
-        [
+      // The app's own alert, like the extension: a native Alert.alert renders the OS dialog, which
+      // has no warning page icon and does not follow the wallet's styling at all.
+      openAlert(
+        buildAlertModalInfo(
           {
-            text: 'I understand',
+            title: i18n.warningTitle.payAttention,
+            type: NotificationType.WARNING,
+            content: `The rewards you are about to claim are ${
+              isRewardLtFee ? 'smaller than' : 'equal to'
+            } the transaction fee. This means that you won’t receive any rewards after claiming. Do you wish to continue?`,
+            okButton: {
+              text: i18n.buttonTitles.iUnderStand,
+              onPress: closeAlert,
+            },
           },
-        ],
+          closeAlert,
+        ),
       );
     }
-  }, [data.unclaimedReward, transaction.estimateFee?.value]);
+  }, [buildAlertModalInfo, closeAlert, data.unclaimedReward, openAlert, transaction.estimateFee?.value]);
 
   return (
     <ConfirmationContent isFullHeight isTransaction transaction={transaction}>

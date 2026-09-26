@@ -22,7 +22,8 @@ import {
   _isNativeTokenBySlug,
   _parseAssetRefKey,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { Alert, AppState, Keyboard, ScrollView, StyleSheet, View } from 'react-native';
+import { AppState, Keyboard, ScrollView, StyleSheet, View } from 'react-native';
+import useAlertModal from 'hooks/modal/useAlertModal';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { SwapToField } from 'components/Swap/SwapToField';
 import BigN from 'bignumber.js';
@@ -70,7 +71,7 @@ import { SendFundProps } from 'routes/transaction/transactionAction';
 import { SwapError } from '@subwallet/extension-base/background/errors/SwapError';
 import useHandleSubmitMultiTransaction from 'hooks/transaction/useHandleSubmitMultiTransaction';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
-import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { ExtrinsicType, NotificationType } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountAddressItemType } from 'types/account';
 import { AccountChainType, AccountProxy, AccountProxyType, BalanceType, ProcessType } from '@subwallet/extension-base/types';
 import { validateRecipientAddress } from 'utils/core/logic-validation/recipientAddress';
@@ -228,6 +229,7 @@ const Component = ({
   const chainValue = useWatch<SwapFormValues>({ name: 'chain', control });
   const recipientValue = useWatch<SwapFormValues>({ name: 'recipient', control });
   const { checkChainConnected, turnOnChain } = useChainChecker(false);
+  const { closeAlert, openAlert } = useAlertModal();
   const accountInfo = useGetAccountByAddress(fromValue);
   const [processState, dispatchProcessState] = useReducer(commonProcessReducer, DEFAULT_COMMON_PROCESS);
   const { onError, onSuccess } = useHandleSubmitMultiTransaction(
@@ -716,15 +718,18 @@ const Component = ({
       }
 
       if (chainValue && !checkChainConnected(chainValue)) {
-        Alert.alert(
-          'Pay attention!',
-          'Your selected network might have lost connection. Try updating it by either re-enabling it or changing network provider',
-          [
-            {
-              text: 'I understand',
-            },
-          ],
-        );
+        // Same alert the extension shows here - a native Alert.alert is the OS dialog, with no
+        // page icon and none of the wallet's styling.
+        openAlert({
+          title: i18n.warningTitle.payAttention,
+          type: NotificationType.ERROR,
+          content:
+            'Your selected network might have lost connection. Try updating it by either re-enabling it or changing network provider',
+          okButton: {
+            text: i18n.buttonTitles.iUnderStand,
+            onPress: closeAlert,
+          },
+        });
 
         return;
       }
@@ -886,6 +891,8 @@ const Component = ({
       accounts,
       chainValue,
       checkChainConnected,
+      closeAlert,
+      openAlert,
       confirmModal,
       currentOptimalSwapPath,
       currentQuote,

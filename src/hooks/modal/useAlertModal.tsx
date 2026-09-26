@@ -4,7 +4,7 @@ import { CheckCircleIcon, InfoIcon, WarningIcon, XCircleIcon } from 'phosphor-re
 import { PageIcon } from 'components/design-system-ui';
 import { ButtonPropsType } from 'components/design-system-ui/button/PropsType';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { AppModalContext } from 'providers/AppModalContext';
+import { AppModalContext, ConfirmModalInfo } from 'providers/AppModalContext';
 import i18n from 'utils/i18n/i18n';
 
 export interface AlertButtonProps {
@@ -22,15 +22,22 @@ export interface AlertDialogProps {
   cancelButton?: AlertButtonProps;
 }
 
-// Mobile counterpart of the extension's openAlert/closeAlert (AlertModal): the shared
-// ConfirmModal with the page icon picked by notification type.
-const useAlertModal = () => {
+/**
+ * Builds the ConfirmModal state for an alert, without touching the context.
+ *
+ * Screens under a <Portal> - the whole confirmation content is teleported on Android
+ * (screens/Confirmations/index.tsx) - render at the host's position, above AppModalContextProvider,
+ * so they cannot read the context at all. They get openAlert/closeAlert passed down as props
+ * instead, and use this to build the same modal the hook below would.
+ */
+export const useBuildAlertModalInfo = () => {
   const theme = useSubWalletTheme().swThemes;
-  const { confirmModal } = useContext(AppModalContext);
-  const { hideConfirmModal, setConfirmModal } = confirmModal;
 
-  const openAlert = useCallback(
-    ({ cancelButton, content, okButton, title, type = NotificationType.INFO }: AlertDialogProps) => {
+  return useCallback(
+    (
+      { cancelButton, content, okButton, title, type = NotificationType.INFO }: AlertDialogProps,
+      closeAlert: () => void,
+    ): ConfirmModalInfo => {
       const iconMap = {
         [NotificationType.INFO]: { icon: InfoIcon, color: theme.geekblue },
         [NotificationType.SUCCESS]: { icon: CheckCircleIcon, color: theme.colorSuccess },
@@ -39,7 +46,7 @@ const useAlertModal = () => {
       };
       const { color, icon } = iconMap[type];
 
-      setConfirmModal({
+      return {
         visible: true,
         title,
         message: content,
@@ -48,11 +55,26 @@ const useAlertModal = () => {
         completeBtnType: okButton?.type,
         cancelBtnTitle: cancelButton?.text,
         isShowCancelButton: !!cancelButton,
-        onCompleteModal: okButton?.onPress || hideConfirmModal,
-        onCancelModal: cancelButton?.onPress || hideConfirmModal,
-      });
+        onCompleteModal: okButton?.onPress || closeAlert,
+        onCancelModal: cancelButton?.onPress || closeAlert,
+      };
     },
-    [hideConfirmModal, setConfirmModal, theme.colorError, theme.colorSuccess, theme.colorWarning, theme.geekblue],
+    [theme.colorError, theme.colorSuccess, theme.colorWarning, theme.geekblue],
+  );
+};
+
+// Mobile counterpart of the extension's openAlert/closeAlert (AlertModal): the shared
+// ConfirmModal with the page icon picked by notification type.
+const useAlertModal = () => {
+  const { confirmModal } = useContext(AppModalContext);
+  const { hideConfirmModal, setConfirmModal } = confirmModal;
+  const buildAlertModalInfo = useBuildAlertModalInfo();
+
+  const openAlert = useCallback(
+    (props: AlertDialogProps) => {
+      setConfirmModal(buildAlertModalInfo(props, hideConfirmModal));
+    },
+    [buildAlertModalInfo, hideConfirmModal, setConfirmModal],
   );
 
   return useMemo(() => ({ openAlert, closeAlert: hideConfirmModal }), [hideConfirmModal, openAlert]);

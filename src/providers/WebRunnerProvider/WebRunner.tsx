@@ -8,7 +8,8 @@ import { WebRunnerState } from 'providers/contexts';
 import { backupStorageData, mmkvStore } from 'utils/storage';
 import { WEB_SERVER_PORT } from './constant';
 import { getJsInjectContent, safeJSONParse } from 'providers/WebRunnerProvider/utils';
-import { WebRunnerGlobalState, WebRunnerHandler } from 'providers/WebRunnerProvider/WebRunnerHandler';
+import { WebRunnerGlobalState } from 'providers/WebRunnerProvider/WebRunnerHandler';
+import { webRunnerHandler } from 'providers/WebRunnerProvider/instance';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { DEV_WEB_RUNNER_URL } from 'constants/localStorage';
 
@@ -21,16 +22,15 @@ const completeBackUpData = !isFirstLaunch ? storedCompleteBackUpData : true;
 // Set by the first load failure; getBaseUri() then stops honouring the custom runner URL.
 let needFallBack = false;
 
-const webRunnerHandler = new WebRunnerHandler();
-
 interface WebRunnerControlAction {
   type: string;
   payload?: Partial<WebRunnerGlobalState>;
 }
 
-const now = new Date().getTime();
-
-const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${now}`;
+// Recomputed per activation: a recovery that re-navigates to a byte-identical URL can be served
+// from cache, and would not even count as a change if the uri had not been cleared in between.
+const getUriParams = () =>
+  '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${Date.now()}`;
 
 const devWebRunnerURL = mmkvStore.getString(DEV_WEB_RUNNER_URL);
 
@@ -55,22 +55,20 @@ const getBaseUri = () => {
 
 let BASE_URI = getBaseUri();
 
-// Both kinds of load failure land here. A WebView that cannot reach the origin at all reports
-// onError (connection refused, bad host); only a server that answers with 4xx/5xx reports
-// onHttpError - and a dead custom URL is the first kind, which used to be logged and nothing else.
-const onRunnerLoadFailure = (label: string, event: unknown) => {
+// Every way the runner page can die lands here. onError means the origin could not be reached at
+// all (connection refused, bad host), onHttpError means a server answered with 4xx/5xx, and the
+// two process-death callbacks mean the page itself was killed by the OS while the URL was fine -
+// so only the first two may drop a custom dev URL. The repair itself is the handler's, which
+// probes the port and rebuilds the server before remounting.
+const onRunnerLoadFailure = (label: string, event: unknown, downgradeUri = true) => {
   console.debug(`### WebRunner ${label}`, event);
 
-  if (needFallBack) {
-    return;
+  if (downgradeUri && !needFallBack) {
+    needFallBack = true;
+    BASE_URI = getBaseUri();
   }
 
-  needFallBack = true;
-  BASE_URI = getBaseUri();
-
-  webRunnerHandler.sleep();
-  webRunnerHandler.active();
-  webRunnerHandler.reload();
+  webRunnerHandler.onLoadFailure(label);
 };
 
 const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlAction): WebRunnerGlobalState => {
@@ -85,7 +83,7 @@ const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlA
       state.eventEmitter.emit('reloading');
       return { ...state };
     case 'active':
-      const targetURI = `${BASE_URI}/index.html${URI_PARAMS}`;
+      const targetURI = `${BASE_URI}/index.html${getUriParams()}`;
       return { ...state, uri: targetURI };
     case 'sleep':
       state.uri = undefined;
@@ -199,6 +197,8 @@ export const WebRunner = React.memo(
             onLoadProgress={onLoadProgress}
             onError={e => onRunnerLoadFailure('error', e.nativeEvent)}
             onHttpError={e => onRunnerLoadFailure('HttpError', e.nativeEvent)}
+            onContentProcessDidTerminate={e => onRunnerLoadFailure('contentProcessDidTerminate', e.nativeEvent, false)}
+            onRenderProcessGone={e => onRunnerLoadFailure('renderProcessGone', e.nativeEvent, false)}
             javaScriptEnabled={true}
             allowFileAccess={true}
             allowUniversalAccessFromFileURLs={true}

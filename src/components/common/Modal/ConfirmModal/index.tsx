@@ -79,8 +79,8 @@ const ConfirmModal: React.FC<Props> = ({
       isAllowSwipeDown={isAllowSwipeDown}
       onBackButtonPress={onCancelModal}
       onChangeModalVisible={onCancelModal}>
-      <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
-        <View style={{ paddingBottom: 20 }}>
+      <View style={styles.contentStyle}>
+        <View style={styles.iconWrapperStyle}>
           {messageIcon ? (
             <Logo network={messageIcon} size={100} />
           ) : customIcon ? (

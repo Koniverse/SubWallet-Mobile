@@ -56,6 +56,9 @@ import { ImageLogosMap } from 'assets/logo';
 import { GlobalInstructionModalContextProvider } from 'providers/GlobalInstructionModalContext';
 import { useGetShowReviewPopupScreen } from 'hooks/static-content/useGetShowReviewPopupScreen';
 import { NEED_UPDATE_CHROME } from 'providers/WebRunnerProvider/constant.ts';
+// The module, never the webRunnerHandler singleton: constructing it here would register its own
+// AppState listener ahead of the one below, so its blind reload() would run before this restart.
+import { isRunnerStartupInFlight, stopStaticServerForRestart } from 'providers/WebRunnerProvider/WebRunnerHandler';
 
 const logoTextStyle: StyleProp<any> = {
   fontSize: 38,
@@ -103,6 +106,9 @@ const APP_BACKGROUND_RELOAD_TIMEOUT = 20 * 60 * 1000;
 // purpose: a first launch on a slow Android device still has to copy the web bundle out of assets
 // and restore storage, and the panel offers a restart - premature is worse than late.
 const APP_STARTUP_STUCK_TIMEOUT = 45 * 1000;
+// And when the deadline passes while the runner is still being worked on, ask again this much
+// later instead of accusing it of being stuck.
+const APP_STARTUP_STUCK_RECHECK = 15 * 1000;
 
 let lockWhenActive = false;
 let lastAppInactiveAt: number | undefined;
@@ -118,7 +124,20 @@ AppState.addEventListener('change', (state: string) => {
 
     if (inactiveDuration > APP_BACKGROUND_RELOAD_TIMEOUT && !isRestartingAfterLongBackground) {
       isRestartingAfterLongBackground = true;
-      RNRestart.Restart();
+      // Never hand a live static server to the next JS context. On iOS RNRestart.Restart() only
+      // reloads the bundle inside the same process, so the server this context started stays
+      // registered natively: the new context's start() then fails with 'Another Server instance
+      // is active' on a port this context's teardown is about to close, and the app is stuck on
+      // the spinner until the process is killed. On Android Restart() exits the process, so this
+      // is a no-op there.
+      stopStaticServerForRestart()
+        .catch(() => undefined)
+        .finally(() => RNRestart.Restart());
+      // If the restart never lands, do not lose long-background recovery for the rest of this run.
+      setTimeout(() => {
+        isRestartingAfterLongBackground = false;
+      }, 15000);
+
       return;
     }
 
@@ -289,7 +308,25 @@ export const App = () => {
       return;
     }
 
-    const timeout = setTimeout(() => setStartupStuck(true), APP_STARTUP_STUCK_TIMEOUT);
+    // Time without progress, not time since launch: the server start retries can legitimately
+    // run past the deadline on a slow first launch, and polling the handler is enough here - the
+    // panel is a last resort, so being a re-check late costs nothing, while showing it over a
+    // runner that is visibly still starting would just look like a failure that is not one.
+    let timeout: NodeJS.Timeout;
+
+    const armStuckTimeout = (delay: number) => {
+      timeout = setTimeout(() => {
+        if (isRunnerStartupInFlight()) {
+          armStuckTimeout(APP_STARTUP_STUCK_RECHECK);
+
+          return;
+        }
+
+        setStartupStuck(true);
+      }, delay);
+    };
+
+    armStuckTimeout(APP_STARTUP_STUCK_TIMEOUT);
 
     return () => clearTimeout(timeout);
   }, [isAppReady]);

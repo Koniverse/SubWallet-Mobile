@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import React from 'react';
 import WebView from 'react-native-webview';
-import StaticServer from '@dr.pogodin/react-native-static-server';
+import StaticServer, { STATES } from '@dr.pogodin/react-native-static-server';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
 import { AppState, AppStateStatus, DeviceEventEmitter, NativeSyntheticEvent, Platform } from 'react-native';
 import { getId } from '@subwallet/extension-base/utils/getId';
@@ -56,6 +56,81 @@ const isDevMode = getDevMode();
 let server: StaticServer | null = null;
 let started = false;
 let serverReadyPromise: Promise<boolean> | null = null;
+// Module scope like the rest of the runner's state, and for the same reason: the thing being
+// repaired is the one native server of this process, so a repair is global, not per instance.
+let isRecovering = false;
+
+const SERVER_ORIGIN = `http://localhost:${WEB_SERVER_PORT}`;
+const SERVER_START_MAX_ATTEMPTS = 6;
+const LOAD_FAILURE_MAX_RECOVERIES = 5;
+
+/**
+ * Does anything actually answer on the runner's port?
+ *
+ * The only honest way to tell a live server from a dead one: the native module's own bookkeeping
+ * survives a JS reload (iOS keeps the process), so `started`/`server` can describe a lighttpd that
+ * another JS context has since shut down.
+ */
+const isStaticServerReachable = async (timeoutMs = 2000): Promise<boolean> => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(`${SERVER_ORIGIN}/index.html?probe=${Date.now()}`, {
+      signal: controller.signal,
+      headers: { 'Cache-Control': 'no-cache' },
+    });
+
+    return response.ok;
+  } catch (e) {
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
+/**
+ * stop() that cannot hang. A CRASHED instance returns early on the JS side, and the iOS native
+ * stop has no else-branch when its server ivar is nil - its promise then never settles at all.
+ */
+const safeStopServer = async (instance: StaticServer | null, timeoutMs = 5000) => {
+  if (!instance || instance.state !== STATES.ACTIVE) {
+    return;
+  }
+
+  await Promise.race([
+    instance.stop('webrunner-restart').catch(() => undefined),
+    new Promise(resolve => setTimeout(resolve, timeoutMs)),
+  ]);
+};
+
+/**
+ * Hand the next JS context a free port. On iOS RNRestart.Restart() keeps the unix process alive,
+ * so without this the new context boots on top of a still-registered lighttpd: its start() fails
+ * with 'Another Server instance is active' while this context's teardown shuts that very server
+ * down, and the app is left pointing at a dead origin with `started` latched true.
+ */
+export const stopStaticServerForRestart = async (timeoutMs = 5000) => {
+  const current = server;
+
+  server = null;
+  started = false;
+  serverReadyPromise = null;
+
+  await safeStopServer(current, timeoutMs);
+};
+
+/**
+ * Is the handler actually working on the runner right now - starting the server, retry chain
+ * included, or repairing it?
+ *
+ * App.tsx asks this before it replaces the spinner with the recovery panel. A first launch on a
+ * slow device can legitimately spend the better part of a minute inside the start retries, and a
+ * panel announcing that the app is stuck while it is visibly still trying is alarming for nothing.
+ * Sitting in a backoff between chains deliberately does not count: a chain that keeps failing
+ * would otherwise suppress the panel forever, and that is the one case that needs it.
+ */
+export const isRunnerStartupInFlight = () => serverReadyPromise !== null || isRecovering;
 
 export class WebRunnerHandler {
   eventEmitter?: EventEmitter;
@@ -73,6 +148,11 @@ export class WebRunnerHandler {
   shouldReloadHandler: boolean = false;
   isBackupOnInit = false;
   androidBundleReadyPromise: Promise<void> = Promise.resolve();
+  activateRetryTimeout?: NodeJS.Timeout;
+  activateAttempts = 0;
+  readyWatchdog?: NodeJS.Timeout;
+  recoveryAttempts = 0;
+  loadFailureCount = 0;
 
   constructor() {
     if (Platform.OS === 'android') {
@@ -135,27 +215,137 @@ export class WebRunnerHandler {
   }
 
   active() {
-    if (this.status === 'inactive') {
-      this.status = 'activating';
-      this.serverReady()
-        .then(() => {
-          this.dispatch && this.dispatch({ type: 'active' });
-          this.status = 'active';
-        })
-        .catch(e => console.log('error when start server', e));
+    if (this.status !== 'inactive') {
+      return;
     }
+
+    this.status = 'activating';
+    this.activateRetryTimeout && clearTimeout(this.activateRetryTimeout);
+
+    this.serverReady()
+      .then(() => {
+        this.activateAttempts = 0;
+        this.dispatch && this.dispatch({ type: 'active' });
+        this.status = 'active';
+        this.startReadyWatchdog();
+      })
+      .catch(e => {
+        // Going back to 'inactive' is the whole point: the status used to stay at 'activating'
+        // after a rejected serverReady(), and since active() only runs while 'inactive', nothing
+        // could ever ask again - no WebView was mounted and the app sat on the spinner for good.
+        console.warn('### WebRunner server start failed', e);
+        this.status = 'inactive';
+
+        const delay = Math.min(30000, 3000 * 2 ** this.activateAttempts);
+
+        this.activateAttempts += 1;
+        this.activateRetryTimeout = setTimeout(() => this.active(), delay);
+      });
   }
 
   sleep() {
     this.stopPing();
+    this.clearReadyWatchdog();
+    this.activateRetryTimeout && clearTimeout(this.activateRetryTimeout);
+    this.activateRetryTimeout = undefined;
     this.dispatch && this.dispatch({ type: 'sleep' });
     this.status = 'inactive';
   }
 
   reload() {
     this.webRef?.current?.reload();
+    // Stop claiming crypto_ready: the reducer's 'rerender' path writes this, the direct reload
+    // here never did, and a stale crypto_ready makes recoverRunner's own guard - and the resume
+    // branch of onAppStateChange - trust a runner that is being torn down. A reload that lands
+    // nowhere then left nothing at all watching it.
+    this.runnerState.status = 'reloading';
     this.eventEmitter?.emit('update-status', 'reloading');
+    // A reload that leads nowhere is the common shape of this bug, so let the watchdog judge it.
+    this.startReadyWatchdog();
     console.debug('Reload the web-runner');
+  }
+
+  /**
+   * A WebView load failure (unreachable origin, 4xx/5xx, a dead content process). Bounded, but no
+   * longer one-shot: the first failure used to consume the only repair attempt this JS context
+   * had, so anything that failed twice stayed broken until the process was killed.
+   */
+  onLoadFailure(reason: string) {
+    if (this.loadFailureCount >= LOAD_FAILURE_MAX_RECOVERIES) {
+      return;
+    }
+
+    // Also stale after a content process death: the runner reported crypto_ready and then the
+    // page was killed, so the guard in recoverRunner would skip the repair and the only thing
+    // left to notice would be the ping, half a minute later. Not emitted on purpose - a failure
+    // that turns out to be transient should not flash the spinner over a working app; the repair
+    // emits 'sleep' itself once it really tears the WebView down.
+    if (this.runnerState.status === 'crypto_ready') {
+      this.runnerState.status = 'reloading';
+    }
+
+    const attempt = (this.loadFailureCount += 1);
+
+    // recoverRunner logs and swallows its own failures; the catch is only here so the promise is
+    // never floating.
+    setTimeout(() => {
+      this.recoverRunner(reason).catch(() => undefined);
+    }, Math.min(8000, 500 * 2 ** (attempt - 1)));
+  }
+
+  startReadyWatchdog(delay = 20000) {
+    this.clearReadyWatchdog();
+    this.readyWatchdog = setTimeout(() => {
+      this.recoverRunner('ready-timeout').catch(() => undefined);
+    }, delay);
+  }
+
+  clearReadyWatchdog() {
+    this.readyWatchdog && clearTimeout(this.readyWatchdog);
+    this.readyWatchdog = undefined;
+  }
+
+  async restartServer() {
+    await stopStaticServerForRestart();
+
+    return this.serverReady();
+  }
+
+  /**
+   * The one repair path: probe the port, rebuild the server if it is gone, then remount the
+   * WebView. Nothing else watched for "mounted but crypto_ready never arrived" - startPing only
+   * runs after crypto_ready, so a runner that never got there had no way back.
+   */
+  async recoverRunner(reason: string) {
+    if (isRecovering || this.runnerState.status === 'crypto_ready') {
+      return;
+    }
+
+    // Never repair in the background: iOS can suspend mid-flight, and a server started there may
+    // not survive to the next foreground - the resume path arms the watchdog again anyway.
+    if (AppState.currentState !== 'active') {
+      this.startReadyWatchdog();
+
+      return;
+    }
+
+    isRecovering = true;
+    this.recoveryAttempts += 1;
+    console.warn(`### WebRunner recovery (${reason}) attempt ${this.recoveryAttempts}`);
+
+    try {
+      if (!(await isStaticServerReachable())) {
+        await this.restartServer();
+      }
+
+      this.sleep();
+      this.active();
+    } catch (e) {
+      console.warn('### WebRunner recovery failed', e);
+    } finally {
+      isRecovering = false;
+      this.startReadyWatchdog(Math.min(60000, 20000 * this.recoveryAttempts));
+    }
   }
 
   async waitForIndexHtml(dir: string, retry = 20) {
@@ -204,26 +394,47 @@ export class WebRunnerHandler {
       await new Promise(r => setTimeout(r, 300));
     }
 
-    try {
-      if (server) {
-        await server.stop();
-      }
-    } catch (_) { }
+    let lastError: unknown;
 
-    server = new StaticServer({ port: WEB_SERVER_PORT, fileDir });
+    for (let attempt = 1; attempt <= SERVER_START_MAX_ATTEMPTS; attempt++) {
+      await safeStopServer(server);
 
-    try {
-      await server.start();
-      started = true;
-    } catch (e: any) {
-      if (e?.message?.includes('Another Server instance is active')) {
+      server = new StaticServer({ port: WEB_SERVER_PORT, fileDir });
+
+      try {
+        await server.start();
         started = true;
+
         return true;
+      } catch (e: any) {
+        lastError = e;
+
+        // A server from a previous JS context is still registered natively. Only treat that as
+        // success when it really answers - it used to be trusted blindly, and the old context's
+        // teardown is racing to shut down that exact server, which left the app on a dead port
+        // with no way back: serverReady() short-circuits on `started && server` forever.
+        if (e?.message?.includes('Another Server instance is active')) {
+          if (await isStaticServerReachable()) {
+            started = true;
+
+            return true;
+          }
+
+          console.warn(`### WebRunner server conflict, survivor unreachable (attempt ${attempt})`);
+        } else {
+          console.warn(`### WebRunner server start failed (attempt ${attempt})`, e);
+        }
+
+        server = null;
+        started = false;
+
+        if (attempt < SERVER_START_MAX_ATTEMPTS) {
+          await new Promise(resolve => setTimeout(resolve, Math.min(4000, 500 * 2 ** (attempt - 1))));
+        }
       }
-      throw e;
     }
 
-    return true;
+    throw lastError;
   }
 
   ping() {
@@ -327,6 +538,11 @@ export class WebRunnerHandler {
           restoreStorageData();
           notifyUnstable();
         } else if (webViewStatus === 'crypto_ready') {
+          this.clearReadyWatchdog();
+          this.recoveryAttempts = 0;
+          this.activateAttempts = 0;
+          this.loadFailureCount = 0;
+
           if (this.shouldReloadHandler) {
             restartAllHandlers();
           }
@@ -384,6 +600,9 @@ export class WebRunnerHandler {
         this.ping();
         this.startPing();
       } else {
+        // Not ready on resume: ping later as before, but also let the watchdog repair it if the
+        // runner never reports back - this branch used to install no recovery of any kind.
+        this.startReadyWatchdog();
         this.resumePingTimeout = setTimeout(() => {
           this.ping();
           this.startPing();
@@ -392,6 +611,7 @@ export class WebRunnerHandler {
     } else {
       this.lastActiveTime = now;
       this.stopPing();
+      this.clearReadyWatchdog();
     }
   }
 }
