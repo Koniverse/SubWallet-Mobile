@@ -59,6 +59,14 @@ let serverReadyPromise: Promise<boolean> | null = null;
 // Module scope like the rest of the runner's state, and for the same reason: the thing being
 // repaired is the one native server of this process, so a repair is global, not per instance.
 let isRecovering = false;
+// Set by App.tsx, synchronously, when it takes over a long-background resume. Its teardown is
+// async, so without this the handler's own resume branch below would still be first and would
+// reload the WebView against a server that is about to be stopped - and, if that reload happened
+// to land, hand recoverRunner a healthy runner to tear down again.
+let isLongBackgroundRepairPending = false;
+export const markLongBackgroundRepair = () => {
+  isLongBackgroundRepairPending = true;
+};
 
 const SERVER_ORIGIN = `http://localhost:${WEB_SERVER_PORT}`;
 const SERVER_START_MAX_ATTEMPTS = 6;
@@ -303,6 +311,22 @@ export class WebRunnerHandler {
   clearReadyWatchdog() {
     this.readyWatchdog && clearTimeout(this.readyWatchdog);
     this.readyWatchdog = undefined;
+  }
+
+  /**
+   * Resume after a long background, on the platforms where the app is not restarted outright.
+   *
+   * The static server has just been stopped, so whatever the runner last reported is stale by
+   * construction: recoverRunner's own guard - there to avoid tearing down a live runner - would
+   * otherwise see crypto_ready and skip the repair. Emitting the status as well is deliberate:
+   * the app really is not ready until the WebView reports back, and the loading screen saying so
+   * is the honest version of what the restart used to look like.
+   */
+  async restartAfterLongBackground() {
+    this.runnerState.status = 'reloading';
+    this.eventEmitter?.emit('update-status', 'reloading');
+
+    await this.recoverRunner('long-background');
   }
 
   async restartServer() {
@@ -593,6 +617,12 @@ export class WebRunnerHandler {
     mmkvStore.set('runnerState', `${this.runnerState.status}`);
     if (state === 'active') {
       this.clearResumePingTimeout();
+
+      if (isLongBackgroundRepairPending) {
+        isLongBackgroundRepairPending = false;
+
+        return;
+      }
 
       if (this.lastActiveTime && now - this.lastActiveTime > LONG_TIMEOUT) {
         this.reload();

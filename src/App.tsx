@@ -6,6 +6,7 @@ import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } fro
 import {
   AppState,
   DeviceEventEmitter,
+  Platform,
   ImageBackground,
   Linking,
   StatusBar,
@@ -58,7 +59,11 @@ import { useGetShowReviewPopupScreen } from 'hooks/static-content/useGetShowRevi
 import { NEED_UPDATE_CHROME } from 'providers/WebRunnerProvider/constant.ts';
 // The module, never the webRunnerHandler singleton: constructing it here would register its own
 // AppState listener ahead of the one below, so its blind reload() would run before this restart.
-import { isRunnerStartupInFlight, stopStaticServerForRestart } from 'providers/WebRunnerProvider/WebRunnerHandler';
+import {
+  isRunnerStartupInFlight,
+  markLongBackgroundRepair,
+  stopStaticServerForRestart,
+} from 'providers/WebRunnerProvider/WebRunnerHandler';
 
 const logoTextStyle: StyleProp<any> = {
   fontSize: 38,
@@ -124,15 +129,38 @@ AppState.addEventListener('change', (state: string) => {
 
     if (inactiveDuration > APP_BACKGROUND_RELOAD_TIMEOUT && !isRestartingAfterLongBackground) {
       isRestartingAfterLongBackground = true;
-      // Never hand a live static server to the next JS context. On iOS RNRestart.Restart() only
-      // reloads the bundle inside the same process, so the server this context started stays
-      // registered natively: the new context's start() then fails with 'Another Server instance
-      // is active' on a port this context's teardown is about to close, and the app is stuck on
-      // the spinner until the process is killed. On Android Restart() exits the process, so this
-      // is a no-op there.
+      // Either way the static server goes first, so nothing is left holding the port.
+      //
+      // Android then restarts for real - Intent + exit(0) - and comes back on a clean process.
+      // iOS does not: RNRestart there is only a JS-context reload inside the same process, driven
+      // from the native module with a dispatch_sync onto the main thread, and a reload that does
+      // not complete leaves the last rendered frame on screen with nothing handling touches. That
+      // is what a "frozen after coming back to the app" report looks like, and the reload never
+      // bought iOS what it buys Android anyway. Repair in place instead: rebuilding the server and
+      // remounting the WebView is all the restart was ever there for, and crypto_ready re-runs
+      // restartAllHandlers() for the subscriptions.
+      if (Platform.OS === 'ios') {
+        // Claim this resume before the teardown below starts: the handler's own AppState listener
+        // runs right after this one and would otherwise reload the WebView in the meantime.
+        markLongBackgroundRepair();
+      }
+
       stopStaticServerForRestart()
         .catch(() => undefined)
-        .finally(() => RNRestart.Restart());
+        .finally(() => {
+          if (Platform.OS !== 'ios') {
+            RNRestart.Restart();
+
+            return;
+          }
+
+          import('providers/WebRunnerProvider/instance')
+            .then(({ webRunnerHandler }) => webRunnerHandler.restartAfterLongBackground())
+            .catch(e => console.warn('### Long background recovery failed', e))
+            .finally(() => {
+              isRestartingAfterLongBackground = false;
+            });
+        });
       // If the restart never lands, do not lose long-background recovery for the rest of this run.
       setTimeout(() => {
         isRestartingAfterLongBackground = false;

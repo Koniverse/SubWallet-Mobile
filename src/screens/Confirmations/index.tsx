@@ -4,7 +4,7 @@ import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/ex
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
 import { NEED_SIGN_CONFIRMATION } from 'constants/transaction';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import React, { useCallback, useContext, useEffect, useId, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { RootStackParamList } from 'routes/index';
 import { ConfirmationType } from 'stores/base/RequestState';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
@@ -38,7 +38,7 @@ import i18n from 'utils/i18n/i18n';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Portal } from '@gorhom/portal';
+import { Portal, PortalHost } from '@gorhom/portal';
 import { findAccountByAddress, getSignMode } from 'utils/index';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { getDevMode } from 'utils/storage';
@@ -50,7 +50,8 @@ import {
 } from '@subwallet/extension-base/types';
 import { SignerPayloadJSON } from '@polkadot/types/types';
 import { _isRuntimeUpdated } from '@subwallet/extension-base/utils';
-import { AppModalContext } from 'providers/AppModalContext';
+import ConfirmModal from 'components/common/Modal/ConfirmModal';
+import { ConfirmModalInfo } from 'providers/AppModalContext';
 import { SubmitApiConfirmation } from './variants/Action';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
@@ -74,6 +75,9 @@ const subWalletModalSeparator: StyleProp<any> = {
   marginBottom: 16,
 };
 
+// The host lives inside this screen (see the alert state below), not in AppNavigator.
+const CONFIRMATION_MODAL_HOST = 'ConfirmationModalHost';
+
 export const Confirmations = () => {
   const portalKey = useId();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -83,9 +87,18 @@ export const Confirmations = () => {
   const [index, setIndex] = useState(0);
   const insets = useSafeAreaInsets();
   const confirmation = confirmationQueue[index] || null;
-  const {
-    confirmModal: { setConfirmModal, hideConfirmModal },
-  } = useContext(AppModalContext);
+  /**
+   * This screen owns its alert, like the extension's Confirmations page and its <AlertModal>.
+   *
+   * Driving the app-wide modal from here put the sheet in the navigator's own portal host, which
+   * on iOS is a different thing entirely: this screen belongs to the stack's transparentModal
+   * group, so the OS presents it as its own view controller, above every React view in the root
+   * one. The alert then painted *behind* the confirmation and only appeared once the confirmation
+   * was dismissed. A host inside this screen keeps the sheet in the presented view controller,
+   * where zIndex can do its job.
+   */
+  const [alertInfo, setAlertInfo] = useState<ConfirmModalInfo>({});
+  const closeAlert = useCallback(() => setAlertInfo(prevState => ({ ...prevState, visible: false })), []);
   useHandlerHardwareBackPress(true);
   const isDevMode = getDevMode();
   const titleMap: Record<ConfirmationType, string> = useMemo(
@@ -351,8 +364,8 @@ export const Confirmations = () => {
     ) {
       return (
         <TransactionConfirmation
-          openAlert={setConfirmModal}
-          closeAlert={hideConfirmModal}
+          openAlert={setAlertInfo}
+          closeAlert={closeAlert}
           confirmation={confirmation}
           navigation={navigation}
         />
@@ -365,8 +378,8 @@ export const Confirmations = () => {
       if (request.payload.processId) {
         return (
           <EvmSignatureWithProcess
-            closeAlert={hideConfirmModal}
-            openAlert={setConfirmModal}
+            closeAlert={closeAlert}
+            openAlert={setAlertInfo}
             request={request}
             navigation={navigation}
           />
@@ -438,7 +451,7 @@ export const Confirmations = () => {
     }
 
     return null;
-  }, [accounts, confirmation, hideConfirmModal, isDevMode, navigation, setConfirmModal]);
+  }, [accounts, closeAlert, confirmation, isDevMode, navigation]);
 
   useEffect(() => {
     if (numberOfConfirmations) {
@@ -479,6 +492,25 @@ export const Confirmations = () => {
         {content}
         <View style={{ paddingBottom: insets.bottom }} />
       </View>
+
+      <ConfirmModal
+        visible={alertInfo.visible || false}
+        title={alertInfo.title || ''}
+        message={alertInfo.message || ''}
+        messageIcon={alertInfo.messageIcon}
+        customIcon={alertInfo.customIcon}
+        onCancelModal={alertInfo.onCancelModal}
+        onCompleteModal={alertInfo.onCompleteModal}
+        completeBtnTitle={alertInfo.completeBtnTitle}
+        completeBtnType={alertInfo.completeBtnType}
+        cancelBtnTitle={alertInfo.cancelBtnTitle}
+        isAllowSwipeDown={alertInfo.isAllowSwipeDown}
+        disabledOnPressBackDrop={alertInfo.disabledOnPressBackDrop}
+        isShowCancelButton={alertInfo.isShowCancelButton}
+        portalHostName={CONFIRMATION_MODAL_HOST}
+      />
+      {/* Last child, so the sheet it hosts paints over the confirmation card. */}
+      <PortalHost name={CONFIRMATION_MODAL_HOST} />
     </View>
   );
 

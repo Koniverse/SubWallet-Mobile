@@ -627,7 +627,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
       onStateChange={onUpdateRoute}
       onReady={onNavigationReady}>
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
-      <PortalHost name="ConfirmationModalHost" />
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={onError}>
         <Stack.Navigator
           initialRouteName={isLogin && accounts.length > 0 ? 'Login' : 'Home'}

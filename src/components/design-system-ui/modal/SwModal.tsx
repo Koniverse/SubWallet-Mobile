@@ -49,6 +49,10 @@ export interface SWModalProps {
   hideWhenCloseApp?: boolean;
   isShowLeftBtn?: boolean;
   isShowRightBtn?: boolean;
+  // Which PortalHost this modal teleports into. Screens that iOS presents as their own view
+  // controller (the Confirmations stack group) have to host their modals themselves, or the
+  // sheet lands in the navigator's host and paints behind the presented screen.
+  portalHostName?: string;
   onPressLeftBtn?: () => void;
   onPressRightBtn?: () => void;
 }
@@ -109,6 +113,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       hideWhenCloseApp = true,
       isShowLeftBtn,
       isShowRightBtn,
+      portalHostName = 'SimpleModalHost',
       onPressLeftBtn,
       onPressRightBtn,
     },
@@ -216,7 +221,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
     return (
       <>
         {isUseModalV2 ? (
-          <Portal hostName="SimpleModalHost">
+          <Portal hostName={portalHostName}>
             <ModalBaseV2
               key={portalKey}
               isVisible={modalVisible}

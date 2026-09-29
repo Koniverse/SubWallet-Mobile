@@ -23,6 +23,7 @@ interface Props {
   disabledOnPressBackDrop?: boolean;
   isAllowSwipeDown?: boolean;
   isShowCancelButton?: boolean;
+  portalHostName?: string;
 }
 
 const ConfirmModal: React.FC<Props> = ({
@@ -39,12 +40,14 @@ const ConfirmModal: React.FC<Props> = ({
   isAllowSwipeDown,
   disabledOnPressBackDrop,
   isShowCancelButton = true,
+  portalHostName,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
 
   return (
     <SwModal
+      portalHostName={portalHostName}
       setVisible={noop}
       isUseForceHidden={false}
       modalVisible={visible}
