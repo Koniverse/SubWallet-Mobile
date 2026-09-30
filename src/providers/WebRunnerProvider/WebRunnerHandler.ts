@@ -283,12 +283,15 @@ export class WebRunnerHandler {
       return;
     }
 
-    // Also stale after a content process death: the runner reported crypto_ready and then the
-    // page was killed, so the guard in recoverRunner would skip the repair and the only thing
-    // left to notice would be the ping, half a minute later. Not emitted on purpose - a failure
-    // that turns out to be transient should not flash the spinner over a working app; the repair
-    // emits 'sleep' itself once it really tears the WebView down.
-    if (this.runnerState.status === 'crypto_ready') {
+    // Only a dead page may overrule a runner that last reported crypto_ready. Process death is
+    // proof the page is gone, so clearing the status there lets recoverRunner past its guard -
+    // that guard exists to stop a repair from tearing down a working runner, and a navigation
+    // error is not proof of anything: iOS already filters cancelled navigations and reports
+    // onHttpError for the main frame only, and whatever is left the ping will catch. Not emitted
+    // on purpose either - the repair emits 'sleep' itself once it really tears the WebView down.
+    const isPageGone = reason === 'contentProcessDidTerminate' || reason === 'renderProcessGone';
+
+    if (isPageGone && this.runnerState.status === 'crypto_ready') {
       this.runnerState.status = 'reloading';
     }
 
@@ -301,7 +304,13 @@ export class WebRunnerHandler {
     }, Math.min(8000, 500 * 2 ** (attempt - 1)));
   }
 
-  startReadyWatchdog(delay = 20000) {
+  /**
+   * Fires when the runner has gone *silent*, not merely slow. The deadline is generous and every
+   * message from the runner pushes it back (see onRunnerMessage): a cold WKWebView boot plus the
+   * keyring restore can run well past twenty seconds on a real device, and tearing that down
+   * mid-boot only starts the same wait again - with restartAllHandlers() on top.
+   */
+  startReadyWatchdog(delay = 45000) {
     this.clearReadyWatchdog();
     this.readyWatchdog = setTimeout(() => {
       this.recoverRunner('ready-timeout').catch(() => undefined);
@@ -368,7 +377,7 @@ export class WebRunnerHandler {
       console.warn('### WebRunner recovery failed', e);
     } finally {
       isRecovering = false;
-      this.startReadyWatchdog(Math.min(60000, 20000 * this.recoveryAttempts));
+      this.startReadyWatchdog(Math.min(120000, 45000 * this.recoveryAttempts));
     }
   }
 
@@ -579,6 +588,10 @@ export class WebRunnerHandler {
           }
         } else {
           this.stopPing();
+          // Progress, not readiness. The runner is talking, so it is booting rather than gone -
+          // give it a fresh window instead of letting the deadline armed by active()/reload()
+          // expire in the middle of a boot it would have finished.
+          this.startReadyWatchdog();
         }
 
         return true;

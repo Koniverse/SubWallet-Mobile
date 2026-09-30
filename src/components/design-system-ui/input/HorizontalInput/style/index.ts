@@ -2,7 +2,7 @@ import { StyleSheet, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { FontMedium } from 'styles/sharedStyles';
 
-export default (theme: ThemeTypes, hasLabel: boolean, isError: boolean, showAvatar?: boolean, readonly?: boolean) => {
+export default (theme: ThemeTypes, hasLabel: boolean, isError: boolean, readonly?: boolean) => {
   const baseInput = 48;
 
   // Stretched, not a fixed 48: pinned at top: 0 with height: baseInput these blocks centre their
@@ -19,6 +19,15 @@ export default (theme: ThemeTypes, hasLabel: boolean, isError: boolean, showAvat
 
   return StyleSheet.create({
     container: {},
+    // The row keeps the field at its design height; the input itself is only as tall as its own
+    // text plus padding, so it is the row's alignItems: 'center' that positions the text - not
+    // whatever each platform does with the space left over inside a fixed-height input.
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+      minHeight: baseInput,
+    },
     label: {
       position: 'absolute',
       top: 0,
@@ -32,8 +41,9 @@ export default (theme: ThemeTypes, hasLabel: boolean, isError: boolean, showAvat
       paddingLeft: theme.paddingXXS,
       paddingRight: theme.paddingSM,
       // Symmetric vertical padding, like the vertical input (input/style/index.ts). Without any,
-      // Fabric on Android substitutes the platform EditText theme's asymmetric 10/11dp padding,
-      // and neither platform is then pinned to the middle of the 48dp box by the style itself.
+      // Fabric on Android substitutes the platform EditText theme's asymmetric 10/11dp padding.
+      // With no height set on the input, these two also make the box exactly line + 26, so the
+      // text is centred in it by construction on both platforms.
       paddingTop: 13,
       paddingBottom: 13,
       // Android only (iOS ignores it): makes the line box ascent..descent instead of top..bottom,
@@ -48,7 +58,12 @@ export default (theme: ThemeTypes, hasLabel: boolean, isError: boolean, showAvat
       // fontSize 14 it moves the glyphs by ~0.5dp; on Android it never reaches the placeholder at
       // all and would desync it from the typed value. The padding above is what does the work.
       zIndex: 2,
-      height: baseInput,
+      // Deliberately no height. A fixed 48 here leaves ~22dp for a ~16dp line and hands the
+      // vertical placement of that line to the platform: iOS centres it in UITextField's text
+      // rect, Android in the EditText's gravity, and on the Transfer screen the placeholder ended
+      // up ~11dp below the middle of the box while the "To:" label beside it was centred. Letting
+      // the row centre a naturally sized input takes the platform out of it - and it is the same
+      // path the address <Text> already takes, which is why that one always looked right.
     },
     leftPart: {
       ...partBlock,

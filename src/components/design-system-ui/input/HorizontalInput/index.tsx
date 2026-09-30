@@ -43,7 +43,7 @@ const HorizontalInput = (
 
   return (
     <FieldHorizontal label={label} outerStyle={[disabled && DisabledStyle, containerStyle]} labelStyle={labelStyle}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+      <View style={stylesheet.row}>
         {!!leftPart && <View style={[stylesheet.leftPart]}>{leftPart}</View>}
         <TextInput
           ref={ref}
