@@ -75,7 +75,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<TextInput>) => {
   const [inputValue, setInputValue] = useState(value ? getInputValuesFromString(value, decimals) : value);
   const [firstTime, setFirstTime] = useState(true);
   const _onPressMaxBtn = useCallback(() => {
-    inputRef.current?.focus();
+    // inputRef.current?.focus(); //comment this for bug UI when press max button
     const transformVal = getInputValuesFromString(maxValue, decimals);
     setInputValue(transformVal);
     setFirstTime(false);
