@@ -1,6 +1,6 @@
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import {
-  _chainInfoToChainType,
+  _chainInfoToAccountChainType,
   findChainInfoByChainId,
   findChainInfoByHalfGenesisHash,
 } from '@subwallet/extension-base/services/chain-service/utils';
@@ -14,7 +14,7 @@ import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import { ToastType } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
-import { AccountProxy } from '@subwallet/extension-base/types';
+import { AccountChainType, AccountProxy } from '@subwallet/extension-base/types';
 
 export const chainsToWalletConnectChainInfos = (
   chainMap: Record<string, _ChainInfo>,
@@ -23,6 +23,10 @@ export const chainsToWalletConnectChainInfos = (
   return chains.map(chain => {
     const [namespace, info] = chain.split(':');
 
+    // `accountType` is matched against `AccountJson.chainType` (AccountChainType: 'ethereum' /
+    // 'substrate'), so it must come from _chainInfoToAccountChainType. _chainInfoToChainType
+    // yields ChainType ('evm'), which never equals an account's chainType and left the EVM
+    // account picker empty with the "Create one" prompt.
     if (namespace === WALLET_CONNECT_EIP155_NAMESPACE) {
       const chainInfo = findChainInfoByChainId(chainMap, parseInt(info));
 
@@ -30,7 +34,7 @@ export const chainsToWalletConnectChainInfos = (
         chainInfo,
         slug: chainInfo?.slug || chain,
         supported: !!chainInfo,
-        accountType: chainInfo ? _chainInfoToChainType(chainInfo) : undefined,
+        accountType: AccountChainType.ETHEREUM,
         wcChain: chain,
       };
     } else if (namespace === WALLET_CONNECT_POLKADOT_NAMESPACE) {
@@ -40,7 +44,7 @@ export const chainsToWalletConnectChainInfos = (
         chainInfo,
         slug: chainInfo?.slug || chain,
         supported: !!chainInfo,
-        accountType: chainInfo ? _chainInfoToChainType(chainInfo) : undefined,
+        accountType: chainInfo ? _chainInfoToAccountChainType(chainInfo) : undefined,
         wcChain: chain,
       };
     } else {

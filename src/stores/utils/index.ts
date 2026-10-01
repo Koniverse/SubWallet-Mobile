@@ -34,6 +34,7 @@ import {
 } from '@subwallet/extension-base/background/types';
 import { _ChainApiStatus, _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
+import { PendingMultisigTxMap } from '@subwallet/extension-base/services/multisig-service';
 import { addLazy } from '@subwallet/extension-base/utils';
 import { lazySubscribeMessage } from 'messaging/index';
 import { AppSettings } from 'stores/types';
@@ -819,6 +820,19 @@ export const subscribeUnreadNotificationCount = lazySubscribeMessage(
   updateUnreadNotificationCountMap,
 );
 /* Notification service */
+
+/* Multisig account */
+export const updatePendingMultisigTxs = (data: PendingMultisigTxMap) => {
+  store.dispatch({ type: 'multisig/updatePendingMultisigTxs', payload: data });
+};
+
+export const subscribePendingMultisigTxs = lazySubscribeMessage(
+  'pri(multisig.subscribePendingMultisigTxs)',
+  null,
+  updatePendingMultisigTxs,
+  updatePendingMultisigTxs,
+);
+/* Multisig account */
 
 /* Priority tokens */
 export const updatePriorityTokens = (data: TokenPriorityDetails) => {

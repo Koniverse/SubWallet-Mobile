@@ -92,6 +92,7 @@ export function HistoryDetailModal({
       modalBaseV2Ref={modalBaseV2Ref}
       modalVisible={modalVisible}
       modalTitle={data?.displayData?.title || ''}
+      titleTextAlign={'center'}
       footer={modalFooter}
       onBackButtonPress={onChangeModalVisible}
       onChangeModalVisible={onChangeModalVisible}>

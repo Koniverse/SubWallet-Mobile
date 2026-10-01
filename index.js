@@ -2,14 +2,14 @@
  * @format
  */
 import '@exodus/patch-broken-hermes-typed-arrays';
-import { Buffer } from 'buffer';
+// Must stay above './src/Root': imports are hoisted, so a `global.Buffer = ...` statement in this
+// file's body would only run after the whole app graph has already been evaluated.
+import './shim';
 import { AppRegistry } from 'react-native';
 import Root from './src/Root';
 import { name as appName } from './app.json';
 import { Text, TextInput } from 'react-native';
 
-global.Buffer = Buffer;
-global.process = global.process || { env: {} };
 try {
   AppRegistry.registerComponent(appName, () => Root);
 } catch (e) {

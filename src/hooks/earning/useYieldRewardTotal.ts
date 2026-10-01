@@ -1,14 +1,13 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { EarningRewardItem, YieldPoolType } from '@subwallet/extension-base/types';
+import { EarningRewardItem } from '@subwallet/extension-base/types';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import { findAccountByAddress } from 'utils/index';
 import { isSameAddress } from '@subwallet/extension-base/utils';
-import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/earning-service/constants';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
 
 const useYieldRewardTotal = (slug: string): string | undefined => {
@@ -30,7 +29,10 @@ const useYieldRewardTotal = (slug: string): string | undefined => {
     const poolInfo = poolInfoMap[slug];
 
     if (poolInfo) {
-      if (poolInfo.type !== YieldPoolType.NOMINATION_POOL && !_STAKING_CHAIN_GROUP.mythos.includes(poolInfo.chain)) {
+      // Ask the pool what it supports instead of listing pool types/chains here: the backend turns
+      // `claimReward` on as pools gain manual claim (Bittensor root, Tanssi, ...), and the old
+      // hardcoded NOMINATION_POOL/mythos check reported 0 for every one of them.
+      if (!poolInfo.metadata.availableMethod.claimReward) {
         return '0';
       } else {
         if (earningRewards.length) {

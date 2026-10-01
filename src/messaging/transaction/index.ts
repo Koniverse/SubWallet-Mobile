@@ -6,4 +6,5 @@ export * from './swap';
 export * from './stake';
 export * from './notification';
 export * from './multi';
-export * from './multi';
+export * from './multisig';
+export * from './substrateProxy';

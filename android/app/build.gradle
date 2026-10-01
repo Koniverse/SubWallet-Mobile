@@ -128,18 +128,22 @@ android {
 }
 
 /**
- * Strip DevModeWeb.bundle from release builds to reduce install size.
- * DevModeWeb.bundle is only used when Dev Mode is enabled in the app settings.
- * The WebRunnerHandler already selects 'Web.bundle' for non-dev builds.
+ * Strip DevModeWeb.bundle unless this build opts into Dev Mode, to reduce install size.
+ * Dev Mode is a build-level opt-in via DEV_MODE=true in the env file, so the bundle is
+ * only worth shipping then -- and it MUST ship then, or Dev Mode would look for a
+ * bundle we deleted. src/constants/devMode.ts mirrors this exact condition to decide
+ * whether the app offers the Dev Mode switch at all: change one, change the other.
  */
+def devModeEnabled = project.env.get('DEV_MODE')?.toString()?.trim()?.equalsIgnoreCase('true')
+
 android.applicationVariants.all { variant ->
-    if (variant.buildType.name == 'release') {
+    if (!devModeEnabled) {
         variant.mergeAssetsProvider.configure {
             doLast {
                 def devModeBundle = new File(outputDir.get().asFile, 'DevModeWeb.bundle')
                 if (devModeBundle.exists()) {
                     delete(devModeBundle)
-                    println "[SubWallet] Stripped DevModeWeb.bundle from release assets"
+                    println "[SubWallet] Stripped DevModeWeb.bundle from ${variant.name} assets"
                 }
             }
         }

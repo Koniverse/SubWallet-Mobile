@@ -12,6 +12,8 @@ import { useToast } from 'react-native-toast-notifications';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { getDevMode } from 'utils/storage';
 import { AccountJson, AccountSignMode } from '@subwallet/extension-base/types';
+import { getSignableAccountInfos } from 'messaging/transaction/multisig';
+import i18n from 'utils/i18n/i18n';
 
 //todo: i18n
 //todo: solve error
@@ -19,6 +21,10 @@ const usePreCheckAction = (
   address?: string,
   blockAllAccount = true,
   message?: string,
+  chain?: string,
+  // Severity for a blocked action; the extension's `type` option. Overrides of
+  // `messageOverride` stay danger regardless.
+  type?: 'normal' | 'danger' | 'warning',
 ): ((onPress: VoidFunction, action: ExtrinsicType) => VoidFunction) => {
   const { show, hideAll } = useToast();
 
@@ -37,6 +43,8 @@ const usePreCheckAction = (
         return 'Normal account';
       case AccountSignMode.QR:
         return 'QR signer account';
+      case AccountSignMode.MULTISIG:
+        return i18n.multisig.multisigAccount;
       case AccountSignMode.READ_ONLY:
         return 'Watch-only account';
       case AccountSignMode.UNKNOWN:
@@ -47,15 +55,17 @@ const usePreCheckAction = (
 
   return useCallback(
     (onPress: VoidFunction, action: ExtrinsicType) => {
-      return () => {
+      return async () => {
         if (!account) {
           hideAll();
-          show('Account not exists');
+          // Same 1.5s the extension gives this short notice.
+          show('Account not exists', { duration: 1500 });
         } else {
           const mode = getSignMode(account);
           let block = false;
           let accountTitle = getAccountTypeTitle(account);
           let defaultMessage = 'The account you are using is {{accountTitle}}, you cannot use this feature with it';
+          let messageOverride: string | undefined;
           const isEthereumAccount = isEthereumAddress(account.address);
 
           switch (mode) {
@@ -74,13 +84,48 @@ const usePreCheckAction = (
           }
 
           if (ALL_STAKING_ACTIONS.includes(action)) {
-            defaultMessage = 'You are using a {{accountTitle}}. Staking is not supported with this account type';
+            defaultMessage = 'You are using a {{accountTitle}}. Earning is not supported with this account type';
           }
 
           if (mode === AccountSignMode.QR) {
             if (isEthereumAccount && !isDevMode) {
               accountTitle = 'EVM QR signer account';
               block = true;
+            }
+          }
+
+          // A multisig account can only act when at least one of its signatories is
+          // available in this wallet and allowed to sign this extrinsic type.
+          if (account.isMultisig && chain) {
+            try {
+              const { signableProxies } = await getSignableAccountInfos({
+                multisigProxyId: account.address,
+                extrinsicType: action,
+                chain,
+              });
+
+              if (!signableProxies.length) {
+                block = true;
+                messageOverride = i18n.multisig.noMultisigSignatories;
+              }
+            } catch (e) {
+              console.error(e);
+            }
+          }
+
+          // The extension funnels every unsupported action through this one check
+          // (hooks/account/usePreCheckAction.ts:89): an account may only run an extrinsic
+          // type its sign mode can actually sign. For a multisig account this is what
+          // blocks swap, cross-chain transfer, claim bridge and liquid staking, while
+          // leaving same-chain transfer, staking, governance, proxy and NFT send alone.
+          // Kept additive: mobile's own switch above still over-blocks Ledger on purpose.
+          if (!account.transactionActions.includes(action)) {
+            block = true;
+
+            // ALL_ACCOUNT carries no transaction actions of its own, so screens that opt
+            // out of blocking it must keep working - same escape as the extension.
+            if (mode === AccountSignMode.ALL_ACCOUNT && !blockAllAccount) {
+              block = false;
             }
           }
 
@@ -121,12 +166,17 @@ const usePreCheckAction = (
             onPress();
           } else {
             hideAll();
-            show((message || defaultMessage).replace('{{accountTitle}}', accountTitle), { type: 'normal' });
+            show((messageOverride || message || defaultMessage).replace('{{accountTitle}}', accountTitle), {
+              type: messageOverride ? 'danger' : type || 'normal',
+              // The extension keeps a blocked-action notice up for 8s; the provider default
+              // (4s) is too short to read a two-line explanation.
+              duration: 8000,
+            });
           }
         }
       };
     },
-    [account, blockAllAccount, getAccountTypeTitle, hideAll, isDevMode, message, show],
+    [account, blockAllAccount, chain, getAccountTypeTitle, hideAll, isDevMode, message, show, type],
   );
 };
 

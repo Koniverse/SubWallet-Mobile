@@ -277,6 +277,10 @@ export const FeeEditorModal = ({
       customPriorityValidateFunc(priorityFeeValue),
     ]);
 
+    // Surface why the fee was rejected instead of closing as if it had been applied.
+    onUpdateErrors('maxFeeValue')(rs1);
+    onUpdateErrors('priorityFeeValue')(rs2);
+
     if (rs1 && rs2 && !rs1.length && !rs2.length) {
       onSelectOption({ feeCustom: rs, feeOption: 'custom' });
       setModalVisible(false);
@@ -291,11 +295,11 @@ export const FeeEditorModal = ({
         setModalVisible(false);
       }
     } else {
-      _onSubmitCustomOption(formState).then(() => setModalVisible(false));
+      _onSubmitCustomOption(formState).catch(console.error);
     }
   };
 
-  const { formState, onChangeValue } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onPressSubmit,
   });
 

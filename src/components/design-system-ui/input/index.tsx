@@ -47,6 +47,11 @@ const Input = (
       <TextInput
         ref={ref}
         placeholderTextColor={theme.colorTextLight4}
+        // Android always lays the placeholder out as multi-line text, and on Fabric a
+        // non-multiline input is measured as if it were multi-line too, so a placeholder
+        // longer than the field wrapped onto a second, clipped line inside the fixed-height
+        // box. numberOfLines={1} pins both (facebook/react-native#29663, #46583).
+        numberOfLines={textInputProps.multiline ? textInputProps.numberOfLines : 1}
         {...textInputProps}
         style={[stylesheet.textInput, inputStyle]}
         editable={!disabled && !readonly}

@@ -1,4 +1,9 @@
-import { AmountData, AmountDataWithId, RequestFreeBalance } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  AmountData,
+  AmountDataWithId,
+  RequestAvailableBalanceByType,
+  RequestFreeBalance,
+} from '@subwallet/extension-base/background/KoniTypes';
 
 import { sendMessage } from '..';
 
@@ -11,4 +16,15 @@ export async function subscribeFreeBalance(
   callback: (balance: AmountDataWithId) => void,
 ): Promise<AmountDataWithId> {
   return sendMessage('pri(freeBalance.subscribe)', request, callback);
+}
+
+export async function getAvailableBalanceByType(request: RequestAvailableBalanceByType): Promise<AmountData> {
+  return sendMessage('pri(availableBalance.getBalanceByType)', request);
+}
+
+export async function subscribeAvailableBalanceByType(
+  request: RequestAvailableBalanceByType,
+  callback: (balance: AmountDataWithId) => void,
+): Promise<AmountDataWithId> {
+  return sendMessage('pri(availableBalance.subscribeBalanceByType)', request, callback);
 }

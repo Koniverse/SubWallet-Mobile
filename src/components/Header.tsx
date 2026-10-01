@@ -180,6 +180,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
         onChangeAddress={onScanAddress}
         error={error}
         isShowError={true}
+        libraryErrorMessage={i18n.errorMessage.unreadableQrCode}
       />
     </View>
   );

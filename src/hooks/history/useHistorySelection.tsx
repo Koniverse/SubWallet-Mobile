@@ -97,6 +97,15 @@ export default function useHistorySelection(initialChain?: string, initialAddres
     }
   }, [chainInfoMap, chainItems]);
 
+  // Same as the extension's hook: with a single account, always subscribe with the address
+  // as the keyring stores it. The history service matches addresses by exact string, so an
+  // address handed over from another screen in a different format would return nothing.
+  useEffect(() => {
+    if (accountAddressItems.length === 1) {
+      setSelectedAddress(accountAddressItems[0].address);
+    }
+  }, [accountAddressItems]);
+
   return {
     chainItems,
     accountAddressItems,

@@ -18,6 +18,29 @@ export function getHostName(url: string) {
   }
 }
 
+/**
+ * A dApp entry matches a visited page when they share a host. Comparing the whole URLs with
+ * `includes` missed every variant the user actually browses (`pinterest.com/x` vs a dApp listed as
+ * `https://www.pinterest.com`), which left those rows without the dApp's curated icon and title.
+ */
+export function findDAppByUrl<T extends { url: string }>(dApps: T[] | undefined, url: string): T | undefined {
+  const host = normalizeHostName(url);
+
+  if (!host) {
+    return undefined;
+  }
+
+  return dApps?.find(dApp => {
+    const dAppHost = normalizeHostName(dApp.url);
+
+    return !!dAppHost && (host === dAppHost || host.endsWith(`.${dAppHost}`));
+  });
+}
+
+function normalizeHostName(url: string): string {
+  return getHostName(url).toLowerCase().replace(/^www\./, '');
+}
+
 export const searchDomain = 'duckduckgo.com';
 export function getProtocol(url: string) {
   try {

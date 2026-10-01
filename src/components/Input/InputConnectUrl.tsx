@@ -95,27 +95,33 @@ const Component = (
 
   const onScanInputText = useCallback(
     (data: string) => {
+      // Not a WalletConnect URI: stay on the scanner and say so (the old flow closed it,
+      // filled the input with the junk and left the loading state on).
+      if (validWalletConnectUri(data)) {
+        setError(i18n.errorMessage.unreadableQrCode);
+
+        return;
+      }
+
       setError(undefined);
       setQrModalVisible(false);
       onChangeInputText(data);
       setLoading(true);
-      if (!validWalletConnectUri(data)) {
-        addConnection({ uri: data })
-          .then(() => {
-            setLoading(false);
-            navigation.goBack();
-          })
-          .catch(e => {
-            const errMessage = (e as Error).message;
-            const message = errMessage.includes('Pairing already exists')
-              ? i18n.errorMessage.connectionAlreadyExist
-              : i18n.errorMessage.failToAddConnection;
+      addConnection({ uri: data })
+        .then(() => {
+          setLoading(false);
+          navigation.goBack();
+        })
+        .catch(e => {
+          const errMessage = (e as Error).message;
+          const message = errMessage.includes('Pairing already exists')
+            ? i18n.errorMessage.connectionAlreadyExist
+            : i18n.errorMessage.failToAddConnection;
 
-            toast.hideAll();
-            toast.show(message, { type: 'danger' });
-            setLoading(false);
-          });
-      }
+          toast.hideAll();
+          toast.show(message, { type: 'danger' });
+          setLoading(false);
+        });
     },
     [navigation, onChangeInputText, setLoading, setQrModalVisible, toast],
   );
@@ -154,6 +160,7 @@ const Component = (
         onChangeAddress={onScanInputText}
         isShowError
         error={error}
+        libraryErrorMessage={i18n.errorMessage.unreadableQrCode}
         setQrModalVisible={setQrModalVisible}
       />
     </>

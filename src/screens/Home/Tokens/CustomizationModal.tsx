@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { updateChainActiveState } from 'messaging/index';
 import { FlatListScreenPaddingTop, FontSemiBold } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -19,6 +18,7 @@ import useChainInfoWithStateAndStatus, {
   ChainInfoWithStateAnhStatus,
 } from 'hooks/chain/useChainInfoWithStateAndStatus';
 import { ListRenderItemInfo } from '@shopify/flash-list';
+import useChainToggle from 'hooks/chain/useChainToggle';
 
 interface Props {
   modalVisible: boolean;
@@ -26,8 +26,6 @@ interface Props {
 }
 
 let chainKeys: Array<string> | undefined;
-
-let cachePendingChainMap: Record<string, boolean> = {};
 
 const searchFunction = (items: ChainInfoWithStateAnhStatus[], searchString: string) => {
   return items.filter(network =>
@@ -50,15 +48,16 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const isShowZeroBalance = useSelector((state: RootState) => state.settings.isShowZeroBalance);
   const chainInfoMap = useChainInfoWithStateAndStatus();
-  const [pendingChainMap, setPendingChainMap] = useState<Record<string, boolean>>(cachePendingChainMap);
+  const { hasPendingChain, isChainPending, getChainActiveState, toggleChain } = useChainToggle(
+    chainInfoMap,
+    'CustomizationModal',
+  );
   const [currentChainList, setCurrentChainList] = useState(processChainMap(chainInfoMap));
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const navigation = useNavigation<RootNavigationProps>();
-  const [isUpdate, setIsUpdate] = useState(true);
 
   const onCancel = () => {
-    setIsUpdate(true);
     modalBaseV2Ref?.current?.close();
   };
 
@@ -72,77 +71,21 @@ export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
     return () => clearTimeout(timeout);
   }, [modalVisible]);
   useEffect(() => {
-    setPendingChainMap(prevPendingChainMap => {
-      const _prevPendingChainMap = { ...prevPendingChainMap };
-      Object.entries(_prevPendingChainMap).forEach(([key, val]) => {
-        if (chainInfoMap[key].active === val) {
-          // @ts-ignore
-          delete _prevPendingChainMap[key];
-        }
-      });
-
-      if (Object.keys(_prevPendingChainMap).length === 0) {
-        setIsUpdate(true);
-      }
-
-      return _prevPendingChainMap;
-    });
-  }, [chainInfoMap]);
-
-  useEffect(() => {
-    setCurrentChainList(processChainMap(chainInfoMap, isUpdate));
-  }, [chainInfoMap, isUpdate, pendingChainMap]);
-
-  useEffect(() => {
-    cachePendingChainMap = pendingChainMap;
-  }, [pendingChainMap]);
-
-  const onToggleItem = (item: ChainInfoWithStateAnhStatus) => {
-    if (pendingChainMap[item.slug] !== undefined) {
-      return;
-    }
-
-    setIsUpdate(false);
-    const currentActiveState = pendingChainMap[item.slug] ?? chainInfoMap[item.slug]?.active ?? false;
-    const nextActiveState = !currentActiveState;
-
-    setPendingChainMap(prevPendingChainMap => ({ ...prevPendingChainMap, [item.slug]: nextActiveState }));
-
-    const reject = () => {
-      console.warn('Toggle network request failed!');
-      setPendingChainMap(prevPendingChainMap => {
-        const nextPendingChainMap = { ...prevPendingChainMap };
-        delete nextPendingChainMap[item.slug];
-
-        return nextPendingChainMap;
-      });
-    };
-
-    updateChainActiveState(item.slug, nextActiveState)
-      .then(result => {
-        if (!result) {
-          reject();
-        }
-      })
-      .catch(reject);
-  };
+    setCurrentChainList(processChainMap(chainInfoMap, !hasPendingChain));
+  }, [chainInfoMap, hasPendingChain]);
 
   const renderItem = ({ item }: ListRenderItemInfo<ChainInfoWithStateAnhStatus>) => {
     return (
       <NetworkAndTokenToggleItem
-        isDisableSwitching={
-          item.slug === 'polkadot' || item.slug === 'kusama' || Object.keys(pendingChainMap).includes(item.slug)
-        }
+        isDisableSwitching={isChainPending(item.slug)}
+        isLoading={isChainPending(item.slug)}
         key={`${item.slug}-${item.name}`}
         itemName={item.name}
         itemKey={item.slug}
         connectionStatus={item.connectionStatus}
         style={{ paddingRight: theme.sizeXS }}
-        // @ts-ignore
-        isEnabled={
-          Object.keys(pendingChainMap).includes(item.slug) ? pendingChainMap[item.slug] : chainInfoMap[item.slug].active
-        }
-        onValueChange={() => onToggleItem(item)}
+        isEnabled={getChainActiveState(item.slug)}
+        onValueChange={() => toggleChain(item.slug)}
       />
     );
   };

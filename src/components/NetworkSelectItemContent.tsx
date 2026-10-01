@@ -16,6 +16,8 @@ interface Props {
   showSeparator?: boolean;
   iconSize?: number;
   customIcon?: React.ReactNode;
+  // Pseudo entries such as "All networks" have no chain to draw a logo for.
+  hideLogo?: boolean;
 }
 
 const itemArea: StyleProp<any> = {
@@ -63,13 +65,14 @@ export const NetworkSelectItemContent = ({
   showSeparator = true,
   iconSize = 28,
   customIcon,
+  hideLogo,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   return (
     <View>
       <View style={itemArea}>
         <View style={itemBodyArea}>
-          <View style={logoWrapperStyle}>{getNetworkLogo(itemKey, iconSize, defaultItemKey)}</View>
+          {!hideLogo && <View style={logoWrapperStyle}>{getNetworkLogo(itemKey, iconSize, defaultItemKey)}</View>}
           <Text style={itemTextStyle}>{itemName}</Text>
         </View>
 

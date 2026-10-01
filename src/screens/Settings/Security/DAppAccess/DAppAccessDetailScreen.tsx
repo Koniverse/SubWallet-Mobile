@@ -12,7 +12,7 @@ import i18n from 'utils/i18n/i18n';
 import { EmptyList } from 'components/EmptyList';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { BackgroundIcon, Typography } from 'components/design-system-ui';
-import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { DisabledStyle, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import DappAccessItem, { getSiteTitle } from 'components/design-system-ui/web3-block/DappAccessItem';
 import { getHostName } from 'utils/browser';
 import { ThemeTypes } from 'styles/themes';
@@ -213,12 +213,17 @@ const Content = ({ origin, accountAuthTypes, authInfo }: Props) => {
             key={item.id}
             disabled={!authInfo.isAllowed}
             rightPartNode={
-              <Switch
-                disabled={pendingMap[item.id] !== undefined || !authInfo.isAllowed}
-                ios_backgroundColor={ColorMap.switchInactiveButtonColor}
-                value={pendingMap[item.id] === undefined ? isEnabled : pendingMap[item.id]}
-                onValueChange={onChangeToggle}
-              />
+              // Blocked switches are dimmed like the extension (opacity 0.4) and made untouchable,
+              // not `disabled`: Android swaps in a gray thumb for a disabled Switch.
+              <View
+                pointerEvents={pendingMap[item.id] !== undefined || !authInfo.isAllowed ? 'none' : 'auto'}
+                style={(pendingMap[item.id] !== undefined || !authInfo.isAllowed) && DisabledStyle}>
+                <Switch
+                  ios_backgroundColor={ColorMap.switchInactiveButtonColor}
+                  value={pendingMap[item.id] === undefined ? isEnabled : pendingMap[item.id]}
+                  onValueChange={onChangeToggle}
+                />
+              </View>
             }
           />
         </View>

@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BrowserSearchProps, RootNavigationProps } from 'routes/index';
 import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
 import { StoredSiteInfo } from 'stores/types';
-import { getHostName, getValidURL, searchDomain } from 'utils/browser';
+import { findDAppByUrl, getHostName, getValidURL, searchDomain } from 'utils/browser';
 import { clearHistory, createNewTab } from 'stores/updater';
 import { BrowserItem } from 'components/Browser/BrowserItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -133,7 +133,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
         ? historyItems
         : historyItems.filter(i => i.name.toLowerCase().includes(searchStringRef.current.toLowerCase()))
     ).map(history => {
-      const dapp = dApps?.find(app => history.url.includes(app.url));
+      const dapp = findDAppByUrl(dApps, history.url);
 
       const hostName = getHostName(history.url);
 

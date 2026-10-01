@@ -14,6 +14,8 @@ export interface AccountInfoItem extends InfoItemBase {
   address: string;
   name?: string;
   networkPrefix?: number;
+  // Wrapped transactions identify the recipient by name alone, as the extension does.
+  onlyShowName?: boolean;
 }
 
 const AccountItem: React.FC<AccountInfoItem> = ({
@@ -21,6 +23,7 @@ const AccountItem: React.FC<AccountInfoItem> = ({
   label,
   address: accountAddress,
   name: accountName,
+  onlyShowName,
 }: AccountInfoItem) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = MetaInfoStyles(theme);
@@ -66,9 +69,11 @@ const AccountItem: React.FC<AccountInfoItem> = ({
                 {name}
               </Typography.Text>
             )}
-            <Typography.Text ellipsis style={!!name ? subValueStyle : valueStyle}>
-              {shortAddress}
-            </Typography.Text>
+            {!(onlyShowName && name) && (
+              <Typography.Text ellipsis style={!!name ? subValueStyle : valueStyle}>
+                {shortAddress}
+              </Typography.Text>
+            )}
           </View>
         </View>
       </View>

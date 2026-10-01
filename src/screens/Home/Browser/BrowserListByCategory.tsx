@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { DAppInfo } from 'types/browser';
 import { BrowserItem } from 'components/Browser/BrowserItem';
-import { getHostName } from 'utils/browser';
+import { findDAppByUrl, getHostName } from 'utils/browser';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CategoryEmptyList } from 'screens/Home/Browser/Shared/CategoryEmptyList';
@@ -35,8 +35,9 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
     if (navigationType && navigationType === 'BOOKMARK') {
       const bookmarkedData = bookmarkedItems.map(bookmarkedItem => {
         // if bookmark item is a pre-defined dapp
-        const bookmarkedDApp = dApps.find(
-          dapp => bookmarkedItem.url.includes(dapp.url) && dapp.title.toLowerCase().includes(searchString),
+        const bookmarkedDApp = findDAppByUrl(
+          dApps.filter(dapp => dapp.title.toLowerCase().includes(searchString)),
+          bookmarkedItem.url,
         );
 
         if (bookmarkedDApp) {
@@ -83,7 +84,7 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
     navigation.navigate('BrowserTabsManager', { url: item.url, name: item.title });
   };
   const renderBrowserItem: ListRenderItem<DAppInfo> = ({ item }) => {
-    const dapp = dApps?.find(app => item.url.includes(app.url));
+    const dapp = findDAppByUrl(dApps, item.url);
 
     return (
       <BrowserItem

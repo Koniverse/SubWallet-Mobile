@@ -3,6 +3,7 @@ import { ThemeTypes } from 'styles/themes';
 import { FontSemiBold } from 'styles/sharedStyles';
 export interface ButtonStyles {
   container: ViewStyle;
+  labelText: TextStyle;
   blockButtonRaw: ViewStyle;
   centerContentAlign: ViewStyle;
   leftContentAlign: ViewStyle;
@@ -73,6 +74,9 @@ export default (theme: ThemeTypes) =>
     container: {
       flexDirection: 'row',
       alignItems: 'center',
+    },
+    labelText: {
+      flexShrink: 1,
     },
     blockButtonRaw: {
       flex: 1,

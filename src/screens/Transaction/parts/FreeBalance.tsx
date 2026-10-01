@@ -6,6 +6,7 @@ import i18n from 'utils/i18n/i18n';
 import { Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { BalanceType } from '@subwallet/extension-base/types';
 
 interface Props {
   address?: string;
@@ -19,6 +20,7 @@ interface Props {
   showNetwork?: boolean;
   extrinsicType?: ExtrinsicType;
   labelTooltip?: string;
+  balanceType?: BalanceType;
 }
 
 export const FreeBalance = ({
@@ -33,6 +35,7 @@ export const FreeBalance = ({
   showNetwork,
   extrinsicType,
   labelTooltip,
+  balanceType,
 }: Props) => {
   const { error, isLoading, nativeTokenBalance, nativeTokenSlug, tokenBalance, chainInfo } = useGetBalance(
     chain,
@@ -40,6 +43,7 @@ export const FreeBalance = ({
     tokenSlug,
     isSubscribe,
     extrinsicType,
+    balanceType,
   );
   const theme = useSubWalletTheme().swThemes;
   useEffect(() => {

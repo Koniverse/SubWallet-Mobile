@@ -6,6 +6,7 @@ import { Keyboard } from 'react-native';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
 import { validateAccountName } from 'messaging/index';
+import { noop } from 'utils/function';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { CheckCircleIcon } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -62,24 +63,47 @@ export const AccountNameModal = ({
     [],
   );
 
-  const _onSubmit = useCallback(
-    (formState: FormState) => {
-      return onSubmit && onSubmit(formState.data.accountName.trim());
-    },
-    [onSubmit],
-  );
+  // useFormControl captures onSubmitForm once, so route it through a ref to the latest handler.
+  const submitRef = useRef<(state: FormState) => void>(noop);
 
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
-    onSubmitForm: _onSubmit,
+    onSubmitForm: state => submitRef.current(state),
   });
+
+  // Like the extension's form.submit(): the name is re-checked right before submitting instead of
+  // gating the button on every keystroke, so typing never shows a spinner.
+  const _onSubmit = useCallback(
+    async (state: FormState) => {
+      const name = state.data.accountName.trim();
+
+      if (!name || validating) {
+        return;
+      }
+
+      // Close the keyboard now so the sheet settles before the check runs, instead of dropping
+      // by the keyboard height half a second later when the input gets disabled.
+      Keyboard.dismiss();
+      setValidating(true);
+      const errors = await validatorFunc(name);
+      setValidating(false);
+      onUpdateErrors('accountName')(errors);
+
+      if (!errors.length) {
+        onSubmit?.(name);
+      }
+    },
+    [onSubmit, onUpdateErrors, validating, validatorFunc],
+  );
+
+  submitRef.current = _onSubmit;
 
   const onChangeAccountName = (value: string) => {
     onChangeValue('accountName')(value);
   };
 
   const isDisabled = useMemo(
-    () => !formState.data.accountName || isLoading || !!formState.errors.accountName.length || validating,
-    [formState.data.accountName, formState.errors.accountName.length, isLoading, validating],
+    () => !formState.data.accountName || isLoading || !!formState.errors.accountName.length,
+    [formState.data.accountName, formState.errors.accountName.length, isLoading],
   );
 
   const footerNode = useMemo(
@@ -107,24 +131,17 @@ export const AccountNameModal = ({
     if (timeOutRef.current) {
       clearTimeout(timeOutRef.current);
     }
-    if (amount) {
-      if (formState.data.accountName) {
-        setValidating(true);
-        timeOutRef.current = setTimeout(() => {
-          validatorFunc(formState.data.accountName)
-            .then(res => {
+    // Debounced inline check only updates the error text; it must not touch the button.
+    if (amount && formState.data.accountName) {
+      timeOutRef.current = setTimeout(() => {
+        validatorFunc(formState.data.accountName)
+          .then(res => {
+            if (amount) {
               onUpdateErrors('accountName')(res);
-            })
-            .catch((error: Error) => console.log('error validate name', error.message))
-            .finally(() => {
-              if (amount) {
-                setValidating(false);
-              }
-            });
-        }, 500);
-      } else {
-        setValidating(false);
-      }
+            }
+          })
+          .catch((error: Error) => console.log('error validate name', error.message));
+      }, 500);
     }
 
     return () => {

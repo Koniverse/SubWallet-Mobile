@@ -17,6 +17,7 @@ import {
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BN_TEN, BN_ZERO } from '@subwallet/extension-base/utils';
+import { isSubstrateCrossChain } from '@subwallet/extension-base/services/balance-service/transfer/xcm/utils';
 import { ChooseFeeTokenModal } from 'components/Modal/TransactionFee/FeeEditor/ChooseFeeTokenModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
@@ -54,12 +55,14 @@ interface Props {
   destChainValue?: string;
   selectedFeeOption?: TransactionFee;
   nativeTokenSlug: string;
+  crossChainFee?: string;
 }
 
 const FEE_TYPES_CAN_SHOW: Array<FeeChainType | undefined> = ['substrate', 'evm', 'bitcoin'];
 
 const FeeEditor = ({
   chainValue,
+  crossChainFee = '0',
   currentTokenPayFee,
   destChainValue,
   estimateFee,
@@ -80,6 +83,7 @@ const FeeEditor = ({
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyles(theme);
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { priceMap, currencyData } = useSelector((state: RootState) => state.price);
 
   const [chooseFeeModalVisible, setChooseFeeModalVisible] = useState(false);
@@ -93,6 +97,10 @@ const FeeEditor = ({
     return assetRegistry[nativeTokenSlug] || undefined;
   })();
 
+  const transferTokenAsset = (() => {
+    return assetRegistry[tokenSlug] || undefined;
+  })();
+
   const decimals = _getAssetDecimals(tokenAsset);
   const priceId = _getAssetPriceId(tokenAsset);
   const priceValue = priceMap[priceId] || 0;
@@ -101,6 +109,9 @@ const FeeEditor = ({
   const priceNativeValue = priceMap[priceNativeId] || 0;
   const nativeTokenSymbol = _getAssetSymbol(nativeAsset);
   const nativeTokenDecimals = _getAssetDecimals(nativeAsset);
+  const transferTokenSymbol = _getAssetSymbol(transferTokenAsset);
+  const transferTokenDecimals = _getAssetDecimals(transferTokenAsset);
+  const transferTokenPriceValue = priceMap[_getAssetPriceId(transferTokenAsset)] || 0;
 
   const feeValue = useMemo(() => {
     return BN_ZERO;
@@ -123,6 +134,17 @@ const FeeEditor = ({
       .toNumber();
   }, [estimateFee, isDataReady, nativeTokenDecimals, priceNativeValue]);
 
+  const convertedCrossChainFeeValueToUSD = useMemo(() => {
+    if (!isDataReady) {
+      return 0;
+    }
+
+    return new BigN(crossChainFee)
+      .multipliedBy(transferTokenPriceValue)
+      .dividedBy(BN_TEN.pow(transferTokenDecimals || 0))
+      .toNumber();
+  }, [crossChainFee, isDataReady, transferTokenDecimals, transferTokenPriceValue]);
+
   const onSelectTransactionFee = useCallback(
     (fee: TransactionFee) => {
       onSelect?.(fee);
@@ -133,6 +155,17 @@ const FeeEditor = ({
   const isXcm = useMemo(() => {
     return chainValue && destChainValue && chainValue !== destChainValue;
   }, [chainValue, destChainValue]);
+
+  const isSubstrateXcm = useMemo(() => {
+    const originChainInfo = chainValue ? chainInfoMap[chainValue] : undefined;
+    const destinationChainInfo = destChainValue ? chainInfoMap[destChainValue] : undefined;
+
+    if (!originChainInfo || !destinationChainInfo) {
+      return false;
+    }
+
+    return isSubstrateCrossChain(originChainInfo, destinationChainInfo);
+  }, [chainInfoMap, chainValue, destChainValue]);
 
   const isEnergyWebChain = useMemo(() => {
     return chainValue === 'energy_web_chain';
@@ -208,6 +241,12 @@ const FeeEditor = ({
     return selectedToken?.rate || 1;
   }, [listTokensCanPayFee, tokenPayFeeSlug]);
 
+  const rateDestValue = useMemo(() => {
+    const selectedToken = listTokensCanPayFee.find(item => item.slug === tokenSlug);
+
+    return selectedToken?.rate || 1;
+  }, [listTokensCanPayFee, tokenSlug]);
+
   const convertedEstimatedFee = useMemo(() => {
     const rs = new BigN(estimateFee).multipliedBy(rateValue);
     const isTransferLocalTokenAndPayThatTokenAsFee =
@@ -216,12 +255,19 @@ const FeeEditor = ({
     return isTransferLocalTokenAndPayThatTokenAsFee ? rs.multipliedBy(feePercentageSpecialCase || 100).div(100) : rs;
   }, [estimateFee, rateValue, tokenSlug, tokenPayFeeSlug, feePercentageSpecialCase]);
 
+  const convertedCrossChainFee = useMemo(() => {
+    return new BigN(crossChainFee).multipliedBy(rateDestValue);
+  }, [crossChainFee, rateDestValue]);
+
   const isNativeTokenValue = !!(!isEditButton && isXcm);
+
+  // Keep the row reserved while the fee is being fetched, so it does not pop in after the network fee
+  const isShowCrossChainFee = isSubstrateXcm && (!isDataReady || new BigN(crossChainFee).gt(0));
 
   return (
     <>
       {customFieldNode || (
-        <View style={styles.container}>
+        <View style={[styles.container, isShowCrossChainFee && styles.containerNoBottomPadding]}>
           <View style={styles.leftArea}>
             <Typography.Text style={styles.label}>{`${i18n.inputLabel.estimatedFee}:`}</Typography.Text>
             <View>
@@ -240,7 +286,7 @@ const FeeEditor = ({
               )}
             </View>
           </View>
-          {FEE_TYPES_CAN_SHOW.includes(feeType) && (
+          {isDataReady && FEE_TYPES_CAN_SHOW.includes(feeType) && (
             <View style={styles.rightArea}>
               <Number
                 size={14}
@@ -285,6 +331,42 @@ const FeeEditor = ({
         </View>
       )}
 
+      {isShowCrossChainFee && (
+        <View style={[styles.container, styles.crossChainFeeContainer]}>
+          <View style={styles.leftArea}>
+            <Typography.Text style={styles.label}>{`${i18n.inputLabel.crossChainFee}:`}</Typography.Text>
+            <View>
+              {!isDataReady ? (
+                <ActivityIndicator size={20} indicatorColor={theme.colorTextLight4} />
+              ) : (
+                FEE_TYPES_CAN_SHOW.includes(feeType) && (
+                  <Number
+                    size={14}
+                    value={isNativeTokenValue ? crossChainFee : convertedCrossChainFee}
+                    suffix={transferTokenSymbol}
+                    decimal={transferTokenDecimals}
+                    unitColor={theme['gray-5']}
+                    decimalColor={theme['gray-5']}
+                    intColor={theme['gray-5']}
+                  />
+                )
+              )}
+            </View>
+          </View>
+          {isDataReady && FEE_TYPES_CAN_SHOW.includes(feeType) && (
+            <View style={styles.rightArea}>
+              <Number
+                size={14}
+                value={convertedCrossChainFeeValueToUSD}
+                decimal={0}
+                prefix={`~ ${(currencyData.isPrefix && currencyData.symbol) || ''}`}
+                suffix={(!currencyData.isPrefix && currencyData.symbol) || ''}
+              />
+            </View>
+          )}
+        </View>
+      )}
+
       <ChooseFeeTokenModal
         tokenSlug={tokenSlug}
         convertedFeeValueToUSD={convertedFeeValueToUSD}
@@ -323,6 +405,9 @@ const FeeEditor = ({
 function createStyles(theme: ThemeTypes) {
   return StyleSheet.create({
     container: { flexDirection: 'row', width: '100%', alignItems: 'center', paddingBottom: 6 },
+    containerNoBottomPadding: { paddingBottom: 0 },
+    // last fee row, needs more room so it does not stick to the submit button
+    crossChainFeeContainer: { paddingBottom: theme.paddingSM },
     leftArea: { flexDirection: 'row', flex: 1, gap: theme.sizeXXS, alignItems: 'center', flexWrap: 'wrap' },
     label: { color: theme['gray-5'], ...FontMedium },
     rightArea: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' },

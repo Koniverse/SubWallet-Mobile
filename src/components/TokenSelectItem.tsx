@@ -13,6 +13,7 @@ import { RootState } from 'stores/index';
 
 interface Props extends TouchableOpacityProps {
   symbol: string;
+  displayName?: string;
   name: string;
   chain: string;
   logoKey: string;
@@ -27,6 +28,7 @@ interface Props extends TouchableOpacityProps {
 
 export const TokenSelectItem = ({
   symbol,
+  displayName,
   name,
   chain,
   logoKey,
@@ -49,9 +51,9 @@ export const TokenSelectItem = ({
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', flex: 1 }}>
               <Typography.Text style={styles.itemTextStyle} ellipsis>
-                {symbol}
+                {displayName || symbol}
               </Typography.Text>
-              <Typography.Text style={styles.itemTokenNameStyle} ellipsis>{`(${name})`}</Typography.Text>
+              {!displayName && <Typography.Text style={styles.itemTokenNameStyle} ellipsis>{`(${name})`}</Typography.Text>}
             </View>
 
             <Text style={styles.subTextStyle}>{chain}</Text>

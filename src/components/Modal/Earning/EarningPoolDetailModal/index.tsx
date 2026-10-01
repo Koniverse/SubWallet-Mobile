@@ -7,7 +7,6 @@ import { earlyValidateJoin } from 'messaging/index';
 import { CaretDownIcon, PlusCircleIcon, XIcon } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Alert,
   Linking,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -32,6 +31,8 @@ import { isAccountAll } from 'utils/accountAll';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { _isChainInfoCompatibleWithAccountInfo } from '@subwallet/extension-base/services/chain-service/utils';
 import useGetEarningPoolDetailModalData from 'hooks/earning/useGetEarningPoolDetailModalData';
+import useAlertModal from 'hooks/modal/useAlertModal';
+import { NotificationType } from '@subwallet/extension-base/background/KoniTypes';
 
 interface Props {
   slug: string;
@@ -79,6 +80,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
   } = props;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
+  const { openAlert } = useAlertModal();
   const scrollRef = useRef<ScrollView>(null);
   const checkRef = useRef<number>(Date.now());
 
@@ -343,11 +345,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
     };
 
     const onError = (message: string) => {
-      Alert.alert('Pay attention!', message, [
-        {
-          text: 'I understand',
-        },
-      ]);
+      openAlert({ title: 'Pay attention!', type: NotificationType.ERROR, content: message });
     };
 
     earlyValidateJoin({
@@ -379,7 +377,7 @@ const EarningPoolDetailModal: React.FC<Props> = (props: Props) => {
           setLoading(false);
         }
       });
-  }, [targetAddress, onStakeMore, setVisible, slug]);
+  }, [targetAddress, onStakeMore, openAlert, setVisible, slug]);
 
   const scrollBottom = useCallback(() => {
     scrollRef.current?.scrollToEnd();

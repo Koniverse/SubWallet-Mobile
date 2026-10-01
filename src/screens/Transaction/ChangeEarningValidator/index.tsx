@@ -182,11 +182,10 @@ export const ChangeEarningValidator = ({
 
     return maxEraNomination ? [maxEraNomination, ...sortedRemaining] : sortedRemaining;
   }, [items, nominations]);
+  // Takes the validator rather than returning a closure per row - see StakingValidatorItem's memo.
   const onClickMore = useCallback((item: ValidatorDataType) => {
-    return () => {
-      setViewDetailItem(item);
-      // activeModal(VALIDATOR_DETAIL_MODAL);
-    };
+    setViewDetailItem(item);
+    // activeModal(VALIDATOR_DETAIL_MODAL);
   }, []);
 
   const renderItem = useCallback(
@@ -201,7 +200,7 @@ export const ChangeEarningValidator = ({
             isNominated={false}
             isSelected={false}
             key={key}
-            onPressRightButton={onClickMore(validator)}
+            onPressRightButton={onClickMore}
             showUnSelectedIcon={false}
             validatorInfo={validator}
           />

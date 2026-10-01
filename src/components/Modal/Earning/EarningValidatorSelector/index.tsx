@@ -458,6 +458,12 @@ export const EarningValidatorSelector = forwardRef(
       );
     };
 
+    const onPressValidatorDetail = useCallback((item: ValidatorDataType) => {
+      Keyboard.dismiss();
+      setDetailItem(item);
+      delayActionAfterDismissKeyboard(() => setDetailModalVisible(true));
+    }, []);
+
     const renderItem = useCallback(
       ({ item }: ListRenderItemInfo<ValidatorDataType>) => {
         if (item.address === originValidator) {
@@ -475,17 +481,13 @@ export const EarningValidatorSelector = forwardRef(
             apy={item?.expectedReturn?.toString() || '0'}
             validatorInfo={item}
             onPress={onChangeSelectedValidator}
-            onPressRightButton={() => {
-              Keyboard.dismiss();
-              setDetailItem(item);
-              delayActionAfterDismissKeyboard(() => setDetailModalVisible(true));
-            }}
+            onPressRightButton={onPressValidatorDetail}
             isNominated={nominated}
             isSelected={selected}
           />
         );
       },
-      [changeValidators, nominatorValueList, onChangeSelectedValidator, originValidator],
+      [changeValidators, nominatorValueList, onChangeSelectedValidator, onPressValidatorDetail, originValidator],
     );
 
     const renderSelected = useCallback(

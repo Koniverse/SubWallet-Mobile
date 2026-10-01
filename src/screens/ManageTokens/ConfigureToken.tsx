@@ -32,6 +32,7 @@ import Tag from '../../components/design-system-ui/tag';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
+import { getAssetDisplayName } from 'utils/chainAndAsset';
 
 export const ConfigureToken = ({
   route: {
@@ -189,7 +190,7 @@ export const ConfigureToken = ({
       <View style={{ flex: 1, ...ContainerHorizontalPadding }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
           <View style={styles.logoWrapper}>{getTokenLogo(tokenInfo?.slug || '', undefined, 112)}</View>
-          {!!tokenInfo?.symbol && <Typography.Text style={styles.symbol}>{tokenInfo.symbol}</Typography.Text>}
+          {!!tokenInfo?.symbol && <Typography.Text style={styles.symbol}>{getAssetDisplayName(tokenInfo, tokenInfo.symbol)}</Typography.Text>}
           {tagNode}
           <View style={{ height: theme.sizeLG }} />
 

@@ -43,11 +43,13 @@ const HorizontalInput = (
 
   return (
     <FieldHorizontal label={label} outerStyle={[disabled && DisabledStyle, containerStyle]} labelStyle={labelStyle}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+      <View style={stylesheet.row}>
         {!!leftPart && <View style={[stylesheet.leftPart]}>{leftPart}</View>}
         <TextInput
           ref={ref}
           placeholderTextColor={theme.colorTextLight4}
+          // See design-system-ui/input: keeps a long placeholder on one line on Android.
+          numberOfLines={textInputProps.multiline ? textInputProps.numberOfLines : 1}
           {...textInputProps}
           style={[stylesheet.textInput, inputStyle]}
           editable={!disabled && !readonly}

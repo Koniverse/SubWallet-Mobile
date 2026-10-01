@@ -11,6 +11,7 @@ declare module 'react-native-config' {
     IOS_CODEPUSH_KEY?: string;
     BUNDLE_ENV?: string;
     DEBUG?: boolean;
+    DEV_MODE?: string;
   }
 
   export const Config: NativeConfig;

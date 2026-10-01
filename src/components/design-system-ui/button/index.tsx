@@ -133,7 +133,9 @@ const Button: React.FC<ButtonProps> = props => {
       <View style={[_style.container, { maxWidth: '100%', paddingHorizontal: children ? theme.padding - 4 : 0 }]}>
         {iconNode}
         {typeof children === 'string' ? (
-          <Text numberOfLines={1} style={[textStyle]}>
+          // flexShrink: a label wider than the button ellipsizes in place instead of
+          // overflowing past the padding and pulling the content off-centre.
+          <Text numberOfLines={1} style={[textStyle, _style.labelText]}>
             {children}
           </Text>
         ) : (

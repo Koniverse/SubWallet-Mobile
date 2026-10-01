@@ -18,7 +18,7 @@ function withPageWrapper<P>(
     const [isLoading, setLoading] = useState(true);
     const dataContext = useContext(DataContext);
 
-    useEffect(() => {
+    useEffect(() => { 
       let mounted = true;
 
       dataContext.awaitStores(stateNames).finally(() => {

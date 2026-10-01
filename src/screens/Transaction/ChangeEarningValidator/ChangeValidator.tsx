@@ -135,7 +135,7 @@ export const ChangeValidator = ({
     },
   );
 
-  const onPreCheck = usePreCheckAction(from);
+  const onPreCheck = usePreCheckAction(from, true, undefined, chain);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
 
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
@@ -405,11 +405,9 @@ export const ChangeValidator = ({
     [onChangeSelectedValidator],
   );
 
-  const onPressMore = useCallback((item: ValidatorDataType) => {
-    return () => {
-      setViewDetailItem(item);
-      setDetailModalVisible(true);
-    };
+ const onPressMore = useCallback((item: ValidatorDataType) => {
+    setViewDetailItem(item);
+    setDetailModalVisible(true);
   }, []);
 
   const renderEmpty = useCallback(() => {
@@ -440,7 +438,7 @@ export const ChangeValidator = ({
           isSelected={selected}
           isNominated={nominated}
           onPress={onPressItem}
-          onPressRightButton={onPressMore(item)}
+          onPressRightButton={onPressMore}
           apy={item?.expectedReturn?.toString() || '0'}
         />
       );

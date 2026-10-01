@@ -2,6 +2,7 @@ import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { _getAssetDecimals, _getAssetSymbol } from '@subwallet/extension-base/services/chain-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import {
+  AccountProxyType,
   EarningStatus,
   NominationPoolInfo,
   OptimalYieldPathParams,
@@ -12,6 +13,8 @@ import {
   YieldStepType,
 } from '@subwallet/extension-base/types';
 import { OptimalYieldPath } from '@subwallet/extension-base/types/yield/actions/join/step';
+import { isLiquidPool } from '@subwallet/extension-base/services/earning-service/utils';
+import { getExtrinsicTypeByPoolInfo } from 'utils/earning';
 import {
   SubmitJoinNativeStaking,
   SubmitJoinNominationPool,
@@ -54,7 +57,6 @@ import { InfoIcon, PencilSimpleLineIcon, PlusCircleIcon, WarningIcon } from 'pho
 import React, { useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import {
-  Alert,
   findNodeHandle,
   Keyboard,
   Linking,
@@ -83,6 +85,8 @@ import { useCreateGetSubnetStakingTokenName, useYieldPositionDetail } from 'hook
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import AlertBox from 'components/design-system-ui/alert-box/simple';
+import useAlertModal from 'hooks/modal/useAlertModal';
+import { NotificationType } from '@subwallet/extension-base/background/KoniTypes';
 import { STAKE_ALERT_DATA } from 'constants/earning/EarningDataRaw';
 import { useGetBalance } from 'hooks/balance';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
@@ -117,10 +121,10 @@ const loadingStepPromiseKey = 'earning.step.loading';
 // Not enough balance to xcm;
 export const insufficientXCMMessages = ['You can only enter a maximum'];
 
-const DO_NOT_SHOW_VALIDATOR_ALERT_CASES = [
-  'TAO___native_staking___bittensor',
-  'TAO___native_staking___bittensor_devnet',
-];
+// Bittensor stakes to exactly one validator at a time, so the "choose more validators to optimize
+// your earnings" nudge never applies on any of its networks. `_STAKING_CHAIN_GROUP` does not know
+// about devnet, hence the extra entry.
+const DO_NOT_SHOW_VALIDATOR_ALERT_CHAINS = [..._STAKING_CHAIN_GROUP.bittensor, 'bittensor_devnet'];
 
 const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const {
@@ -186,13 +190,26 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const currentStep = processState.currentStep;
   const firstStep = currentStep === 0;
   const submitStepType = processState.steps?.[!currentStep ? currentStep + 1 : currentStep]?.type;
-  const preCheckAction = usePreCheckAction(currentFrom);
+  const preCheckAction = usePreCheckAction(currentFrom, true, undefined, chain);
   const { compound } = useYieldPositionDetail(slug);
   const specificList = useGetYieldPositionForSpecificAccount(currentFrom);
   const { nativeTokenBalance } = useGetBalance(chain, currentFrom);
   const poolInfo = poolInfoMap[slug];
   const poolType = poolInfo?.type || '';
   const poolChain = poolInfo?.chain || '';
+  // The pre-check must see the extrinsic this pool actually submits (MINT_VDOT, MINT_QDOT,
+  // STAKING_BOND, ...), not a blanket JOIN_YIELD_POOL - otherwise an account that cannot
+  // sign liquid staking still passes. Same memo as the extension's Earn.tsx:480.
+  const exType = useMemo(
+    () => getExtrinsicTypeByPoolInfo({ chain, type: poolType, slug }),
+    [chain, poolType, slug],
+  );
+  const hiddenAccountProxyTypes = useMemo(
+    // The extension hides multisig senders for liquid pools only (Earn.tsx:1240) - not for
+    // lending, and not for native/nomination staking, which a multisig can sign.
+    () => (poolInfo && isLiquidPool(poolInfo) ? [AccountProxyType.MULTISIG] : []),
+    [poolInfo],
+  );
 
   const styles = useMemo(() => createStyle(theme), [theme]);
 
@@ -281,6 +298,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [submitString, setSubmitString] = useState<string | undefined>();
   const [connectionError, setConnectionError] = useState<string>();
   const [submitLoading, setSubmitLoading] = useState(false);
+  // Kept apart from submitLoading: the fee is refetched on every amount change, and sharing the
+  // submit flag made the button spin - and the inputs go disabled - on every keystroke.
+  const [feeLoading, setFeeLoading] = useState(false);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isShowAlert, setIsShowAlert] = useState<boolean>(false);
@@ -288,6 +308,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
   const [checkValidAccountLoading, setCheckValidAccountLoading] = useState<boolean>(redirectFromPreviewRef.current);
   const globalAppModalContext = useContext(GlobalModalContext);
   const { confirmModal } = useContext(AppModalContext);
+  const { closeAlert, openAlert } = useAlertModal();
 
   const inputAsset = useMemo(
     () => chainAsset[poolInfo?.metadata?.inputAsset],
@@ -466,11 +487,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         let message = balanceDisplayInfo.message.replaceAll('{{minJoinPool}}', minJoinPool);
         message = message.replaceAll('{{symbol}}', symbol);
         message = message.replaceAll('{{chain}}', _chain);
-        Alert.alert(balanceDisplayInfo.title, message, [
-          {
-            text: 'I understand',
-          },
-        ]);
+        openAlert({ title: balanceDisplayInfo.title, type: NotificationType.ERROR, content: message });
 
         dispatchProcessState({
           type: EarningActionType.STEP_ERROR_ROLLBACK,
@@ -479,11 +496,11 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
         return;
       } else if (insufficientXCMMessages.some(v => error.message.includes(v))) {
-        Alert.alert(i18n.warningTitle.insufficientBalance, error.message, [
-          {
-            text: 'I understand',
-          },
-        ]);
+        openAlert({
+          title: i18n.warningTitle.insufficientBalance,
+          type: NotificationType.ERROR,
+          content: error.message,
+        });
 
         dispatchProcessState({
           type: EarningActionType.STEP_ERROR_ROLLBACK,
@@ -501,7 +518,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         payload: error,
       });
     },
-    [currentAmount, handleDataForInsufficientAlert, hideAll, nativeTokenBalance.value, show],
+    [currentAmount, handleDataForInsufficientAlert, hideAll, nativeTokenBalance.value, openAlert, show],
   );
 
   const onSuccess = useCallback(
@@ -559,7 +576,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     assetDecimals,
     poolInfo.metadata.subnetData?.netuid || 0,
     ExtrinsicType.STAKING_BOND,
-    setSubmitLoading,
+    setFeeLoading,
   );
 
   const onChangeTarget = useCallback(
@@ -639,14 +656,17 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
         {!isDisabledSubnetContent && earningRate > 0 && (
           <>
+            {/* The rate is refetched while typing; the pending state shows here rather than on the
+                submit button, which used to flash a spinner on every character. */}
             <MetaInfo.Number
               decimals={assetDecimals}
               label={'Expected alpha amount'}
+              loading={feeLoading}
               suffix={poolInfo.metadata?.subnetData?.subnetSymbol || ''}
               value={BigN(currentAmount).multipliedBy(1 / earningRate)}
             />
 
-            <MetaInfo.Default label={'Conversion rate'}>
+            <MetaInfo.Default label={'Conversion rate'} loading={feeLoading}>
               <View style={styles.conversionRateStyle}>
                 <Typography.Text style={{ color: theme['gray-5'] }}>{`1 ${inputAsset.symbol} = `}</Typography.Text>
                 <Number
@@ -700,6 +720,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     assetDecimals,
     currentAmount,
     earningRate,
+    feeLoading,
     inputAsset.symbol,
     isDisabledSubnetContent,
     isSlippageAcceptable,
@@ -727,6 +748,9 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       !isBalanceReady ||
       !!errors.value ||
       submitLoading ||
+      // The staking fee is part of the payload: hold submission until the refetch lands, but
+      // without spinning the button on every character (see feeLoading).
+      feeLoading ||
       targetLoading ||
       !isSlippageAcceptable ||
       (mustChooseTarget && !poolTarget),
@@ -737,6 +761,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       isBalanceReady,
       errors.value,
       submitLoading,
+      feeLoading,
       targetLoading,
       isSlippageAcceptable,
       mustChooseTarget,
@@ -744,11 +769,19 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     ],
   );
 
-  const renderMetaInfo = useCallback(() => {
+  // Opening a modal updates context state, so this must not run while rendering (the old Alert.alert did).
+  useEffect(() => {
     if (!poolInfo && !isShowNoPoolInfoPopupRef.current) {
       isShowNoPoolInfoPopupRef.current = true;
-      Alert.alert('Unable to get earning data', 'Please, go back and try again later');
+      openAlert({
+        title: 'Unable to get earning data',
+        type: NotificationType.ERROR,
+        content: 'Please, go back and try again later',
+      });
     }
+  }, [openAlert, poolInfo]);
+
+  const renderMetaInfo = useCallback(() => {
     const value = currentAmount ? parseFloat(currentAmount) / 10 ** assetDecimals : 0;
     const assetSymbol = inputAsset ? inputAsset.symbol : '';
 
@@ -842,36 +875,40 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
 
   const showValidatorMaxCountWarning = useCallback(
     (maxCount: number, userSelectedPoolCount: number, callback: VoidFunction) => {
-      return Alert.alert(
-        'Pay attention!',
-        `You are recommended to choose ${maxCount} validators to optimize your earnings. Do you wish to continue with ${userSelectedPoolCount} validator${
+      openAlert({
+        title: 'Pay attention!',
+        type: NotificationType.WARNING,
+        content: `You are recommended to choose ${maxCount} validators to optimize your earnings. Do you wish to continue with ${userSelectedPoolCount} validator${
           userSelectedPoolCount === 1 ? '' : 's'
         }?`,
-        [
-          {
-            text: 'Go back',
-            onPress: () => {
-              setSubmitLoading(false);
-            },
-            style: 'default',
+        cancelButton: {
+          text: 'Go back',
+          onPress: () => {
+            closeAlert();
+            setSubmitLoading(false);
           },
-          {
-            text: 'Continue',
-            style: 'default',
-            isPreferred: false,
-            onPress: callback,
+        },
+        okButton: {
+          text: 'Continue',
+          onPress: () => {
+            closeAlert();
+            callback();
           },
-        ],
-      );
+        },
+      });
     },
-    [],
+    [closeAlert, openAlert],
   );
 
   const netuid = useMemo(() => poolInfo.metadata.subnetData?.netuid, [poolInfo.metadata.subnetData]);
 
   const onSubmit = useCallback(() => {
     if (!poolInfo) {
-      Alert.alert('Unable to get earning data', 'Please, go back and try again later');
+      openAlert({
+        title: 'Unable to get earning data',
+        type: NotificationType.ERROR,
+        content: 'Please, go back and try again later',
+      });
     }
 
     setSubmitLoading(true);
@@ -1005,8 +1042,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     if (
       userSelectedPoolCount < maxCount &&
       label === 'Validator' &&
-      !DO_NOT_SHOW_VALIDATOR_ALERT_CASES.includes(slug) &&
-      !slug.startsWith('TAO___subnet_staking___bittensor')
+      !DO_NOT_SHOW_VALIDATOR_ALERT_CHAINS.includes(chain)
     ) {
       showValidatorMaxCountWarning(maxCount, userSelectedPoolCount, () => {
         submitData(currentStep)
@@ -1025,6 +1061,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
       });
   }, [
     chain,
+    openAlert,
     currentStep,
     getValues,
     maxSlippage?.slippage,
@@ -1128,31 +1165,31 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         navigation.goBack();
       }
     } else {
-      Alert.alert(
-        'Cancel earning process?',
-        'Going back will cancel the current earning process. Do you wish to cancel?',
-        [
-          {
-            text: 'Cancel earning',
-            onPress: () => {
-              if (redirectFromPreviewRef.current) {
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
-                });
-                return;
-              }
+      openAlert({
+        title: 'Cancel earning process?',
+        type: NotificationType.WARNING,
+        content: 'Going back will cancel the current earning process. Do you wish to cancel?',
+        okButton: {
+          text: 'Cancel earning',
+          type: 'warning',
+          onPress: () => {
+            closeAlert();
 
-              navigation.goBack();
-            },
+            if (redirectFromPreviewRef.current) {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Home', params: { screen: 'Main', params: { screen: 'Earning' } } }],
+              });
+              return;
+            }
+
+            navigation.goBack();
           },
-          {
-            text: 'Not now',
-          },
-        ],
-      );
+        },
+        cancelButton: { text: 'Not now' },
+      });
     }
-  }, [slug, firstStep, navigation]);
+  }, [slug, firstStep, navigation, openAlert, closeAlert]);
 
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
@@ -1351,18 +1388,19 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         if (isUnstakeAll) {
           if (poolType === YieldPoolType.NOMINATION_POOL) {
             isReadyToShowAlertRef.current &&
-              Alert.alert(
-                'Pay attention',
-                "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
-                [
-                  {
-                    text: 'I understand',
-                    onPress: () => {
-                      isReadyToShowAlertRef.current = true;
-                    },
+              openAlert({
+                title: 'Pay attention',
+                type: NotificationType.WARNING,
+                content:
+                  "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
+                okButton: {
+                  text: 'I understand',
+                  onPress: () => {
+                    closeAlert();
+                    isReadyToShowAlertRef.current = true;
                   },
-                ],
-              );
+                },
+              });
 
             isReadyToShowAlertRef.current = false;
 
@@ -1370,18 +1408,19 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
           } else if (poolType === YieldPoolType.NATIVE_STAKING) {
             if (_STAKING_CHAIN_GROUP.para.includes(chain)) {
               isReadyToShowAlertRef.current &&
-                Alert.alert(
-                  'Pay attention',
-                  "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
-                  [
-                    {
-                      text: 'I understand',
-                      onPress: () => {
-                        isReadyToShowAlertRef.current = true;
-                      },
+                openAlert({
+                  title: 'Pay attention',
+                  type: NotificationType.WARNING,
+                  content:
+                    "This account is unstaking all stake and can't nominate validators. You can change your account on the Account tab or try again after withdrawing unstaked funds",
+                  okButton: {
+                    text: 'I understand',
+                    onPress: () => {
+                      closeAlert();
+                      isReadyToShowAlertRef.current = true;
                     },
-                  ],
-                );
+                  },
+                });
               isReadyToShowAlertRef.current = false;
             }
 
@@ -1423,26 +1462,35 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
         };
 
         isReadyToShowAlertRef.current &&
-          Alert.alert('Pay attention', content, [
-            {
+          openAlert({
+            title: 'Pay attention',
+            type: NotificationType.WARNING,
+            content,
+            okButton: {
               text:
                 poolType === YieldPoolType.NATIVE_STAKING
                   ? 'Change validators'
                   : poolType === YieldPoolType.NOMINATION_POOL
                   ? 'Use nomination pool'
                   : '',
-              onPress: onPressContinue,
+              onPress: () => {
+                closeAlert();
+                onPressContinue();
+              },
             },
-            {
+            cancelButton: {
               text:
                 poolType === YieldPoolType.NATIVE_STAKING
                   ? 'Keep current validators'
                   : poolType === YieldPoolType.NOMINATION_POOL
                   ? 'Explore Earning options'
                   : '',
-              onPress: onPressCancel,
+              onPress: () => {
+                closeAlert();
+                onPressCancel();
+              },
             },
-          ]);
+          });
         isReadyToShowAlertRef.current = false;
       }
     }
@@ -1458,6 +1506,8 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
     isShowAlert,
     isAllAccount,
     isFocused,
+    openAlert,
+    closeAlert,
   ]);
 
   const validatorDefaultValue = (() => {
@@ -1518,6 +1568,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                   )}
                   <AccountSelector
                     items={accountAddressItems}
+                    hiddenAccountProxyTypes={hiddenAccountProxyTypes}
                     selectedValueMap={{ [currentFrom]: true }}
                     accountSelectorRef={accountSelectorRef}
                     disabled={submitLoading || !isAllAccount}
@@ -1650,7 +1701,7 @@ const EarnTransaction: React.FC<EarningProps> = (props: EarningProps) => {
                         iconColor={isDisabledButton ? theme.colorTextLight5 : theme.colorWhite}
                       />
                     }
-                    onPress={preCheckAction(onPressSubmit, ExtrinsicType.JOIN_YIELD_POOL)}>
+                    onPress={preCheckAction(onPressSubmit, exType)}>
                     {i18n.buttonTitles.stake}
                   </Button>
                 </View>

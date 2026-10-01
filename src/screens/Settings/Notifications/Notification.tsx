@@ -13,6 +13,7 @@ import {
   IconProps,
   InfoIcon,
   ListBulletsIcon,
+  UserSwitchIcon,
 } from 'phosphor-react-native';
 import {
   _NotificationInfo,
@@ -28,7 +29,7 @@ import {
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   fetchInappNotifications,
   getIsClaimNotificationStatus,
@@ -59,6 +60,8 @@ import { Keyboard, StyleSheet, View } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import useGetChainSlugsByCurrentAccountProxy from 'hooks/chain/useGetChainSlugsByCurrentAccountProxy';
+import { NOTI_MULTISIG_PENDINGTX_ID } from 'constants/localStorage';
+import { mmkvStore } from 'utils/storage';
 
 export interface NotificationInfoItem extends _NotificationInfo {
   backgroundColor: string;
@@ -76,6 +79,7 @@ export enum NotificationIconBackgroundColorMap {
   CLAIM_POLYGON_BRIDGE = 'yellow-7',
   SWAP = 'blue-8',
   EARNING = 'blue-8',
+  MULTISIG_APPROVAL = 'geekblue-9',
 }
 
 export const NotificationIconMap = {
@@ -88,6 +92,7 @@ export const NotificationIconMap = {
   CLAIM_POLYGON_BRIDGE: CoinsIcon,
   SWAP: ArrowsLeftRightIcon,
   EARNING: DatabaseIcon,
+  MULTISIG_APPROVAL: UserSwitchIcon,
 };
 
 export const Notification = ({ route: { params } }: NotificationProps) => {
@@ -120,17 +125,22 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
         onPress: () => {},
         value: NotificationTab.READ,
       },
+      {
+        label: i18n.multisig.tabLabel,
+        onPress: () => {},
+        value: NotificationTab.MULTISIG,
+      },
     ];
   }, []);
   const [selectedFilterTab, setSelectedFilterTab] = useState<NotificationTab>(NotificationTab.ALL);
   const [viewDetailItem, setViewDetailItem] = useState<NotificationInfoItem | undefined>(undefined);
+  // The confirm modal is global, so a pending popup must not land on the next screen.
+  const activeChainModalTimerRef = useRef<NodeJS.Timeout>();
   const [notifications, setNotifications] = useState<_NotificationInfo[]>([]);
   const [currentProxyId] = useState<string | undefined>(currentAccountProxy?.id);
   const [loadingNotification, setLoadingNotification] = useState<boolean>(false);
   const [isTrigger, setTrigger] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  // use this to trigger get date when click read/unread
-  const [currentTimestampMs, setCurrentTimestampMs] = useState(Date.now());
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const styles = createStyleSheet(theme);
 
@@ -157,8 +167,19 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     openNotificationSetting();
   }, [notificationSetup, openNotificationSetting]);
 
+  // The store has no query for the Multisig tab: getIsTabRead() returns undefined for it,
+  // so its `item.isRead === undefined` test never matches and the tab comes back empty.
+  // Ask for the full list instead and let filterTabFunction below pick the multisig ones.
+  const fetchTab = selectedFilterTab === NotificationTab.MULTISIG ? NotificationTab.ALL : selectedFilterTab;
+
   const notificationItems = useMemo((): NotificationInfoItem[] => {
     const filterTabFunction = (item: NotificationInfoItem) => {
+      const isMultisigAction = item.actionType === NotificationActionType.MULTISIG_APPROVAL;
+
+      if (selectedFilterTab === NotificationTab.MULTISIG) {
+        return isMultisigAction;
+      }
+
       if (selectedFilterTab === NotificationTab.ALL) {
         return true;
       } else if (selectedFilterTab === NotificationTab.UNREAD) {
@@ -211,7 +232,9 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
       const networkName = chainInfo?.name || chainSlug;
       const actionText = action === NotificationActionType.WITHDRAW ? 'withdrawing' : 'claiming';
       const content = `${networkName} network is currently disabled. Enable the network and then re-click the notification to start ${actionText} your funds`;
-      setTimeout(() => {
+
+      clearTimeout(activeChainModalTimerRef.current);
+      activeChainModalTimerRef.current = setTimeout(() => {
         confirmModal.setConfirmModal({
           visible: true,
           completeBtnTitle: i18n.buttonTitles.enable,
@@ -261,8 +284,9 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     (item: NotificationInfoItem) => {
       return () => {
         Keyboard.dismiss();
-        setViewDetailItem(item);
         const slug = (item.metadata as WithdrawClaimNotificationMetadata).stakingSlug;
+        // Read the clock here instead of keeping it in state: a ticking state value
+        // re-rendered the whole screen (and rebuilt renderItem) once a second.
         const totalWithdrawable = getTotalWidrawable(
           slug,
           poolInfoMap,
@@ -270,7 +294,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
           currentAccountProxy,
           isAllAccount,
           chainsByAccountType,
-          currentTimestampMs,
+          Date.now(),
         );
         const switchStatusParams: RequestSwitchStatusParams = {
           id: item.id,
@@ -449,6 +473,17 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
 
             break;
           }
+
+          case NotificationActionType.MULTISIG_APPROVAL: {
+            // Pending multisig transactions are listed on the History screen's Multisig
+            // tab; hand the id over so History can open this exact one.
+            mmkvStore.set(NOTI_MULTISIG_PENDINGTX_ID, item.id);
+            switchReadNotificationStatus(switchStatusParams)
+              .then(() => navigation.navigate('History', {}))
+              .catch(console.error);
+
+            break;
+          }
         }
 
         if (!item.isRead) {
@@ -466,7 +501,6 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
       chainStateMap,
       chainsByAccountType,
       currentAccountProxy,
-      currentTimestampMs,
       earningRewards,
       isAllAccount,
       isTrigger,
@@ -478,20 +512,34 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     ],
   );
 
+  // On the Multisig tab, "mark all read" should only touch multisig notifications.
+  const excludeNotificationIds = useMemo(() => {
+    if (selectedFilterTab !== NotificationTab.MULTISIG) {
+      return [];
+    }
+
+    return notifications
+      .filter(item => item.actionType !== NotificationActionType.MULTISIG_APPROVAL)
+      .map(item => item.id);
+  }, [notifications, selectedFilterTab]);
+
   const markAllRead = useCallback(() => {
-    markAllReadNotification(currentProxyId || ALL_ACCOUNT_KEY).catch(console.error);
+    markAllReadNotification({
+      proxyId: currentProxyId || ALL_ACCOUNT_KEY,
+      excludeNotificationIds,
+    }).catch(console.error);
 
     setLoading(true);
     fetchInappNotifications({
       proxyId: currentProxyId,
-      notificationTab: selectedFilterTab,
+      notificationTab: fetchTab,
     } as GetNotificationParams)
       .then(rs => {
         setNotifications(rs);
         setTimeout(() => setLoading(false), 300);
       })
       .catch(console.error);
-  }, [currentProxyId, selectedFilterTab]);
+  }, [currentProxyId, excludeNotificationIds, fetchTab]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<NotificationInfoItem>) => {
@@ -548,23 +596,17 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     setLoading(true);
     fetchInappNotifications({
       proxyId: currentProxyId,
-      notificationTab: selectedFilterTab,
+      notificationTab: fetchTab,
     } as GetNotificationParams)
       .then(rs => {
         setNotifications(rs);
         setTimeout(() => setLoading(false), 300);
       })
       .catch(console.error);
-  }, [currentProxyId, isAllAccount, isTrigger, selectedFilterTab]);
+  }, [currentProxyId, isAllAccount, isTrigger, fetchTab]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTimestampMs(Date.now());
-    }, 1000);
-
-    return () => {
-      clearInterval(timer);
-    };
+    return () => clearTimeout(activeChainModalTimerRef.current);
   }, []);
 
   useEffect(() => {
@@ -609,9 +651,8 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
             size={'xs'}
             disabled={!enableNotification}
             onPress={markAllRead}
-            externalTextStyle={styles.markAllReadTextStyle}>
-            {'Mark all as read'}
-          </Button>
+            style={styles.markAllReadBtnStyle}
+          />
         )}
       </View>
     );
@@ -621,7 +662,7 @@ export const Notification = ({ route: { params } }: NotificationProps) => {
     markAllRead,
     selectedFilterTab,
     styles.beforeListWrapperStyle,
-    styles.markAllReadTextStyle,
+    styles.markAllReadBtnStyle,
     styles.tabContainerStyle,
     styles.tabItemStyle,
     styles.tabSelectedStyle,
@@ -700,6 +741,6 @@ function createStyleSheet(theme: ThemeTypes) {
       ...FontSemiBold,
     },
     tabTextSelectedStyle: { color: theme.colorWhite },
-    markAllReadTextStyle: { color: theme.colorWhite },
+    markAllReadBtnStyle: { marginRight: theme.margin },
   });
 }

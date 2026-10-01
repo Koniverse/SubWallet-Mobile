@@ -70,6 +70,8 @@ export const DeriveAccountActionModal = ({
     [networkType, accountProxy?.chainTypes],
   );
   const timeOutRef = useRef<NodeJS.Timeout | null>(null);
+  // Separate timer: sharing one ref let a keystroke in one field cancel the other field's pending check.
+  const nameTimeOutRef = useRef<NodeJS.Timeout | null>(null);
   const modalRef = useRef<SWModalRefProps>(null);
   const [validating, setValidating] = useState(false);
   const accountNameValidator = useCallback(async (value: string) => {
@@ -125,12 +127,27 @@ export const DeriveAccountActionModal = ({
     [proxyId, setInfo],
   );
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const _suri = formState.data.suri.trim();
     const _name = formState.data.accountName.trim();
+
+    if (validating) {
+      return;
+    }
+
+    // Like the extension, inputs are re-checked at submit rather than gating the button while typing.
+    setValidating(true);
+    const [suriErrors, nameErrors] = await Promise.all([
+      infoRef.current ? Promise.resolve<string[]>([]) : suriValidator(_suri),
+      accountNameValidator(_name),
+    ]);
+    setValidating(false);
+    onUpdateErrors('suri')(suriErrors);
+    onUpdateErrors('accountName')(nameErrors);
+
     const _info = infoRef.current;
 
-    if (!_info) {
+    if (suriErrors.length || nameErrors.length || !_info) {
       return;
     }
 
@@ -221,24 +238,16 @@ export const DeriveAccountActionModal = ({
     if (timeOutRef.current) {
       clearTimeout(timeOutRef.current);
     }
-    if (amount) {
-      if (formState.data.suri) {
-        setValidating(true);
-        timeOutRef.current = setTimeout(() => {
-          suriValidator(formState.data.suri)
-            .then(res => {
+    if (amount && formState.data.suri) {
+      timeOutRef.current = setTimeout(() => {
+        suriValidator(formState.data.suri)
+          .then(res => {
+            if (amount) {
               onUpdateErrors('suri')(res);
-            })
-            .catch((error: Error) => console.log('error suri', error.message))
-            .finally(() => {
-              if (amount) {
-                setValidating(false);
-              }
-            });
-        }, 1000);
-      } else {
-        setValidating(false);
-      }
+            }
+          })
+          .catch((error: Error) => console.log('error suri', error.message));
+      }, 1000);
     }
 
     return () => {
@@ -249,27 +258,19 @@ export const DeriveAccountActionModal = ({
   useEffect(() => {
     let amount = true;
 
-    if (timeOutRef.current) {
-      clearTimeout(timeOutRef.current);
+    if (nameTimeOutRef.current) {
+      clearTimeout(nameTimeOutRef.current);
     }
-    if (amount) {
-      if (formState.data.accountName) {
-        setValidating(true);
-        timeOutRef.current = setTimeout(() => {
-          accountNameValidator(formState.data.accountName)
-            .then(res => {
+    if (amount && formState.data.accountName) {
+      nameTimeOutRef.current = setTimeout(() => {
+        accountNameValidator(formState.data.accountName)
+          .then(res => {
+            if (amount) {
               onUpdateErrors('accountName')(res);
-            })
-            .catch((error: Error) => console.log('error account name', error.message))
-            .finally(() => {
-              if (amount) {
-                setValidating(false);
-              }
-            });
-        }, 500);
-      } else {
-        setValidating(false);
-      }
+            }
+          })
+          .catch((error: Error) => console.log('error account name', error.message));
+      }, 500);
     }
 
     return () => {

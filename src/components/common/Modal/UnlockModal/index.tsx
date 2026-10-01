@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import {
   BackHandler,
@@ -58,6 +58,7 @@ async function handleUnlockPassword(
   }
 }
 export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
+  const portalKey = useId();
   const { isUpdateBiometric, isConfirmation } = params;
   const { isUseBiometric } = useSelector((state: RootState) => state.mobileSettings);
   const navigation = useNavigation<RootNavigationProps>();
@@ -239,7 +240,14 @@ export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.select({ ios: 0, android: 0 })}
       style={styles.flex1}>
-      {Platform.OS === 'android' && openFromModal ? <Portal>{renderMainContent()}</Portal> : renderMainContent()}
+      {/* Keyed for the same reason as the sheets in SwModal - see the comment there. */}
+      {Platform.OS === 'android' && openFromModal ? (
+        <Portal>
+          <React.Fragment key={portalKey}>{renderMainContent()}</React.Fragment>
+        </Portal>
+      ) : (
+        renderMainContent()
+      )}
     </KeyboardAvoidingView>
   );
 });

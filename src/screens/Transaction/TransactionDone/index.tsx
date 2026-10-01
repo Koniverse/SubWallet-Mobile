@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { View } from 'react-native';
 import { Button, PageIcon, Typography } from 'components/design-system-ui';
@@ -14,8 +14,13 @@ import { TransactionDoneInfo } from 'hooks/screen/Transaction/useTransaction';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { mmkvStore } from 'utils/storage';
 import InAppReview from 'react-native-in-app-review';
-import { reformatAddress } from '@subwallet/extension-base/utils';
+import { isSameAddress, reformatAddress } from '@subwallet/extension-base/utils';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { SHOW_REVIEW_APP_SCREENS } from 'constants/index';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { findAccountByAddress } from 'utils/index';
+import { saveCurrentAccountAddress } from 'messaging/index';
 
 interface Props {
   transactionDoneInfo: TransactionDoneInfo;
@@ -27,6 +32,9 @@ export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) =
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const _style = TransactionDoneStyle(theme);
+  const { transactionRequest } = useSelector((state: RootState) => state.requestState);
+  const { accounts } = useSelector((state: RootState) => state.accountState);
+  const [isLoading, setIsLoading] = useState(false);
   const showReviewAppScreen = useMemo(() => {
     try {
       const storedData = JSON.parse(mmkvStore.getString('show-review-popup-screen') || '[]') as string[];
@@ -59,12 +67,39 @@ export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) =
   }, [extrinsicType, isShowRateAppNoti, showReviewAppScreen]);
 
   const viewTransaction = useCallback(() => {
-    if (chain && id && address) {
-      navigation.navigate('History', { chain, transactionId: id, address: reformatAddress(address) });
-    } else {
+    if (!chain || !id || !address) {
       navigation.navigate('History', {});
+
+      return;
     }
-  }, [address, chain, id, navigation]);
+
+    let storedAddressesHistory = address;
+    const transaction = transactionRequest[id];
+
+    // The address signing the transaction may differ from the one submitting it (proxy, multisig).
+    // History is indexed by the signing address, so navigate with it instead.
+    if (transaction?.address && !isSameAddress(transaction.address, address)) {
+      storedAddressesHistory = transaction.address;
+    }
+
+    const account = findAccountByAddress(accounts, storedAddressesHistory);
+
+    if (!account) {
+      navigation.navigate('History', { chain, transactionId: id, address: reformatAddress(storedAddressesHistory) });
+
+      return;
+    }
+
+    // The History screen only lists addresses of the current account proxy, so switch to the
+    // owner of the signing address before navigating.
+    setIsLoading(true);
+    saveCurrentAccountAddress({ address: account.proxyId || ALL_ACCOUNT_KEY })
+      .catch(console.error)
+      .finally(() => {
+        setIsLoading(false);
+        navigation.navigate('History', { chain, transactionId: id, address: reformatAddress(storedAddressesHistory) });
+      });
+  }, [accounts, address, chain, id, navigation, transactionRequest]);
 
   const goHome = useCallback(() => {
     if (path === 'Staking') {
@@ -99,9 +134,11 @@ export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) =
         </View>
 
         <View style={{ width: '100%', ...MarginBottomForSubmitButton, gap: theme.size }}>
-          <Button onPress={viewTransaction}>{i18n.buttonTitles.viewTransaction}</Button>
+          <Button disabled={isLoading} loading={isLoading} onPress={viewTransaction}>
+            {i18n.buttonTitles.viewTransaction}
+          </Button>
 
-          <Button type={'secondary'} onPress={goHome}>
+          <Button disabled={isLoading} type={'secondary'} onPress={goHome}>
             {i18n.buttonTitles.backToHome}
           </Button>
         </View>

@@ -16,6 +16,7 @@ import {
   QuestionIcon,
   StrategyIcon,
   SwatchesIcon,
+  UserSwitchIcon,
 } from 'phosphor-react-native';
 import { AccountProxy, AccountProxyType } from '@subwallet/extension-base/types';
 import { PhosphorIcon } from 'utils/campaign';
@@ -115,6 +116,14 @@ export const SelectAccountItem = ({
       return {
         value: NeedleIcon,
         iconColor: theme.colorWhite,
+        weight: 'fill',
+      };
+    }
+
+    if (accountProxy.accountType === AccountProxyType.MULTISIG) {
+      return {
+        value: UserSwitchIcon,
+        iconColor: theme['geekblue-9'],
         weight: 'fill',
       };
     }
