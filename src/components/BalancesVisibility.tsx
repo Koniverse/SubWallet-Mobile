@@ -15,6 +15,7 @@ type Props = {
   subFloatNumber?: boolean;
   /** Font size of the balance. Defaults to the large display size. */
   size?: number;
+  raisedSymbol?: boolean;
 };
 
 export const BalancesVisibility = ({
@@ -23,6 +24,7 @@ export const BalancesVisibility = ({
   startWithSymbol = true,
   subFloatNumber = false,
   size = 38,
+  raisedSymbol = true,
 }: Props) => {
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const theme = useSubWalletTheme().swThemes;
@@ -39,7 +41,7 @@ export const BalancesVisibility = ({
           decimal={0}
           prefix={startWithSymbol ? symbol : undefined}
           size={size}
-          subFloatUnit={true}
+          subFloatUnit={raisedSymbol}
           subFloatUnitFontSize={unitFontSize}
           subFloatUnitStyle={{
             lineHeight: unitFontSize,

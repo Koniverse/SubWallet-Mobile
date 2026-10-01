@@ -165,7 +165,7 @@ export const TokenGroupsDetailUpperBlock = ({
         <Typography.Text ellipsis style={_style.yourBalanceLabel}>
           {i18n.common.yourBalance}
         </Typography.Text>
-        <BalancesVisibility value={balanceValue} symbol={currencyData.symbol} size={20} />
+        <BalancesVisibility value={balanceValue} symbol={currencyData.symbol} size={20} raisedSymbol={false} />
       </View>
     </View>
   );

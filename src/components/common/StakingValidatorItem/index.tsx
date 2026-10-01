@@ -16,14 +16,14 @@ interface Props {
   apy: string;
   validatorInfo: ValidatorDataType;
   onPress?: (changeVal: string) => void;
-  onPressRightButton?: () => void;
+  onPressRightButton?: (validatorInfo: ValidatorDataType) => void;
   isSelected?: boolean;
   isNominated?: boolean;
   showUnSelectedIcon?: boolean;
   isShowRightBtn?: boolean;
 }
 
-export const StakingValidatorItem = ({
+const Component = ({
   apy,
   validatorInfo,
   onPress,
@@ -39,6 +39,10 @@ export const StakingValidatorItem = ({
   const onPressItem = useCallback(() => {
     onPress && onPress(getValidatorKey(address, identity));
   }, [address, identity, onPress]);
+
+  const onPressRight = useCallback(() => {
+    onPressRightButton?.(validatorInfo);
+  }, [onPressRightButton, validatorInfo]);
 
   return (
     <TouchableOpacity style={_style.container} onPress={onPressItem}>
@@ -91,10 +95,18 @@ export const StakingValidatorItem = ({
             type={'ghost'}
             size={'xs'}
             icon={<Icon phosphorIcon={DotsThreeIcon} size={'sm'} iconColor={theme.colorTextLight4} />}
-            onPress={onPressRightButton}
+            onPress={onPressRight}
           />
         )}
       </View>
     </TouchableOpacity>
   );
 };
+
+/**
+ * Memoised: the selector re-renders its whole list on every tap, and each row draws an identicon
+ * generated from the address - cheap once, expensive times the number of rows on screen, which
+ * grows as the lazy list pages in. With stable props a tap now re-renders only the rows whose
+ * isSelected actually changed.
+ */
+export const StakingValidatorItem = React.memo(Component);

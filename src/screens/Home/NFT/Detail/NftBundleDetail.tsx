@@ -105,7 +105,7 @@ const NftBundleDetail = ({
       const owner = accounts.find(a => a.address === ownerAddress);
 
       if (owner?.isReadOnly) {
-        show('The NFT owner is a watch-only account, you cannot send the NFT with it');
+        show('The NFT owner is a watch-only account, you cannot send the NFT with it', 'normal');
         return;
       }
     }
