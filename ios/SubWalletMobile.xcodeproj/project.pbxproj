@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		18D4B86D0DC693AE2B368885 /* libPods-SubWalletMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD45F407AD884FBE16F4088F /* libPods-SubWalletMobile.a */; };
-		3532DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3532DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */; };
+		3533DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3533DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */; };
 		4627831F29CEA0080046230D /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 4627831E29CEA0080046230D /* fonts */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		7F4C288B1E55425982E2043F /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F9A26545C5674915A5A3564C /* BootSplash.storyboard */; };
@@ -22,7 +22,7 @@
 /* Begin PBXFileReference section */
 		13B07F961A680F5B00A75B9A /* SubWalletMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SubWalletMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SubWalletMobile/Info.plist; sourceTree = "<group>"; };
-		3532DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		3533DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3FC290845071D72D14D623DC /* Pods-SubWalletMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.debug.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		4627831E29CEA0080046230D /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
 		462FCA152A72462100B46279 /* RCTMinimizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTMinimizer.m; path = SubWalletMobile/NativeModules/RCTMinimizer/RCTMinimizer.m; sourceTree = "<group>"; };
@@ -32,12 +32,13 @@
 		83FD0374F95D1620EE8272A7 /* Pods-SubWalletMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.release.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.release.xcconfig"; sourceTree = "<group>"; };
 		990CC4AB2A46246200AB6D8B /* SubWalletMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SubWalletMobile.entitlements; path = SubWalletMobile/SubWalletMobile.entitlements; sourceTree = "<group>"; };
 		CD45F407AD884FBE16F4088F /* libPods-SubWalletMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SubWalletMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		ED3021.2.75321F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		ED3021.2.75331F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F1554EF8292D4F5B00302F08 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SubWalletMobile/Images.xcassets; sourceTree = "<group>"; };
 		F16143B02EF2B64200BCFC7E /* PageJs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = PageJs.bundle; sourceTree = "<group>"; };
 		F19ED00B2F2868880074C13A /* DevModeWeb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = DevModeWeb.bundle; path = ../html/DevModeWeb.bundle; sourceTree = SOURCE_ROOT; };
 		F19ED00D2F2868970074C13A /* Web.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Web.bundle; path = ../html/Web.bundle; sourceTree = SOURCE_ROOT; };
 		F9A26545C5674915A5A3564C /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = SubWalletMobile/BootSplash.storyboard; sourceTree = "<group>"; };
+		FC5BB5C0D41055614DF278DF /* Pods-SubWalletMobile.devmode.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubWalletMobile.devmode.xcconfig"; path = "Target Support Files/Pods-SubWalletMobile/Pods-SubWalletMobile.devmode.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,7 +60,7 @@
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72462601600AC10FF /* LaunchScreen.storyboard */,
-				3532DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */,
+				3533DD1B2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy */,
 				462FCA132A7236F000B46279 /* NativeModules */,
 				990CC4AB2A46246200AB6D8B /* SubWalletMobile.entitlements */,
 				F9A26545C5674915A5A3564C /* BootSplash.storyboard */,
@@ -70,7 +71,7 @@
 		2D16E6871FA4F8E462B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				ED3021.2.75321F000B7C4FE /* JavaScriptCore.framework */,
+				ED3021.2.75331F000B7C4FE /* JavaScriptCore.framework */,
 				CD45F407AD884FBE16F4088F /* libPods-SubWalletMobile.a */,
 			);
 			name = Frameworks;
@@ -112,7 +113,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E462B85C8A /* Frameworks */,
 				BBD78D7AC51CEA462F1C20DB /* Pods */,
-				F898C800E8954625325C0C41 /* Resources */,
+				F898C800E8954625335C0C41 /* Resources */,
 				354622E22CBE82D1002D4A91 /* Recovered References */,
 			);
 			indentWidth = 2;
@@ -140,11 +141,12 @@
 			children = (
 				3FC290845071D72D14D623DC /* Pods-SubWalletMobile.debug.xcconfig */,
 				83FD0374F95D1620EE8272A7 /* Pods-SubWalletMobile.release.xcconfig */,
+				FC5BB5C0D41055614DF278DF /* Pods-SubWalletMobile.devmode.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		F898C800E8954625325C0C41 /* Resources */ = {
+		F898C800E8954625335C0C41 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -213,7 +215,7 @@
 			files = (
 				F16143B12EF2B64200BCFC7E /* PageJs.bundle in Resources */,
 				F19ED00E2F2868970074C13A /* Web.bundle in Resources */,
-				3532DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */,
+				3533DD1C2BD8B25E0021D1DC /* PrivacyInfo.xcprivacy in Resources */,
 				81AB9BB82462601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				4627831F29CEA0080046230D /* fonts in Resources */,
 				F1554EF9292D4F5B00302F08 /* Images.xcassets in Resources */,
@@ -321,7 +323,7 @@
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 532;
+				CURRENT_PROJECT_VERSION = 533;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
@@ -332,7 +334,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.44;
+				MARKETING_VERSION = 1.2.45;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -357,7 +359,7 @@
 				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 532;
+				CURRENT_PROJECT_VERSION = 533;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SubWallet;
@@ -367,7 +369,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.44;
+				MARKETING_VERSION = 1.2.45;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -533,6 +535,114 @@
 			};
 			name = Release;
 		};
+		F1A7C70130651F7B008E60AD /* Devmode */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(SDKROOT)/usr/lib/swift\"",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
+					"\"$(inherited)\"",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DFOLLY_NO_CONFIG",
+					"-DFOLLY_MOBILE=1",
+					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
+				);
+				OTHER_LDFLAGS = "$(inherited)";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+				SDKROOT = iphoneos;
+				USE_HERMES = true;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Devmode;
+		};
+		F1A7C70230651F7B008E60AD /* Devmode */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FC5BB5C0D41055614DF278DF /* Pods-SubWalletMobile.devmode.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = SubWalletMobile/SubWalletMobile.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 533;
+				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
+				INFOPLIST_FILE = SubWalletMobile/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SubWallet;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2.45;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.subwallet.mobile;
+				PRODUCT_NAME = SubWalletMobile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Devmode;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -541,6 +651,7 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				13B07F951A680F5B00A75B9A /* Release */,
+				F1A7C70230651F7B008E60AD /* Devmode */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -550,6 +661,7 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+				F1A7C70130651F7B008E60AD /* Devmode */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
