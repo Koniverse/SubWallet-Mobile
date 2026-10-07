@@ -15,6 +15,7 @@ import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
 import RequestCreateMasterPasswordModal from 'screens/MasterPassword/RequestCreateMasterPasswordModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { ReduxStatus } from 'stores/types';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
@@ -287,6 +288,10 @@ export const Home = ({ navigation }: Props) => {
   const { isAcknowledgedUnifiedAccountMigration, isUnifiedAccountMigrationInProgress } = useSelector(
     (state: RootState) => state.settings,
   );
+  // Both flags above arrive from the web runner's settings subscription and are simply absent from
+  // the slice's initialState, so until that first payload lands they read as undefined - which is
+  // indistinguishable from "the user has never acknowledged the migration".
+  const isSettingsReady = useSelector((state: RootState) => state.settings.reduxStatus === ReduxStatus.READY);
   const { timeAutoLock } = useSelector((state: RootState) => state.mobileSettings);
   const aliveProcessMap = useSelector((state: RootState) => state.requestState.aliveProcess);
   const { currentRoute } = useSelector((state: RootState) => state.settings);
@@ -314,6 +319,14 @@ export const Home = ({ navigation }: Props) => {
   );
 
   const activePriorityPath = useMemo(() => {
+    // Not knowing yet is not the same as "not acknowledged". Deciding before the settings arrive is
+    // what re-opened the migration notice on every launch: with biometrics the app boots straight
+    // into Login, and unlocking resets the stack onto a freshly mounted Home - so this ran again,
+    // from scratch, ahead of the subscription every time.
+    if (!isSettingsReady) {
+      return undefined;
+    }
+
     if (!isAcknowledgedUnifiedAccountMigration) {
       return { isNotice: true };
     }
@@ -323,7 +336,7 @@ export const Home = ({ navigation }: Props) => {
     }
 
     return undefined;
-  }, [isAcknowledgedUnifiedAccountMigration, isUnifiedAccountMigrationInProgress]);
+  }, [isAcknowledgedUnifiedAccountMigration, isSettingsReady, isUnifiedAccountMigrationInProgress]);
 
   // Identifies which migration prompt has already been routed to, so a dismissed one is not
   // re-opened. Both flags behind `activePriorityPath` are persisted through the web-runner, so they
