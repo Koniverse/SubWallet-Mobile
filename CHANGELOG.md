@@ -1,3 +1,6 @@
+## 1.2.45 (534)
+- Fix the unified account migration notice re-opening on every launch (#2057)
+
 ## 1.2.45 (533)
 - Update web-runner (#2057)
 
